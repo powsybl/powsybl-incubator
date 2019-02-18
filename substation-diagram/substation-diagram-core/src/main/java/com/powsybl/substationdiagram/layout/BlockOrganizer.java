@@ -162,25 +162,27 @@ public class BlockOrganizer {
     }
 
     private int placeExternCell(int hPos, Set<Cell> cells) {
+        int hPos2 = hPos;
         for (Cell cell : cells) {
             Position rootPosition = cell.getRootBlock().getPosition();
-            rootPosition.setHV(hPos, 0);
-            hPos += rootPosition.getHSpan();
+            rootPosition.setHV(hPos2, 0);
+            hPos2 += rootPosition.getHSpan();
 
         }
-        return hPos;
+        return hPos2;
     }
 
     private int placeVerticalCoupling(int hPos, SubSections.HorizontalSubSection hSs) {
+        int hPos2 = hPos;
         for (InternCell cell : hSs.getSideInternCells(Side.UNDEFINED)) {
-            cell.getRootBlock().getPosition().setH(hPos);
-            hPos += cell.getRootBlock().getPosition().getHSpan();
+            cell.getRootBlock().getPosition().setH(hPos2);
+            hPos2 += cell.getRootBlock().getPosition().getHSpan();
 //            if (cell.getCentralBlock() != null) {
-//                hPos += cell.getCentralBlock().getPosition().getHSpan();
+//                hPos2 += cell.getCentralBlock().getPosition().getHSpan();
 //            }
-//            hPos++;
+//            hPos2++;
         }
-        return hPos;
+        return hPos2;
     }
 
     private PosNWidth placeHorizontalInternCell(int hPos,

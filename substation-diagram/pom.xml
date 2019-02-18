@@ -13,11 +13,12 @@
 
     <parent>
         <groupId>com.powsybl</groupId>
-        <artifactId>powsybl-substation-diagram</artifactId>
+        <artifactId>powsybl-incubator</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
     <packaging>pom</packaging>
+    <artifactId>powsybl-substation-diagram</artifactId>
     <name>Substation diagram</name>
 
     <modules>

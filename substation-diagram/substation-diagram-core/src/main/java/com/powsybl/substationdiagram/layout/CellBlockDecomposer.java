@@ -222,26 +222,28 @@ public class CellBlockDecomposer {
                                          List<Node> alreadyTreated,
                                          List<Node> blockNodes,
                                          List<Block> blocks) {
+        Node currentNode2 = currentNode;
+        Node parentNode2 = parentNode;
 
-        alreadyTreated.add(currentNode);
-        blockNodes.add(currentNode);
-        while (currentNode.getType() == Node.NodeType.SWITCH || currentNode.getType() == Node.NodeType.FICTITIOUS_SWITCH) {
-            Node nextNode = currentNode.getAdjacentNodes().get(
-                    currentNode.getAdjacentNodes().get(0).equals(parentNode) ? 1 : 0);
-            parentNode = currentNode;
-            currentNode = nextNode;
-            if (currentNode.getType() != Node.NodeType.BUS) {
-                alreadyTreated.add(currentNode);
+        alreadyTreated.add(currentNode2);
+        blockNodes.add(currentNode2);
+        while (currentNode2.getType() == Node.NodeType.SWITCH || currentNode2.getType() == Node.NodeType.FICTITIOUS_SWITCH) {
+            Node nextNode = currentNode2.getAdjacentNodes().get(
+                    currentNode2.getAdjacentNodes().get(0).equals(parentNode2) ? 1 : 0);
+            parentNode2 = currentNode2;
+            currentNode2 = nextNode;
+            if (currentNode2.getType() != Node.NodeType.BUS) {
+                alreadyTreated.add(currentNode2);
             }
-            blockNodes.add(currentNode);
+            blockNodes.add(currentNode2);
         }
         PrimaryBlock b = new PrimaryBlock(blockNodes);
         blocks.add(b);
         // If we did'nt reach a Busbar, continue to search for other
         // blocks
-        if (currentNode.getType() != Node.NodeType.BUS) {
-            Node finalCurrentNode = currentNode;
-            currentNode.getListNodeAdjInCell(cell)
+        if (currentNode2.getType() != Node.NodeType.BUS) {
+            Node finalCurrentNode = currentNode2;
+            currentNode2.getListNodeAdjInCell(cell)
                     .filter(node -> !alreadyTreated.contains(node) && !blockNodes.contains(node))
                     .forEach(node -> {
                         List<Node> blockNode = new ArrayList<>();

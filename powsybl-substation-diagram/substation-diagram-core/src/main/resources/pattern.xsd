@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:pattern="generated" targetNamespace="generated">
+
+    <complexType name="NodePattern">
+        <sequence>
+            <element name="listNodeAdj" type="pattern:NodePattern" minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
+        <attribute name="id" type="string"/>
+        <attribute name="kind" type="string"/>
+        <attribute name="shuntPossible" type="boolean" default="true"/>
+    </complexType>
+
+    <complexType name="EdgePattern">
+        <attribute name="id" type="string"/>
+        <attribute name="source" type="string"/>
+        <attribute name="target" type="string"/>
+    </complexType>
+
+
+    <element name="Patterns">
+        <complexType>
+            <sequence>
+                <element name="Pattern" maxOccurs="unbounded">
+                    <complexType>
+                        <sequence>
+                            <element name="Node" type="pattern:NodePattern" maxOccurs="unbounded"/>
+                            <element name="Edge" type="pattern:EdgePattern" maxOccurs="unbounded"/>
+                        </sequence>
+                        <attribute name="id" type="string"/>
+                        <attribute name="kind" type="string"/>
+                        <attribute name="occurence" type="int" default="0"/>
+                    </complexType>
+                </element>
+            </sequence>
+        </complexType>
+    </element>
+
+</schema>

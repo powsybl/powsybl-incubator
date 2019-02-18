@@ -14,7 +14,7 @@
 
     <groupId>com.powsybl</groupId>
     <artifactId>powsybl-incubator</artifactId>
-    <version>2.4.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>powsybl incubator</name>
@@ -76,6 +76,7 @@
         <maven.jacoco.version>0.8.1</maven.jacoco.version>
         <maven.jar.version>3.1.0</maven.jar.version>
         <maven.javadoc.version>3.0.1</maven.javadoc.version>
+        <maven.jaxb2.version>0.13.2</maven.jaxb2.version>
         <maven.plugin.version>3.5.2</maven.plugin.version>
         <maven.resources.version>3.1.0</maven.resources.version>
         <maven.shade.version>3.1.1</maven.shade.version>
@@ -248,6 +249,32 @@
                             </goals>
                         </execution>
                     </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.jvnet.jaxb2.maven2</groupId>
+                    <artifactId>maven-jaxb2-plugin</artifactId>
+                    <version>${maven.jaxb2.version}</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>generate</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <schemaDirectory>src/main/resources</schemaDirectory>
+                        <bindingDirectory>src/main/xjb</bindingDirectory>
+                        <args>
+                            <arg>-Xinheritance</arg>
+                        </args>
+                        <plugins>
+                            <plugin>
+                                <groupId>org.jvnet.jaxb2_commons</groupId>
+                                <artifactId>jaxb2-basics</artifactId>
+                                <version>${jaxb2.basics.version}</version>
+                            </plugin>
+                        </plugins>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>

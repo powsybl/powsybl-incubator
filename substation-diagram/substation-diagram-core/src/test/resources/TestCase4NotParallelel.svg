@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg">
+    <g>
+        <g>
+            <line y2="590.0" style="stroke:rgb(0,55,0);stroke-width:1;stroke-dasharray:1,10" x1="0.0" x2="0.0" transform="translate(20.0,50.0)" y1="-20.0"/>
+            <line y2="590.0" style="stroke:rgb(0,55,0);stroke-width:1;stroke-dasharray:1,10" x1="50.0" x2="50.0" transform="translate(20.0,50.0)" y1="-20.0"/>
+            <line y2="590.0" style="stroke:rgb(0,55,0);stroke-width:1;stroke-dasharray:1,10" x1="100.0" x2="100.0" transform="translate(20.0,50.0)" y1="-20.0"/>
+            <line y2="590.0" style="stroke:rgb(0,55,0);stroke-width:1;stroke-dasharray:1,10" x1="150.0" x2="150.0" transform="translate(20.0,50.0)" y1="-20.0"/>
+        </g>
+        <g id="bbs1.1" transform="translate(30.0,310.0)">
+            <line y2="0" style="stroke:rgb(0,0,0);stroke-width:3" x1="0" x2="30.0" y1="0"/>
+            <text x="-5" font-size="8" y="-5" font-family="Verdana" transform="rotate(0,0,0)">bbs1.1</text>
+        </g>
+        <g id="bbs1.2" transform="translate(80.0,310.0)">
+            <line y2="0" style="stroke:rgb(0,0,0);stroke-width:3" x1="0" x2="80.0" y1="0"/>
+            <text x="-5" font-size="8" y="-5" font-family="Verdana" transform="rotate(0,0,0)">bbs1.2</text>
+        </g>
+        <g id="bbs2.1" transform="translate(30.0,335.0)">
+            <line y2="0" style="stroke:rgb(0,0,0);stroke-width:3" x1="0" x2="130.0" y1="0"/>
+            <text x="-5" font-size="8" y="-5" font-family="Verdana" transform="rotate(0,0,0)">bbs2.1</text>
+        </g>
+        <g id="la" transform="translate(37.0,25.5)">
+    <rect style="fill:rgb(255,255,255);stroke-pxWidth:1; stroke:rgb(0,0,255)" height="9" width="16"/>
+    <line y2="9" style="stroke:rgb(0,0,255);stroke-pxWidth:1" x1="0" x2="16" y1="0"/>
+    <line y2="9" style="stroke:rgb(0,0,255);stroke-pxWidth:1" x1="16" x2="0" y1="0"/>
+<text x="-5" font-size="8" y="-5" font-family="Verdana" transform="rotate(0,0,0)">la</text>
+        </g>
+        <g id="lb" transform="translate(87.0,610.5)">
+    <rect style="fill:rgb(255,255,255);stroke-pxWidth:1; stroke:rgb(0,0,255)" height="9" width="16"/>
+    <line y2="9" style="stroke:rgb(0,0,255);stroke-pxWidth:1" x1="0" x2="16" y1="0"/>
+    <line y2="9" style="stroke:rgb(0,0,255);stroke-pxWidth:1" x1="16" x2="0" y1="0"/>
+<text x="-5" font-size="8" y="-5" font-family="Verdana" transform="rotate(0,0,0)">lb</text>
+        </g>
+        <g id="gc" transform="translate(139.0,24.0)">
+    <circle stroke-width="1" r="6" style="fill-opacity:0" cx="6" cy="6" stroke="blue"/>
+    <path fill="none" d="M6,6 A 6 20 0 0 0 0,6" stroke-width="1" stroke="blue"/>
+    <path fill="none" d="M6,6 A 6 20 0 0 0 12,6" stroke-width="1" stroke="blue"/>
+<text x="-5" font-size="8" y="-5" font-family="Verdana" transform="rotate(0,0,0)">gc</text>
+        </g>
+        <g id="4" transform="translate(41.0,276.0)">
+    <circle fill="black" r="4" cx="4" cy="4" stroke="black"/>
+</g>
+        <g id="ba" transform="translate(35.0,145.0)">
+    <rect x="1" width="18" y="1" height="18" style="fill:rgb(255,255,255);stroke-width:2;stroke:rgb(0,0,255)"/>
+    <line y2="15" style="stroke:rgb(0,0,255);stroke-width:2" x1="10" x2="10" y1="5"/>
+</g>
+        <g id="da1" transform="translate(41.0,306.0)">
+    <line y2="8" style="stroke:rgb(0,0,0);stroke-width:3" x1="0" x2="8" y1="0"/>
+    <line y2="8" style="stroke:rgb(0,0,0);stroke-width:3" x1="8" x2="0" y1="0"/>
+</g>
+        <g id="da2" transform="translate(41.0,331.0)">
+    <line y2="8" style="stroke:rgb(0,0,0);stroke-width:3" x1="0" x2="8" y1="0"/>
+    <line y2="8" style="stroke:rgb(0,0,0);stroke-width:3" x1="8" x2="0" y1="0"/>
+</g>
+        <g id="6" transform="translate(91.0,361.0)">
+    <circle fill="black" r="4" cx="4" cy="4" stroke="black"/>
+</g>
+        <g id="bb" transform="translate(85.0,480.0)">
+    <rect x="1" width="18" y="1" height="18" style="fill:rgb(255,255,255);stroke-width:2;stroke:rgb(0,0,255)"/>
+    <line y2="15" style="stroke:rgb(0,0,255);stroke-width:2" x1="10" x2="10" y1="5"/>
+</g>
+        <g id="db1" transform="translate(91.0,306.0)">
+    <line y2="8" style="stroke:rgb(0,0,0);stroke-width:3" x1="0" x2="8" y1="0"/>
+    <line y2="8" style="stroke:rgb(0,0,0);stroke-width:3" x1="8" x2="0" y1="0"/>
+</g>
+        <g id="db2" transform="translate(91.0,331.0)">
+    <line y2="8" style="stroke:rgb(0,0,0);stroke-width:3" x1="0" x2="8" y1="0"/>
+    <line y2="8" style="stroke:rgb(0,0,0);stroke-width:3" x1="8" x2="0" y1="0"/>
+</g>
+        <g id="ss1" transform="translate(66.0,306.0)">
+    <line y2="8" style="stroke:rgb(0,0,0);stroke-width:3" x1="0" x2="8" y1="0"/>
+    <line y2="8" style="stroke:rgb(0,0,0);stroke-width:3" x1="8" x2="0" y1="0"/>
+</g>
+        <g id="8" transform="translate(141.0,276.0)">
+    <circle fill="black" r="4" cx="4" cy="4" stroke="black"/>
+</g>
+        <g id="bc" transform="translate(135.0,145.0)">
+    <rect x="1" width="18" y="1" height="18" style="fill:rgb(255,255,255);stroke-width:2;stroke:rgb(0,0,255)"/>
+    <line y2="15" style="stroke:rgb(0,0,255);stroke-width:2" x1="10" x2="10" y1="5"/>
+</g>
+        <g id="dc1" transform="translate(141.0,306.0)">
+    <line y2="8" style="stroke:rgb(0,0,0);stroke-width:3" x1="0" x2="8" y1="0"/>
+    <line y2="8" style="stroke:rgb(0,0,0);stroke-width:3" x1="8" x2="0" y1="0"/>
+</g>
+        <polyline fill="none" id="Wire0" style="stroke:rgb(200,0,0);stroke-width:1" points="45.0,34.0 45.0,145.0"/>
+        <polyline fill="none" id="Wire1" style="stroke:rgb(200,0,0);stroke-width:1" points="45.0,165.0 45.0,280.0"/>
+        <polyline fill="none" id="Wire2" style="stroke:rgb(200,0,0);stroke-width:1" points="45.0,280.0 45.0,310.0"/>
+        <polyline fill="none" id="Wire3" style="stroke:rgb(200,0,0);stroke-width:1" points="45.0,310.0 45.0,310.0"/>
+        <polyline fill="none" id="Wire4" style="stroke:rgb(200,0,0);stroke-width:1" points="45.0,280.0 45.0,335.0"/>
+        <polyline fill="none" id="Wire5" style="stroke:rgb(200,0,0);stroke-width:1" points="45.0,335.0 45.0,335.0"/>
+        <polyline fill="none" id="Wire6" style="stroke:rgb(200,0,0);stroke-width:1" points="95.0,611.0 95.0,500.0"/>
+        <polyline fill="none" id="Wire7" style="stroke:rgb(200,0,0);stroke-width:1" points="95.0,480.0 95.0,365.0"/>
+        <polyline fill="none" id="Wire8" style="stroke:rgb(200,0,0);stroke-width:1" points="95.0,365.0 95.0,310.0"/>
+        <polyline fill="none" id="Wire9" style="stroke:rgb(200,0,0);stroke-width:1" points="95.0,310.0 95.0,310.0"/>
+        <polyline fill="none" id="Wire10" style="stroke:rgb(200,0,0);stroke-width:1" points="95.0,365.0 95.0,335.0"/>
+        <polyline fill="none" id="Wire11" style="stroke:rgb(200,0,0);stroke-width:1" points="95.0,335.0 95.0,335.0"/>
+        <polyline fill="none" id="Wire12" style="stroke:rgb(200,0,0);stroke-width:1" points="80.0,310.0 70.0,310.0"/>
+        <polyline fill="none" id="Wire13" style="stroke:rgb(200,0,0);stroke-width:1" points="70.0,310.0 60.0,310.0"/>
+        <polyline fill="none" id="Wire14" style="stroke:rgb(200,0,0);stroke-width:1" points="145.0,36.0 145.0,145.0"/>
+        <polyline fill="none" id="Wire15" style="stroke:rgb(200,0,0);stroke-width:1" points="145.0,165.0 145.0,280.0"/>
+        <polyline fill="none" id="Wire16" style="stroke:rgb(200,0,0);stroke-width:1" points="145.0,280.0 145.0,310.0"/>
+        <polyline fill="none" id="Wire17" style="stroke:rgb(200,0,0);stroke-width:1" points="145.0,310.0 145.0,310.0"/>
+    </g>
+</svg>

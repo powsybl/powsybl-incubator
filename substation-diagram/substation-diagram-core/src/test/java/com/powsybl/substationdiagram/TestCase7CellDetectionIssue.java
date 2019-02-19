@@ -22,7 +22,7 @@ import static org.junit.Assert.assertEquals;
  * ------ bbs
  * </PRE>
  *
- * @author Jeanson Jeanson <benoit.jeanson at rte-france.com>
+ * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */

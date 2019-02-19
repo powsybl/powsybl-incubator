@@ -14,7 +14,7 @@ import java.util.Objects;
 import java.util.Random;
 
 /**
- * @author Jeanson Jeanson <benoit.jeanson at rte-france.com>
+ * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */

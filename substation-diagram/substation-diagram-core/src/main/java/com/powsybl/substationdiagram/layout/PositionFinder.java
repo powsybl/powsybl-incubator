@@ -15,7 +15,7 @@ import com.powsybl.substationdiagram.model.Graph;
  *     <li>cell order and direction of each cell connected to Bus (ie all cells except Shunt ones)</li>
  * </ul>
  *
- * @author Jeanson Jeanson <benoit.jeanson at rte-france.com>
+ * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */

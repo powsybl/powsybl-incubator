@@ -21,7 +21,7 @@ import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
  *
  * </pre>
  *
- * @author Jeanson Jeanson <benoit.jeanson at rte-france.com>
+ * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */

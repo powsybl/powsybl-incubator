@@ -16,8 +16,9 @@ import java.util.List;
 /**
  * Contain function to dispose components of cells based on Hierarchical Layout
  *
- * @author Jeanson Jeanson <benoit.jeanson at rte-france.com>
+ * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
+ * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
 public class CellBlockDecomposer {
 

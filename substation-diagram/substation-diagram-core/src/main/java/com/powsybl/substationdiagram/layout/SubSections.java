@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  * SubSections splits the horizontal organisation of the busBars to cope with the case parallelism is not respected
  * This solves the case of a busbar spanning over many busbars at another vertical structural position.
  *
- * @author Jeanson Jeanson <benoit.jeanson at rte-france.com>
+ * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */

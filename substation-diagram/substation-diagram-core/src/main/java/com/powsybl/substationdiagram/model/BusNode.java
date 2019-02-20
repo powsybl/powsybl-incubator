@@ -9,6 +9,7 @@ package com.powsybl.substationdiagram.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.powsybl.iidm.network.Bus;
 import com.powsybl.iidm.network.BusbarSection;
+import com.powsybl.iidm.network.Identifiable;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
 import com.powsybl.substationdiagram.library.ComponentType;
 
@@ -26,20 +27,20 @@ public class BusNode extends Node {
     private Position structuralPosition;
     private Position position = new Position(-1, -1);
 
-    protected BusNode(String id, String name, Graph graph) {
-        super(NodeType.BUS, id, name, ComponentType.BUSBAR_SECTION, graph);
+    protected BusNode(String id, String name, Graph graph, Identifiable identifiable) {
+        super(NodeType.BUS, id, name, ComponentType.BUSBAR_SECTION, graph, identifiable);
     }
 
     public static BusNode create(Graph graph, BusbarSection busbarSection) {
         Objects.requireNonNull(graph);
         Objects.requireNonNull(busbarSection);
-        return new BusNode(busbarSection.getId(), busbarSection.getName(), graph);
+        return new BusNode(busbarSection.getId(), busbarSection.getName(), graph, busbarSection);
     }
 
     public static BusNode create(Graph graph, Bus bus) {
         Objects.requireNonNull(graph);
         Objects.requireNonNull(bus);
-        return new BusNode(bus.getId(), bus.getName(), graph);
+        return new BusNode(bus.getId(), bus.getName(), graph, bus);
     }
 
     public void calculateCoord(LayoutParameters layoutParameters) {

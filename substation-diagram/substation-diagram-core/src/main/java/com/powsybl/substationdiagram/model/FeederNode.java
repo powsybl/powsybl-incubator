@@ -7,6 +7,7 @@
 package com.powsybl.substationdiagram.model;
 
 import com.powsybl.iidm.network.Branch;
+import com.powsybl.iidm.network.Identifiable;
 import com.powsybl.iidm.network.Injection;
 import com.powsybl.iidm.network.ShuntCompensator;
 import com.powsybl.substationdiagram.library.ComponentType;
@@ -24,8 +25,8 @@ public class FeederNode extends Node {
 
     private Cell.Direction direction = Cell.Direction.UNDEFINED;
 
-    protected FeederNode(String id, String name, ComponentType componentType, Graph graph) {
-        super(NodeType.FEEDER, id, name, componentType, graph);
+    protected FeederNode(String id, String name, ComponentType componentType, Graph graph, Identifiable identifiable) {
+        super(NodeType.FEEDER, id, name, componentType, graph, identifiable);
     }
 
     public static FeederNode create(Graph graph, Injection injection) {
@@ -48,10 +49,13 @@ public class FeederNode extends Node {
             case SHUNT_COMPENSATOR:
                 componentType = ((ShuntCompensator) injection).getbPerSection() >= 0 ? ComponentType.CAPACITOR : ComponentType.INDUCTOR;
                 break;
+            case DANGLING_LINE:
+                componentType = ComponentType.DANGLING_LINE;
+                break;
             default:
                 throw new AssertionError();
         }
-        return new FeederNode(injection.getId(), injection.getName(), componentType, graph);
+        return new FeederNode(injection.getId(), injection.getName(), componentType, graph, injection);
     }
 
     public static FeederNode create(Graph graph, Branch branch, Branch.Side side) {
@@ -70,7 +74,7 @@ public class FeederNode extends Node {
         }
         String id = branch.getId() + "_" + side.name();
         String name = branch.getName() + "_" + side.name();
-        return new FeederNode(id, name, componentType, graph);
+        return new FeederNode(id, name, componentType, graph, branch);
     }
 
     public int getOrder() {

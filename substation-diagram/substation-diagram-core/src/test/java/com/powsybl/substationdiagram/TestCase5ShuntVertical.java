@@ -176,7 +176,7 @@ public class TestCase5ShuntVertical extends AbstractTestCase {
         LayoutParameters layoutParameters = new LayoutParameters(20, 50, 0, 260,
                                                                  25, 20,
                                                                  50, 250, 40,
-                                                                 30, false, false);
+                                                                 30, false, false, 1);
         new PositionVoltageLevelLayout(g).run(layoutParameters);
 
         // assert coordinate

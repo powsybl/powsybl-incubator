@@ -275,6 +275,7 @@ public class SubstationDiagramViewer extends Application {
             refreshDiagram();
         });
         parametersPane.add(stackCb, 0, 20);
+        addSpinner("Scale factor:", 1, 10, 1, 21, LayoutParameters::getScaleFactor, LayoutParameters::setScaleFactor);
     }
 
     private void refreshDiagram() {

@@ -59,42 +59,29 @@ public class WireConnection {
 
         List<AnchorPoint> anchorPoints1 = getAnchorPoints(anchorPointProvider, node1);
         List<AnchorPoint> anchorPoints2 = getAnchorPoints(anchorPointProvider, node2);
-        AnchorPoint firstAnchorPoint1 = anchorPoints1.get(0);
-        AnchorPoint firstAnchorPoint2 = anchorPoints2.get(0);
+        AnchorPoint betterAnchorPoint1 = anchorPoints1.get(0);
+        AnchorPoint betterAnchorPoint2 = anchorPoints2.get(0);
 
-        double currentDistance = calculateDistancePoint(node1.getX() + firstAnchorPoint1.getX(),
-                                                        node1.getY() + firstAnchorPoint1.getY(),
-                                                        node2.getX() + firstAnchorPoint2.getX(),
-                                                        node2.getY() + firstAnchorPoint2.getY());
+        double currentDistance = calculateDistancePoint(node1.getX() + betterAnchorPoint1.getX(),
+                                                        node1.getY() + betterAnchorPoint1.getY(),
+                                                        node2.getX() + betterAnchorPoint2.getX(),
+                                                        node2.getY() + betterAnchorPoint2.getY());
 
-        if (anchorPoints1.size() > 1) { // plusieurs
-            // points de
-            // connexions
-            for (AnchorPoint anchorPoint1 : anchorPoints1) {
+        for (AnchorPoint anchorPoint1 : anchorPoints1) {
+            for (AnchorPoint anchorPoint2 : anchorPoints2) {
                 double distance = calculateDistancePoint(node1.getX() + anchorPoint1.getX(),
                                                          node1.getY() + anchorPoint1.getY(),
-                                                         node2.getX() + firstAnchorPoint2.getX(),
-                                                         node2.getY() + firstAnchorPoint2.getY());
-                if (distance < currentDistance) {
-                    firstAnchorPoint1 = anchorPoint1;
-                    currentDistance = distance;
-                }
-            }
-        }
-
-        if (anchorPoints2.size() > 1) { // plusieurs points de connexions
-            for (AnchorPoint anchorPoint2 : anchorPoints2) {
-                double distance = calculateDistancePoint(node1.getX() + firstAnchorPoint1.getX(),
-                                                         node1.getY() + firstAnchorPoint1.getY(),
                                                          node2.getX() + anchorPoint2.getX(),
                                                          node2.getY() + anchorPoint2.getY());
                 if (distance < currentDistance) {
-                    firstAnchorPoint2 = anchorPoint2;
+                    betterAnchorPoint1 = anchorPoint1;
+                    betterAnchorPoint2 = anchorPoint2;
                     currentDistance = distance;
                 }
             }
         }
-        return new WireConnection(firstAnchorPoint1, firstAnchorPoint2);
+
+        return new WireConnection(betterAnchorPoint1, betterAnchorPoint2);
     }
 
     public AnchorPoint getAnchorPoint1() {

@@ -410,7 +410,7 @@ public class Graph {
         return connectedSets.size() == 1;
     }
 
-    private void addNode(Node node) {
+    public void addNode(Node node) {
         nodes.add(node);
         nodesByType.computeIfAbsent(node.getType(), nodeType -> new ArrayList<>()).add(node);
         nodesById.put(node.getId(), node);
@@ -441,7 +441,7 @@ public class Graph {
      * @param n1 first node
      * @param n2 second node
      */
-    void addEdge(Node n1, Node n2) {
+    public void addEdge(Node n1, Node n2) {
         Edge edge = new Edge(n1, n2);
         edges.add(edge);
         n1.addAdjacentEdge(edge);

@@ -1,23 +1,51 @@
-/**
- * Copyright (c) 2019, RTE (http://www.rte-france.com)
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- */
 package com.powsybl.substationdiagram.view.app;
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.prefs.Preferences;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import com.powsybl.commons.json.JsonUtil;
 import com.powsybl.iidm.import_.Importers;
+import com.powsybl.iidm.network.Branch;
+import com.powsybl.iidm.network.Branch.Side;
 import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.network.TwoWindingsTransformer;
 import com.powsybl.iidm.network.VoltageLevel;
 import com.powsybl.substationdiagram.SubstationDiagram;
-import com.powsybl.substationdiagram.layout.*;
+import com.powsybl.substationdiagram.layout.ImplicitCellDetector;
+import com.powsybl.substationdiagram.layout.LayoutParameters;
+import com.powsybl.substationdiagram.layout.PositionFree;
+import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayoutFactory;
+import com.powsybl.substationdiagram.layout.RandomVoltageLevelLayoutFactory;
+import com.powsybl.substationdiagram.layout.VoltageLevelLayoutFactory;
 import com.powsybl.substationdiagram.library.ComponentLibrary;
+import com.powsybl.substationdiagram.library.ComponentType;
 import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
+import com.powsybl.substationdiagram.view.NavigationListener;
+import com.powsybl.substationdiagram.view.NetworkStyleHandler;
 import com.powsybl.substationdiagram.view.SubstationDiagramView;
+
 import javafx.application.Application;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -33,28 +61,26 @@ import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxListCell;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.prefs.Preferences;
-import java.util.stream.Collectors;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
@@ -125,7 +151,63 @@ public class SubstationDiagramViewer extends Application {
             SubstationDiagramView diagramView;
             try (InputStream svgInputStream = new ByteArrayInputStream(svgData.getBytes(StandardCharsets.UTF_8));
                  InputStream metadataInputStream = new ByteArrayInputStream(metadataData.getBytes(StandardCharsets.UTF_8))) {
-                diagramView = SubstationDiagramView.load(svgInputStream, metadataInputStream);
+                diagramView = SubstationDiagramView.load(svgInputStream, metadataInputStream, new NavigationListener() {
+                    @Override
+                    public void onNavigationEvent(String id, ComponentType type) {
+                        Objects.requireNonNull(id);
+                        Objects.requireNonNull(type);
+                        String strippedId = id.substring(0, id.length() - 4);
+                        Side side = id.endsWith(Side.ONE.toString()) ? Side.ONE : Side.TWO;
+                        VoltageLevel vl = getNextVoltageLevel(strippedId, type, side);
+                        filterInput.clear();
+                        loadDiagram(vl);
+                        for (int i = 0; i < voltageLevelList.getItems().size(); i++) {
+                            SelectableVoltageLevel svl = voltageLevelList.getItems().get(i);
+                            if (svl.getId().equals(vl.getId())) {
+                                voltageLevelList.getSelectionModel().select(i);
+                                voltageLevelList.getFocusModel().focus(i);
+                                voltageLevelList.scrollTo(i);
+                            }
+                        }
+                        voltageLevelList.refresh();
+                    }
+
+                    @Override
+                    public String getDestination(String id, ComponentType type) {
+                        Objects.requireNonNull(id);
+                        Objects.requireNonNull(type);
+                        String strippedId = id.substring(0, id.length() - 4);
+                        Side side = id.endsWith(Side.ONE.toString()) ? Side.ONE : Side.TWO;
+                        VoltageLevel vl = getNextVoltageLevel(strippedId, type, side);
+                        return vl != null ? vl.getId() : null;
+                    }
+
+                    private VoltageLevel getNextVoltageLevel(String id, ComponentType type, Side side) {
+                        VoltageLevel nextvl = null;
+                        switch (type) {
+                            case LINE: {
+                                Branch line = networkProperty.get().getLine(id);
+                                if (side.equals(Side.ONE)) {
+                                    nextvl = line.getTerminal2().getVoltageLevel();
+                                } else {
+                                    nextvl = line.getTerminal1().getVoltageLevel();
+                                }
+                                break;
+                            }
+                            case TWO_WINDINGS_TRANSFORMER: {
+                                TwoWindingsTransformer twt = networkProperty.get().getTwoWindingsTransformer(id);
+
+                                if (side.equals(Side.ONE)) {
+                                    nextvl = twt.getTerminal2().getVoltageLevel();
+                                } else {
+                                    nextvl = twt.getTerminal1().getVoltageLevel();
+                                }
+                                break;
+                            }
+                        }
+                        return nextvl;
+                    }
+                }, new NetworkStyleHandler(networkProperty.get()));
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }

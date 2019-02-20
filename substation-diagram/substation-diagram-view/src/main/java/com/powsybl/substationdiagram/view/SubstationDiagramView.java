@@ -67,11 +67,11 @@ public final class SubstationDiagramView extends BorderPane {
         });
     }
 
-    public static void installHandlers(Node node, GraphMetadata metadata) {
+    public static void installHandlers(Node node, GraphMetadata metadata,  NavigationListener navigationListener, StyleHandler styleHandler) {
         List<WireHandler> wireHandlers = new ArrayList<>();
         Map<String, NodeHandler> nodeHandlers = new HashMap<>();
 
-        installHandlers(node, metadata, wireHandlers, nodeHandlers);
+        installHandlers(node, metadata, wireHandlers, nodeHandlers,  navigationListener, styleHandler);
 
         // resolve links
         for (WireHandler wireHandler : wireHandlers) {
@@ -81,11 +81,11 @@ public final class SubstationDiagramView extends BorderPane {
     }
 
     private static void installHandlers(Node node, GraphMetadata metadata, List<WireHandler> wireHandlers,
-                                        Map<String, NodeHandler> nodeHandlers) {
+                                        Map<String, NodeHandler> nodeHandlers,  NavigationListener navigationListener, StyleHandler styleHandler) {
         if ((node.getId() != null) && !node.getId().isEmpty()) {
             GraphMetadata.NodeMetadata nodeMetadata = metadata.getNodeMetadata(node.getId());
             if (nodeMetadata != null) {
-                NodeHandler nodeHandler = new NodeHandler(node, nodeMetadata.getComponentType(), nodeMetadata.isRotated(), metadata);
+                NodeHandler nodeHandler = new NodeHandler(node, nodeMetadata.getComponentType(), nodeMetadata.isRotated(), metadata, navigationListener, styleHandler);
                 LOGGER.trace("Add handler to node {}", node.getId());
                 nodeHandlers.put(node.getId(), nodeHandler);
             } else {
@@ -99,7 +99,7 @@ public final class SubstationDiagramView extends BorderPane {
                     if (nodeHandler2 == null) {
                         throw new PowsyblException("Node 2 " + wireMetadata.getNodeId2() + " not found");
                     }
-                    WireHandler wireHandler = new WireHandler((Polyline) node, nodeHandler1, nodeHandler2, metadata);
+                    WireHandler wireHandler = new WireHandler((Polyline) node, nodeHandler1, nodeHandler2, metadata, navigationListener, styleHandler);
                     LOGGER.trace(" Added handler to wire between {} and {}", wireMetadata.getNodeId1(), wireMetadata.getNodeId2());
                     wireHandlers.add(wireHandler);
                 }
@@ -110,12 +110,12 @@ public final class SubstationDiagramView extends BorderPane {
         if (node instanceof Group) {
             Group group = (Group) node;
             for (Node child : group.getChildren()) {
-                installHandlers(child, metadata, wireHandlers, nodeHandlers);
+                installHandlers(child, metadata, wireHandlers, nodeHandlers, navigationListener, styleHandler);
             }
         }
     }
 
-    public static SubstationDiagramView load(InputStream svgInputStream, InputStream metadataInputStream) {
+    public static SubstationDiagramView load(InputStream svgInputStream, InputStream metadataInputStream, NavigationListener navigationListener, StyleHandler styleHandler) {
         Objects.requireNonNull(svgInputStream);
         Objects.requireNonNull(metadataInputStream);
 
@@ -126,12 +126,12 @@ public final class SubstationDiagramView extends BorderPane {
         GraphMetadata metadata = GraphMetadata.parseJson(metadataInputStream);
 
         // install node and wire handlers to allow diagram edition
-        installHandlers(svgImage, metadata);
+        installHandlers(svgImage, metadata,  navigationListener, styleHandler);
 
         return new SubstationDiagramView(svgImage);
     }
 
-    public static SubstationDiagramView load(Path svgFile) {
+    public static SubstationDiagramView load(Path svgFile, NavigationListener navigationListener, StyleHandler styleHandler) {
         Objects.requireNonNull(svgFile);
 
         Path dir = svgFile.toAbsolutePath().getParent();
@@ -142,7 +142,7 @@ public final class SubstationDiagramView extends BorderPane {
 
         try (InputStream svgInputStream = Files.newInputStream(svgFile);
              InputStream metadataInputStream = Files.newInputStream(metadataFile)) {
-            return load(svgInputStream, metadataInputStream);
+            return load(svgInputStream, metadataInputStream, navigationListener, styleHandler);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

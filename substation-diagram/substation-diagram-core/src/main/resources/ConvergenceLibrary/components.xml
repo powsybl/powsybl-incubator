@@ -9,8 +9,24 @@
         </metadata>
     </component>
     <component>
+        <fileName>open-breaker.svg</fileName>
+        <metadata type="OPEN_BREAKER">
+            <size width="20" height="20" />
+            <anchorPoint x="0" y="-10" orientation="VERTICAL"/>
+            <anchorPoint x="0" y="10" orientation="VERTICAL"/>
+        </metadata>
+    </component>
+    <component>
         <fileName>load-break-switch.svg</fileName>
         <metadata type="LOAD_BREAK_SWITCH">
+            <size width="10" height="10"/>
+            <anchorPoint x="0" y="-5" orientation="VERTICAL"/>
+            <anchorPoint x="0" y="5" orientation="VERTICAL"/>
+        </metadata>
+    </component>
+    <component>
+        <fileName>open-load-break-switch.svg</fileName>
+        <metadata type="OPEN_LOAD_BREAK_SWITCH">
             <size width="10" height="10"/>
             <anchorPoint x="0" y="-5" orientation="VERTICAL"/>
             <anchorPoint x="0" y="5" orientation="VERTICAL"/>
@@ -67,6 +83,13 @@
     <component>
         <fileName>disconnector.svg</fileName>
         <metadata type="DISCONNECTOR">
+            <size height="8" width="8"/>
+            <anchorPoint x="0" y="0" orientation="VERTICAL"/>
+        </metadata>
+    </component>
+    <component>
+        <fileName>open-disconnector.svg</fileName>
+        <metadata type="OPEN_DISCONNECTOR">
             <size height="8" width="8"/>
             <anchorPoint x="0" y="0" orientation="VERTICAL"/>
         </metadata>

@@ -23,10 +23,12 @@ import java.util.Objects;
 public class SwitchNode extends Node {
 
     private final SwitchKind kind;
+    private boolean open;
 
-    protected SwitchNode(String id, String name, ComponentType componentType, Graph graph, SwitchKind kind) {
+    protected SwitchNode(String id, String name, ComponentType componentType, Graph graph, SwitchKind kind, boolean open) {
         super(NodeType.SWITCH, id, name, componentType, graph);
         this.kind = Objects.requireNonNull(kind);
+        this.open = open;
     }
 
     public static SwitchNode create(Graph graph, Switch aSwitch) {
@@ -46,7 +48,7 @@ public class SwitchNode extends Node {
             default:
                 throw new AssertionError();
         }
-        return new SwitchNode(aSwitch.getId(), aSwitch.getName(), componentType, graph, aSwitch.getKind());
+        return new SwitchNode(aSwitch.getId(), aSwitch.getName(), componentType, graph, aSwitch.getKind(), aSwitch.isOpen());
     }
 
     public static SwitchNode create(Graph graph, Terminal terminal) {
@@ -55,7 +57,7 @@ public class SwitchNode extends Node {
         Bus bus = terminal.getBusBreakerView().getConnectableBus();
         String id = bus.getId() + "_" + terminal.getConnectable().getId();
         String name = bus.getName() + "_" + terminal.getConnectable().getName();
-        return new SwitchNode(id, name, ComponentType.DISCONNECTOR, graph, SwitchKind.DISCONNECTOR);
+        return new SwitchNode(id, name, ComponentType.DISCONNECTOR, graph, SwitchKind.DISCONNECTOR, !terminal.isConnected());
     }
 
     public SwitchKind getKind() {
@@ -68,5 +70,13 @@ public class SwitchNode extends Node {
             throw new PowsyblException("Error switch node not having exactly 2 adjacent nodes " + getId());
         }
         return getAdjacentNodes().get(getAdjacentNodes().get(0).equals(adj) ? 1 : 0);
+    }
+
+    public boolean isOpen() {
+        return open;
+    }
+
+    public void setOpen(boolean open) {
+        this.open = open;
     }
 }

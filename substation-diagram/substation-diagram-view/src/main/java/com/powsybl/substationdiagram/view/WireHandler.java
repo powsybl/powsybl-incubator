@@ -30,11 +30,14 @@ public class WireHandler {
     private final GraphMetadata metadata;
 
     public WireHandler(Polyline node, NodeHandler nodeHandler1, NodeHandler nodeHandler2,
-                       GraphMetadata metadata) {
+                       GraphMetadata metadata, NavigationListener navigationListener, StyleHandler styleHandler) {
         this.node = Objects.requireNonNull(node);
         this.nodeHandler1 = Objects.requireNonNull(nodeHandler1);
         this.nodeHandler2 = Objects.requireNonNull(nodeHandler2);
         this.metadata = Objects.requireNonNull(metadata);
+        if (styleHandler != null) {
+            this.node.setStyle(styleHandler.getWireStyle(node.getId(), nodeHandler1.getNode().getId(), nodeHandler1.getComponentType(), nodeHandler2.getNode().getId(), nodeHandler2.getComponentType()));
+        }
     }
 
     public Node getNode() {

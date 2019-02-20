@@ -219,7 +219,27 @@ public class SVGWriter {
     }
 
     private void incorporateComponents(Node node, Element g) {
+
         SVGOMDocument obj = componentLibrary.getSvgDocument(node.getComponentType());
+        if (node instanceof SwitchNode) {
+            SwitchNode swn = (SwitchNode) node;
+            if (swn.isOpen()) {
+                switch (node.getComponentType()) {
+                    case BREAKER: {
+                        obj = componentLibrary.getSvgDocument(ComponentType.OPEN_BREAKER);
+                        break;
+                    }
+                    case DISCONNECTOR: {
+                        obj = componentLibrary.getSvgDocument(ComponentType.OPEN_DISCONNECTOR);
+                        break;
+                    }
+                    case LOAD_BREAK_SWITCH: {
+                        obj = componentLibrary.getSvgDocument(ComponentType.OPEN_LOAD_BREAK_SWITCH);
+                        break;
+                    }
+                }
+            }
+        }
         if (obj != null) {
             transformComponent(node, g);
             if (layoutParameters.isShowInternalNodes()

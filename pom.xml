@@ -51,6 +51,7 @@
 
     <modules>
         <module>substation-diagram</module>
+		<module>cgmes-dl</module>
     </modules>
 
     <properties>

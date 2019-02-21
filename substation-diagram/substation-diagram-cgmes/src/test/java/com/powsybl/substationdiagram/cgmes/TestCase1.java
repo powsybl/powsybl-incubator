@@ -333,7 +333,7 @@ public class TestCase1 {
         });
     }
 
-    private void checkCoodinates(Graph graph) {
+    private void checkCoordinates(Graph graph) {
         assertEquals(40, graph.getNodes().get(0).getX(), 0);
         assertEquals(150, graph.getNodes().get(0).getY(), 0);
         assertEquals(320, ((BusNode) graph.getNodes().get(0)).getPxWidth(), 0);
@@ -351,12 +351,12 @@ public class TestCase1 {
     }
 
     private void test(VoltageLevel vl) {
-        Graph graph = new CgmesGraphBuilder(vl, true).build();
-        checkGraph(graph);
+        Graph graph = Graph.create(vl);
         LayoutParameters layoutParameters = new LayoutParameters();
         layoutParameters.setScaleFactor(2);
         new CgmesVoltageLevelLayout(graph).run(layoutParameters);
-        checkCoodinates(graph);
+        checkGraph(graph);
+        checkCoordinates(graph);
     }
 
     @Test

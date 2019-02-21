@@ -18,6 +18,7 @@ import com.powsybl.cgmes.iidm.extensions.dl.DiagramPoint;
 import com.powsybl.cgmes.iidm.extensions.dl.InjectionDiagramData;
 import com.powsybl.cgmes.iidm.extensions.dl.LineDiagramData;
 import com.powsybl.cgmes.iidm.extensions.dl.NodeDiagramData;
+import com.powsybl.iidm.network.Bus;
 import com.powsybl.iidm.network.BusbarSection;
 import com.powsybl.iidm.network.DanglingLine;
 import com.powsybl.iidm.network.Generator;
@@ -52,7 +53,16 @@ public class CgmesVoltageLevelLayout implements VoltageLevelLayout {
     private final double marginY = 10;
 
     public CgmesVoltageLevelLayout(Graph graph) {
-        this.graph = Objects.requireNonNull(graph);
+        Objects.requireNonNull(graph);
+        // remove fictitious nodes (no CGMES DL data available for them)
+        graph.removeUnnecessaryFictitiousNodes();
+        // set label using name (CGMES import uses RDF ids)
+        graph.getNodes().forEach(node -> {
+            if (node.getIdentifiable() != null) {
+                node.setLabel(node.getIdentifiable().getName());
+            }
+        });
+        this.graph = graph;
     }
 
     private void setMin(double x, double y) {
@@ -93,33 +103,51 @@ public class CgmesVoltageLevelLayout implements VoltageLevelLayout {
         switch (node.getType()) {
             case BUS:
                 BusNode nodeBus = (BusNode) node;
-                BusbarSection busbar = (BusbarSection) nodeBus.getIdentifiable();
-                NodeDiagramData<BusbarSection> busbarDiagramData = busbar.getExtension(NodeDiagramData.class);
-                if (busbarDiagramData != null) {
-                    nodeBus.setX(busbarDiagramData.getPoint1().getX());
-                    nodeBus.setY(busbarDiagramData.getPoint1().getY());
-                    nodeBus.setPxWidth(computeBusbarWidth(busbarDiagramData));
-                    if (busbarDiagramData.getPoint1().getX() == busbarDiagramData.getPoint2().getX()) {
-                        nodeBus.setRotated(true);
+                if (nodeBus.getIdentifiable() instanceof BusbarSection) {
+                    BusbarSection busbar = (BusbarSection) nodeBus.getIdentifiable();
+                    NodeDiagramData<BusbarSection> busbarDiagramData = busbar.getExtension(NodeDiagramData.class);
+                    if (busbarDiagramData != null) {
+                        nodeBus.setX(busbarDiagramData.getPoint1().getX());
+                        nodeBus.setY(busbarDiagramData.getPoint1().getY());
+                        nodeBus.setPxWidth(computeBusbarWidth(busbarDiagramData));
+                        if (busbarDiagramData.getPoint1().getX() == busbarDiagramData.getPoint2().getX()) {
+                            nodeBus.setRotated(true);
+                        }
+                        setMin(busbarDiagramData.getPoint1().getX(), busbarDiagramData.getPoint1().getY());
+                    } else {
+                        LOG.warn("No CGMES-DL data for {} node {}, busbar {}", node.getType(), node.getId(), busbar.getName());
                     }
-                    setMin(busbarDiagramData.getPoint1().getX(), busbarDiagramData.getPoint1().getY());
                 } else {
-                    LOG.warn("No CGMES-DL data for {} node {}, busbar {}", node.getType(), node.getId(), busbar.getName());
+                    Bus bus = (Bus) nodeBus.getIdentifiable();
+                    NodeDiagramData<Bus> busDiagramData = bus.getExtension(NodeDiagramData.class);
+                    if (busDiagramData != null) {
+                        nodeBus.setX(busDiagramData.getPoint1().getX());
+                        nodeBus.setY(busDiagramData.getPoint1().getY());
+                        nodeBus.setPxWidth(computeBusbarWidth(busDiagramData));
+                        if (busDiagramData.getPoint1().getX() == busDiagramData.getPoint2().getX()) {
+                            nodeBus.setRotated(true);
+                        }
+                        setMin(busDiagramData.getPoint1().getX(), busDiagramData.getPoint1().getY());
+                    } else {
+                        LOG.warn("No CGMES-DL data for {} node {}, bus {}", node.getType(), node.getId(), bus.getName());
+                    }
                 }
                 break;
             case SWITCH:
                 SwitchNode nodeSwitch = (SwitchNode) node;
                 Switch sw = (Switch) nodeSwitch.getIdentifiable();
-                CouplingDeviseDiagramData<Switch> switchDiagramData = sw.getExtension(CouplingDeviseDiagramData.class);
-                if (switchDiagramData != null) {
-                    nodeSwitch.setX(switchDiagramData.getPoint().getX());
-                    nodeSwitch.setY(switchDiagramData.getPoint().getY());
-                    if (switchDiagramData.getRotation() == 90 || switchDiagramData.getRotation() == 270) {
-                        nodeSwitch.setRotated(true);
+                if (sw != null) {
+                    CouplingDeviseDiagramData<Switch> switchDiagramData = sw.getExtension(CouplingDeviseDiagramData.class);
+                    if (switchDiagramData != null) {
+                        nodeSwitch.setX(switchDiagramData.getPoint().getX());
+                        nodeSwitch.setY(switchDiagramData.getPoint().getY());
+                        if (switchDiagramData.getRotation() == 90 || switchDiagramData.getRotation() == 270) {
+                            nodeSwitch.setRotated(true);
+                        }
+                        setMin(switchDiagramData.getPoint().getX(), switchDiagramData.getPoint().getY());
+                    } else {
+                        LOG.warn("No CGMES-DL data for {} node {}, switch {}", node.getType(), node.getId(), sw.getName());
                     }
-                    setMin(switchDiagramData.getPoint().getX(), switchDiagramData.getPoint().getY());
-                } else {
-                    LOG.warn("No CGMES-DL data for {} node {}, switch {}", node.getType(), node.getId(), sw.getName());
                 }
                 break;
             case FEEDER:
@@ -130,7 +158,7 @@ public class CgmesVoltageLevelLayout implements VoltageLevelLayout {
         }
     }
 
-    private double computeBusbarWidth(NodeDiagramData<BusbarSection> busbarDiagramData) {
+    private double computeBusbarWidth(NodeDiagramData<?> busbarDiagramData) {
         if (busbarDiagramData.getPoint1().getX() == busbarDiagramData.getPoint2().getX()) {
             return Math.abs(busbarDiagramData.getPoint1().getY() - busbarDiagramData.getPoint2().getY());
         } else {

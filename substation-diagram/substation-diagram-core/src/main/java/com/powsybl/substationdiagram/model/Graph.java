@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.powsybl.iidm.network.*;
+import com.powsybl.substationdiagram.model.Node.NodeType;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
 import org.jgrapht.UndirectedGraph;
@@ -316,17 +317,31 @@ public class Graph {
         }
     }
 
-    private void removeUnnecessaryFictitiousNodes() {
+    public void removeUnnecessaryFictitiousNodes() {
         List<Node> fictitiousNodesToRemove = nodes.stream()
                 .filter(node -> node.getType() == Node.NodeType.FICTITIOUS)
-                .filter(node -> node.getAdjacentNodes().size() == 2)
                 .collect(Collectors.toList());
         for (Node n : fictitiousNodesToRemove) {
-            Node node1 = n.getAdjacentNodes().get(0);
-            Node node2 = n.getAdjacentNodes().get(1);
-            LOGGER.info("Remove unnecessary node between {} and {}", node1.getId(), node2.getId());
-            removeNode(n);
-            addEdge(node1, node2);
+            if (n.getAdjacentNodes().size() == 2) {
+                Node node1 = n.getAdjacentNodes().get(0);
+                Node node2 = n.getAdjacentNodes().get(1);
+                LOGGER.info("Remove fictitious node {} between {} and {}", n.getId(), node1.getId(), node2.getId());
+                removeNode(n);
+                addEdge(node1, node2);
+            } else {
+                LOGGER.info("Working on fictitious node {} with {} adjacent nodes", n.getId(), n.getAdjacentNodes().size());
+                Node busNode = n.getAdjacentNodes().stream().filter(node -> node.getType() == NodeType.BUS).findFirst().orElse(null);
+                if (busNode != null) {
+                    n.getAdjacentNodes().stream().filter(node -> !node.equals(busNode)).forEach(node -> {
+                        LOGGER.info("Connecting {} to {}", node.getId(), busNode.getId());
+                        addEdge(node, busNode);
+                    });
+                    LOGGER.info("Remove fictitious node {}", n.getId());
+                    removeNode(n);
+                } else {
+                    LOGGER.warn("Cannot remove fictitious node {} because there are no adjacent BUS nodes", n.getId());
+                }
+            }
         }
     }
 

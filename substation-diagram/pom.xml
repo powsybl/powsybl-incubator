@@ -24,6 +24,7 @@
     <modules>
         <module>substation-diagram-core</module>
         <module>substation-diagram-view</module>
+        <module>substation-diagram-force-layout</module>
     </modules>
 
     <properties>

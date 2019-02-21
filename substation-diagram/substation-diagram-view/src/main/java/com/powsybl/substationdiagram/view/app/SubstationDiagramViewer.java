@@ -15,6 +15,7 @@ import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.VoltageLevel;
 import com.powsybl.substationdiagram.SubstationDiagram;
 import com.powsybl.substationdiagram.layout.*;
+import com.powsybl.substationdiagram.layout.force.ForceVoltageLevelLayoutFactory;
 import com.powsybl.substationdiagram.library.ComponentLibrary;
 import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
 import com.powsybl.substationdiagram.view.SubstationDiagramView;
@@ -71,7 +72,8 @@ public class SubstationDiagramViewer extends Application {
     private final Map<String, VoltageLevelLayoutFactory> layouts
             = ImmutableMap.of("Auto extensions", new PositionVoltageLevelLayoutFactory(),
                               "Auto without extensions", new PositionVoltageLevelLayoutFactory(new ImplicitCellDetector(), new PositionFree()),
-                              "Random", new RandomVoltageLevelLayoutFactory(500, 500));
+                              "Random", new RandomVoltageLevelLayoutFactory(500, 500),
+                              "Force", new ForceVoltageLevelLayoutFactory());
 
     private final ComponentLibrary componentLibrary = new ResourcesComponentLibrary("/ConvergenceLibrary");
 

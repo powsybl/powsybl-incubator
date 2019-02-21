@@ -68,7 +68,6 @@
         <maven.checkstyle.version>3.0.0</maven.checkstyle.version>
         <maven.clean.version>3.1.0</maven.clean.version>
         <maven.compiler.version>3.8.0</maven.compiler.version>
-        <maven.coveralls.version>4.3.0</maven.coveralls.version>
         <maven.dependency.version>3.1.1</maven.dependency.version>
         <maven.deploy.version>2.8.2</maven.deploy.version>
         <maven.enforcer.version>3.0.0-M2</maven.enforcer.version>
@@ -89,11 +88,6 @@
         <maven.templating.version>1.0.0</maven.templating.version>
         <maven.versions.version>2.7</maven.versions.version>
 
-        <sonar.jacoco.reportPaths>
-            ../target/jacoco-merge.exec,
-            ../../target/jacoco-merge.exec,
-            ../../../target/jacoco-merge.exec
-        </sonar.jacoco.reportPaths>
         <sonar.exclusions>
             **/generated/**/*
         </sonar.exclusions>
@@ -225,16 +219,6 @@
                     </executions>
                 </plugin>
                 <plugin>
-                    <groupId>org.eluder.coveralls</groupId>
-                    <artifactId>coveralls-maven-plugin</artifactId>
-                    <version>${maven.coveralls.version}</version>
-                    <configuration>
-                        <jacocoReports>
-                            <jacocoReport>${project.basedir}/distribution-core/target/site/jacoco-aggregate/jacoco.xml</jacocoReport>
-                        </jacocoReports>
-                    </configuration>
-                </plugin>
-                <plugin>
                     <groupId>org.codehaus.gmavenplus</groupId>
                     <artifactId>gmavenplus-plugin</artifactId>
                     <version>${maven.gmavenplus.version}</version>
@@ -307,9 +291,6 @@
                                 <goals>
                                     <goal>prepare-agent</goal>
                                 </goals>
-                                <configuration>
-                                    <destFile>${project.build.directory}/jacoco-${project.artifactId}.exec</destFile>
-                                </configuration>
                             </execution>
                         </executions>
                     </plugin>

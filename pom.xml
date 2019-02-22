@@ -50,6 +50,7 @@
     </developers>
 
     <modules>
+        <module>powsybl-balances-adjustment</module>
         <module>simple-loadflow</module>
         <module>substation-diagram</module>
 		<module>cgmes-dl</module>
@@ -93,6 +94,8 @@
         <maven.surefire.version>2.22.0</maven.surefire.version>
         <maven.templating.version>1.0.0</maven.templating.version>
         <maven.versions.version>2.7</maven.versions.version>
+        <mockito.version>1.10.19</mockito.version>
+
 
         <sonar.exclusions>
             **/generated/**/*
@@ -472,6 +475,12 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-simple</artifactId>
                 <version>${slf4j.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-all</artifactId>
+                <version>${mockito.version}</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>

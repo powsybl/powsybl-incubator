@@ -1,0 +1,15 @@
+/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-dl-conversion/src/main/java/com/powsybl/cgmes/dl/conversion/importers/BusbarDiagramDataImporter.java
+/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-dl-conversion/src/main/java/com/powsybl/cgmes/dl/conversion/importers/ShuntDiagramDataImporter.java
+/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-dl-conversion/src/main/java/com/powsybl/cgmes/dl/conversion/CgmesDLImporter.java
+/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-dl-conversion/src/main/java/com/powsybl/cgmes/dl/conversion/importers/HvdcLineDiagramDataImporter.java
+/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-dl-conversion/src/main/java/com/powsybl/cgmes/dl/conversion/importers/AbstractInjectionDiagramDataImporter.java
+/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-dl-conversion/src/main/java/com/powsybl/cgmes/dl/conversion/importers/AbstractCouplingDeviceDiagramDataImporter.java
+/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-dl-conversion/src/main/java/com/powsybl/cgmes/dl/conversion/importers/SvcDiagramDataImporter.java
+/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-dl-conversion/src/main/java/com/powsybl/cgmes/dl/conversion/CgmesDLModel.java
+/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-dl-conversion/src/main/java/com/powsybl/cgmes/dl/conversion/CgmesDLImportPostProcessor.java
+/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-dl-conversion/src/main/java/com/powsybl/cgmes/dl/conversion/importers/TransformerDiagramDataImporter.java
+/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-dl-conversion/src/main/java/com/powsybl/cgmes/dl/conversion/importers/SwitchDiagramDataImporter.java
+/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-dl-conversion/src/main/java/com/powsybl/cgmes/dl/conversion/importers/BusDiagramDataImporter.java
+/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-dl-conversion/src/main/java/com/powsybl/cgmes/dl/conversion/importers/GeneratorDiagramDataImporter.java
+/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-dl-conversion/src/main/java/com/powsybl/cgmes/dl/conversion/importers/LineDiagramDataImporter.java
+/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-dl-conversion/src/main/java/com/powsybl/cgmes/dl/conversion/importers/LoadDiagramDataImporter.java

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="6.18">
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-dl-conversion/src/main/java/com/powsybl/cgmes/dl/conversion/CgmesDLImporter.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-dl-conversion/src/main/java/com/powsybl/cgmes/dl/conversion/importers/GeneratorDiagramDataImporter.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-dl-conversion/src/main/java/com/powsybl/cgmes/dl/conversion/importers/SvcDiagramDataImporter.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-dl-conversion/src/main/java/com/powsybl/cgmes/dl/conversion/importers/SwitchDiagramDataImporter.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-dl-conversion/src/main/java/com/powsybl/cgmes/dl/conversion/importers/LineDiagramDataImporter.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-dl-conversion/src/main/java/com/powsybl/cgmes/dl/conversion/importers/ShuntDiagramDataImporter.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-dl-conversion/src/main/java/com/powsybl/cgmes/dl/conversion/importers/HvdcLineDiagramDataImporter.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-dl-conversion/src/main/java/com/powsybl/cgmes/dl/conversion/importers/BusbarDiagramDataImporter.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-dl-conversion/src/main/java/com/powsybl/cgmes/dl/conversion/importers/TransformerDiagramDataImporter.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-dl-conversion/src/main/java/com/powsybl/cgmes/dl/conversion/importers/LoadDiagramDataImporter.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-dl-conversion/src/main/java/com/powsybl/cgmes/dl/conversion/importers/AbstractCouplingDeviceDiagramDataImporter.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-dl-conversion/src/main/java/com/powsybl/cgmes/dl/conversion/importers/AbstractInjectionDiagramDataImporter.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-dl-conversion/src/main/java/com/powsybl/cgmes/dl/conversion/importers/BusDiagramDataImporter.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-dl-conversion/src/main/java/com/powsybl/cgmes/dl/conversion/CgmesDLModel.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-dl-conversion/src/main/java/com/powsybl/cgmes/dl/conversion/CgmesDLImportPostProcessor.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-dl-conversion/src/test/java/com/powsybl/cgmes/dl/conversion/CgmesDLImportPostProcessorTest.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-dl-conversion/src/test/java/com/powsybl/cgmes/dl/conversion/AbstractCgmesDLTest.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-dl-conversion/src/test/java/com/powsybl/cgmes/dl/conversion/CgmesDLModelTest.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-dl-conversion/src/test/java/com/powsybl/cgmes/dl/conversion/CgmesDLImporterTest.java">
+</file>
+</checkstyle>

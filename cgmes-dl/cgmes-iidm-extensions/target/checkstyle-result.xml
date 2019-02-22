@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="6.18">
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-iidm-extensions/src/main/java/com/powsybl/cgmes/iidm/extensions/dl/DiagramTerminal.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-iidm-extensions/src/main/java/com/powsybl/cgmes/iidm/extensions/dl/CouplingDeviceDiagramData.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-iidm-extensions/src/main/java/com/powsybl/cgmes/iidm/extensions/dl/NodeDiagramData.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-iidm-extensions/src/main/java/com/powsybl/cgmes/iidm/extensions/dl/DiagramPoint.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-iidm-extensions/src/main/java/com/powsybl/cgmes/iidm/extensions/dl/LineDiagramData.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-iidm-extensions/src/main/java/com/powsybl/cgmes/iidm/extensions/dl/ThreeWindingsTransformerDiagramData.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-iidm-extensions/src/main/java/com/powsybl/cgmes/iidm/extensions/dl/InjectionDiagramData.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-iidm-extensions/src/test/java/com/powsybl/cgmes/iidm/Networks.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-iidm-extensions/src/test/java/com/powsybl/cgmes/iidm/extensions/dl/HvdcLineDiagramDataTest.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-iidm-extensions/src/test/java/com/powsybl/cgmes/iidm/extensions/dl/BusbarDiagramDataTest.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-iidm-extensions/src/test/java/com/powsybl/cgmes/iidm/extensions/dl/DanglingLineDiagramDataTest.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-iidm-extensions/src/test/java/com/powsybl/cgmes/iidm/extensions/dl/TransformerDiagramDataTest.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-iidm-extensions/src/test/java/com/powsybl/cgmes/iidm/extensions/dl/ThreeWindingsTransformerDiagramDataTest.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-iidm-extensions/src/test/java/com/powsybl/cgmes/iidm/extensions/dl/StaticVarCompensatorDiagramDataTest.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-iidm-extensions/src/test/java/com/powsybl/cgmes/iidm/extensions/dl/AbstractInjectionDiagramDataTest.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-iidm-extensions/src/test/java/com/powsybl/cgmes/iidm/extensions/dl/LineDiagramDataTest.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-iidm-extensions/src/test/java/com/powsybl/cgmes/iidm/extensions/dl/LoadDiagramDataTest.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-iidm-extensions/src/test/java/com/powsybl/cgmes/iidm/extensions/dl/SwitchDiagramDataTest.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-iidm-extensions/src/test/java/com/powsybl/cgmes/iidm/extensions/dl/BusDiagramDataTest.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-iidm-extensions/src/test/java/com/powsybl/cgmes/iidm/extensions/dl/GeneratorDiagramDataTest.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-iidm-extensions/src/test/java/com/powsybl/cgmes/iidm/extensions/dl/ShuntDiagramDataTest.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-iidm-extensions/src/test/java/com/powsybl/cgmes/iidm/extensions/dl/AbstractCouplingDeviceDiagramDataTest.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-iidm-extensions/src/test/java/com/powsybl/cgmes/iidm/extensions/dl/AbstractNodeDiagramDataTest.java">
+</file>
+<file name="/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-iidm-extensions/src/test/java/com/powsybl/cgmes/iidm/extensions/dl/AbstractLineDiagramDataTest.java">
+</file>
+</checkstyle>

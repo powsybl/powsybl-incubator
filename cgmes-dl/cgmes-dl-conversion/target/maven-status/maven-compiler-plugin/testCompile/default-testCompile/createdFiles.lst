@@ -1,0 +1,4 @@
+com/powsybl/cgmes/dl/conversion/AbstractCgmesDLTest.class
+com/powsybl/cgmes/dl/conversion/CgmesDLImporterTest.class
+com/powsybl/cgmes/dl/conversion/CgmesDLModelTest.class
+com/powsybl/cgmes/dl/conversion/CgmesDLImportPostProcessorTest.class

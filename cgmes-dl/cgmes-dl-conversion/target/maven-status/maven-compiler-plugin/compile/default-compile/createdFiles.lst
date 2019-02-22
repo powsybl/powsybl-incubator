@@ -1,0 +1,16 @@
+com/powsybl/cgmes/dl/conversion/importers/GeneratorDiagramDataImporter.class
+com/powsybl/cgmes/dl/conversion/importers/LoadDiagramDataImporter.class
+com/powsybl/cgmes/dl/conversion/importers/SvcDiagramDataImporter.class
+com/powsybl/cgmes/dl/conversion/importers/TransformerDiagramDataImporter.class
+com/powsybl/cgmes/dl/conversion/CgmesDLImporter.class
+META-INF/services/com.powsybl.cgmes.conversion.CgmesImportPostProcessor
+com/powsybl/cgmes/dl/conversion/CgmesDLImportPostProcessor.class
+com/powsybl/cgmes/dl/conversion/importers/LineDiagramDataImporter.class
+com/powsybl/cgmes/dl/conversion/importers/BusDiagramDataImporter.class
+com/powsybl/cgmes/dl/conversion/importers/SwitchDiagramDataImporter.class
+com/powsybl/cgmes/dl/conversion/importers/AbstractCouplingDeviceDiagramDataImporter.class
+com/powsybl/cgmes/dl/conversion/importers/HvdcLineDiagramDataImporter.class
+com/powsybl/cgmes/dl/conversion/importers/AbstractInjectionDiagramDataImporter.class
+com/powsybl/cgmes/dl/conversion/importers/BusbarDiagramDataImporter.class
+com/powsybl/cgmes/dl/conversion/CgmesDLModel.class
+com/powsybl/cgmes/dl/conversion/importers/ShuntDiagramDataImporter.class

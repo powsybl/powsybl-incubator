@@ -23,7 +23,6 @@ public interface Block {
         END
     }
 
-
     Node getStartingNode();
 
     Node getEndingNode();

@@ -70,7 +70,6 @@ public class SerialBlock extends AbstractBlock {
             child.setParentBlock(this);
         }
 
-
         setCardinalityStart(lowerBlock.getCardinalityInverse(commonNode));
 
         setCardinalityEnd(upperBlock.getCardinalityInverse(commonNode));
@@ -105,7 +104,6 @@ public class SerialBlock extends AbstractBlock {
         upperBlock.reverseBlock();
     }
 
-
     @Override
     public Node getStartingNode() {
         return lowerBlock.getStartingNode();
@@ -131,7 +129,6 @@ public class SerialBlock extends AbstractBlock {
         Position lPosition = lowerBlock.getPosition();
         Position uPosition = upperBlock.getPosition();
 
-
         if (getPosition().getOrientation() == Orientation.VERTICAL) {
             getPosition().setHSpan(Math.max(uPosition.getHSpan(), lPosition.getHSpan()));
             getPosition().setVSpan(lPosition.getVSpan() + uPosition.getVSpan());
@@ -147,7 +144,6 @@ public class SerialBlock extends AbstractBlock {
             uPosition.setHV(lPosition.getHSpan() - h2vShift, 0);
         }
     }
-
 
     @Override
     public void coordVerticalCase(LayoutParameters layoutParam) {

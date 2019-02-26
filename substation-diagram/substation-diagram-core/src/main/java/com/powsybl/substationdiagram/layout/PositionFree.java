@@ -23,7 +23,6 @@ public class PositionFree implements PositionFinder {
     private Map<BusNode, Integer> nodeToNb;
     private Map<BusConnectionPattern, List<Cell>> bcpToCell;
 
-
     @JsonIgnore
     private static final Logger LOGGER = LoggerFactory.getLogger(PositionFree.class);
     private static final Cell.Direction DEFAULTDIRECTION = Cell.Direction.TOP;
@@ -43,7 +42,6 @@ public class PositionFree implements PositionFinder {
         graph.setMaxBusPosition();
 
     }
-
 
     private void initiateBusPosition(Graph graph) {
         int i = 1;
@@ -161,7 +159,6 @@ public class PositionFree implements PositionFinder {
             }
             return null;
         }
-
 
         Set<BusNode> getBusNodeSet() {
             return busNodeSet;

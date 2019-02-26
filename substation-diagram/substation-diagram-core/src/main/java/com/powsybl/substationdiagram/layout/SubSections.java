@@ -34,7 +34,6 @@ class SubSections {
 
     private static final String STR_SIDE = "\t side ";
 
-
     SubSections(Graph graph) {
         this.graph = graph;
         subsectionMap = new TreeMap<>();

@@ -610,7 +610,6 @@ public class Graph {
         addEdge(fNodeToSw, nodeSwitch);
     }
 
-
     public BusNode getVHNodeBus(int v, int h) {
         if (vPosToHPosToNodeBus == null) {
             buildVPosToHposToNodeBus();

@@ -241,7 +241,6 @@ public class BlockOrganizer {
         return hPosRes;
     }
 
-
     class PosNWidth {
         int pos;
         int width;

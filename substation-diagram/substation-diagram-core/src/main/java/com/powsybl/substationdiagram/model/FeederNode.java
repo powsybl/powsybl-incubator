@@ -48,6 +48,9 @@ public class FeederNode extends Node {
             case SHUNT_COMPENSATOR:
                 componentType = ((ShuntCompensator) injection).getbPerSection() >= 0 ? ComponentType.CAPACITOR : ComponentType.INDUCTOR;
                 break;
+            case DANGLING_LINE:
+                componentType = ComponentType.DANGLING_LINE;
+                break;
             default:
                 throw new AssertionError();
         }

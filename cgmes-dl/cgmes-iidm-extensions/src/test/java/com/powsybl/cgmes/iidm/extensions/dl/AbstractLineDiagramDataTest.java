@@ -29,6 +29,12 @@ public abstract class AbstractLineDiagramDataTest {
         assertEquals(2, diagramData.getLastPoint().getSeq(), 0);
         assertEquals(10, diagramData.getLastPoint().getX(), 0);
         assertEquals(0, diagramData.getLastPoint().getY(), 0);
+        assertEquals(1, diagramData.getFirstPoint(5).getSeq(), 0);
+        assertEquals(3.535, diagramData.getFirstPoint(5).getX(), .001);
+        assertEquals(6.464, diagramData.getFirstPoint(5).getY(), .001);
+        assertEquals(2, diagramData.getLastPoint(5).getSeq(), 0);
+        assertEquals(6.464, diagramData.getLastPoint(5).getX(), .001);
+        assertEquals(3.535, diagramData.getLastPoint(5).getY(), .001);
     }
 
 }

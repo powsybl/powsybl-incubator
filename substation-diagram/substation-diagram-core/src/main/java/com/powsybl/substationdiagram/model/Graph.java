@@ -70,6 +70,9 @@ public class Graph {
     @JsonIgnore
     private int cellCounter = 0;
 
+    @JsonIgnore
+    private TopologyKind topologyKind;
+
     /**
      * Constructor
      */
@@ -297,6 +300,7 @@ public class Graph {
 
     private void buildGraph(VoltageLevel vl) {
         LOGGER.info("Building '{}' graph...", vl.getId());
+        topologyKind = vl.getTopologyKind();
 
         switch (vl.getTopologyKind()) {
             case BUS_BREAKER:
@@ -342,6 +346,21 @@ public class Graph {
                     LOGGER.warn("Cannot remove fictitious node {} because there are no adjacent BUS nodes", n.getId());
                 }
             }
+        }
+    }
+
+    public void removeFictitiousSwitchNodes() {
+        List<Node> fictitiousSwithcNodesToRemove = nodes.stream()
+                .filter(node -> node.getType() == Node.NodeType.SWITCH)
+                .filter(node -> node.getIdentifiable() == null)
+                .filter(node -> node.getAdjacentNodes().size() == 2)
+                .collect(Collectors.toList());
+        for (Node n : fictitiousSwithcNodesToRemove) {
+            Node node1 = n.getAdjacentNodes().get(0);
+            Node node2 = n.getAdjacentNodes().get(1);
+            LOGGER.info("Remove fictitious switch node between {} and {}", node1.getId(), node2.getId());
+            removeNode(n);
+            addEdge(node1, node2);
         }
     }
 
@@ -649,4 +668,9 @@ public class Graph {
     public Set<Cell> getCells() {
         return new TreeSet<>(cells);
     }
+
+    public TopologyKind getTopologyKind() {
+        return topologyKind;
+    }
+
 }

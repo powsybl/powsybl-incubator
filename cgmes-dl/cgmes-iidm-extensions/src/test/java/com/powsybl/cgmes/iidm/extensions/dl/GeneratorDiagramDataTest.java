@@ -31,7 +31,6 @@ public class GeneratorDiagramDataTest extends AbstractInjectionDiagramDataTest {
         Generator generator2 = network.getGenerator("Generator");
         InjectionDiagramData<Generator> generatorDiagramData2 = generator2.getExtension(InjectionDiagramData.class);
 
-
         checkDiagramData(generatorDiagramData2);
     }
 

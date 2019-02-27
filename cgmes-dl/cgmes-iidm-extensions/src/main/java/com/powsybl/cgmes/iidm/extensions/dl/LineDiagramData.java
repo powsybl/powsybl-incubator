@@ -7,9 +7,12 @@
 package com.powsybl.cgmes.iidm.extensions.dl;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
 import com.powsybl.commons.extensions.AbstractExtension;
 import com.powsybl.iidm.network.DanglingLine;
@@ -58,11 +61,36 @@ public class LineDiagramData<T extends Identifiable<T>> extends AbstractExtensio
     }
 
     public DiagramPoint getFirstPoint() {
-        return points.stream().sorted().findFirst().get();
+        return points.stream().sorted().findFirst().orElse(new DiagramPoint(0, 0, 0));
     }
 
     public DiagramPoint getLastPoint() {
-        return points.stream().sorted().reduce((first, second) -> second).get();
+        return points.stream().sorted(Comparator.reverseOrder()).findFirst().orElse(new DiagramPoint(0, 0, 0));
+    }
+
+    public DiagramPoint getFirstPoint(double offset) {
+        if (points.size() < 2) {
+            return getFirstPoint();
+        }
+        DiagramPoint firstPoint = points.stream().sorted().findFirst().get();
+        DiagramPoint secondPoint = points.stream().sorted().skip(1).findFirst().get();
+        return shiftPoint(firstPoint, secondPoint, offset);
+    }
+
+    public DiagramPoint getLastPoint(double offset) {
+        if (points.size() < 2) {
+            return getLastPoint();
+        }
+        DiagramPoint lastPoint = points.stream().sorted(Comparator.reverseOrder()).findFirst().get();
+        DiagramPoint secondLastPoint = points.stream().sorted(Comparator.reverseOrder()).skip(1).findFirst().get();
+        return shiftPoint(lastPoint, secondLastPoint, offset);
+    }
+
+    private DiagramPoint shiftPoint(DiagramPoint point, DiagramPoint otherPoint, double offset) {
+        Vector2D pointVector = new Vector2D(point.getX(), point.getY());
+        Vector2D otherPointVector = new Vector2D(otherPoint.getX(), otherPoint.getY());
+        Vector2D shiftedPointVector = pointVector.add(otherPointVector.subtract(pointVector).normalize().scalarMultiply(offset));
+        return new DiagramPoint(shiftedPointVector.getX(), shiftedPointVector.getY(), point.getSeq());
     }
 
 }

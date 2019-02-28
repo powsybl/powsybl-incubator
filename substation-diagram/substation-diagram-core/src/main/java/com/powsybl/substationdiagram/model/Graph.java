@@ -13,7 +13,6 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.powsybl.iidm.network.*;
-import com.powsybl.substationdiagram.model.Node.NodeType;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
 import org.jgrapht.UndirectedGraph;
@@ -334,7 +333,7 @@ public class Graph {
                 addEdge(node1, node2);
             } else {
                 LOGGER.info("Working on fictitious node {} with {} adjacent nodes", n.getId(), n.getAdjacentNodes().size());
-                Node busNode = n.getAdjacentNodes().stream().filter(node -> node.getType() == NodeType.BUS).findFirst().orElse(null);
+                Node busNode = n.getAdjacentNodes().stream().filter(node -> node.getType() == Node.NodeType.BUS).findFirst().orElse(null);
                 if (busNode != null) {
                     n.getAdjacentNodes().stream().filter(node -> !node.equals(busNode)).forEach(node -> {
                         LOGGER.info("Connecting {} to {}", node.getId(), busNode.getId());

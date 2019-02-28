@@ -420,6 +420,8 @@ public class SubstationDiagramViewer extends Application {
             preferences.put(CASE_PATH_PROPERTY, file.toAbsolutePath().toString());
         });
         networkService.setOnFailed(event -> {
+            Throwable exception = event.getSource().getException();
+            LOGGER.error(exception.toString(), exception);
             casePathTextField.setText("");
             caseLoadingStatus.setStyle("-fx-background-color: red");
         });

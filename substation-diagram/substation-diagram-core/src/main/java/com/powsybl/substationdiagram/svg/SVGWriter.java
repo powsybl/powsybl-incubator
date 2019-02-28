@@ -169,8 +169,10 @@ public class SVGWriter {
             } else {
                 incorporateComponents(node, g);
             }
-            if (node instanceof FeederNode || node instanceof BusNode) {
+            if (node instanceof FeederNode) {
                 drawLabel(node.getLabel(), node.isRotated(), g);
+            } else if (node instanceof BusNode) {
+                drawLabel(node.getLabel(), false, g);
             }
             root.appendChild(g);
 
@@ -196,8 +198,13 @@ public class SVGWriter {
         Element line = g.getOwnerDocument().createElement("line");
         line.setAttribute("x1", "0");
         line.setAttribute("y1", "0");
-        line.setAttribute("x2", String.valueOf(node.getPxWidth()));
-        line.setAttribute("y2", "0");
+        if (node.isRotated()) {
+            line.setAttribute("x2", "0");
+            line.setAttribute("y2", String.valueOf(node.getPxWidth()));
+        } else {
+            line.setAttribute("x2", String.valueOf(node.getPxWidth()));
+            line.setAttribute("y2", "0");
+        }
         line.setAttribute(STYLE, "stroke:rgb(0,0,0);stroke-width:3");
 
         g.appendChild(line);

@@ -316,17 +316,31 @@ public class Graph {
         }
     }
 
-    private void removeUnnecessaryFictitiousNodes() {
+    public void removeUnnecessaryFictitiousNodes() {
         List<Node> fictitiousNodesToRemove = nodes.stream()
                 .filter(node -> node.getType() == Node.NodeType.FICTITIOUS)
-                .filter(node -> node.getAdjacentNodes().size() == 2)
                 .collect(Collectors.toList());
         for (Node n : fictitiousNodesToRemove) {
-            Node node1 = n.getAdjacentNodes().get(0);
-            Node node2 = n.getAdjacentNodes().get(1);
-            LOGGER.info("Remove unnecessary node between {} and {}", node1.getId(), node2.getId());
-            removeNode(n);
-            addEdge(node1, node2);
+            if (n.getAdjacentNodes().size() == 2) {
+                Node node1 = n.getAdjacentNodes().get(0);
+                Node node2 = n.getAdjacentNodes().get(1);
+                LOGGER.info("Remove fictitious node {} between {} and {}", n.getId(), node1.getId(), node2.getId());
+                removeNode(n);
+                addEdge(node1, node2);
+            } else {
+                LOGGER.info("Working on fictitious node {} with {} adjacent nodes", n.getId(), n.getAdjacentNodes().size());
+                Node busNode = n.getAdjacentNodes().stream().filter(node -> node.getType() == Node.NodeType.BUS).findFirst().orElse(null);
+                if (busNode != null) {
+                    n.getAdjacentNodes().stream().filter(node -> !node.equals(busNode)).forEach(node -> {
+                        LOGGER.info("Connecting {} to {}", node.getId(), busNode.getId());
+                        addEdge(node, busNode);
+                    });
+                    LOGGER.info("Remove fictitious node {}", n.getId());
+                    removeNode(n);
+                } else {
+                    LOGGER.warn("Cannot remove fictitious node {} because there are no adjacent BUS nodes", n.getId());
+                }
+            }
         }
     }
 
@@ -410,7 +424,7 @@ public class Graph {
         return connectedSets.size() == 1;
     }
 
-    private void addNode(Node node) {
+    public void addNode(Node node) {
         nodes.add(node);
         nodesByType.computeIfAbsent(node.getType(), nodeType -> new ArrayList<>()).add(node);
         nodesById.put(node.getId(), node);
@@ -441,7 +455,7 @@ public class Graph {
      * @param n1 first node
      * @param n2 second node
      */
-    void addEdge(Node n1, Node n2) {
+    public void addEdge(Node n1, Node n2) {
         Edge edge = new Edge(n1, n2);
         edges.add(edge);
         n1.addAdjacentEdge(edge);

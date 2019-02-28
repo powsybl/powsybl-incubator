@@ -53,6 +53,7 @@ public class CgmesVoltageLevelLayout implements VoltageLevelLayout {
     private final Graph graph;
     private double minX = 0;
     private double minY = 0;
+    private boolean rotatedBus = false;
 
     public CgmesVoltageLevelLayout(Graph graph) {
         Objects.requireNonNull(graph);
@@ -144,7 +145,8 @@ public class CgmesVoltageLevelLayout implements VoltageLevelLayout {
             node.setX(diagramData.getPoint1().getX());
             node.setY(diagramData.getPoint1().getY());
             node.setPxWidth(computeBusWidth(diagramData));
-            node.setRotated(diagramData.getPoint1().getX() == diagramData.getPoint2().getX());
+            rotatedBus = diagramData.getPoint1().getX() == diagramData.getPoint2().getX();
+            node.setRotated(rotatedBus);
             setMin(diagramData.getPoint1().getX(), diagramData.getPoint1().getY());
         } else {
             LOG.warn("No CGMES-DL data for {} node {}, bus {}", node.getType(), node.getId(), name);
@@ -239,6 +241,7 @@ public class CgmesVoltageLevelLayout implements VoltageLevelLayout {
             DiagramPoint linePoint = getLinePoint(diagramData, node);
             node.setX(linePoint.getX());
             node.setY(linePoint.getY());
+            node.setRotated(rotatedBus);
             setMin(linePoint.getX(), linePoint.getY());
         } else {
             LOG.warn("No CGMES-DL data for {} {} node {}, line {}", node.getType(), node.getComponentType(), node.getId(), name);

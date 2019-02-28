@@ -74,8 +74,8 @@ public class SubstationDiagramViewer extends Application {
             = ImmutableMap.of("Auto extensions", new PositionVoltageLevelLayoutFactory(),
                               "Auto without extensions", new PositionVoltageLevelLayoutFactory(new ImplicitCellDetector(), new PositionFree()),
                               "Random", new RandomVoltageLevelLayoutFactory(500, 500),
-                              "Cgmes", new CgmesVoltageLevelLayoutFactory(),
-                              "Force", new ForceVoltageLevelLayoutFactory());
+                              "Force", new ForceVoltageLevelLayoutFactory(),
+                              "Cgmes", new CgmesVoltageLevelLayoutFactory());
 
     private final ComponentLibrary componentLibrary = new ResourcesComponentLibrary("/ConvergenceLibrary");
 
@@ -279,7 +279,7 @@ public class SubstationDiagramViewer extends Application {
             refreshDiagram();
         });
         parametersPane.add(stackCb, 0, 20);
-        addSpinner("Scale factor:", 1, 10, 1, 21, LayoutParameters::getScaleFactor, LayoutParameters::setScaleFactor);
+        addSpinner("Scale factor:", 1, 20, 1, 21, LayoutParameters::getScaleFactor, LayoutParameters::setScaleFactor);
     }
 
     private void refreshDiagram() {

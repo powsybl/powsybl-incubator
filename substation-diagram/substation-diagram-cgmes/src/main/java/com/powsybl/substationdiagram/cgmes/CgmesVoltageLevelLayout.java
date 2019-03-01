@@ -89,7 +89,7 @@ public class CgmesVoltageLevelLayout implements VoltageLevelLayout {
             setLineNodeCoordinates(node);
         });
         graph.getNodes().forEach(node -> {
-            shiftNodeCoordinates(node);
+            shiftNodeCoordinates(node, layoutParam.getScaleFactor());
         });
         if (layoutParam.getScaleFactor() != 1) {
             graph.getNodes().forEach(node -> {
@@ -277,9 +277,9 @@ public class CgmesVoltageLevelLayout implements VoltageLevelLayout {
         return isLastPointCloser ? lineDiagramData.getLastPoint(LINE_OFFSET) : lineDiagramData.getFirstPoint(LINE_OFFSET);
     }
 
-    private void shiftNodeCoordinates(Node node) {
-        node.setX(node.getX() - minX + X_MARGIN);
-        node.setY(node.getY() - minY + Y_MARGIN);
+    private void shiftNodeCoordinates(Node node, double scaleFactor) {
+        node.setX(node.getX() - minX + (X_MARGIN / scaleFactor));
+        node.setY(node.getY() - minY + (Y_MARGIN / scaleFactor));
     }
 
     private void scaleNodeCoordinates(Node node, double scaleFactor) {

@@ -36,22 +36,22 @@ public class NodeTopologyVerticalBusbarTest extends AbstractNodeTopologyTest {
 
     @Override
     protected void checkCoordinates(Graph graph) {
-        assertEquals(230, graph.getNodes().get(0).getX(), 0);
-        assertEquals(20, graph.getNodes().get(0).getY(), 0);
+        assertEquals(210, graph.getNodes().get(0).getX(), 0);
+        assertEquals(10, graph.getNodes().get(0).getY(), 0);
         assertEquals(220, ((BusNode) graph.getNodes().get(0)).getPxWidth(), 0);
         assertTrue(graph.getNodes().get(0).isRotated());
-        assertEquals(360, graph.getNodes().get(1).getX(), 0);
-        assertEquals(200, graph.getNodes().get(1).getY(), 0);
-        assertEquals(40, graph.getNodes().get(2).getX(), 0);
-        assertEquals(70, graph.getNodes().get(2).getY(), 0);
-        assertEquals(260, graph.getNodes().get(3).getX(), 0);
-        assertEquals(200, graph.getNodes().get(3).getY(), 0);
+        assertEquals(340, graph.getNodes().get(1).getX(), 0);
+        assertEquals(190, graph.getNodes().get(1).getY(), 0);
+        assertEquals(20, graph.getNodes().get(2).getX(), 0);
+        assertEquals(60, graph.getNodes().get(2).getY(), 0);
+        assertEquals(240, graph.getNodes().get(3).getX(), 0);
+        assertEquals(190, graph.getNodes().get(3).getY(), 0);
         assertTrue(graph.getNodes().get(3).isRotated());
-        assertEquals(300, graph.getNodes().get(4).getX(), 0);
-        assertEquals(200, graph.getNodes().get(4).getY(), 0);
+        assertEquals(280, graph.getNodes().get(4).getX(), 0);
+        assertEquals(190, graph.getNodes().get(4).getY(), 0);
         assertTrue(graph.getNodes().get(4).isRotated());
-        assertEquals(340, graph.getNodes().get(5).getX(), 0);
-        assertEquals(200, graph.getNodes().get(5).getY(), 0);
+        assertEquals(320, graph.getNodes().get(5).getX(), 0);
+        assertEquals(190, graph.getNodes().get(5).getY(), 0);
         assertTrue(graph.getNodes().get(5).isRotated());
     }
 

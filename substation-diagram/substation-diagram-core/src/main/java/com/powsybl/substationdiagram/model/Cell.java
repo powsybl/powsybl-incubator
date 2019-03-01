@@ -109,7 +109,7 @@ public class Cell implements Comparable<Cell> {
         return this.type;
     }
 
-    public List<BusNode> getBusbars() {
+    public List<BusNode> getBusNodes() {
         return nodes.stream()
                 .filter(n -> n.getType() == Node.NodeType.BUS)
                 .map(n -> (BusNode) n)

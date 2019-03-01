@@ -54,7 +54,12 @@ public class BlockOrganizer {
                 .filter(cell -> cell.getType().equals(Cell.CellType.EXTERN)
                         || cell.getType().equals(Cell.CellType.INTERN)
                         || cell.getType().equals(Cell.CellType.INTERNBOUND))
-                .forEach(cell -> new CellBlockDecomposer().determineBlocks(cell));
+                .forEach(cell -> {
+                    new CellBlockDecomposer().determineBlocks(cell);
+                    if (cell.getType() == Cell.CellType.INTERN) {
+                        ((InternCell) cell).rationalizeOrganization();
+                    }
+                });
         graph.getCells().stream()
                 .filter(cell -> cell.getType() == Cell.CellType.SHUNT)
                 .forEach(cell -> new CellBlockDecomposer().determineBlocks(cell));
@@ -210,7 +215,7 @@ public class BlockOrganizer {
                     hPosRes++;
                 }
                 Position position = cell.getRootBlock().getPosition();
-                position.setHV(hPosRes, cell.getBusbars().get(0).getStructuralPosition().getV());
+                position.setHV(hPosRes, cell.getBusNodes().get(0).getStructuralPosition().getV());
                 shift = Math.max(position.getHSpan(), shift);
             }
         }

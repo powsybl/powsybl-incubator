@@ -53,7 +53,7 @@ public class CellBlockDecomposer {
         List<PrimaryBlock> blocksConnectedToBusbar = new ArrayList<>();
         List<Node> alreadyTreated = new ArrayList<>();
         List<Block> blocks = new ArrayList<>();
-        Node currentNode = cell.getBusbars().get(0);
+        Node currentNode = cell.getBusNodes().get(0);
 
         // Search all primary blocks
         currentNode.getListNodeAdjInCell(cell).forEach(n -> {

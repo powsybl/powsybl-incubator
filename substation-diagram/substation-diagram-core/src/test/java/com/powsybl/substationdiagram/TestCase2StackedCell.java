@@ -115,7 +115,7 @@ public class TestCase2StackedCell extends AbstractTestCase {
         assertEquals(Cell.CellType.EXTERN, cell.getType());
         assertEquals(-1, cell.getOrder());
         assertEquals(7, cell.getNodes().size());
-        assertEquals(2, cell.getBusbars().size());
+        assertEquals(2, cell.getBusNodes().size());
         assertEquals("EXTERN[2, b, bbs1, bbs2, d1, d2, l]", cell.getFullId());
 
         // build blocks

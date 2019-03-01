@@ -125,12 +125,14 @@ public class PrimaryBlock extends AbstractBlock {
         if (isEmbedingNodeType(Node.NodeType.BUS)) {
             Node nodeBus = getBusNode();
             Node nodeMiddle = nodes.get(1);
-            Node nodeSide = nodeBus == nodes.get(0) ? nodes.get(2) : nodes.get(0);
             nodeMiddle.setX(getCoord().getX());
             nodeMiddle.setY(nodeBus.getY());
-            nodeSide.setX(getCoord().getX(), true);
-            if (getCell().getType() == Cell.CellType.INTERN && ((InternCell) getCell()).getCentralBlock() == null) {
-                nodeSide.setY(layoutParam.getInitialYBus() - layoutParam.getInternCellHeight());
+            if (nodes.size() == 3) {
+                Node nodeSide = nodeBus == nodes.get(0) ? nodes.get(2) : nodes.get(0);
+                nodeSide.setX(getCoord().getX(), true);
+                if (getCell().getType() == Cell.CellType.INTERN && ((InternCell) getCell()).getCentralBlock() == null) {
+                    nodeSide.setY(layoutParam.getInitialYBus() - layoutParam.getInternCellHeight());
+                }
             }
         } else {
             int sign = getCell().getDirection() == Cell.Direction.TOP ? 1 : -1;
@@ -156,10 +158,12 @@ public class PrimaryBlock extends AbstractBlock {
         if (isEmbedingNodeType(Node.NodeType.BUS)) {
             Node nodeBus = getBusNode();
             Node nodeMiddle = nodes.get(1);
-            Node nodeSide = nodeBus == nodes.get(0) ? nodes.get(2) : nodes.get(0);
             nodeMiddle.setX(getCoord().getX() + getCoord().getXSpan() / 2);
             nodeMiddle.setY(nodeBus.getY());
-            nodeSide.setY(nodeBus.getY(), true);
+            if (nodes.size() == 3) {
+                Node nodeSide = nodeBus == nodes.get(0) ? nodes.get(2) : nodes.get(0);
+                nodeSide.setY(nodeBus.getY(), true);
+            }
             return;
         }
         double x0 = getCoord().getX() - getCoord().getXSpan() / 2;

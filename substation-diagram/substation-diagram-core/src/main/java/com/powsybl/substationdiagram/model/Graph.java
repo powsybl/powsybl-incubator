@@ -367,7 +367,7 @@ public class Graph {
         }
         if (remainingNodeCount > 0) {
             LOGGER.warn("{}/{} nodes not associated to a cell ({})",
-                        remainingNodeCount, nodes.size(), remainingNodeCountByType);
+                    remainingNodeCount, nodes.size(), remainingNodeCountByType);
         }
     }
 
@@ -458,12 +458,16 @@ public class Graph {
         for (Edge edge : edges) {
             if ((edge.getNode1().equals(n1) && edge.getNode2().equals(n2))
                     || (edge.getNode1().equals(n2) && edge.getNode2().equals(n1))) {
-                n1.removeAdjacentEdge(edge);
-                n2.removeAdjacentEdge(edge);
-                edges.remove(edge);
+                removeEdge(edge);
                 return;
             }
         }
+    }
+
+    void removeEdge(Edge edge) {
+        edge.getNode1().removeAdjacentEdge(edge);
+        edge.getNode2().removeAdjacentEdge(edge);
+        edges.remove(edge);
     }
 
     /**
@@ -515,6 +519,9 @@ public class Graph {
             v.add(nodeBus.getStructuralPosition().getV());
             h.add(nodeBus.getStructuralPosition().getH());
         });
+        if (h.isEmpty()||v.isEmpty()){
+            return;
+        }
         maxBusStructuralPosition.setH(Collections.max(h));
         maxBusStructuralPosition.setV(Collections.max(v));
     }
@@ -586,13 +593,31 @@ public class Graph {
     private void addDoubleNode(BusNode busNode, SwitchNode nodeSwitch, String suffix) {
         removeEdge(busNode, nodeSwitch);
         FicticiousNode fNodeToBus = new FicticiousNode(Graph.this, nodeSwitch.getId() + "fSwitch" + suffix,
-                                                       true);
+                true);
         addNode(fNodeToBus);
         FicticiousNode fNodeToSw = new FicticiousNode(Graph.this, nodeSwitch.getId() + "fNode" + suffix);
         addNode(fNodeToSw);
         addEdge(busNode, fNodeToBus);
         addEdge(fNodeToBus, fNodeToSw);
         addEdge(fNodeToSw, nodeSwitch);
+    }
+
+    public void substituteFictitiousNodesMirroringBusNodes() {
+        getNodeBuses().forEach(busNode -> {
+            List<Node> adjs = busNode.getAdjacentNodes();
+            if (adjs.size() == 1 && adjs.get(0).getType() == Node.NodeType.FICTITIOUS) {
+                Node adj = adjs.get(0);
+                removeEdge(adj, busNode);
+                while (!adj.getAdjacentEdges().isEmpty()) {
+                    Edge edge = adj.getAdjacentEdges().get(0);
+                    Node node1 = edge.getNode1() == adj ? busNode : edge.getNode1();
+                    Node node2 = edge.getNode2() == adj ? busNode : edge.getNode2();
+                    addEdge(node1, node2);
+                    removeEdge(edge);
+                }
+                removeNode(adj);
+            }
+        });
     }
 
 

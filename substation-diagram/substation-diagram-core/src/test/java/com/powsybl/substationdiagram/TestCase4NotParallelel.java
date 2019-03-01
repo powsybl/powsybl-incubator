@@ -180,7 +180,7 @@ public class TestCase4NotParallelel extends AbstractTestCase {
         Cell cell = it.next();
         assertEquals(Cell.CellType.INTERNBOUND, cell.getType());
         assertEquals(3, cell.getNodes().size());
-        assertEquals(2, cell.getBusbars().size());
+        assertEquals(2, cell.getBusNodes().size());
         assertEquals("INTERNBOUND[bbs1.1, bbs1.2, ss1]", cell.getFullId());
 
         // build blocks

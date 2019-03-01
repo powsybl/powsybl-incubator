@@ -351,7 +351,7 @@ public class Graph {
     public void removeFictitiousSwitchNodes() {
         List<Node> fictitiousSwithcNodesToRemove = nodes.stream()
                 .filter(node -> node.getType() == Node.NodeType.SWITCH)
-                .filter(node -> node.getIdentifiable() == null)
+                .filter(node -> node.getIdentifiable() == null || ((Switch) node.getIdentifiable()).isFictitious())
                 .filter(node -> node.getAdjacentNodes().size() == 2)
                 .collect(Collectors.toList());
         for (Node n : fictitiousSwithcNodesToRemove) {

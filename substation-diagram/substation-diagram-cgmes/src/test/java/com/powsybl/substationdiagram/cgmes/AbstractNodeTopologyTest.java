@@ -7,10 +7,8 @@
 package com.powsybl.substationdiagram.cgmes;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
-import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -31,9 +29,7 @@ import com.powsybl.iidm.network.Substation;
 import com.powsybl.iidm.network.Switch;
 import com.powsybl.iidm.network.TopologyKind;
 import com.powsybl.iidm.network.VoltageLevel;
-import com.powsybl.substationdiagram.layout.LayoutParameters;
 import com.powsybl.substationdiagram.library.ComponentType;
-import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
 import com.powsybl.substationdiagram.model.Graph;
 import com.powsybl.substationdiagram.model.Node;
 
@@ -41,12 +37,10 @@ import com.powsybl.substationdiagram.model.Node;
  *
  * @author Massimo Ferraro <massimo.ferraro@techrain.eu>
  */
-public abstract class AbstractNodeTopologyTest {
+public abstract class AbstractNodeTopologyTest extends AbstractCgmesVoltageLevelLayoutTest {
 
     protected VoltageLevel voltageLevel;
     protected VoltageLevel voltageLevelWithInternalConnections;
-
-    protected final ResourcesComponentLibrary componentLibrary = new ResourcesComponentLibrary("/ConvergenceLibrary");
 
     @Before
     public void setUp() {
@@ -216,25 +210,7 @@ public abstract class AbstractNodeTopologyTest {
         line.addExtension(LineDiagramData.class, lineDiagramData);
     }
 
-    @Test
-    public void test() {
-        test(voltageLevel);
-    }
-
-    @Test
-    public void testWithInternalConnections() {
-        test(voltageLevelWithInternalConnections);
-    }
-
-    protected void test(VoltageLevel vl) {
-        Graph graph = Graph.create(vl);
-        LayoutParameters layoutParameters = new LayoutParameters();
-        layoutParameters.setScaleFactor(2);
-        new CgmesVoltageLevelLayout(graph).run(layoutParameters);
-        checkGraph(graph);
-        checkCoordinates(graph);
-    }
-
+    @Override
     protected void checkGraph(Graph graph) {
         assertEquals(6, graph.getNodes().size());
 
@@ -275,12 +251,14 @@ public abstract class AbstractNodeTopologyTest {
         assertEquals(5, graph.getEdges().size());
     }
 
-    protected void checkAdjacentNodes(Node node, List<String> expectedAdjacentNodes) {
-        node.getAdjacentNodes().forEach(adjacentNode -> {
-            assertTrue(expectedAdjacentNodes.contains(adjacentNode.getId()));
-        });
+    @Test
+    public void test() {
+        test(voltageLevel);
     }
 
-    protected abstract void checkCoordinates(Graph graph);
+    @Test
+    public void testWithInternalConnections() {
+        test(voltageLevelWithInternalConnections);
+    }
 
 }

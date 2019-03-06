@@ -48,10 +48,10 @@ public class PositionFree implements PositionFinder {
         indexBusPosition();
         initVbpcToCell();
         organizeWithInternCells();
-/*
+
         newStructuralPosition();
         initiateFeederPosition();
-*/
+
         graph.setMaxBusPosition();
 
     }

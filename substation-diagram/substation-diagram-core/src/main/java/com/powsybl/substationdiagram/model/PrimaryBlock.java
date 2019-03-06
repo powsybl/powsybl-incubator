@@ -53,7 +53,6 @@ public class PrimaryBlock extends AbstractBlock {
         setCell(cell);
     }
 
-
     @Override
     public boolean isEmbedingNodeType(Node.NodeType type) {
         return nodes.stream().anyMatch(n -> n.getType() == type);

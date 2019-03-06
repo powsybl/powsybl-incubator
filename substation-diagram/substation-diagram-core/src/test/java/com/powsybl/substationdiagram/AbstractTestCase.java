@@ -50,7 +50,6 @@ public abstract class AbstractTestCase {
         return vl;
     }
 
-
     public void compareSvg(Graph graph, LayoutParameters layoutParameters, String refSvgName) {
         try (StringWriter writer = new StringWriter()) {
             new SVGWriter(componentLibrary, layoutParameters)

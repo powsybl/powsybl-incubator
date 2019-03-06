@@ -172,7 +172,6 @@ public class TestCase1 extends AbstractTestCase {
         assertEquals("l", bc.getEndingNode().getId());
         assertEquals(1, cell.getPrimaryBlocksConnectedToBus().size());
 
-
         assertTrue(bc.getUpperBlock() instanceof PrimaryBlock);
         PrimaryBlock ub = (PrimaryBlock) bc.getUpperBlock();
         assertEquals(new Position(0, 0, 1, 2, false, Orientation.VERTICAL), ub.getPosition());
@@ -187,7 +186,6 @@ public class TestCase1 extends AbstractTestCase {
         assertEquals("1", lb.getEndingNode().getId());
         assertTrue(lb.getStackableBlocks().isEmpty());
 
-
         assertFalse(g.getNodes().get(0).isRotated());
         assertFalse(g.getNodes().get(1).isRotated());
         assertFalse(g.getNodes().get(2).isRotated());
@@ -199,7 +197,6 @@ public class TestCase1 extends AbstractTestCase {
                                                                  25, 20,
                                                                  50, 250, 40,
                                                                  30, true, true);
-
 
         new PositionVoltageLevelLayout(g).run(layoutParameters);
 

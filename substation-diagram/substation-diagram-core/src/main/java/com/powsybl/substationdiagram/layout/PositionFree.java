@@ -56,7 +56,6 @@ public class PositionFree implements PositionFinder {
 
     }
 
-
     private void indexBusPosition() {
         int i = 1;
         for (BusNode n : graph.getNodeBuses()

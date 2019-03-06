@@ -9,6 +9,7 @@ package com.powsybl.substationdiagram.model;
 import com.powsybl.iidm.network.Branch;
 import com.powsybl.iidm.network.Injection;
 import com.powsybl.iidm.network.ShuntCompensator;
+import com.powsybl.iidm.network.ThreeWindingsTransformer;
 import com.powsybl.substationdiagram.library.ComponentType;
 
 import java.util.Objects;
@@ -74,6 +75,15 @@ public class FeederNode extends Node {
         String id = branch.getId() + "_" + side.name();
         String name = branch.getName() + "_" + side.name();
         return new FeederNode(id, name, componentType, graph);
+    }
+
+    public static FeederNode create(Graph graph, ThreeWindingsTransformer twt, ThreeWindingsTransformer.Side side) {
+        Objects.requireNonNull(graph);
+        Objects.requireNonNull(twt);
+        Objects.requireNonNull(side);
+        String id = twt.getId() + "_" + side.name();
+        String name = twt.getName() + "_" + side.name();
+        return new FeederNode(id, name, ComponentType.THREE_WINDINGS_TRANSFORMER, graph);
     }
 
     public int getOrder() {

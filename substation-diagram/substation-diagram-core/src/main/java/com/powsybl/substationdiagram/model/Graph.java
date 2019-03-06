@@ -156,7 +156,7 @@ public class Graph {
         @Override
         public void visitThreeWindingsTransformer(ThreeWindingsTransformer transformer,
                                                   ThreeWindingsTransformer.Side side) {
-            throw new AssertionError("TODO");
+            addFeeder(FeederNode.create(Graph.this, transformer, side), transformer.getTerminal(side));
         }
     }
 

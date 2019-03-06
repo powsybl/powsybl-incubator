@@ -33,6 +33,7 @@ import javafx.collections.transformation.FilteredList;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.geometry.Insets;
+import javafx.geometry.Side;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxListCell;
@@ -107,23 +108,68 @@ public class SubstationDiagramViewer extends Application {
 
         private final TextArea infoArea = new TextArea();
 
+        private final TextArea svgArea = new TextArea();
+
+        private final TextArea metadataArea = new TextArea();
+
+        private final Tab tab1 = new Tab("Diagram", flowPane);
+
+        private final Tab tab2 = new Tab("SVG", svgArea);
+
+        private final Tab tab3 = new Tab("Metadata", metadataArea);
+
+        private final TabPane tabPane = new TabPane(tab1, tab2, tab3);
+
         private final TitledPane titledPane = new TitledPane("Infos", infoArea);
 
         private final ChangeListener<LayoutParameters> listener;
 
         SubstationDiagramPane(VoltageLevel vl) {
-            setCenter(flowPane);
-            setBottom(titledPane);
+            svgArea.setEditable(false);
+            metadataArea.setEditable(false);
             infoArea.setEditable(false);
             infoArea.setText(String.join(System.lineSeparator(),
-                               "id: " + vl.getId(),
-                               "name: " + vl.getName()));
+                                         "id: " + vl.getId(),
+                                         "name: " + vl.getName()));
+            tabPane.setSide(Side.BOTTOM);
+            tab1.setClosable(false);
+            tab2.setClosable(false);
+            tab3.setClosable(false);
+            setCenter(tabPane);
+            setBottom(titledPane);
             listener = (observable, oldValue, newValue) -> loadDiagram(vl);
             layoutParameters.addListener(new WeakChangeListener<>(listener));
             loadDiagram(vl);
         }
 
-        private SubstationDiagramView createSubstationDiagramView(VoltageLevel vl) {
+        class SubstationDiagramResult {
+
+            private final SubstationDiagramView view;
+
+            private final String svgData;
+
+            private final String metadataData;
+
+            SubstationDiagramResult(SubstationDiagramView view, String svgData, String metadataData) {
+                this.view = view;
+                this.svgData = svgData;
+                this.metadataData = metadataData;
+            }
+
+            SubstationDiagramView getView() {
+                return view;
+            }
+
+            String getSvgData() {
+                return svgData;
+            }
+
+            String getMetadataData() {
+                return metadataData;
+            }
+        }
+
+        private SubstationDiagramResult createSubstationDiagramView(VoltageLevel vl) {
             String svgData;
             String metadataData;
             try (StringWriter svgWriter = new StringWriter();
@@ -145,16 +191,16 @@ public class SubstationDiagramViewer extends Application {
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }
-            return diagramView;
+            return new SubstationDiagramResult(diagramView, svgData, metadataData);
         }
 
         private void loadDiagram(VoltageLevel vl) {
-            Service<SubstationDiagramView> loader = new Service<SubstationDiagramView>() {
+            Service<SubstationDiagramResult> loader = new Service<SubstationDiagramResult>() {
                 @Override
-                protected Task<SubstationDiagramView> createTask() {
-                    return new Task<SubstationDiagramView>() {
+                protected Task<SubstationDiagramResult> createTask() {
+                    return new Task<SubstationDiagramResult>() {
                         @Override
-                        protected SubstationDiagramView call() {
+                        protected SubstationDiagramResult call() {
                             return createSubstationDiagramView(vl);
                         }
                     };
@@ -164,10 +210,14 @@ public class SubstationDiagramViewer extends Application {
                 Text loading = new Text("Loading...");
                 loading.setFont(Font.font(30));
                 flowPane.getChildren().setAll(loading);
+                svgArea.setText("");
+                metadataArea.setText("");
             });
             loader.setOnSucceeded(event -> {
-                SubstationDiagramView view = (SubstationDiagramView) event.getSource().getValue();
-                flowPane.getChildren().setAll(view);
+                SubstationDiagramResult result = (SubstationDiagramResult) event.getSource().getValue();
+                flowPane.getChildren().setAll(result.getView());
+                svgArea.setText(result.getSvgData());
+                metadataArea.setText(result.getMetadataData());
             });
             loader.setOnFailed(event -> {
                 Throwable e = event.getSource().getException();

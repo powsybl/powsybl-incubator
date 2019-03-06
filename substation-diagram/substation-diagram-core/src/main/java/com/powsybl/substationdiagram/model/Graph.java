@@ -417,7 +417,7 @@ public class Graph {
                 .map(FicticiousNode.class::cast)
                 .forEach(ficticiousNodeSet::add);
         FicticiousNode biggestFn = ficticiousNodeSet.last();
-        BusNode bn = new BusNode(biggestFn.getId()+"FictitiousBus", biggestFn.getLabel(), this);
+        BusNode bn = new BusNode(biggestFn.getId() + "FictitiousBus", biggestFn.getLabel(), this);
         addNode(bn);
         substitueNode(biggestFn, bn);
     }

@@ -42,7 +42,6 @@ public class InternCell extends Cell {
     }
 
     public void postPositioningSettings() {
-        centralBlock = null;
         identifyIfFlat();
         if (getType() == CellType.INTERNBOUND) {
             if (getDirection() == Direction.FLAT) {
@@ -51,7 +50,6 @@ public class InternCell extends Cell {
                 handleNonFlatInterbound();
             }
         } else {
-            unRavelBlocks();
             if (centralBlock != null) {
                 refactorBlocks();
             }
@@ -59,7 +57,10 @@ public class InternCell extends Cell {
     }
 
     private void identifyIfFlat() {
-        List<BusNode> buses = getBusbars();
+        List<BusNode> buses = getBusNodes();
+        if (buses.size() < 2) {
+            return;
+        }
         Position pos1 = buses.get(0).getStructuralPosition();
         Position pos2 = buses.get(1).getStructuralPosition();
         if (buses.size() == 2 && Math.abs(pos2.getH() - pos1.getH()) == 1
@@ -104,39 +105,6 @@ public class InternCell extends Cell {
         return adj.get(0) == toBeOther ? adj.get(1) : adj.get(0);
     }
 
-    private void unRavelBlocks() {
-        Block legBlock1 = null;
-        Block legBlock2;
-        List<Block> blocksToParalellize = new ArrayList<>();
-        for (Block block : ((ParallelBlock) getRootBlock()).getSubBlocks()) {
-            if (block instanceof SerialBlock) {
-                SerialBlock bc = (SerialBlock) block;
-                centralBlock = bc.getUpperBlock();
-                legBlock1 = bc.getLowerBlock();
-            } else {
-                blocksToParalellize.add(block);
-            }
-        }
-        if (blocksToParalellize.size() == 1) {
-            legBlock2 = blocksToParalellize.get(0);
-        } else {
-            legBlock2 = new ParallelBlock(blocksToParalellize, this, true);
-        }
-
-        if (centralBlock == null) {
-            sideToBlock.put(Side.LEFT, legBlock2);
-        } else if (legBlock1 != null) {
-            if (getOneNodeBusHPod(legBlock1) > getOneNodeBusHPod(legBlock2)) {
-                sideToBlock.put(Side.LEFT, legBlock2);
-                sideToBlock.put(Side.RIGHT, legBlock1);
-            } else {
-                sideToBlock.put(Side.LEFT, legBlock1);
-                sideToBlock.put(Side.RIGHT, legBlock2);
-            }
-        }
-        LOGGER.warn("Intern cell structure not handled for {}", getFullId());
-    }
-
     /**
      * <pre>
      * the organisation of the block shall be
@@ -147,10 +115,63 @@ public class InternCell extends Cell {
      *         blocks - one or more / whatever type from RightNode to busNodes
      * </pre>
      */
+    public void rationalizeOrganization() {
+        unRavelBlocks();
+        if (centralBlock != null) {
+            refactorBlocks();
+        }
+    }
+
+    private void unRavelBlocks() {
+        Block legBlock1 = null;
+        Block legBlock2;
+        List<Block> blocksToParalellize = new ArrayList<>();
+/*
+         Usually the rootBlock becomes always a parallel block in an internCell considering
+         - a BusNode is always becoming a startingNode
+         - the merging process
+         then the block that is a serial one is the one having the central block, the others constituting another "leg"
+
+         One exception : it can be a serial block in case of a "one leg" intern cell on a single bus
+
+*/
+        if (getRootBlock().getType() == Block.Type.PARALLEL) {
+            for (Block block : ((ParallelBlock) getRootBlock()).getSubBlocks()) {
+                if (block instanceof SerialBlock && centralBlock == null) {
+                    SerialBlock bc = (SerialBlock) block;
+                    centralBlock = bc.getUpperBlock();
+                    legBlock1 = bc.getLowerBlock();
+                } else {
+                    blocksToParalellize.add(block);
+                }
+            }
+            if (blocksToParalellize.size() == 1) {
+                legBlock2 = blocksToParalellize.get(0);
+            } else {
+                legBlock2 = new ParallelBlock(blocksToParalellize, this, true);
+            }
+        } else {
+            legBlock2 = getRootBlock();
+        }
+
+        if (centralBlock == null) {
+            // case of a one leg internCell.
+            sideToBlock.put(Side.LEFT, legBlock2);
+        } else if (legBlock1 != null) {
+            if (getOneNodeBusHPod(legBlock1) > getOneNodeBusHPod(legBlock2)) {
+                sideToBlock.put(Side.LEFT, legBlock2);
+                sideToBlock.put(Side.RIGHT, legBlock1);
+            } else {
+                sideToBlock.put(Side.LEFT, legBlock1);
+                sideToBlock.put(Side.RIGHT, legBlock2);
+            }
+        }
+    }
+
     private void refactorBlocks() {
         SerialBlock bc = new SerialBlock(sideToBlock.get(Side.LEFT),
-                                       centralBlock,
-                                       sideToBlock.get(Side.LEFT).getEndingNode(), this);
+                centralBlock,
+                sideToBlock.get(Side.LEFT).getEndingNode(), this);
         List<Block> blocks = new ArrayList<>();
         blocks.add(bc);
         blocks.add(sideToBlock.get(Side.RIGHT));
@@ -170,7 +191,8 @@ public class InternCell extends Cell {
     }
 
     private int getOneNodeBusHPod(Block b) {
-        return ((BusNode) b.getStartingNode()).getStructuralPosition().getH();
+        Position structuralPos = ((BusNode) b.getStartingNode()).getStructuralPosition();
+        return structuralPos == null ? -1 : structuralPos.getH();
     }
 
     private void identifyExtremities() {
@@ -189,7 +211,7 @@ public class InternCell extends Cell {
     }
 
     public void reverseCell() {
-        if (getDirection() == Direction.FLAT) {
+        if (getType() != CellType.INTERNBOUND) {
             Block swap = sideToBlock.get(Side.LEFT);
             sideToBlock.put(Side.LEFT, sideToBlock.get(Side.RIGHT));
             sideToBlock.put(Side.RIGHT, swap);
@@ -224,9 +246,9 @@ public class InternCell extends Cell {
         return sideToBlock.get(side);
     }
 
-    public List<BusNode> getSideNodeBus(Side side) {
+    public List<BusNode> getSideBusNodes(Side side) {
         if (getType() == CellType.INTERNBOUND) {
-            List<BusNode> busNodes = getBusbars()
+            List<BusNode> busNodes = getBusNodes()
                     .stream()
                     .sorted(Comparator.comparingInt(n -> n.getStructuralPosition().getH()))
                     .collect(Collectors.toList());

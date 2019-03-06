@@ -64,7 +64,7 @@ class SubSections {
                     order = cell.getOrder();
                 }
             }
-            busNodes.addAll(cell.getBusbars());
+            busNodes.addAll(cell.getBusNodes());
         }
 
         void add(InternCell cell, Side side) {
@@ -76,7 +76,7 @@ class SubSections {
                 cellToSideMap.put(cell,
                                   side == Side.RIGHT ? Side.LEFT : Side.RIGHT); //inversion, the left leg of an interncell, is on the right side of the subsection
             }
-            busNodes.addAll(cell.getBusbars());
+            busNodes.addAll(cell.getBusNodes());
         }
 
         void merge(HorizontalSubSection hss) {
@@ -291,7 +291,7 @@ class SubSections {
 
     private boolean verticalInternCell(Cell cell) {
         if (cell.getType() == Cell.CellType.INTERN) {
-            return cell.getBusbars().stream()
+            return cell.getBusNodes().stream()
                     .map(bus -> bus.getStructuralPosition().getH())
                     .distinct().count() == 1;
         }
@@ -300,7 +300,7 @@ class SubSections {
 
     private void buildSubSections() {
         graph.getCells().stream().filter(cell -> cell.getType() == Cell.CellType.EXTERN)
-                .forEach(cell -> allocateCellToSubsection(cell, cell.getBusbars(), Side.UNDEFINED));
+                .forEach(cell -> allocateCellToSubsection(cell, cell.getBusNodes(), Side.UNDEFINED));
 
         Set<InternCell> internCells = graph.getCells().stream()
                 .filter(cell -> cell.getType() == Cell.CellType.INTERN || cell.getType() == Cell.CellType.INTERNBOUND)
@@ -308,15 +308,15 @@ class SubSections {
 
         Set<InternCell> verticalInternCells = internCells.stream().filter(this::verticalInternCell)
                 .collect(Collectors.toSet());
-        verticalInternCells.forEach(cell -> allocateCellToSubsection(cell, cell.getBusbars(), Side.UNDEFINED));
+        verticalInternCells.forEach(cell -> allocateCellToSubsection(cell, cell.getBusNodes(), Side.UNDEFINED));
 
         internCells.removeAll(verticalInternCells);
 
         internCells.stream()
                 .filter(cell -> cell.getType() == Cell.CellType.INTERN || cell.getType() == Cell.CellType.INTERNBOUND)
                 .forEach(cell -> {
-                    allocateCellToSubsection(cell, cell.getSideNodeBus(Side.LEFT), Side.LEFT);
-                    allocateCellToSubsection(cell, cell.getSideNodeBus(Side.RIGHT), Side.RIGHT);
+                    allocateCellToSubsection(cell, cell.getSideBusNodes(Side.LEFT), Side.LEFT);
+                    allocateCellToSubsection(cell, cell.getSideBusNodes(Side.RIGHT), Side.RIGHT);
                 });
         mergeSimilarSubstations();
     }

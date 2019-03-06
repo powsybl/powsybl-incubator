@@ -41,7 +41,10 @@ public class ImplicitCellDetector implements CellDetector {
     public void detectCells(Graph graph) {
         graph.extendFeederWithMultipleSwitches();
         graph.extendFirstOutsideNode();
+        graph.substituteSingularFictitiousByFeederNode();
+        graph.substituteFictitiousNodesMirroringBusNodes();
         graph.extendBreakerConnectedToBus();
+        graph.extendFeederConnectedToBus();
 
         LOGGER.info("Detecting cells...");
 
@@ -137,9 +140,8 @@ public class ImplicitCellDetector implements CellDetector {
             } else if (typeStops.contains(n.getType())) {
                 nodesResult.add(n);
                 exploredNodes.add(n);
-                return true;
             } else if (rDelimitedExploration(n, typeStops, exclusionTypes, nodesResult,
-                                             exploredNodes)) {
+                    exploredNodes)) {
                 nodesResult.add(n);
             } else {
                 return false;
@@ -187,6 +189,8 @@ public class ImplicitCellDetector implements CellDetector {
                         .collect(Collectors.toList());
                 if (types.size() == 2) {
                     hasMixBranch = true;
+                } else if (types.isEmpty()) {
+                    return false;
                 } else if (types.get(0).equals(Node.NodeType.FEEDER)) {
                     hasDepartBranch = true;
                 } else {
@@ -216,8 +220,8 @@ public class ImplicitCellDetector implements CellDetector {
             if (cellNodesExtern1 != null) {
                 // create the 1st new external cell
                 cell.removeAllNodes(cellNodesExtern1.stream()
-                                            .filter(m -> !m.getType().equals(Node.NodeType.BUS))
-                                            .collect(Collectors.toList()));
+                        .filter(m -> !m.getType().equals(Node.NodeType.BUS))
+                        .collect(Collectors.toList()));
                 n.setType(Node.NodeType.SHUNT);
                 Cell newCell1 = new Cell(graph);
                 newCell1.setType(Cell.CellType.EXTERN);
@@ -235,10 +239,10 @@ public class ImplicitCellDetector implements CellDetector {
                         .collect(Collectors.toList());
 
                 cellNodesExtern2.removeAll(cellNodesExtern2.stream()
-                                                   .filter(node -> node.getType() == Node.NodeType.BUS
-                                                           && node.getAdjacentNodes().stream().noneMatch(
-                                                           cellNodesExtern2::contains))
-                                                   .collect(Collectors.toList()));
+                        .filter(node -> node.getType() == Node.NodeType.BUS
+                                && node.getAdjacentNodes().stream().noneMatch(
+                                cellNodesExtern2::contains))
+                        .collect(Collectors.toList()));
 
                 Cell newCell2 = new Cell(graph);
                 newCell2.setType(Cell.CellType.EXTERN);
@@ -253,8 +257,8 @@ public class ImplicitCellDetector implements CellDetector {
 
     private List<Node> checkCandidateShuntNode(Node n, List<Node> externalNodes) {
         List<Node.NodeType> kindToFilter = Arrays.asList(Node.NodeType.BUS,
-                                                         Node.NodeType.FEEDER,
-                                                         Node.NodeType.SHUNT);
+                Node.NodeType.FEEDER,
+                Node.NodeType.SHUNT);
         /*
         the node n is candidate to be a SHUNT node if there is
         (i) at least one branch exclusively reaching BUSes
@@ -278,10 +282,10 @@ public class ImplicitCellDetector implements CellDetector {
             if (!visitedNodes.contains(adj)) {
                 List<Node> resultNodes = new ArrayList<>();
                 rDelimitedExploration(adj,
-                                      kindToFilter,
-                                      new ArrayList<>(),
-                                      resultNodes,
-                                      visitedNodes);
+                        kindToFilter,
+                        new ArrayList<>(),
+                        resultNodes,
+                        visitedNodes);
                 resultNodes.add(adj);
 
                 List<Node.NodeType> types = resultNodes.stream() // what are the types of terminal node of the branch
@@ -300,9 +304,9 @@ public class ImplicitCellDetector implements CellDetector {
                     }
                 }
                 visitedNodes.removeAll(resultNodes
-                                               .stream()
-                                               .filter(m -> m.getType().equals(Node.NodeType.BUS))
-                                               .collect(Collectors.toList()));
+                        .stream()
+                        .filter(m -> m.getType().equals(Node.NodeType.BUS))
+                        .collect(Collectors.toList()));
 
             }
         }

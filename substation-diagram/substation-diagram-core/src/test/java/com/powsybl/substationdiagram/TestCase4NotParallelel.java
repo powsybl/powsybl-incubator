@@ -21,6 +21,7 @@ import java.util.Iterator;
 
 import static org.junit.Assert.*;
 
+
 /**
  * <pre>
  *            la                        gc
@@ -180,7 +181,7 @@ public class TestCase4NotParallelel extends AbstractTestCase {
         Cell cell = it.next();
         assertEquals(Cell.CellType.INTERNBOUND, cell.getType());
         assertEquals(3, cell.getNodes().size());
-        assertEquals(2, cell.getBusbars().size());
+        assertEquals(2, cell.getBusNodes().size());
         assertEquals("INTERNBOUND[bbs1.1, bbs1.2, ss1]", cell.getFullId());
 
         // build blocks
@@ -224,9 +225,9 @@ public class TestCase4NotParallelel extends AbstractTestCase {
 
         // calculate coordinates
         LayoutParameters layoutParameters = new LayoutParameters(20, 50, 0, 260,
-                                                                 25, 20,
-                                                                 50, 250, 40,
-                                                                 30, true, true);
+                25, 20,
+                50, 250, 40,
+                30, true, true);
 
         new PositionVoltageLevelLayout(g).run(layoutParameters);
 

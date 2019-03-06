@@ -53,7 +53,7 @@ public class CellBlockDecomposer {
         List<PrimaryBlock> blocksConnectedToBusbar = new ArrayList<>();
         List<Node> alreadyTreated = new ArrayList<>();
         List<Block> blocks = new ArrayList<>();
-        Node currentNode = cell.getBusbars().get(0);
+        Node currentNode = cell.getBusNodes().get(0);
 
         // Search all primary blocks
         currentNode.getListNodeAdjInCell(cell).forEach(n -> {
@@ -173,12 +173,12 @@ public class CellBlockDecomposer {
         Node s2 = block2.getStartingNode();
         Node e2 = block2.getEndingNode();
 
-        if ((s1.getType() == Node.NodeType.FICTITIOUS || s1.getType() == Node.NodeType.SHUNT) && (s1.equals(
-                s2) || s1.equals(e2))) {
+        if ((s1.getType() == Node.NodeType.FICTITIOUS || s1.getType() == Node.NodeType.SHUNT)
+                && (s1.equals(s2) || s1.equals(e2))) {
             return s1;
         }
-        if ((e1.getType() == Node.NodeType.FICTITIOUS || e1.getType() == Node.NodeType.SHUNT) && (e1.equals(
-                s2) || e1.equals(e2))) {
+        if ((e1.getType() == Node.NodeType.FICTITIOUS || e1.getType() == Node.NodeType.SHUNT)
+                && (e1.equals(s2) || e1.equals(e2))) {
             return e1;
         }
         return null;

@@ -94,14 +94,18 @@ public class Node implements BaseNode {
 
     @Override
     public String getId() {
-        return graph.isUseName() ? name : id;
+        return id;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public String getLabel() {
         if (label != null) {
             return label;
         } else {
-            return getId();
+            return graph.isUseName() ? name : id;
         }
     }
 

@@ -25,7 +25,7 @@ import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-class TestCase10TestBreakerToBus extends AbstractTestCase {
+public class TestCase10TestBreakerToBus extends AbstractTestCase {
 
     @Override
     void setUp() {

@@ -25,7 +25,7 @@ import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-class TestCase9singularInternCell extends AbstractTestCase {
+public class TestCase9singularInternCell extends AbstractTestCase {
 
     @Override
     void setUp() {

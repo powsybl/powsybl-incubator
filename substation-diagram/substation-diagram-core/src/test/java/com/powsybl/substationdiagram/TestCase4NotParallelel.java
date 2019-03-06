@@ -45,7 +45,7 @@ import static org.junit.Assert.*;
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-class TestCase4NotParallelel extends AbstractTestCase {
+public class TestCase4NotParallelel extends AbstractTestCase {
 
     @Before
     public void setUp() {

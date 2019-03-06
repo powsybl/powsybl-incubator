@@ -26,7 +26,7 @@ import static org.junit.Assert.assertEquals;
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-class TestCase7CellDetectionIssue extends AbstractTestCase {
+public class TestCase7CellDetectionIssue extends AbstractTestCase {
 
     private VoltageLevel vl;
 

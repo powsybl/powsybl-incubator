@@ -140,7 +140,6 @@ public class ImplicitCellDetector implements CellDetector {
             } else if (typeStops.contains(n.getType())) {
                 nodesResult.add(n);
                 exploredNodes.add(n);
-                return true;
             } else if (rDelimitedExploration(n, typeStops, exclusionTypes, nodesResult,
                     exploredNodes)) {
                 nodesResult.add(n);

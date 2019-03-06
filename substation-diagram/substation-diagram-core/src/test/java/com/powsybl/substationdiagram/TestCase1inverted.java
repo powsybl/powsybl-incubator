@@ -34,7 +34,7 @@ import static org.junit.Assert.*;
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-class TestCase1inverted extends AbstractTestCase {
+public class TestCase1inverted extends AbstractTestCase {
 
     @Before
     public void setUp() {

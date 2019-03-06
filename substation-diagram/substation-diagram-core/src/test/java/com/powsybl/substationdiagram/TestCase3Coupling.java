@@ -32,7 +32,7 @@ import static org.junit.Assert.*;
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-class TestCase3Coupling extends AbstractTestCase {
+public class TestCase3Coupling extends AbstractTestCase {
 
     @Before
     public void setUp() {

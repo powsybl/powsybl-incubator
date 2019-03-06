@@ -34,7 +34,7 @@ import static org.junit.Assert.*;
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class TestCase6CouplingNonFlatHorizontal extends AbstractTestCase {
+class TestCase6CouplingNonFlatHorizontal extends AbstractTestCase {
 
     @Before
     public void setUp() {

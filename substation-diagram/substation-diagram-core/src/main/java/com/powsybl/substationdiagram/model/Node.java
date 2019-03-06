@@ -193,8 +193,13 @@ public class Node implements BaseNode {
      **/
     public boolean checkNodeSimilarity(Node n) {
         return this.equals(n)
-                || ((this instanceof FeederNode) && (n instanceof FeederNode))
+                || ((similarToAFeederNode(this)) && (similarToAFeederNode(n)))
                 || ((this instanceof BusNode) && (n instanceof BusNode));
+    }
+
+    public boolean similarToAFeederNode(Node n) {
+        return (n instanceof FeederNode)
+                || (n.getType() == NodeType.FICTITIOUS && n.adjacentEdges.size() == 1);
     }
 
     @Override

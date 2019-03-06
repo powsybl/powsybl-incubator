@@ -422,13 +422,16 @@ public class PositionFree implements PositionFinder {
         }
 
         private void sortVbcp() {
+            if (vbcps.isEmpty()) {
+                return;
+            }
             List<VerticalBusConnectionPattern> remainingVbcp = new ArrayList<>(vbcps);
             List<VerticalBusConnectionPattern> sortedVbcp = new ArrayList<>();
             sortedVbcp.add(remainingVbcp.get(0));
             remainingVbcp.remove(0);
             while (!remainingVbcp.isEmpty()) {
                 Iterator<VerticalBusConnectionPattern> it = remainingVbcp.iterator();
-                while (it.hasNext() ) {
+                while (it.hasNext()) {
                     VerticalBusConnectionPattern vbcp = it.next();
                     if (tryToInsertVbcp(vbcp, sortedVbcp)) {
                         remainingVbcp.remove(vbcp);

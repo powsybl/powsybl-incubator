@@ -21,6 +21,7 @@ import java.util.Iterator;
 
 import static org.junit.Assert.*;
 
+
 /**
  * <pre>
  *            la                        gc
@@ -44,7 +45,7 @@ import static org.junit.Assert.*;
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class TestCase4NotParallelel extends AbstractTestCase {
+class TestCase4NotParallelel extends AbstractTestCase {
 
     @Before
     public void setUp() {
@@ -224,9 +225,9 @@ public class TestCase4NotParallelel extends AbstractTestCase {
 
         // calculate coordinates
         LayoutParameters layoutParameters = new LayoutParameters(20, 50, 0, 260,
-                                                                 25, 20,
-                                                                 50, 250, 40,
-                                                                 30, true, true);
+                25, 20,
+                50, 250, 40,
+                30, true, true);
 
         new PositionVoltageLevelLayout(g).run(layoutParameters);
 

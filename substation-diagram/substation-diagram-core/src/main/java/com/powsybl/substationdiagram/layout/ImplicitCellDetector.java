@@ -41,8 +41,10 @@ public class ImplicitCellDetector implements CellDetector {
     public void detectCells(Graph graph) {
         graph.extendFeederWithMultipleSwitches();
         graph.extendFirstOutsideNode();
-        graph.extendBreakerConnectedToBus();
+        graph.substituteSingularFictitiousByFeederNode();
         graph.substituteFictitiousNodesMirroringBusNodes();
+        graph.extendBreakerConnectedToBus();
+        graph.extendFeederConnectedToBus();
 
         LOGGER.info("Detecting cells...");
 
@@ -188,6 +190,8 @@ public class ImplicitCellDetector implements CellDetector {
                         .collect(Collectors.toList());
                 if (types.size() == 2) {
                     hasMixBranch = true;
+                } else if (types.isEmpty()) {
+                    return false;
                 } else if (types.get(0).equals(Node.NodeType.FEEDER)) {
                     hasDepartBranch = true;
                 } else {

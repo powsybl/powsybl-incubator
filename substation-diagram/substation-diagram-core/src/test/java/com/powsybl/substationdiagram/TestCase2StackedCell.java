@@ -36,7 +36,7 @@ import static org.junit.Assert.*;
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class TestCase2StackedCell extends AbstractTestCase {
+class TestCase2StackedCell extends AbstractTestCase {
 
     @Before
     public void setUp() {

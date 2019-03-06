@@ -39,7 +39,7 @@ import static org.junit.Assert.*;
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class TestCase5ShuntHorizontal extends AbstractTestCase {
+class TestCase5ShuntHorizontal extends AbstractTestCase {
 
     @Before
     public void setUp() {

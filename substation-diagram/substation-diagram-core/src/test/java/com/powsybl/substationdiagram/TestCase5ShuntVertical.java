@@ -43,7 +43,7 @@ import static org.junit.Assert.*;
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class TestCase5ShuntVertical extends AbstractTestCase {
+class TestCase5ShuntVertical extends AbstractTestCase {
 
     private FileSystem fileSystem;
 

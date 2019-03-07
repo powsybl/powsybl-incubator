@@ -18,6 +18,7 @@ import com.powsybl.cgmes.iidm.extensions.dl.DiagramPoint;
 import com.powsybl.cgmes.iidm.extensions.dl.InjectionDiagramData;
 import com.powsybl.cgmes.iidm.extensions.dl.LineDiagramData;
 import com.powsybl.cgmes.iidm.extensions.dl.NodeDiagramData;
+import com.powsybl.cgmes.iidm.extensions.dl.ThreeWindingsTransformerDiagramData;
 import com.powsybl.iidm.network.Bus;
 import com.powsybl.iidm.network.BusbarSection;
 import com.powsybl.iidm.network.DanglingLine;
@@ -27,6 +28,7 @@ import com.powsybl.iidm.network.Load;
 import com.powsybl.iidm.network.ShuntCompensator;
 import com.powsybl.iidm.network.StaticVarCompensator;
 import com.powsybl.iidm.network.Switch;
+import com.powsybl.iidm.network.ThreeWindingsTransformer;
 import com.powsybl.iidm.network.TopologyKind;
 import com.powsybl.iidm.network.TwoWindingsTransformer;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
@@ -57,15 +59,9 @@ public class CgmesVoltageLevelLayout implements VoltageLevelLayout {
 
     public CgmesVoltageLevelLayout(Graph graph) {
         Objects.requireNonNull(graph);
-        // remove fictitious nodes (no CGMES DL data available for them)
+        // remove fictitious nodes&switches (no CGMES DL data available for them)
         graph.removeUnnecessaryFictitiousNodes();
         graph.removeFictitiousSwitchNodes();
-        // set label using name (CGMES import uses RDF ids)
-        graph.getNodes().forEach(node -> {
-            if (node.getIdentifiable() != null) {
-                node.setLabel(node.getIdentifiable().getName());
-            }
-        });
         this.graph = graph;
     }
 
@@ -200,6 +196,17 @@ public class CgmesVoltageLevelLayout implements VoltageLevelLayout {
                     LOG.warn("No CGMES-DL data for {} {} node {}, transformer {}", node.getType(), node.getComponentType(), node.getId(), transformer.getName());
                 }
                 break;
+            case THREE_WINDINGS_TRANSFORMER:
+                FeederNode transformer3wNode = (FeederNode) node;
+                ThreeWindingsTransformer transformer3w = (ThreeWindingsTransformer) transformer3wNode.getIdentifiable();
+                ThreeWindingsTransformerDiagramData transformer3wDiagramData = transformer3w.getExtension(ThreeWindingsTransformerDiagramData.class);
+                if (transformer3wDiagramData != null) {
+                    transformer3wNode.setX(transformer3wDiagramData.getPoint().getX());
+                    transformer3wNode.setY(transformer3wDiagramData.getPoint().getY());
+                    setMin(transformer3wDiagramData.getPoint().getX(), transformer3wDiagramData.getPoint().getY());
+                } else {
+                    LOG.warn("No CGMES-DL data for {} {} node {}, transformer {}", node.getType(), node.getComponentType(), node.getId(), transformer3w.getName());
+                }
             default:
                 break;
         }

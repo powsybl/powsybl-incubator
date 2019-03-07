@@ -185,6 +185,7 @@ public class CgmesVoltageLevelLayout implements VoltageLevelLayout {
                 setInjectionCoordinates(svcNode, svcDiagramData, svc.getName(), true);
                 break;
             case TWO_WINDINGS_TRANSFORMER:
+            case PHASE_SHIFT_TRANSFORMER:
                 FeederNode transformerNode = (FeederNode) node;
                 TwoWindingsTransformer transformer = (TwoWindingsTransformer) transformerNode.getIdentifiable();
                 CouplingDeviseDiagramData<TwoWindingsTransformer> transformerDiagramData = transformer.getExtension(CouplingDeviseDiagramData.class);

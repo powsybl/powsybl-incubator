@@ -182,10 +182,6 @@ public class BlockOrganizer {
         for (InternCell cell : hSs.getSideInternCells(Side.UNDEFINED)) {
             cell.getRootBlock().getPosition().setH(hPos2);
             hPos2 += cell.getRootBlock().getPosition().getHSpan();
-//            if (cell.getCentralBlock() != null) {
-//                hPos2 += cell.getCentralBlock().getPosition().getHSpan();
-//            }
-//            hPos2++;
         }
         return hPos2;
     }

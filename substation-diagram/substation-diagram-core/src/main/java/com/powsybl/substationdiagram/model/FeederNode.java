@@ -69,10 +69,11 @@ public class FeederNode extends Node {
                 componentType = ComponentType.LINE;
                 break;
             case TWO_WINDINGS_TRANSFORMER:
-                if (((TwoWindingsTransformer)branch).getPhaseTapChanger() == null)
+                if (((TwoWindingsTransformer) branch).getPhaseTapChanger() == null) {
                     componentType = ComponentType.TWO_WINDINGS_TRANSFORMER;
-                else
+                } else {
                     componentType = ComponentType.PHASE_SHIFT_TRANSFORMER;
+                }
                 break;
             default:
                 throw new AssertionError();

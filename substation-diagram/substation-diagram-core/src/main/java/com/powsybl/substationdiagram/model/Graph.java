@@ -13,7 +13,6 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.powsybl.iidm.network.*;
-import com.powsybl.substationdiagram.library.ComponentType;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
 import org.jgrapht.UndirectedGraph;
@@ -431,7 +430,7 @@ public class Graph {
                 .map(FicticiousNode.class::cast)
                 .forEach(ficticiousNodeSet::add);
         FicticiousNode biggestFn = ficticiousNodeSet.last();
-        BusNode bn = new BusNode(biggestFn.getId() + "FictitiousBus", biggestFn.getLabel(), this);
+        BusNode bn = BusNode.createFictitious(this, biggestFn.getId() + "FictitiousBus");
         addNode(bn);
         substitueNode(biggestFn, bn);
     }
@@ -632,8 +631,7 @@ public class Graph {
 
     private void addDoubleNode(BusNode busNode, SwitchNode nodeSwitch, String suffix) {
         removeEdge(busNode, nodeSwitch);
-        FicticiousNode fNodeToBus = new FicticiousNode(Graph.this, nodeSwitch.getId() + "fSwitch" + suffix,
-                true);
+        SwitchNode fNodeToBus = SwitchNode.createFictitious(Graph.this, nodeSwitch.getId() + "fSwitch" + suffix);
         addNode(fNodeToBus);
         FicticiousNode fNodeToSw = new FicticiousNode(Graph.this, nodeSwitch.getId() + "fNode" + suffix);
         addNode(fNodeToSw);
@@ -668,7 +666,7 @@ public class Graph {
         getNodes().stream()
                 .filter(n -> n.getType() == Node.NodeType.FICTITIOUS && n.getAdjacentEdges().size() == 1)
                 .forEach(n -> {
-                    FeederNode feederNode = new FeederNode(n.getId(), n.getLabel(), ComponentType.LOAD, this);
+                    FeederNode feederNode = FeederNode.createFictitious(this, n.getId());
                     addNode(feederNode);
                     substitueNode(n, feederNode);
 /*

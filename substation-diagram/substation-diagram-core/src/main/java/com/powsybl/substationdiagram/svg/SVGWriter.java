@@ -169,10 +169,12 @@ public class SVGWriter {
             } else {
                 incorporateComponents(node, g);
             }
-            if (node instanceof FeederNode) {
-                drawLabel(node.getLabel(), node.isRotated(), g);
-            } else if (node instanceof BusNode) {
-                drawLabel(node.getLabel(), false, g);
+            if (!node.isFictitious()) {
+                if (node instanceof FeederNode) {
+                    drawLabel(node.getLabel(), node.isRotated(), g);
+                } else if (node instanceof BusNode) {
+                    drawLabel(node.getLabel(), false, g);
+                }
             }
             root.appendChild(g);
 
@@ -230,9 +232,7 @@ public class SVGWriter {
         if (obj != null) {
             transformComponent(node, g);
             if (layoutParameters.isShowInternalNodes()
-                    || (node.getType() != Node.NodeType.FICTITIOUS
-                    && node.getType() != Node.NodeType.SHUNT
-                    && node.getType() != Node.NodeType.FICTITIOUS_SWITCH)) {
+                    || (!node.isFictitious() && node.getType() != Node.NodeType.SHUNT)) {
                 insertComponentSVGIntoDocumentSVG(obj, g);
             }
         }

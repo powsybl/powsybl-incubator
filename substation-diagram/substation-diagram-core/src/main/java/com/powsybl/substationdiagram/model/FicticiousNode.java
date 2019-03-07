@@ -15,12 +15,8 @@ import com.powsybl.substationdiagram.library.ComponentType;
  */
 public class FicticiousNode extends Node {
 
-    public FicticiousNode(Graph graph, String id, boolean isFictitiousSwitch) {
-        super(isFictitiousSwitch ? NodeType.FICTITIOUS_SWITCH : NodeType.FICTITIOUS, id, id, ComponentType.NODE, graph, null);
-    }
-
     public FicticiousNode(Graph graph, String id) {
-        this(graph, id, false);
+        super(NodeType.FICTITIOUS, id, id, ComponentType.NODE, true, graph, null);
     }
 
     public int getCardinality() {

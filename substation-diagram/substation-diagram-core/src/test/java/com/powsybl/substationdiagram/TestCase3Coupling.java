@@ -98,7 +98,7 @@ public class TestCase3Coupling extends AbstractTestCase {
         Cell cell = g.getCells().iterator().next();
         assertEquals(Cell.CellType.INTERN, cell.getType());
         assertEquals(7, cell.getNodes().size());
-        assertEquals(2, cell.getBusbars().size());
+        assertEquals(2, cell.getBusNodes().size());
         assertEquals("INTERN[1, 2, b, bbs1, bbs2, d1, d2]", cell.getFullId());
 
         // build blocks

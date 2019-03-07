@@ -153,8 +153,8 @@ public class TestCase1 extends AbstractTestCase {
         assertEquals(-1, cell.getOrder());
         assertEquals(5, cell.getNodes().size());
         assertTrue(cell.getPrimaryBlocksConnectedToBus().isEmpty());
-        assertEquals(1, cell.getBusbars().size());
-        assertEquals("bbs", cell.getBusbars().get(0).getId());
+        assertEquals(1, cell.getBusNodes().size());
+        assertEquals("bbs", cell.getBusNodes().get(0).getId());
         assertNull(cell.getRootBlock());
         assertTrue(cell.getCellBridgingWith().isEmpty());
         assertEquals("EXTERN[1, b, bbs, d, l]", cell.getFullId());

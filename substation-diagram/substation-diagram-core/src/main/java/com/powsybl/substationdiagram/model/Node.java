@@ -31,7 +31,6 @@ public class Node implements BaseNode {
         FEEDER,
         FICTITIOUS,
         SWITCH,
-        FICTITIOUS_SWITCH,
         SHUNT,
         OTHER
     }
@@ -45,6 +44,8 @@ public class Node implements BaseNode {
     private final String name;
 
     private final ComponentType componentType;
+
+    private final boolean fictitious;
 
     private double x = -1;
     private double y = -1;
@@ -70,11 +71,12 @@ public class Node implements BaseNode {
     /**
      * Constructor
      */
-    protected Node(NodeType type, String id, String name, ComponentType componentType, Graph graph, Identifiable identifiable) {
+    protected Node(NodeType type, String id, String name, ComponentType componentType, boolean fictitious, Graph graph, Identifiable identifiable) {
         this.type = Objects.requireNonNull(type);
         this.id = Objects.requireNonNull(id);
         this.name = name;
         this.componentType = Objects.requireNonNull(componentType);
+        this.fictitious = fictitious;
         this.graph = Objects.requireNonNull(graph);
         this.identifiable = identifiable;
     }
@@ -92,20 +94,28 @@ public class Node implements BaseNode {
         return componentType;
     }
 
+    public boolean isFictitious() {
+        return fictitious;
+    }
+
     public void setType(NodeType type) {
         this.type = type;
     }
 
     @Override
     public String getId() {
-        return graph.isUseName() ? name : id;
+        return id;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public String getLabel() {
         if (label != null) {
             return label;
         } else {
-            return getId();
+            return graph.isUseName() ? name : id;
         }
     }
 
@@ -197,8 +207,13 @@ public class Node implements BaseNode {
      **/
     public boolean checkNodeSimilarity(Node n) {
         return this.equals(n)
-                || ((this instanceof FeederNode) && (n instanceof FeederNode))
+                || ((similarToAFeederNode(this)) && (similarToAFeederNode(n)))
                 || ((this instanceof BusNode) && (n instanceof BusNode));
+    }
+
+    public boolean similarToAFeederNode(Node n) {
+        return (n instanceof FeederNode)
+                || (n.getType() == NodeType.FICTITIOUS && n.adjacentEdges.size() == 1);
     }
 
     @Override

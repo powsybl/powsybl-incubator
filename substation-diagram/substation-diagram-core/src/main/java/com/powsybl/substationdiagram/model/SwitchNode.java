@@ -24,8 +24,8 @@ public class SwitchNode extends Node {
 
     private final SwitchKind kind;
 
-    protected SwitchNode(String id, String name, ComponentType componentType, Graph graph, SwitchKind kind, Switch aSwitch) {
-        super(NodeType.SWITCH, id, name, componentType, graph, aSwitch);
+    protected SwitchNode(String id, String name, ComponentType componentType, boolean fictitious, Graph graph, SwitchKind kind, Switch aSwitch) {
+        super(NodeType.SWITCH, id, name, componentType, fictitious, graph, aSwitch);
         this.kind = Objects.requireNonNull(kind);
     }
 
@@ -46,7 +46,7 @@ public class SwitchNode extends Node {
             default:
                 throw new AssertionError();
         }
-        return new SwitchNode(aSwitch.getId(), aSwitch.getName(), componentType, graph, aSwitch.getKind(), aSwitch);
+        return new SwitchNode(aSwitch.getId(), aSwitch.getName(), componentType, false, graph, aSwitch.getKind(), aSwitch);
     }
 
     public static SwitchNode create(Graph graph, Terminal terminal) {
@@ -55,7 +55,11 @@ public class SwitchNode extends Node {
         Bus bus = terminal.getBusBreakerView().getConnectableBus();
         String id = bus.getId() + "_" + terminal.getConnectable().getId();
         String name = bus.getName() + "_" + terminal.getConnectable().getName();
-        return new SwitchNode(id, name, ComponentType.DISCONNECTOR, graph, SwitchKind.DISCONNECTOR, null);
+        return new SwitchNode(id, name, ComponentType.DISCONNECTOR, false, graph, SwitchKind.DISCONNECTOR, null);
+    }
+
+    public static SwitchNode createFictitious(Graph graph, String id) {
+        return new SwitchNode(id, id, ComponentType.NODE, true, graph, SwitchKind.BREAKER, null);
     }
 
     public SwitchKind getKind() {

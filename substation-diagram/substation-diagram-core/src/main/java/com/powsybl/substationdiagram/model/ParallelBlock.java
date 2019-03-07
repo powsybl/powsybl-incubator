@@ -187,7 +187,6 @@ public class ParallelBlock extends AbstractBlock {
             } else {
 */
             sub.setXSpan(getCoord().getXSpan());
-//            }
             sub.setY(getCoord().getY());
             sub.setYSpan(getCoord().getYSpan());
             sub.calculateCoord(layoutParam);

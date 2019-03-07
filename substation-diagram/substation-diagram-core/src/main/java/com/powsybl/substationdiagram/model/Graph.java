@@ -669,11 +669,6 @@ public class Graph {
                     FeederNode feederNode = FeederNode.createFictitious(this, n.getId());
                     addNode(feederNode);
                     substitueNode(n, feederNode);
-/*
-                    Node adj = n.getAdjacentNodes().get(0);
-                    removeEdge(n, adj);
-                    addEdge(feederNode, adj);
-*/
                 });
     }
 

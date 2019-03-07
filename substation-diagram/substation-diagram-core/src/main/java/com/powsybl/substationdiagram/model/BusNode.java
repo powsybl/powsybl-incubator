@@ -26,20 +26,24 @@ public class BusNode extends Node {
     private Position structuralPosition;
     private Position position = new Position(-1, -1);
 
-    protected BusNode(String id, String name, Graph graph) {
-        super(NodeType.BUS, id, name, ComponentType.BUSBAR_SECTION, graph);
+    protected BusNode(String id, String name, boolean fictitious, Graph graph) {
+        super(NodeType.BUS, id, name, ComponentType.BUSBAR_SECTION, fictitious, graph);
     }
 
     public static BusNode create(Graph graph, BusbarSection busbarSection) {
         Objects.requireNonNull(graph);
         Objects.requireNonNull(busbarSection);
-        return new BusNode(busbarSection.getId(), busbarSection.getName(), graph);
+        return new BusNode(busbarSection.getId(), busbarSection.getName(), false, graph);
     }
 
     public static BusNode create(Graph graph, Bus bus) {
         Objects.requireNonNull(graph);
         Objects.requireNonNull(bus);
-        return new BusNode(bus.getId(), bus.getName(), graph);
+        return new BusNode(bus.getId(), bus.getName(), false, graph);
+    }
+
+    public static BusNode createFictitious(Graph graph, String id) {
+        return new BusNode(id, id, true, graph);
     }
 
     public void calculateCoord(LayoutParameters layoutParameters) {

@@ -11,6 +11,7 @@ import com.powsybl.iidm.network.Identifiable;
 import com.powsybl.iidm.network.Injection;
 import com.powsybl.iidm.network.ShuntCompensator;
 import com.powsybl.iidm.network.ThreeWindingsTransformer;
+import com.powsybl.iidm.network.TwoWindingsTransformer;
 import com.powsybl.substationdiagram.library.ComponentType;
 
 import java.util.Objects;
@@ -19,6 +20,7 @@ import java.util.Objects;
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
+ * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
  */
 public class FeederNode extends Node {
 
@@ -68,7 +70,11 @@ public class FeederNode extends Node {
                 componentType = ComponentType.LINE;
                 break;
             case TWO_WINDINGS_TRANSFORMER:
-                componentType = ComponentType.TWO_WINDINGS_TRANSFORMER;
+                if (((TwoWindingsTransformer) branch).getPhaseTapChanger() == null) {
+                    componentType = ComponentType.TWO_WINDINGS_TRANSFORMER;
+                } else {
+                    componentType = ComponentType.PHASE_SHIFT_TRANSFORMER;
+                }
                 break;
             default:
                 throw new AssertionError();

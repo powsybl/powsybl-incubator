@@ -1,5 +1,8 @@
 # Maven projects
-/target
+/loadflow/simple-loadflow/target/
+/substation-diagram-core/target/
+/substation-diagram-view/target/
+/target/
 
 # IntelliJ
 /.idea

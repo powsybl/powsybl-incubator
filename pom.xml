@@ -50,6 +50,7 @@
     </developers>
 
     <modules>
+        <module>simple-loadflow</module>
         <module>substation-diagram</module>
     </modules>
 
@@ -57,6 +58,12 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <java.version>1.8</java.version>
+
+        <assertj.version>3.11.0</assertj.version>
+        <junit.version>4.12</junit.version>
+        <guava.version>27.0.1-jre</guava.version>
+        <ojalgo.version>46.3.0</ojalgo.version>
+        <slf4j.version>1.7.22</slf4j.version>
 
         <maven.antrun.version>1.8</maven.antrun.version>
         <maven.assembly.version>3.1.0</maven.assembly.version>
@@ -89,6 +96,8 @@
         <sonar.exclusions>
             **/generated/**/*
         </sonar.exclusions>
+
+        <powsyblcore.version>2.4.0-SNAPSHOT</powsyblcore.version>
 
     </properties>
 
@@ -421,10 +430,43 @@
     <dependencyManagement>
         <dependencies>
             <!-- Compile dependencies -->
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ojalgo</groupId>
+                <artifactId>ojalgo</artifactId>
+                <version>${ojalgo.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
 
             <!-- Runtime dependencies -->
 
             <!-- Test dependencies -->
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>${assertj.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-simple</artifactId>
+                <version>${slf4j.version}</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

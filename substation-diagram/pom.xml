@@ -28,9 +28,7 @@
     </modules>
 
     <properties>
-        <junit.version>4.12</junit.version>
         <logback.version>1.2.3</logback.version>
-        <slf4j.version>1.7.22</slf4j.version>
         <batik.version>1.9</batik.version>
         <jaxb2.basics.version>1.11.1</jaxb2.basics.version>
         <jaxb.api.version>2.2.3</jaxb.api.version>
@@ -38,8 +36,6 @@
         <franzxaver.version>0.1</franzxaver.version>
 
         <powsybl-iidm-cvg-extensions.version>2.1.2</powsybl-iidm-cvg-extensions.version>
-
-        <powsyblcore.version>2.4.0-SNAPSHOT</powsyblcore.version>
     </properties>
 
     <dependencyManagement>
@@ -54,6 +50,11 @@
                 <groupId>org.apache.xmlgraphics</groupId>
                 <artifactId>batik-dom</artifactId>
                 <version>${batik.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ojalgo</groupId>
+                <artifactId>ojalgo</artifactId>
+                <version>${ojalgo.version}</version>
             </dependency>
 
             <!-- powsybl-core dependencies -->

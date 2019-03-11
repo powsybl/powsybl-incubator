@@ -230,6 +230,11 @@ public class SubstationDiagramViewer extends Application {
             });
             loader.start();
         }
+
+        private ComponentLibrary getComponentLibrary() {
+            String selectedItem = svgLibraryComboBox.getSelectionModel().getSelectedItem();
+            return svgLibraries.get(selectedItem);
+        }
     }
 
     private class SelectableVoltageLevel {
@@ -294,11 +299,6 @@ public class SubstationDiagramViewer extends Application {
     private VoltageLevelLayoutFactory getLayoutFactory() {
         String selectedItem = layoutComboBox.getSelectionModel().getSelectedItem();
         return layouts.get(selectedItem);
-    }
-
-    private ComponentLibrary getComponentLibrary() {
-        String selectedItem = svgLibraryComboBox.getSelectionModel().getSelectedItem();
-        return svgLibraries.get(selectedItem);
     }
 
     private void setParameters(LayoutParameters layoutParameters) {

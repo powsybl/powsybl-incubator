@@ -229,8 +229,8 @@ public class SVGWriter {
 
     private void incorporateComponents(Node node, Element g) {
         SVGOMDocument obj = componentLibrary.getSvgDocument(node.getComponentType());
+        transformComponent(node, g);
         if (obj != null) {
-            transformComponent(node, g);
             if (layoutParameters.isShowInternalNodes()
                     || (!node.isFictitious() && node.getType() != Node.NodeType.SHUNT)) {
                 insertComponentSVGIntoDocumentSVG(obj, g);

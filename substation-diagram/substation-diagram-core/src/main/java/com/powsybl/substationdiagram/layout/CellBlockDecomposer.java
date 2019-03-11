@@ -211,7 +211,8 @@ public class CellBlockDecomposer {
 
     /**
      * Search for primary layout.block
-     * a primary layout.block is made of BUS|FICTICIOUS|FEEDER|SHUNT - n* SWITCH - BUS|FICTICIOUS|FEEDER|SHUNT
+     * a primary layout.block shall have the following pattern :
+     * BUS|FICTICIOUS|FEEDER|SHUNT - n * SWITCH - BUS|FICTICIOUS|FEEDER|SHUNT
      *
      * @param cell           cell
      * @param currentNode    currentnode

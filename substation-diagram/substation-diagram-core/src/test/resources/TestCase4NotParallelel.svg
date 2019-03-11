@@ -66,12 +66,9 @@
     <line y2="8" style="stroke:rgb(0,0,0);stroke-width:3" x1="0" x2="8" y1="0"/>
     <line y2="8" style="stroke:rgb(0,0,0);stroke-width:3" x1="8" x2="0" y1="0"/>
 </g>
-        <g id="ss1" transform="translate(66.0,306.0)">
+        <g id="ss1" transform="matrix(0.0,1.0,-1.0,0.0,74.0,306.0)">
     <line y2="8" style="stroke:rgb(0,0,0);stroke-width:3" x1="0" x2="8" y1="0"/>
     <line y2="8" style="stroke:rgb(0,0,0);stroke-width:3" x1="8" x2="0" y1="0"/>
-</g>
-        <g id="8" transform="translate(141.0,276.0)">
-    <circle fill="black" r="4" cx="4" cy="4" stroke="black"/>
 </g>
         <g id="bc" transform="translate(135.0,145.0)">
     <rect x="1" width="18" y="1" height="18" style="fill:rgb(255,255,255);stroke-width:2;stroke:rgb(0,0,255)"/>
@@ -80,6 +77,9 @@
         <g id="dc1" transform="translate(141.0,306.0)">
     <line y2="8" style="stroke:rgb(0,0,0);stroke-width:3" x1="0" x2="8" y1="0"/>
     <line y2="8" style="stroke:rgb(0,0,0);stroke-width:3" x1="8" x2="0" y1="0"/>
+</g>
+        <g id="dc1Fictif" transform="translate(141.0,276.0)">
+    <circle fill="black" r="4" cx="4" cy="4" stroke="black"/>
 </g>
         <polyline fill="none" id="Wire0" style="stroke:rgb(200,0,0);stroke-width:1" points="45.0,34.0 45.0,145.0"/>
         <polyline fill="none" id="Wire1" style="stroke:rgb(200,0,0);stroke-width:1" points="45.0,165.0 45.0,280.0"/>
@@ -96,8 +96,8 @@
         <polyline fill="none" id="Wire12" style="stroke:rgb(200,0,0);stroke-width:1" points="80.0,310.0 70.0,310.0"/>
         <polyline fill="none" id="Wire13" style="stroke:rgb(200,0,0);stroke-width:1" points="70.0,310.0 60.0,310.0"/>
         <polyline fill="none" id="Wire14" style="stroke:rgb(200,0,0);stroke-width:1" points="145.0,36.0 145.0,145.0"/>
-        <polyline fill="none" id="Wire15" style="stroke:rgb(200,0,0);stroke-width:1" points="145.0,165.0 145.0,280.0"/>
-        <polyline fill="none" id="Wire16" style="stroke:rgb(200,0,0);stroke-width:1" points="145.0,280.0 145.0,310.0"/>
-        <polyline fill="none" id="Wire17" style="stroke:rgb(200,0,0);stroke-width:1" points="145.0,310.0 145.0,310.0"/>
+        <polyline fill="none" id="Wire15" style="stroke:rgb(200,0,0);stroke-width:1" points="145.0,310.0 145.0,310.0"/>
+        <polyline fill="none" id="Wire16" style="stroke:rgb(200,0,0);stroke-width:1" points="145.0,165.0 145.0,280.0"/>
+        <polyline fill="none" id="Wire17" style="stroke:rgb(200,0,0);stroke-width:1" points="145.0,310.0 145.0,280.0"/>
     </g>
 </svg>

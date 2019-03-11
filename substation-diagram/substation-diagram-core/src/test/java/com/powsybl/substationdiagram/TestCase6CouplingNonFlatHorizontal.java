@@ -124,7 +124,7 @@ public class TestCase6CouplingNonFlatHorizontal extends AbstractTestCase {
         assertEquals(3, g.getCells().size());
         Iterator<Cell> it = g.getCells().iterator();
         Cell cellB = it.next();
-        assertEquals("INTERN[4, 5, b, bbs1.1, bbs2.2, d1, d2]", cellB.getFullId());
+        assertEquals("INTERN[b, bbs1.1, bbs2.2, d1, d1Fictif, d2, d2Fictif]", cellB.getFullId());
         Cell cellD1 = it.next();
         assertEquals("INTERNBOUND[bbs1.1, bbs1.2, ds1]", cellD1.getFullId());
         Cell cellD2 = it.next();
@@ -172,25 +172,25 @@ public class TestCase6CouplingNonFlatHorizontal extends AbstractTestCase {
         assertEquals(285, g.getNodes().get(3).getY(), 0);
         assertFalse(g.getNodes().get(3).isRotated());
 
-        assertEquals(25, g.getNodes().get(4).getX(), 0);
-        assertEquals(220, g.getNodes().get(4).getY(), 0);
-        assertTrue(g.getNodes().get(4).isRotated());
+        assertEquals(50, g.getNodes().get(5).getX(), 0);
+        assertEquals(220, g.getNodes().get(5).getY(), 0);
+        assertTrue(g.getNodes().get(5).isRotated());
 
-        assertEquals(25, g.getNodes().get(5).getX(), 0);
-        assertEquals(260, g.getNodes().get(5).getY(), 0);
-        assertFalse(g.getNodes().get(5).isRotated());
+        assertEquals(25, g.getNodes().get(9).getX(), 0);
+        assertEquals(220, g.getNodes().get(9).getY(), 0);
+        assertTrue(g.getNodes().get(9).isRotated());
 
-        assertEquals(75, g.getNodes().get(6).getX(), 0);
-        assertEquals(220, g.getNodes().get(6).getY(), 0);
-        assertTrue(g.getNodes().get(6).isRotated());
+        assertEquals(75, g.getNodes().get(10).getX(), 0);
+        assertEquals(220, g.getNodes().get(10).getY(), 0);
+        assertTrue(g.getNodes().get(10).isRotated());
 
         assertEquals(50, g.getNodes().get(7).getX(), 0);
-        assertEquals(220, g.getNodes().get(7).getY(), 0);
+        assertEquals(260, g.getNodes().get(7).getY(), 0);
         assertTrue(g.getNodes().get(7).isRotated());
 
-        assertEquals(75, g.getNodes().get(8).getX(), 0);
+        assertEquals(50, g.getNodes().get(8).getX(), 0);
         assertEquals(285, g.getNodes().get(8).getY(), 0);
-        assertFalse(g.getNodes().get(8).isRotated());
+        assertTrue(g.getNodes().get(8).isRotated());
 
         // write SVG and compare to reference
         compareSvg(g, layoutParameters, "/TestCase6CouplingNonFlatHorizontal.svg");

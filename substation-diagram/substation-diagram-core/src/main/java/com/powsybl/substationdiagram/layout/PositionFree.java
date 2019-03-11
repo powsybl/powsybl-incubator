@@ -94,18 +94,14 @@ public class PositionFree implements PositionFinder {
     private void addBusNodeSet(List<BusNode> busNodes, Cell cell, Context context) {
         VerticalBusConnectionPattern vbcp = new VerticalBusConnectionPattern(context, busNodes);
         VerticalBusConnectionPattern targetBcp = null;
-        for (Map.Entry<VerticalBusConnectionPattern, List<Cell>> entry : context.vbcpToCells.entrySet()) {
-            VerticalBusConnectionPattern vbcp1 = entry.getKey();
-            List<Cell> cells = entry.getValue();
+        for (VerticalBusConnectionPattern vbcp1 : new ArrayList<>(context.vbcpToCells.keySet())) {
             if (vbcp.isIncludedIn(vbcp1)) {
                 targetBcp = vbcp1;
             } else if (vbcp1.isIncludedIn(vbcp)) {
+                context.vbcpToCells.putIfAbsent(vbcp, new ArrayList<>());
+                context.vbcpToCells.get(vbcp).addAll(context.vbcpToCells.get(vbcp1));
                 context.vbcpToCells.remove(vbcp1);
-                context.vbcpToCells.put(vbcp, cells);
                 targetBcp = vbcp;
-            }
-            if (targetBcp != null) {
-                break;
             }
         }
         if (targetBcp == null) {
@@ -406,11 +402,61 @@ public class PositionFree implements PositionFinder {
             }
         }
 
+        private void sortVbcp() {
+            if (vbcps.isEmpty()) {
+                return;
+            }
+            List<VerticalBusConnectionPattern> remainingVbcp = new ArrayList<>(vbcps);
+            List<VerticalBusConnectionPattern> sortedVbcp = new ArrayList<>();
+            sortedVbcp.add(remainingVbcp.get(0));
+            remainingVbcp.remove(0);
+            int previousSize = 0;
+            while (!remainingVbcp.isEmpty()) {
+                previousSize = remainingVbcp.size();
+                sortWhenObviousComparisonsExist(remainingVbcp, sortedVbcp);
+                if (previousSize == remainingVbcp.size()) { //plan B !
+                    return;
+                }
+            }
+            vbcps = sortedVbcp;
+        }
+
+        private void sortWhenObviousComparisonsExist(List<VerticalBusConnectionPattern> remainingVbcp,
+                                                     List<VerticalBusConnectionPattern> sortedVbcp) {
+            Iterator<VerticalBusConnectionPattern> it = remainingVbcp.iterator();
+            while (it.hasNext()) {
+                VerticalBusConnectionPattern vbcp = it.next();
+                if (tryToInsertVbcp(vbcp, sortedVbcp)) {
+                    remainingVbcp.remove(vbcp);
+                    break;
+                }
+                unblockSortingWithSimilarityCriteria(remainingVbcp, sortedVbcp);
+            }
+        }
+
+        private boolean tryToInsertVbcp(VerticalBusConnectionPattern vbcp,
+                                        List<VerticalBusConnectionPattern> sortedList,
+                                        boolean strict) {
+            for (VerticalBusConnectionPattern iterVbcp : sortedList) {
+                int compare = compareHVbcp(vbcp, iterVbcp);
+                if (compare != 0) {
+                    int position = sortedList.indexOf(iterVbcp);
+                    sortedList.add(compare < 0 ? position : position + 1, vbcp);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private boolean tryToInsertVbcp(VerticalBusConnectionPattern vbcp,
+                                        List<VerticalBusConnectionPattern> sortedList) {
+            return tryToInsertVbcp(vbcp, sortedList, true);
+        }
+
         // don't use it as a comparator : if 2 vbcp have no commonChains, the result is "equals",
         // but the to vbcp could be far from one another -> necessary to have a dedicated sorting function -> sortVbcp()
         private int compareHVbcp(VerticalBusConnectionPattern vbcp1, VerticalBusConnectionPattern vbcp2) {
-            List<HorizontalChain> commonChains = gethChainsFromVbcp(vbcp1);
-            commonChains.retainAll(gethChainsFromVbcp(vbcp2));
+            List<HorizontalChain> commonChains = intersectChains(vbcp1, vbcp2);
             if (commonChains.isEmpty()) {
                 return 0;
             }
@@ -424,37 +470,28 @@ public class PositionFree implements PositionFinder {
             return 0;
         }
 
-        private void sortVbcp() {
-            if (vbcps.isEmpty()) {
-                return;
-            }
-            List<VerticalBusConnectionPattern> remainingVbcp = new ArrayList<>(vbcps);
-            List<VerticalBusConnectionPattern> sortedVbcp = new ArrayList<>();
-            sortedVbcp.add(remainingVbcp.get(0));
-            remainingVbcp.remove(0);
-            while (!remainingVbcp.isEmpty()) {
-                Iterator<VerticalBusConnectionPattern> it = remainingVbcp.iterator();
-                while (it.hasNext()) {
-                    VerticalBusConnectionPattern vbcp = it.next();
-                    if (tryToInsertVbcp(vbcp, sortedVbcp)) {
-                        remainingVbcp.remove(vbcp);
-                        break;
+        private List<HorizontalChain> intersectChains(VerticalBusConnectionPattern vbcp1, VerticalBusConnectionPattern vbcp2) {
+            List<HorizontalChain> commonChains = gethChainsFromVbcp(vbcp1);
+            commonChains.retainAll(gethChainsFromVbcp(vbcp2));
+            return commonChains;
+        }
+
+        private void unblockSortingWithSimilarityCriteria(List<VerticalBusConnectionPattern> remainingVbcps,
+                                                          List<VerticalBusConnectionPattern> sortedVbcps) {
+            VerticalBusConnectionPattern matchingRemainingVbcp = remainingVbcps.get(0);
+            VerticalBusConnectionPattern matchingSortedVbcp = sortedVbcps.get(0);
+            int maxIntersection = 0;
+            for (VerticalBusConnectionPattern sortedVbcp : sortedVbcps) {
+                for (VerticalBusConnectionPattern remainingVbcp : remainingVbcps) {
+                    int intersectionSize = intersectChains(sortedVbcp, remainingVbcp).size();
+                    if (intersectionSize > maxIntersection) {
+                        maxIntersection = intersectionSize;
+                        matchingRemainingVbcp = remainingVbcp;
+                        matchingSortedVbcp = sortedVbcp;
                     }
                 }
             }
-            vbcps = sortedVbcp;
-        }
-
-        private boolean tryToInsertVbcp(VerticalBusConnectionPattern vbcp, List<VerticalBusConnectionPattern> sortedList) {
-            for (VerticalBusConnectionPattern iterVbcp : sortedList) {
-                int compare = compareHVbcp(vbcp, iterVbcp);
-                if (compare != 0) {
-                    int position = sortedList.indexOf(iterVbcp);
-                    sortedList.add(compare < 0 ? position : position + 1, vbcp);
-                    return true;
-                }
-            }
-            return false;
+            sortedVbcps.add(sortedVbcps.indexOf(matchingSortedVbcp) + 1, matchingRemainingVbcp);
         }
 
         private void organizeHChainsVertically() {

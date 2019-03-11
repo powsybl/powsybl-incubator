@@ -39,6 +39,7 @@ public class ImplicitCellDetector implements CellDetector {
      */
     @Override
     public void detectCells(Graph graph) {
+        graph.removeUnnecessaryFictitiousNodes();
         graph.extendFeederWithMultipleSwitches();
         graph.extendFirstOutsideNode();
         graph.substituteSingularFictitiousByFeederNode();

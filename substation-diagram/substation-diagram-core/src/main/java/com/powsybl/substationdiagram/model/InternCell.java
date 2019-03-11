@@ -26,14 +26,11 @@ public class InternCell extends Cell {
     @JsonIgnore
     private Map<Side, Block> sideToBlock;
     @JsonIgnore
-    private Map<Side, Node> sideToCentralNode;
-    @JsonIgnore
     private Map<Side, List<PrimaryBlock>> sideToConnectedBlocks;
 
     public InternCell(Graph graph) {
         super(graph, CellType.INTERN);
         centralBlock = null;
-        sideToCentralNode = new EnumMap<>(Side.class);
         sideToConnectedBlocks = new EnumMap<>(Side.class);
         sideToConnectedBlocks.put(Side.RIGHT, new ArrayList<>());
         sideToConnectedBlocks.put(Side.LEFT, new ArrayList<>());
@@ -77,15 +74,17 @@ public class InternCell extends Cell {
         getPrimaryBlocksConnectedToBus().clear();
         Block block0 = createAdjacentPrimaryBlock(ns, 0);
         Block block1 = createAdjacentPrimaryBlock(ns, 1);
-        if (block0.getBusNode().getStructuralPosition().getH() < block1.getBusNode().getStructuralPosition().getH()) {
-            sideToBlock.put(Side.LEFT, block0);
-            sideToBlock.put(Side.RIGHT, block1);
-        } else {
-            sideToBlock.put(Side.LEFT, block1);
-            sideToBlock.put(Side.RIGHT, block0);
-        }
-        centralBlock = new PrimaryBlock(
-                Arrays.asList(new Node[]{block0.getEndingNode(), ns, block1.getEndingNode()}), this);
+        fillInSideToBlock(block0, block1);
+///*
+//        if (block0.getBusNode().getStructuralPosition().getH() < block1.getBusNode().getStructuralPosition().getH()) {
+//            sideToBlock.put(Side.LEFT, block0);
+//            sideToBlock.put(Side.RIGHT, block1);
+//        } else {
+//            sideToBlock.put(Side.LEFT, block1);
+//            sideToBlock.put(Side.RIGHT, block0);
+//        }
+//*/
+        centralBlock = new PrimaryBlock(Arrays.asList(block0.getEndingNode(), ns, block1.getEndingNode()), this);
         setType(CellType.INTERN);
         refactorBlocks();
     }
@@ -127,7 +126,7 @@ public class InternCell extends Cell {
         Block legBlock2;
         List<Block> blocksToParalellize = new ArrayList<>();
 /*
-         Usually the rootBlock becomes always a parallel block in an internCell considering
+         Usually the rootBlock becomes a parallel block in an internCell considering
          - a BusNode is always becoming a startingNode
          - the merging process
          then the block that is a serial one is the one having the central block, the others constituting another "leg"
@@ -158,13 +157,17 @@ public class InternCell extends Cell {
             // case of a one leg internCell.
             sideToBlock.put(Side.LEFT, legBlock2);
         } else if (legBlock1 != null) {
-            if (getOneNodeBusHPod(legBlock1) > getOneNodeBusHPod(legBlock2)) {
-                sideToBlock.put(Side.LEFT, legBlock2);
-                sideToBlock.put(Side.RIGHT, legBlock1);
-            } else {
-                sideToBlock.put(Side.LEFT, legBlock1);
-                sideToBlock.put(Side.RIGHT, legBlock2);
-            }
+            fillInSideToBlock(legBlock1, legBlock2);
+        }
+    }
+
+    private void fillInSideToBlock(Block block1, Block block2) {
+        if (getOneNodeBusHPod(block1) > getOneNodeBusHPod(block2)) {
+            sideToBlock.put(Side.LEFT, block2);
+            sideToBlock.put(Side.RIGHT, block1);
+        } else {
+            sideToBlock.put(Side.LEFT, block1);
+            sideToBlock.put(Side.RIGHT, block2);
         }
     }
 
@@ -172,11 +175,7 @@ public class InternCell extends Cell {
         SerialBlock bc = new SerialBlock(sideToBlock.get(Side.LEFT),
                 centralBlock,
                 sideToBlock.get(Side.LEFT).getEndingNode(), this);
-        List<Block> blocks = new ArrayList<>();
-        blocks.add(bc);
-        blocks.add(sideToBlock.get(Side.RIGHT));
-
-        ParallelBlock bp = new ParallelBlock(blocks, this, false);
+        ParallelBlock bp = new ParallelBlock(Arrays.asList(bc, sideToBlock.get(Side.RIGHT)), this, false);
         if (getDirection() == Direction.FLAT) {
             bp.setOrientation(Orientation.HORIZONTAL);
         } else {
@@ -186,7 +185,6 @@ public class InternCell extends Cell {
         }
 
         blocksSetting(bp, getPrimaryBlocksConnectedToBus());
-        identifyExtremities();
         identifyConnectedBlocks();
     }
 
@@ -195,16 +193,11 @@ public class InternCell extends Cell {
         return structuralPos == null ? -1 : structuralPos.getH();
     }
 
-    private void identifyExtremities() {
-        sideToCentralNode.put(Side.LEFT, centralBlock.getStartingNode());
-        sideToCentralNode.put(Side.RIGHT, centralBlock.getEndingNode());
-    }
-
     private void identifyConnectedBlocks() {
         getPrimaryBlocksConnectedToBus().forEach(block -> {
-            if (block.getNodes().contains(sideToCentralNode.get(Side.LEFT))) {
+            if (block.getNodes().contains(centralBlock.getStartingNode())) {
                 sideToConnectedBlocks.get(Side.LEFT).add(block);
-            } else if (block.getNodes().contains(sideToCentralNode.get(Side.RIGHT))) {
+            } else if (block.getNodes().contains(centralBlock.getEndingNode())) {
                 sideToConnectedBlocks.get(Side.RIGHT).add(block);
             }
         });

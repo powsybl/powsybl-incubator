@@ -66,7 +66,6 @@ public class PositionFree implements PositionFinder {
             context.nodeToNb.put(n, i);
             i++;
         }
-        LOGGER.warn(context.nodeToNb.toString());
     }
 
     private void initiateFeederPosition(Context context) {
@@ -541,7 +540,6 @@ public class PositionFree implements PositionFinder {
             int feederPosition = firstFeederOrder;
             int cellPos = 0;
             for (VerticalBusConnectionPattern vbcp : vbcps) {
-                LOGGER.warn(vbcp.busNodeSet.toString());
                 for (Cell cell : context.vbcpToCells.get(vbcp)) {
                     cell.setDirection(cellPos % 2 == 0 ? Cell.Direction.TOP : Cell.Direction.BOTTOM);
                     cell.setOrder(cellPos);

@@ -37,12 +37,17 @@ public class ImplicitCellDetector implements CellDetector {
      * exclusion types = {}
      * stop the visit if reach a Bus : stopTypes = {BUS,FEEDER} * @param graph g
      */
-    @Override
-    public void detectCells(Graph graph) {
-        graph.removeUnnecessaryFictitiousNodes();
+    public void detectCells(Graph graph,
+                            boolean removeUnnecessaryFictitiousNodes,
+                            boolean substituteSingularFictitiousByFeederNode) {
+        if (removeUnnecessaryFictitiousNodes) {
+            graph.removeUnnecessaryFictitiousNodes();
+        }
         graph.extendFeederWithMultipleSwitches();
         graph.extendFirstOutsideNode();
-        graph.substituteSingularFictitiousByFeederNode();
+        if (substituteSingularFictitiousByFeederNode) {
+            graph.substituteSingularFictitiousByFeederNode();
+        }
         graph.substituteFictitiousNodesMirroringBusNodes();
         graph.extendBreakerConnectedToBus();
         graph.extendFeederConnectedToBus();
@@ -74,6 +79,11 @@ public class ImplicitCellDetector implements CellDetector {
         graph.getCells().forEach(Cell::getFullId);
 
         graph.logCellDetectionStatus();
+    }
+
+    @Override
+    public void detectCells(Graph graph) {
+        detectCells(graph, false, true);
     }
 
     /**

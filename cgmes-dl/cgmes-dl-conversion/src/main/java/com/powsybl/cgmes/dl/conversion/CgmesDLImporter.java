@@ -73,81 +73,61 @@ public class CgmesDLImporter {
     private void importBusesDLData() {
         LOG.info("Importing Buses DL Data");
         BusDiagramDataImporter diagramDataImporter = new BusDiagramDataImporter(network);
-        cgmesDLModel.getBusesDiagramData().forEach(busDiagramData -> {
-            diagramDataImporter.importDiagramData(busDiagramData);
-        });
+        cgmesDLModel.getBusesDiagramData().forEach(diagramDataImporter::importDiagramData);
     }
 
     private void importBusbarsDLData() {
         LOG.info("Importing Busbars DL Data");
-        BusbarDiagramDataImporter busbarDiagramDataImporter = new BusbarDiagramDataImporter(network);
-        cgmesDLModel.getBusbarsDiagramData().forEach(busbarDiagramData -> {
-            busbarDiagramDataImporter.importDiagramData(busbarDiagramData);
-        });
+        BusbarDiagramDataImporter diagramDataImporter = new BusbarDiagramDataImporter(network);
+        cgmesDLModel.getBusbarsDiagramData().forEach(diagramDataImporter::importDiagramData);
     }
 
     private void importLinesDLData() {
         LOG.info("Importing Lines DL Data");
         LineDiagramDataImporter diagramDataImporter = new LineDiagramDataImporter(network);
-        cgmesDLModel.getLinesDiagramData().forEach(lineDiagramData -> {
-            diagramDataImporter.importDiagramData(lineDiagramData);
-        });
+        cgmesDLModel.getLinesDiagramData().forEach(diagramDataImporter::importDiagramData);
     }
 
     private void importGeneratorsDLData() {
         LOG.info("Importing Generators DL Data");
         GeneratorDiagramDataImporter diagramDataImporter = new GeneratorDiagramDataImporter(network, terminalsDiagramData);
-        cgmesDLModel.getGeneratorsDiagramData().forEach(generatorDiagramData -> {
-            diagramDataImporter.importDiagramData(generatorDiagramData);
-        });
+        cgmesDLModel.getGeneratorsDiagramData().forEach(diagramDataImporter::importDiagramData);
     }
 
     private void importLoadsDLData() {
         LOG.info("Importing Loads DL Data");
         LoadDiagramDataImporter diagramDataImporter = new LoadDiagramDataImporter(network, terminalsDiagramData);
-        cgmesDLModel.getLoadsDiagramData().forEach(loadDiagramData -> {
-            diagramDataImporter.importDiagramData(loadDiagramData);
-        });
+        cgmesDLModel.getLoadsDiagramData().forEach(diagramDataImporter::importDiagramData);
     }
 
     private void importShuntsDLData() {
         LOG.info("Importing Shunts DL Data");
         ShuntDiagramDataImporter diagramDataImporter = new ShuntDiagramDataImporter(network, terminalsDiagramData);
-        cgmesDLModel.getShuntsDiagramData().forEach(shuntDiagramData -> {
-            diagramDataImporter.importDiagramData(shuntDiagramData);
-        });
+        cgmesDLModel.getShuntsDiagramData().forEach(diagramDataImporter::importDiagramData);
     }
 
     private void importSwitchesDLData() {
         LOG.info("Importing Switches DL Data");
         SwitchDiagramDataImporter diagramDataImporter = new SwitchDiagramDataImporter(network, terminalsDiagramData);
-        cgmesDLModel.getSwitchesDiagramData().forEach(switchesDiagramData -> {
-            diagramDataImporter.importDiagramData(switchesDiagramData);
-        });
+        cgmesDLModel.getSwitchesDiagramData().forEach(diagramDataImporter::importDiagramData);
     }
 
     private void importTransformersDLData() {
         LOG.info("Importing Transformers DL Data");
         TransformerDiagramDataImporter diagramDataImporter = new TransformerDiagramDataImporter(network, terminalsDiagramData);
-        cgmesDLModel.getTransformersDiagramData().forEach(transformersDiagramData -> {
-            diagramDataImporter.importDiagramData(transformersDiagramData);
-        });
+        cgmesDLModel.getTransformersDiagramData().forEach(diagramDataImporter::importDiagramData);
     }
 
     private void importHvdcLinesDLData() {
         LOG.info("Importing HVDC Lines DL Data");
         HvdcLineDiagramDataImporter diagramDataImporter = new HvdcLineDiagramDataImporter(network);
-        cgmesDLModel.getHvdcLinesDiagramData().forEach(hvdcLineDiagramData -> {
-            diagramDataImporter.importDiagramData(hvdcLineDiagramData);
-        });
+        cgmesDLModel.getHvdcLinesDiagramData().forEach(diagramDataImporter::importDiagramData);
     }
 
     private void importSvcsDLData() {
         LOG.info("Importing Svcs DL Data");
         SvcDiagramDataImporter diagramDataImporter = new SvcDiagramDataImporter(network, terminalsDiagramData);
-        cgmesDLModel.getSvcsDiagramData().forEach(svcDiagramData -> {
-            diagramDataImporter.importDiagramData(svcDiagramData);
-        });
+        cgmesDLModel.getSvcsDiagramData().forEach(diagramDataImporter::importDiagramData);
     }
 
     public Network getNetworkWithDLData() {

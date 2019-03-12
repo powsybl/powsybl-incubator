@@ -226,7 +226,7 @@ public class Node implements BaseNode {
         y = ys.stream().mapToDouble(Node::applyAsDouble).average().orElse(0);
     }
 
-    public Identifiable<?> getIdentifiable() {
+    public Identifiable getIdentifiable() {
         return identifiable;
     }
 }

@@ -65,9 +65,9 @@ public class TransformerDiagramDataImporter extends AbstractCouplingDeviseDiagra
         String terminalKey = transformerId + "_" + terminalSide;
         if (terminalsDiagramData.containsKey(terminalKey)) {
             PropertyBags equipmentTerminalsDiagramData = terminalsDiagramData.get(terminalKey);
-            equipmentTerminalsDiagramData.forEach(terminalDiagramData -> {
-                transformerDiagramData.addTerminalPoint(terminal, new DiagramPoint(terminalDiagramData.asDouble("x"), terminalDiagramData.asDouble("y"), terminalDiagramData.asInt("seq")));
-            });
+            equipmentTerminalsDiagramData.forEach(terminalDiagramData ->
+                transformerDiagramData.addTerminalPoint(terminal, new DiagramPoint(terminalDiagramData.asDouble("x"), terminalDiagramData.asDouble("y"), terminalDiagramData.asInt("seq")))
+            );
         } else {
             LOG.warn("Cannot find terminal diagram data of transformer {}, name {}, terminal {}", transformerId, transformerName, terminal);
         }

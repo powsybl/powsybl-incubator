@@ -77,20 +77,12 @@ public class CgmesVoltageLevelLayout implements VoltageLevelLayout {
     @Override
     public void run(LayoutParameters layoutParam) {
         // skip line nodes: I need the coordinates of the adjacent node to know which side of the line belongs to this voltage level
-        graph.getNodes().stream().filter(node -> !isLineNode(node)).forEach(node -> {
-            setNodeCoordinates(node);
-        });
+        graph.getNodes().stream().filter(node -> !isLineNode(node)).forEach(this::setNodeCoordinates);
         // set line nodes coordinates: I use the coordinates of the adjacent node to know which side of the line belongs to this voltage level
-        graph.getNodes().stream().filter(node -> isLineNode(node)).forEach(node -> {
-            setLineNodeCoordinates(node);
-        });
-        graph.getNodes().forEach(node -> {
-            shiftNodeCoordinates(node, layoutParam.getScaleFactor());
-        });
+        graph.getNodes().stream().filter(this::isLineNode).forEach(this::setLineNodeCoordinates);
+        graph.getNodes().forEach(node -> shiftNodeCoordinates(node, layoutParam.getScaleFactor()));
         if (layoutParam.getScaleFactor() != 1) {
-            graph.getNodes().forEach(node -> {
-                scaleNodeCoordinates(node, layoutParam.getScaleFactor());
-            });
+            graph.getNodes().forEach(node -> scaleNodeCoordinates(node, layoutParam.getScaleFactor()));
         }
     }
 
@@ -208,6 +200,7 @@ public class CgmesVoltageLevelLayout implements VoltageLevelLayout {
                 } else {
                     LOG.warn("No CGMES-DL data for {} {} node {}, transformer {}", node.getType(), node.getComponentType(), node.getId(), transformer3w.getName());
                 }
+                break;
             default:
                 break;
         }
@@ -256,7 +249,7 @@ public class CgmesVoltageLevelLayout implements VoltageLevelLayout {
         }
     }
 
-    private <T> DiagramPoint getLinePoint(LineDiagramData<?> lineDiagramData, Node lineNode) {
+    private DiagramPoint getLinePoint(LineDiagramData<?> lineDiagramData, Node lineNode) {
         DiagramPoint adjacentNodePoint = getLineAdjacentNodePoint(lineNode);
         if (adjacentNodePoint == null) {
             return getLinePoint(lineDiagramData, true);
@@ -278,7 +271,7 @@ public class CgmesVoltageLevelLayout implements VoltageLevelLayout {
         return new DiagramPoint(adjacentNode.getX(), adjacentNode.getY(), 0);
     }
 
-    private <T> DiagramPoint getLinePoint(LineDiagramData<?> lineDiagramData, boolean isLastPointCloser) {
+    private DiagramPoint getLinePoint(LineDiagramData<?> lineDiagramData, boolean isLastPointCloser) {
         if (TopologyKind.NODE_BREAKER.equals(graph.getTopologyKind())) {
             return isLastPointCloser ? lineDiagramData.getLastPoint() : lineDiagramData.getFirstPoint();
         }

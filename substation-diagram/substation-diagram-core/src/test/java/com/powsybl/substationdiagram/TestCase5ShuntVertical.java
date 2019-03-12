@@ -151,7 +151,7 @@ public class TestCase5ShuntVertical extends AbstractTestCase {
         Cell cella = it.next();
         assertEquals(Cell.CellType.EXTERN, cella.getType());
         assertEquals(6, cella.getNodes().size());
-        assertEquals("EXTERN[1, ba, bbs, da, la, laFictif]", cella.getFullId());
+        assertEquals("EXTERN[ba, bbs, da, daFictif, la, laFictif]", cella.getFullId());
 
         // build blocks
         assertTrue(new BlockOrganizer().organize(g));
@@ -176,21 +176,21 @@ public class TestCase5ShuntVertical extends AbstractTestCase {
         LayoutParameters layoutParameters = new LayoutParameters(20, 50, 0, 260,
                                                                  25, 20,
                                                                  50, 250, 40,
-                                                                 30, false, false, 1);
+                                                                 30, true, true, 1);
         new PositionVoltageLevelLayout(g).run(layoutParameters);
 
         // assert coordinate
-        assertEquals(75, g.getNodes().get(6).getX(), 0);
-        assertEquals(230, g.getNodes().get(6).getY(), 0.1);
-        assertFalse(g.getNodes().get(6).isRotated());
+        assertEquals(75, g.getNodes().get(7).getX(), 0);
+        assertEquals(260, g.getNodes().get(7).getY(), 0.1);
+        assertFalse(g.getNodes().get(7).isRotated());
 
-        assertEquals(50, g.getNodes().get(9).getX(), 0);
-        assertEquals(146.6, g.getNodes().get(9).getY(), 0.1);
+        assertEquals(50, g.getNodes().get(8).getX(), 0);
+        assertEquals(146.6, g.getNodes().get(8).getY(), 0.1);
+        assertFalse(g.getNodes().get(8).isRotated());
+
+        assertEquals(25, g.getNodes().get(9).getX(), 0);
+        assertEquals(63.3, g.getNodes().get(9).getY(), 0.1);
         assertFalse(g.getNodes().get(9).isRotated());
-
-        assertEquals(25, g.getNodes().get(10).getX(), 0);
-        assertEquals(63.3, g.getNodes().get(10).getY(), 0.1);
-        assertFalse(g.getNodes().get(10).isRotated());
 
         // write SVG and compare to reference
         compareSvg(g, layoutParameters, "/TestCase5ShuntVertical.svg");

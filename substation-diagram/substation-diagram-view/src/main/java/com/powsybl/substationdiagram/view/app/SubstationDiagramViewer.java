@@ -16,7 +16,6 @@ import com.powsybl.iidm.network.VoltageLevel;
 import com.powsybl.substationdiagram.SubstationDiagram;
 import com.powsybl.substationdiagram.cgmes.CgmesVoltageLevelLayoutFactory;
 import com.powsybl.substationdiagram.layout.*;
-import com.powsybl.substationdiagram.layout.force.ForceVoltageLevelLayoutFactory;
 import com.powsybl.substationdiagram.library.ComponentLibrary;
 import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
 import com.powsybl.substationdiagram.view.SubstationDiagramView;
@@ -75,10 +74,14 @@ public class SubstationDiagramViewer extends Application {
             = ImmutableMap.of("Auto extensions", new PositionVoltageLevelLayoutFactory(),
                               "Auto without extensions", new PositionVoltageLevelLayoutFactory(new ImplicitCellDetector(), new PositionFree()),
                               "Random", new RandomVoltageLevelLayoutFactory(500, 500),
-                              "Force", new ForceVoltageLevelLayoutFactory(),
                               "Cgmes", new CgmesVoltageLevelLayoutFactory());
 
-    private final ComponentLibrary componentLibrary = new ResourcesComponentLibrary("/ConvergenceLibrary");
+    private final ComponentLibrary convergenceComponentLibrary = new ResourcesComponentLibrary("/ConvergenceLibrary");
+    private final ComponentLibrary flatDesignComponentLibrary = new ResourcesComponentLibrary("/FlatDesignLibrary");
+
+    private final Map<String, ComponentLibrary> svgLibraries
+            = ImmutableMap.of("CVG Design", convergenceComponentLibrary,
+                              "Flat Design", flatDesignComponentLibrary);
 
     private final ObservableList<SelectableVoltageLevel> selectableVoltageLevels = FXCollections.observableArrayList();
     private final FilteredList<SelectableVoltageLevel> filteredSelectableVoltageLevels = new FilteredList<>(selectableVoltageLevels, s -> true);
@@ -101,6 +104,8 @@ public class SubstationDiagramViewer extends Application {
     private final ObjectMapper objectMapper = JsonUtil.createObjectMapper();
 
     private final ComboBox<String> layoutComboBox = new ComboBox<>();
+
+    private final ComboBox<String> svgLibraryComboBox = new ComboBox<>();
 
     private final CheckBox showNames = new CheckBox("Show names");
 
@@ -177,7 +182,7 @@ public class SubstationDiagramViewer extends Application {
             try (StringWriter svgWriter = new StringWriter();
                  StringWriter metadataWriter = new StringWriter()) {
                 SubstationDiagram diagram = SubstationDiagram.build(vl, getLayoutFactory(), showNames.isSelected());
-                diagram.writeSvg(componentLibrary, layoutParameters.get(), svgWriter, metadataWriter, null);
+                diagram.writeSvg(getComponentLibrary(), layoutParameters.get(), svgWriter, metadataWriter, null);
                 svgWriter.flush();
                 metadataWriter.flush();
                 svgData = svgWriter.toString();
@@ -226,6 +231,11 @@ public class SubstationDiagramViewer extends Application {
                 LOGGER.error(e.toString(), e);
             });
             loader.start();
+        }
+
+        private ComponentLibrary getComponentLibrary() {
+            String selectedItem = svgLibraryComboBox.getSelectionModel().getSelectedItem();
+            return svgLibraries.get(selectedItem);
         }
     }
 
@@ -322,23 +332,42 @@ public class SubstationDiagramViewer extends Application {
         parametersPane.setVgap(5);
         parametersPane.setPadding(new Insets(5, 5, 5, 5));
 
+        int rowIndex = 0;
+
+        // svg library list
+        svgLibraryComboBox.getItems().addAll(svgLibraries.keySet());
+        svgLibraryComboBox.getSelectionModel().selectFirst();
+        svgLibraryComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> refreshDiagram());
+        parametersPane.add(new Label("Design:"), 0, rowIndex++);
+        parametersPane.add(svgLibraryComboBox, 0, rowIndex++);
+
         // layout list
         layoutComboBox.getItems().addAll(layouts.keySet());
         layoutComboBox.getSelectionModel().selectFirst();
         layoutComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> refreshDiagram());
-        parametersPane.add(new Label("Layout:"), 0, 0);
-        parametersPane.add(layoutComboBox, 0, 1);
+        parametersPane.add(new Label("Layout:"), 0, rowIndex++);
+        parametersPane.add(layoutComboBox, 0, rowIndex++);
 
-        addSpinner("Initial busbar X:", 0, 100, 5, 2, LayoutParameters::getInitialYBus, LayoutParameters::setInitialXBus);
-        addSpinner("Initial busbar Y:", 0, 500, 5, 4, LayoutParameters::getInitialYBus, LayoutParameters::setInitialYBus);
-        addSpinner("Busbar vertical space:", 10, 100, 5, 6, LayoutParameters::getVerticalSpaceBus, LayoutParameters::setVerticalSpaceBus);
-        addSpinner("Horizontal busbar padding:", 10, 100, 5, 8, LayoutParameters::getHorizontalBusPadding, LayoutParameters::setHorizontalBusPadding);
-        addSpinner("Cell width:", 10, 100, 5, 10, LayoutParameters::getCellWidth, LayoutParameters::setCellWidth);
-        addSpinner("Extern cell height:", 100, 500, 10, 12, LayoutParameters::getExternCellHeight, LayoutParameters::setExternCellHeight);
-        addSpinner("Intern cell height:", 10, 100, 5, 14, LayoutParameters::getInternCellHeight, LayoutParameters::setInternCellHeight);
-        addSpinner("Stack height:", 10, 100, 5, 16, LayoutParameters::getStackHeight, LayoutParameters::setStackHeight);
-        addCheckBox("Show grid", 18, LayoutParameters::isShowGrid, LayoutParameters::setShowGrid);
-        addCheckBox("Show internal nodes", 19, LayoutParameters::isShowInternalNodes, LayoutParameters::setShowInternalNodes);
+        addSpinner("Initial busbar X:", 0, 100, 5, rowIndex, LayoutParameters::getInitialYBus, LayoutParameters::setInitialXBus);
+        rowIndex += 2;
+        addSpinner("Initial busbar Y:", 0, 500, 5, rowIndex, LayoutParameters::getInitialYBus, LayoutParameters::setInitialYBus);
+        rowIndex += 2;
+        addSpinner("Busbar vertical space:", 10, 100, 5, rowIndex, LayoutParameters::getVerticalSpaceBus, LayoutParameters::setVerticalSpaceBus);
+        rowIndex += 2;
+        addSpinner("Horizontal busbar padding:", 10, 100, 5, rowIndex, LayoutParameters::getHorizontalBusPadding, LayoutParameters::setHorizontalBusPadding);
+        rowIndex += 2;
+        addSpinner("Cell width:", 10, 100, 5, rowIndex, LayoutParameters::getCellWidth, LayoutParameters::setCellWidth);
+        rowIndex += 2;
+        addSpinner("Extern cell height:", 100, 500, 10, rowIndex, LayoutParameters::getExternCellHeight, LayoutParameters::setExternCellHeight);
+        rowIndex += 2;
+        addSpinner("Intern cell height:", 10, 100, 5, rowIndex, LayoutParameters::getInternCellHeight, LayoutParameters::setInternCellHeight);
+        rowIndex += 2;
+        addSpinner("Stack height:", 10, 100, 5, rowIndex, LayoutParameters::getStackHeight, LayoutParameters::setStackHeight);
+        rowIndex += 2;
+        addCheckBox("Show grid", rowIndex, LayoutParameters::isShowGrid, LayoutParameters::setShowGrid);
+        rowIndex += 1;
+        addCheckBox("Show internal nodes", rowIndex, LayoutParameters::isShowInternalNodes, LayoutParameters::setShowInternalNodes);
+        rowIndex += 1;
 
         CheckBox stackCb = new CheckBox("Stack feeders");
         VoltageLevelLayoutFactory layoutFactory = getLayoutFactory();
@@ -349,8 +378,9 @@ public class SubstationDiagramViewer extends Application {
             // just to trigger diagram update
             refreshDiagram();
         });
-        parametersPane.add(stackCb, 0, 20);
-        addSpinner("Scale factor:", 1, 20, 1, 21, LayoutParameters::getScaleFactor, LayoutParameters::setScaleFactor);
+        parametersPane.add(stackCb, 0, rowIndex);
+        rowIndex += 1;
+        addSpinner("Scale factor:", 1, 20, 1, rowIndex, LayoutParameters::getScaleFactor, LayoutParameters::setScaleFactor);
     }
 
     private void refreshDiagram() {

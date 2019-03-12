@@ -21,9 +21,6 @@
     <line y2="9" style="stroke:rgb(0,0,255);stroke-pxWidth:1" x1="16" x2="0" y1="0"/>
 <text x="-5" font-size="8" y="-5" font-family="Verdana" transform="rotate(0,0,0)">lb</text>
         </g>
-        <g id="1" transform="translate(41.0,276.0)">
-    <circle fill="black" r="4" cx="4" cy="4" stroke="black"/>
-</g>
         <g id="ba" transform="translate(35.0,186.66666666666669)">
     <rect x="1" width="18" y="1" height="18" style="fill:rgb(255,255,255);stroke-width:2;stroke:rgb(0,0,255)"/>
     <line y2="15" style="stroke:rgb(0,0,255);stroke-width:2" x1="10" x2="10" y1="5"/>
@@ -31,9 +28,6 @@
         <g id="da" transform="translate(41.0,306.0)">
     <line y2="8" style="stroke:rgb(0,0,0);stroke-width:3" x1="0" x2="8" y1="0"/>
     <line y2="8" style="stroke:rgb(0,0,0);stroke-width:3" x1="8" x2="0" y1="0"/>
-</g>
-        <g id="3" transform="translate(91.0,276.0)">
-    <circle fill="black" r="4" cx="4" cy="4" stroke="black"/>
 </g>
         <g id="bb" transform="translate(85.0,186.66666666666669)">
     <rect x="1" width="18" y="1" height="18" style="fill:rgb(255,255,255);stroke-width:2;stroke:rgb(0,0,255)"/>
@@ -53,17 +47,23 @@
         <g id="lbFictif" transform="translate(91.0,109.33333333333334)">
     <circle fill="black" r="4" cx="4" cy="4" stroke="black"/>
 </g>
-        <polyline fill="none" id="Wire0" style="stroke:rgb(200,0,0);stroke-width:1" points="45.0,206.66666666666669 45.0,280.0"/>
-        <polyline fill="none" id="Wire1" style="stroke:rgb(200,0,0);stroke-width:1" points="45.0,280.0 45.0,310.0"/>
-        <polyline fill="none" id="Wire2" style="stroke:rgb(200,0,0);stroke-width:1" points="45.0,310.0 45.0,310.0"/>
-        <polyline fill="none" id="Wire3" style="stroke:rgb(200,0,0);stroke-width:1" points="95.0,206.66666666666669 95.0,280.0"/>
-        <polyline fill="none" id="Wire4" style="stroke:rgb(200,0,0);stroke-width:1" points="95.0,280.0 95.0,310.0"/>
-        <polyline fill="none" id="Wire5" style="stroke:rgb(200,0,0);stroke-width:1" points="95.0,310.0 95.0,310.0"/>
-        <polyline fill="none" id="Wire6" style="stroke:rgb(200,0,0);stroke-width:1" points="45.0,113.33333333333334 45.0,186.66666666666669"/>
-        <polyline fill="none" id="Wire7" style="stroke:rgb(200,0,0);stroke-width:1" points="45.0,113.33333333333334 45.0,113.33333333333334 60.0,113.33333333333334"/>
-        <polyline fill="none" id="Wire8" style="stroke:rgb(200,0,0);stroke-width:1" points="45.0,34.00000000000002 45.0,113.33333333333334"/>
-        <polyline fill="none" id="Wire9" style="stroke:rgb(200,0,0);stroke-width:1" points="95.0,113.33333333333334 95.0,186.66666666666669"/>
-        <polyline fill="none" id="Wire10" style="stroke:rgb(200,0,0);stroke-width:1" points="95.0,113.33333333333334 95.0,113.33333333333334 80.0,113.33333333333334"/>
-        <polyline fill="none" id="Wire11" style="stroke:rgb(200,0,0);stroke-width:1" points="95.0,34.00000000000002 95.0,113.33333333333334"/>
+        <g id="daFictif" transform="translate(41.0,276.0)">
+    <circle fill="black" r="4" cx="4" cy="4" stroke="black"/>
+</g>
+        <g id="dbFictif" transform="translate(91.0,276.0)">
+    <circle fill="black" r="4" cx="4" cy="4" stroke="black"/>
+</g>
+        <polyline fill="none" id="Wire0" style="stroke:rgb(200,0,0);stroke-width:1" points="45.0,310.0 45.0,310.0"/>
+        <polyline fill="none" id="Wire1" style="stroke:rgb(200,0,0);stroke-width:1" points="95.0,310.0 95.0,310.0"/>
+        <polyline fill="none" id="Wire2" style="stroke:rgb(200,0,0);stroke-width:1" points="45.0,113.33333333333334 45.0,186.66666666666669"/>
+        <polyline fill="none" id="Wire3" style="stroke:rgb(200,0,0);stroke-width:1" points="45.0,113.33333333333334 45.0,113.33333333333334 60.0,113.33333333333334"/>
+        <polyline fill="none" id="Wire4" style="stroke:rgb(200,0,0);stroke-width:1" points="45.0,34.00000000000002 45.0,113.33333333333334"/>
+        <polyline fill="none" id="Wire5" style="stroke:rgb(200,0,0);stroke-width:1" points="95.0,113.33333333333334 95.0,186.66666666666669"/>
+        <polyline fill="none" id="Wire6" style="stroke:rgb(200,0,0);stroke-width:1" points="95.0,113.33333333333334 95.0,113.33333333333334 80.0,113.33333333333334"/>
+        <polyline fill="none" id="Wire7" style="stroke:rgb(200,0,0);stroke-width:1" points="95.0,34.00000000000002 95.0,113.33333333333334"/>
+        <polyline fill="none" id="Wire8" style="stroke:rgb(200,0,0);stroke-width:1" points="45.0,206.66666666666669 45.0,280.0"/>
+        <polyline fill="none" id="Wire9" style="stroke:rgb(200,0,0);stroke-width:1" points="45.0,310.0 45.0,280.0"/>
+        <polyline fill="none" id="Wire10" style="stroke:rgb(200,0,0);stroke-width:1" points="95.0,206.66666666666669 95.0,280.0"/>
+        <polyline fill="none" id="Wire11" style="stroke:rgb(200,0,0);stroke-width:1" points="95.0,310.0 95.0,280.0"/>
     </g>
 </svg>

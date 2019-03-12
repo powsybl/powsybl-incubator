@@ -83,7 +83,7 @@ public class ImplicitCellDetector implements CellDetector {
 
     @Override
     public void detectCells(Graph graph) {
-        detectCells(graph, false, true);
+        detectCells(graph, true, true);
     }
 
     /**

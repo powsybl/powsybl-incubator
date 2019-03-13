@@ -62,7 +62,6 @@ public class PositionFree implements PositionFinder {
         int i = 1;
         for (BusNode n : context.graph.getNodeBuses()
                 .stream()
-                .sorted(Comparator.comparing(BusNode::getId))
                 .collect(Collectors.toList())) {
             context.nodeToNb.put(n, i);
             i++;
@@ -158,6 +157,7 @@ public class PositionFree implements PositionFinder {
         List<HorizontalChain> chains = new ArrayList<>();
 
         List<BusNode> busConnectedToFlatCell = bus2flatCells.keySet().stream()
+                .sorted(Comparator.comparingInt(context.nodeToNb::get))
                 .sorted(Comparator.comparingInt(bus -> bus2flatCells.get(bus).size()))
                 .collect(Collectors.toList());
         //this sorting is to ensure that in most cases (non circular chain) the first bus of a chain is connected to
@@ -198,12 +198,11 @@ public class PositionFree implements PositionFinder {
     }
 
     private void buildBusToBelongings(Context context) {
-        context.vbcpToCells.keySet().forEach(vbcp -> {
-            vbcp.busNodeSet.forEach(busNode -> {
-                context.busToBelonging.putIfAbsent(busNode, new NodeBelonging(busNode));
-                context.busToBelonging.get(busNode).vbcps.add(vbcp);
-            });
-        });
+        context.vbcpToCells.keySet().forEach(vbcp ->
+                vbcp.busNodeSet.forEach(busNode -> {
+                    context.busToBelonging.putIfAbsent(busNode, new NodeBelonging(busNode));
+                    context.busToBelonging.get(busNode).vbcps.add(vbcp);
+                }));
         context.hChains.forEach(hChain -> hChain.busNodes.forEach(busNode -> {
             context.busToBelonging.putIfAbsent(busNode, new NodeBelonging(busNode));
             context.busToBelonging.get(busNode).hChain = hChain;
@@ -221,7 +220,7 @@ public class PositionFree implements PositionFinder {
         int firstStructuralPosition = 1;
         int firstFeederOrder = 1;
         for (ConnectedCluster cc : context.connectedClusters) {
-            firstStructuralPosition = cc.setStructuralPositionsAndCellOrders(firstStructuralPosition);
+            firstStructuralPosition = cc.setStructuralPositions(firstStructuralPosition);
             firstFeederOrder = cc.setCellOrders(firstFeederOrder);
         }
     }
@@ -315,7 +314,7 @@ public class PositionFree implements PositionFinder {
             return busNodes.indexOf(bus);
         }
 
-        int getDelatPosition(BusNode bus1, BusNode bus2) {
+        int getDeltaPosition(BusNode bus1, BusNode bus2) {
             return getPosition(bus1) - getPosition(bus2);
         }
 
@@ -326,7 +325,7 @@ public class PositionFree implements PositionFinder {
                 for (int j = i + 1; j < intersection.size(); j++) {
                     BusNode bus1 = intersection.get(i);
                     BusNode bus2 = intersection.get(j);
-                    if (getDelatPosition(bus1, bus2) * other.getDelatPosition(bus1, bus2) < 0) {
+                    if (getDeltaPosition(bus1, bus2) * other.getDeltaPosition(bus1, bus2) < 0) {
                         Collections.reverse(busNodes);
                         return;
                     }
@@ -347,7 +346,7 @@ public class PositionFree implements PositionFinder {
     }
 
     /**
-     * A connexCluster bundle busNodes that are connected through a path of HChains and VerticalBusConnectionPatterns
+     * A connectedCluster bundle busNodes that are connected through a path of HChains and VerticalBusConnectionPatterns
      */
     private class ConnectedCluster {
         Set<NodeBelonging> buses;
@@ -410,12 +409,12 @@ public class PositionFree implements PositionFinder {
             List<VerticalBusConnectionPattern> sortedVbcp = new ArrayList<>();
             sortedVbcp.add(remainingVbcp.get(0));
             remainingVbcp.remove(0);
-            int previousSize = 0;
+            int previousSize;
             while (!remainingVbcp.isEmpty()) {
                 previousSize = remainingVbcp.size();
                 sortWhenObviousComparisonsExist(remainingVbcp, sortedVbcp);
                 if (previousSize == remainingVbcp.size()) { //plan B !
-                    return;
+                    unblockSortingWithSimilarityCriteria(remainingVbcp, sortedVbcp);
                 }
             }
             vbcps = sortedVbcp;
@@ -423,37 +422,33 @@ public class PositionFree implements PositionFinder {
 
         private void sortWhenObviousComparisonsExist(List<VerticalBusConnectionPattern> remainingVbcp,
                                                      List<VerticalBusConnectionPattern> sortedVbcp) {
-            Iterator<VerticalBusConnectionPattern> it = remainingVbcp.iterator();
-            while (it.hasNext()) {
-                VerticalBusConnectionPattern vbcp = it.next();
+            for (VerticalBusConnectionPattern vbcp : remainingVbcp) {
                 if (tryToInsertVbcp(vbcp, sortedVbcp)) {
                     remainingVbcp.remove(vbcp);
                     break;
                 }
-                unblockSortingWithSimilarityCriteria(remainingVbcp, sortedVbcp);
             }
-        }
-
-        private boolean tryToInsertVbcp(VerticalBusConnectionPattern vbcp,
-                                        List<VerticalBusConnectionPattern> sortedList,
-                                        boolean strict) {
-            for (VerticalBusConnectionPattern iterVbcp : sortedList) {
-                int compare = compareHVbcp(vbcp, iterVbcp);
-                if (compare != 0) {
-                    int position = sortedList.indexOf(iterVbcp);
-                    sortedList.add(compare < 0 ? position : position + 1, vbcp);
-                    return true;
-                }
-            }
-            return false;
         }
 
         private boolean tryToInsertVbcp(VerticalBusConnectionPattern vbcp,
                                         List<VerticalBusConnectionPattern> sortedList) {
-            return tryToInsertVbcp(vbcp, sortedList, true);
+            int compare = 0;
+            for (VerticalBusConnectionPattern iterVbcp : sortedList) {
+                compare = compareHVbcp(vbcp, iterVbcp);
+                if (compare < 0) {
+                    int position = sortedList.indexOf(iterVbcp);
+                    sortedList.add(position, vbcp);
+                    return true;
+                }
+            }
+            if (compare > 0) {
+                sortedList.add(vbcp);
+                return true;
+            }
+            return false;
         }
 
-        // don't use it as a comparator : if 2 vbcp have no commonChains, the result is "equals",
+        // don't use it as a comparator : if 2 vbcp are not comparable, the result is 0,
         // but the to vbcp could be far from one another -> necessary to have a dedicated sorting function -> sortVbcp()
         private int compareHVbcp(VerticalBusConnectionPattern vbcp1, VerticalBusConnectionPattern vbcp2) {
             List<HorizontalChain> commonChains = intersectChains(vbcp1, vbcp2);
@@ -528,7 +523,7 @@ public class PositionFree implements PositionFinder {
             return h;
         }
 
-        int setStructuralPositionsAndCellOrders(int firstStructuralHPosition) {
+        int setStructuralPositions(int firstStructuralHPosition) {
             int maxH = firstStructuralHPosition;
             for (HorizontalChain chain : hChains) {
                 int structH = firstStructuralHPosition;

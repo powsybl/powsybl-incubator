@@ -179,7 +179,7 @@ public class SVGWriter {
             root.appendChild(g);
 
             metadata.addNodeMetadata(
-                    new GraphMetadata.NodeMetadata(node.getId(), node.getComponentType(), node.isRotated()));
+                    new GraphMetadata.NodeMetadata(node.getId(), node.getComponentType(), node.isRotated(), node.isOpen()));
             if (node.getType() == Node.NodeType.BUS) {
                 metadata.addComponentMetadata(new ComponentMetadata(ComponentType.BUSBAR_SECTION,
                                                                     node.getId(),

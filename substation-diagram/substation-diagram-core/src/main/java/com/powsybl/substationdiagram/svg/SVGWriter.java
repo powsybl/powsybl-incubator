@@ -227,14 +227,16 @@ public class SVGWriter {
         g.appendChild(label);
     }
 
+    private boolean canInsertComponentSVG(Node node) {
+        return layoutParameters.isShowInternalNodes() ||
+                (!node.isFictitious() && node.getType() != Node.NodeType.SHUNT);
+    }
+
     private void incorporateComponents(Node node, Element g) {
         SVGOMDocument obj = componentLibrary.getSvgDocument(node.getComponentType());
-        if (obj != null) {
-            transformComponent(node, g);
-            if (layoutParameters.isShowInternalNodes()
-                    || (!node.isFictitious() && node.getType() != Node.NodeType.SHUNT)) {
-                insertComponentSVGIntoDocumentSVG(obj, g);
-            }
+        transformComponent(node, g);
+        if (obj != null && canInsertComponentSVG(node)) {
+            insertComponentSVGIntoDocumentSVG(obj, g);
         }
     }
 

@@ -152,6 +152,7 @@ public class PrimaryBlock extends AbstractBlock {
         if (getCell().getType() == Cell.CellType.INTERNBOUND) {
             nodes.get(1).setX(getCoord().getX());
             nodes.get(1).setY(nodes.get(0).getY());
+            nodes.get(1).setRotated(true);
             return;
         }
         if (isEmbedingNodeType(Node.NodeType.BUS)) {

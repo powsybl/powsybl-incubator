@@ -14,9 +14,6 @@
     <line y2="9" style="stroke:rgb(0,0,255);stroke-pxWidth:1" x1="16" x2="0" y1="0"/>
 <text x="-5" font-size="8" y="-5" font-family="Verdana" transform="rotate(0,0,0)">l</text>
         </g>
-        <g id="1" transform="translate(41.0,276.0)">
-    <circle fill="black" r="4" cx="4" cy="4" stroke="black"/>
-</g>
         <g id="d" transform="translate(41.0,306.0)">
     <g id="closed">
         <line y2="8" style="stroke:rgb(0,0,0);stroke-width:3" x1="0" x2="8" y1="0"/>
@@ -36,9 +33,12 @@
         <line y2="10" style="stroke:rgb(0,0,255);stroke-width:2" x1="5" x2="15" y1="10"/>
     </g>
 </g>
+        <g id="dFictif" transform="translate(41.0,276.0)">
+    <circle fill="black" r="4" cx="4" cy="4" stroke="black"/>
+</g>
         <polyline fill="none" id="Wire0" style="stroke:rgb(200,0,0);stroke-width:1" points="45.0,310.0 45.0,310.0"/>
-        <polyline fill="none" id="Wire1" style="stroke:rgb(200,0,0);stroke-width:1" points="45.0,310.0 45.0,280.0"/>
-        <polyline fill="none" id="Wire2" style="stroke:rgb(200,0,0);stroke-width:1" points="45.0,280.0 45.0,165.0"/>
-        <polyline fill="none" id="Wire3" style="stroke:rgb(200,0,0);stroke-width:1" points="45.0,145.0 45.0,34.0"/>
+        <polyline fill="none" id="Wire1" style="stroke:rgb(200,0,0);stroke-width:1" points="45.0,145.0 45.0,34.0"/>
+        <polyline fill="none" id="Wire2" style="stroke:rgb(200,0,0);stroke-width:1" points="45.0,165.0 45.0,280.0"/>
+        <polyline fill="none" id="Wire3" style="stroke:rgb(200,0,0);stroke-width:1" points="45.0,310.0 45.0,280.0"/>
     </g>
 </svg>

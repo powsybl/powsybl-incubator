@@ -611,6 +611,7 @@ public class Graph {
                 .forEach(nodeSwitch -> addDoubleNode(nodeBus, (SwitchNode) nodeSwitch, "")));
     }
 
+    //the first element shouldn't be a Feeder
     public void extendFeederConnectedToBus() {
         getNodeBuses().forEach(nodeBus -> nodeBus.getAdjacentNodes().stream()
                 .filter(node -> node.getType() == Node.NodeType.FEEDER)
@@ -669,11 +670,6 @@ public class Graph {
                     FeederNode feederNode = FeederNode.createFictitious(this, n.getId());
                     addNode(feederNode);
                     substitueNode(n, feederNode);
-/*
-                    Node adj = n.getAdjacentNodes().get(0);
-                    removeEdge(n, adj);
-                    addEdge(feederNode, adj);
-*/
                 });
     }
 

@@ -32,6 +32,7 @@ import javafx.collections.transformation.FilteredList;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.geometry.Insets;
+import javafx.geometry.Side;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxListCell;
@@ -73,7 +74,12 @@ public class SubstationDiagramViewer extends Application {
                               "Auto without extensions", new PositionVoltageLevelLayoutFactory(new ImplicitCellDetector(), new PositionFree()),
                               "Random", new RandomVoltageLevelLayoutFactory(500, 500));
 
-    private final ComponentLibrary componentLibrary = new ResourcesComponentLibrary("/ConvergenceLibrary");
+    private final ComponentLibrary convergenceComponentLibrary = new ResourcesComponentLibrary("/ConvergenceLibrary");
+    private final ComponentLibrary flatDesignComponentLibrary = new ResourcesComponentLibrary("/FlatDesignLibrary");
+
+    private final Map<String, ComponentLibrary> svgLibraries
+            = ImmutableMap.of("CVG Design", convergenceComponentLibrary,
+                              "Flat Design", flatDesignComponentLibrary);
 
     private final ObservableList<SelectableVoltageLevel> selectableVoltageLevels = FXCollections.observableArrayList();
     private final FilteredList<SelectableVoltageLevel> filteredSelectableVoltageLevels = new FilteredList<>(selectableVoltageLevels, s -> true);
@@ -97,23 +103,84 @@ public class SubstationDiagramViewer extends Application {
 
     private final ComboBox<String> layoutComboBox = new ComboBox<>();
 
-    private class SubstationDiagramPane extends FlowPane {
+    private final ComboBox<String> svgLibraryComboBox = new ComboBox<>();
+
+    private final CheckBox showNames = new CheckBox("Show names");
+
+    private class SubstationDiagramPane extends BorderPane {
+
+        private final FlowPane flowPane = new FlowPane();
+
+        private final TextArea infoArea = new TextArea();
+
+        private final TextArea svgArea = new TextArea();
+
+        private final TextArea metadataArea = new TextArea();
+
+        private final Tab tab1 = new Tab("Diagram", flowPane);
+
+        private final Tab tab2 = new Tab("SVG", svgArea);
+
+        private final Tab tab3 = new Tab("Metadata", metadataArea);
+
+        private final TabPane tabPane = new TabPane(tab1, tab2, tab3);
+
+        private final TitledPane titledPane = new TitledPane("Infos", infoArea);
 
         private final ChangeListener<LayoutParameters> listener;
 
         SubstationDiagramPane(VoltageLevel vl) {
+            svgArea.setEditable(false);
+            metadataArea.setEditable(false);
+            infoArea.setEditable(false);
+            infoArea.setText(String.join(System.lineSeparator(),
+                                         "id: " + vl.getId(),
+                                         "name: " + vl.getName()));
+            tabPane.setSide(Side.BOTTOM);
+            tab1.setClosable(false);
+            tab2.setClosable(false);
+            tab3.setClosable(false);
+            setCenter(tabPane);
+            setBottom(titledPane);
             listener = (observable, oldValue, newValue) -> loadDiagram(vl);
             layoutParameters.addListener(new WeakChangeListener<>(listener));
             loadDiagram(vl);
         }
 
-        private SubstationDiagramView createSubstationDiagramView(VoltageLevel vl) {
+        class SubstationDiagramResult {
+
+            private final SubstationDiagramView view;
+
+            private final String svgData;
+
+            private final String metadataData;
+
+            SubstationDiagramResult(SubstationDiagramView view, String svgData, String metadataData) {
+                this.view = view;
+                this.svgData = svgData;
+                this.metadataData = metadataData;
+            }
+
+            SubstationDiagramView getView() {
+                return view;
+            }
+
+            String getSvgData() {
+                return svgData;
+            }
+
+            String getMetadataData() {
+                return metadataData;
+            }
+        }
+
+        private SubstationDiagramResult createSubstationDiagramView(VoltageLevel vl) {
             String svgData;
             String metadataData;
             try (StringWriter svgWriter = new StringWriter();
                  StringWriter metadataWriter = new StringWriter()) {
-                SubstationDiagram diagram = SubstationDiagram.build(vl, getLayoutFactory());
-                diagram.writeSvg(componentLibrary, layoutParameters.get(), svgWriter, metadataWriter, null);
+                SubstationDiagram diagram = SubstationDiagram.build(vl, getLayoutFactory(), showNames.isSelected());
+                diagram.writeSvg(getComponentLibrary(), layoutParameters.get(), svgWriter, metadataWriter, null);
                 svgWriter.flush();
                 metadataWriter.flush();
                 svgData = svgWriter.toString();
@@ -129,16 +196,16 @@ public class SubstationDiagramViewer extends Application {
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }
-            return diagramView;
+            return new SubstationDiagramResult(diagramView, svgData, metadataData);
         }
 
         private void loadDiagram(VoltageLevel vl) {
-            Service<SubstationDiagramView> loader = new Service<SubstationDiagramView>() {
+            Service<SubstationDiagramResult> loader = new Service<SubstationDiagramResult>() {
                 @Override
-                protected Task<SubstationDiagramView> createTask() {
-                    return new Task<SubstationDiagramView>() {
+                protected Task<SubstationDiagramResult> createTask() {
+                    return new Task<SubstationDiagramResult>() {
                         @Override
-                        protected SubstationDiagramView call() {
+                        protected SubstationDiagramResult call() {
                             return createSubstationDiagramView(vl);
                         }
                     };
@@ -147,11 +214,15 @@ public class SubstationDiagramViewer extends Application {
             loader.setOnScheduled(event -> {
                 Text loading = new Text("Loading...");
                 loading.setFont(Font.font(30));
-                getChildren().setAll(loading);
+                flowPane.getChildren().setAll(loading);
+                svgArea.setText("");
+                metadataArea.setText("");
             });
             loader.setOnSucceeded(event -> {
-                SubstationDiagramView view = (SubstationDiagramView) event.getSource().getValue();
-                getChildren().setAll(view);
+                SubstationDiagramResult result = (SubstationDiagramResult) event.getSource().getValue();
+                flowPane.getChildren().setAll(result.getView());
+                svgArea.setText(result.getSvgData());
+                metadataArea.setText(result.getMetadataData());
             });
             loader.setOnFailed(event -> {
                 Throwable e = event.getSource().getException();
@@ -159,16 +230,24 @@ public class SubstationDiagramViewer extends Application {
             });
             loader.start();
         }
+
+        private ComponentLibrary getComponentLibrary() {
+            String selectedItem = svgLibraryComboBox.getSelectionModel().getSelectedItem();
+            return svgLibraries.get(selectedItem);
+        }
     }
 
     private class SelectableVoltageLevel {
 
         private final String id;
 
+        private final String name;
+
         private final BooleanProperty checkedProperty = new SimpleBooleanProperty();
 
-        SelectableVoltageLevel(String id) {
+        SelectableVoltageLevel(String id, String name) {
             this.id = id;
+            this.name = name;
             checkedProperty.addListener((obs, wasSelected, isNowSelected) -> {
                 if (isNowSelected) {
                     addDiagramTab();
@@ -199,13 +278,17 @@ public class SubstationDiagramViewer extends Application {
             return id;
         }
 
+        String getIdOrName() {
+            return showNames.isSelected() ? name : id;
+        }
+
         BooleanProperty checkedProperty() {
             return checkedProperty;
         }
 
         @Override
         public String toString() {
-            return id;
+            return getIdOrName();
         }
     }
 
@@ -247,23 +330,42 @@ public class SubstationDiagramViewer extends Application {
         parametersPane.setVgap(5);
         parametersPane.setPadding(new Insets(5, 5, 5, 5));
 
+        int rowIndex = 0;
+
+        // svg library list
+        svgLibraryComboBox.getItems().addAll(svgLibraries.keySet());
+        svgLibraryComboBox.getSelectionModel().selectFirst();
+        svgLibraryComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> refreshDiagram());
+        parametersPane.add(new Label("Design:"), 0, rowIndex++);
+        parametersPane.add(svgLibraryComboBox, 0, rowIndex++);
+
         // layout list
         layoutComboBox.getItems().addAll(layouts.keySet());
         layoutComboBox.getSelectionModel().selectFirst();
         layoutComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> refreshDiagram());
-        parametersPane.add(new Label("Layout:"), 0, 0);
-        parametersPane.add(layoutComboBox, 0, 1);
+        parametersPane.add(new Label("Layout:"), 0, rowIndex++);
+        parametersPane.add(layoutComboBox, 0, rowIndex++);
 
-        addSpinner("Initial busbar X:", 0, 100, 5, 2, LayoutParameters::getInitialYBus, LayoutParameters::setInitialXBus);
-        addSpinner("Initial busbar Y:", 0, 500, 5, 4, LayoutParameters::getInitialYBus, LayoutParameters::setInitialYBus);
-        addSpinner("Busbar vertical space:", 10, 100, 5, 6, LayoutParameters::getVerticalSpaceBus, LayoutParameters::setVerticalSpaceBus);
-        addSpinner("Horizontal busbar padding:", 10, 100, 5, 8, LayoutParameters::getHorizontalBusPadding, LayoutParameters::setHorizontalBusPadding);
-        addSpinner("Cell width:", 10, 100, 5, 10, LayoutParameters::getCellWidth, LayoutParameters::setCellWidth);
-        addSpinner("Extern cell height:", 100, 500, 10, 12, LayoutParameters::getExternCellHeight, LayoutParameters::setExternCellHeight);
-        addSpinner("Intern cell height:", 10, 100, 5, 14, LayoutParameters::getInternCellHeight, LayoutParameters::setInternCellHeight);
-        addSpinner("Stack height:", 10, 100, 5, 16, LayoutParameters::getStackHeight, LayoutParameters::setStackHeight);
-        addCheckBox("Show grid", 18, LayoutParameters::isShowGrid, LayoutParameters::setShowGrid);
-        addCheckBox("Show internal nodes", 19, LayoutParameters::isShowInternalNodes, LayoutParameters::setShowInternalNodes);
+        addSpinner("Initial busbar X:", 0, 100, 5, rowIndex, LayoutParameters::getInitialYBus, LayoutParameters::setInitialXBus);
+        rowIndex += 2;
+        addSpinner("Initial busbar Y:", 0, 500, 5, rowIndex, LayoutParameters::getInitialYBus, LayoutParameters::setInitialYBus);
+        rowIndex += 2;
+        addSpinner("Busbar vertical space:", 10, 100, 5, rowIndex, LayoutParameters::getVerticalSpaceBus, LayoutParameters::setVerticalSpaceBus);
+        rowIndex += 2;
+        addSpinner("Horizontal busbar padding:", 10, 100, 5, rowIndex, LayoutParameters::getHorizontalBusPadding, LayoutParameters::setHorizontalBusPadding);
+        rowIndex += 2;
+        addSpinner("Cell width:", 10, 100, 5, rowIndex, LayoutParameters::getCellWidth, LayoutParameters::setCellWidth);
+        rowIndex += 2;
+        addSpinner("Extern cell height:", 100, 500, 10, rowIndex, LayoutParameters::getExternCellHeight, LayoutParameters::setExternCellHeight);
+        rowIndex += 2;
+        addSpinner("Intern cell height:", 10, 100, 5, rowIndex, LayoutParameters::getInternCellHeight, LayoutParameters::setInternCellHeight);
+        rowIndex += 2;
+        addSpinner("Stack height:", 10, 100, 5, rowIndex, LayoutParameters::getStackHeight, LayoutParameters::setStackHeight);
+        rowIndex += 2;
+        addCheckBox("Show grid", rowIndex, LayoutParameters::isShowGrid, LayoutParameters::setShowGrid);
+        rowIndex += 1;
+        addCheckBox("Show internal nodes", rowIndex, LayoutParameters::isShowInternalNodes, LayoutParameters::setShowInternalNodes);
+        rowIndex += 1;
 
         CheckBox stackCb = new CheckBox("Stack feeders");
         VoltageLevelLayoutFactory layoutFactory = getLayoutFactory();
@@ -274,7 +376,7 @@ public class SubstationDiagramViewer extends Application {
             // just to trigger diagram update
             refreshDiagram();
         });
-        parametersPane.add(stackCb, 0, 20);
+        parametersPane.add(stackCb, 0, rowIndex);
     }
 
     private void refreshDiagram() {
@@ -311,12 +413,16 @@ public class SubstationDiagramViewer extends Application {
     @Override
     public void start(Stage primaryStage) {
         voltageLevelList.setCellFactory(CheckBoxListCell.forListView(SelectableVoltageLevel::checkedProperty));
+        showNames.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            voltageLevelList.refresh();
+            refreshDiagram();
+        });
         filterInput.textProperty().addListener(obs -> {
             String filter = filterInput.getText();
             if (filter == null || filter.length() == 0) {
                 filteredSelectableVoltageLevels.setPredicate(s -> true);
             } else {
-                filteredSelectableVoltageLevels.setPredicate(s -> s.getId().contains(filter));
+                filteredSelectableVoltageLevels.setPredicate(s -> s.getIdOrName().contains(filter));
             }
         });
 
@@ -325,7 +431,7 @@ public class SubstationDiagramViewer extends Application {
                 selectableVoltageLevels.clear();
             } else {
                 selectableVoltageLevels.setAll(newNetwork.getVoltageLevelStream()
-                        .map(vl -> new SelectableVoltageLevel(vl.getId()))
+                        .map(vl -> new SelectableVoltageLevel(vl.getId(), vl.getName()))
                         .collect(Collectors.toList()));
             }
         });
@@ -339,10 +445,18 @@ public class SubstationDiagramViewer extends Application {
         BorderPane voltageLevelPane = new BorderPane();
         Label filterLabel = new Label("Filter:");
         filterLabel.setMinWidth(40);
-        HBox filterPane = new HBox(5, filterLabel, filterInput);
-        HBox.setHgrow(filterInput, Priority.ALWAYS);
-        filterPane.setPadding(new Insets(5, 5, 5, 5));
-        voltageLevelPane.setTop(filterPane);
+        GridPane voltageLevelToolBar = new GridPane();
+        voltageLevelToolBar.setHgap(5);
+        voltageLevelToolBar.setVgap(5);
+        voltageLevelToolBar.setPadding(new Insets(5, 5, 5, 5));
+        voltageLevelToolBar.add(showNames, 0, 0, 2, 1);
+        voltageLevelToolBar.add(filterLabel, 0, 1);
+        voltageLevelToolBar.add(filterInput, 1, 1);
+        ColumnConstraints c0 = new ColumnConstraints();
+        ColumnConstraints c1 = new ColumnConstraints();
+        c1.setHgrow(Priority.ALWAYS);
+        voltageLevelToolBar.getColumnConstraints().addAll(c0, c1);
+        voltageLevelPane.setTop(voltageLevelToolBar);
         voltageLevelPane.setCenter(voltageLevelList);
 
         SplitPane splitPane = new SplitPane(voltageLevelPane, diagramsPane, parametersPane);
@@ -418,6 +532,8 @@ public class SubstationDiagramViewer extends Application {
             preferences.put(CASE_PATH_PROPERTY, file.toAbsolutePath().toString());
         });
         networkService.setOnFailed(event -> {
+            Throwable exception = event.getSource().getException();
+            LOGGER.error(exception.toString(), exception);
             casePathTextField.setText("");
             caseLoadingStatus.setStyle("-fx-background-color: red");
         });

@@ -171,7 +171,6 @@ public class TestCase2StackedCell extends AbstractTestCase {
                                                                  50, 250, 40,
                                                                  30, true, true);
 
-
         new PositionVoltageLevelLayout(g).run(layoutParameters);
 
         // assert coordinate

@@ -9,6 +9,8 @@ package com.powsybl.substationdiagram.model;
 import com.powsybl.iidm.network.Branch;
 import com.powsybl.iidm.network.Injection;
 import com.powsybl.iidm.network.ShuntCompensator;
+import com.powsybl.iidm.network.ThreeWindingsTransformer;
+import com.powsybl.iidm.network.TwoWindingsTransformer;
 import com.powsybl.substationdiagram.library.ComponentType;
 
 import java.util.Objects;
@@ -17,6 +19,7 @@ import java.util.Objects;
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
+ * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
  */
 public class FeederNode extends Node {
 
@@ -24,8 +27,8 @@ public class FeederNode extends Node {
 
     private Cell.Direction direction = Cell.Direction.UNDEFINED;
 
-    protected FeederNode(String id, String name, ComponentType componentType, Graph graph) {
-        super(NodeType.FEEDER, id, name, componentType, graph);
+    protected FeederNode(String id, String name, ComponentType componentType, boolean fictitious, Graph graph) {
+        super(NodeType.FEEDER, id, name, componentType, fictitious, graph);
     }
 
     public static FeederNode create(Graph graph, Injection injection) {
@@ -48,10 +51,13 @@ public class FeederNode extends Node {
             case SHUNT_COMPENSATOR:
                 componentType = ((ShuntCompensator) injection).getbPerSection() >= 0 ? ComponentType.CAPACITOR : ComponentType.INDUCTOR;
                 break;
+            case DANGLING_LINE:
+                componentType = ComponentType.DANGLING_LINE;
+                break;
             default:
                 throw new AssertionError();
         }
-        return new FeederNode(injection.getId(), injection.getName(), componentType, graph);
+        return new FeederNode(injection.getId(), injection.getName(), componentType, false, graph);
     }
 
     public static FeederNode create(Graph graph, Branch branch, Branch.Side side) {
@@ -63,14 +69,31 @@ public class FeederNode extends Node {
                 componentType = ComponentType.LINE;
                 break;
             case TWO_WINDINGS_TRANSFORMER:
-                componentType = ComponentType.TWO_WINDINGS_TRANSFORMER;
+                if (((TwoWindingsTransformer) branch).getPhaseTapChanger() == null) {
+                    componentType = ComponentType.TWO_WINDINGS_TRANSFORMER;
+                } else {
+                    componentType = ComponentType.PHASE_SHIFT_TRANSFORMER;
+                }
                 break;
             default:
                 throw new AssertionError();
         }
         String id = branch.getId() + "_" + side.name();
         String name = branch.getName() + "_" + side.name();
-        return new FeederNode(id, name, componentType, graph);
+        return new FeederNode(id, name, componentType, false, graph);
+    }
+
+    public static FeederNode create(Graph graph, ThreeWindingsTransformer twt, ThreeWindingsTransformer.Side side) {
+        Objects.requireNonNull(graph);
+        Objects.requireNonNull(twt);
+        Objects.requireNonNull(side);
+        String id = twt.getId() + "_" + side.name();
+        String name = twt.getName() + "_" + side.name();
+        return new FeederNode(id, name, ComponentType.THREE_WINDINGS_TRANSFORMER, false, graph);
+    }
+
+    public static FeederNode createFictitious(Graph graph, String id) {
+        return new FeederNode(id, id, ComponentType.NODE, true, graph);
     }
 
     public int getOrder() {

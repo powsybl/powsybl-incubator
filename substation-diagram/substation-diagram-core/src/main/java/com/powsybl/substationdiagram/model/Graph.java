@@ -13,7 +13,6 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.powsybl.iidm.network.*;
-import com.powsybl.substationdiagram.library.ComponentType;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
 import org.jgrapht.UndirectedGraph;
@@ -156,7 +155,7 @@ public class Graph {
         @Override
         public void visitThreeWindingsTransformer(ThreeWindingsTransformer transformer,
                                                   ThreeWindingsTransformer.Side side) {
-            throw new AssertionError("TODO");
+            addFeeder(FeederNode.create(Graph.this, transformer, side), transformer.getTerminal(side));
         }
     }
 
@@ -314,17 +313,31 @@ public class Graph {
         handleConnectedComponents();
     }
 
-    private void removeUnnecessaryFictitiousNodes() {
+    public void removeUnnecessaryFictitiousNodes() {
         List<Node> fictitiousNodesToRemove = nodes.stream()
                 .filter(node -> node.getType() == Node.NodeType.FICTITIOUS)
-                .filter(node -> node.getAdjacentNodes().size() == 2)
                 .collect(Collectors.toList());
         for (Node n : fictitiousNodesToRemove) {
-            Node node1 = n.getAdjacentNodes().get(0);
-            Node node2 = n.getAdjacentNodes().get(1);
-            LOGGER.info("Remove unnecessary node between {} and {}", node1.getId(), node2.getId());
-            removeNode(n);
-            addEdge(node1, node2);
+            if (n.getAdjacentNodes().size() == 2) {
+                Node node1 = n.getAdjacentNodes().get(0);
+                Node node2 = n.getAdjacentNodes().get(1);
+                LOGGER.info("Remove fictitious node {} between {} and {}", n.getId(), node1.getId(), node2.getId());
+                removeNode(n);
+                addEdge(node1, node2);
+            } else {
+                LOGGER.info("Working on fictitious node {} with {} adjacent nodes", n.getId(), n.getAdjacentNodes().size());
+                Node busNode = n.getAdjacentNodes().stream().filter(node -> node.getType() == Node.NodeType.BUS).findFirst().orElse(null);
+                if (busNode != null) {
+                    n.getAdjacentNodes().stream().filter(node -> !node.equals(busNode)).forEach(node -> {
+                        LOGGER.info("Connecting {} to {}", node.getId(), busNode.getId());
+                        addEdge(node, busNode);
+                    });
+                    LOGGER.info("Remove fictitious node {}", n.getId());
+                    removeNode(n);
+                } else {
+                    LOGGER.warn("Cannot remove fictitious node {} because there are no adjacent BUS nodes", n.getId());
+                }
+            }
         }
     }
 
@@ -417,12 +430,12 @@ public class Graph {
                 .map(FicticiousNode.class::cast)
                 .forEach(ficticiousNodeSet::add);
         FicticiousNode biggestFn = ficticiousNodeSet.last();
-        BusNode bn = new BusNode(biggestFn.getId() + "FictitiousBus", biggestFn.getLabel(), this);
+        BusNode bn = BusNode.createFictitious(this, biggestFn.getId() + "FictitiousBus");
         addNode(bn);
         substitueNode(biggestFn, bn);
     }
 
-    private void addNode(Node node) {
+    public void addNode(Node node) {
         nodes.add(node);
         nodesByType.computeIfAbsent(node.getType(), nodeType -> new ArrayList<>()).add(node);
         nodesById.put(node.getId(), node);
@@ -453,7 +466,7 @@ public class Graph {
      * @param n1 first node
      * @param n2 second node
      */
-    void addEdge(Node n1, Node n2) {
+    public void addEdge(Node n1, Node n2) {
         Edge edge = new Edge(n1, n2);
         edges.add(edge);
         n1.addAdjacentEdge(edge);
@@ -598,6 +611,7 @@ public class Graph {
                 .forEach(nodeSwitch -> addDoubleNode(nodeBus, (SwitchNode) nodeSwitch, "")));
     }
 
+    //the first element shouldn't be a Feeder
     public void extendFeederConnectedToBus() {
         getNodeBuses().forEach(nodeBus -> nodeBus.getAdjacentNodes().stream()
                 .filter(node -> node.getType() == Node.NodeType.FEEDER)
@@ -610,7 +624,6 @@ public class Graph {
                 }));
     }
 
-
     public void extendSwitchBetweenBus(SwitchNode nodeSwitch) {
         List<Node> copyAdj = new ArrayList<>(nodeSwitch.getAdjacentNodes());
         addDoubleNode((BusNode) copyAdj.get(0), nodeSwitch, "0");
@@ -619,8 +632,7 @@ public class Graph {
 
     private void addDoubleNode(BusNode busNode, SwitchNode nodeSwitch, String suffix) {
         removeEdge(busNode, nodeSwitch);
-        FicticiousNode fNodeToBus = new FicticiousNode(Graph.this, nodeSwitch.getId() + "fSwitch" + suffix,
-                true);
+        SwitchNode fNodeToBus = SwitchNode.createFictitious(Graph.this, nodeSwitch.getId() + "fSwitch" + suffix);
         addNode(fNodeToBus);
         FicticiousNode fNodeToSw = new FicticiousNode(Graph.this, nodeSwitch.getId() + "fNode" + suffix);
         addNode(fNodeToSw);
@@ -655,17 +667,11 @@ public class Graph {
         getNodes().stream()
                 .filter(n -> n.getType() == Node.NodeType.FICTITIOUS && n.getAdjacentEdges().size() == 1)
                 .forEach(n -> {
-                    FeederNode feederNode = new FeederNode(n.getId(), n.getLabel(), ComponentType.LOAD, this);
+                    FeederNode feederNode = FeederNode.createFictitious(this, n.getId());
                     addNode(feederNode);
                     substitueNode(n, feederNode);
-/*
-                    Node adj = n.getAdjacentNodes().get(0);
-                    removeEdge(n, adj);
-                    addEdge(feederNode, adj);
-*/
                 });
     }
-
 
     public BusNode getVHNodeBus(int v, int h) {
         if (vPosToHPosToNodeBus == null) {

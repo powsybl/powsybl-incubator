@@ -30,7 +30,6 @@ public class Node implements BaseNode {
         FEEDER,
         FICTITIOUS,
         SWITCH,
-        FICTITIOUS_SWITCH,
         SHUNT,
         OTHER
     }
@@ -44,6 +43,8 @@ public class Node implements BaseNode {
     private final String name;
 
     private final ComponentType componentType;
+
+    private final boolean fictitious;
 
     private double x = -1;
     private double y = -1;
@@ -67,11 +68,12 @@ public class Node implements BaseNode {
     /**
      * Constructor
      */
-    protected Node(NodeType type, String id, String name, ComponentType componentType, Graph graph) {
+    protected Node(NodeType type, String id, String name, ComponentType componentType, boolean fictitious, Graph graph) {
         this.type = Objects.requireNonNull(type);
         this.id = Objects.requireNonNull(id);
         this.name = name;
         this.componentType = Objects.requireNonNull(componentType);
+        this.fictitious = fictitious;
         this.graph = Objects.requireNonNull(graph);
     }
 
@@ -88,20 +90,28 @@ public class Node implements BaseNode {
         return componentType;
     }
 
+    public boolean isFictitious() {
+        return fictitious;
+    }
+
     public void setType(NodeType type) {
         this.type = type;
     }
 
     @Override
     public String getId() {
-        return graph.isUseName() ? name : id;
+        return id;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public String getLabel() {
         if (label != null) {
             return label;
         } else {
-            return getId();
+            return graph.isUseName() ? name : id;
         }
     }
 

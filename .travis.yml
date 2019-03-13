@@ -18,4 +18,4 @@ install:
 - pushd powsybl/powsybl-core && mvn --batch-mode -DskipTests install && popd
 
 script:
-- mvn --batch-mode clean verify sonar:sonar
+- mvn --batch-mode -Pjacoco,checks clean verify sonar:sonar

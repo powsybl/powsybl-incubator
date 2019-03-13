@@ -165,7 +165,6 @@ public abstract class AbstractBlock implements Block {
         getCoord().setY(y);
     }
 
-
     @Override
     public void calculateCoord(LayoutParameters layoutParam) {
         if (cell.getType() == Cell.CellType.SHUNT) {

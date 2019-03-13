@@ -169,8 +169,12 @@ public class SVGWriter {
             } else {
                 incorporateComponents(node, g);
             }
-            if (node instanceof FeederNode || node instanceof BusNode) {
-                drawLabel(node.getLabel(), node.isRotated(), g);
+            if (!node.isFictitious()) {
+                if (node instanceof FeederNode) {
+                    drawLabel(node.getLabel(), node.isRotated(), g);
+                } else if (node instanceof BusNode) {
+                    drawLabel(node.getLabel(), false, g);
+                }
             }
             root.appendChild(g);
 
@@ -196,8 +200,13 @@ public class SVGWriter {
         Element line = g.getOwnerDocument().createElement("line");
         line.setAttribute("x1", "0");
         line.setAttribute("y1", "0");
-        line.setAttribute("x2", String.valueOf(node.getPxWidth()));
-        line.setAttribute("y2", "0");
+        if (node.isRotated()) {
+            line.setAttribute("x2", "0");
+            line.setAttribute("y2", String.valueOf(node.getPxWidth()));
+        } else {
+            line.setAttribute("x2", String.valueOf(node.getPxWidth()));
+            line.setAttribute("y2", "0");
+        }
         line.setAttribute(STYLE, "stroke:rgb(0,0,0);stroke-width:3");
 
         g.appendChild(line);
@@ -218,16 +227,16 @@ public class SVGWriter {
         g.appendChild(label);
     }
 
+    private boolean canInsertComponentSVG(Node node) {
+        return layoutParameters.isShowInternalNodes() ||
+                (!node.isFictitious() && node.getType() != Node.NodeType.SHUNT);
+    }
+
     private void incorporateComponents(Node node, Element g) {
         SVGOMDocument obj = componentLibrary.getSvgDocument(node.getComponentType());
-        if (obj != null) {
-            transformComponent(node, g);
-            if (layoutParameters.isShowInternalNodes()
-                    || (node.getType() != Node.NodeType.FICTITIOUS
-                    && node.getType() != Node.NodeType.SHUNT
-                    && node.getType() != Node.NodeType.FICTITIOUS_SWITCH)) {
-                insertComponentSVGIntoDocumentSVG(obj, g);
-            }
+        transformComponent(node, g);
+        if (obj != null && canInsertComponentSVG(node)) {
+            insertComponentSVGIntoDocumentSVG(obj, g);
         }
     }
 

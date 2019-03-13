@@ -211,7 +211,8 @@ public class CellBlockDecomposer {
 
     /**
      * Search for primary layout.block
-     * a primary layout.block is made of BUS|FICTICIOUS|FEEDER|SHUNT - n* SWITCH - BUS|FICTICIOUS|FEEDER|SHUNT
+     * a primary layout.block shall have the following pattern :
+     * BUS|FICTICIOUS|FEEDER|SHUNT - n * SWITCH - BUS|FICTICIOUS|FEEDER|SHUNT
      *
      * @param cell           cell
      * @param currentNode    currentnode
@@ -228,7 +229,7 @@ public class CellBlockDecomposer {
 
         alreadyTreated.add(currentNode2);
         blockNodes.add(currentNode2);
-        while (currentNode2.getType() == Node.NodeType.SWITCH || currentNode2.getType() == Node.NodeType.FICTITIOUS_SWITCH) {
+        while (currentNode2.getType() == Node.NodeType.SWITCH) {
             Node nextNode = currentNode2.getAdjacentNodes().get(
                     currentNode2.getAdjacentNodes().get(0).equals(parentNode2) ? 1 : 0);
             parentNode2 = currentNode2;

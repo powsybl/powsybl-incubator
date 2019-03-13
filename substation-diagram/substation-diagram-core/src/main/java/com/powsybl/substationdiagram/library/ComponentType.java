@@ -10,6 +10,7 @@ package com.powsybl.substationdiagram.library;
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
+ * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
  */
 public enum ComponentType {
     BUSBAR_SECTION,
@@ -24,5 +25,8 @@ public enum ComponentType {
     INDUCTOR,
     STATIC_VAR_COMPENSATOR,
     TWO_WINDINGS_TRANSFORMER,
-    VSC_CONVERTER_STATION
+    THREE_WINDINGS_TRANSFORMER,
+    VSC_CONVERTER_STATION,
+    DANGLING_LINE,
+    PHASE_SHIFT_TRANSFORMER
 }

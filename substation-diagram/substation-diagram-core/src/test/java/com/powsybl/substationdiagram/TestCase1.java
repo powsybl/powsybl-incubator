@@ -157,7 +157,7 @@ public class TestCase1 extends AbstractTestCase {
         assertEquals("bbs", cell.getBusNodes().get(0).getId());
         assertNull(cell.getRootBlock());
         assertTrue(cell.getCellBridgingWith().isEmpty());
-        assertEquals("EXTERN[1, b, bbs, d, l]", cell.getFullId());
+        assertEquals("EXTERN[b, bbs, d, dFictif, l]", cell.getFullId());
         assertEquals(new Position(0, 0), cell.getMaxBusPosition());
 
         // build blocks
@@ -172,11 +172,10 @@ public class TestCase1 extends AbstractTestCase {
         assertEquals("l", bc.getEndingNode().getId());
         assertEquals(1, cell.getPrimaryBlocksConnectedToBus().size());
 
-
         assertTrue(bc.getUpperBlock() instanceof PrimaryBlock);
         PrimaryBlock ub = (PrimaryBlock) bc.getUpperBlock();
         assertEquals(new Position(0, 0, 1, 2, false, Orientation.VERTICAL), ub.getPosition());
-        assertEquals("1", ub.getStartingNode().getId());
+        assertEquals("dFictif", ub.getStartingNode().getId());
         assertEquals("l", ub.getEndingNode().getId());
         assertTrue(ub.getStackableBlocks().isEmpty());
 
@@ -184,9 +183,8 @@ public class TestCase1 extends AbstractTestCase {
         PrimaryBlock lb = (PrimaryBlock) bc.getLowerBlock();
         assertEquals(new Position(0, 0, 1, 0, false, Orientation.VERTICAL), lb.getPosition());
         assertEquals("bbs", lb.getStartingNode().getId());
-        assertEquals("1", lb.getEndingNode().getId());
+        assertEquals("dFictif", lb.getEndingNode().getId());
         assertTrue(lb.getStackableBlocks().isEmpty());
-
 
         assertFalse(g.getNodes().get(0).isRotated());
         assertFalse(g.getNodes().get(1).isRotated());
@@ -200,7 +198,6 @@ public class TestCase1 extends AbstractTestCase {
                                                                  50, 250, 40,
                                                                  30, true, true);
 
-
         new PositionVoltageLevelLayout(g).run(layoutParameters);
 
         // assert coordinate
@@ -209,11 +206,11 @@ public class TestCase1 extends AbstractTestCase {
         assertEquals(25, g.getNodes().get(1).getX(), 0);
         assertEquals(-20, g.getNodes().get(1).getY(), 0);
         assertEquals(25, g.getNodes().get(2).getX(), 0);
-        assertEquals(230, g.getNodes().get(2).getY(), 0);
+        assertEquals(260, g.getNodes().get(2).getY(), 0);
         assertEquals(25, g.getNodes().get(3).getX(), 0);
-        assertEquals(260, g.getNodes().get(3).getY(), 0);
+        assertEquals(105, g.getNodes().get(3).getY(), 0);
         assertEquals(25, g.getNodes().get(4).getX(), 0);
-        assertEquals(105, g.getNodes().get(4).getY(), 0);
+        assertEquals(230, g.getNodes().get(4).getY(), 0);
 
         // write SVG and compare to reference
         compareSvg(g, layoutParameters, "/TestCase1.svg");

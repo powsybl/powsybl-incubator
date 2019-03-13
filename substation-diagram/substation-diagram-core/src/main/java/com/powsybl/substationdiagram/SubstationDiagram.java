@@ -45,14 +45,14 @@ public final class SubstationDiagram {
     }
 
     public static SubstationDiagram build(VoltageLevel vl) {
-        return build(vl, new PositionVoltageLevelLayoutFactory());
+        return build(vl, new PositionVoltageLevelLayoutFactory(), false);
     }
 
-    public static SubstationDiagram build(VoltageLevel vl, VoltageLevelLayoutFactory layoutFactory) {
+    public static SubstationDiagram build(VoltageLevel vl, VoltageLevelLayoutFactory layoutFactory, boolean useName) {
         Objects.requireNonNull(vl);
         Objects.requireNonNull(layoutFactory);
 
-        Graph graph = Graph.create(vl);
+        Graph graph = Graph.create(vl, useName);
         VoltageLevelLayout layout = layoutFactory.create(graph);
 
         return new SubstationDiagram(graph, layout);

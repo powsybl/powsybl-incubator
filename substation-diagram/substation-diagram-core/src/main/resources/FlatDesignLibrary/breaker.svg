@@ -49,7 +49,7 @@
      inkscape:window-maximized="1"
      inkscape:current-layer="svg6" />
   <g
-     id="g1427">
+     id="closed">
     <g
        transform="translate(-715,-271)"
        id="g1200">
@@ -127,4 +127,24 @@
        x="-16"
        y="-12" />
   </g>
+  <g id="open">
+  <g transform="rotate(89.24874877929688 10.00000762939453,10.000007629394531) " id="g1427">
+   <g id="g1200">
+    <g transform="matrix(0,-1,-1,0,1006,1006) " id="g1190">
+     <rect fill="#008080" stroke-width="1.001671" id="rect1181" width="20" height="20" x="986" y="986" rx="5.008356" ry="5.008356"/>
+     <path opacity="0.5" fill="#4d4d4d" stroke-width="1px" stroke-miterlimit="4" stroke-dashoffset="0" id="path1183" d="m990,994l-4,4l0,2.99219c0,2.77463 2.23318,5.00781 5.00781,5.00781l2.99219,0l8,-8l-12,-4z"/>
+     <rect fill="#f9f9f9" stroke-width="0.816497px" stroke-miterlimit="4" stroke-dashoffset="0" y="994" x="990" height="4" width="12" id="rect1185"/>
+    </g>
+   </g>
+   <g id="g1210">
+    <g id="g1208" transform="matrix(0,-1,-1,0,1006,1006) ">
+     <rect fill="#008080" stroke-width="1.001671" ry="5.008356" rx="5.008356" y="986" x="986" height="20" width="20" id="rect1202"/>
+     <path opacity="0.5" fill="#4d4d4d" stroke-width="1px" stroke-miterlimit="4" stroke-dashoffset="0" d="m990,994l-4,4l0,2.99219c0,2.77463 2.23318,5.00781 5.00781,5.00781l2.99219,0l8,-8l-12,-4z" id="path1204"/>
+     <rect fill="#f9f9f9" stroke-width="0.816497px" stroke-miterlimit="4" stroke-dashoffset="0" id="rect1206" width="12" height="4" x="990" y="994"/>
+    </g>
+   </g>
+   <rect fill="#008080" stroke-width="1.001671" id="rect1212" width="20" height="20" x="-20" y="-20" rx="5.008356" ry="5.008356" transform="matrix(0,-1,-1,0,0,0) "/>
+   <rect fill="#f9f9f9" stroke-width="0.816497px" stroke-miterlimit="4" stroke-dashoffset="0" y="-12" x="-16" height="4" width="12" id="rect1216" transform="matrix(0,-1,-1,0,0,0) "/>
+  </g>
+ </g>
 </svg>

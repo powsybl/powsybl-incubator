@@ -97,7 +97,7 @@
             **/generated/**/*
         </sonar.exclusions>
 
-        <powsyblcore.version>2.4.0-SNAPSHOT</powsyblcore.version>
+        <powsyblcore.version>2.5.0-SNAPSHOT</powsyblcore.version>
 
     </properties>
 

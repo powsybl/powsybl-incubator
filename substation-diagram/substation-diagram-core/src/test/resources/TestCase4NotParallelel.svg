@@ -98,7 +98,7 @@
         <line y2="8" style="stroke:rgb(0,0,0);stroke-width:3" x1="8" x2="0" y1="0"/>
     </g>
 </g>
-        <g id="ss1" transform="translate(66.0,306.0)">
+        <g id="ss1" transform="matrix(0.0,1.0,-1.0,0.0,74.0,306.0)">
     <g id="closed">
         <line y2="8" style="stroke:rgb(0,0,0);stroke-width:3" x1="0" x2="8" y1="0"/>
         <line y2="8" style="stroke:rgb(0,0,0);stroke-width:3" x1="8" x2="0" y1="0"/>
@@ -106,9 +106,6 @@
     <g id="open">
         <line y2="8" style="stroke:rgb(0,0,0);stroke-width:3" x1="8" x2="0" y1="0"/>
     </g>
-</g>
-        <g id="8" transform="translate(141.0,276.0)">
-    <circle fill="black" r="4" cx="4" cy="4" stroke="black"/>
 </g>
         <g id="bc" transform="translate(135.0,145.0)">
     <g id="closed">

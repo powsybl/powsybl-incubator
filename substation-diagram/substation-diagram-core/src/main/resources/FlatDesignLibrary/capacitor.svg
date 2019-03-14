@@ -8,8 +8,8 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.0"
-   width="12"
-   height="12"
+   width="25"
+   height="25"
    id="svg10"
    sodipodi:docname="ShuntCompensatorCapacitor.svg"
    inkscape:version="0.92.3 (2405546, 2018-03-11)">
@@ -41,15 +41,15 @@
      id="namedview12"
      showgrid="false"
      inkscape:zoom="19.666667"
-     inkscape:cx="6"
-     inkscape:cy="6"
+     inkscape:cx="6.0000001"
+     inkscape:cy="6.0000001"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg10" />
   <g
      id="g41"
-     transform="matrix(0.60000051,0,0,0.60000051,-2.9389906,6.488136)">
+     transform="matrix(1.2500011,0,0,1.2500011,-6.1228971,13.51695)">
     <circle
        style="fill:#008080;fill-opacity:1;stroke-width:1.03286421"
        r="9.9999914"

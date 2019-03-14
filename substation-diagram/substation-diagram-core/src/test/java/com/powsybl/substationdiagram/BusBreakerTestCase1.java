@@ -24,8 +24,6 @@ import static org.junit.Assert.assertTrue;
  */
 public class BusBreakerTestCase1 extends AbstractTestCase {
 
-    private VoltageLevel vl;
-
     @Before
     public void setUp() {
         Network network = NetworkFactory.create("busBreakerTestCase1", "test");

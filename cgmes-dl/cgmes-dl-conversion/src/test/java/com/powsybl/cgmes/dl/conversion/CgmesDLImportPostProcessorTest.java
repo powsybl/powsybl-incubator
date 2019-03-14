@@ -10,12 +10,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
-import org.mockito.Mockito;
 
-import com.powsybl.cgmes.conversion.CgmesModelExtension;
+import com.powsybl.cgmes.conversion.Profiling;
 import com.powsybl.cgmes.iidm.Networks;
 import com.powsybl.cgmes.iidm.extensions.dl.NodeDiagramData;
-import com.powsybl.cgmes.model.triplestore.CgmesModelTripleStore;
 import com.powsybl.iidm.network.BusbarSection;
 import com.powsybl.iidm.network.Network;
 
@@ -23,18 +21,12 @@ import com.powsybl.iidm.network.Network;
  *
  * @author Massimo Ferraro <massimo.ferraro@techrain.eu>
  */
-public class CgmesDLPostProcessorTest extends CgmesDLModelTest {
+public class CgmesDLImportPostProcessorTest extends CgmesDLModelTest  {
 
     @Test
     public void process() throws Exception {
         Network network = Networks.createNetworkWithBusbar();
-        CgmesModelTripleStore cgmesModel = Mockito.mock(CgmesModelTripleStore.class);
-        Mockito.when(cgmesModel.tripleStore()).thenReturn(tripleStore);
-        CgmesModelExtension extension = Mockito.mock(CgmesModelExtension.class);
-        Mockito.when(extension.getCgmesModel()).thenReturn(cgmesModel);
-        network.addExtension(CgmesModelExtension.class, extension);
-
-        new CgmesDLPostProcessor(queryCatalog).process(network, null);
+        new CgmesDLImportPostProcessor(queryCatalog).process(network, tripleStore, new Profiling());
 
         BusbarSection busbar = network.getBusbarSection("Busbar");
         NodeDiagramData<BusbarSection> busDiagramData = busbar.getExtension(NodeDiagramData.class);
@@ -46,5 +38,4 @@ public class CgmesDLPostProcessorTest extends CgmesDLModelTest {
         assertEquals(20, busDiagramData.getPoint2().getX(), 0);
         assertEquals(40, busDiagramData.getPoint2().getY(), 0);
     }
-
 }

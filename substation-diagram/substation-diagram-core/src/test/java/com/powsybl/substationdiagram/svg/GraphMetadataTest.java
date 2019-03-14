@@ -32,8 +32,8 @@ public class GraphMetadataTest {
                                                             null,
                                                             ImmutableList.of(new AnchorPoint(5, 4, AnchorOrientation.NONE)),
                                                             new ComponentSize(10, 12)));
-        metadata.addNodeMetadata(new GraphMetadata.NodeMetadata("id1", ComponentType.BREAKER, true));
-        metadata.addNodeMetadata(new GraphMetadata.NodeMetadata("id2", ComponentType.BUSBAR_SECTION, false));
+        metadata.addNodeMetadata(new GraphMetadata.NodeMetadata("id1", ComponentType.BREAKER, true, false));
+        metadata.addNodeMetadata(new GraphMetadata.NodeMetadata("id2", ComponentType.BUSBAR_SECTION, false, false));
         metadata.addWireMetadata(new GraphMetadata.WireMetadata("id3", "id1", "id2"));
 
         ObjectMapper objectMapper = JsonUtil.createObjectMapper();

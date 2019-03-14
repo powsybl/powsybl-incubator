@@ -241,14 +241,19 @@ public class InternCell extends Cell {
 
     public List<BusNode> getSideBusNodes(Side side) {
         if (getType() == CellType.INTERNBOUND) {
-            List<BusNode> busNodes = getBusNodes()
-                    .stream()
-                    .sorted(Comparator.comparingInt(n -> n.getStructuralPosition().getH()))
-                    .collect(Collectors.toList());
+            Position pos0 = getBusNodes().get(0).getStructuralPosition();
+            Position pos1 = getBusNodes().get(1).getStructuralPosition();
+            if (pos0 == null || pos1 == null || pos0.getH() < pos1.getH()) {
+                if (side == Side.LEFT) {
+                    return new ArrayList<>(Collections.singletonList(getBusNodes().get(0)));
+                } else {
+                    return new ArrayList<>(Collections.singletonList(getBusNodes().get(1)));
+                }
+            }
             if (side == Side.LEFT) {
-                return new ArrayList<>(Collections.singletonList(busNodes.get(0)));
+                return new ArrayList<>(Collections.singletonList(getBusNodes().get(1)));
             } else {
-                return new ArrayList<>(Collections.singletonList(busNodes.get(1)));
+                return new ArrayList<>(Collections.singletonList(getBusNodes().get(0)));
             }
         }
         return sideToConnectedBlocks.get(side).stream()

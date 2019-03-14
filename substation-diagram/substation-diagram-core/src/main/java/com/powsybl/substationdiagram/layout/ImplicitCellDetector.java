@@ -23,6 +23,17 @@ import java.util.stream.Collectors;
 public class ImplicitCellDetector implements CellDetector {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ImplicitCellDetector.class);
+    private boolean removeUnnecessaryFictitiousNodes;
+    private boolean substituteSingularFictitiousByFeederNode;
+
+    public ImplicitCellDetector(boolean removeUnnecessaryFictitiousNodes, boolean substituteSingularFictitiousByFeederNode) {
+        this.removeUnnecessaryFictitiousNodes = removeUnnecessaryFictitiousNodes;
+        this.substituteSingularFictitiousByFeederNode = substituteSingularFictitiousByFeederNode;
+    }
+
+    public ImplicitCellDetector() {
+        this(true, true);
+    }
 
 
     /**
@@ -37,9 +48,9 @@ public class ImplicitCellDetector implements CellDetector {
      * exclusion types = {}
      * stop the visit if reach a Bus : stopTypes = {BUS,FEEDER} * @param graph g
      */
-    public void detectCells(Graph graph,
-                            boolean removeUnnecessaryFictitiousNodes,
-                            boolean substituteSingularFictitiousByFeederNode) {
+    @Override
+    public void detectCells(Graph graph) {
+        graph.substituteFictitiousNodesMirroringBusNodes();
         if (removeUnnecessaryFictitiousNodes) {
             graph.removeUnnecessaryFictitiousNodes();
         }
@@ -48,7 +59,6 @@ public class ImplicitCellDetector implements CellDetector {
         if (substituteSingularFictitiousByFeederNode) {
             graph.substituteSingularFictitiousByFeederNode();
         }
-        graph.substituteFictitiousNodesMirroringBusNodes();
         graph.extendBreakerConnectedToBus();
         graph.extendFeederConnectedToBus();
 
@@ -79,11 +89,6 @@ public class ImplicitCellDetector implements CellDetector {
         graph.getCells().forEach(Cell::getFullId);
 
         graph.logCellDetectionStatus();
-    }
-
-    @Override
-    public void detectCells(Graph graph) {
-        detectCells(graph, true, true);
     }
 
     /**

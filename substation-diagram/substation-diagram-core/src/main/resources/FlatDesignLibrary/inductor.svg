@@ -8,8 +8,8 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.0"
-   width="12"
-   height="12"
+   width="25"
+   height="25"
    id="svg10"
    sodipodi:docname="ShuntCompensatorInductor.svg"
    inkscape:version="0.92.3 (2405546, 2018-03-11)">
@@ -41,14 +41,14 @@
      id="namedview12"
      showgrid="false"
      inkscape:zoom="19.666667"
-     inkscape:cx="6"
-     inkscape:cy="6"
+     inkscape:cx="6.0000001"
+     inkscape:cy="6.0000001"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg10" />
   <g
-     transform="matrix(0.60000051,0,0,0.60000051,-429.00037,-183.60016)"
+     transform="matrix(1.2500011,0,0,1.2500011,-893.75078,-382.50034)"
      id="g1536">
     <circle
        id="circle1476"

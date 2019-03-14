@@ -19,8 +19,13 @@
 <text x="-5" font-size="8" y="-5" font-family="Verdana" transform="rotate(0,0,0)">l</text>
         </g>
         <g id="b1_l" transform="translate(41.0,306.0)">
-    <line y2="8" style="stroke:rgb(0,0,0);stroke-width:3" x1="0" x2="8" y1="0"/>
-    <line y2="8" style="stroke:rgb(0,0,0);stroke-width:3" x1="8" x2="0" y1="0"/>
+    <g id="closed">
+        <line y2="8" style="stroke:rgb(0,0,0);stroke-width:3" x1="0" x2="8" y1="0"/>
+        <line y2="8" style="stroke:rgb(0,0,0);stroke-width:3" x1="8" x2="0" y1="0"/>
+    </g>
+    <g id="open">
+        <line y2="8" style="stroke:rgb(0,0,0);stroke-width:3" x1="8" x2="0" y1="0"/>
+    </g>
 </g>
         <polyline fill="none" id="Wire0" style="stroke:rgb(200,0,0);stroke-width:1" points="45.0,310.0 45.0,310.0"/>
         <polyline fill="none" id="Wire1" style="stroke:rgb(200,0,0);stroke-width:1" points="45.0,310.0 45.0,54.0"/>

@@ -48,6 +48,9 @@ public class SVGWriter {
     private static final String STYLE = "style";
     private static final String TRANSFORM = "transform";
     private static final String TRANSLATE = "translate";
+    private static final int FONT_SIZE = 8;
+    private static final String FONT_FAMILY = "Verdana";
+    private static final int LABEL_OFFSET = 5;
 
     private final ComponentLibrary componentLibrary;
 
@@ -171,9 +174,12 @@ public class SVGWriter {
             }
             if (!node.isFictitious()) {
                 if (node instanceof FeederNode) {
-                    drawLabel(node.getLabel(), node.isRotated(), g);
+                    int yShift = node.getCell().getDirection() == Cell.Direction.TOP
+                            ? -LABEL_OFFSET
+                            : ((int) (componentLibrary.getSize(node.getComponentType()).getHeight()) + FONT_SIZE + LABEL_OFFSET);
+                    drawLabel(node.getLabel(), node.isRotated(), -LABEL_OFFSET, yShift, g);
                 } else if (node instanceof BusNode) {
-                    drawLabel(node.getLabel(), false, g);
+                    drawLabel(node.getLabel(), false, -LABEL_OFFSET, -LABEL_OFFSET, g);
                 }
             }
             root.appendChild(g);
@@ -215,12 +221,12 @@ public class SVGWriter {
                 + (layoutParameters.getTranslateY() + node.getY()) + ")");
     }
 
-    private void drawLabel(String str, boolean rotated, Element g) {
+    private void drawLabel(String str, boolean rotated, int xShift, int yShift, Element g) {
         Element label = g.getOwnerDocument().createElement("text");
-        label.setAttribute("x", "-5");
-        label.setAttribute("y", "-5");
-        label.setAttribute("font-family", "Verdana");
-        label.setAttribute("font-size", "8");
+        label.setAttribute("x", Integer.toString(xShift));
+        label.setAttribute("y", Integer.toString(yShift));
+        label.setAttribute("font-family", FONT_FAMILY);
+        label.setAttribute("font-size", Integer.toString(FONT_SIZE));
         Text text = g.getOwnerDocument().createTextNode(str);
         label.setAttribute(TRANSFORM, "rotate(" + (rotated ? -90 : 0) + "," + 0 + "," + 0 + ")");
         label.appendChild(text);

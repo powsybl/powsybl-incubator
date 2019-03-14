@@ -15,6 +15,7 @@ import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.test.EurostagTutorialExample1Factory;
 import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
+import com.powsybl.loadflow.simple.equations.IndexedNetwork;
 import com.powsybl.loadflow.simple.equations.LoadFlowMatrix;
 import com.powsybl.security.*;
 import org.junit.Test;
@@ -37,7 +38,7 @@ import static org.junit.Assert.*;
  */
 public class SimpleLoadFlowTest {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(SimpleLoadFlowTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleLoadFlowTest.class);
 
     @Test
     public void buildDcMatrix() throws RecoverableCondition {
@@ -51,10 +52,32 @@ public class SimpleLoadFlowTest {
                     b.setV(b.getVoltageLevel().getNominalV());
                 });
 
-        SparseStore<Double> lfMatrix = LoadFlowMatrix.buildDc(network);
+        IndexedNetwork indexedNetwork = IndexedNetwork.of(network);
+
+        SparseStore<Double> lfMatrix = LoadFlowMatrix.buildDc(indexedNetwork);
         LOGGER.info("{}", lfMatrix);
 
-        PrimitiveDenseStore rhs = LoadFlowMatrix.buildDcRhs(network);
+        assertEquals(1d, lfMatrix.get(0, 0), 0d);
+        assertEquals(0d, lfMatrix.get(0, 1), 0d);
+        assertEquals(0d, lfMatrix.get(0, 2), 0d);
+        assertEquals(0d, lfMatrix.get(0, 3), 0d);
+
+        assertEquals(-821.2891969379839d, lfMatrix.get(1, 0), 0d);
+        assertEquals(9572.804348453135d, lfMatrix.get(1, 1), 0d);
+        assertEquals(-8751.515151515152d, lfMatrix.get(1, 2), 0d);
+        assertEquals(0d, lfMatrix.get(1, 3), 0d);
+
+        assertEquals(0d, lfMatrix.get(2, 0), 0d);
+        assertEquals(-8751.515151515152d, lfMatrix.get(2, 1), 0d);
+        assertEquals(22826.54714230771d, lfMatrix.get(2, 2), 0d);
+        assertEquals(-14075.031990792557d, lfMatrix.get(2, 3), 0d);
+
+        assertEquals(0d, lfMatrix.get(3, 0), 0d);
+        assertEquals(0d, lfMatrix.get(3, 1), 0d);
+        assertEquals(-14075.031990792557d, lfMatrix.get(3, 2), 0d);
+        assertEquals(14075.031990792557d, lfMatrix.get(3, 3), 0d);
+
+        PrimitiveDenseStore rhs = LoadFlowMatrix.buildDcRhs(indexedNetwork);
 
         LU<Double> lu = LU.PRIMITIVE.make();
 
@@ -62,24 +85,31 @@ public class SimpleLoadFlowTest {
 
         LOGGER.info("Result: {}", lhs);
 
-        LoadFlowMatrix.updateNetwork(network, lhs);
+        assertEquals(2.214797674592096E-15d, lhs.get(0), 0d);
+        assertEquals(0.7305587389155768, lhs.get(1), 0d);
+        assertEquals(0.7991182957022801, lhs.get(2), 0d);
+        assertEquals(0.8417469732351269, lhs.get(3), 0d);
+
+        LoadFlowMatrix.updateNetwork(indexedNetwork, lhs);
 
         logNetwork(network);
 
         network.getLine("NHV1_NHV2_1").getTerminal1().disconnect();
         network.getLine("NHV1_NHV2_1").getTerminal2().disconnect();
 
-        lfMatrix = LoadFlowMatrix.buildDc(network);
-        rhs = LoadFlowMatrix.buildDcRhs(network);
+        indexedNetwork = IndexedNetwork.of(network);
+
+        lfMatrix = LoadFlowMatrix.buildDc(indexedNetwork);
+        rhs = LoadFlowMatrix.buildDcRhs(indexedNetwork);
         lhs = lu.solve(lfMatrix, rhs);
-        LoadFlowMatrix.updateNetwork(network, lhs);
+        LoadFlowMatrix.updateNetwork(indexedNetwork, lhs);
 
         logNetwork(network);
     }
 
     private static void logNetwork(Network network) {
-
         network.getLoads().forEach(l ->  LOGGER.info("{} : p = {}.", l.getId(), l.getP0()));
+        network.getGenerators().forEach(g ->  LOGGER.info("{} : p = {}.", g.getId(), g.getTargetP()));
         network.getBranchStream().forEach(b -> LOGGER.info("{} : p1 = {}, p2 = {}.",
                 b.getId(), b.getTerminal1().getP(), b.getTerminal2().getP()));
     }

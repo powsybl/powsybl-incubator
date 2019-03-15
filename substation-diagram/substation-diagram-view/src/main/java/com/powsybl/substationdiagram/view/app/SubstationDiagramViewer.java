@@ -10,6 +10,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import com.powsybl.commons.json.JsonUtil;
+import com.powsybl.computation.local.LocalComputationManager;
+import com.powsybl.iidm.import_.ImportConfig;
 import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.VoltageLevel;
@@ -49,10 +51,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.prefs.Preferences;
@@ -521,7 +520,9 @@ public class SubstationDiagramViewer extends Application {
                 return new Task<Network>() {
                     @Override
                     protected Network call() {
-                        return Importers.loadNetwork(file);
+                        Properties properties = new Properties();
+                        properties.put("iidm.import.cgmes.post-processors", "cgmesDLImport");
+                        return Importers.loadNetwork(file, LocalComputationManager.getDefault(), new ImportConfig(), properties);
                     }
                 };
             }

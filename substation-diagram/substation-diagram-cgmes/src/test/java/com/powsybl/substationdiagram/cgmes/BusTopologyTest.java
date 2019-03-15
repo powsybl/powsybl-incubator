@@ -15,7 +15,7 @@ import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.powsybl.cgmes.iidm.extensions.dl.CouplingDeviseDiagramData;
+import com.powsybl.cgmes.iidm.extensions.dl.CouplingDeviceDiagramData;
 import com.powsybl.cgmes.iidm.extensions.dl.DiagramPoint;
 import com.powsybl.cgmes.iidm.extensions.dl.DiagramTerminal;
 import com.powsybl.cgmes.iidm.extensions.dl.InjectionDiagramData;
@@ -155,12 +155,12 @@ public class BusTopologyTest extends AbstractCgmesVoltageLevelLayoutTest {
         danglingLine.addExtension(LineDiagramData.class, danglingLineDiagramData);
 
         TwoWindingsTransformer twt = network.getTwoWindingsTransformer("Transformer");
-        CouplingDeviseDiagramData<TwoWindingsTransformer> twtDiagramData = new CouplingDeviseDiagramData<>(twt, new DiagramPoint(100, 15, 0), 90);
+        CouplingDeviceDiagramData<TwoWindingsTransformer> twtDiagramData = new CouplingDeviceDiagramData<>(twt, new DiagramPoint(100, 15, 0), 90);
         twtDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL1, new DiagramPoint(95, 15, 1));
         twtDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL1, new DiagramPoint(60, 15, 2));
         twtDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL2, new DiagramPoint(105, 15, 1));
         twtDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL2, new DiagramPoint(120, 15, 2));
-        twt.addExtension(CouplingDeviseDiagramData.class, twtDiagramData);
+        twt.addExtension(CouplingDeviceDiagramData.class, twtDiagramData);
     }
 
     @Test

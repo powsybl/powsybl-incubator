@@ -13,7 +13,7 @@ import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.powsybl.cgmes.iidm.extensions.dl.CouplingDeviseDiagramData;
+import com.powsybl.cgmes.iidm.extensions.dl.CouplingDeviceDiagramData;
 import com.powsybl.cgmes.iidm.extensions.dl.DiagramPoint;
 import com.powsybl.cgmes.iidm.extensions.dl.DiagramTerminal;
 import com.powsybl.cgmes.iidm.extensions.dl.InjectionDiagramData;
@@ -195,12 +195,12 @@ public abstract class AbstractNodeTopologyTest extends AbstractCgmesVoltageLevel
 
     protected void addSwitchDiagramData(Switch sw, DiagramPoint switchPoint, int rotation, DiagramPoint terminal1Point1, DiagramPoint terminal1Point2,
                                         DiagramPoint terminal2Point1, DiagramPoint terminal2Point2) {
-        CouplingDeviseDiagramData<Switch> switchDiagramData = new CouplingDeviseDiagramData<>(sw, switchPoint, rotation);
+        CouplingDeviceDiagramData<Switch> switchDiagramData = new CouplingDeviceDiagramData<>(sw, switchPoint, rotation);
         switchDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL1, terminal1Point1);
         switchDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL1, terminal1Point2);
         switchDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL2, terminal2Point1);
         switchDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL2, terminal2Point2);
-        sw.addExtension(CouplingDeviseDiagramData.class, switchDiagramData);
+        sw.addExtension(CouplingDeviceDiagramData.class, switchDiagramData);
     }
 
     protected void addLineDiagramData(Line line, DiagramPoint point1, DiagramPoint point2) {

@@ -13,7 +13,7 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.powsybl.cgmes.iidm.extensions.dl.CouplingDeviseDiagramData;
+import com.powsybl.cgmes.iidm.extensions.dl.CouplingDeviceDiagramData;
 import com.powsybl.cgmes.iidm.extensions.dl.DiagramPoint;
 import com.powsybl.cgmes.iidm.extensions.dl.InjectionDiagramData;
 import com.powsybl.cgmes.iidm.extensions.dl.LineDiagramData;
@@ -110,8 +110,8 @@ public class CgmesVoltageLevelLayout implements VoltageLevelLayout {
                 Switch sw = TopologyKind.NODE_BREAKER.equals(graph.getVoltageLevel().getTopologyKind()) ?
                             graph.getVoltageLevel().getNodeBreakerView().getSwitch(switchNode.getId()) :
                             graph.getVoltageLevel().getBusBreakerView().getSwitch(switchNode.getId());
-                CouplingDeviseDiagramData<Switch> switchDiagramData =  sw != null ? sw.getExtension(CouplingDeviseDiagramData.class) : null;
-                setCouplingDeviseNodeCoordinates(switchNode, switchDiagramData, true);
+                CouplingDeviceDiagramData<Switch> switchDiagramData =  sw != null ? sw.getExtension(CouplingDeviceDiagramData.class) : null;
+                setCouplingDeviceNodeCoordinates(switchNode, switchDiagramData, true);
                 break;
             case FEEDER:
                 setFeederNodeCoordinates(node);
@@ -134,7 +134,7 @@ public class CgmesVoltageLevelLayout implements VoltageLevelLayout {
         }
     }
 
-    private void setCouplingDeviseNodeCoordinates(Node node, CouplingDeviseDiagramData<?> diagramData, boolean rotate) {
+    private void setCouplingDeviceNodeCoordinates(Node node, CouplingDeviceDiagramData<?> diagramData, boolean rotate) {
         if (diagramData != null) {
             node.setX(diagramData.getPoint().getX());
             node.setY(diagramData.getPoint().getY());
@@ -184,8 +184,8 @@ public class CgmesVoltageLevelLayout implements VoltageLevelLayout {
             case PHASE_SHIFT_TRANSFORMER:
                 FeederNode transformerNode = (FeederNode) node;
                 TwoWindingsTransformer transformer = graph.getVoltageLevel().getConnectable(getBranchId(transformerNode.getId()), TwoWindingsTransformer.class);
-                CouplingDeviseDiagramData<TwoWindingsTransformer> transformerDiagramData = transformer != null ? transformer.getExtension(CouplingDeviseDiagramData.class) : null;
-                setCouplingDeviseNodeCoordinates(transformerNode, transformerDiagramData, false);
+                CouplingDeviceDiagramData<TwoWindingsTransformer> transformerDiagramData = transformer != null ? transformer.getExtension(CouplingDeviceDiagramData.class) : null;
+                setCouplingDeviceNodeCoordinates(transformerNode, transformerDiagramData, false);
                 break;
             case THREE_WINDINGS_TRANSFORMER:
                 FeederNode transformer3wNode = (FeederNode) node;

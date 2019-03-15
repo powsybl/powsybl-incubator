@@ -14,7 +14,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.powsybl.cgmes.iidm.Networks;
-import com.powsybl.cgmes.iidm.extensions.dl.CouplingDeviseDiagramData;
+import com.powsybl.cgmes.iidm.extensions.dl.CouplingDeviceDiagramData;
 import com.powsybl.cgmes.iidm.extensions.dl.DiagramTerminal;
 import com.powsybl.cgmes.iidm.extensions.dl.InjectionDiagramData;
 import com.powsybl.cgmes.iidm.extensions.dl.LineDiagramData;
@@ -199,7 +199,7 @@ public class CgmesDLImporterTest extends AbstractCgmesDLTest {
         checkDiagramData(svcDiagramData);
     }
 
-    private <T> void checkDiagramData(CouplingDeviseDiagramData<?> diagramData) {
+    private <T> void checkDiagramData(CouplingDeviceDiagramData<?> diagramData) {
         assertNotNull(diagramData);
         assertEquals(0, diagramData.getPoint().getSeq(), 0);
         assertEquals(10, diagramData.getPoint().getX(), 0);
@@ -225,7 +225,7 @@ public class CgmesDLImporterTest extends AbstractCgmesDLTest {
         cgmesDLImporter.importDLData();
         Network network = cgmesDLImporter.getNetworkWithDLData();
         Switch sw = network.getSwitch("Switch");
-        CouplingDeviseDiagramData<Switch> shuntDiagramData = sw.getExtension(CouplingDeviseDiagramData.class);
+        CouplingDeviceDiagramData<Switch> shuntDiagramData = sw.getExtension(CouplingDeviceDiagramData.class);
 
         checkDiagramData(shuntDiagramData);
     }
@@ -236,7 +236,7 @@ public class CgmesDLImporterTest extends AbstractCgmesDLTest {
         cgmesDLImporter.importDLData();
         Network network = cgmesDLImporter.getNetworkWithDLData();
         TwoWindingsTransformer transformer = network.getTwoWindingsTransformer("Transformer");
-        CouplingDeviseDiagramData<TwoWindingsTransformer> transformerDiagramData = transformer.getExtension(CouplingDeviseDiagramData.class);
+        CouplingDeviceDiagramData<TwoWindingsTransformer> transformerDiagramData = transformer.getExtension(CouplingDeviceDiagramData.class);
 
         checkDiagramData(transformerDiagramData);
     }

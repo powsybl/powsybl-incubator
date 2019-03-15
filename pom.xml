@@ -99,7 +99,7 @@
         </sonar.exclusions>
 
         <powsyblcore.version>2.5.0-SNAPSHOT</powsyblcore.version>
-
+        <powsybl-iidm-cvg-extensions.version>2.4.0</powsybl-iidm-cvg-extensions.version>
     </properties>
 
     <build>
@@ -445,6 +445,12 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.rte-france.powsybl</groupId>
+                <artifactId>powsybl-iidm-cvg-extensions</artifactId>
+                <version>${powsybl-iidm-cvg-extensions.version}</version>
             </dependency>
 
             <!-- Runtime dependencies -->

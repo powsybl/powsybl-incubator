@@ -12,7 +12,7 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.powsybl.cgmes.iidm.extensions.dl.CouplingDeviseDiagramData;
+import com.powsybl.cgmes.iidm.extensions.dl.CouplingDeviceDiagramData;
 import com.powsybl.cgmes.iidm.extensions.dl.DiagramPoint;
 import com.powsybl.cgmes.iidm.extensions.dl.DiagramTerminal;
 import com.powsybl.iidm.network.Network;
@@ -22,19 +22,19 @@ import com.powsybl.triplestore.api.PropertyBags;
  *
  * @author Massimo Ferraro <massimo.ferraro@techrain.eu>
  */
-public abstract class AbstractCouplingDeviseDiagramDataImporter {
+public abstract class AbstractCouplingDeviceDiagramDataImporter {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractCouplingDeviseDiagramDataImporter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractCouplingDeviceDiagramDataImporter.class);
 
     protected Network network;
     protected Map<String, PropertyBags> terminalsDiagramData;
 
-    public AbstractCouplingDeviseDiagramDataImporter(Network network, Map<String, PropertyBags> terminalsDiagramData) {
+    public AbstractCouplingDeviceDiagramDataImporter(Network network, Map<String, PropertyBags> terminalsDiagramData) {
         this.network = Objects.requireNonNull(network);
         this.terminalsDiagramData = Objects.requireNonNull(terminalsDiagramData);
     }
 
-    protected void addTerminalPoints(String equipmentId, String equipmentName, DiagramTerminal terminal, String terminalSide, CouplingDeviseDiagramData<?> diagramData) {
+    protected void addTerminalPoints(String equipmentId, String equipmentName, DiagramTerminal terminal, String terminalSide, CouplingDeviceDiagramData<?> diagramData) {
         String terminalKey = equipmentId + "_" + terminalSide;
         if (terminalsDiagramData.containsKey(terminalKey)) {
             PropertyBags equipmentTerminalsDiagramData = terminalsDiagramData.get(terminalKey);

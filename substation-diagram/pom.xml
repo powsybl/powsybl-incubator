@@ -36,9 +36,6 @@
 
         <franzxaver.version>0.1</franzxaver.version>
         <rdf4j.version>2.4.4</rdf4j.version>
-
-        <powsybl-iidm-cvg-extensions.version>2.1.2</powsybl-iidm-cvg-extensions.version>
-        <powsyblcgmesdl.version>1.0.0-SNAPSHOT</powsyblcgmesdl.version>
     </properties>
 
     <dependencyManagement>
@@ -72,14 +69,9 @@
                 <version>${powsyblcore.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.rte-france.powsybl</groupId>
-                <artifactId>powsybl-iidm-cvg-extensions</artifactId>
-                <version>${powsybl-iidm-cvg-extensions.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>com.powsybl</groupId>
                 <artifactId>powsybl-cgmes-iidm-extensions</artifactId>
-                <version>${powsyblcgmesdl.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <!-- Runtime dependencies -->
@@ -104,7 +96,7 @@
             <dependency>
                 <groupId>com.powsybl</groupId>
                 <artifactId>powsybl-cgmes-dl-conversion</artifactId>
-                <version>${powsyblcgmesdl.version}</version>
+                <version>${project.version}</version>
                 <scope>runtime</scope>
             </dependency>
             <dependency>

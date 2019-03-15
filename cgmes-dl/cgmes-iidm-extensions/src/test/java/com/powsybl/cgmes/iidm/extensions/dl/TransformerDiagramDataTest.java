@@ -16,22 +16,22 @@ import com.powsybl.iidm.network.TwoWindingsTransformer;
  *
  * @author Massimo Ferraro <massimo.ferraro@techrain.eu>
  */
-public class TransformerDiagramDataTest extends AbstractCouplingDeviseDiagramDataTest {
+public class TransformerDiagramDataTest extends AbstractCouplingDeviceDiagramDataTest {
 
     @Test
     public void test() {
         Network network = Networks.createNetworkWithTwoWindingsTransformer();
         TwoWindingsTransformer twt = network.getTwoWindingsTransformer("Transformer");
 
-        CouplingDeviseDiagramData<TwoWindingsTransformer> twtDiagramData = new CouplingDeviseDiagramData<>(twt, new DiagramPoint(20, 10, 0), 90);
+        CouplingDeviceDiagramData<TwoWindingsTransformer> twtDiagramData = new CouplingDeviceDiagramData<>(twt, new DiagramPoint(20, 10, 0), 90);
         twtDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL1, new DiagramPoint(15, 10, 2));
         twtDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL1, new DiagramPoint(0, 10, 1));
         twtDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL2, new DiagramPoint(25, 10, 1));
         twtDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL2, new DiagramPoint(40, 10, 2));
-        twt.addExtension(CouplingDeviseDiagramData.class, twtDiagramData);
+        twt.addExtension(CouplingDeviceDiagramData.class, twtDiagramData);
 
         TwoWindingsTransformer twt2 = network.getTwoWindingsTransformer("Transformer");
-        CouplingDeviseDiagramData<TwoWindingsTransformer> twtDiagramData2 = twt2.getExtension(CouplingDeviseDiagramData.class);
+        CouplingDeviceDiagramData<TwoWindingsTransformer> twtDiagramData2 = twt2.getExtension(CouplingDeviceDiagramData.class);
 
         checkDiagramData(twtDiagramData2);
     }

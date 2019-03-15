@@ -12,7 +12,7 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.powsybl.cgmes.iidm.extensions.dl.CouplingDeviseDiagramData;
+import com.powsybl.cgmes.iidm.extensions.dl.CouplingDeviceDiagramData;
 import com.powsybl.cgmes.iidm.extensions.dl.DiagramPoint;
 import com.powsybl.cgmes.iidm.extensions.dl.DiagramTerminal;
 import com.powsybl.iidm.network.Network;
@@ -24,7 +24,7 @@ import com.powsybl.triplestore.api.PropertyBags;
  *
  * @author Massimo Ferraro <massimo.ferraro@techrain.eu>
  */
-public class SwitchDiagramDataImporter extends AbstractCouplingDeviseDiagramDataImporter {
+public class SwitchDiagramDataImporter extends AbstractCouplingDeviceDiagramDataImporter {
 
     private static final Logger LOG = LoggerFactory.getLogger(SwitchDiagramDataImporter.class);
 
@@ -37,12 +37,12 @@ public class SwitchDiagramDataImporter extends AbstractCouplingDeviseDiagramData
         String switchId = switchesDiagramData.getId("identifiedObject");
         Switch sw = network.getSwitch(switchId);
         if (sw != null) {
-            CouplingDeviseDiagramData<Switch> switchIidmDiagramData = new CouplingDeviseDiagramData<>(sw,
+            CouplingDeviceDiagramData<Switch> switchIidmDiagramData = new CouplingDeviceDiagramData<>(sw,
                     new DiagramPoint(switchesDiagramData.asDouble("x"), switchesDiagramData.asDouble("y"), 0),
                     switchesDiagramData.asDouble("rotation"));
             addTerminalPoints(switchId, sw.getName(), DiagramTerminal.TERMINAL1, "1", switchIidmDiagramData);
             addTerminalPoints(switchId, sw.getName(), DiagramTerminal.TERMINAL2, "2", switchIidmDiagramData);
-            sw.addExtension(CouplingDeviseDiagramData.class, switchIidmDiagramData);
+            sw.addExtension(CouplingDeviceDiagramData.class, switchIidmDiagramData);
         } else {
             LOG.warn("Cannot find switch {}, name {} in network {}: skipping switch diagram data", switchId, switchesDiagramData.get("name"), network.getId());
         }

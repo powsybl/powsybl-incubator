@@ -12,7 +12,7 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.powsybl.cgmes.iidm.extensions.dl.CouplingDeviseDiagramData;
+import com.powsybl.cgmes.iidm.extensions.dl.CouplingDeviceDiagramData;
 import com.powsybl.cgmes.iidm.extensions.dl.DiagramPoint;
 import com.powsybl.cgmes.iidm.extensions.dl.DiagramTerminal;
 import com.powsybl.cgmes.iidm.extensions.dl.ThreeWindingsTransformerDiagramData;
@@ -26,7 +26,7 @@ import com.powsybl.triplestore.api.PropertyBags;
  *
  * @author Massimo Ferraro <massimo.ferraro@techrain.eu>
  */
-public class TransformerDiagramDataImporter extends AbstractCouplingDeviseDiagramDataImporter {
+public class TransformerDiagramDataImporter extends AbstractCouplingDeviceDiagramDataImporter {
 
     private static final Logger LOG = LoggerFactory.getLogger(TransformerDiagramDataImporter.class);
 
@@ -39,12 +39,12 @@ public class TransformerDiagramDataImporter extends AbstractCouplingDeviseDiagra
         String transformerId = transformersDiagramData.getId("identifiedObject");
         TwoWindingsTransformer transformer = network.getTwoWindingsTransformer(transformerId);
         if (transformer != null) {
-            CouplingDeviseDiagramData<TwoWindingsTransformer> transformerIidmDiagramData = new CouplingDeviseDiagramData<>(transformer,
+            CouplingDeviceDiagramData<TwoWindingsTransformer> transformerIidmDiagramData = new CouplingDeviceDiagramData<>(transformer,
                     new DiagramPoint(transformersDiagramData.asDouble("x"), transformersDiagramData.asDouble("y"), transformersDiagramData.asInt("seq")),
                     transformersDiagramData.asDouble("rotation"));
             addTerminalPoints(transformerId, transformer.getName(), DiagramTerminal.TERMINAL1, "1", transformerIidmDiagramData);
             addTerminalPoints(transformerId, transformer.getName(), DiagramTerminal.TERMINAL2, "2", transformerIidmDiagramData);
-            transformer.addExtension(CouplingDeviseDiagramData.class, transformerIidmDiagramData);
+            transformer.addExtension(CouplingDeviceDiagramData.class, transformerIidmDiagramData);
         } else {
             ThreeWindingsTransformer transformer3w = network.getThreeWindingsTransformer(transformerId);
             if (transformer3w != null) {

@@ -13,9 +13,9 @@ import static org.junit.Assert.assertNotNull;
  *
  * @author Massimo Ferraro <massimo.ferraro@techrain.eu>
  */
-public abstract class AbstractCouplingDeviseDiagramDataTest {
+public abstract class AbstractCouplingDeviceDiagramDataTest {
 
-    protected <T> void checkDiagramData(CouplingDeviseDiagramData<?> diagramData) {
+    protected <T> void checkDiagramData(CouplingDeviceDiagramData<?> diagramData) {
         assertNotNull(diagramData);
         assertEquals(0, diagramData.getPoint().getSeq(), 0);
         assertEquals(20, diagramData.getPoint().getX(), 0);

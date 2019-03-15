@@ -16,22 +16,22 @@ import com.powsybl.iidm.network.Switch;
  *
  * @author Massimo Ferraro <massimo.ferraro@techrain.eu>
  */
-public class SwitchDiagramDataTest extends AbstractCouplingDeviseDiagramDataTest {
+public class SwitchDiagramDataTest extends AbstractCouplingDeviceDiagramDataTest {
 
     @Test
     public void test() {
         Network network = Networks.createNetworkWithSwitch();
         Switch sw = network.getSwitch("Switch");
 
-        CouplingDeviseDiagramData<Switch> switchDiagramData = new CouplingDeviseDiagramData<>(sw, new DiagramPoint(20, 10, 0), 90);
+        CouplingDeviceDiagramData<Switch> switchDiagramData = new CouplingDeviceDiagramData<>(sw, new DiagramPoint(20, 10, 0), 90);
         switchDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL1, new DiagramPoint(15, 10, 2));
         switchDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL1, new DiagramPoint(0, 10, 1));
         switchDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL2, new DiagramPoint(25, 10, 1));
         switchDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL2, new DiagramPoint(40, 10, 2));
-        sw.addExtension(CouplingDeviseDiagramData.class, switchDiagramData);
+        sw.addExtension(CouplingDeviceDiagramData.class, switchDiagramData);
 
         Switch sw2 = network.getSwitch("Switch");
-        CouplingDeviseDiagramData<Switch> switchDiagramData2 = sw2.getExtension(CouplingDeviseDiagramData.class);
+        CouplingDeviceDiagramData<Switch> switchDiagramData2 = sw2.getExtension(CouplingDeviceDiagramData.class);
 
         checkDiagramData(switchDiagramData2);
     }

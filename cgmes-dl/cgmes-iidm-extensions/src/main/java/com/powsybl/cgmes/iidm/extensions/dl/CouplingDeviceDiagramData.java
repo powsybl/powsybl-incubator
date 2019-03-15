@@ -20,26 +20,26 @@ import com.powsybl.iidm.network.TwoWindingsTransformer;
  *
  * @author Massimo Ferraro <massimo.ferraro@techrain.eu>
  */
-public class CouplingDeviseDiagramData<T extends Identifiable<T>> extends AbstractExtension<T> {
+public class CouplingDeviceDiagramData<T extends Identifiable<T>> extends AbstractExtension<T> {
 
-    static final String NAME = "coupling-devise-diagram-data";
+    static final String NAME = "coupling-device-diagram-data";
 
     private final DiagramPoint point;
     private final double rotation;
     private List<DiagramPoint> terminal1Points = new ArrayList<>();
     private List<DiagramPoint> terminal2Points = new ArrayList<>();
 
-    private CouplingDeviseDiagramData(T extendable, DiagramPoint point, double rotation) {
+    private CouplingDeviceDiagramData(T extendable, DiagramPoint point, double rotation) {
         super(extendable);
         this.point = Objects.requireNonNull(point);
         this.rotation = Objects.requireNonNull(rotation);
     }
 
-    public CouplingDeviseDiagramData(Switch sw, DiagramPoint point, double rotation) {
+    public CouplingDeviceDiagramData(Switch sw, DiagramPoint point, double rotation) {
         this((T) sw, point, rotation);
     }
 
-    public CouplingDeviseDiagramData(TwoWindingsTransformer transformer, DiagramPoint point, double rotation) {
+    public CouplingDeviceDiagramData(TwoWindingsTransformer transformer, DiagramPoint point, double rotation) {
         this((T) transformer, point, rotation);
     }
 

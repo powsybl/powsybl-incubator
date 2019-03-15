@@ -174,9 +174,12 @@ public class SVGWriter {
             }
             if (!node.isFictitious()) {
                 if (node instanceof FeederNode) {
-                    int yShift = node.getCell().getDirection() == Cell.Direction.TOP
-                            ? -LABEL_OFFSET
-                            : ((int) (componentLibrary.getSize(node.getComponentType()).getHeight()) + FONT_SIZE + LABEL_OFFSET);
+                    int yShift = -LABEL_OFFSET;
+                    if (node.getCell() != null) {
+                        yShift = node.getCell().getDirection() == Cell.Direction.TOP
+                                ? -LABEL_OFFSET
+                                : ((int) (componentLibrary.getSize(node.getComponentType()).getHeight()) + FONT_SIZE + LABEL_OFFSET);
+                    }
                     drawLabel(node.getLabel(), node.isRotated(), -LABEL_OFFSET, yShift, g);
                 } else if (node instanceof BusNode) {
                     drawLabel(node.getLabel(), false, -LABEL_OFFSET, -LABEL_OFFSET, g);

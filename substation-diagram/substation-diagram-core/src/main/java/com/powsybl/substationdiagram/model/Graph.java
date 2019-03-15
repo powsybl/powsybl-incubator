@@ -43,6 +43,9 @@ public class Graph {
     private static final Logger LOGGER = LoggerFactory.getLogger(Graph.class);
 
     @JsonIgnore
+    private VoltageLevel voltageLevel;
+
+    @JsonIgnore
     private final boolean useName;
 
     @JsonIgnore
@@ -69,13 +72,11 @@ public class Graph {
     @JsonIgnore
     private int cellCounter = 0;
 
-    @JsonIgnore
-    private TopologyKind topologyKind;
-
     /**
      * Constructor
      */
-    public Graph(boolean useName) {
+    public Graph(VoltageLevel voltageLevel, boolean useName) {
+        this.voltageLevel = Objects.requireNonNull(voltageLevel);
         this.useName = useName;
     }
 
@@ -89,7 +90,7 @@ public class Graph {
 
     public static Graph create(VoltageLevel vl, boolean useName) {
         Objects.requireNonNull(vl);
-        Graph g = new Graph(useName);
+        Graph g = new Graph(vl, useName);
         g.buildGraph(vl);
         return g;
     }
@@ -299,7 +300,6 @@ public class Graph {
 
     private void buildGraph(VoltageLevel vl) {
         LOGGER.info("Building '{}' graph...", vl.getId());
-        topologyKind = vl.getTopologyKind();
 
         switch (vl.getTopologyKind()) {
             case BUS_BREAKER:
@@ -348,7 +348,7 @@ public class Graph {
     public void removeFictitiousSwitchNodes() {
         List<Node> fictitiousSwithcNodesToRemove = nodes.stream()
                 .filter(node -> node.getType() == Node.NodeType.SWITCH)
-                .filter(node -> node.getIdentifiable() == null || ((Switch) node.getIdentifiable()).isFictitious())
+                .filter(this::isFictitiousSwitchNode)
                 .filter(node -> node.getAdjacentNodes().size() == 2)
                 .collect(Collectors.toList());
         for (Node n : fictitiousSwithcNodesToRemove) {
@@ -358,6 +358,13 @@ public class Graph {
             removeNode(n);
             addEdge(node1, node2);
         }
+    }
+
+    private boolean isFictitiousSwitchNode(Node node) {
+        Switch sw = TopologyKind.NODE_BREAKER.equals(voltageLevel.getTopologyKind()) ?
+                    voltageLevel.getNodeBreakerView().getSwitch(node.getId()) :
+                    voltageLevel.getBusBreakerView().getSwitch(node.getId());
+        return sw == null || sw.isFictitious();
     }
 
     private void ensureNodeExists(int n, Map<Integer, Node> nodesByNumber) {
@@ -732,8 +739,8 @@ public class Graph {
         return new TreeSet<>(cells);
     }
 
-    public TopologyKind getTopologyKind() {
-        return topologyKind;
+    public VoltageLevel getVoltageLevel() {
+        return voltageLevel;
     }
 
 }

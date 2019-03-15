@@ -9,7 +9,6 @@ package com.powsybl.substationdiagram.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.powsybl.iidm.network.Bus;
 import com.powsybl.iidm.network.BusbarSection;
-import com.powsybl.iidm.network.Identifiable;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
 import com.powsybl.substationdiagram.library.ComponentType;
 
@@ -27,24 +26,24 @@ public class BusNode extends Node {
     private Position structuralPosition;
     private Position position = new Position(-1, -1);
 
-    protected BusNode(String id, String name, boolean fictitious, Graph graph, Identifiable identifiable) {
-        super(NodeType.BUS, id, name, ComponentType.BUSBAR_SECTION, fictitious, graph, identifiable);
+    protected BusNode(String id, String name, boolean fictitious, Graph graph) {
+        super(NodeType.BUS, id, name, ComponentType.BUSBAR_SECTION, fictitious, graph);
     }
 
     public static BusNode create(Graph graph, BusbarSection busbarSection) {
         Objects.requireNonNull(graph);
         Objects.requireNonNull(busbarSection);
-        return new BusNode(busbarSection.getId(), busbarSection.getName(), false, graph, busbarSection);
+        return new BusNode(busbarSection.getId(), busbarSection.getName(), false, graph);
     }
 
     public static BusNode create(Graph graph, Bus bus) {
         Objects.requireNonNull(graph);
         Objects.requireNonNull(bus);
-        return new BusNode(bus.getId(), bus.getName(), false, graph, bus);
+        return new BusNode(bus.getId(), bus.getName(), false, graph);
     }
 
     public static BusNode createFictitious(Graph graph, String id) {
-        return new BusNode(id, id, true, graph, null);
+        return new BusNode(id, id, true, graph);
     }
 
     public void calculateCoord(LayoutParameters layoutParameters) {

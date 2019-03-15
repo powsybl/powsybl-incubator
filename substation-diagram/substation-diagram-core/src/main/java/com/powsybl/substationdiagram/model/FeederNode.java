@@ -7,7 +7,6 @@
 package com.powsybl.substationdiagram.model;
 
 import com.powsybl.iidm.network.Branch;
-import com.powsybl.iidm.network.Identifiable;
 import com.powsybl.iidm.network.Injection;
 import com.powsybl.iidm.network.ShuntCompensator;
 import com.powsybl.iidm.network.ThreeWindingsTransformer;
@@ -28,8 +27,8 @@ public class FeederNode extends Node {
 
     private Cell.Direction direction = Cell.Direction.UNDEFINED;
 
-    protected FeederNode(String id, String name, ComponentType componentType, boolean fictitious, Graph graph, Identifiable identifiable) {
-        super(NodeType.FEEDER, id, name, componentType, fictitious, graph, identifiable);
+    protected FeederNode(String id, String name, ComponentType componentType, boolean fictitious, Graph graph) {
+        super(NodeType.FEEDER, id, name, componentType, fictitious, graph);
     }
 
     public static FeederNode create(Graph graph, Injection injection) {
@@ -58,7 +57,7 @@ public class FeederNode extends Node {
             default:
                 throw new AssertionError();
         }
-        return new FeederNode(injection.getId(), injection.getName(), componentType, false, graph, injection);
+        return new FeederNode(injection.getId(), injection.getName(), componentType, false, graph);
     }
 
     public static FeederNode create(Graph graph, Branch branch, Branch.Side side) {
@@ -81,7 +80,7 @@ public class FeederNode extends Node {
         }
         String id = branch.getId() + "_" + side.name();
         String name = branch.getName() + "_" + side.name();
-        return new FeederNode(id, name, componentType, false, graph, branch);
+        return new FeederNode(id, name, componentType, false, graph);
     }
 
     public static FeederNode create(Graph graph, ThreeWindingsTransformer twt, ThreeWindingsTransformer.Side side) {
@@ -90,11 +89,11 @@ public class FeederNode extends Node {
         Objects.requireNonNull(side);
         String id = twt.getId() + "_" + side.name();
         String name = twt.getName() + "_" + side.name();
-        return new FeederNode(id, name, ComponentType.THREE_WINDINGS_TRANSFORMER, false, graph, twt);
+        return new FeederNode(id, name, ComponentType.THREE_WINDINGS_TRANSFORMER, false, graph);
     }
 
     public static FeederNode createFictitious(Graph graph, String id) {
-        return new FeederNode(id, id, ComponentType.NODE, true, graph, null);
+        return new FeederNode(id, id, ComponentType.NODE, true, graph);
     }
 
     public int getOrder() {

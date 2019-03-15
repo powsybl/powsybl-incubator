@@ -7,7 +7,6 @@
 package com.powsybl.substationdiagram.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.powsybl.iidm.network.Identifiable;
 import com.powsybl.substationdiagram.library.ComponentType;
 
 import java.util.ArrayList;
@@ -66,19 +65,16 @@ public class Node implements BaseNode {
 
     private String label;
 
-    private final Identifiable identifiable;
-
     /**
      * Constructor
      */
-    protected Node(NodeType type, String id, String name, ComponentType componentType, boolean fictitious, Graph graph, Identifiable identifiable) {
+    protected Node(NodeType type, String id, String name, ComponentType componentType, boolean fictitious, Graph graph) {
         this.type = Objects.requireNonNull(type);
         this.id = Objects.requireNonNull(id);
         this.name = name;
         this.componentType = Objects.requireNonNull(componentType);
         this.fictitious = fictitious;
         this.graph = Objects.requireNonNull(graph);
-        this.identifiable = identifiable;
     }
 
     public Cell getCell() {
@@ -224,9 +220,5 @@ public class Node implements BaseNode {
     public void finalizeCoord() {
         x = xs.stream().mapToDouble(Node::applyAsDouble).average().orElse(0);
         y = ys.stream().mapToDouble(Node::applyAsDouble).average().orElse(0);
-    }
-
-    public Identifiable getIdentifiable() {
-        return identifiable;
     }
 }

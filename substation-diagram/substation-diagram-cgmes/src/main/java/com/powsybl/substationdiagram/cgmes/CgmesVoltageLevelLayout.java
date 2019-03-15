@@ -111,16 +111,7 @@ public class CgmesVoltageLevelLayout implements VoltageLevelLayout {
                             graph.getVoltageLevel().getNodeBreakerView().getSwitch(switchNode.getId()) :
                             graph.getVoltageLevel().getBusBreakerView().getSwitch(switchNode.getId());
                 CouplingDeviseDiagramData<Switch> switchDiagramData =  sw != null ? sw.getExtension(CouplingDeviseDiagramData.class) : null;
-                if (switchDiagramData != null) {
-                    switchNode.setX(switchDiagramData.getPoint().getX());
-                    switchNode.setY(switchDiagramData.getPoint().getY());
-                    if (switchDiagramData.getRotation() == 90 || switchDiagramData.getRotation() == 270) {
-                        switchNode.setRotated(true);
-                    }
-                    setMin(switchDiagramData.getPoint().getX(), switchDiagramData.getPoint().getY());
-                } else {
-                    LOG.warn("No CGMES-DL data for {} node {}, switch {}", node.getType(), node.getId(), node.getName());
-                }
+                setCouplingDeviseNodeCoordinates(switchNode, switchDiagramData, true);
                 break;
             case FEEDER:
                 setFeederNodeCoordinates(node);
@@ -143,6 +134,17 @@ public class CgmesVoltageLevelLayout implements VoltageLevelLayout {
         }
     }
 
+    private void setCouplingDeviseNodeCoordinates(Node node, CouplingDeviseDiagramData<?> diagramData, boolean rotate) {
+        if (diagramData != null) {
+            node.setX(diagramData.getPoint().getX());
+            node.setY(diagramData.getPoint().getY());
+            node.setRotated(rotate && diagramData.getRotation() == 90 || diagramData.getRotation() == 270);
+            setMin(diagramData.getPoint().getX(), diagramData.getPoint().getY());
+        } else {
+            LOG.warn("No CGMES-DL data for {} node {}, name {}", node.getType(), node.getId(), node.getName());
+        }
+    }
+
     private double computeBusWidth(NodeDiagramData<?> diagramData) {
         if (diagramData.getPoint1().getX() == diagramData.getPoint2().getX()) {
             return Math.abs(diagramData.getPoint1().getY() - diagramData.getPoint2().getY());
@@ -157,51 +159,39 @@ public class CgmesVoltageLevelLayout implements VoltageLevelLayout {
                 FeederNode loadNode = (FeederNode) node;
                 Load load = graph.getVoltageLevel().getConnectable(loadNode.getId(), Load.class);
                 InjectionDiagramData<Load> loadDiagramData = load != null ? load.getExtension(InjectionDiagramData.class) : null;
-                setInjectionCoordinates(loadNode, loadDiagramData, true);
+                setInjectionNodeCoordinates(loadNode, loadDiagramData, true);
                 break;
             case GENERATOR:
                 FeederNode generatorNode = (FeederNode) node;
                 Generator generator = graph.getVoltageLevel().getConnectable(generatorNode.getId(), Generator.class);
                 InjectionDiagramData<Generator> generatorDiagramData = generator != null ? generator.getExtension(InjectionDiagramData.class) : null;
-                setInjectionCoordinates(generatorNode, generatorDiagramData, false);
+                setInjectionNodeCoordinates(generatorNode, generatorDiagramData, false);
                 break;
             case CAPACITOR:
             case INDUCTOR:
                 FeederNode shuntNode = (FeederNode) node;
                 ShuntCompensator shunt = graph.getVoltageLevel().getConnectable(shuntNode.getId(), ShuntCompensator.class);
                 InjectionDiagramData<ShuntCompensator> shuntDiagramData = shunt != null ? shunt.getExtension(InjectionDiagramData.class) : null;
-                setInjectionCoordinates(shuntNode, shuntDiagramData, true);
+                setInjectionNodeCoordinates(shuntNode, shuntDiagramData, true);
                 break;
             case STATIC_VAR_COMPENSATOR:
                 FeederNode svcNode = (FeederNode) node;
                 StaticVarCompensator svc = graph.getVoltageLevel().getConnectable(svcNode.getId(), StaticVarCompensator.class);
                 InjectionDiagramData<StaticVarCompensator> svcDiagramData = svc != null ? svc.getExtension(InjectionDiagramData.class) : null;
-                setInjectionCoordinates(svcNode, svcDiagramData, true);
+                setInjectionNodeCoordinates(svcNode, svcDiagramData, true);
                 break;
             case TWO_WINDINGS_TRANSFORMER:
             case PHASE_SHIFT_TRANSFORMER:
                 FeederNode transformerNode = (FeederNode) node;
                 TwoWindingsTransformer transformer = graph.getVoltageLevel().getConnectable(getBranchId(transformerNode.getId()), TwoWindingsTransformer.class);
                 CouplingDeviseDiagramData<TwoWindingsTransformer> transformerDiagramData = transformer != null ? transformer.getExtension(CouplingDeviseDiagramData.class) : null;
-                if (transformerDiagramData != null) {
-                    transformerNode.setX(transformerDiagramData.getPoint().getX());
-                    transformerNode.setY(transformerDiagramData.getPoint().getY());
-                    setMin(transformerDiagramData.getPoint().getX(), transformerDiagramData.getPoint().getY());
-                } else {
-                    LOG.warn("No CGMES-DL data for {} {} node {}, transformer {}", node.getType(), node.getComponentType(), node.getId(), node.getName());
-                }
+                setCouplingDeviseNodeCoordinates(transformerNode, transformerDiagramData, false);
                 break;
             case THREE_WINDINGS_TRANSFORMER:
                 FeederNode transformer3wNode = (FeederNode) node;
                 ThreeWindingsTransformer transformer3w = graph.getVoltageLevel().getConnectable(getBranchId(transformer3wNode.getId()), ThreeWindingsTransformer.class);
                 ThreeWindingsTransformerDiagramData transformer3wDiagramData = transformer3w != null ? transformer3w.getExtension(ThreeWindingsTransformerDiagramData.class) : null;
-                if (transformer3wDiagramData != null) {
-                    transformer3wNode.setX(transformer3wDiagramData.getPoint().getX());
-                    transformer3wNode.setY(transformer3wDiagramData.getPoint().getY());
-                    setMin(transformer3wDiagramData.getPoint().getX(), transformer3wDiagramData.getPoint().getY());
-                } else {
-                    LOG.warn("No CGMES-DL data for {} {} node {}, transformer {}", node.getType(), node.getComponentType(), node.getId(), node.getName());
-                }
+                setThreeWindingsTransformerNodeCoordinates(transformer3wNode, transformer3wDiagramData);
                 break;
             default:
                 break;
@@ -209,10 +199,10 @@ public class CgmesVoltageLevelLayout implements VoltageLevelLayout {
     }
 
     private String getBranchId(String branchNodeId) {
-        return branchNodeId.substring(0, branchNodeId.lastIndexOf("_"));
+        return branchNodeId.substring(0, branchNodeId.lastIndexOf('_'));
     }
 
-    private void setInjectionCoordinates(FeederNode node, InjectionDiagramData<?> diagramData, boolean rotate) {
+    private void setInjectionNodeCoordinates(FeederNode node, InjectionDiagramData<?> diagramData, boolean rotate) {
         if (diagramData != null) {
             node.setX(diagramData.getPoint().getX());
             node.setY(diagramData.getPoint().getY());
@@ -220,6 +210,16 @@ public class CgmesVoltageLevelLayout implements VoltageLevelLayout {
             setMin(diagramData.getPoint().getX(), diagramData.getPoint().getY());
         } else {
             LOG.warn("No CGMES-DL data for {} {} node {}, injection {}", node.getType(), node.getComponentType(), node.getId(), node.getName());
+        }
+    }
+
+    private void setThreeWindingsTransformerNodeCoordinates(FeederNode node, ThreeWindingsTransformerDiagramData diagramData) {
+        if (diagramData != null) {
+            node.setX(diagramData.getPoint().getX());
+            node.setY(diagramData.getPoint().getY());
+            setMin(diagramData.getPoint().getX(), diagramData.getPoint().getY());
+        } else {
+            LOG.warn("No CGMES-DL data for {} {} node {}, transformer {}", node.getType(), node.getComponentType(), node.getId(), node.getName());
         }
     }
 

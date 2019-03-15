@@ -10,10 +10,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import com.powsybl.commons.json.JsonUtil;
+import com.powsybl.computation.local.LocalComputationManager;
+import com.powsybl.iidm.import_.ImportConfig;
 import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.VoltageLevel;
 import com.powsybl.substationdiagram.SubstationDiagram;
+import com.powsybl.substationdiagram.cgmes.CgmesVoltageLevelLayoutFactory;
 import com.powsybl.substationdiagram.layout.*;
 import com.powsybl.substationdiagram.library.ComponentLibrary;
 import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
@@ -48,10 +51,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.prefs.Preferences;
@@ -72,7 +72,8 @@ public class SubstationDiagramViewer extends Application {
     private final Map<String, VoltageLevelLayoutFactory> layouts
             = ImmutableMap.of("Auto extensions", new PositionVoltageLevelLayoutFactory(),
                               "Auto without extensions", new PositionVoltageLevelLayoutFactory(new ImplicitCellDetector(), new PositionFree()),
-                              "Random", new RandomVoltageLevelLayoutFactory(500, 500));
+                              "Random", new RandomVoltageLevelLayoutFactory(500, 500),
+                              "Cgmes", new CgmesVoltageLevelLayoutFactory());
 
     private final ComponentLibrary convergenceComponentLibrary = new ResourcesComponentLibrary("/ConvergenceLibrary");
     private final ComponentLibrary flatDesignComponentLibrary = new ResourcesComponentLibrary("/FlatDesignLibrary");
@@ -377,6 +378,8 @@ public class SubstationDiagramViewer extends Application {
             refreshDiagram();
         });
         parametersPane.add(stackCb, 0, rowIndex);
+        rowIndex += 1;
+        addSpinner("Scale factor:", 1, 20, 1, rowIndex, LayoutParameters::getScaleFactor, LayoutParameters::setScaleFactor);
     }
 
     private void refreshDiagram() {
@@ -517,7 +520,9 @@ public class SubstationDiagramViewer extends Application {
                 return new Task<Network>() {
                     @Override
                     protected Network call() {
-                        return Importers.loadNetwork(file);
+                        Properties properties = new Properties();
+                        properties.put("iidm.import.cgmes.post-processors", "cgmesDLImport");
+                        return Importers.loadNetwork(file, LocalComputationManager.getDefault(), new ImportConfig(), properties);
                     }
                 };
             }

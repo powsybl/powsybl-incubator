@@ -8,6 +8,7 @@ package com.powsybl.substationdiagram.view;
 
 import afester.javafx.svg.SvgLoader;
 import com.powsybl.commons.PowsyblException;
+import com.powsybl.substationdiagram.library.ComponentType;
 import com.powsybl.substationdiagram.svg.GraphMetadata;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -85,6 +86,14 @@ public final class SubstationDiagramView extends BorderPane {
         if ((node.getId() != null) && !node.getId().isEmpty()) {
             GraphMetadata.NodeMetadata nodeMetadata = metadata.getNodeMetadata(node.getId());
             if (nodeMetadata != null) {
+                if (node instanceof Group && (nodeMetadata.getComponentType().equals(ComponentType.BREAKER) || nodeMetadata.getComponentType().equals(ComponentType.DISCONNECTOR) || nodeMetadata.getComponentType().equals(ComponentType.LOAD_BREAK_SWITCH))) {
+                    Group group = (Group) node;
+                    for (Node child : group.getChildren()) {
+                        if ((nodeMetadata.isOpen() && child.getId().equals("closed")) || (!nodeMetadata.isOpen() && child.getId().equals("open"))) {
+                            child.setVisible(false);
+                        }
+                    }
+                }
                 NodeHandler nodeHandler = new NodeHandler(node, nodeMetadata.getComponentType(), nodeMetadata.isRotated(), metadata);
                 LOGGER.trace("Add handler to node {}", node.getId());
                 nodeHandlers.put(node.getId(), nodeHandler);

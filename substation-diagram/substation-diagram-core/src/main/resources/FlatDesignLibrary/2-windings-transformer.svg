@@ -8,8 +8,8 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.0"
-   width="13"
-   height="8"
+   width="40.625"
+   height="25"
    id="svg6"
    sodipodi:docname="TwoWindingsTransformer.svg"
    inkscape:version="0.92.3 (2405546, 2018-03-11)">
@@ -54,22 +54,27 @@
        type="xygrid"
        id="grid37" />
   </sodipodi:namedview>
-  <circle
-     transform="rotate(-90)"
-     id="circle42"
-     cx="-4"
-     cy="9"
-     r="4"
-     style="fill:#008080;fill-opacity:1;stroke-width:0.41314608" />
-  <path
-     style="fill:#276767;fill-opacity:1;stroke-width:0.41314608"
-     d="M 7.0019531 0.54101562 A 4 4 0 0 0 5 4 A 4 4 0 0 0 6.9980469 7.4589844 A 4 4 0 0 0 9 4 A 4 4 0 0 0 7.0019531 0.54101562 z "
-     id="circle44" />
-  <circle
-     style="fill:#008080;fill-opacity:1;stroke-width:0.41314608"
-     r="4"
-     cy="4"
-     cx="-4"
-     id="circle33"
-     transform="rotate(-90)" />
+  <g
+     id="g13"
+     transform="scale(3.125)">
+    <circle
+       style="fill:#008080;fill-opacity:1;stroke-width:0.41314608"
+       r="4"
+       cy="9"
+       cx="-4"
+       id="circle42"
+       transform="rotate(-90)" />
+    <path
+       id="circle44"
+       d="M 7.0019531,0.54101562 A 4,4 0 0 0 5,4 4,4 0 0 0 6.9980469,7.4589844 4,4 0 0 0 9,4 4,4 0 0 0 7.0019531,0.54101562 Z"
+       style="fill:#276767;fill-opacity:1;stroke-width:0.41314608"
+       inkscape:connector-curvature="0" />
+    <circle
+       transform="rotate(-90)"
+       id="circle33"
+       cx="-4"
+       cy="4"
+       r="4"
+       style="fill:#008080;fill-opacity:1;stroke-width:0.41314608" />
+  </g>
 </svg>

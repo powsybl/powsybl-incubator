@@ -322,9 +322,10 @@ public class Graph {
                 .filter(node -> node.getType() == Node.NodeType.FICTITIOUS)
                 .collect(Collectors.toList());
         for (Node n : fictitiousNodesToRemove) {
-            if (n.getAdjacentNodes().size() == 2) {
-                Node node1 = n.getAdjacentNodes().get(0);
-                Node node2 = n.getAdjacentNodes().get(1);
+            if (n.getAdjacentEdges().size() == 2) {
+                List<Node> adjNodes = n.getAdjacentNodes();
+                Node node1 = adjNodes.get(0);
+                Node node2 = adjNodes.get(1);
                 LOGGER.info("Remove fictitious node {} between {} and {}", n.getId(), node1.getId(), node2.getId());
                 removeNode(n);
                 addEdge(node1, node2);
@@ -471,13 +472,8 @@ public class Graph {
         nodes.remove(node);
         nodesByType.computeIfAbsent(node.getType(), nodeType -> new ArrayList<>()).remove(node);
         nodesById.remove(node.getId());
-        for (Edge edge : node.getAdjacentEdges()) {
-            if (edge.getNode1() == node) {
-                edge.getNode2().removeAdjacentEdge(edge);
-            } else {
-                edge.getNode1().removeAdjacentEdge(edge);
-            }
-            edges.remove(edge);
+        for (Edge edge : new ArrayList<>(node.getAdjacentEdges())) {
+            removeEdge(edge);
         }
     }
 
@@ -658,7 +654,7 @@ public class Graph {
 
     private void addDoubleNode(BusNode busNode, SwitchNode nodeSwitch, String suffix) {
         removeEdge(busNode, nodeSwitch);
-        SwitchNode fNodeToBus = SwitchNode.createFictitious(Graph.this, nodeSwitch.getId() + "fSwitch" + suffix);
+        SwitchNode fNodeToBus = SwitchNode.createFictitious(Graph.this, nodeSwitch.getId() + "fSwitch" + suffix, nodeSwitch.isOpen());
         addNode(fNodeToBus);
         FicticiousNode fNodeToSw = new FicticiousNode(Graph.this, nodeSwitch.getId() + "fNode" + suffix);
         addNode(fNodeToSw);

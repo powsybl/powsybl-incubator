@@ -70,7 +70,8 @@ public class SubstationDiagramViewer extends Application {
     private static final String CASE_PATH_PROPERTY = "casePath";
 
     private final Map<String, VoltageLevelLayoutFactory> layouts
-            = ImmutableMap.of("Auto extensions", new PositionVoltageLevelLayoutFactory(),
+            = ImmutableMap.of("Smart", new SmartVoltageLevelLayoutFactory(),
+                              "Auto extensions", new PositionVoltageLevelLayoutFactory(),
                               "Auto without extensions", new PositionVoltageLevelLayoutFactory(new ImplicitCellDetector(), new PositionFree()),
                               "Random", new RandomVoltageLevelLayoutFactory(500, 500),
                               "Cgmes", new CgmesVoltageLevelLayoutFactory());

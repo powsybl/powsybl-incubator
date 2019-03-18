@@ -52,6 +52,6 @@ public class SmartVoltageLevelLayoutFactory implements VoltageLevelLayoutFactory
             }
         }
 
-        return new PositionVoltageLevelLayoutFactory(new ImplicitCellDetector(), new PositionFree()).create(graph);
+        return new PositionVoltageLevelLayoutFactory(new PositionFree()).create(graph);
     }
 }

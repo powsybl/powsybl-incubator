@@ -71,8 +71,8 @@ public class SubstationDiagramViewer extends Application {
 
     private final Map<String, VoltageLevelLayoutFactory> layouts
             = ImmutableMap.of("Smart", new SmartVoltageLevelLayoutFactory(),
-                              "Auto extensions", new PositionVoltageLevelLayoutFactory(),
-                              "Auto without extensions", new PositionVoltageLevelLayoutFactory(new ImplicitCellDetector(), new PositionFree()),
+                              "Auto extensions", new PositionVoltageLevelLayoutFactory(new PositionFromExtension()),
+                              "Auto without extensions", new PositionVoltageLevelLayoutFactory(new PositionFree()),
                               "Random", new RandomVoltageLevelLayoutFactory(500, 500),
                               "Cgmes", new CgmesVoltageLevelLayoutFactory());
 
@@ -326,6 +326,29 @@ public class SubstationDiagramViewer extends Application {
         parametersPane.add(cb, 0, row);
     }
 
+    private void initPositionLayoutCheckBox(Function<PositionVoltageLevelLayoutFactory, Boolean> initializer, CheckBox stackCb) {
+        VoltageLevelLayoutFactory layoutFactory = getLayoutFactory();
+        stackCb.setSelected(layoutFactory instanceof PositionVoltageLevelLayoutFactory && initializer.apply((PositionVoltageLevelLayoutFactory) layoutFactory));
+        stackCb.setDisable(!(layoutFactory instanceof PositionVoltageLevelLayoutFactory));
+    }
+
+    private void addPositionLayoutCheckBox(String label, int rowIndex, Function<PositionVoltageLevelLayoutFactory, Boolean> initializer,
+                                           BiFunction<PositionVoltageLevelLayoutFactory, Boolean, PositionVoltageLevelLayoutFactory> updater) {
+        CheckBox stackCb = new CheckBox(label);
+        initPositionLayoutCheckBox(initializer, stackCb);
+        layoutComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> initPositionLayoutCheckBox(initializer, stackCb));
+        stackCb.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            VoltageLevelLayoutFactory layoutFactory = getLayoutFactory();
+            if (layoutFactory instanceof PositionVoltageLevelLayoutFactory) {
+                updater.apply((PositionVoltageLevelLayoutFactory) layoutFactory, newValue);
+                // just to trigger diagram update
+                refreshDiagram();
+            }
+        });
+
+        parametersPane.add(stackCb, 0, rowIndex);
+    }
+
     private void createParametersPane() {
         parametersPane = new GridPane();
         parametersPane.setHgap(5);
@@ -368,17 +391,11 @@ public class SubstationDiagramViewer extends Application {
         rowIndex += 1;
         addCheckBox("Show internal nodes", rowIndex, LayoutParameters::isShowInternalNodes, LayoutParameters::setShowInternalNodes);
         rowIndex += 1;
-
-        CheckBox stackCb = new CheckBox("Stack feeders");
-        VoltageLevelLayoutFactory layoutFactory = getLayoutFactory();
-        stackCb.setSelected(layoutFactory instanceof PositionVoltageLevelLayoutFactory && ((PositionVoltageLevelLayoutFactory) layoutFactory).isStack());
-        stackCb.setDisable(!(layoutFactory instanceof PositionVoltageLevelLayoutFactory));
-        stackCb.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            ((PositionVoltageLevelLayoutFactory) layoutFactory).setStack(newValue);
-            // just to trigger diagram update
-            refreshDiagram();
-        });
-        parametersPane.add(stackCb, 0, rowIndex);
+        addPositionLayoutCheckBox("Stack feeders", rowIndex, PositionVoltageLevelLayoutFactory::isFeederStacked, PositionVoltageLevelLayoutFactory::setFeederStacked);
+        rowIndex += 1;
+        addPositionLayoutCheckBox("Remove fictitious nodes", rowIndex, PositionVoltageLevelLayoutFactory::isRemoveUnnecessaryFictitiousNodes, PositionVoltageLevelLayoutFactory::setRemoveUnnecessaryFictitiousNodes);
+        rowIndex += 1;
+        addPositionLayoutCheckBox("Substitute singular fictitious nodes", rowIndex, PositionVoltageLevelLayoutFactory::isSubstituteSingularFictitiousByFeederNode, PositionVoltageLevelLayoutFactory::setSubstituteSingularFictitiousByFeederNode);
         rowIndex += 1;
         addSpinner("Scale factor:", 1, 20, 1, rowIndex, LayoutParameters::getScaleFactor, LayoutParameters::setScaleFactor);
     }

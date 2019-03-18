@@ -17,36 +17,57 @@ import java.util.Objects;
  */
 public class PositionVoltageLevelLayoutFactory implements VoltageLevelLayoutFactory {
 
-    private final CellDetector cellDetector;
-
     private final PositionFinder positionFinder;
 
-    private boolean stack = true;
+    private boolean feederStacked = true;
+
+    private boolean removeUnnecessaryFictitiousNodes = true;
+
+    private boolean substituteSingularFictitiousByFeederNode = true;
 
     public PositionVoltageLevelLayoutFactory() {
-        this(new ImplicitCellDetector(), new PositionFromExtension());
+        this(new PositionFromExtension());
     }
 
-    public PositionVoltageLevelLayoutFactory(CellDetector cellDetector, PositionFinder positionFinder) {
-        this.cellDetector = Objects.requireNonNull(cellDetector);
+    public PositionVoltageLevelLayoutFactory(PositionFinder positionFinder) {
         this.positionFinder = Objects.requireNonNull(positionFinder);
     }
 
-    public boolean isStack() {
-        return stack;
+    public boolean isFeederStacked() {
+        return feederStacked;
     }
 
-    public void setStack(boolean stack) {
-        this.stack = stack;
+    public PositionVoltageLevelLayoutFactory setFeederStacked(boolean feederStacked) {
+        this.feederStacked = feederStacked;
+        return this;
+    }
+
+    public boolean isRemoveUnnecessaryFictitiousNodes() {
+        return removeUnnecessaryFictitiousNodes;
+    }
+
+    public PositionVoltageLevelLayoutFactory setRemoveUnnecessaryFictitiousNodes(boolean removeUnnecessaryFictitiousNodes) {
+        this.removeUnnecessaryFictitiousNodes = removeUnnecessaryFictitiousNodes;
+        return this;
+    }
+
+    public boolean isSubstituteSingularFictitiousByFeederNode() {
+        return substituteSingularFictitiousByFeederNode;
+    }
+
+    public PositionVoltageLevelLayoutFactory setSubstituteSingularFictitiousByFeederNode(boolean substituteSingularFictitiousByFeederNode) {
+        this.substituteSingularFictitiousByFeederNode = substituteSingularFictitiousByFeederNode;
+        return this;
     }
 
     @Override
     public VoltageLevelLayout create(Graph graph) {
         // detect cells
-        cellDetector.detectCells(graph);
+        new ImplicitCellDetector(removeUnnecessaryFictitiousNodes, substituteSingularFictitiousByFeederNode)
+                .detectCells(graph);
 
         // build blocks from cells
-        new BlockOrganizer(positionFinder, stack).organize(graph);
+        new BlockOrganizer(positionFinder, feederStacked).organize(graph);
 
         return new PositionVoltageLevelLayout(graph);
     }

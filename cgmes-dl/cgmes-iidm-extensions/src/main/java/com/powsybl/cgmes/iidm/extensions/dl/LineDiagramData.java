@@ -72,8 +72,8 @@ public class LineDiagramData<T extends Identifiable<T>> extends AbstractExtensio
         if (points.size() < 2) {
             return getFirstPoint();
         }
-        DiagramPoint firstPoint = points.stream().sorted().findFirst().get();
-        DiagramPoint secondPoint = points.stream().sorted().skip(1).findFirst().get();
+        DiagramPoint firstPoint = points.stream().sorted().findFirst().orElseThrow(AssertionError::new);
+        DiagramPoint secondPoint = points.stream().sorted().skip(1).findFirst().orElseThrow(AssertionError::new);
         return shiftPoint(firstPoint, secondPoint, offset);
     }
 
@@ -81,8 +81,8 @@ public class LineDiagramData<T extends Identifiable<T>> extends AbstractExtensio
         if (points.size() < 2) {
             return getLastPoint();
         }
-        DiagramPoint lastPoint = points.stream().sorted(Comparator.reverseOrder()).findFirst().get();
-        DiagramPoint secondLastPoint = points.stream().sorted(Comparator.reverseOrder()).skip(1).findFirst().get();
+        DiagramPoint lastPoint = points.stream().sorted(Comparator.reverseOrder()).findFirst().orElseThrow(AssertionError::new);
+        DiagramPoint secondLastPoint = points.stream().sorted(Comparator.reverseOrder()).skip(1).findFirst().orElseThrow(AssertionError::new);
         return shiftPoint(lastPoint, secondLastPoint, offset);
     }
 

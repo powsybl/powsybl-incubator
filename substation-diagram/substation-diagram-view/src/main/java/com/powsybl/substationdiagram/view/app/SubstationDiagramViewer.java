@@ -14,6 +14,7 @@ import com.powsybl.computation.local.LocalComputationManager;
 import com.powsybl.iidm.import_.ImportConfig;
 import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Container;
+import com.powsybl.iidm.network.ContainerType;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.Substation;
 import com.powsybl.iidm.network.VoltageLevel;
@@ -29,6 +30,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.beans.value.WeakChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -294,6 +296,25 @@ public class SubstationDiagramViewer extends Application {
         public String toString() {
             return getIdOrName();
         }
+
+        private void saveSelectedDiagrams() {
+            try {
+                String selectedVoltageLevelIdsPropertyValue = objectMapper.writeValueAsString(selectableVoltageLevels.stream()
+                        .filter(selectableVoltageLevel -> selectableVoltageLevel.checkedProperty().get())
+                        .map(SelectableVoltageLevel::getId)
+                        .collect(Collectors.toList()));
+                preferences.put(SELECTED_VOLTAGE_LEVEL_IDS_PROPERTY, selectedVoltageLevelIdsPropertyValue);
+
+                String selectedSubstationIdsPropertyValue = objectMapper.writeValueAsString(selectableSubstations.stream()
+                        .filter(selectableSubstation -> selectableSubstation.checkedProperty().get())
+                        .map(SelectableSubstation::getId)
+                        .collect(Collectors.toList()));
+                preferences.put(SELECTED_SUBSTATION_IDS_PROPERTY, selectedSubstationIdsPropertyValue);
+
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+        }
     }
 
     private class SelectableVoltageLevel extends AbstractSelectableContainer {
@@ -445,25 +466,6 @@ public class SubstationDiagramViewer extends Application {
         layoutParameters.set(new LayoutParameters(layoutParameters.get()));
     }
 
-    private void saveSelectedDiagrams() {
-        try {
-            String selectedVoltageLevelIdsPropertyValue = objectMapper.writeValueAsString(selectableVoltageLevels.stream()
-                    .filter(selectableVoltageLevel -> selectableVoltageLevel.checkedProperty().get())
-                    .map(SelectableVoltageLevel::getId)
-                    .collect(Collectors.toList()));
-            preferences.put(SELECTED_VOLTAGE_LEVEL_IDS_PROPERTY, selectedVoltageLevelIdsPropertyValue);
-
-            String selectedSubstationIdsPropertyValue = objectMapper.writeValueAsString(selectableSubstations.stream()
-                    .filter(selectableSubstation -> selectableSubstation.checkedProperty().get())
-                    .map(SelectableSubstation::getId)
-                    .collect(Collectors.toList()));
-            preferences.put(SELECTED_SUBSTATION_IDS_PROPERTY, selectedSubstationIdsPropertyValue);
-
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-    }
-
     private void loadSelectedDiagrams() {
         String selectedVoltageLevelIdsPropertyValue = preferences.get(SELECTED_VOLTAGE_LEVEL_IDS_PROPERTY, null);
         if (selectedVoltageLevelIdsPropertyValue != null) {
@@ -493,8 +495,7 @@ public class SubstationDiagramViewer extends Application {
         }
     }
 
-    @Override
-    public void start(Stage primaryStage) {
+    private void initTreeCellFacgory() {
         substationsTree.setCellFactory(param -> {
             CheckBoxTreeCell<Container> treeCell = new CheckBoxTreeCell<>();
             StringConverter<TreeItem<Container>> strConvert = new StringConverter<TreeItem<Container>>() {
@@ -515,6 +516,11 @@ public class SubstationDiagramViewer extends Application {
             treeCell.setConverter(strConvert);
             return treeCell;
         });
+    }
+
+    @Override
+    public void start(Stage primaryStage) {
+        initTreeCellFacgory();
 
         showNames.selectedProperty().addListener((observable, oldValue, newValue) -> {
             substationsTree.refresh();
@@ -600,6 +606,19 @@ public class SubstationDiagramViewer extends Application {
             }
         });
 
+        substationsTree.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<Container>>() {
+            @Override
+            public void changed(ObservableValue<? extends TreeItem<Container>> observable, TreeItem<Container> oldValue, TreeItem<Container> newValue) {
+                if (newValue == null) {
+                    return;
+                }
+                Container c = newValue.getValue();
+                if (c.getContainerType() == ContainerType.VOLTAGE_LEVEL) {
+                    selectedDiagramPane.setCenter(new SubstationDiagramPane(c));
+                }
+            }
+        });
+
         // case reloading
         String casePathPropertyValue = preferences.get(CASE_PATH_PROPERTY, null);
         if (casePathPropertyValue != null) {
@@ -645,6 +664,50 @@ public class SubstationDiagramViewer extends Application {
         networkService.start();
     }
 
+    private void checkVoltageLevel(VoltageLevel v, Boolean checked) {
+        selectableVoltageLevels.stream()
+                .filter(selectableVoltageLevel -> selectableVoltageLevel.getIdOrName().equals(showNames.isSelected() ? v.getName() : v.getId()))
+                .forEach(selectableVoltageLevel -> selectableVoltageLevel.setCheckedProperty(checked));
+    }
+
+    private void initVoltageLevelsTree(TreeItem<Container> rootItem,
+                                       Substation s, String filter, boolean emptyFilter,
+                                       Map<String, SelectableSubstation> mapSubstations,
+                                       Map<String, SelectableVoltageLevel> mapVoltageLevels) {
+        boolean firstVL = true;
+        CheckBoxTreeItem<Container> sItem = null;
+
+        for (VoltageLevel v : s.getVoltageLevels()) {
+            boolean vlOk = showNames.isSelected() ? v.getName().contains(filter) : v.getId().contains(filter);
+
+            if (!emptyFilter && !vlOk) {
+                continue;
+            }
+
+            CheckBoxTreeItem<Container> vItem = new CheckBoxTreeItem<>(v);
+            vItem.setIndependent(true);
+            if (mapVoltageLevels.containsKey(v.getId()) && mapVoltageLevels.get(v.getId()).checkedProperty().get()) {
+                vItem.setSelected(true);
+            }
+
+            if (firstVL) {
+                sItem = new CheckBoxTreeItem<>(s);
+                sItem.setIndependent(true);
+                if (mapSubstations.containsKey(s.getId()) && mapSubstations.get(s.getId()).checkedProperty().get()) {
+                    sItem.setSelected(true);
+                }
+                rootItem.getChildren().add(sItem);
+                sItem.selectedProperty().addListener((obs, oldVal, newVal) -> {
+                });
+            }
+
+            firstVL = false;
+            sItem.getChildren().add(vItem);
+            vItem.selectedProperty().addListener((obs, oldVal, newVal) ->
+                    checkVoltageLevel(v, newVal));
+        }
+    }
+
     private void initSubstationsTree() {
         String filter = filterInput.getText();
         boolean emptyFilter = StringUtils.isEmpty(filter);
@@ -659,37 +722,7 @@ public class SubstationDiagramViewer extends Application {
                 .collect(Collectors.toMap(SelectableVoltageLevel::getId, Function.identity()));
 
         for (Substation s : n.getSubstations()) {
-            int nbVL = 0;
-            CheckBoxTreeItem<Container> sItem = null;
-
-            for (VoltageLevel v : s.getVoltageLevels()) {
-                boolean vlOk = showNames.isSelected() ? v.getName().contains(filter) : v.getId().contains(filter);
-                if (emptyFilter || vlOk) {
-                    CheckBoxTreeItem<Container> vItem = new CheckBoxTreeItem<>(v);
-                    vItem.setIndependent(true);
-                    if (mapVoltageLevels.get(v.getId()).checkedProperty().get()) {
-                        vItem.setSelected(true);
-                    }
-
-                    if (nbVL == 0) {
-                        sItem = new CheckBoxTreeItem<>(s);
-                        sItem.setIndependent(true);
-                        if (mapSubstations.get(s.getId()).checkedProperty().get()) {
-                            sItem.setSelected(true);
-                        }
-                        rootItem.getChildren().add(sItem);
-                        sItem.selectedProperty().addListener((obs, oldVal, newVal) -> {
-                        });
-                    }
-
-                    nbVL++;
-                    sItem.getChildren().add(vItem);
-                    vItem.selectedProperty().addListener((obs, oldVal, newVal) ->
-                        selectableVoltageLevels.stream()
-                                .filter(selectableVoltageLevel -> selectableVoltageLevel.getIdOrName().equals(showNames.isSelected() ? v.getName() : v.getId()))
-                                .forEach(selectableVoltageLevel -> selectableVoltageLevel.setCheckedProperty(newVal)));
-                }
-            }
+            initVoltageLevelsTree(rootItem, s, filter, emptyFilter, mapSubstations, mapVoltageLevels);
         }
 
         if (substationsTree.getRoot() != null) {

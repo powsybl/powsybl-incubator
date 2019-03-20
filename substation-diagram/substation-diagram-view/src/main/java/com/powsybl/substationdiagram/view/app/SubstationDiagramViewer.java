@@ -520,9 +520,9 @@ public class SubstationDiagramViewer extends Application {
             substationsTree.refresh();
             refreshDiagram();
         });
-        filterInput.textProperty().addListener(obs -> {
-            initSubstationsTree();
-        });
+        filterInput.textProperty().addListener(obs ->
+            initSubstationsTree()
+        );
 
         networkProperty.addListener((observable, oldNetwork, newNetwork) -> {
             if (newNetwork == null) {
@@ -647,6 +647,7 @@ public class SubstationDiagramViewer extends Application {
 
     private void initSubstationsTree() {
         String filter = filterInput.getText();
+        boolean emptyFilter = StringUtils.isEmpty(filter);
 
         Network n = networkProperty.get();
         TreeItem<Container> rootItem = new TreeItem<>();
@@ -662,33 +663,31 @@ public class SubstationDiagramViewer extends Application {
             CheckBoxTreeItem<Container> sItem = null;
 
             for (VoltageLevel v : s.getVoltageLevels()) {
-                if (StringUtils.isEmpty(filter) || (showNames.isSelected() ? v.getName().contains(filter)
-                                                                           : v.getId().contains(filter))) {
+                boolean vlOk = showNames.isSelected() ? v.getName().contains(filter) : v.getId().contains(filter);
+                if (emptyFilter || vlOk) {
                     CheckBoxTreeItem<Container> vItem = new CheckBoxTreeItem<>(v);
                     vItem.setIndependent(true);
-                    if (mapVoltageLevels.containsKey(v.getId()) && mapVoltageLevels.get(v.getId()).checkedProperty().get()) {
+                    if (mapVoltageLevels.get(v.getId()).checkedProperty().get()) {
                         vItem.setSelected(true);
                     }
 
                     if (nbVL == 0) {
                         sItem = new CheckBoxTreeItem<>(s);
                         sItem.setIndependent(true);
-                        if (mapSubstations.containsKey(s.getId()) && mapSubstations.get(s.getId()).checkedProperty().get()) {
+                        if (mapSubstations.get(s.getId()).checkedProperty().get()) {
                             sItem.setSelected(true);
                         }
                         rootItem.getChildren().add(sItem);
                         sItem.selectedProperty().addListener((obs, oldVal, newVal) -> {
-                            // TODO : to be implemented
                         });
                     }
 
                     nbVL++;
                     sItem.getChildren().add(vItem);
-                    vItem.selectedProperty().addListener((obs, oldVal, newVal) -> {
+                    vItem.selectedProperty().addListener((obs, oldVal, newVal) ->
                         selectableVoltageLevels.stream()
                                 .filter(selectableVoltageLevel -> selectableVoltageLevel.getIdOrName().equals(showNames.isSelected() ? v.getName() : v.getId()))
-                                .forEach(selectableVoltageLevel -> selectableVoltageLevel.setCheckedProperty(newVal));
-                    });
+                                .forEach(selectableVoltageLevel -> selectableVoltageLevel.setCheckedProperty(newVal)));
                 }
             }
         }

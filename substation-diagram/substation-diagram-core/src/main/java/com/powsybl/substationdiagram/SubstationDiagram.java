@@ -13,6 +13,7 @@ import com.powsybl.substationdiagram.layout.VoltageLevelLayout;
 import com.powsybl.substationdiagram.layout.VoltageLevelLayoutFactory;
 import com.powsybl.substationdiagram.library.ComponentLibrary;
 import com.powsybl.substationdiagram.model.Graph;
+import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramStyleProvider;
 import com.powsybl.substationdiagram.svg.GraphMetadata;
 import com.powsybl.substationdiagram.svg.SVGWriter;
 import org.slf4j.Logger;
@@ -98,7 +99,7 @@ public final class SubstationDiagram {
         LOGGER.info("Writing SVG and JSON metadata files...");
 
         GraphMetadata metadata = new SVGWriter(componentLibrary, layoutParameters)
-                .write(graph, svgWriter);
+                .write(graph, new DefaultSubstationDiagramStyleProvider(), svgWriter);
 
         // write metadata file
         metadata.writeJson(metadataWriter);

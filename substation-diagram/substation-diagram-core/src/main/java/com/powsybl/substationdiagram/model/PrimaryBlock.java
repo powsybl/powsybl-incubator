@@ -125,7 +125,7 @@ public class PrimaryBlock extends AbstractBlock {
             Node nodeBus = getBusNode();
             Node nodeMiddle = nodes.get(1);
             nodeMiddle.setX(getCoord().getX());
-            nodeMiddle.setY(nodeBus.getY());
+            nodeMiddle.setY(nodeBus.getY(), false, false);
             if (nodes.size() == 3) {
                 Node nodeSide = nodeBus == nodes.get(0) ? nodes.get(2) : nodes.get(0);
                 nodeSide.setX(getCoord().getX(), true);
@@ -151,7 +151,7 @@ public class PrimaryBlock extends AbstractBlock {
     public void coordHorizontalCase(LayoutParameters layoutParam) {
         if (getCell().getType() == Cell.CellType.INTERNBOUND) {
             nodes.get(1).setX(getCoord().getX());
-            nodes.get(1).setY(nodes.get(0).getY());
+            nodes.get(1).setY(nodes.get(0).getY(), false, false);
             nodes.get(1).setRotated(true);
             return;
         }
@@ -159,10 +159,10 @@ public class PrimaryBlock extends AbstractBlock {
             Node nodeBus = getBusNode();
             Node nodeMiddle = nodes.get(1);
             nodeMiddle.setX(getCoord().getX() + getCoord().getXSpan() / 2);
-            nodeMiddle.setY(nodeBus.getY());
+            nodeMiddle.setY(nodeBus.getY(), false, false);
             if (nodes.size() == 3) {
                 Node nodeSide = nodeBus == nodes.get(0) ? nodes.get(2) : nodes.get(0);
-                nodeSide.setY(nodeBus.getY(), true);
+                nodeSide.setY(nodeBus.getY(), true, false);
             }
             return;
         }
@@ -186,8 +186,8 @@ public class PrimaryBlock extends AbstractBlock {
         double dy = (y1 - y0) / (nodes.size() - 1);
         for (int i = 1; i < nodes.size() - 1; i++) {
             Node node = nodes.get(i);
-            node.setX(x0 + i * dx);
-            node.setY(y0 + i * dy);
+            node.setX(x0 + i * dx, false, false);
+            node.setY(y0 + i * dy, false, false);
             if (dy == 0) {
                 node.setRotated(true);
             }

@@ -141,17 +141,17 @@ public class TestCase5ShuntVertical extends AbstractTestCase {
         Cell cellb = it.next();
         assertEquals(Cell.CellType.EXTERN, cellb.getType());
         assertEquals(5, cellb.getNodes().size());
-        assertEquals("EXTERN[3, bb, bbs, db, lb]", cellb.getFullId());
+        assertEquals("EXTERN[FICT_vl_3, bb, bbs, db, lb]", cellb.getFullId());
 
         Cell cellShunt = it.next();
         assertEquals(Cell.CellType.SHUNT, cellShunt.getType());
         assertEquals(3, cellShunt.getNodes().size());
-        assertEquals("SHUNT[3, bs, laFictif]", cellShunt.getFullId());
+        assertEquals("SHUNT[FICT_vl_3, FICT_vl_laFictif, bs]", cellShunt.getFullId());
 
         Cell cella = it.next();
         assertEquals(Cell.CellType.EXTERN, cella.getType());
         assertEquals(6, cella.getNodes().size());
-        assertEquals("EXTERN[ba, bbs, da, daFictif, la, laFictif]", cella.getFullId());
+        assertEquals("EXTERN[FICT_vl_daFictif, FICT_vl_laFictif, ba, bbs, da, la]", cella.getFullId());
 
         // build blocks
         assertTrue(new BlockOrganizer().organize(g));
@@ -176,7 +176,7 @@ public class TestCase5ShuntVertical extends AbstractTestCase {
         LayoutParameters layoutParameters = new LayoutParameters(20, 50, 0, 260,
                                                                  25, 20,
                                                                  50, 250, 40,
-                                                                 30, true, true, 1);
+                                                                 30, true, true, 1, 50, 50);
         new PositionVoltageLevelLayout(g).run(layoutParameters);
 
         // assert coordinate

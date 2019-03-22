@@ -6,18 +6,17 @@
  */
 package com.powsybl.substationdiagram;
 
-import com.powsybl.iidm.network.Substation;
+import com.powsybl.iidm.network.VoltageLevel;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
-import com.powsybl.substationdiagram.layout.HorizontalSubstationLayoutFactory;
 import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayoutFactory;
-import com.powsybl.substationdiagram.layout.SubstationLayoutFactory;
+import com.powsybl.substationdiagram.layout.VoltageLevelLayout;
 import com.powsybl.substationdiagram.layout.VoltageLevelLayoutFactory;
 import com.powsybl.substationdiagram.library.ComponentLibrary;
+import com.powsybl.substationdiagram.model.Graph;
 import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramStyleProvider;
 import com.powsybl.substationdiagram.svg.GraphMetadata;
 import com.powsybl.substationdiagram.svg.SVGWriter;
 import com.powsybl.substationdiagram.svg.SubstationDiagramStyleProvider;
-import com.powsybl.substationdiagram.model.SubstationGraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,46 +29,45 @@ import java.nio.file.Path;
 import java.util.Objects;
 
 /**
- * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
+ * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
+ * @author Nicolas Duchene
+ * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public final class SubstationDiagram {
+public final class VoltageLevelDiagram {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SubstationDiagram.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(VoltageLevelDiagram.class);
 
-    private final SubstationGraph graph;
+    private final Graph graph;
 
-    private final SubstationLayoutFactory sLayoutFactory;
+    private final VoltageLevelLayout layout;
 
-    private final VoltageLevelLayoutFactory vLayoutFactory;
-
-    private SubstationDiagram(SubstationGraph graph, SubstationLayoutFactory sLayoutFactory,
-                              VoltageLevelLayoutFactory vLayoutFactory) {
+    private VoltageLevelDiagram(Graph graph, VoltageLevelLayout layout) {
         this.graph = Objects.requireNonNull(graph);
-        this.sLayoutFactory = Objects.requireNonNull(sLayoutFactory);
-        this.vLayoutFactory = Objects.requireNonNull(vLayoutFactory);
+        this.layout = Objects.requireNonNull(layout);
     }
 
-    public static SubstationDiagram build(Substation s) {
-        return build(s, new HorizontalSubstationLayoutFactory(), new PositionVoltageLevelLayoutFactory(), false);
+    public static VoltageLevelDiagram build(VoltageLevel vl) {
+        return build(vl, new PositionVoltageLevelLayoutFactory(), false);
     }
 
-    public static SubstationDiagram build(Substation s, SubstationLayoutFactory sLayoutFactory,
-                                          VoltageLevelLayoutFactory vLayoutFactory, boolean useName) {
-        Objects.requireNonNull(s);
-        Objects.requireNonNull(sLayoutFactory);
-        Objects.requireNonNull(vLayoutFactory);
+    public static VoltageLevelDiagram build(VoltageLevel vl, VoltageLevelLayoutFactory layoutFactory, boolean useName) {
+        Objects.requireNonNull(vl);
+        Objects.requireNonNull(layoutFactory);
 
-        SubstationGraph graph = SubstationGraph.create(s, useName);
+        Graph graph = Graph.create(vl, useName);
 
-        return new SubstationDiagram(graph, sLayoutFactory, vLayoutFactory);
+        VoltageLevelLayout layout = layoutFactory.create(graph);
+
+        return new VoltageLevelDiagram(graph, layout);
     }
 
     public void writeSvg(ComponentLibrary componentLibrary, LayoutParameters layoutParameters, Path svgFile) {
-        writeSvg(componentLibrary, layoutParameters, svgFile, false);
+        writeSvg(componentLibrary, layoutParameters, new DefaultSubstationDiagramStyleProvider(), svgFile, false);
     }
 
     public void writeSvg(ComponentLibrary componentLibrary, LayoutParameters layoutParameters,
-                         Path svgFile, boolean debug) {
+                         SubstationDiagramStyleProvider styleProvider, Path svgFile,
+                         boolean debug) {
         Path dir = svgFile.toAbsolutePath().getParent();
         String svgFileName = svgFile.getFileName().toString();
         if (!svgFileName.endsWith(".svg")) {
@@ -79,23 +77,23 @@ public final class SubstationDiagram {
         try (Writer svgWriter = Files.newBufferedWriter(svgFile, StandardCharsets.UTF_8);
              Writer metadataWriter = Files.newBufferedWriter(dir.resolve(svgFileName.replace(".svg", "_metadata.json")), StandardCharsets.UTF_8);
              Writer graphWriter = debug ? Files.newBufferedWriter(dir.resolve(svgFileName.replace(".svg", "_graph.json")), StandardCharsets.UTF_8) : null) {
-            writeSvg(componentLibrary, layoutParameters, svgWriter, metadataWriter, graphWriter);
+            writeSvg(componentLibrary, layoutParameters, styleProvider, svgWriter, metadataWriter, graphWriter);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }
 
     public void writeSvg(ComponentLibrary componentLibrary, LayoutParameters layoutParameters,
-                         Writer svgWriter, Writer metadataWriter, Writer graphWriter) {
-        writeSvg(componentLibrary, layoutParameters, new DefaultSubstationDiagramStyleProvider(), svgWriter, metadataWriter, graphWriter);
-    }
-
-    public void writeSvg(ComponentLibrary componentLibrary, LayoutParameters layoutParameters, SubstationDiagramStyleProvider styleProvider,
-                         Writer svgWriter, Writer metadataWriter, Writer graphWriter) {
+                         SubstationDiagramStyleProvider styleProvider,
+                         Writer svgWriter,
+                         Writer metadataWriter, Writer graphWriter) {
         Objects.requireNonNull(componentLibrary);
         Objects.requireNonNull(layoutParameters);
         Objects.requireNonNull(svgWriter);
         Objects.requireNonNull(metadataWriter);
+
+        // calculate coordinate
+        layout.run(layoutParameters);
 
         // write graph debug file
         if (graphWriter != null) {
@@ -106,7 +104,7 @@ public final class SubstationDiagram {
         LOGGER.info("Writing SVG and JSON metadata files...");
 
         GraphMetadata metadata = new SVGWriter(componentLibrary, layoutParameters)
-                .write(graph, styleProvider, svgWriter, sLayoutFactory, vLayoutFactory);
+                .write(graph, styleProvider, svgWriter);
 
         // write metadata file
         metadata.writeJson(metadataWriter);

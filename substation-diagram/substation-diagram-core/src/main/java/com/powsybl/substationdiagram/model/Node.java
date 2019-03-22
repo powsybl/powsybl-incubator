@@ -8,6 +8,7 @@ package com.powsybl.substationdiagram.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.powsybl.substationdiagram.library.ComponentType;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,15 +74,17 @@ public class Node implements BaseNode {
      */
     protected Node(NodeType type, String id, String name, ComponentType componentType, boolean fictitious, Graph graph) {
         this.type = Objects.requireNonNull(type);
-        this.id = Objects.requireNonNull(id);
         this.name = name;
         this.componentType = Objects.requireNonNull(componentType);
         this.fictitious = fictitious;
         this.graph = Objects.requireNonNull(graph);
-    }
-
-    public Graph getGraph() {
-        return graph;
+        // for unicity purpose (in substation diagram), we prefix the id of the fictitious node with the voltageLevel id and "_"
+        String tmpId = Objects.requireNonNull(id);
+        if (type == NodeType.FICTITIOUS && !StringUtils.startsWith(tmpId, "FICT_" + this.graph.getVoltageLevel().getId() + "_")) {
+            this.id = "FICT_" + this.graph.getVoltageLevel().getId() + "_" + tmpId;
+        } else {
+            this.id = tmpId;
+        }
     }
 
     public Cell getCell() {
@@ -90,6 +93,10 @@ public class Node implements BaseNode {
 
     public void setCell(Cell cell) {
         this.cell = cell;
+    }
+
+    public Graph getGraph() {
+        return graph;
     }
 
     @Override
@@ -154,17 +161,26 @@ public class Node implements BaseNode {
     }
 
     public void setX(double x) {
-        setX(x, false);
+        setX(x, false, true);
     }
 
     public void setX(double x, boolean xPriority) {
+        setX(x, xPriority, true);
+    }
+
+    public void setX(double x, boolean xPriority, boolean addXGraph) {
+        double xNode = x;
+        if (addXGraph) {
+            xNode += graph.getX();
+        }
+
         if (!this.xPriority && xPriority) {
             xs.clear();
             this.xPriority = true;
         }
         if (this.xPriority == xPriority) {
-            this.x = x;
-            xs.add(x);
+            this.x = xNode;
+            xs.add(xNode);
         }
     }
 
@@ -174,17 +190,26 @@ public class Node implements BaseNode {
     }
 
     public void setY(double y) {
-        setY(y, false);
+        setY(y, false, true);
     }
 
     public void setY(double y, boolean yPriority) {
+        setY(y, yPriority, true);
+    }
+
+    public void setY(double y, boolean yPriority, boolean addYGraph) {
+        double yNode = y;
+        if (addYGraph) {
+            yNode += graph.getY();
+        }
+
         if (!this.yPriority && yPriority) {
             ys.clear();
             this.yPriority = true;
         }
         if (this.yPriority == yPriority) {
-            this.y = y;
-            ys.add(y);
+            this.y = yNode;
+            ys.add(yNode);
         }
     }
 

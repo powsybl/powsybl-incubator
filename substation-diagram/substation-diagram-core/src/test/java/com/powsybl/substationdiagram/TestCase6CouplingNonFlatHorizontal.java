@@ -124,7 +124,7 @@ public class TestCase6CouplingNonFlatHorizontal extends AbstractTestCase {
         assertEquals(3, g.getCells().size());
         Iterator<Cell> it = g.getCells().iterator();
         Cell cellB = it.next();
-        assertEquals("INTERN[b, bbs1.1, bbs2.2, d1, d1Fictif, d2, d2Fictif]", cellB.getFullId());
+        assertEquals("INTERN[FICT_vl_d1Fictif, FICT_vl_d2Fictif, b, bbs1.1, bbs2.2, d1, d2]", cellB.getFullId());
         Cell cellD1 = it.next();
         assertEquals("INTERNBOUND[bbs1.1, bbs1.2, ds1]", cellD1.getFullId());
         Cell cellD2 = it.next();
@@ -160,7 +160,7 @@ public class TestCase6CouplingNonFlatHorizontal extends AbstractTestCase {
         LayoutParameters layoutParameters = new LayoutParameters(20, 50, 0, 260,
                                                                  25, 20,
                                                                  50, 250, 40,
-                                                                 30, true, true, 1);
+                                                                 30, true, true, 1, 50, 50);
         new PositionVoltageLevelLayout(g).run(layoutParameters);
 
         // assert coordinate

@@ -150,7 +150,7 @@ public final class LoadFlowMatrix {
             if (num == 0) {
                 continue;
             }
-            rhs[num] += gen.getTargetP();
+            rhs[num] -= gen.getTargetP();
         }
 
         for (Load load : network.get().getLoads()) {
@@ -178,7 +178,7 @@ public final class LoadFlowMatrix {
 
         for (Bus bus : network.getBuses()) {
             int num = network.getIndex(bus);
-            bus.setAngle(lhs[num]);
+            bus.setAngle(Math.toDegrees(lhs[num]));
         }
 
         for (Branch branch : network.get().getBranches()) {

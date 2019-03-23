@@ -139,10 +139,10 @@ public class SimpleLoadFlowTest {
         LoadFlow lf = new SimpleLoadFlowFactory(matrixFactory).create(network, null, 0);
         lf.run(network.getVariantManager().getWorkingVariantId(), new LoadFlowParameters());
 
-        assertEquals(-300, line1.getTerminal1().getP(), 0.01);
-        assertEquals(300, line1.getTerminal2().getP(), 0.01);
-        assertEquals(-300, line2.getTerminal1().getP(), 0.01);
-        assertEquals(300, line2.getTerminal2().getP(), 0.01);
+        assertEquals(300, line1.getTerminal1().getP(), 0.01);
+        assertEquals(-300, line1.getTerminal2().getP(), 0.01);
+        assertEquals(300, line2.getTerminal1().getP(), 0.01);
+        assertEquals(-300, line2.getTerminal2().getP(), 0.01);
 
         network.getLine("NHV1_NHV2_1").getTerminal1().disconnect();
         network.getLine("NHV1_NHV2_1").getTerminal2().disconnect();
@@ -152,8 +152,8 @@ public class SimpleLoadFlowTest {
 
         assertEquals(0, line1.getTerminal1().getP(), 0.01);
         assertEquals(0, line1.getTerminal2().getP(), 0.01);
-        assertEquals(-600, line2.getTerminal1().getP(), 0.01);
-        assertEquals(600, line2.getTerminal2().getP(), 0.01);
+        assertEquals(600, line2.getTerminal1().getP(), 0.01);
+        assertEquals(-600, line2.getTerminal2().getP(), 0.01);
 
         network.getLoad("LOAD").setP0(450);
 
@@ -162,8 +162,8 @@ public class SimpleLoadFlowTest {
 
         assertEquals(0, line1.getTerminal1().getP(), 0.01);
         assertEquals(0, line1.getTerminal2().getP(), 0.01);
-        assertEquals(-450, line2.getTerminal1().getP(), 0.01);
-        assertEquals(450, line2.getTerminal2().getP(), 0.01);
+        assertEquals(450, line2.getTerminal1().getP(), 0.01);
+        assertEquals(-450, line2.getTerminal2().getP(), 0.01);
     }
 
     @Test

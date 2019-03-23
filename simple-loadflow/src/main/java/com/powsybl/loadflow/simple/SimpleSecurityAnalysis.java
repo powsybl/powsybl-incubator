@@ -12,6 +12,8 @@ import com.powsybl.iidm.network.Network;
 import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
+import com.powsybl.math.matrix.DenseMatrixFactory;
+import com.powsybl.math.matrix.MatrixFactory;
 import com.powsybl.security.*;
 import com.powsybl.security.interceptors.CurrentLimitViolationInterceptor;
 
@@ -24,13 +26,20 @@ import java.util.concurrent.CompletableFuture;
  */
 public class SimpleSecurityAnalysis extends AbstractSecurityAnalysis {
 
+    private final MatrixFactory matrixFactory;
+
     public SimpleSecurityAnalysis(Network network) {
-        this(network, new DefaultLimitViolationDetector(), new LimitViolationFilter());
+        this(network, new DenseMatrixFactory());
     }
 
-    public SimpleSecurityAnalysis(Network network, LimitViolationDetector detector, LimitViolationFilter filter) {
-        super(network, detector, filter);
+    public SimpleSecurityAnalysis(Network network, MatrixFactory matrixFactory) {
+        this(network, new DefaultLimitViolationDetector(), new LimitViolationFilter(), matrixFactory);
+    }
 
+    public SimpleSecurityAnalysis(Network network, LimitViolationDetector detector, LimitViolationFilter filter,
+                                  MatrixFactory matrixFactory) {
+        super(network, detector, filter);
+        this.matrixFactory = Objects.requireNonNull(matrixFactory);
         interceptors.add(new CurrentLimitViolationInterceptor());
     }
 
@@ -43,7 +52,7 @@ public class SimpleSecurityAnalysis extends AbstractSecurityAnalysis {
 
         LoadFlowParameters loadFlowParameters = securityAnalysisParameters.getLoadFlowParameters();
 
-        LoadFlow loadFlow = new SimpleLoadFlow(network);
+        LoadFlow loadFlow = new SimpleLoadFlow(network, matrixFactory);
 
         // start post contingency LF from pre-contingency state variables
         LoadFlowParameters postContParameters = loadFlowParameters.copy().setVoltageInitMode(LoadFlowParameters.VoltageInitMode.PREVIOUS_VALUES);

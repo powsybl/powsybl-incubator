@@ -11,12 +11,12 @@ import com.powsybl.iidm.network.Branch;
 /**
  * @author Sylvain Leclerc <sylvain.leclerc at rte-france.com>
  */
-public class DcFlowEquationsImpl extends AbstractDcFlowEquations {
+public class ClosedBranchDcFlowEquations extends AbstractDcFlowEquations {
 
     private final double deltaPhase;
     private final double power;
 
-    public DcFlowEquationsImpl(Branch branch) {
+    public ClosedBranchDcFlowEquations(Branch branch) {
         BranchCharacteristics bc = new BranchCharacteristics(branch);
 
         double v1 = branch.getTerminal1().getVoltageLevel().getNominalV();

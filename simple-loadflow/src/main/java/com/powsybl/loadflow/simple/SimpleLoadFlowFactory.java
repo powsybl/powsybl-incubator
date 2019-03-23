@@ -10,14 +10,28 @@ import com.powsybl.computation.ComputationManager;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowFactory;
+import com.powsybl.math.matrix.DenseMatrixFactory;
+import com.powsybl.math.matrix.MatrixFactory;
+
+import java.util.Objects;
 
 /**
  * @author Sylvain Leclerc <sylvain.leclerc at rte-france.com>
  */
 public class SimpleLoadFlowFactory implements LoadFlowFactory {
 
+    private final MatrixFactory matrixFactory;
+
+    public SimpleLoadFlowFactory() {
+        this(new DenseMatrixFactory());
+    }
+
+    public SimpleLoadFlowFactory(MatrixFactory matrixFactory) {
+        this.matrixFactory = Objects.requireNonNull(matrixFactory);
+    }
+
     @Override
     public LoadFlow create(Network network, ComputationManager computationManager, int i) {
-        return new SimpleLoadFlow(network);
+        return new SimpleLoadFlow(network, matrixFactory);
     }
 }

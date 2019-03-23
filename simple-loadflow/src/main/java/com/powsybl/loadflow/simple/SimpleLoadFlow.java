@@ -6,6 +6,7 @@
  */
 package com.powsybl.loadflow.simple;
 
+import com.google.common.base.Stopwatch;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
@@ -13,17 +14,17 @@ import com.powsybl.loadflow.LoadFlowResult;
 import com.powsybl.loadflow.LoadFlowResultImpl;
 import com.powsybl.loadflow.simple.equations.IndexedNetwork;
 import com.powsybl.loadflow.simple.equations.LoadFlowMatrix;
-import org.ojalgo.RecoverableCondition;
-import org.ojalgo.matrix.decomposition.LU;
-import org.ojalgo.matrix.store.MatrixStore;
-import org.ojalgo.matrix.store.PrimitiveDenseStore;
-import org.ojalgo.matrix.store.SparseStore;
+import com.powsybl.math.matrix.DenseMatrixFactory;
+import com.powsybl.math.matrix.LUDecomposition;
+import com.powsybl.math.matrix.Matrix;
+import com.powsybl.math.matrix.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -45,12 +46,21 @@ public class SimpleLoadFlow implements LoadFlow {
 
     private final Network network;
 
+    private final MatrixFactory matrixFactory;
+
     public SimpleLoadFlow(Network network) {
+        this(network, new DenseMatrixFactory());
+    }
+
+    public SimpleLoadFlow(Network network, MatrixFactory matrixFactory) {
         this.network = Objects.requireNonNull(network);
+        this.matrixFactory = Objects.requireNonNull(matrixFactory);
     }
 
     @Override
     public CompletableFuture<LoadFlowResult> run(String state, LoadFlowParameters loadFlowParameters) {
+
+        Stopwatch stopwatch = Stopwatch.createStarted();
 
         network.getVariantManager().setWorkingVariant(state);
 
@@ -71,20 +81,24 @@ public class SimpleLoadFlow implements LoadFlow {
 
         IndexedNetwork indexedNetwork = IndexedNetwork.of(network);
 
-        SparseStore<Double> lfMatrix = LoadFlowMatrix.buildDc(indexedNetwork);
-        PrimitiveDenseStore rhs = LoadFlowMatrix.buildDcRhs(indexedNetwork);
+        Matrix lfMatrix = LoadFlowMatrix.buildDc(indexedNetwork, matrixFactory);
+        double[] rhs = LoadFlowMatrix.buildDcRhs(indexedNetwork);
 
         boolean status;
         try {
-            MatrixStore<Double> lhs = LU.PRIMITIVE.make().solve(lfMatrix, rhs);
-
-            LoadFlowMatrix.updateNetwork(indexedNetwork, lhs);
-
+            try (LUDecomposition lu = lfMatrix.decomposeLU()) {
+                lu.solve(rhs);
+            }
             status = true;
-        } catch (RecoverableCondition recoverableCondition) {
+        } catch (Exception e) {
             status = false;
-            LOGGER.error("Failed to solve linear system for simple DC load flow.", recoverableCondition);
+            LOGGER.error("Failed to solve linear system for simple DC load flow.", e);
         }
+
+        LoadFlowMatrix.updateDcNetwork(indexedNetwork, rhs);
+
+        stopwatch.stop();
+        LOGGER.info("DC loadflow complete in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
 
         return CompletableFuture.completedFuture(new LoadFlowResultImpl(status, Collections.emptyMap(), null));
     }

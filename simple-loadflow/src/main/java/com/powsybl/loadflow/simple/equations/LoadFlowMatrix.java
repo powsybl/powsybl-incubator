@@ -6,18 +6,22 @@
  */
 package com.powsybl.loadflow.simple.equations;
 
+import com.google.common.base.Stopwatch;
 import com.powsybl.iidm.network.Branch;
 import com.powsybl.iidm.network.Bus;
 import com.powsybl.iidm.network.Generator;
 import com.powsybl.iidm.network.Load;
-import org.ojalgo.matrix.store.MatrixStore;
-import org.ojalgo.matrix.store.PrimitiveDenseStore;
-import org.ojalgo.matrix.store.SparseStore;
+import com.powsybl.math.matrix.DenseMatrix;
+import com.powsybl.math.matrix.DenseMatrixFactory;
+import com.powsybl.math.matrix.Matrix;
+import com.powsybl.math.matrix.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Sylvain Leclerc <sylvain.leclerc at rte-france.com>
@@ -41,8 +45,8 @@ public final class LoadFlowMatrix {
         return getBus(b, Branch.Side.TWO);
     }
 
-    public static SparseStore<Double> build(IndexedNetwork network) {
-        SparseStore<Double> a = SparseStore.PRIMITIVE.make(2L * network.getBusCount(), 2L * network.getBusCount());
+    public static Matrix build(IndexedNetwork network) {
+        DenseMatrix a = new DenseMatrixFactory().create(2 * network.getBusCount(), 2 * network.getBusCount(), 1);
 
         Set<Bus> busGenerators = new HashSet<>();
         for (Generator generator : network.get().getGenerators()) {
@@ -71,105 +75,121 @@ public final class LoadFlowMatrix {
             int colPh2 = 2 * num2;
             int colV2 = 2 * num2 + 1;
 
-            a.add(rowP1, colPh1, eq.dp1dph1());
-            a.add(rowP1, colPh2, eq.dp1dph2());
-            a.add(rowP1, colV1, eq.dp1dv1());
-            a.add(rowP1, colV2, eq.dp1dv2());
+            a.addValue(rowP1, colPh1, eq.dp1dph1());
+            a.addValue(rowP1, colPh2, eq.dp1dph2());
+            a.addValue(rowP1, colV1, eq.dp1dv1());
+            a.addValue(rowP1, colV2, eq.dp1dv2());
 
             if (!busGenerators.contains(bus1)) {
-                a.add(rowQ1, colPh1, eq.dq1dph1());
-                a.add(rowQ1, colPh2, eq.dq1dph2());
-                a.add(rowQ1, colV1, eq.dq1dv1());
-                a.add(rowQ1, colV2, eq.dq1dv2());
+                a.addValue(rowQ1, colPh1, eq.dq1dph1());
+                a.addValue(rowQ1, colPh2, eq.dq1dph2());
+                a.addValue(rowQ1, colV1, eq.dq1dv1());
+                a.addValue(rowQ1, colV2, eq.dq1dv2());
             }
 
-            a.add(rowP2, colPh1, eq.dp2dph1());
-            a.add(rowP2, colPh2, eq.dp2dph2());
-            a.add(rowP2, colV1, eq.dp2dv1());
-            a.add(rowP2, colV2, eq.dp2dv2());
+            a.addValue(rowP2, colPh1, eq.dp2dph1());
+            a.addValue(rowP2, colPh2, eq.dp2dph2());
+            a.addValue(rowP2, colV1, eq.dp2dv1());
+            a.addValue(rowP2, colV2, eq.dp2dv2());
 
             if (!busGenerators.contains(bus2)) {
-                a.add(rowQ2, colPh1, eq.dq2dph1());
-                a.add(rowQ2, colPh2, eq.dq2dph2());
-                a.add(rowQ2, colV1, eq.dq2dv1());
-                a.add(rowQ2, colV2, eq.dq2dv2());
+                a.addValue(rowQ2, colPh1, eq.dq2dph1());
+                a.addValue(rowQ2, colPh2, eq.dq2dph2());
+                a.addValue(rowQ2, colV1, eq.dq2dv1());
+                a.addValue(rowQ2, colV2, eq.dq2dv2());
             }
         }
 
         return a;
     }
 
-    public static SparseStore<Double> buildDc(IndexedNetwork network) {
-        SparseStore<Double> a = SparseStore.PRIMITIVE.make(network.getBusCount(), network.getBusCount());
+    public static Matrix buildDc(IndexedNetwork network, MatrixFactory matrixFactory) {
+        Objects.requireNonNull(network);
+        Objects.requireNonNull(matrixFactory);
 
-        for (Branch branch : network.get().getBranches()) {
+        Stopwatch stopwatch = Stopwatch.createStarted();
 
-            Bus bus1 = getBus1(branch);
-            Bus bus2 = getBus2(branch);
+        Matrix a = matrixFactory.create(network.getBusCount(), network.getBusCount(), network.getBusCount() * 3);
 
-            if (bus1 == null || bus2 == null) {
-                continue;
+        a.setValue(0, 0, 1);
+
+        network.forEachBranchInCscOrder((row, column, branch, side) -> {
+            if (row != 0) {
+                ClosedBranchDcFlowEquations eq = new ClosedBranchDcFlowEquations(branch);
+                if (row == column) {
+                    if (side == Branch.Side.ONE) {
+                        a.addValue(row, column, eq.dp1dph1());
+                    } else {
+                        a.addValue(row, column, eq.dp2dph2());
+                    }
+                } else {
+                    if (side == Branch.Side.ONE) {
+                        a.addValue(row, column, eq.dp1dph2());
+                    } else {
+                        a.addValue(row, column, eq.dp2dph1());
+                    }
+                }
             }
+        });
 
-            DcFlowEquationsImpl eq = new DcFlowEquationsImpl(branch);
-
-            int num1 = network.getIndex(bus1);
-            int num2 = network.getIndex(bus2);
-
-            int rowP1 = num1;
-            int rowP2 = num2;
-            int colPh1 = num1;
-            int colPh2 = num2;
-
-            if (rowP1 != 0) {
-                a.add(rowP1, colPh1, eq.dp1dph1());
-                a.add(rowP1, colPh2, eq.dp1dph2());
-            }
-            if (rowP2 != 0) {
-                a.add(rowP2, colPh1, eq.dp2dph1());
-                a.add(rowP2, colPh2, eq.dp2dph2());
-            }
-        }
-
-        a.set(0, 0, 1);
+        stopwatch.stop();
+        LOGGER.info("DC matrix built in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
 
         return a;
     }
 
-    public static PrimitiveDenseStore buildDcRhs(IndexedNetwork network) {
-        PrimitiveDenseStore rhs = PrimitiveDenseStore.FACTORY.makeZero(network.getBusCount(), 1);
+    public static double[] buildDcRhs(IndexedNetwork network) {
+        double[] rhs = new double[network.getBusCount()];
 
         for (Generator gen : network.get().getGenerators()) {
             Bus bus = gen.getTerminal().getBusView().getBus();
+            if (bus == null || !bus.isInMainConnectedComponent()) {
+                continue;
+            }
             int num = network.getIndex(bus);
             if (num == 0) {
                 continue;
             }
-            rhs.set(num, 0, gen.getTargetP());
+            rhs[num] += gen.getTargetP();
         }
 
         for (Load load : network.get().getLoads()) {
             Bus bus = load.getTerminal().getBusView().getBus();
+            if (bus == null || !bus.isInMainConnectedComponent()) {
+                continue;
+            }
             int num = network.getIndex(bus);
             if (num == 0) {
                 continue;
             }
-            rhs.set(num, 0, load.getP0());
+            rhs[num] += load.getP0();
         }
 
         return rhs;
     }
 
-    public static void updateNetwork(IndexedNetwork network, MatrixStore<Double> lhs) {
+    public static void updateDcNetwork(IndexedNetwork network, double[] lhs) {
+        Stopwatch stopwatch = Stopwatch.createStarted();
+
+        for (Bus bus : network.get().getBusView().getBuses()) {
+            bus.setV(Double.NaN);
+            bus.setAngle(Double.NaN);
+        }
+
         for (Bus bus : network.getBuses()) {
             int num = network.getIndex(bus);
-            bus.setAngle(lhs.get(num, 0));
+            bus.setAngle(lhs[num]);
         }
 
         for (Branch branch : network.get().getBranches()) {
             DcFlowEquations eq = DcFlowEquations.of(branch);
             branch.getTerminal1().setP(eq.p1());
+            branch.getTerminal1().setQ(Double.NaN);
             branch.getTerminal2().setP(eq.p2());
+            branch.getTerminal2().setQ(Double.NaN);
         }
+
+        stopwatch.stop();
+        LOGGER.info("Network updated with DC result in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
     }
 }

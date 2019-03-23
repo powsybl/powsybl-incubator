@@ -26,9 +26,9 @@ public interface DcFlowEquations {
     double dp2dph2();
 
     static DcFlowEquations of(Branch branch) {
-        if (!branch.getTerminal1().isConnected() || !branch.getTerminal2().isConnected()) {
+        if (branch.getTerminal1().getBusView().getBus() == null || branch.getTerminal2().getBusView().getBus() == null) {
             return new OpenBranchDcFlowEquations();
         }
-        return new DcFlowEquationsImpl(branch);
+        return new ClosedBranchDcFlowEquations(branch);
     }
 }

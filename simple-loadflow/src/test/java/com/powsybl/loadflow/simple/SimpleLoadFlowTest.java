@@ -7,6 +7,8 @@
 package com.powsybl.loadflow.simple;
 
 import com.google.common.collect.ImmutableList;
+import com.powsybl.commons.io.table.AsciiTableFormatterFactory;
+import com.powsybl.commons.io.table.TableFormatterConfig;
 import com.powsybl.contingency.BranchContingency;
 import com.powsybl.contingency.ContingenciesProvider;
 import com.powsybl.contingency.Contingency;
@@ -24,7 +26,10 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.usefultoys.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintStream;
+import java.io.Writer;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -170,7 +175,7 @@ public class SimpleLoadFlowTest {
     }
 
     @Test
-    public void securityAnalysis() {
+    public void securityAnalysis() throws IOException {
         Network network = EurostagTutorialExample1Factory.createWithCurrentLimits();
 
         LimitViolationFilter currentFilter = new LimitViolationFilter(EnumSet.of(LimitViolationType.CURRENT));
@@ -182,25 +187,33 @@ public class SimpleLoadFlowTest {
         SecurityAnalysisResult res = securityAnalysis.run(network.getVariantManager().getWorkingVariantId(), new SecurityAnalysisParameters(), provider)
                 .join();
 
+        try (Writer writer = new OutputStreamWriter(LoggerFactory.getInfoPrintStream(LOGGER))) {
+            Security.print(res, network, writer, new AsciiTableFormatterFactory(),
+                    new Security.PostContingencyLimitViolationWriteConfig(null, new TableFormatterConfig(), true, false));
+        }
+
         assertNotNull(res);
         assertNotNull(res.getPreContingencyResult());
         assertTrue(res.getPreContingencyResult().isComputationOk());
 
-//        //2 violations, 1 on each line
-//        List<LimitViolation> nViolations = res.getPreContingencyResult().getLimitViolations();
-//        assertEquals(2, nViolations.size());
-//
-//        List<PostContingencyResult> contingenciesResult = res.getPostContingencyResults();
-//        assertEquals(2, contingenciesResult.size());
-//
-//        LimitViolationsResult contingency1 = contingenciesResult.get(0).getLimitViolationsResult();
-//        assertTrue(contingency1.isComputationOk());
-//
-//        //2 violations on the line which is still connected
-//        List<LimitViolation> cont1Violations = contingency1.getLimitViolations().stream()
-//                .filter(l -> l.getSubjectId().equals("NHV1_NHV2_2"))
-//                .collect(Collectors.toList());
-//        assertEquals(2, cont1Violations.size());
+        //2 violations, 1 on each line
+        assertTrue(res.getPreContingencyResult().getLimitViolations().isEmpty());
+
+        List<PostContingencyResult> contingenciesResult = res.getPostContingencyResults();
+        assertEquals(2, contingenciesResult.size());
+
+        LimitViolationsResult contingency1 = contingenciesResult.get(0).getLimitViolationsResult();
+        assertTrue(contingency1.isComputationOk());
+
+        assertTrue(contingency1.getLimitViolations().isEmpty());
+
+        LimitViolationsResult contingency2 = contingenciesResult.get(1).getLimitViolationsResult();
+        assertTrue(contingency2.isComputationOk());
+
+        //1 violation on the line which is still connected
+        assertEquals(1, contingency2.getLimitViolations().stream()
+                .filter(l -> l.getSubjectId().equals("NHV1_NHV2_1"))
+                .count());
     }
 
 }

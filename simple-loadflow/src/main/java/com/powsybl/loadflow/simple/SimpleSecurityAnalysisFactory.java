@@ -31,7 +31,7 @@ public class SimpleSecurityAnalysisFactory implements SecurityAnalysisFactory {
 
     @Override
     public SecurityAnalysis create(Network network, LimitViolationFilter filter, ComputationManager computationManager, int priority) {
-        return create(network, new DefaultLimitViolationDetector(), filter, computationManager, priority);
+        return create(network, new SimpleLimitViolationDetector(), filter, computationManager, priority);
     }
 
     @Override

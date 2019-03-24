@@ -15,7 +15,6 @@ import com.powsybl.loadflow.LoadFlowResult;
 import com.powsybl.math.matrix.DenseMatrixFactory;
 import com.powsybl.math.matrix.MatrixFactory;
 import com.powsybl.security.*;
-import com.powsybl.security.interceptors.CurrentLimitViolationInterceptor;
 
 import java.util.List;
 import java.util.Objects;
@@ -33,14 +32,13 @@ public class SimpleSecurityAnalysis extends AbstractSecurityAnalysis {
     }
 
     public SimpleSecurityAnalysis(Network network, MatrixFactory matrixFactory) {
-        this(network, new DefaultLimitViolationDetector(), new LimitViolationFilter(), matrixFactory);
+        this(network, new SimpleLimitViolationDetector(), new LimitViolationFilter(), matrixFactory);
     }
 
     public SimpleSecurityAnalysis(Network network, LimitViolationDetector detector, LimitViolationFilter filter,
                                   MatrixFactory matrixFactory) {
         super(network, detector, filter);
         this.matrixFactory = Objects.requireNonNull(matrixFactory);
-        interceptors.add(new CurrentLimitViolationInterceptor());
     }
 
     @Override

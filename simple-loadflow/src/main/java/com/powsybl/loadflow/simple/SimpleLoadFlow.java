@@ -7,6 +7,9 @@
 package com.powsybl.loadflow.simple;
 
 import com.google.common.base.Stopwatch;
+import com.powsybl.iidm.network.Bus;
+import com.powsybl.iidm.network.Generator;
+import com.powsybl.iidm.network.Load;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
@@ -73,6 +76,21 @@ public class SimpleLoadFlow implements LoadFlow {
         }
     }
 
+    private static void balance(IndexedNetwork indexedNetwork) {
+        double activeGeneration = 0;
+        double activeLoad = 0;
+        for (Bus b : indexedNetwork.getBuses()) {
+            for (Generator g : b.getGenerators()) {
+                activeGeneration += g.getTargetP();
+            }
+            for (Load l : b.getLoads()) {
+                activeLoad += l.getP0();
+            }
+        }
+
+        LOGGER.info("Active generation={} Mw, active load={} Mw", Math.round(activeGeneration), Math.round(activeLoad));
+    }
+
     @Override
     public CompletableFuture<LoadFlowResult> run(String state, LoadFlowParameters loadFlowParameters) {
 
@@ -85,8 +103,12 @@ public class SimpleLoadFlow implements LoadFlow {
 
         IndexedNetwork indexedNetwork = IndexedNetwork.of(network);
 
-        Matrix lfMatrix = LoadFlowMatrix.buildDc(indexedNetwork, matrixFactory);
-        double[] rhs = LoadFlowMatrix.buildDcRhs(indexedNetwork);
+        balance(indexedNetwork);
+
+        int slackBusNum = 0;
+
+        Matrix lfMatrix = LoadFlowMatrix.buildDc(indexedNetwork, slackBusNum, matrixFactory);
+        double[] rhs = LoadFlowMatrix.buildDcRhs(indexedNetwork, slackBusNum);
 
         boolean status;
         try {

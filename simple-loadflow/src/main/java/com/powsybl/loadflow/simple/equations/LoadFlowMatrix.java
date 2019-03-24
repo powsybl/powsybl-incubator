@@ -103,7 +103,7 @@ public final class LoadFlowMatrix {
         return a;
     }
 
-    public static Matrix buildDc(IndexedNetwork network, MatrixFactory matrixFactory) {
+    public static Matrix buildDc(IndexedNetwork network, int slackBusNum, MatrixFactory matrixFactory) {
         Objects.requireNonNull(network);
         Objects.requireNonNull(matrixFactory);
 
@@ -111,22 +111,32 @@ public final class LoadFlowMatrix {
 
         Matrix a = matrixFactory.create(network.getBusCount(), network.getBusCount(), network.getBusCount() * 3);
 
-        a.setValue(0, 0, 1);
+        network.forEachBranchInCscOrder(new IndexedNetwork.BranchHandler() {
 
-        network.forEachBranchInCscOrder((row, column, branch, side) -> {
-            if (row != 0) {
-                ClosedBranchDcFlowEquations eq = new ClosedBranchDcFlowEquations(branch);
-                if (row == column) {
-                    if (side == Branch.Side.ONE) {
-                        a.addValue(row, column, eq.dp1dph1());
-                    } else {
-                        a.addValue(row, column, eq.dp2dph2());
+            private boolean slackBusAdded = false;
+
+            @Override
+            public void onBranch(int row, int column, Branch branch, Branch.Side side) {
+                if (!slackBusAdded) {
+                    if (column >= slackBusNum) {
+                        a.setValue(slackBusNum, slackBusNum, 1);
+                        slackBusAdded = true;
                     }
-                } else {
-                    if (side == Branch.Side.ONE) {
-                        a.addValue(row, column, eq.dp1dph2());
+                }
+                if (row != slackBusNum) {
+                    ClosedBranchDcFlowEquations eq = new ClosedBranchDcFlowEquations(branch);
+                    if (row == column) {
+                        if (side == Branch.Side.ONE) {
+                            a.addValue(row, column, eq.dp1dph1());
+                        } else {
+                            a.addValue(row, column, eq.dp2dph2());
+                        }
                     } else {
-                        a.addValue(row, column, eq.dp2dph1());
+                        if (side == Branch.Side.ONE) {
+                            a.addValue(row, column, eq.dp1dph2());
+                        } else {
+                            a.addValue(row, column, eq.dp2dph1());
+                        }
                     }
                 }
             }
@@ -138,7 +148,7 @@ public final class LoadFlowMatrix {
         return a;
     }
 
-    public static double[] buildDcRhs(IndexedNetwork network) {
+    public static double[] buildDcRhs(IndexedNetwork network, int slackBusNum) {
         double[] rhs = new double[network.getBusCount()];
 
         for (Generator gen : network.get().getGenerators()) {
@@ -147,7 +157,7 @@ public final class LoadFlowMatrix {
                 continue;
             }
             int num = network.getIndex(bus);
-            if (num == 0) {
+            if (num == slackBusNum) {
                 continue;
             }
             rhs[num] -= gen.getTargetP();
@@ -159,7 +169,7 @@ public final class LoadFlowMatrix {
                 continue;
             }
             int num = network.getIndex(bus);
-            if (num == 0) {
+            if (num == slackBusNum) {
                 continue;
             }
             rhs[num] += load.getP0();

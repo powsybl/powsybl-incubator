@@ -178,6 +178,7 @@ public final class LoadFlowMatrix {
 
         for (Bus bus : network.getBuses()) {
             int num = network.getIndex(bus);
+            bus.setV(bus.getVoltageLevel().getNominalV());
             bus.setAngle(Math.toDegrees(lhs[num]));
         }
 

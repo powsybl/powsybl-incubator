@@ -57,14 +57,7 @@ public class SimpleLoadFlow implements LoadFlow {
         this.matrixFactory = Objects.requireNonNull(matrixFactory);
     }
 
-    @Override
-    public CompletableFuture<LoadFlowResult> run(String state, LoadFlowParameters loadFlowParameters) {
-
-        Stopwatch stopwatch = Stopwatch.createStarted();
-
-        network.getVariantManager().setWorkingVariant(state);
-
-        //initialize phase and voltage
+    private void initVoltage(LoadFlowParameters loadFlowParameters) {
         switch (loadFlowParameters.getVoltageInitMode()) {
             case DC_VALUES:
                 LOGGER.warn("Voltage initialization with DC values is not supported, falling back to uniform values");
@@ -78,6 +71,17 @@ public class SimpleLoadFlow implements LoadFlow {
             case PREVIOUS_VALUES:
                 break;
         }
+    }
+
+    @Override
+    public CompletableFuture<LoadFlowResult> run(String state, LoadFlowParameters loadFlowParameters) {
+
+        Stopwatch stopwatch = Stopwatch.createStarted();
+
+        network.getVariantManager().setWorkingVariant(state);
+
+        // initialize phase and voltage
+        initVoltage(loadFlowParameters);
 
         IndexedNetwork indexedNetwork = IndexedNetwork.of(network);
 

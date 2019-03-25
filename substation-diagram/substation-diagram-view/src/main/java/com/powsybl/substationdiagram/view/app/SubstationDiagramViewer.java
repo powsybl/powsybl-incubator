@@ -13,7 +13,10 @@ import com.powsybl.commons.json.JsonUtil;
 import com.powsybl.computation.local.LocalComputationManager;
 import com.powsybl.iidm.import_.ImportConfig;
 import com.powsybl.iidm.import_.Importers;
+import com.powsybl.iidm.network.Container;
+import com.powsybl.iidm.network.ContainerType;
 import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.network.Substation;
 import com.powsybl.iidm.network.VoltageLevel;
 import com.powsybl.substationdiagram.SubstationDiagram;
 import com.powsybl.substationdiagram.cgmes.CgmesVoltageLevelLayoutFactory;
@@ -27,23 +30,25 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.beans.value.WeakChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Side;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.CheckBoxListCell;
+import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,6 +72,8 @@ public class SubstationDiagramViewer extends Application {
     private static final Logger LOGGER = LoggerFactory.getLogger(SubstationDiagramViewer.class);
 
     private  static final String SELECTED_VOLTAGE_LEVEL_IDS_PROPERTY = "selectedVoltageLevelIds";
+    private  static final String SELECTED_SUBSTATION_IDS_PROPERTY = "selectedSubstationIds";
+
     private static final String CASE_PATH_PROPERTY = "casePath";
 
     private final Map<String, VoltageLevelLayoutFactory> layouts
@@ -83,10 +90,13 @@ public class SubstationDiagramViewer extends Application {
             = ImmutableMap.of("CVG Design", convergenceComponentLibrary,
                               "Flat Design", flatDesignComponentLibrary);
 
+    private final ObservableList<SelectableSubstation> selectableSubstations = FXCollections.observableArrayList();
+
     private final ObservableList<SelectableVoltageLevel> selectableVoltageLevels = FXCollections.observableArrayList();
-    private final FilteredList<SelectableVoltageLevel> filteredSelectableVoltageLevels = new FilteredList<>(selectableVoltageLevels, s -> true);
-    private final ListView<SelectableVoltageLevel> voltageLevelList = new ListView<>(filteredSelectableVoltageLevels);
+
     private final TextField filterInput = new TextField();
+
+    private final TreeView<Container> substationsTree = new TreeView<>();
 
     private final Button caseLoadingStatus = new Button("  ");
     private final TextField casePathTextField = new TextField();
@@ -131,22 +141,22 @@ public class SubstationDiagramViewer extends Application {
 
         private final ChangeListener<LayoutParameters> listener;
 
-        SubstationDiagramPane(VoltageLevel vl) {
+        SubstationDiagramPane(Container container) {
             svgArea.setEditable(false);
             metadataArea.setEditable(false);
             infoArea.setEditable(false);
             infoArea.setText(String.join(System.lineSeparator(),
-                                         "id: " + vl.getId(),
-                                         "name: " + vl.getName()));
+                                         "id: " + container.getId(),
+                                         "name: " + container.getName()));
             tabPane.setSide(Side.BOTTOM);
             tab1.setClosable(false);
             tab2.setClosable(false);
             tab3.setClosable(false);
             setCenter(tabPane);
             setBottom(titledPane);
-            listener = (observable, oldValue, newValue) -> loadDiagram(vl);
+            listener = (observable, oldValue, newValue) -> loadDiagram(container);
             layoutParameters.addListener(new WeakChangeListener<>(listener));
-            loadDiagram(vl);
+            loadDiagram(container);
         }
 
         class SubstationDiagramResult {
@@ -176,12 +186,12 @@ public class SubstationDiagramViewer extends Application {
             }
         }
 
-        private SubstationDiagramResult createSubstationDiagramView(VoltageLevel vl) {
+        private SubstationDiagramResult createSubstationDiagramView(Container container) {
             String svgData;
             String metadataData;
             try (StringWriter svgWriter = new StringWriter();
                  StringWriter metadataWriter = new StringWriter()) {
-                SubstationDiagram diagram = SubstationDiagram.build(vl, getLayoutFactory(), showNames.isSelected());
+                SubstationDiagram diagram = SubstationDiagram.build(container, getLayoutFactory(), showNames.isSelected());
                 diagram.writeSvg(getComponentLibrary(), layoutParameters.get(), svgWriter, metadataWriter, null);
                 svgWriter.flush();
                 metadataWriter.flush();
@@ -201,14 +211,14 @@ public class SubstationDiagramViewer extends Application {
             return new SubstationDiagramResult(diagramView, svgData, metadataData);
         }
 
-        private void loadDiagram(VoltageLevel vl) {
+        private void loadDiagram(Container container) {
             Service<SubstationDiagramResult> loader = new Service<SubstationDiagramResult>() {
                 @Override
                 protected Task<SubstationDiagramResult> createTask() {
                     return new Task<SubstationDiagramResult>() {
                         @Override
                         protected SubstationDiagramResult call() {
-                            return createSubstationDiagramView(vl);
+                            return createSubstationDiagramView(container);
                         }
                     };
                 }
@@ -239,15 +249,15 @@ public class SubstationDiagramViewer extends Application {
         }
     }
 
-    private class SelectableVoltageLevel {
+    abstract class AbstractSelectableContainer {
 
-        private final String id;
+        protected final String id;
 
-        private final String name;
+        protected final String name;
 
-        private final BooleanProperty checkedProperty = new SimpleBooleanProperty();
+        protected final BooleanProperty checkedProperty = new SimpleBooleanProperty();
 
-        SelectableVoltageLevel(String id, String name) {
+        AbstractSelectableContainer(String id, String name) {
             this.id = id;
             this.name = name;
             checkedProperty.addListener((obs, wasSelected, isNowSelected) -> {
@@ -264,7 +274,57 @@ public class SubstationDiagramViewer extends Application {
             checkedDiagramsPane.getTabs().removeIf(tab -> tab.getText().equals(id));
         }
 
-        private void addDiagramTab() {
+        abstract void addDiagramTab();
+
+        protected String getId() {
+            return id;
+        }
+
+        protected String getIdOrName() {
+            return showNames.isSelected() ? name : id;
+        }
+
+        public BooleanProperty checkedProperty() {
+            return checkedProperty;
+        }
+
+        public void setCheckedProperty(Boolean b) {
+            checkedProperty.setValue(b);
+        }
+
+        @Override
+        public String toString() {
+            return getIdOrName();
+        }
+
+        private void saveSelectedDiagrams() {
+            try {
+                String selectedVoltageLevelIdsPropertyValue = objectMapper.writeValueAsString(selectableVoltageLevels.stream()
+                        .filter(selectableVoltageLevel -> selectableVoltageLevel.checkedProperty().get())
+                        .map(SelectableVoltageLevel::getId)
+                        .collect(Collectors.toList()));
+                preferences.put(SELECTED_VOLTAGE_LEVEL_IDS_PROPERTY, selectedVoltageLevelIdsPropertyValue);
+
+                String selectedSubstationIdsPropertyValue = objectMapper.writeValueAsString(selectableSubstations.stream()
+                        .filter(selectableSubstation -> selectableSubstation.checkedProperty().get())
+                        .map(SelectableSubstation::getId)
+                        .collect(Collectors.toList()));
+                preferences.put(SELECTED_SUBSTATION_IDS_PROPERTY, selectedSubstationIdsPropertyValue);
+
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+        }
+    }
+
+    private class SelectableVoltageLevel extends AbstractSelectableContainer {
+
+        SelectableVoltageLevel(String id, String name) {
+            super(id, name);
+        }
+
+        @Override
+        protected void addDiagramTab() {
             VoltageLevel vl = networkProperty.get().getVoltageLevel(id);
             if (vl != null) {
                 Tab tab = new Tab(id, new SubstationDiagramPane(vl));
@@ -275,22 +335,24 @@ public class SubstationDiagramViewer extends Application {
                 LOGGER.warn("Voltage level {} not found", id);
             }
         }
+    }
 
-        String getId() {
-            return id;
-        }
-
-        String getIdOrName() {
-            return showNames.isSelected() ? name : id;
-        }
-
-        BooleanProperty checkedProperty() {
-            return checkedProperty;
+    private class SelectableSubstation extends AbstractSelectableContainer {
+        SelectableSubstation(String id, String name) {
+            super(id, name);
         }
 
         @Override
-        public String toString() {
-            return getIdOrName();
+        protected void addDiagramTab() {
+            Substation s = networkProperty.get().getSubstation(id);
+            if (s != null) {
+                Tab tab = new Tab(id, new SubstationDiagramPane(s));
+                tab.setOnCloseRequest(event -> checkedProperty.set(false));
+                checkedDiagramsPane.getTabs().add(tab);
+                checkedDiagramsPane.getSelectionModel().select(tab);
+            } else {
+                LOGGER.warn("Substation {} not found", id);
+            }
         }
     }
 
@@ -404,18 +466,6 @@ public class SubstationDiagramViewer extends Application {
         layoutParameters.set(new LayoutParameters(layoutParameters.get()));
     }
 
-    private void saveSelectedDiagrams() {
-        try {
-            String selectedVoltageLevelIdsPropertyValue = objectMapper.writeValueAsString(selectableVoltageLevels.stream()
-                    .filter(selectableVoltageLevel -> selectableVoltageLevel.checkedProperty().get())
-                    .map(SelectableVoltageLevel::getId)
-                    .collect(Collectors.toList()));
-            preferences.put(SELECTED_VOLTAGE_LEVEL_IDS_PROPERTY, selectedVoltageLevelIdsPropertyValue);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-    }
-
     private void loadSelectedDiagrams() {
         String selectedVoltageLevelIdsPropertyValue = preferences.get(SELECTED_VOLTAGE_LEVEL_IDS_PROPERTY, null);
         if (selectedVoltageLevelIdsPropertyValue != null) {
@@ -429,30 +479,67 @@ public class SubstationDiagramViewer extends Application {
                 throw new UncheckedIOException(e);
             }
         }
+
+        String selectedSubstationIdsPropertyValue = preferences.get(SELECTED_SUBSTATION_IDS_PROPERTY, null);
+
+        if (selectedSubstationIdsPropertyValue != null) {
+            try {
+                Set<String> selectedSubstationIds = new HashSet<>(objectMapper.readValue(selectedSubstationIdsPropertyValue, new TypeReference<List<String>>() {
+                }));
+                selectableSubstations.stream()
+                        .filter(selectableSubstation -> selectedSubstationIds.contains(selectableSubstation.getId()))
+                        .forEach(selectableSubstation -> selectableSubstation.checkedProperty().set(true));
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+        }
+    }
+
+    private void initTreeCellFacgory() {
+        substationsTree.setCellFactory(param -> {
+            CheckBoxTreeCell<Container> treeCell = new CheckBoxTreeCell<>();
+            StringConverter<TreeItem<Container>> strConvert = new StringConverter<TreeItem<Container>>() {
+                @Override
+                public String toString(TreeItem<Container> c) {
+                    if (c.getValue() != null) {
+                        return showNames.isSelected() ? c.getValue().getName() : c.getValue().getId();
+                    } else {
+                        return "";
+                    }
+                }
+
+                @Override
+                public TreeItem<Container> fromString(String string) {
+                    return null;
+                }
+            };
+            treeCell.setConverter(strConvert);
+            return treeCell;
+        });
     }
 
     @Override
     public void start(Stage primaryStage) {
-        voltageLevelList.setCellFactory(CheckBoxListCell.forListView(SelectableVoltageLevel::checkedProperty));
+        initTreeCellFacgory();
+
         showNames.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            voltageLevelList.refresh();
+            substationsTree.refresh();
             refreshDiagram();
         });
-        filterInput.textProperty().addListener(obs -> {
-            String filter = filterInput.getText();
-            if (filter == null || filter.length() == 0) {
-                filteredSelectableVoltageLevels.setPredicate(s -> true);
-            } else {
-                filteredSelectableVoltageLevels.setPredicate(s -> s.getIdOrName().contains(filter));
-            }
-        });
+        filterInput.textProperty().addListener(obs ->
+            initSubstationsTree()
+        );
 
         networkProperty.addListener((observable, oldNetwork, newNetwork) -> {
             if (newNetwork == null) {
                 selectableVoltageLevels.clear();
+                selectableSubstations.clear();
             } else {
                 selectableVoltageLevels.setAll(newNetwork.getVoltageLevelStream()
                         .map(vl -> new SelectableVoltageLevel(vl.getId(), vl.getName()))
+                        .collect(Collectors.toList()));
+                selectableSubstations.setAll(newNetwork.getSubstationStream()
+                        .map(s -> new SelectableSubstation(s.getId(), s.getName()))
                         .collect(Collectors.toList()));
             }
         });
@@ -478,7 +565,7 @@ public class SubstationDiagramViewer extends Application {
         c1.setHgrow(Priority.ALWAYS);
         voltageLevelToolBar.getColumnConstraints().addAll(c0, c1);
         voltageLevelPane.setTop(voltageLevelToolBar);
-        voltageLevelPane.setCenter(voltageLevelList);
+        voltageLevelPane.setCenter(substationsTree);
 
         SplitPane splitPane = new SplitPane(voltageLevelPane, diagramsPane, parametersPane);
         splitPane.setDividerPositions(0.2, 0.7, 0.1);
@@ -501,21 +588,34 @@ public class SubstationDiagramViewer extends Application {
         mainPane.setCenter(splitPane);
         mainPane.setTop(casePane);
 
-        voltageLevelList.getSelectionModel().getSelectedItems().addListener((ListChangeListener<SelectableVoltageLevel>) c -> {
-            while (c.next()) {
-                for (SelectableVoltageLevel s : c.getAddedSubList()) {
-                    VoltageLevel vl = networkProperty.get().getVoltageLevel(s.getId());
-                    selectedDiagramPane.setCenter(new SubstationDiagramPane(vl));
-                }
-            }
-        });
-
-        // selected diagrams reloading
+        // selected voltagelevel diagrams reloading
         selectableVoltageLevels.addListener(new ListChangeListener<SelectableVoltageLevel>() {
             @Override
             public void onChanged(Change<? extends SelectableVoltageLevel> c) {
                 loadSelectedDiagrams();
                 selectableVoltageLevels.remove(this);
+            }
+        });
+
+        // selected substation diagrams reloading
+        selectableSubstations.addListener(new ListChangeListener<SelectableSubstation>() {
+            @Override
+            public void onChanged(Change<? extends SelectableSubstation> c) {
+                loadSelectedDiagrams();
+                selectableSubstations.remove(this);
+            }
+        });
+
+        substationsTree.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<Container>>() {
+            @Override
+            public void changed(ObservableValue<? extends TreeItem<Container>> observable, TreeItem<Container> oldValue, TreeItem<Container> newValue) {
+                if (newValue == null) {
+                    return;
+                }
+                Container c = newValue.getValue();
+                if (c.getContainerType() == ContainerType.VOLTAGE_LEVEL) {
+                    selectedDiagramPane.setCenter(new SubstationDiagramPane(c));
+                }
             }
         });
 
@@ -551,6 +651,7 @@ public class SubstationDiagramViewer extends Application {
         });
         networkService.setOnSucceeded(event -> {
             networkProperty.setValue((Network) event.getSource().getValue());
+            initSubstationsTree();
             caseLoadingStatus.setStyle("-fx-background-color: green");
             preferences.put(CASE_PATH_PROPERTY, file.toAbsolutePath().toString());
         });
@@ -561,5 +662,75 @@ public class SubstationDiagramViewer extends Application {
             caseLoadingStatus.setStyle("-fx-background-color: red");
         });
         networkService.start();
+    }
+
+    private void checkVoltageLevel(VoltageLevel v, Boolean checked) {
+        selectableVoltageLevels.stream()
+                .filter(selectableVoltageLevel -> selectableVoltageLevel.getIdOrName().equals(showNames.isSelected() ? v.getName() : v.getId()))
+                .forEach(selectableVoltageLevel -> selectableVoltageLevel.setCheckedProperty(checked));
+    }
+
+    private void initVoltageLevelsTree(TreeItem<Container> rootItem,
+                                       Substation s, String filter, boolean emptyFilter,
+                                       Map<String, SelectableSubstation> mapSubstations,
+                                       Map<String, SelectableVoltageLevel> mapVoltageLevels) {
+        boolean firstVL = true;
+        CheckBoxTreeItem<Container> sItem = null;
+
+        for (VoltageLevel v : s.getVoltageLevels()) {
+            boolean vlOk = showNames.isSelected() ? v.getName().contains(filter) : v.getId().contains(filter);
+
+            if (!emptyFilter && !vlOk) {
+                continue;
+            }
+
+            CheckBoxTreeItem<Container> vItem = new CheckBoxTreeItem<>(v);
+            vItem.setIndependent(true);
+            if (mapVoltageLevels.containsKey(v.getId()) && mapVoltageLevels.get(v.getId()).checkedProperty().get()) {
+                vItem.setSelected(true);
+            }
+
+            if (firstVL) {
+                sItem = new CheckBoxTreeItem<>(s);
+                sItem.setIndependent(true);
+                sItem.setExpanded(true);
+                if (mapSubstations.containsKey(s.getId()) && mapSubstations.get(s.getId()).checkedProperty().get()) {
+                    sItem.setSelected(true);
+                }
+                rootItem.getChildren().add(sItem);
+                sItem.selectedProperty().addListener((obs, oldVal, newVal) -> {
+                });
+            }
+
+            firstVL = false;
+            sItem.getChildren().add(vItem);
+            vItem.selectedProperty().addListener((obs, oldVal, newVal) ->
+                    checkVoltageLevel(v, newVal));
+        }
+    }
+
+    private void initSubstationsTree() {
+        String filter = filterInput.getText();
+        boolean emptyFilter = StringUtils.isEmpty(filter);
+
+        Network n = networkProperty.get();
+        TreeItem<Container> rootItem = new TreeItem<>();
+        rootItem.setExpanded(true);
+
+        Map<String, SelectableSubstation> mapSubstations = selectableSubstations.stream()
+                .collect(Collectors.toMap(SelectableSubstation::getId, Function.identity()));
+        Map<String, SelectableVoltageLevel> mapVoltageLevels = selectableVoltageLevels.stream()
+                .collect(Collectors.toMap(SelectableVoltageLevel::getId, Function.identity()));
+
+        for (Substation s : n.getSubstations()) {
+            initVoltageLevelsTree(rootItem, s, filter, emptyFilter, mapSubstations, mapVoltageLevels);
+        }
+
+        if (substationsTree.getRoot() != null) {
+            substationsTree.getRoot().getChildren().clear();
+        }
+
+        substationsTree.setRoot(rootItem);
+        substationsTree.setShowRoot(false);
     }
 }

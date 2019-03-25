@@ -339,7 +339,7 @@ public class SubstationDiagramViewer extends Application {
 
     private class SelectableSubstation extends AbstractSelectableContainer {
         SelectableSubstation(String id, String name) {
-          super(id, name);
+            super(id, name);
         }
 
         @Override
@@ -693,6 +693,7 @@ public class SubstationDiagramViewer extends Application {
             if (firstVL) {
                 sItem = new CheckBoxTreeItem<>(s);
                 sItem.setIndependent(true);
+                sItem.setExpanded(true);
                 if (mapSubstations.containsKey(s.getId()) && mapSubstations.get(s.getId()).checkedProperty().get()) {
                     sItem.setSelected(true);
                 }

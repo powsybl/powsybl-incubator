@@ -1,44 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg">
-    <g>
+    <style><![CDATA[.substation-diagram {fill:rgb(255,255,255);stroke-width:1;stroke:rgb(0,0,255);fill-opacity:0;}.wire {stroke:rgb(200,0,0);stroke-width:1;}.grid {stroke:rgb(0,55,0);stroke-width:1;stroke-dasharray:1,10;}.bus {stroke:rgb(0,0,0);stroke-width:3;}.component-label {fill: black;color:black;stroke:none;fill-opacity:1;} .BUSBAR_SECTION{} .BREAKER {stroke-width:2;fill-opacity:1;} .DISCONNECTOR {stroke:rgb(0,0,0);stroke-width:3;} .GENERATOR{} .LINE{} .LOAD{} .LOAD_BREAK_SWITCH{} .NODE {stroke:rgb(0,0,0);fill:rgb(0,0,0);fill-opacity:1;} .CAPACITOR{} .INDUCTOR{} .STATIC_VAR_COMPENSATOR{}#path5227 { stroke-width:0.4; stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:1.4;}#path5229 {stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;}#path5231 {stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;} .TWO_WINDINGS_TRANSFORMER{} .THREE_WINDINGS_TRANSFORMER{} .VSC_CONVERTER_STATION {font-size:7.4314661px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;stroke-miterlimit:4;} .DANGLING_LINE {stroke:rgb(0,0,0);stroke-width:2;} .PHASE_SHIFT_TRANSFORMER {stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;}.d .open { visibility: hidden;}.d .closed { visibility: visible;}.b .open { visibility: hidden;}.b .closed { visibility: visible;}]]></style>
+    <g class="substation-diagram">
         <g>
-            <line y2="565.0" style="stroke:rgb(0,55,0);stroke-width:1;stroke-dasharray:1,10" x1="0.0" x2="0.0" transform="translate(20.0,50.0)" y1="-20.0"/>
-            <line y2="565.0" style="stroke:rgb(0,55,0);stroke-width:1;stroke-dasharray:1,10" x1="50.0" x2="50.0" transform="translate(20.0,50.0)" y1="-20.0"/>
+            <line y2="565.0" x1="0.0" class="grid" x2="0.0" transform="translate(20.0,50.0)" y1="-20.0"/>
+            <line y2="565.0" x1="50.0" class="grid" x2="50.0" transform="translate(20.0,50.0)" y1="-20.0"/>
         </g>
-        <g id="l" transform="translate(37.0,25.5)">
-    <rect style="fill:rgb(255,255,255);stroke-pxWidth:1; stroke:rgb(0,0,255)" height="9" width="16"/>
-    <line y2="9" style="stroke:rgb(0,0,255);stroke-pxWidth:1" x1="0" x2="16" y1="0"/>
-    <line y2="9" style="stroke:rgb(0,0,255);stroke-pxWidth:1" x1="16" x2="0" y1="0"/>
-<text x="-5" font-size="8" y="-5" font-family="Verdana" transform="rotate(0,0,0)">l</text>
+        <g class="substation-diagram LOAD l" id="l" transform="translate(37.0,25.5)">
+    <rect height="9" width="16"/>
+    <line y2="9" x1="0" x2="16" y1="0"/>
+    <line y2="9" x1="16" x2="0" y1="0"/>
+<text x="-5" font-size="8" y="-5" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">l</text>
         </g>
-        <g id="bbs" transform="translate(30.0,310.0)">
-            <line y2="0" style="stroke:rgb(0,0,0);stroke-width:3" x1="0" x2="30.0" y1="0"/>
-            <text x="-5" font-size="8" y="-5" font-family="Verdana" transform="rotate(0,0,0)">bbs</text>
+        <g class="substation-diagram BUSBAR_SECTION bbs" id="bbs" transform="translate(30.0,310.0)">
+            <line y2="0" x1="0" class="bus" x2="30.0" y1="0"/>
+            <text x="-5" font-size="8" y="-5" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs</text>
         </g>
-        <g id="d" transform="translate(41.0,306.0)">
+        <g class="substation-diagram DISCONNECTOR d" id="d" transform="translate(41.0,306.0)">
     <g id="closed">
-        <line y2="8" style="stroke:rgb(0,0,0);stroke-width:3" x1="0" x2="8" y1="0"/>
-        <line y2="8" style="stroke:rgb(0,0,0);stroke-width:3" x1="8" x2="0" y1="0"/>
+        <line y2="8" x1="0" x2="8" y1="0"/>
+        <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
     <g id="open">
-        <line y2="8" style="stroke:rgb(0,0,0);stroke-width:3" x1="8" x2="0" y1="0"/>
+        <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
-        <g id="b" transform="translate(35.0,145.0)">
-    <g id="closed">
-        <rect x="1" width="18" y="1" height="18" style="fill:rgb(255,255,255);stroke-width:2;stroke:rgb(0,0,255)"/>
-        <line y2="15" style="stroke:rgb(0,0,255);stroke-width:2" x1="10" x2="10" y1="5"/>
+        <g class="substation-diagram BREAKER b" id="b" transform="translate(35.0,145.0)">
+    <g class="closed" id="closed">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="15" x1="10" x2="10" y1="5"/>
     </g>
-    <g id="open">
-        <rect x="1" width="18" y="1" height="18" style="fill:rgb(255,255,255);stroke-width:2;stroke:rgb(0,0,255)"/>
-        <line y2="10" style="stroke:rgb(0,0,255);stroke-width:2" x1="5" x2="15" y1="10"/>
+    <g class="open" id="open">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="10" x1="5" x2="15" y1="10"/>
     </g>
 </g>
-        <g id="dFictif" transform="translate(41.0,276.0)">
-    <circle fill="black" r="4" cx="4" cy="4" stroke="black"/>
+        <g class="substation-diagram NODE dFictif" id="dFictif" transform="translate(41.0,276.0)">
+    <circle r="4" cx="4" cy="4"/>
 </g>
-        <polyline fill="none" id="Wire0" style="stroke:rgb(200,0,0);stroke-width:1" points="45.0,310.0 45.0,310.0"/>
-        <polyline fill="none" id="Wire1" style="stroke:rgb(200,0,0);stroke-width:1" points="45.0,145.0 45.0,34.0"/>
-        <polyline fill="none" id="Wire2" style="stroke:rgb(200,0,0);stroke-width:1" points="45.0,165.0 45.0,280.0"/>
-        <polyline fill="none" id="Wire3" style="stroke:rgb(200,0,0);stroke-width:1" points="45.0,310.0 45.0,280.0"/>
+        <polyline class="wire" points="45.0,310.0 45.0,310.0" id="Wire0"/>
+        <polyline class="wire" points="45.0,145.0 45.0,34.0" id="Wire1"/>
+        <polyline class="wire" points="45.0,165.0 45.0,280.0" id="Wire2"/>
+        <polyline class="wire" points="45.0,310.0 45.0,280.0" id="Wire3"/>
     </g>
 </svg>

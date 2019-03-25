@@ -11,6 +11,7 @@ import com.powsybl.iidm.network.VoltageLevel;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
 import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
 import com.powsybl.substationdiagram.model.Graph;
+import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramStyleProvider;
 import com.powsybl.substationdiagram.svg.SVGWriter;
 
 import java.io.IOException;
@@ -53,7 +54,7 @@ public abstract class AbstractTestCase {
     public void compareSvg(Graph graph, LayoutParameters layoutParameters, String refSvgName) {
         try (StringWriter writer = new StringWriter()) {
             new SVGWriter(componentLibrary, layoutParameters)
-                    .write(graph, writer);
+                    .write(graph, new DefaultSubstationDiagramStyleProvider(), writer);
             writer.flush();
 
             String refSvg = normalizeLineSeparator(new String(ByteStreams.toByteArray(getClass().getResourceAsStream(refSvgName)), StandardCharsets.UTF_8));

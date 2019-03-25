@@ -218,7 +218,7 @@ public class SVGWriter {
                 Element g = root.getOwnerDocument().createElement("g");
 
                 g.setAttribute("id", nodeId);
-                g.setAttribute(CLASS, node.getComponentType() + " " + nodeId);
+                g.setAttribute(CLASS, DefaultSubstationDiagramStyleProvider.SUBSTATION_STYLE_CLASS + " " + node.getComponentType() + " " + nodeId);
 
                 if (node.getType() == Node.NodeType.BUS) {
                     drawBus((BusNode) node, g);
@@ -286,6 +286,7 @@ public class SVGWriter {
         label.setAttribute("y", Integer.toString(yShift));
         label.setAttribute("font-family", FONT_FAMILY);
         label.setAttribute("font-size", Integer.toString(FONT_SIZE));
+        label.setAttribute(CLASS, SubstationDiagramStyleProvider.LABEL_STYLE_CLASS);
         Text text = g.getOwnerDocument().createTextNode(str);
         label.setAttribute(TRANSFORM, "rotate(" + (rotated ? -90 : 0) + "," + 0 + "," + 0 + ")");
         label.appendChild(text);

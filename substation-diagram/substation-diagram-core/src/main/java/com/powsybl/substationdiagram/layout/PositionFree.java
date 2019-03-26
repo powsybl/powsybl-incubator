@@ -219,8 +219,9 @@ public class PositionFree implements PositionFinder {
     private void organizeClusters(Context context) {
         int firstStructuralPosition = 1;
         int firstFeederOrder = 1;
+        context.graph.getNodeBuses().forEach(busNode -> busNode.setStructuralPosition(null));
         for (ConnectedCluster cc : context.connectedClusters) {
-            firstStructuralPosition = cc.setStructuralPositions(firstStructuralPosition);
+            firstStructuralPosition = cc.setStructuralPositions(firstStructuralPosition + 1);
             firstFeederOrder = cc.setCellOrders(firstFeederOrder);
         }
     }
@@ -298,6 +299,7 @@ public class PositionFree implements PositionFinder {
 
     private class HorizontalChain {
         List<BusNode> busNodes;
+        int vbcpOrder;
         int v;
 
         HorizontalChain() {
@@ -487,9 +489,11 @@ public class PositionFree implements PositionFinder {
                 }
             }
             sortedVbcps.add(sortedVbcps.indexOf(matchingSortedVbcp) + 1, matchingRemainingVbcp);
+            remainingVbcps.remove(matchingRemainingVbcp);
         }
 
         private void organizeHChainsVertically() {
+            int vbcpOrder = 0;
             for (VerticalBusConnectionPattern vbcp : vbcps) {
                 Set<Integer> vBooked = new TreeSet<>(Comparator.comparingInt(Integer::intValue));
                 vbcp.busNodeSet.forEach(bus -> vBooked.add(context.busToBelonging.get(bus).hChain.v));
@@ -498,9 +502,11 @@ public class PositionFree implements PositionFinder {
                     if (chain.v == 0) {
                         int v = firstAvailableIndex(vBooked);
                         chain.v = v;
+                        chain.vbcpOrder = vbcpOrder;
                         vBooked.add(v);
                     }
                 }
+                vbcpOrder++;
             }
         }
 
@@ -526,12 +532,13 @@ public class PositionFree implements PositionFinder {
         int setStructuralPositions(int firstStructuralHPosition) {
             int maxH = firstStructuralHPosition;
             for (HorizontalChain chain : hChains) {
-                int structH = firstStructuralHPosition;
+                int newH = chain.vbcpOrder + firstStructuralHPosition;
                 for (BusNode bus : chain.busNodes) {
-                    bus.setStructuralPosition(new Position(structH, chain.v));
-                    structH++;
+                    if (bus.getStructuralPosition() == null) {
+                        bus.setStructuralPosition(new Position(newH, chain.v));
+                    }
                 }
-                maxH = Math.max(maxH, structH);
+                maxH = Math.max(maxH, newH);
             }
             return maxH;
         }

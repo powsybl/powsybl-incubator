@@ -1,0 +1,134 @@
+{
+  "components" : [ {
+    "type" : "BUSBAR_SECTION",
+    "id" : "NGEN",
+    "anchorPoints" : [ {
+      "x" : 0.0,
+      "y" : 0.0,
+      "orientation" : "HORIZONTAL"
+    }, {
+      "x" : 15.0,
+      "y" : 0.0,
+      "orientation" : "VERTICAL"
+    }, {
+      "x" : 40.0,
+      "y" : 0.0,
+      "orientation" : "VERTICAL"
+    }, {
+      "x" : 65.0,
+      "y" : 0.0,
+      "orientation" : "VERTICAL"
+    }, {
+      "x" : 80.0,
+      "y" : 0.0,
+      "orientation" : "HORIZONTAL"
+    } ],
+    "size" : {
+      "width" : 0.0,
+      "height" : 0.0
+    }
+  }, {
+    "type" : "DISCONNECTOR",
+    "id" : null,
+    "anchorPoints" : [ {
+      "x" : 0.0,
+      "y" : 0.0,
+      "orientation" : "VERTICAL"
+    } ],
+    "size" : {
+      "width" : 8.0,
+      "height" : 8.0
+    }
+  }, {
+    "type" : "GENERATOR",
+    "id" : null,
+    "anchorPoints" : [ {
+      "x" : 0.0,
+      "y" : -6.0,
+      "orientation" : "VERTICAL"
+    }, {
+      "x" : 0.0,
+      "y" : 6.0,
+      "orientation" : "VERTICAL"
+    }, {
+      "x" : -6.0,
+      "y" : 0.0,
+      "orientation" : "HORIZONTAL"
+    }, {
+      "x" : 6.0,
+      "y" : 0.0,
+      "orientation" : "HORIZONTAL"
+    } ],
+    "size" : {
+      "width" : 12.0,
+      "height" : 12.0
+    }
+  }, {
+    "type" : "TWO_WINDINGS_TRANSFORMER",
+    "id" : null,
+    "anchorPoints" : [ {
+      "x" : 0.0,
+      "y" : -4.0,
+      "orientation" : "VERTICAL"
+    }, {
+      "x" : 0.0,
+      "y" : 4.0,
+      "orientation" : "VERTICAL"
+    }, {
+      "x" : -6.0,
+      "y" : 0.0,
+      "orientation" : "HORIZONTAL"
+    }, {
+      "x" : 6.0,
+      "y" : 0.0,
+      "orientation" : "HORIZONTAL"
+    } ],
+    "size" : {
+      "width" : 13.0,
+      "height" : 8.0
+    }
+  } ],
+  "nodes" : [ {
+    "id" : "GEN",
+    "componentType" : "GENERATOR",
+    "rotated" : false,
+    "open" : false
+  }, {
+    "id" : "NGEN",
+    "componentType" : "BUSBAR_SECTION",
+    "rotated" : false,
+    "open" : false
+  }, {
+    "id" : "NGEN_GEN",
+    "componentType" : "DISCONNECTOR",
+    "rotated" : false,
+    "open" : false
+  }, {
+    "id" : "NGEN_NGEN_NHV1",
+    "componentType" : "DISCONNECTOR",
+    "rotated" : false,
+    "open" : false
+  }, {
+    "id" : "NGEN_NHV1_ONE",
+    "componentType" : "TWO_WINDINGS_TRANSFORMER",
+    "rotated" : false,
+    "open" : false
+  } ],
+  "wires" : [ {
+    "id" : "Wire0",
+    "nodeId1" : "NGEN",
+    "nodeId2" : "NGEN_GEN"
+  }, {
+    "id" : "Wire3",
+    "nodeId1" : "NGEN_NGEN_NHV1",
+    "nodeId2" : "NGEN_NHV1_ONE"
+  }, {
+    "id" : "Wire2",
+    "nodeId1" : "NGEN",
+    "nodeId2" : "NGEN_NGEN_NHV1"
+  }, {
+    "id" : "Wire1",
+    "nodeId1" : "NGEN_GEN",
+    "nodeId2" : "GEN"
+  } ]
+}

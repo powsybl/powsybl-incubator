@@ -25,15 +25,6 @@
         </metadata>
     </component>
     <component>
-        <fileName>line.svg</fileName>
-        <metadata type="LINE">
-            <size width="16" height="16"/>
-            <anchorPoint x="0" y="-8" orientation="VERTICAL"/>
-            <anchorPoint x="0" y="8" orientation="VERTICAL"/>
-            <anchorPoint x="0" y="0" orientation="HORIZONTAL"/>
-        </metadata>
-    </component>
-    <component>
         <fileName>generator.svg</fileName>
         <metadata type="GENERATOR">
             <size width="12" height="12"/>

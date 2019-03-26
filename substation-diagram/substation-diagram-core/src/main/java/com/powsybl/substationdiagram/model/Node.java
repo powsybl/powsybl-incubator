@@ -61,6 +61,9 @@ public class Node implements BaseNode {
     private boolean rotated = false;
 
     @JsonIgnore
+    private boolean open = false;
+
+    @JsonIgnore
     private final List<Edge> adjacentEdges = new ArrayList<>();
 
     private String label;
@@ -192,6 +195,14 @@ public class Node implements BaseNode {
 
     public void setRotated(boolean rotated) {
         this.rotated = rotated;
+    }
+
+    public boolean isOpen() {
+        return open;
+    }
+
+    public void setOpen(boolean open) {
+        this.open = open;
     }
 
     /**

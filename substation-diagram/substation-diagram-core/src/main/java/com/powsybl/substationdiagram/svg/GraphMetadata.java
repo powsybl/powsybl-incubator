@@ -34,13 +34,17 @@ public class GraphMetadata implements AnchorPointProvider {
 
         private final boolean rotated;
 
+        private final boolean open;
+
         @JsonCreator
         public NodeMetadata(@JsonProperty("id") String id,
                             @JsonProperty("componentType") ComponentType componentType,
-                            @JsonProperty("rotated") boolean rotated) {
+                            @JsonProperty("rotated") boolean rotated,
+                            @JsonProperty("open") boolean open) {
             this.id = Objects.requireNonNull(id);
             this.componentType = Objects.requireNonNull(componentType);
             this.rotated = Objects.requireNonNull(rotated);
+            this.open = Objects.requireNonNull(open);
         }
 
         public String getId() {
@@ -53,6 +57,10 @@ public class GraphMetadata implements AnchorPointProvider {
 
         public boolean isRotated() {
             return rotated;
+        }
+
+        public boolean isOpen() {
+            return open;
         }
     }
 

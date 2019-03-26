@@ -33,6 +33,8 @@ public class LayoutParameters {
 
     private boolean showInternalNodes = false;
 
+    private double scaleFactor = 1;
+
     public LayoutParameters() {
     }
 
@@ -47,7 +49,8 @@ public class LayoutParameters {
                             double internCellHeight,
                             double stackHeight,
                             boolean showGrid,
-                            boolean showInternalNodes) {
+                            boolean showInternalNodes,
+                            double scaleFactor) {
         this.translateX = translateX;
         this.translateY = translateY;
         this.initialXBus = initialXBus;
@@ -60,6 +63,7 @@ public class LayoutParameters {
         this.stackHeight = stackHeight;
         this.showGrid = showGrid;
         this.showInternalNodes = showInternalNodes;
+        this.scaleFactor = scaleFactor;
     }
 
     public LayoutParameters(LayoutParameters other) {
@@ -76,6 +80,7 @@ public class LayoutParameters {
         stackHeight = other.stackHeight;
         showGrid = other.showGrid;
         showInternalNodes = other.showInternalNodes;
+        scaleFactor = other.scaleFactor;
     }
 
     public double getTranslateX() {
@@ -183,6 +188,15 @@ public class LayoutParameters {
 
     public LayoutParameters setShowInternalNodes(boolean showInternalNodes) {
         this.showInternalNodes = showInternalNodes;
+        return this;
+    }
+
+    public double getScaleFactor() {
+        return scaleFactor;
+    }
+
+    public LayoutParameters setScaleFactor(double scaleFactor) {
+        this.scaleFactor = scaleFactor;
         return this;
     }
 }

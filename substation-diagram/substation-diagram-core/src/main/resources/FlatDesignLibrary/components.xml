@@ -11,45 +11,45 @@
     <component>
         <fileName>load.svg</fileName>
         <metadata type="LOAD">
-            <size width="16" height="9"/>
-            <anchorPoint x="0" y="-4" orientation="VERTICAL"/>
-            <anchorPoint x="0" y="4" orientation="VERTICAL"/>
+            <size width="25" height="25"/>
+            <anchorPoint x="0" y="-12" orientation="VERTICAL"/>
+            <anchorPoint x="0" y="12" orientation="VERTICAL"/>
         </metadata>
     </component>
     <component>
         <fileName>generator.svg</fileName>
         <metadata type="GENERATOR">
-            <size width="12" height="12"/>
-            <anchorPoint x="0" y="-6" orientation="VERTICAL"/>
-            <anchorPoint x="0" y="6" orientation="VERTICAL"/>
-            <anchorPoint x="-6" y="0" orientation="HORIZONTAL"/>
-            <anchorPoint x="6" y="0" orientation="HORIZONTAL"/>
+            <size width="25" height="25"/>
+            <anchorPoint x="0" y="-12" orientation="VERTICAL"/>
+            <anchorPoint x="0" y="12" orientation="VERTICAL"/>
+            <anchorPoint x="-12" y="0" orientation="HORIZONTAL"/>
+            <anchorPoint x="12" y="0" orientation="HORIZONTAL"/>
         </metadata>
     </component>
     <component>
         <fileName>2-windings-transformer.svg</fileName>
         <metadata type="TWO_WINDINGS_TRANSFORMER">
-            <size width="13" height="8"/>
-            <anchorPoint x="0" y="-4" orientation="VERTICAL"/>
-            <anchorPoint x="0" y="4" orientation="VERTICAL"/>
-            <anchorPoint x="-6" y="0" orientation="HORIZONTAL"/>
-            <anchorPoint x="6" y="0" orientation="HORIZONTAL"/>
+            <size width="40" height="25"/>
+            <anchorPoint x="0" y="-12" orientation="VERTICAL"/>
+            <anchorPoint x="0" y="12" orientation="VERTICAL"/>
+            <anchorPoint x="-20" y="0" orientation="HORIZONTAL"/>
+            <anchorPoint x="20" y="0" orientation="HORIZONTAL"/>
         </metadata>
     </component>
     <component>
         <fileName>capacitor.svg</fileName>
         <metadata type="CAPACITOR">
-            <size width="12" height="12"/>
-            <anchorPoint x="0" y="-6" orientation="VERTICAL"/>
-            <anchorPoint x="0" y="6" orientation="VERTICAL"/>
+            <size width="25" height="25"/>
+            <anchorPoint x="0" y="-12" orientation="VERTICAL"/>
+            <anchorPoint x="0" y="12" orientation="VERTICAL"/>
         </metadata>
     </component>
     <component>
         <fileName>inductor.svg</fileName>
         <metadata type="INDUCTOR">
-            <size width="15" height="9"/>
-            <anchorPoint x="0" y="-4" orientation="VERTICAL"/>
-            <anchorPoint x="0" y="4" orientation="VERTICAL"/>
+            <size width="25" height="25"/>
+            <anchorPoint x="0" y="-12" orientation="VERTICAL"/>
+            <anchorPoint x="0" y="12" orientation="VERTICAL"/>
         </metadata>
     </component>
     <component>

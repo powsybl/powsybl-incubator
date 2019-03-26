@@ -11,6 +11,7 @@ import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
 import com.powsybl.loadflow.LoadFlowResultImpl;
+import com.powsybl.loadflow.simple.equations.IndexedNetwork;
 import com.powsybl.loadflow.simple.equations.LoadFlowMatrix;
 import org.ojalgo.RecoverableCondition;
 import org.ojalgo.matrix.decomposition.LU;
@@ -68,14 +69,16 @@ public class SimpleLoadFlow implements LoadFlow {
                 break;
         }
 
-        SparseStore<Double> lfMatrix = LoadFlowMatrix.buildDc(network);
-        PrimitiveDenseStore rhs = LoadFlowMatrix.buildDcRhs(network);
+        IndexedNetwork indexedNetwork = IndexedNetwork.of(network);
+
+        SparseStore<Double> lfMatrix = LoadFlowMatrix.buildDc(indexedNetwork);
+        PrimitiveDenseStore rhs = LoadFlowMatrix.buildDcRhs(indexedNetwork);
 
         boolean status;
         try {
             MatrixStore<Double> lhs = LU.PRIMITIVE.make().solve(lfMatrix, rhs);
 
-            LoadFlowMatrix.updateNetwork(network, lhs);
+            LoadFlowMatrix.updateNetwork(indexedNetwork, lhs);
 
             status = true;
         } catch (RecoverableCondition recoverableCondition) {

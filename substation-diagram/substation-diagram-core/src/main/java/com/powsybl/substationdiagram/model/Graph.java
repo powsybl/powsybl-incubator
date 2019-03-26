@@ -43,6 +43,9 @@ public class Graph {
     private static final Logger LOGGER = LoggerFactory.getLogger(Graph.class);
 
     @JsonIgnore
+    private VoltageLevel voltageLevel;
+
+    @JsonIgnore
     private final boolean useName;
 
     @JsonIgnore
@@ -72,7 +75,8 @@ public class Graph {
     /**
      * Constructor
      */
-    public Graph(boolean useName) {
+    public Graph(VoltageLevel voltageLevel, boolean useName) {
+        this.voltageLevel = Objects.requireNonNull(voltageLevel);
         this.useName = useName;
     }
 
@@ -86,7 +90,7 @@ public class Graph {
 
     public static Graph create(VoltageLevel vl, boolean useName) {
         Objects.requireNonNull(vl);
-        Graph g = new Graph(useName);
+        Graph g = new Graph(vl, useName);
         g.buildGraph(vl);
         return g;
     }
@@ -340,6 +344,28 @@ public class Graph {
                 }
             }
         }
+    }
+
+    public void removeFictitiousSwitchNodes() {
+        List<Node> fictitiousSwithcNodesToRemove = nodes.stream()
+                .filter(node -> node.getType() == Node.NodeType.SWITCH)
+                .filter(this::isFictitiousSwitchNode)
+                .filter(node -> node.getAdjacentNodes().size() == 2)
+                .collect(Collectors.toList());
+        for (Node n : fictitiousSwithcNodesToRemove) {
+            Node node1 = n.getAdjacentNodes().get(0);
+            Node node2 = n.getAdjacentNodes().get(1);
+            LOGGER.info("Remove fictitious switch node between {} and {}", node1.getId(), node2.getId());
+            removeNode(n);
+            addEdge(node1, node2);
+        }
+    }
+
+    private boolean isFictitiousSwitchNode(Node node) {
+        Switch sw = TopologyKind.NODE_BREAKER.equals(voltageLevel.getTopologyKind()) ?
+                    voltageLevel.getNodeBreakerView().getSwitch(node.getId()) :
+                    voltageLevel.getBusBreakerView().getSwitch(node.getId());
+        return sw == null || sw.isFictitious();
     }
 
     private void ensureNodeExists(int n, Map<Integer, Node> nodesByNumber) {
@@ -628,7 +654,7 @@ public class Graph {
 
     private void addDoubleNode(BusNode busNode, SwitchNode nodeSwitch, String suffix) {
         removeEdge(busNode, nodeSwitch);
-        SwitchNode fNodeToBus = SwitchNode.createFictitious(Graph.this, nodeSwitch.getId() + "fSwitch" + suffix);
+        SwitchNode fNodeToBus = SwitchNode.createFictitious(Graph.this, nodeSwitch.getId() + "fSwitch" + suffix, nodeSwitch.isOpen());
         addNode(fNodeToBus);
         FicticiousNode fNodeToSw = new FicticiousNode(Graph.this, nodeSwitch.getId() + "fNode" + suffix);
         addNode(fNodeToSw);
@@ -708,4 +734,9 @@ public class Graph {
     public Set<Cell> getCells() {
         return new TreeSet<>(cells);
     }
+
+    public VoltageLevel getVoltageLevel() {
+        return voltageLevel;
+    }
+
 }

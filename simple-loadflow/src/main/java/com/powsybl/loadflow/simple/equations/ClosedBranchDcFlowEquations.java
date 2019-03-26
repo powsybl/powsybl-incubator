@@ -25,8 +25,8 @@ public class ClosedBranchDcFlowEquations extends AbstractDcFlowEquations {
         double ph1 = Math.toRadians(branch.getTerminal1().getBusView().getBus().getAngle());
         double ph2 = Math.toRadians(branch.getTerminal2().getBusView().getBus().getAngle());
 
-        power =  1 / bc.x() * v1 * v2;
-        deltaPhase =  ph1 + bc.a1() - ph2 - bc.a2();
+        power =  1 / bc.x() * v1 * bc.r1() * v2 * bc.r2();
+        deltaPhase =  ph2 - ph1 + bc.a2() - bc.a1();
     }
 
     @Override
@@ -36,6 +36,6 @@ public class ClosedBranchDcFlowEquations extends AbstractDcFlowEquations {
 
     @Override
     public double p1() {
-        return -power * deltaPhase;
+        return power * deltaPhase;
     }
 }

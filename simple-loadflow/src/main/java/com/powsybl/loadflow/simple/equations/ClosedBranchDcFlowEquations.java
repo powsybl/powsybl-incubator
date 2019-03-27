@@ -31,11 +31,11 @@ public class ClosedBranchDcFlowEquations extends AbstractDcFlowEquations {
 
     @Override
     public double dp1dph1() {
-        return - power;
+        return -power;
     }
 
     @Override
     public double p1() {
-        return - power * deltaPhase;
+        return -power * deltaPhase;
     }
 }

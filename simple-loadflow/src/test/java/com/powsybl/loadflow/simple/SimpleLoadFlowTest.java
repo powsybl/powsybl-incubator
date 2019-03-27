@@ -75,20 +75,20 @@ public class SimpleLoadFlowTest {
         assertEquals(0d, denseLfMatrix.getValue(0, 2), 0d);
         assertEquals(0d, denseLfMatrix.getValue(0, 3), 0d);
 
-        assertEquals(-13688.153282299732d, denseLfMatrix.getValue(1, 0), 0d);
-        assertEquals(22439.668433814884d, denseLfMatrix.getValue(1, 1), 0d);
-        assertEquals(-8751.515151515152d, denseLfMatrix.getValue(1, 2), 0d);
+        assertEquals(0d, denseLfMatrix.getValue(1, 0), 0d);
+        assertEquals(-22439.668433814884d, denseLfMatrix.getValue(1, 1), 0d);
+        assertEquals(8751.515151515152d, denseLfMatrix.getValue(1, 2), 0d);
         assertEquals(0d, denseLfMatrix.getValue(1, 3), 0d);
 
         assertEquals(0d, denseLfMatrix.getValue(2, 0), 0d);
-        assertEquals(-8751.515151515152d, denseLfMatrix.getValue(2, 1), 0d);
-        assertEquals(14314.85921296912d, denseLfMatrix.getValue(2, 2), 0d);
-        assertEquals(-5563.344061453969d, denseLfMatrix.getValue(2, 3), 0d);
+        assertEquals(8751.515151515152d, denseLfMatrix.getValue(2, 1), 0d);
+        assertEquals(-14314.85921296912d, denseLfMatrix.getValue(2, 2), 0d);
+        assertEquals(5563.344061453969d, denseLfMatrix.getValue(2, 3), 0d);
 
         assertEquals(0d, denseLfMatrix.getValue(3, 0), 0d);
         assertEquals(0d, denseLfMatrix.getValue(3, 1), 0d);
-        assertEquals(-5563.344061453969d, denseLfMatrix.getValue(3, 2), 0d);
-        assertEquals(5563.344061453969d, denseLfMatrix.getValue(3, 3), 0d);
+        assertEquals(5563.344061453969d, denseLfMatrix.getValue(3, 2), 0d);
+        assertEquals(-5563.344061453969d, denseLfMatrix.getValue(3, 3), 0d);
 
         double[] rhs = LoadFlowMatrix.buildDcRhs(indexedNetwork, slackBusNum);
 
@@ -99,9 +99,9 @@ public class SimpleLoadFlowTest {
         LOGGER.info("Result: {}", rhs);
 
         assertEquals(0d, rhs[0], 1E-14d);
-        assertEquals(0.04383352433493455d, rhs[1], 1E-14d);
-        assertEquals(0.11239308112163815d, rhs[2], 1E-14d);
-        assertEquals(0.2202418845341654d, rhs[3], 1E-14d);
+        assertEquals(-0.04383352433493455d, rhs[1], 1E-14d);
+        assertEquals(-0.11239308112163815d, rhs[2], 1E-14d);
+        assertEquals(-0.2202418845341654d, rhs[3], 1E-14d);
 
         LoadFlowMatrix.updateDcNetwork(indexedNetwork, rhs);
 

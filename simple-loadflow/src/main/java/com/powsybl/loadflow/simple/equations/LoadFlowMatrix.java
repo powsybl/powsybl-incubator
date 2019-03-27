@@ -7,10 +7,7 @@
 package com.powsybl.loadflow.simple.equations;
 
 import com.google.common.base.Stopwatch;
-import com.powsybl.iidm.network.Branch;
-import com.powsybl.iidm.network.Bus;
-import com.powsybl.iidm.network.Generator;
-import com.powsybl.iidm.network.Load;
+import com.powsybl.iidm.network.*;
 import com.powsybl.math.matrix.DenseMatrix;
 import com.powsybl.math.matrix.DenseMatrixFactory;
 import com.powsybl.math.matrix.Matrix;
@@ -123,7 +120,7 @@ public final class LoadFlowMatrix {
                         slackBusAdded = true;
                     }
                 }
-                if (row != slackBusNum) {
+                if (row != slackBusNum && column != slackBusNum) {
                     ClosedBranchDcFlowEquations eq = new ClosedBranchDcFlowEquations(branch);
                     if (row == column) {
                         if (side == Branch.Side.ONE) {
@@ -173,6 +170,26 @@ public final class LoadFlowMatrix {
                 continue;
             }
             rhs[num] += load.getP0();
+        }
+
+        for (HvdcLine line : network.get().getHvdcLines()) {
+            Bus bus1 = line.getConverterStation1().getTerminal().getBusView().getBus();
+            Bus bus2 = line.getConverterStation2().getTerminal().getBusView().getBus();
+            double p = line.getConvertersMode() == HvdcLine.ConvertersMode.SIDE_1_RECTIFIER_SIDE_2_INVERTER
+                    ? line.getActivePowerSetpoint()
+                    : -line.getActivePowerSetpoint();
+            if (bus1 != null && bus1.isInMainConnectedComponent()) {
+                int num = network.getIndex(bus1);
+                if (num != slackBusNum) {
+                    rhs[num] += p;
+                }
+            }
+            if (bus2 != null && bus2.isInMainConnectedComponent()) {
+                int num = network.getIndex(bus2);
+                if (num != slackBusNum) {
+                    rhs[num] -= p;
+                }
+            }
         }
 
         return rhs;

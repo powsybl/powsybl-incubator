@@ -10,6 +10,12 @@ package com.powsybl.loadflow.simple.equations;
  * @author Sylvain Leclerc <sylvain.leclerc at rte-france.com>
  */
 public class OpenBranchDcFlowEquations extends AbstractDcFlowEquations {
+
+    @Override
+    public double rhs1() {
+        return 0;
+    }
+
     @Override
     public double p1() {
         return 0;

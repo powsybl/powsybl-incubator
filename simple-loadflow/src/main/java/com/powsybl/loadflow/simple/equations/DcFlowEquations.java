@@ -17,6 +17,10 @@ public interface DcFlowEquations {
 
     double p2();
 
+    double rhs1();
+
+    double rhs2();
+
     double dp1dph1();
 
     double dp1dph2();

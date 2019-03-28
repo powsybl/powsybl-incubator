@@ -17,6 +17,11 @@ public abstract class AbstractDcFlowEquations implements DcFlowEquations {
     }
 
     @Override
+    public double rhs2() {
+        return -rhs1();
+    }
+
+    @Override
     public double dp1dph2() {
         return -dp1dph1();
     }

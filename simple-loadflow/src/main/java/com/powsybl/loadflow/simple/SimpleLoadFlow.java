@@ -107,8 +107,8 @@ public class SimpleLoadFlow implements LoadFlow {
 
         int slackBusNum = 0;
 
-        Matrix lfMatrix = LoadFlowMatrix.buildDc(indexedNetwork, slackBusNum, matrixFactory);
         double[] rhs = LoadFlowMatrix.buildDcRhs(indexedNetwork, slackBusNum);
+        Matrix lfMatrix = LoadFlowMatrix.buildDc(indexedNetwork, slackBusNum, matrixFactory, rhs);
 
         boolean status;
         try {

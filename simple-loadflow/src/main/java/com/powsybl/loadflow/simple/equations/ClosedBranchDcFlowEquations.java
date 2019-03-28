@@ -13,6 +13,8 @@ import com.powsybl.iidm.network.Branch;
  */
 public class ClosedBranchDcFlowEquations extends AbstractDcFlowEquations {
 
+    private final double a1;
+    private final double a2;
     private final double deltaPhase;
     private final double power;
 
@@ -26,7 +28,14 @@ public class ClosedBranchDcFlowEquations extends AbstractDcFlowEquations {
         double ph2 = Math.toRadians(branch.getTerminal2().getBusView().getBus().getAngle());
 
         power =  1 / bc.x() * v1 * bc.r1() * v2 * bc.r2();
-        deltaPhase =  ph2 - ph1 + bc.a2() - bc.a1();
+        a1 = bc.a1();
+        a2 = bc.a2();
+        deltaPhase =  ph2 - ph1 + a2 - a1;
+    }
+
+    @Override
+    public double rhs1() {
+        return -power * a1;
     }
 
     @Override

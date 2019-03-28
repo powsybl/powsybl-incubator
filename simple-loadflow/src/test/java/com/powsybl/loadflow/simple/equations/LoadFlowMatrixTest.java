@@ -53,7 +53,7 @@ public class LoadFlowMatrixTest {
 
         int slackBusNum = 0;
 
-        Matrix lfMatrix = LoadFlowMatrix.buildDc(indexedNetwork, slackBusNum, matrixFactory);
+        Matrix lfMatrix = LoadFlowMatrix.buildDc(indexedNetwork, slackBusNum, matrixFactory, new double[indexedNetwork.getBusCount()]);
         DenseMatrix denseLfMatrix = lfMatrix.toDense();
 
         List<String> busNames = indexedNetwork.getBuses().stream().map(Bus::getId).collect(Collectors.toList());
@@ -104,7 +104,7 @@ public class LoadFlowMatrixTest {
 
         indexedNetwork = IndexedNetwork.of(network);
 
-        lfMatrix = LoadFlowMatrix.buildDc(indexedNetwork, slackBusNum, matrixFactory);
+        lfMatrix = LoadFlowMatrix.buildDc(indexedNetwork, slackBusNum, matrixFactory, new double[indexedNetwork.getBusCount()]);
         rhs = LoadFlowMatrix.buildDcRhs(indexedNetwork, slackBusNum);
         try (LUDecomposition lu = lfMatrix.decomposeLU()) {
             lu.solve(rhs);

@@ -100,9 +100,10 @@ public final class LoadFlowMatrix {
         return a;
     }
 
-    public static Matrix buildDc(IndexedNetwork network, int slackBusNum, MatrixFactory matrixFactory) {
+    public static Matrix buildDc(IndexedNetwork network, int slackBusNum, MatrixFactory matrixFactory, double[] rhs) {
         Objects.requireNonNull(network);
         Objects.requireNonNull(matrixFactory);
+        Objects.requireNonNull(rhs);
 
         Stopwatch stopwatch = Stopwatch.createStarted();
 
@@ -125,8 +126,10 @@ public final class LoadFlowMatrix {
                     if (row == column) {
                         if (side == Branch.Side.ONE) {
                             a.addValue(row, column, eq.dp1dph1());
+                            rhs[row] -= eq.rhs1();
                         } else {
                             a.addValue(row, column, eq.dp2dph2());
+                            rhs[row] -= eq.rhs2();
                         }
                     } else {
                         if (side == Branch.Side.ONE) {

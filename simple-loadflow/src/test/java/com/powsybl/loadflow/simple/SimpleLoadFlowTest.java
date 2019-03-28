@@ -107,17 +107,19 @@ public class SimpleLoadFlowTest {
         Line l1 = network.getLine("L1");
         Line l2 = network.getLine("L2");
         TwoWindingsTransformer ps1 = network.getTwoWindingsTransformer("PS1");
+        ps1.getPhaseTapChanger().getStep(0).setAlpha(5);
+        ps1.getPhaseTapChanger().getStep(2).setAlpha(5);
 
         ps1.getPhaseTapChanger().setTapPosition(2);
 
         LoadFlow lf = new SimpleLoadFlowFactory(matrixFactory).create(network, null, 0);
         lf.run(VariantManagerConstants.INITIAL_VARIANT_ID, new LoadFlowParameters());
 
-        assertEquals(50, l1.getTerminal1().getP(), 0.01);
-        assertEquals(-50, l1.getTerminal2().getP(), 0.01);
-        assertEquals(50, l2.getTerminal1().getP(), 0.01);
-        assertEquals(-50, l2.getTerminal2().getP(), 0.01);
-        assertEquals(554.0510879759623, ps1.getTerminal1().getP(), 0.01);
-        assertEquals(-554.0510879759623, ps1.getTerminal2().getP(), 0.01);
+        assertEquals(18.5, l1.getTerminal1().getP(), 0.01);
+        assertEquals(-18.5, l1.getTerminal2().getP(), 0.01);
+        assertEquals(81.5, l2.getTerminal1().getP(), 0.01);
+        assertEquals(-81.5, l2.getTerminal2().getP(), 0.01);
+        assertEquals(81.5, ps1.getTerminal1().getP(), 0.01);
+        assertEquals(-81.5, ps1.getTerminal2().getP(), 0.01);
     }
 }

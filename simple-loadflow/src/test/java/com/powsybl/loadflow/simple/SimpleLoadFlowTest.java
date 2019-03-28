@@ -110,10 +110,20 @@ public class SimpleLoadFlowTest {
         ps1.getPhaseTapChanger().getStep(0).setAlpha(5);
         ps1.getPhaseTapChanger().getStep(2).setAlpha(5);
 
+        LoadFlowParameters parameters = new LoadFlowParameters();
+        LoadFlow lf = new SimpleLoadFlowFactory(matrixFactory).create(network, null, 0);
+        lf.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters);
+
+        assertEquals(50, l1.getTerminal1().getP(), 0.01);
+        assertEquals(-50, l1.getTerminal2().getP(), 0.01);
+        assertEquals(50, l2.getTerminal1().getP(), 0.01);
+        assertEquals(-50, l2.getTerminal2().getP(), 0.01);
+        assertEquals(50, ps1.getTerminal1().getP(), 0.01);
+        assertEquals(-50, ps1.getTerminal2().getP(), 0.01);
+
         ps1.getPhaseTapChanger().setTapPosition(2);
 
-        LoadFlow lf = new SimpleLoadFlowFactory(matrixFactory).create(network, null, 0);
-        lf.run(VariantManagerConstants.INITIAL_VARIANT_ID, new LoadFlowParameters());
+        lf.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters);
 
         assertEquals(18.5, l1.getTerminal1().getP(), 0.01);
         assertEquals(-18.5, l1.getTerminal2().getP(), 0.01);

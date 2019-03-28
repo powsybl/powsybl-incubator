@@ -1,0 +1,47 @@
+.BUSBAR_SECTION{}
+
+.TWO_WINDINGS_TRANSFORMER{
+	fill:#008080;fill-opacity:1;stroke-width:0.41314608
+}
+#circle44 {fill:#276767;}
+
+ .BREAKER {
+	fill:#008080;fill-opacity:1;stroke-width:0.41314608
+}
+#rect1181 {fill:#008080;fill-opacity:1;stroke-width:1.0016712;}
+#path1183 {opacity:0.5;vector-effect:none;fill:#4d4d4d;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;}
+#rect1185 {opacity:1;vector-effect:none;fill:#f9f9f9;fill-opacity:1;stroke:none;stroke-width:0.81649661px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;}
+#rect1202 {fill:#008080;fill-opacity:1;stroke-width:1.0016712}
+#path1204 {opacity:0.5;vector-effect:none;fill:#4d4d4d;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1; }
+#rect1206 {opacity:1;vector-effect:none;fill:#f9f9f9;fill-opacity:1;stroke:none;stroke-width:0.81649661px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;}
+#rect1212 {fill:#008080;fill-opacity:1;stroke-width:1.0016712;}
+#rect1216 {opacity:1;vector-effect:none;fill:#f9f9f9;fill-opacity:1;stroke:none;stroke-width:0.81649661px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;}
+
+.CAPACITOR {		
+}
+#circle1397 {fill:#008080;fill-opacity:1;stroke-width:1.03286421 }
+#rect1408 {opacity:1;vector-effect:none;fill:#f9f9f9;fill-opacity:1;stroke:none;stroke-width:0.57735032px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;}
+#rect1410 {opacity:1;vector-effect:none;fill:#f9f9f9;fill-opacity:1;stroke:none;stroke-width:0.57735032px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;}
+#rect1672 {opacity:1;vector-effect:none;fill:#f9f9f9;fill-opacity:1;stroke:none;stroke-width:0.33333337px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;}
+#rect1674 {opacity:1;vector-effect:none;fill:#f9f9f9;fill-opacity:1;stroke:none;stroke-width:0.33333337px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;}
+
+
+.DISCONNECTOR {
+	fill:#008080;fill-opacity:1;stroke-width:0.40066847;
+}
+.GENERATOR{
+	fill:#008080;stroke-width:1.29108143;fill-opacity:1;
+}
+
+.INDUCTOR {
+	fill:#f9f9f9;fill-opacity:1;
+}
+#circle1476 {opacity:1; fill:#008080;fill-opacity:1;stroke-width:1.03286421;}
+
+.LOAD {
+	fill:#008080;fill-opacity:1;stroke-width:1.03286421;
+}
+#rect5350 {opacity:1;vector-effect:none;fill:#f9f9f9;fill-opacity:1;stroke:none;stroke-width:0.47999895;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;}
+
+
+

@@ -58,7 +58,6 @@
      id="g13"
      transform="scale(3.125)">
     <circle
-       style="fill:#008080;fill-opacity:1;stroke-width:0.41314608"
        r="4"
        cy="9"
        cx="-4"
@@ -67,7 +66,6 @@
     <path
        id="circle44"
        d="M 7.0019531,0.54101562 A 4,4 0 0 0 5,4 4,4 0 0 0 6.9980469,7.4589844 4,4 0 0 0 9,4 4,4 0 0 0 7.0019531,0.54101562 Z"
-       style="fill:#276767;fill-opacity:1;stroke-width:0.41314608"
        inkscape:connector-curvature="0" />
     <circle
        transform="rotate(-90)"
@@ -75,6 +73,6 @@
        cx="-4"
        cy="4"
        r="4"
-       style="fill:#008080;fill-opacity:1;stroke-width:0.41314608" />
+       />
   </g>
 </svg>

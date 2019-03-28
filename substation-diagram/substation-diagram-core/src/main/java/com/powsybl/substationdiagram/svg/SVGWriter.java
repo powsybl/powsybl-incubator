@@ -103,12 +103,16 @@ public class SVGWriter {
         if (globalStyle.isPresent()) {
             graphStyle.append(globalStyle.get());
         }
+        /*
         for (ComponentType comp : ComponentType.values()) {
             Optional<String> componentStyle = styleProvider.getCompomentStyle(graph, comp);
             if (componentStyle.isPresent()) {
                 graphStyle.append(componentStyle.get());
             }
         }
+        */
+        graphStyle.append(componentLibrary.getStyleSheet());
+
         graph.getNodes().forEach(n -> {
             Optional<String> nodeStyle = styleProvider.getNodeStyle(n);
             if (nodeStyle.isPresent()) {
@@ -256,7 +260,7 @@ public class SVGWriter {
                     }
                 }
             } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException(e);
+                throw new UncheckedIOException(e);
             }
         });
     }
@@ -388,7 +392,7 @@ public class SVGWriter {
                                                                         URLEncoder.encode(edge.getNode1().getId(), "UTF-8"),
                                                                         URLEncoder.encode(edge.getNode2().getId(), "UTF-8")));
             } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException(e);
+                throw new UncheckedIOException(e);
             }
         }
     }

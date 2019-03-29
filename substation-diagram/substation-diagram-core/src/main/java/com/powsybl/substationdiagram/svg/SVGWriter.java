@@ -103,14 +103,7 @@ public class SVGWriter {
         if (globalStyle.isPresent()) {
             graphStyle.append(globalStyle.get());
         }
-        /*
-        for (ComponentType comp : ComponentType.values()) {
-            Optional<String> componentStyle = styleProvider.getCompomentStyle(graph, comp);
-            if (componentStyle.isPresent()) {
-                graphStyle.append(componentStyle.get());
-            }
-        }
-        */
+
         graphStyle.append(componentLibrary.getStyleSheet());
 
         graph.getNodes().forEach(n -> {

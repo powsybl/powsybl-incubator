@@ -20,6 +20,8 @@ import com.powsybl.substationdiagram.cgmes.CgmesVoltageLevelLayoutFactory;
 import com.powsybl.substationdiagram.layout.*;
 import com.powsybl.substationdiagram.library.ComponentLibrary;
 import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
+import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramStyleProvider;
+import com.powsybl.substationdiagram.svg.SubstationDiagramStyleProvider;
 import com.powsybl.substationdiagram.view.SubstationDiagramView;
 import javafx.application.Application;
 import javafx.beans.property.BooleanProperty;
@@ -76,6 +78,10 @@ public class SubstationDiagramViewer extends Application {
                               "Random", new RandomVoltageLevelLayoutFactory(500, 500),
                               "Cgmes", new CgmesVoltageLevelLayoutFactory());
 
+    private final Map<String, SubstationDiagramStyleProvider> styles
+            = ImmutableMap.of("Default", new DefaultSubstationDiagramStyleProvider(),
+                              "Nominal voltage", new NominalVoltageSubstationDiagramStyleProvider());
+
     private final ComponentLibrary convergenceComponentLibrary = new ResourcesComponentLibrary("/ConvergenceLibrary");
     private final ComponentLibrary flatDesignComponentLibrary = new ResourcesComponentLibrary("/FlatDesignLibrary");
 
@@ -104,6 +110,8 @@ public class SubstationDiagramViewer extends Application {
     private final ObjectMapper objectMapper = JsonUtil.createObjectMapper();
 
     private final ComboBox<String> layoutComboBox = new ComboBox<>();
+
+    private final ComboBox<String> styleComboBox = new ComboBox<>();
 
     private final ComboBox<String> svgLibraryComboBox = new ComboBox<>();
 
@@ -182,7 +190,8 @@ public class SubstationDiagramViewer extends Application {
             try (StringWriter svgWriter = new StringWriter();
                  StringWriter metadataWriter = new StringWriter()) {
                 SubstationDiagram diagram = SubstationDiagram.build(vl, getLayoutFactory(), showNames.isSelected());
-                diagram.writeSvg(getComponentLibrary(), layoutParameters.get(), svgWriter, metadataWriter, null);
+                SubstationDiagramStyleProvider styleProvider = styles.get(styleComboBox.getSelectionModel().getSelectedItem());
+                diagram.writeSvg(getComponentLibrary(), layoutParameters.get(), styleProvider, svgWriter, metadataWriter, null);
                 svgWriter.flush();
                 metadataWriter.flush();
                 svgData = svgWriter.toString();
@@ -370,6 +379,12 @@ public class SubstationDiagramViewer extends Application {
         layoutComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> refreshDiagram());
         parametersPane.add(new Label("Layout:"), 0, rowIndex++);
         parametersPane.add(layoutComboBox, 0, rowIndex++);
+
+        styleComboBox.getItems().addAll(styles.keySet());
+        styleComboBox.getSelectionModel().selectFirst();
+        styleComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> refreshDiagram());
+        parametersPane.add(new Label("Style:"), 0, rowIndex++);
+        parametersPane.add(styleComboBox, 0, rowIndex++);
 
         addSpinner("Initial busbar X:", 0, 100, 5, rowIndex, LayoutParameters::getInitialYBus, LayoutParameters::setInitialXBus);
         rowIndex += 2;

@@ -11,6 +11,7 @@ import java.io.UncheckedIOException;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -98,25 +99,19 @@ public class SVGWriter {
         Document document = domImpl.createDocument("http://www.w3.org/2000/svg", "svg", null);
         Element style = document.createElement("style");
 
-        StringBuffer graphStyle = new StringBuffer();
+        StringBuilder graphStyle = new StringBuilder();
         Optional<String> globalStyle = styleProvider.getGlobalStyle(graph);
-        if (globalStyle.isPresent()) {
-            graphStyle.append(globalStyle.get());
-        }
+        globalStyle.ifPresent(graphStyle::append);
 
         graphStyle.append(componentLibrary.getStyleSheet());
 
         graph.getNodes().forEach(n -> {
             Optional<String> nodeStyle = styleProvider.getNodeStyle(n);
-            if (nodeStyle.isPresent()) {
-                graphStyle.append(nodeStyle.get());
-            }
+            nodeStyle.ifPresent(graphStyle::append);
         });
         graph.getEdges().forEach(e -> {
             Optional<String> wireStyle = styleProvider.getWireStyle(e);
-            if (wireStyle.isPresent()) {
-                graphStyle.append(wireStyle.get());
-            }
+            wireStyle.ifPresent(graphStyle::append);
         });
         CDATASection cd = document.createCDATASection(graphStyle.toString());
         style.appendChild(cd);
@@ -148,7 +143,7 @@ public class SVGWriter {
         GraphMetadata metadata = new GraphMetadata();
 
         Element root = document.createElement("g");
-        root.setAttribute(CLASS, SubstationDiagramStyleProvider.SUBSTATION_STYLE_CLASS);
+        root.setAttribute(CLASS, SubstationDiagramStyles.SUBSTATION_STYLE_CLASS);
 
         if (layoutParameters.isShowGrid()) {
             root.appendChild(drawGrid(graph, document));
@@ -200,7 +195,7 @@ public class SVGWriter {
                     layoutParameters.getInitialYBus() + layoutParameters.getStackHeight() + layoutParameters.getExternCellHeight()
                             + layoutParameters.getVerticalSpaceBus() * maxV));
 
-            line.setAttribute(CLASS, SubstationDiagramStyleProvider.GRID_STYLE_CLASS);
+            line.setAttribute(CLASS, SubstationDiagramStyles.GRID_STYLE_CLASS);
             line.setAttribute(TRANSFORM,
                               TRANSLATE + "(" + layoutParameters.getTranslateX() + "," + layoutParameters.getTranslateY() + ")");
             gridRoot.appendChild(line);
@@ -211,11 +206,11 @@ public class SVGWriter {
     private void drawNodes(Element root, Graph graph, GraphMetadata metadata, AnchorPointProvider anchorPointProvider) {
         graph.getNodes().forEach(node -> {
             try {
-                String nodeId = URLEncoder.encode(node.getId(), "UTF-8");
+                String nodeId = URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name());
                 Element g = root.getOwnerDocument().createElement("g");
 
                 g.setAttribute("id", nodeId);
-                g.setAttribute(CLASS, DefaultSubstationDiagramStyleProvider.SUBSTATION_STYLE_CLASS + " " + node.getComponentType() + " " + nodeId);
+                g.setAttribute(CLASS, SubstationDiagramStyles.SUBSTATION_STYLE_CLASS + " " + node.getComponentType() + " " + nodeId);
 
                 if (node.getType() == Node.NodeType.BUS) {
                     drawBus((BusNode) node, g);
@@ -269,7 +264,7 @@ public class SVGWriter {
             line.setAttribute("x2", String.valueOf(node.getPxWidth()));
             line.setAttribute("y2", "0");
         }
-        line.setAttribute(CLASS, SubstationDiagramStyleProvider.BUS_STYLE_CLASS);
+        line.setAttribute(CLASS, SubstationDiagramStyles.BUS_STYLE_CLASS);
 
         g.appendChild(line);
 
@@ -283,7 +278,7 @@ public class SVGWriter {
         label.setAttribute("y", Integer.toString(yShift));
         label.setAttribute("font-family", FONT_FAMILY);
         label.setAttribute("font-size", Integer.toString(FONT_SIZE));
-        label.setAttribute(CLASS, SubstationDiagramStyleProvider.LABEL_STYLE_CLASS);
+        label.setAttribute(CLASS, SubstationDiagramStyles.LABEL_STYLE_CLASS);
         Text text = g.getOwnerDocument().createTextNode(str);
         label.setAttribute(TRANSFORM, "rotate(" + (rotated ? -90 : 0) + "," + 0 + "," + 0 + ")");
         label.appendChild(text);
@@ -377,13 +372,13 @@ public class SVGWriter {
             }
 
             g.setAttribute("points", polPoints.toString());
-            g.setAttribute(CLASS, SubstationDiagramStyleProvider.WIRE_STYLE_CLASS);
+            g.setAttribute(CLASS, SubstationDiagramStyles.WIRE_STYLE_CLASS);
             root.appendChild(g);
 
             try {
                 metadata.addWireMetadata(new GraphMetadata.WireMetadata("Wire" + graph.getEdges().indexOf(edge),
-                                                                        URLEncoder.encode(edge.getNode1().getId(), "UTF-8"),
-                                                                        URLEncoder.encode(edge.getNode2().getId(), "UTF-8")));
+                                                                        URLEncoder.encode(edge.getNode1().getId(), StandardCharsets.UTF_8.name()),
+                                                                        URLEncoder.encode(edge.getNode2().getId(), StandardCharsets.UTF_8.name())));
             } catch (UnsupportedEncodingException e) {
                 throw new UncheckedIOException(e);
             }

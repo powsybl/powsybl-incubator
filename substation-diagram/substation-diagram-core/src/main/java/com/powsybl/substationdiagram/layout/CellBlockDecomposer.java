@@ -110,7 +110,7 @@ public class CellBlockDecomposer {
                 Node commonNode = compareBlockPath(b1, b2);
                 LOGGER.trace(" Common node : {}", commonNode);
                 if (commonNode != null
-                        && ((FicticiousNode) commonNode).getCardinality()
+                        && ((FictitiousNode) commonNode).getCardinality()
                         == (b1.getCardinality(commonNode) + b2.getCardinality(commonNode))) {
                     SerialBlock b = new SerialBlock(b1, b2, commonNode);
                     b1.setParentBlock(b);

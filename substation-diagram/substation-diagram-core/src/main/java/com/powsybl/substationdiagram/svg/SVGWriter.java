@@ -145,18 +145,18 @@ public class SVGWriter {
         for (int i = 0; i < maxH + 1; i++) {
             Element line = document.createElement("line");
             line.setAttribute("x1",
-                              Double.toString(layoutParameters.getInitialXBus() + i * layoutParameters.getCellWidth()));
+                    Double.toString(layoutParameters.getInitialXBus() + i * layoutParameters.getCellWidth()));
             line.setAttribute("x2",
-                              Double.toString(layoutParameters.getInitialXBus() + i * layoutParameters.getCellWidth()));
+                    Double.toString(layoutParameters.getInitialXBus() + i * layoutParameters.getCellWidth()));
             line.setAttribute("y1",
-                              Double.toString(layoutParameters.getInitialYBus() - layoutParameters.getStackHeight()
-                                                      - layoutParameters.getExternCellHeight()));
+                    Double.toString(layoutParameters.getInitialYBus() - layoutParameters.getStackHeight()
+                            - layoutParameters.getExternCellHeight()));
             line.setAttribute("y2", Double.toString(
                     layoutParameters.getInitialYBus() + layoutParameters.getStackHeight() + layoutParameters.getExternCellHeight()
                             + layoutParameters.getVerticalSpaceBus() * maxV));
             line.setAttribute(STYLE, "stroke:rgb(0,55,0);stroke-width:1;stroke-dasharray:1,10");
             line.setAttribute(TRANSFORM,
-                              TRANSLATE + "(" + layoutParameters.getTranslateX() + "," + layoutParameters.getTranslateY() + ")");
+                    TRANSLATE + "(" + layoutParameters.getTranslateX() + "," + layoutParameters.getTranslateY() + ")");
             gridRoot.appendChild(line);
         }
         return gridRoot;
@@ -191,15 +191,15 @@ public class SVGWriter {
                     new GraphMetadata.NodeMetadata(node.getId(), node.getComponentType(), node.isRotated(), node.isOpen()));
             if (node.getType() == Node.NodeType.BUS) {
                 metadata.addComponentMetadata(new ComponentMetadata(ComponentType.BUSBAR_SECTION,
-                                                                    node.getId(),
-                                                                    anchorPointProvider.getAnchorPoints(ComponentType.BUSBAR_SECTION, node.getId()),
-                                                                    new ComponentSize(0, 0)));
+                        node.getId(),
+                        anchorPointProvider.getAnchorPoints(ComponentType.BUSBAR_SECTION, node.getId()),
+                        new ComponentSize(0, 0)));
             } else {
                 if (metadata.getComponentMetadata(node.getComponentType()) == null) {
                     metadata.addComponentMetadata(new ComponentMetadata(node.getComponentType(),
-                                                                        null,
-                                                                        componentLibrary.getAnchorPoints(node.getComponentType()),
-                                                                        componentLibrary.getSize(node.getComponentType())));
+                            null,
+                            componentLibrary.getAnchorPoints(node.getComponentType()),
+                            componentLibrary.getSize(node.getComponentType())));
                 }
             }
         });
@@ -265,8 +265,8 @@ public class SVGWriter {
 
         if (!node.isRotated()) {
             g.setAttribute(TRANSFORM,
-                           TRANSLATE + "(" + (layoutParameters.getTranslateX() + node.getX() - componentSize.getWidth() / 2) + ","
-                                   + (layoutParameters.getTranslateY() + node.getY() - componentSize.getHeight() / 2) + ")");
+                    TRANSLATE + "(" + (layoutParameters.getTranslateX() + node.getX() - componentSize.getWidth() / 2) + ","
+                            + (layoutParameters.getTranslateY() + node.getY() - componentSize.getHeight() / 2) + ")");
             return;
         }
 
@@ -286,10 +286,10 @@ public class SVGWriter {
         double f1 = layoutParameters.getTranslateY() - cdx * sinRo - cdy * cosRo + node.getY();
 
         g.setAttribute(TRANSFORM,
-                       "matrix(" + Precision.round(cosRo, precision) + "," + Precision.round(sinRo, precision)
-                               + "," + Precision.round(-sinRo, precision) + "," + Precision.round(cosRo,
-                                                                                                  precision) + ","
-                               + Precision.round(e1, precision) + "," + Precision.round(f1, precision) + ")");
+                "matrix(" + Precision.round(cosRo, precision) + "," + Precision.round(sinRo, precision)
+                        + "," + Precision.round(-sinRo, precision) + "," + Precision.round(cosRo,
+                        precision) + ","
+                        + Precision.round(e1, precision) + "," + Precision.round(f1, precision) + ")");
     }
 
     private void drawEdges(Element root, Graph graph, GraphMetadata metadata, AnchorPointProvider anchorPointProvider) {
@@ -298,11 +298,11 @@ public class SVGWriter {
             g.setAttribute("id", "Wire" + graph.getEdges().indexOf(edge));
 
             WireConnection anchorPoints = WireConnection.searchBetterAnchorPoints(anchorPointProvider, edge.getNode1(),
-                                                                                  edge.getNode2());
+                    edge.getNode2());
 
             // Determine points of the polyline
             List<Double> pol = calculatePolylinePoints(edge, anchorPoints.getAnchorPoint1(),
-                                                       anchorPoints.getAnchorPoint2());
+                    anchorPoints.getAnchorPoint2());
 
             StringBuilder polPoints = new StringBuilder();
             for (int i = 0; i < pol.size(); i++) {
@@ -328,8 +328,8 @@ public class SVGWriter {
             root.appendChild(g);
 
             metadata.addWireMetadata(new GraphMetadata.WireMetadata("Wire" + graph.getEdges().indexOf(edge),
-                                                                    edge.getNode1().getId(),
-                                                                    edge.getNode2().getId()));
+                    edge.getNode1().getId(),
+                    edge.getNode2().getId()));
         }
     }
 

@@ -70,7 +70,7 @@ public class PatternCellDetector implements CellDetector {
             LOGGER.info("Cell with pattern #{}", pattern.getId());
             for (Node n : cell.getNodes()) {
                 LOGGER.trace("    Node : {} ; {}", n.getId(), n.getComponentType());
-                if (!pattern.getKind().equals("pontage") || !(n instanceof FicticiousNode)) {
+                if (!pattern.getKind().equals("pontage") || !(n instanceof FictitiousNode)) {
                     n.setCell(cell);
                 }
             }
@@ -163,7 +163,7 @@ public class PatternCellDetector implements CellDetector {
             if ((nP.getKind().equals("EQ") && (nG instanceof FeederNode) && !(nG instanceof BusNode))
                     || ((nP.getKind().equals("Switch")) && (nG instanceof SwitchNode))
                     || (nP.getKind().equals("BusbarSection") && (nG instanceof BusNode))
-                    || (nP.getKind().equals("Node") && (nG instanceof FicticiousNode))) {
+                    || (nP.getKind().equals("Node") && (nG instanceof FictitiousNode))) {
                 nodesCell.add(nG);
                 // We reach the end of the branch and it matches
                 if (nP.getKind().equals("BusbarSection")) {

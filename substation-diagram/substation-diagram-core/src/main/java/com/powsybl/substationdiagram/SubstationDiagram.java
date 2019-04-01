@@ -6,6 +6,9 @@
  */
 package com.powsybl.substationdiagram;
 
+import com.powsybl.commons.PowsyblException;
+import com.powsybl.iidm.network.Container;
+import com.powsybl.iidm.network.ContainerType;
 import com.powsybl.iidm.network.VoltageLevel;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
 import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayoutFactory;
@@ -45,15 +48,21 @@ public final class SubstationDiagram {
         this.layout = Objects.requireNonNull(layout);
     }
 
-    public static SubstationDiagram build(VoltageLevel vl) {
-        return build(vl, new PositionVoltageLevelLayoutFactory(), false);
+    public static SubstationDiagram build(Container container) {
+        return build(container, new PositionVoltageLevelLayoutFactory(), false);
     }
 
-    public static SubstationDiagram build(VoltageLevel vl, VoltageLevelLayoutFactory layoutFactory, boolean useName) {
-        Objects.requireNonNull(vl);
+    public static SubstationDiagram build(Container container, VoltageLevelLayoutFactory layoutFactory, boolean useName) {
+        Objects.requireNonNull(container);
         Objects.requireNonNull(layoutFactory);
 
-        Graph graph = Graph.create(vl, useName);
+        Graph graph = null;
+        if (container.getContainerType() == ContainerType.VOLTAGE_LEVEL) {
+            graph = Graph.create((VoltageLevel) container, useName);
+        } else {
+            throw new PowsyblException("Substation diagram" + container.getId() + " not yet implemented");
+        }
+
         VoltageLevelLayout layout = layoutFactory.create(graph);
 
         return new SubstationDiagram(graph, layout);

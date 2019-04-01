@@ -60,9 +60,7 @@ public class PositionFree implements PositionFinder {
 
     private void indexBusPosition(Context context) {
         int i = 1;
-        for (BusNode n : context.graph.getNodeBuses()
-                .stream()
-                .collect(Collectors.toList())) {
+        for (BusNode n : new ArrayList<>(context.graph.getNodeBuses())) {
             context.nodeToNb.put(n, i);
             i++;
         }
@@ -212,15 +210,16 @@ public class PositionFree implements PositionFinder {
     private void buildConnexClusters(Context context) {
         List<BusNode> remainingBuses = context.graph.getNodeBuses();
         while (!remainingBuses.isEmpty()) {
-            context.connectedClusters.add(new ConnectedCluster(context, remainingBuses.get(0), remainingBuses));
+            context.connectedClusters.add(new ConnectedCluster(context, remainingBuses));
         }
     }
 
     private void organizeClusters(Context context) {
-        int firstStructuralPosition = 1;
+        int firstStructuralPosition = 0;
         int firstFeederOrder = 1;
+        context.graph.getNodeBuses().forEach(busNode -> busNode.setStructuralPosition(null));
         for (ConnectedCluster cc : context.connectedClusters) {
-            firstStructuralPosition = cc.setStructuralPositions(firstStructuralPosition);
+            firstStructuralPosition = cc.setStructuralPositions(firstStructuralPosition + 1);
             firstFeederOrder = cc.setCellOrders(firstFeederOrder);
         }
     }
@@ -249,7 +248,7 @@ public class PositionFree implements PositionFinder {
         private Set<BusNode> busNodeSet;
 
         VerticalBusConnectionPattern(Context context, List<BusNode> busNodees) {
-            busNodeSet = new TreeSet<>(Comparator.comparingInt(n -> context.nodeToNb.get(n)));
+            busNodeSet = new TreeSet<>(Comparator.comparingInt(context.nodeToNb::get));
             busNodeSet.addAll(busNodees);
         }
 
@@ -298,6 +297,7 @@ public class PositionFree implements PositionFinder {
 
     private class HorizontalChain {
         List<BusNode> busNodes;
+        int vbcpOrder;
         int v;
 
         HorizontalChain() {
@@ -354,10 +354,10 @@ public class PositionFree implements PositionFinder {
         List<HorizontalChain> hChains;
         Context context;
 
-        ConnectedCluster(Context context, BusNode startingNode, List<BusNode> remainingBuses) {
+        ConnectedCluster(Context context, List<BusNode> remainingBuses) {
             this.context = context;
             buses = new HashSet<>();
-            rBuild(startingNode, remainingBuses);
+            rBuild(remainingBuses.get(0), remainingBuses);
             vbcps = buses.stream().flatMap(bus -> bus.vbcps.stream()).distinct().collect(Collectors.toList());
             hChains = buses.stream().map(bus -> bus.hChain).distinct().collect(Collectors.toList());
             alignChains();
@@ -387,7 +387,7 @@ public class PositionFree implements PositionFinder {
 
         private List<HorizontalChain> gethChainsFromVbcp(VerticalBusConnectionPattern vbcp) {
             return vbcp.busNodeSet.stream()
-                    .map(busNode -> context.busToBelonging.get(busNode))
+                    .map(context.busToBelonging::get)
                     .map(nodeBelonging -> nodeBelonging.hChain).collect(Collectors.toList());
         }
 
@@ -487,9 +487,11 @@ public class PositionFree implements PositionFinder {
                 }
             }
             sortedVbcps.add(sortedVbcps.indexOf(matchingSortedVbcp) + 1, matchingRemainingVbcp);
+            remainingVbcps.remove(matchingRemainingVbcp);
         }
 
         private void organizeHChainsVertically() {
+            int vbcpOrder = 0;
             for (VerticalBusConnectionPattern vbcp : vbcps) {
                 Set<Integer> vBooked = new TreeSet<>(Comparator.comparingInt(Integer::intValue));
                 vbcp.busNodeSet.forEach(bus -> vBooked.add(context.busToBelonging.get(bus).hChain.v));
@@ -498,9 +500,11 @@ public class PositionFree implements PositionFinder {
                     if (chain.v == 0) {
                         int v = firstAvailableIndex(vBooked);
                         chain.v = v;
+                        chain.vbcpOrder = vbcpOrder;
                         vBooked.add(v);
                     }
                 }
+                vbcpOrder++;
             }
         }
 
@@ -526,12 +530,13 @@ public class PositionFree implements PositionFinder {
         int setStructuralPositions(int firstStructuralHPosition) {
             int maxH = firstStructuralHPosition;
             for (HorizontalChain chain : hChains) {
-                int structH = firstStructuralHPosition;
+                int newH = chain.vbcpOrder + firstStructuralHPosition;
                 for (BusNode bus : chain.busNodes) {
-                    bus.setStructuralPosition(new Position(structH, chain.v));
-                    structH++;
+                    if (bus.getStructuralPosition() == null) {
+                        bus.setStructuralPosition(new Position(newH++, chain.v));
+                    }
                 }
-                maxH = Math.max(maxH, structH);
+                maxH = Math.max(maxH, newH);
             }
             return maxH;
         }

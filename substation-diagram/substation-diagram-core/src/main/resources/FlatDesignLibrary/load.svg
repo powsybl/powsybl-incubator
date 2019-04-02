@@ -54,12 +54,10 @@
        id="circle5346"
        cx="2.2881401"
        cy="6.7627101"
-       r="9.9999914"
-       style="fill:#008080;fill-opacity:1;stroke-width:1.03286421" />
+       r="9.9999914" />
     <path
        id="rect5350"
        d="m -0.53998,1.10646 -2.82813,2.82813 2.82813,2.82812 -2.82813,2.82812 2.82813,2.82813 L 2.28814,9.59083 5.11626,12.41896 7.94439,9.59083 5.11626,6.76271 7.94439,3.93459 5.11626,1.10646 2.28814,3.93459 Z"
-       style="opacity:1;vector-effect:none;fill:#f9f9f9;fill-opacity:1;stroke:none;stroke-width:0.47999895;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        inkscape:connector-curvature="0" />
   </g>
 </svg>

@@ -51,13 +51,11 @@
      id="g41"
      transform="matrix(1.2500011,0,0,1.2500011,-6.1228971,13.51695)">
     <circle
-       style="fill:#008080;fill-opacity:1;stroke-width:1.03286421"
        r="9.9999914"
        cy="-0.81355929"
        cx="14.898305"
        id="circle1397" />
     <rect
-       style="opacity:1;vector-effect:none;fill:#f9f9f9;fill-opacity:1;stroke:none;stroke-width:0.57735032px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="rect1408"
        width="12"
        height="2"
@@ -68,17 +66,14 @@
        x="8.8983049"
        height="2"
        width="12"
-       id="rect1410"
-       style="opacity:1;vector-effect:none;fill:#f9f9f9;fill-opacity:1;stroke:none;stroke-width:0.57735032px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+       id="rect1410" />
     <rect
        y="-5.8135595"
        x="13.898305"
        height="4"
        width="2"
-       id="rect1672"
-       style="opacity:1;vector-effect:none;fill:#f9f9f9;fill-opacity:1;stroke:none;stroke-width:0.33333337px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+       id="rect1672" />
     <rect
-       style="opacity:1;vector-effect:none;fill:#f9f9f9;fill-opacity:1;stroke:none;stroke-width:0.33333337px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="rect1674"
        width="2"
        height="4"

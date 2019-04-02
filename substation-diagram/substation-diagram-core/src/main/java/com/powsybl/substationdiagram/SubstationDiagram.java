@@ -16,8 +16,10 @@ import com.powsybl.substationdiagram.layout.VoltageLevelLayout;
 import com.powsybl.substationdiagram.layout.VoltageLevelLayoutFactory;
 import com.powsybl.substationdiagram.library.ComponentLibrary;
 import com.powsybl.substationdiagram.model.Graph;
+import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramStyleProvider;
 import com.powsybl.substationdiagram.svg.GraphMetadata;
 import com.powsybl.substationdiagram.svg.SVGWriter;
+import com.powsybl.substationdiagram.svg.SubstationDiagramStyleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,8 +90,13 @@ public final class SubstationDiagram {
         }
     }
 
-    public void writeSvg(ComponentLibrary componentLibrary, LayoutParameters layoutParameters, Writer svgWriter,
-                         Writer metadataWriter, Writer graphWriter) {
+    public void writeSvg(ComponentLibrary componentLibrary, LayoutParameters layoutParameters,
+                         Writer svgWriter, Writer metadataWriter, Writer graphWriter) {
+        writeSvg(componentLibrary, layoutParameters, new DefaultSubstationDiagramStyleProvider(), svgWriter, metadataWriter, graphWriter);
+    }
+
+    public void writeSvg(ComponentLibrary componentLibrary, LayoutParameters layoutParameters, SubstationDiagramStyleProvider styleProvider,
+                         Writer svgWriter, Writer metadataWriter, Writer graphWriter) {
         Objects.requireNonNull(componentLibrary);
         Objects.requireNonNull(layoutParameters);
         Objects.requireNonNull(svgWriter);
@@ -107,7 +114,7 @@ public final class SubstationDiagram {
         LOGGER.info("Writing SVG and JSON metadata files...");
 
         GraphMetadata metadata = new SVGWriter(componentLibrary, layoutParameters)
-                .write(graph, svgWriter);
+                .write(graph, styleProvider, svgWriter);
 
         // write metadata file
         metadata.writeJson(metadataWriter);

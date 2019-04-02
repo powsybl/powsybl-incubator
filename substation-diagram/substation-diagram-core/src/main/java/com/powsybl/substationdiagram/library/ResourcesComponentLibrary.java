@@ -6,14 +6,30 @@
  */
 package com.powsybl.substationdiagram.library;
 
-import com.google.common.collect.Sets;
-import com.powsybl.substationdiagram.svg.SVGLoaderToDocument;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.apache.batik.anim.dom.SVGOMDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import com.google.common.collect.Sets;
+import com.powsybl.commons.exceptions.UncheckedUriSyntaxException;
+import com.powsybl.substationdiagram.svg.SVGLoaderToDocument;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
@@ -27,6 +43,8 @@ public class ResourcesComponentLibrary implements ComponentLibrary {
     private final Map<ComponentType, SVGOMDocument> svgDocuments = new HashMap<>();
 
     private final Map<ComponentType, Component> components;
+
+    private final String styleSheet;
 
     public ResourcesComponentLibrary(String directory) {
         Objects.requireNonNull(directory);
@@ -49,6 +67,15 @@ public class ResourcesComponentLibrary implements ComponentLibrary {
             SVGOMDocument doc = svgLoadDoc.read(resourceName);
             svgDocuments.put(component.getMetadata().getType(), doc);
         }
+        try {
+            URL cssFile = this.getClass().getResource(directory + "/" + "components.css");
+
+            styleSheet = new String(Files.readAllBytes(Paths.get(cssFile.toURI())), Charset.forName("UTF-8"));
+        } catch (URISyntaxException e) {
+            throw new UncheckedUriSyntaxException(e);
+        } catch (IOException e) {
+            throw new UncheckedIOException("Can't read css file from the SVG library!", e);
+        }
     }
 
     @Override
@@ -70,5 +97,9 @@ public class ResourcesComponentLibrary implements ComponentLibrary {
         Objects.requireNonNull(type);
         Component component = components.get(type);
         return component != null ? component.getMetadata().getSize() : new ComponentSize(0, 0);
+    }
+
+    public String getStyleSheet() {
+        return styleSheet;
     }
 }

@@ -80,6 +80,10 @@ public class Node implements BaseNode {
         this.graph = Objects.requireNonNull(graph);
     }
 
+    public Graph getGraph() {
+        return graph;
+    }
+
     public Cell getCell() {
         return cell;
     }

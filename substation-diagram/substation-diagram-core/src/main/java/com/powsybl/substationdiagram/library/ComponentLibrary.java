@@ -22,4 +22,6 @@ public interface ComponentLibrary {
     SVGOMDocument getSvgDocument(ComponentType type);
 
     ComponentSize getSize(ComponentType type);
+
+    String getStyleSheet();
 }

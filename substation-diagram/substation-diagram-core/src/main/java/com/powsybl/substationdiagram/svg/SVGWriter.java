@@ -102,7 +102,6 @@ public class SVGWriter {
         StringBuilder graphStyle = new StringBuilder();
         Optional<String> globalStyle = styleProvider.getGlobalStyle(graph);
         globalStyle.ifPresent(graphStyle::append);
-
         graphStyle.append(componentLibrary.getStyleSheet());
 
         graph.getNodes().forEach(n -> {
@@ -208,9 +207,9 @@ public class SVGWriter {
             try {
                 String nodeId = URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name());
                 Element g = root.getOwnerDocument().createElement("g");
-
                 g.setAttribute("id", nodeId);
-                g.setAttribute(CLASS, SubstationDiagramStyles.SUBSTATION_STYLE_CLASS + " " + node.getComponentType() + " " + nodeId);
+
+                g.setAttribute(CLASS, SubstationDiagramStyles.SUBSTATION_STYLE_CLASS + " " + node.getComponentType() + " " + SubstationDiagramStyles.escapeClassName(nodeId));
 
                 if (node.getType() == Node.NodeType.BUS) {
                     drawBus((BusNode) node, g);

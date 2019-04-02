@@ -23,6 +23,8 @@ public final class SubstationDiagramStyles {
     }
 
     public static String escapeClassName(String input) {
-        return Objects.requireNonNull(input).replaceAll("\\+", "\\\\+").replaceAll("\\.", "\\\\.");
+        Objects.requireNonNull(input);
+        String temp = Character.isDigit(input.charAt(0)) ? "d" + input : input;
+        return temp.replaceAll("\\+", "-").replaceAll("\\.", "_");
     }
 }

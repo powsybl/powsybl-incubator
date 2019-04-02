@@ -69,7 +69,7 @@
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
-        <g class="substation-diagram NODE 3" id="3" transform="translate(91.0,276.0)">
+        <g class="substation-diagram NODE d3" id="3" transform="translate(91.0,276.0)">
     <circle r="4" cx="4" cy="4"/>
 </g>
         <g class="substation-diagram BREAKER bb" id="bb" transform="translate(85.0,145.0)">

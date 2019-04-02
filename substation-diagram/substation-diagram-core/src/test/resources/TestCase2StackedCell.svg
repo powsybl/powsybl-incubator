@@ -47,7 +47,7 @@
     <line y2="9" x1="16" x2="0" y1="0"/>
 <text x="-5" font-size="8" y="-5" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">l</text>
         </g>
-        <g class="substation-diagram NODE 2" id="2" transform="translate(41.0,276.0)">
+        <g class="substation-diagram NODE d2" id="2" transform="translate(41.0,276.0)">
     <circle r="4" cx="4" cy="4"/>
 </g>
         <g class="substation-diagram DISCONNECTOR d1" id="d1" transform="translate(41.0,306.0)">

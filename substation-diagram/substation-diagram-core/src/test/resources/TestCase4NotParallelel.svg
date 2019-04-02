@@ -35,15 +35,15 @@
             <line y2="590.0" x1="100.0" class="grid" x2="100.0" transform="translate(20.0,50.0)" y1="-20.0"/>
             <line y2="590.0" x1="150.0" class="grid" x2="150.0" transform="translate(20.0,50.0)" y1="-20.0"/>
         </g>
-        <g class="substation-diagram BUSBAR_SECTION bbs1.1" id="bbs1.1" transform="translate(30.0,310.0)">
+        <g class="substation-diagram BUSBAR_SECTION bbs1_1" id="bbs1.1" transform="translate(30.0,310.0)">
             <line y2="0" x1="0" class="bus" x2="30.0" y1="0"/>
             <text x="-5" font-size="8" y="-5" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs1.1</text>
         </g>
-        <g class="substation-diagram BUSBAR_SECTION bbs1.2" id="bbs1.2" transform="translate(80.0,310.0)">
+        <g class="substation-diagram BUSBAR_SECTION bbs1_2" id="bbs1.2" transform="translate(80.0,310.0)">
             <line y2="0" x1="0" class="bus" x2="80.0" y1="0"/>
             <text x="-5" font-size="8" y="-5" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs1.2</text>
         </g>
-        <g class="substation-diagram BUSBAR_SECTION bbs2.1" id="bbs2.1" transform="translate(30.0,335.0)">
+        <g class="substation-diagram BUSBAR_SECTION bbs2_1" id="bbs2.1" transform="translate(30.0,335.0)">
             <line y2="0" x1="0" class="bus" x2="130.0" y1="0"/>
             <text x="-5" font-size="8" y="-5" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs2.1</text>
         </g>
@@ -65,7 +65,7 @@
     <path d="M6,6 A 6 20 0 0 0 12,6"/>
 <text x="-5" font-size="8" y="-5" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">gc</text>
         </g>
-        <g class="substation-diagram NODE 4" id="4" transform="translate(41.0,276.0)">
+        <g class="substation-diagram NODE d4" id="4" transform="translate(41.0,276.0)">
     <circle r="4" cx="4" cy="4"/>
 </g>
         <g class="substation-diagram BREAKER ba" id="ba" transform="translate(35.0,145.0)">
@@ -96,7 +96,7 @@
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
-        <g class="substation-diagram NODE 6" id="6" transform="translate(91.0,361.0)">
+        <g class="substation-diagram NODE d6" id="6" transform="translate(91.0,361.0)">
     <circle r="4" cx="4" cy="4"/>
 </g>
         <g class="substation-diagram BREAKER bb" id="bb" transform="translate(85.0,480.0)">

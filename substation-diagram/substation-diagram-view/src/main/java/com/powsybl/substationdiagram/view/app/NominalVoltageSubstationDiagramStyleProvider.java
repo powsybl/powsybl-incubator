@@ -50,8 +50,7 @@ public class NominalVoltageSubstationDiagramStyleProvider implements SubstationD
                 "." + WIRE_STYLE_CLASS + " {stroke:" + color + ";stroke-width:1;}" +
                 "." + GRID_STYLE_CLASS + " {stroke:rgb(0,55,0);stroke-width:1;stroke-dasharray:1,10;}" +
                 "." + BUS_STYLE_CLASS + " {stroke:" + color + ";stroke-width:3;}" +
-                "." + LABEL_STYLE_CLASS + " {fill: black;color:black;stroke:none;fill-opacity:1;}" +
-                "." + Node.NodeType.FEEDER + " {stroke:" + color + ";stroke-width:1;}"; // FIXME Doesn't work?
+                "." + LABEL_STYLE_CLASS + " {fill: black;color:black;stroke:none;fill-opacity:1;}";
 
         return Optional.of(style);
     }
@@ -63,12 +62,12 @@ public class NominalVoltageSubstationDiagramStyleProvider implements SubstationD
             String className = escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name()));
             if (node.getType() == Node.NodeType.SWITCH) {
                 String style = "." + className +
-                        " .open { visibility: " + (node.isOpen() ? "visible;" : "hidden;}") +
+                        " .open { visibility: " + (node.isOpen() ? "visible;}" : "hidden;}") +
                         "." + className +
-                        " .closed { visibility: " + (node.isOpen() ? "hidden;" : "visible;}");
+                        " .closed { visibility: " + (node.isOpen() ? "hidden;}" : "visible;}");
                 return Optional.of(style);
             } else {
-                return Optional.of("." + className + " {fill:" + color + ";stroke-width:1;fill-opacity:0;}"); // FIXME Doesn't work?
+                return Optional.of("." + className + " {stroke:" + color + ";stroke-width:1;fill-opacity:0;}"); // FIXME Doesn't work?
             }
         } catch (UnsupportedEncodingException e) {
             throw new UncheckedIOException(e);

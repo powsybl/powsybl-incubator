@@ -88,16 +88,16 @@ public class FlowEquations {
         a1 = Transformers.getAngle(tf);
     }
 
-    public double p1() {
-        return r1 * v1 * (g1 * r1 * v1 + y * r1 * v1 * Math.sin(ksi) - y * r2 * v2 * Math.sin(ksi - a1 + a2 - ph1 + ph2));
+    public double q1() {
+        return r1 * v1 * (-b1 * r1 * v1 + y * r1 * v1 * Math.cos(ksi) - y * r2 * v2 * Math.cos(ksi - a1 + a2 - ph1 + ph2));
     }
 
     public double  p2() {
         return r2 * v2 * (g2 * r2 * v2 - y * r1 * v1 * Math.sin(ksi + a1 - a2 + ph1 - ph2) + y * r2 * v2 * Math.sin(ksi));
     }
 
-    public double q1() {
-        return r1 * v1 * (-b1 * r1 * v1 + y * r1 * v1 * Math.cos(ksi) - y * r2 * v2 * Math.cos(ksi - a1 + a2 - ph1 + ph2));
+    public double p1() {
+        return r1 * v1 * (g1 * r1 * v1 + y * r1 * v1 * Math.sin(ksi) - y * r2 * v2 * Math.sin(ksi - a1 + a2 - ph1 + ph2));
     }
 
     public double q2() {

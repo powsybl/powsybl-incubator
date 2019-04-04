@@ -13,9 +13,9 @@ import com.powsybl.substationdiagram.library.ComponentType;
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class FicticiousNode extends Node {
+public class FictitiousNode extends Node {
 
-    public FicticiousNode(Graph graph, String id) {
+    public FictitiousNode(Graph graph, String id) {
         super(NodeType.FICTITIOUS, id, id, ComponentType.NODE, true, graph);
     }
 

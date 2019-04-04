@@ -370,14 +370,14 @@ public class Graph {
 
     private void ensureNodeExists(int n, Map<Integer, Node> nodesByNumber) {
         if (!nodesByNumber.containsKey(n)) {
-            FicticiousNode node = new FicticiousNode(Graph.this, "" + n);
+            FictitiousNode node = new FictitiousNode(Graph.this, "" + n);
             nodesByNumber.put(n, node);
             addNode(node);
         }
     }
 
     public void logCellDetectionStatus() {
-        Set<Cell> cells = new HashSet<>();
+        Set<Cell> cellsLog = new HashSet<>();
         Map<Cell.CellType, Integer> cellCountByType = new EnumMap<>(Cell.CellType.class);
         for (Cell.CellType cellType : Cell.CellType.values()) {
             cellCountByType.put(cellType, 0);
@@ -390,7 +390,7 @@ public class Graph {
         for (Node node : nodes) {
             Cell cell = node.getCell();
             if (cell != null) {
-                if (cells.add(cell)) {
+                if (cellsLog.add(cell)) {
                     cellCountByType.put(cell.getType(), cellCountByType.get(cell.getType()) + 1);
                 }
             } else {
@@ -398,10 +398,10 @@ public class Graph {
                 remainingNodeCountByType.put(node.getType(), remainingNodeCountByType.get(node.getType()) + 1);
             }
         }
-        if (cells.isEmpty()) {
+        if (cellsLog.isEmpty()) {
             LOGGER.warn("No cell detected");
         } else {
-            LOGGER.info("{} cells detected ({})", cells.size(), cellCountByType);
+            LOGGER.info("{} cells detected ({})", cellsLog.size(), cellCountByType);
         }
         if (remainingNodeCount > 0) {
             LOGGER.warn("{}/{} nodes not associated to a cell ({})",
@@ -452,11 +452,11 @@ public class Graph {
         if (nodes.stream().anyMatch(node -> node.getType() == Node.NodeType.BUS)) {
             return;
         }
-        TreeSet<FicticiousNode> ficticiousNodeSet = new TreeSet<>(Comparator.comparingInt(n -> n.getAdjacentEdges().size()));
+        TreeSet<FictitiousNode> fictitiousNodeSet = new TreeSet<>(Comparator.comparingInt(n -> n.getAdjacentEdges().size()));
         nodes.stream().filter(node -> node.getType() == Node.NodeType.FICTITIOUS)
-                .map(FicticiousNode.class::cast)
-                .forEach(ficticiousNodeSet::add);
-        FicticiousNode biggestFn = ficticiousNodeSet.last();
+                .map(FictitiousNode.class::cast)
+                .forEach(fictitiousNodeSet::add);
+        FictitiousNode biggestFn = fictitiousNodeSet.last();
         BusNode bn = BusNode.createFictitious(this, biggestFn.getId() + "FictitiousBus");
         addNode(bn);
         substitueNode(biggestFn, bn);
@@ -593,7 +593,7 @@ public class Graph {
         for (Node n : nodes) {
             if (n instanceof FeederNode && n.getAdjacentNodes().size() > 1) {
                 // Create a new fictitious node
-                FicticiousNode nf = new FicticiousNode(Graph.this, n.getId() + "Fictif");
+                FictitiousNode nf = new FictitiousNode(Graph.this, n.getId() + "Fictif");
                 nodesToAdd.add(nf);
                 // Create all new edges and remove old ones
                 List<Node> oldNeighboor = new ArrayList<>(n.getAdjacentNodes());
@@ -617,7 +617,7 @@ public class Graph {
                             .filter(node -> node.getType() == Node.NodeType.SWITCH)
                             .forEach(node -> {
                                 removeEdge(node, nodeSwitch);
-                                FicticiousNode newNode = new FicticiousNode(Graph.this, nodeSwitch.getId() + "Fictif");
+                                FictitiousNode newNode = new FictitiousNode(Graph.this, nodeSwitch.getId() + "Fictif");
                                 addNode(newNode);
                                 addEdge(node, newNode);
                                 addEdge(nodeSwitch, newNode);
@@ -639,7 +639,7 @@ public class Graph {
                 .filter(node -> node.getType() == Node.NodeType.FEEDER)
                 .forEach(feeder -> {
                     removeEdge(nodeBus, feeder);
-                    FicticiousNode fn = new FicticiousNode(this, feeder.getLabel() + "_fictif");
+                    FictitiousNode fn = new FictitiousNode(this, feeder.getLabel() + "_fictif");
                     addNode(fn);
                     addEdge(nodeBus, fn);
                     addEdge(feeder, fn);
@@ -656,7 +656,7 @@ public class Graph {
         removeEdge(busNode, nodeSwitch);
         SwitchNode fNodeToBus = SwitchNode.createFictitious(Graph.this, nodeSwitch.getId() + "fSwitch" + suffix, nodeSwitch.isOpen());
         addNode(fNodeToBus);
-        FicticiousNode fNodeToSw = new FicticiousNode(Graph.this, nodeSwitch.getId() + "fNode" + suffix);
+        FictitiousNode fNodeToSw = new FictitiousNode(Graph.this, nodeSwitch.getId() + "fNode" + suffix);
         addNode(fNodeToSw);
         addEdge(busNode, fNodeToBus);
         addEdge(fNodeToBus, fNodeToSw);

@@ -90,7 +90,7 @@ public class InternCell extends Cell {
     }
 
     private Block createAdjacentPrimaryBlock(SwitchNode ns, int id) {
-        FicticiousNode nf = (FicticiousNode) ns.getAdjacentNodes().get(id);
+        FictitiousNode nf = (FictitiousNode) ns.getAdjacentNodes().get(id);
         Node fictSwitch = otherNodeFromAdj(nf, ns);
         BusNode bus = (BusNode) otherNodeFromAdj(fictSwitch, nf);
         PrimaryBlock bpy = new PrimaryBlock(Arrays.asList(new Node[]{bus, fictSwitch, nf}), this);

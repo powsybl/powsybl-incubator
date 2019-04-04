@@ -6,19 +6,19 @@
  */
 package com.powsybl.substationdiagram.svg;
 
-import com.powsybl.commons.exceptions.UncheckedTransformerException;
-import com.powsybl.substationdiagram.layout.LayoutParameters;
-import com.powsybl.substationdiagram.library.*;
-import com.powsybl.substationdiagram.model.*;
-import org.apache.batik.anim.dom.SVGOMDocument;
-import org.apache.batik.dom.GenericDOMImplementation;
-import org.apache.commons.math3.util.Precision;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Text;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -26,15 +26,33 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.io.Writer;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+
+import org.apache.batik.anim.dom.SVGOMDocument;
+import org.apache.batik.dom.GenericDOMImplementation;
+import org.apache.commons.math3.util.Precision;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.CDATASection;
+import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Text;
+
+import com.powsybl.commons.exceptions.UncheckedTransformerException;
+import com.powsybl.substationdiagram.layout.LayoutParameters;
+import com.powsybl.substationdiagram.library.AnchorOrientation;
+import com.powsybl.substationdiagram.library.AnchorPoint;
+import com.powsybl.substationdiagram.library.AnchorPointProvider;
+import com.powsybl.substationdiagram.library.ComponentLibrary;
+import com.powsybl.substationdiagram.library.ComponentMetadata;
+import com.powsybl.substationdiagram.library.ComponentSize;
+import com.powsybl.substationdiagram.library.ComponentType;
+import com.powsybl.substationdiagram.model.BusNode;
+import com.powsybl.substationdiagram.model.Cell;
+import com.powsybl.substationdiagram.model.Edge;
+import com.powsybl.substationdiagram.model.FeederNode;
+import com.powsybl.substationdiagram.model.Graph;
+import com.powsybl.substationdiagram.model.Node;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
@@ -45,7 +63,7 @@ public class SVGWriter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SVGWriter.class);
 
-    private static final String STYLE = "style";
+    private static final String CLASS = "class";
     private static final String TRANSFORM = "transform";
     private static final String TRANSLATE = "translate";
     private static final int FONT_SIZE = 8;
@@ -61,9 +79,9 @@ public class SVGWriter {
         this.layoutParameters = Objects.requireNonNull(layoutParameters);
     }
 
-    public GraphMetadata write(Graph graph, Path svgFile) {
+    public GraphMetadata write(Graph graph, SubstationDiagramStyleProvider styleProvider, Path svgFile) {
         try (Writer writer = Files.newBufferedWriter(svgFile)) {
-            return write(graph, writer);
+            return write(graph, styleProvider, writer);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -75,10 +93,30 @@ public class SVGWriter {
      * @param graph  graph
      * @param writer writer
      */
-    public GraphMetadata write(Graph graph, Writer writer) {
+    public GraphMetadata write(Graph graph, SubstationDiagramStyleProvider styleProvider, Writer writer) {
         DOMImplementation domImpl = GenericDOMImplementation.getDOMImplementation();
 
         Document document = domImpl.createDocument("http://www.w3.org/2000/svg", "svg", null);
+        Element style = document.createElement("style");
+
+        StringBuilder graphStyle = new StringBuilder();
+        Optional<String> globalStyle = styleProvider.getGlobalStyle(graph);
+        globalStyle.ifPresent(graphStyle::append);
+        graphStyle.append(componentLibrary.getStyleSheet());
+
+        graph.getNodes().forEach(n -> {
+            Optional<String> nodeStyle = styleProvider.getNodeStyle(n);
+            nodeStyle.ifPresent(graphStyle::append);
+        });
+        graph.getEdges().forEach(e -> {
+            Optional<String> wireStyle = styleProvider.getWireStyle(e);
+            wireStyle.ifPresent(graphStyle::append);
+        });
+        CDATASection cd = document.createCDATASection(graphStyle.toString());
+        style.appendChild(cd);
+
+        document.adoptNode(style);
+        document.getDocumentElement().appendChild(style);
 
         GraphMetadata metadata = writegraph(graph, document);
 
@@ -104,6 +142,7 @@ public class SVGWriter {
         GraphMetadata metadata = new GraphMetadata();
 
         Element root = document.createElement("g");
+        root.setAttribute(CLASS, SubstationDiagramStyles.SUBSTATION_STYLE_CLASS);
 
         if (layoutParameters.isShowGrid()) {
             root.appendChild(drawGrid(graph, document));
@@ -145,18 +184,19 @@ public class SVGWriter {
         for (int i = 0; i < maxH + 1; i++) {
             Element line = document.createElement("line");
             line.setAttribute("x1",
-                    Double.toString(layoutParameters.getInitialXBus() + i * layoutParameters.getCellWidth()));
+                              Double.toString(layoutParameters.getInitialXBus() + i * layoutParameters.getCellWidth()));
             line.setAttribute("x2",
-                    Double.toString(layoutParameters.getInitialXBus() + i * layoutParameters.getCellWidth()));
+                              Double.toString(layoutParameters.getInitialXBus() + i * layoutParameters.getCellWidth()));
             line.setAttribute("y1",
-                    Double.toString(layoutParameters.getInitialYBus() - layoutParameters.getStackHeight()
-                            - layoutParameters.getExternCellHeight()));
+                              Double.toString(layoutParameters.getInitialYBus() - layoutParameters.getStackHeight()
+                                                      - layoutParameters.getExternCellHeight()));
             line.setAttribute("y2", Double.toString(
                     layoutParameters.getInitialYBus() + layoutParameters.getStackHeight() + layoutParameters.getExternCellHeight()
                             + layoutParameters.getVerticalSpaceBus() * maxV));
-            line.setAttribute(STYLE, "stroke:rgb(0,55,0);stroke-width:1;stroke-dasharray:1,10");
+
+            line.setAttribute(CLASS, SubstationDiagramStyles.GRID_STYLE_CLASS);
             line.setAttribute(TRANSFORM,
-                    TRANSLATE + "(" + layoutParameters.getTranslateX() + "," + layoutParameters.getTranslateY() + ")");
+                              TRANSLATE + "(" + layoutParameters.getTranslateX() + "," + layoutParameters.getTranslateY() + ")");
             gridRoot.appendChild(line);
         }
         return gridRoot;
@@ -164,43 +204,50 @@ public class SVGWriter {
 
     private void drawNodes(Element root, Graph graph, GraphMetadata metadata, AnchorPointProvider anchorPointProvider) {
         graph.getNodes().forEach(node -> {
-            Element g = root.getOwnerDocument().createElement("g");
-            g.setAttribute("id", node.getId());
+            try {
+                String nodeId = URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name());
+                Element g = root.getOwnerDocument().createElement("g");
+                g.setAttribute("id", nodeId);
 
-            if (node.getType() == Node.NodeType.BUS) {
-                drawBus((BusNode) node, g);
-            } else {
-                incorporateComponents(node, g);
-            }
-            if (!node.isFictitious()) {
-                if (node instanceof FeederNode) {
-                    int yShift = -LABEL_OFFSET;
-                    if (node.getCell() != null) {
-                        yShift = node.getCell().getDirection() == Cell.Direction.TOP
-                                ? -LABEL_OFFSET
-                                : ((int) (componentLibrary.getSize(node.getComponentType()).getHeight()) + FONT_SIZE + LABEL_OFFSET);
+                g.setAttribute(CLASS, SubstationDiagramStyles.SUBSTATION_STYLE_CLASS + " " + node.getComponentType() + " " + SubstationDiagramStyles.escapeClassName(nodeId));
+
+                if (node.getType() == Node.NodeType.BUS) {
+                    drawBus((BusNode) node, g);
+                } else {
+                    incorporateComponents(node, g);
+                }
+                if (!node.isFictitious()) {
+                    if (node instanceof FeederNode) {
+                        int yShift = -LABEL_OFFSET;
+                        if (node.getCell() != null) {
+                            yShift = node.getCell().getDirection() == Cell.Direction.TOP
+                                    ? -LABEL_OFFSET
+                                    : ((int) (componentLibrary.getSize(node.getComponentType()).getHeight()) + FONT_SIZE + LABEL_OFFSET);
+                        }
+                        drawLabel(node.getLabel(), node.isRotated(), -LABEL_OFFSET, yShift, g);
+                    } else if (node instanceof BusNode) {
+                        drawLabel(node.getLabel(), false, -LABEL_OFFSET, -LABEL_OFFSET, g);
                     }
-                    drawLabel(node.getLabel(), node.isRotated(), -LABEL_OFFSET, yShift, g);
-                } else if (node instanceof BusNode) {
-                    drawLabel(node.getLabel(), false, -LABEL_OFFSET, -LABEL_OFFSET, g);
                 }
-            }
-            root.appendChild(g);
+                root.appendChild(g);
 
-            metadata.addNodeMetadata(
-                    new GraphMetadata.NodeMetadata(node.getId(), node.getComponentType(), node.isRotated(), node.isOpen()));
-            if (node.getType() == Node.NodeType.BUS) {
-                metadata.addComponentMetadata(new ComponentMetadata(ComponentType.BUSBAR_SECTION,
-                        node.getId(),
-                        anchorPointProvider.getAnchorPoints(ComponentType.BUSBAR_SECTION, node.getId()),
-                        new ComponentSize(0, 0)));
-            } else {
-                if (metadata.getComponentMetadata(node.getComponentType()) == null) {
-                    metadata.addComponentMetadata(new ComponentMetadata(node.getComponentType(),
-                            null,
-                            componentLibrary.getAnchorPoints(node.getComponentType()),
-                            componentLibrary.getSize(node.getComponentType())));
+                metadata.addNodeMetadata(
+                        new GraphMetadata.NodeMetadata(nodeId, node.getComponentType(), node.isRotated(), node.isOpen()));
+                if (node.getType() == Node.NodeType.BUS) {
+                    metadata.addComponentMetadata(new ComponentMetadata(ComponentType.BUSBAR_SECTION,
+                                                                        nodeId,
+                                                                        anchorPointProvider.getAnchorPoints(ComponentType.BUSBAR_SECTION, node.getId()),
+                                                                        new ComponentSize(0, 0)));
+                } else {
+                    if (metadata.getComponentMetadata(node.getComponentType()) == null) {
+                        metadata.addComponentMetadata(new ComponentMetadata(node.getComponentType(),
+                                                                            null,
+                                                                            componentLibrary.getAnchorPoints(node.getComponentType()),
+                                                                            componentLibrary.getSize(node.getComponentType())));
+                    }
                 }
+            } catch (UnsupportedEncodingException e) {
+                throw new UncheckedIOException(e);
             }
         });
     }
@@ -216,7 +263,7 @@ public class SVGWriter {
             line.setAttribute("x2", String.valueOf(node.getPxWidth()));
             line.setAttribute("y2", "0");
         }
-        line.setAttribute(STYLE, "stroke:rgb(0,0,0);stroke-width:3");
+        line.setAttribute(CLASS, SubstationDiagramStyles.BUS_STYLE_CLASS);
 
         g.appendChild(line);
 
@@ -230,6 +277,7 @@ public class SVGWriter {
         label.setAttribute("y", Integer.toString(yShift));
         label.setAttribute("font-family", FONT_FAMILY);
         label.setAttribute("font-size", Integer.toString(FONT_SIZE));
+        label.setAttribute(CLASS, SubstationDiagramStyles.LABEL_STYLE_CLASS);
         Text text = g.getOwnerDocument().createTextNode(str);
         label.setAttribute(TRANSFORM, "rotate(" + (rotated ? -90 : 0) + "," + 0 + "," + 0 + ")");
         label.appendChild(text);
@@ -265,8 +313,8 @@ public class SVGWriter {
 
         if (!node.isRotated()) {
             g.setAttribute(TRANSFORM,
-                    TRANSLATE + "(" + (layoutParameters.getTranslateX() + node.getX() - componentSize.getWidth() / 2) + ","
-                            + (layoutParameters.getTranslateY() + node.getY() - componentSize.getHeight() / 2) + ")");
+                           TRANSLATE + "(" + (layoutParameters.getTranslateX() + node.getX() - componentSize.getWidth() / 2) + ","
+                                   + (layoutParameters.getTranslateY() + node.getY() - componentSize.getHeight() / 2) + ")");
             return;
         }
 
@@ -286,10 +334,10 @@ public class SVGWriter {
         double f1 = layoutParameters.getTranslateY() - cdx * sinRo - cdy * cosRo + node.getY();
 
         g.setAttribute(TRANSFORM,
-                "matrix(" + Precision.round(cosRo, precision) + "," + Precision.round(sinRo, precision)
-                        + "," + Precision.round(-sinRo, precision) + "," + Precision.round(cosRo,
-                        precision) + ","
-                        + Precision.round(e1, precision) + "," + Precision.round(f1, precision) + ")");
+                       "matrix(" + Precision.round(cosRo, precision) + "," + Precision.round(sinRo, precision)
+                               + "," + Precision.round(-sinRo, precision) + "," + Precision.round(cosRo,
+                                                                                                  precision) + ","
+                               + Precision.round(e1, precision) + "," + Precision.round(f1, precision) + ")");
     }
 
     private void drawEdges(Element root, Graph graph, GraphMetadata metadata, AnchorPointProvider anchorPointProvider) {
@@ -298,11 +346,11 @@ public class SVGWriter {
             g.setAttribute("id", "Wire" + graph.getEdges().indexOf(edge));
 
             WireConnection anchorPoints = WireConnection.searchBetterAnchorPoints(anchorPointProvider, edge.getNode1(),
-                    edge.getNode2());
+                                                                                  edge.getNode2());
 
             // Determine points of the polyline
             List<Double> pol = calculatePolylinePoints(edge, anchorPoints.getAnchorPoint1(),
-                    anchorPoints.getAnchorPoint2());
+                                                       anchorPoints.getAnchorPoint2());
 
             StringBuilder polPoints = new StringBuilder();
             for (int i = 0; i < pol.size(); i++) {
@@ -323,13 +371,16 @@ public class SVGWriter {
             }
 
             g.setAttribute("points", polPoints.toString());
-            g.setAttribute(STYLE, "stroke:rgb(200,0,0);stroke-width:1");
-            g.setAttribute("fill", "none");
+            g.setAttribute(CLASS, SubstationDiagramStyles.WIRE_STYLE_CLASS);
             root.appendChild(g);
 
-            metadata.addWireMetadata(new GraphMetadata.WireMetadata("Wire" + graph.getEdges().indexOf(edge),
-                    edge.getNode1().getId(),
-                    edge.getNode2().getId()));
+            try {
+                metadata.addWireMetadata(new GraphMetadata.WireMetadata("Wire" + graph.getEdges().indexOf(edge),
+                                                                        URLEncoder.encode(edge.getNode1().getId(), StandardCharsets.UTF_8.name()),
+                                                                        URLEncoder.encode(edge.getNode2().getId(), StandardCharsets.UTF_8.name())));
+            } catch (UnsupportedEncodingException e) {
+                throw new UncheckedIOException(e);
+            }
         }
     }
 

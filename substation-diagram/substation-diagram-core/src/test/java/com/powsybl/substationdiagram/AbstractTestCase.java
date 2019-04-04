@@ -11,7 +11,9 @@ import com.powsybl.iidm.network.VoltageLevel;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
 import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
 import com.powsybl.substationdiagram.model.Graph;
+import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramStyleProvider;
 import com.powsybl.substationdiagram.svg.SVGWriter;
+import com.powsybl.substationdiagram.svg.SubstationDiagramStyleProvider;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -30,6 +32,8 @@ public abstract class AbstractTestCase {
     protected VoltageLevel vl;
 
     private final ResourcesComponentLibrary componentLibrary = new ResourcesComponentLibrary("/ConvergenceLibrary");
+
+    private final SubstationDiagramStyleProvider styleProvider = new DefaultSubstationDiagramStyleProvider();
 
     private static String normalizeLineSeparator(String str) {
         return str.replace("\r\n", "\n")
@@ -53,7 +57,7 @@ public abstract class AbstractTestCase {
     public void compareSvg(Graph graph, LayoutParameters layoutParameters, String refSvgName) {
         try (StringWriter writer = new StringWriter()) {
             new SVGWriter(componentLibrary, layoutParameters)
-                    .write(graph, writer);
+                    .write(graph, styleProvider, writer);
             writer.flush();
 
             String refSvg = normalizeLineSeparator(new String(ByteStreams.toByteArray(getClass().getResourceAsStream(refSvgName)), StandardCharsets.UTF_8));

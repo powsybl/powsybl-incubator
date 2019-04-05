@@ -227,7 +227,7 @@ public class TestCase4NotParallelel extends AbstractTestCase {
         LayoutParameters layoutParameters = new LayoutParameters(20, 50, 0, 260,
                 25, 20,
                 50, 250, 40,
-                30, true, true, 1);
+                30, true, true, 1, 50, 50);
 
         new PositionVoltageLevelLayout(g).run(layoutParameters);
 

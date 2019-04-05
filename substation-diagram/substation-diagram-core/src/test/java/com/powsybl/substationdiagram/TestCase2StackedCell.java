@@ -95,15 +95,15 @@ public class TestCase2StackedCell extends AbstractTestCase {
         // assert graph structure
         assertEquals(7, g.getNodes().size());
         assertEquals(Node.NodeType.FICTITIOUS, g.getNodes().get(3).getType());
-        assertEquals("2", g.getNodes().get(3).getId());
+        assertEquals("FICT_vl_2", g.getNodes().get(3).getId());
         assertEquals(ComponentType.NODE, g.getNodes().get(3).getComponentType());
 
         assertEquals(6, g.getEdges().size());
         assertEquals("d1", g.getEdges().get(1).getNode1().getId());
-        assertEquals("2", g.getEdges().get(1).getNode2().getId());
+        assertEquals("FICT_vl_2", g.getEdges().get(1).getNode2().getId());
         assertEquals("d2", g.getEdges().get(3).getNode1().getId());
-        assertEquals("2", g.getEdges().get(3).getNode2().getId());
-        assertEquals("2", g.getEdges().get(4).getNode1().getId());
+        assertEquals("FICT_vl_2", g.getEdges().get(3).getNode2().getId());
+        assertEquals("FICT_vl_2", g.getEdges().get(4).getNode1().getId());
         assertEquals("b", g.getEdges().get(4).getNode2().getId());
 
         // detect cells
@@ -116,7 +116,7 @@ public class TestCase2StackedCell extends AbstractTestCase {
         assertEquals(-1, cell.getOrder());
         assertEquals(7, cell.getNodes().size());
         assertEquals(2, cell.getBusNodes().size());
-        assertEquals("EXTERN[2, b, bbs1, bbs2, d1, d2, l]", cell.getFullId());
+        assertEquals("EXTERN[FICT_vl_2, b, bbs1, bbs2, d1, d2, l]", cell.getFullId());
 
         // build blocks
         assertTrue(new BlockOrganizer().organize(g));
@@ -136,7 +136,7 @@ public class TestCase2StackedCell extends AbstractTestCase {
         assertEquals(bc, bpy.getParentBlock());
         assertEquals(new Coord(-1, -1), bpy.getCoord());
         assertEquals(new Position(0, 0, 1, 2, false, Orientation.VERTICAL), bpy.getPosition());
-        assertEquals("2", bpy.getStartingNode().getId());
+        assertEquals("FICT_vl_2", bpy.getStartingNode().getId());
         assertEquals("l", bpy.getEndingNode().getId());
         assertTrue(bpy.getStackableBlocks().isEmpty());
 
@@ -146,14 +146,14 @@ public class TestCase2StackedCell extends AbstractTestCase {
         assertEquals(new Position(0, 0, 1, 0, false, Orientation.VERTICAL), bpl.getPosition());
         assertEquals(new Coord(-1, -1), bpl.getCoord());
         assertEquals("bbs1", bpl.getStartingNode().getId());
-        assertEquals("2", bpl.getEndingNode().getId());
+        assertEquals("FICT_vl_2", bpl.getEndingNode().getId());
         assertEquals(2, bpl.getSubBlocks().size());
 
         assertTrue(bpl.getSubBlocks().get(0) instanceof PrimaryBlock);
         PrimaryBlock bpy1 = (PrimaryBlock) bpl.getSubBlocks().get(0);
         assertEquals(new Position(0, 0, 0, 0, false, Orientation.VERTICAL), bpy1.getPosition());
         assertEquals(new Coord(-1, -1), bpy1.getCoord());
-        assertEquals("2", bpy1.getEndingNode().getId());
+        assertEquals("FICT_vl_2", bpy1.getEndingNode().getId());
         assertEquals("bbs1", bpy1.getStartingNode().getId());
         assertEquals(1, bpy1.getStackableBlocks().size());
 
@@ -161,7 +161,7 @@ public class TestCase2StackedCell extends AbstractTestCase {
         PrimaryBlock bpy2 = (PrimaryBlock) bpl.getSubBlocks().get(1);
         assertEquals(new Position(0, 0, 0, 0, false, Orientation.VERTICAL), bpy2.getPosition());
         assertEquals(new Coord(-1, -1), bpy2.getCoord());
-        assertEquals("2", bpy2.getEndingNode().getId());
+        assertEquals("FICT_vl_2", bpy2.getEndingNode().getId());
         assertEquals("bbs2", bpy2.getStartingNode().getId());
         assertEquals(1, bpy2.getStackableBlocks().size());
 
@@ -169,7 +169,7 @@ public class TestCase2StackedCell extends AbstractTestCase {
         LayoutParameters layoutParameters = new LayoutParameters(20, 50, 0, 260,
                                                                  25, 20,
                                                                  50, 250, 40,
-                                                                 30, true, true, 1);
+                                                                 30, true, true, 1, 50, 50);
 
         new PositionVoltageLevelLayout(g).run(layoutParameters);
 

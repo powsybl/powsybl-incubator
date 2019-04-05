@@ -22,23 +22,21 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
- * @author Franck Lecuyer <fracck.lecuyer at rte-france.com>
+ * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
+ * @author Nicolas Duchene
+ * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public final class SubstationDiagramView extends AbstractContainerDiagramView {
+public final class VoltageLevelDiagramView extends AbstractContainerDiagramView {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SubstationDiagramView.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(VoltageLevelDiagramView.class);
 
     private double pressedX;
     private double pressedY;
 
-    private SubstationDiagramView(Group svgImage) {
+    private VoltageLevelDiagramView(Group svgImage) {
         super(svgImage);
 
         setOnScroll(event -> {
@@ -125,7 +123,7 @@ public final class SubstationDiagramView extends AbstractContainerDiagramView {
         }
     }
 
-    public static SubstationDiagramView load(InputStream svgInputStream, InputStream metadataInputStream) {
+    public static VoltageLevelDiagramView load(InputStream svgInputStream, InputStream metadataInputStream) {
         Objects.requireNonNull(svgInputStream);
         Objects.requireNonNull(metadataInputStream);
 
@@ -138,10 +136,10 @@ public final class SubstationDiagramView extends AbstractContainerDiagramView {
         // install node and wire handlers to allow diagram edition
         installHandlers(svgImage, metadata);
 
-        return new SubstationDiagramView(svgImage);
+        return new VoltageLevelDiagramView(svgImage);
     }
 
-    public static SubstationDiagramView load(Path svgFile) {
+    public static VoltageLevelDiagramView load(Path svgFile) {
         Objects.requireNonNull(svgFile);
 
         Path dir = svgFile.toAbsolutePath().getParent();

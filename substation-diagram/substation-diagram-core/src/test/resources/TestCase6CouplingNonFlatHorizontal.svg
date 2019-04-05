@@ -96,21 +96,21 @@
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
-        <g class="substation-diagram NODE d1Fictif" id="d1Fictif" transform="matrix(0.0,1.0,-1.0,0.0,49.0,266.0)">
+        <g class="substation-diagram NODE FICT_vl_d1Fictif" id="FICT_vl_d1Fictif" transform="matrix(0.0,1.0,-1.0,0.0,49.0,266.0)">
     <circle r="4" cx="4" cy="4"/>
 </g>
-        <g class="substation-diagram NODE d2Fictif" id="d2Fictif" transform="matrix(0.0,1.0,-1.0,0.0,99.0,266.0)">
+        <g class="substation-diagram NODE FICT_vl_d2Fictif" id="FICT_vl_d2Fictif" transform="matrix(0.0,1.0,-1.0,0.0,99.0,266.0)">
     <circle r="4" cx="4" cy="4"/>
 </g>
-        <polyline class="wire" points="45.0,310.0 45.0,310.0" id="Wire0"/>
-        <polyline class="wire" points="95.0,335.0 95.0,335.0" id="Wire1"/>
-        <polyline class="wire" points="60.0,310.0 70.0,310.0" id="Wire2"/>
-        <polyline class="wire" points="70.0,310.0 80.0,310.0" id="Wire3"/>
-        <polyline class="wire" points="60.0,335.0 70.0,335.0" id="Wire4"/>
-        <polyline class="wire" points="70.0,335.0 80.0,335.0" id="Wire5"/>
-        <polyline class="wire" points="60.0,270.0 45.0,270.0" id="Wire6"/>
-        <polyline class="wire" points="45.0,310.0 45.0,270.0" id="Wire7"/>
-        <polyline class="wire" points="80.0,270.0 95.0,270.0" id="Wire8"/>
-        <polyline class="wire" points="95.0,335.0 95.0,270.0" id="Wire9"/>
+        <polyline class="wire" points="45.0,310.0 45.0,310.0" id="vl_Wire0"/>
+        <polyline class="wire" points="95.0,335.0 95.0,335.0" id="vl_Wire1"/>
+        <polyline class="wire" points="60.0,310.0 70.0,310.0" id="vl_Wire2"/>
+        <polyline class="wire" points="70.0,310.0 80.0,310.0" id="vl_Wire3"/>
+        <polyline class="wire" points="60.0,335.0 70.0,335.0" id="vl_Wire4"/>
+        <polyline class="wire" points="70.0,335.0 80.0,335.0" id="vl_Wire5"/>
+        <polyline class="wire" points="60.0,270.0 45.0,270.0" id="vl_Wire6"/>
+        <polyline class="wire" points="45.0,310.0 45.0,270.0" id="vl_Wire7"/>
+        <polyline class="wire" points="80.0,270.0 95.0,270.0" id="vl_Wire8"/>
+        <polyline class="wire" points="95.0,335.0 95.0,270.0" id="vl_Wire9"/>
     </g>
 </svg>

@@ -72,6 +72,9 @@ public class Graph {
     @JsonIgnore
     private int cellCounter = 0;
 
+    private double x = 0;
+    private double y = 0;
+
     /**
      * Constructor
      */
@@ -739,4 +742,19 @@ public class Graph {
         return voltageLevel;
     }
 
+    public double getX() {
+        return x;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
 }

@@ -37,8 +37,8 @@ public class ImplicitCellDetector implements CellDetector {
 
 
     /**
-     * internCell detection : an internal cell is composed of nodes connecting BUSes without connecting DEPARTure.
-     * genericDetectCell is used to detect cells exploring the graph and scaning exclusionTypes and stopTypes
+     * internCell detection : an internal cell is composed of nodes connecting BUSes without connecting Feeder.
+     * genericDetectCell is used to detect cells exploring the graph and scanning exclusionTypes and stopTypes
      * <p>
      * *************INTERN CELL*******************
      * exclusion types = {FEEDER} : if a FEEDER type is reached it is not an INTERN CELL
@@ -50,18 +50,7 @@ public class ImplicitCellDetector implements CellDetector {
      */
     @Override
     public void detectCells(Graph graph) {
-        graph.substituteFictitiousNodesMirroringBusNodes();
-        if (removeUnnecessaryFictitiousNodes) {
-            graph.removeUnnecessaryFictitiousNodes();
-        }
-        graph.extendFeederWithMultipleSwitches();
-        graph.extendFirstOutsideNode();
-        if (substituteSingularFictitiousByFeederNode) {
-            graph.substituteSingularFictitiousByFeederNode();
-        }
-        graph.extendBreakerConnectedToBus();
-        graph.extendFeederConnectedToBus();
-
+        cleaning(graph);
         LOGGER.info("Detecting cells...");
 
         List<Node> allocatedNodes = new ArrayList<>();
@@ -89,6 +78,20 @@ public class ImplicitCellDetector implements CellDetector {
         graph.getCells().forEach(Cell::getFullId);
 
         graph.logCellDetectionStatus();
+    }
+
+    private void cleaning(Graph graph) {
+        graph.substituteFictitiousNodesMirroringBusNodes();
+        if (removeUnnecessaryFictitiousNodes) {
+            graph.removeUnnecessaryFictitiousNodes();
+        }
+        graph.extendFeederWithMultipleSwitches();
+        graph.extendFirstOutsideNode();
+        if (substituteSingularFictitiousByFeederNode) {
+            graph.substituteSingularFictitiousByFeederNode();
+        }
+        graph.extendBreakerConnectedToBus();
+        graph.extendFeederConnectedToBus();
     }
 
     /**
@@ -288,7 +291,7 @@ public class ImplicitCellDetector implements CellDetector {
         visitedNodes.add(n); //removal of the node to explore branches from it
 
         List<Node> cellNodesExtern = new ArrayList<>();
-        boolean hasDepartBranch = false;
+        boolean hasFeederBranch = false;
         boolean hasBusBranch = false;
         boolean hasMixBranch = false;
 
@@ -313,7 +316,7 @@ public class ImplicitCellDetector implements CellDetector {
                     hasMixBranch = true;
                 } else {
                     hasBusBranch |= types.get(0).equals(Node.NodeType.BUS);
-                    hasDepartBranch |= types.get(0).equals(Node.NodeType.FEEDER);
+                    hasFeederBranch |= types.get(0).equals(Node.NodeType.FEEDER);
 
                     if (types.get(0).equals(Node.NodeType.BUS) || types.get(0).equals(Node.NodeType.FEEDER)) {
                         cellNodesExtern.addAll(resultNodes);
@@ -326,7 +329,7 @@ public class ImplicitCellDetector implements CellDetector {
 
             }
         }
-        return (hasBusBranch && hasDepartBranch && hasMixBranch) ? cellNodesExtern : null;
+        return (hasBusBranch && hasFeederBranch && hasMixBranch) ? cellNodesExtern : null;
     }
 
     private Cell createShuntCell(Graph graph, Node n, List<Node> cellNodesExtern1) {

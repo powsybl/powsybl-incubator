@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.powsybl.iidm.network.*;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
+import org.apache.commons.lang3.StringUtils;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.alg.ConnectivityInspector;
 import org.jgrapht.graph.Pseudograph;
@@ -445,7 +446,7 @@ public class Graph {
             LOGGER.warn("{} connected components found", connectedSets.size());
             connectedSets.stream()
                     .sorted(Comparator.comparingInt(Set::size))
-                    .map(nodes -> nodes.stream().map(Node::getId).collect(Collectors.toSet()))
+                    .map(setNodes -> setNodes.stream().map(Node::getId).collect(Collectors.toSet()))
                     .forEach(strings -> LOGGER.warn("   - {}", strings));
         }
         connectedSets.forEach(this::ensureOneBusInConnectedComponent);
@@ -615,8 +616,8 @@ public class Graph {
         getNodeBuses().stream()
                 .flatMap(node -> node.getAdjacentNodes().stream())
                 .filter(node -> node.getType() == Node.NodeType.SWITCH)
-                .forEach(nodeSwitch -> {
-                    nodeSwitch.getAdjacentNodes().stream()
+                .forEach(nodeSwitch ->
+                        nodeSwitch.getAdjacentNodes().stream()
                             .filter(node -> node.getType() == Node.NodeType.SWITCH)
                             .forEach(node -> {
                                 removeEdge(node, nodeSwitch);
@@ -624,8 +625,7 @@ public class Graph {
                                 addNode(newNode);
                                 addEdge(node, newNode);
                                 addEdge(nodeSwitch, newNode);
-                            });
-                });
+                            }));
     }
 
     //the first element shouldn't be a Breaker
@@ -756,5 +756,9 @@ public class Graph {
 
     public void setY(double y) {
         this.y = y;
+    }
+
+    public String getIdForStyle() {
+        return StringUtils.replaceChars(getVoltageLevel().getId(), " .", "_-");
     }
 }

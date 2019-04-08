@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg">
-    <style><![CDATA[.substation-diagram {fill:rgb(255,255,255);stroke-width:1;fill-opacity:0;}.wire {stroke:rgb(200,0,0);stroke-width:1;}.grid {stroke:rgb(0,55,0);stroke-width:1;stroke-dasharray:1,10;}.bus {stroke:rgb(0,0,0);stroke-width:3;}.component-label {fill: black;color:black;stroke:none;fill-opacity:1;}.BUSBAR_SECTION{stroke:rgb(0,0,255);}
+    <style><![CDATA[.substation-diagram {fill:rgb(255,255,255);stroke-width:1;fill-opacity:0;}.wire_vl {stroke:rgb(200,0,0);stroke-width:1;}.grid {stroke:rgb(0,55,0);stroke-width:1;stroke-dasharray:1,10;}.bus_vl {stroke:rgb(0,0,0);stroke-width:3;}.component-label {fill:black;color:black;stroke:none;fill-opacity:1;}.BUSBAR_SECTION{stroke:rgb(0,0,255);}
 
 .BREAKER {
 	stroke:rgb(0,0,255);
@@ -35,19 +35,19 @@
             <line y2="590.0" x1="100.0" class="grid" x2="100.0" transform="translate(20.0,50.0)" y1="-20.0"/>
         </g>
         <g class="substation-diagram BUSBAR_SECTION bbs1_1" id="bbs1.1" transform="translate(30.0,310.0)">
-            <line y2="0" x1="0" class="bus" x2="30.0" y1="0"/>
+            <line y2="0" x1="0" class="bus_vl" x2="30.0" y1="0"/>
             <text x="-5" font-size="8" y="-5" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs1.1</text>
         </g>
         <g class="substation-diagram BUSBAR_SECTION bbs1_2" id="bbs1.2" transform="translate(80.0,310.0)">
-            <line y2="0" x1="0" class="bus" x2="30.0" y1="0"/>
+            <line y2="0" x1="0" class="bus_vl" x2="30.0" y1="0"/>
             <text x="-5" font-size="8" y="-5" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs1.2</text>
         </g>
         <g class="substation-diagram BUSBAR_SECTION bbs2_1" id="bbs2.1" transform="translate(30.0,335.0)">
-            <line y2="0" x1="0" class="bus" x2="30.0" y1="0"/>
+            <line y2="0" x1="0" class="bus_vl" x2="30.0" y1="0"/>
             <text x="-5" font-size="8" y="-5" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs2.1</text>
         </g>
         <g class="substation-diagram BUSBAR_SECTION bbs2_2" id="bbs2.2" transform="translate(80.0,335.0)">
-            <line y2="0" x1="0" class="bus" x2="30.0" y1="0"/>
+            <line y2="0" x1="0" class="bus_vl" x2="30.0" y1="0"/>
             <text x="-5" font-size="8" y="-5" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs2.2</text>
         </g>
         <g class="substation-diagram DISCONNECTOR d1" id="d1" transform="translate(41.0,306.0)">
@@ -102,15 +102,15 @@
         <g class="substation-diagram NODE FICT_vl_d2Fictif" id="FICT_vl_d2Fictif" transform="matrix(0.0,1.0,-1.0,0.0,99.0,266.0)">
     <circle r="4" cx="4" cy="4"/>
 </g>
-        <polyline class="wire" points="45.0,310.0 45.0,310.0" id="vl_Wire0"/>
-        <polyline class="wire" points="95.0,335.0 95.0,335.0" id="vl_Wire1"/>
-        <polyline class="wire" points="60.0,310.0 70.0,310.0" id="vl_Wire2"/>
-        <polyline class="wire" points="70.0,310.0 80.0,310.0" id="vl_Wire3"/>
-        <polyline class="wire" points="60.0,335.0 70.0,335.0" id="vl_Wire4"/>
-        <polyline class="wire" points="70.0,335.0 80.0,335.0" id="vl_Wire5"/>
-        <polyline class="wire" points="60.0,270.0 45.0,270.0" id="vl_Wire6"/>
-        <polyline class="wire" points="45.0,310.0 45.0,270.0" id="vl_Wire7"/>
-        <polyline class="wire" points="80.0,270.0 95.0,270.0" id="vl_Wire8"/>
-        <polyline class="wire" points="95.0,335.0 95.0,270.0" id="vl_Wire9"/>
+        <polyline class="wire_vl" points="45.0,310.0 45.0,310.0" id="vl_Wire0"/>
+        <polyline class="wire_vl" points="95.0,335.0 95.0,335.0" id="vl_Wire1"/>
+        <polyline class="wire_vl" points="60.0,310.0 70.0,310.0" id="vl_Wire2"/>
+        <polyline class="wire_vl" points="70.0,310.0 80.0,310.0" id="vl_Wire3"/>
+        <polyline class="wire_vl" points="60.0,335.0 70.0,335.0" id="vl_Wire4"/>
+        <polyline class="wire_vl" points="70.0,335.0 80.0,335.0" id="vl_Wire5"/>
+        <polyline class="wire_vl" points="60.0,270.0 45.0,270.0" id="vl_Wire6"/>
+        <polyline class="wire_vl" points="45.0,310.0 45.0,270.0" id="vl_Wire7"/>
+        <polyline class="wire_vl" points="80.0,270.0 95.0,270.0" id="vl_Wire8"/>
+        <polyline class="wire_vl" points="95.0,335.0 95.0,270.0" id="vl_Wire9"/>
     </g>
 </svg>

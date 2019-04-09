@@ -15,7 +15,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.powsybl.iidm.network.*;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
-import org.apache.commons.lang3.StringUtils;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.alg.ConnectivityInspector;
 import org.jgrapht.graph.Pseudograph;
@@ -26,6 +25,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -759,6 +759,7 @@ public class Graph {
     }
 
     public String getIdForStyle() {
-        return StringUtils.replaceChars(getVoltageLevel().getId(), " .", "_-");
+        return Pattern.compile("[^\\_\\-a-zA-Z0-9][^\\_\\-a-zA-Z0-9]*", 32)
+                .matcher(getVoltageLevel().getId()).replaceAll("_");
     }
 }

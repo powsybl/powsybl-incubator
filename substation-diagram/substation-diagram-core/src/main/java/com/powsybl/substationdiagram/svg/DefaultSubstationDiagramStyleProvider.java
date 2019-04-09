@@ -42,10 +42,11 @@ public class DefaultSubstationDiagramStyleProvider implements SubstationDiagramS
         if (node.getType() == Node.NodeType.SWITCH) {
             try {
                 StringBuilder style = new StringBuilder();
-                style.append(".").append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
+                String className = escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name()));
+                style.append(".").append(className)
                         .append(" .open { visibility: ").append(node.isOpen() ? "visible;" : "hidden;}");
 
-                style.append(".").append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
+                style.append(".").append(className)
                         .append(" .closed { visibility: ").append(node.isOpen() ? "hidden;" : "visible;}");
 
                 return Optional.of(style.toString());

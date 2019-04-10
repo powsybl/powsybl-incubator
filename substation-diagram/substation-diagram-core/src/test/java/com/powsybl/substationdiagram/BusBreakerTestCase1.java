@@ -26,7 +26,7 @@ public class BusBreakerTestCase1 extends AbstractTestCase {
 
     @Before
     public void setUp() {
-        Network network = NetworkFactory.create("busBreakerTestCase1", "test");
+        network = NetworkFactory.create("busBreakerTestCase1", "test");
         Substation s = network.newSubstation()
                 .setId("s")
                 .setCountry(Country.FR)

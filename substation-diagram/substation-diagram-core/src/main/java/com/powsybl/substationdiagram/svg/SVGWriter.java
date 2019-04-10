@@ -425,7 +425,7 @@ public class SVGWriter {
             line.setAttribute("x2", String.valueOf(node.getPxWidth()));
             line.setAttribute("y2", "0");
         }
-        line.setAttribute(CLASS, SubstationDiagramStyles.BUS_STYLE_CLASS + "_" + node.getGraph().getIdForStyle());
+        line.setAttribute(CLASS, SubstationDiagramStyles.BUS_STYLE_CLASS + "_" + SubstationDiagramStyles.escapeClassName(node.getGraph().getVoltageLevel().getId()));
 
         g.appendChild(line);
 
@@ -539,7 +539,7 @@ public class SVGWriter {
             }
 
             g.setAttribute("points", polPoints.toString());
-            g.setAttribute(CLASS, SubstationDiagramStyles.WIRE_STYLE_CLASS + "_" + graph.getIdForStyle());
+            g.setAttribute(CLASS, SubstationDiagramStyles.WIRE_STYLE_CLASS + "_" + SubstationDiagramStyles.escapeClassName(vId));
             root.appendChild(g);
 
             try {
@@ -589,14 +589,14 @@ public class SVGWriter {
             }
 
             g.setAttribute("points", polPoints.toString());
-            Graph grph;
+            String vId;
             if (edge.getNode1().getGraph().getVoltageLevel().getNominalV() > edge.getNode2().getGraph().getVoltageLevel().getNominalV()) {
-                grph = edge.getNode1().getGraph();
+                vId = vId1;
             } else {
-                grph = edge.getNode2().getGraph();
+                vId = vId2;
             }
 
-            g.setAttribute(CLASS, SubstationDiagramStyles.WIRE_STYLE_CLASS + "_" + grph.getIdForStyle());
+            g.setAttribute(CLASS, SubstationDiagramStyles.WIRE_STYLE_CLASS + "_" + SubstationDiagramStyles.escapeClassName(vId));
             root.appendChild(g);
 
             try {

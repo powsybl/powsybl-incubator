@@ -45,7 +45,7 @@ public class NominalVoltageSubstationDiagramStyleProvider implements SubstationD
 
     @Override
     public Optional<String> getGlobalStyle(Graph graph) {
-        String idVL = graph.getIdForStyle();
+        String idVL = escapeClassName(graph.getVoltageLevel().getId());
         String color = getColor(graph.getVoltageLevel());
         StringBuilder style = new StringBuilder();
         style.append(".").append(SUBSTATION_STYLE_CLASS).append(" {fill:rgb(255,255,255);stroke-width:1;fill-opacity:0;}");

@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.util.*;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -756,10 +755,5 @@ public class Graph {
 
     public void setY(double y) {
         this.y = y;
-    }
-
-    public String getIdForStyle() {
-        return Pattern.compile("[^\\_\\-a-zA-Z0-9][^\\_\\-a-zA-Z0-9]*", 32)
-                .matcher(getVoltageLevel().getId()).replaceAll("_");
     }
 }

@@ -13,6 +13,7 @@ package com.powsybl.substationdiagram.library;
  * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
  */
 public enum ComponentType {
+    ARROW,
     BUSBAR_SECTION,
     BREAKER,
     DISCONNECTOR,

@@ -6,6 +6,38 @@
  */
 package com.powsybl.substationdiagram.svg;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.apache.batik.anim.dom.SVGOMDocument;
+import org.apache.batik.dom.GenericDOMImplementation;
+import org.apache.commons.math3.util.Precision;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.CDATASection;
+import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Text;
+
 import com.powsybl.commons.exceptions.UncheckedTransformerException;
 import com.powsybl.substationdiagram.layout.HorizontalSubstationLayout;
 import com.powsybl.substationdiagram.layout.HorizontalSubstationLayoutFactory;
@@ -31,36 +63,6 @@ import com.powsybl.substationdiagram.model.FeederNode;
 import com.powsybl.substationdiagram.model.Graph;
 import com.powsybl.substationdiagram.model.Node;
 import com.powsybl.substationdiagram.model.SubstationGraph;
-import org.apache.batik.anim.dom.SVGOMDocument;
-import org.apache.batik.dom.GenericDOMImplementation;
-import org.apache.commons.math3.util.Precision;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.CDATASection;
-import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Text;
-
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
@@ -93,9 +95,9 @@ public class SVGWriter {
      * @param graph  graph
      * @param svgFile file
      */
-    public GraphMetadata write(Graph graph, SubstationDiagramStyleProvider styleProvider, Path svgFile) {
+    public GraphMetadata write(Graph graph, SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider, Path svgFile) {
         try (Writer writer = Files.newBufferedWriter(svgFile)) {
-            return write(graph, styleProvider, writer);
+            return write(graph, initProvider, styleProvider, writer);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -107,7 +109,7 @@ public class SVGWriter {
      * @param graph  graph
      * @param writer writer
      */
-    public GraphMetadata write(Graph graph, SubstationDiagramStyleProvider styleProvider, Writer writer) {
+    public GraphMetadata write(Graph graph, SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider, Writer writer) {
         DOMImplementation domImpl = GenericDOMImplementation.getDOMImplementation();
 
         Document document = domImpl.createDocument("http://www.w3.org/2000/svg", "svg", null);
@@ -132,7 +134,7 @@ public class SVGWriter {
         document.adoptNode(style);
         document.getDocumentElement().appendChild(style);
 
-        GraphMetadata metadata = writegraph(graph, document);
+        GraphMetadata metadata = writegraph(graph, document, initProvider);
 
         try {
             DOMSource source = new DOMSource(document);
@@ -152,7 +154,7 @@ public class SVGWriter {
     /**
      * Create the SVGDocument corresponding to the graph
      */
-    private GraphMetadata writegraph(Graph graph, Document document) {
+    private GraphMetadata writegraph(Graph graph, Document document, SubstationDiagramInitialValueProvider initProvider) {
         GraphMetadata metadata = new GraphMetadata();
 
         Element root = document.createElement("g");
@@ -179,7 +181,7 @@ public class SVGWriter {
         };
 
         drawNodes(root, graph, metadata, anchorPointProvider);
-        drawEdges(root, graph, metadata, anchorPointProvider);
+        drawEdges(root, graph, metadata, anchorPointProvider, initProvider);
 
         document.adoptNode(root);
         document.getDocumentElement().appendChild(root);
@@ -193,10 +195,10 @@ public class SVGWriter {
      * @param graph  substation graph
      * @param svgFile file
      */
-    public GraphMetadata write(SubstationGraph graph, SubstationDiagramStyleProvider styleProvider,
+    public GraphMetadata write(SubstationGraph graph, SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider,
                                Path svgFile) {
         try (Writer writer = Files.newBufferedWriter(svgFile)) {
-            return write(graph, styleProvider, writer, new HorizontalSubstationLayoutFactory(), new PositionVoltageLevelLayoutFactory());
+            return write(graph, initProvider, styleProvider, writer, new HorizontalSubstationLayoutFactory(), new PositionVoltageLevelLayoutFactory());
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -208,7 +210,7 @@ public class SVGWriter {
      * @param graph  substation graph
      * @param writer writer
      */
-    public GraphMetadata write(SubstationGraph graph, SubstationDiagramStyleProvider styleProvider,
+    public GraphMetadata write(SubstationGraph graph, SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider,
                                Writer writer, SubstationLayoutFactory sLayoutFactory,
                                VoltageLevelLayoutFactory vLayoutFactory) {
         DOMImplementation domImpl = GenericDOMImplementation.getDOMImplementation();
@@ -238,7 +240,7 @@ public class SVGWriter {
         document.adoptNode(style);
         document.getDocumentElement().appendChild(style);
 
-        GraphMetadata metadata = writegraph(graph, document, sLayoutFactory, vLayoutFactory);
+        GraphMetadata metadata = writegraph(graph, document, sLayoutFactory, vLayoutFactory, initProvider);
 
         try {
             DOMSource source = new DOMSource(document);
@@ -260,7 +262,7 @@ public class SVGWriter {
      */
     private GraphMetadata writegraph(SubstationGraph graph,
                                      Document document, SubstationLayoutFactory sLayoutFactory,
-                                     VoltageLevelLayoutFactory vLayoutFactory) {
+                                     VoltageLevelLayoutFactory vLayoutFactory,  SubstationDiagramInitialValueProvider initProvider) {
         GraphMetadata metadata = new GraphMetadata();
 
         SubstationLayout sLayout = sLayoutFactory.create(graph);
@@ -312,14 +314,14 @@ public class SVGWriter {
                 }
             };
             drawNodes(root, vlGraph, metadata, anchorPointProvider);
-            drawEdges(root, vlGraph, metadata, anchorPointProvider);
+            drawEdges(root, vlGraph, metadata, anchorPointProvider, initProvider);
         }
 
         // Drawing the lines between the voltageLevels
         AnchorPointProvider anchorPointProvider = (type, id) ->
             componentLibrary.getAnchorPoints(type);
 
-        drawEdges(root, graph, metadata, anchorPointProvider);
+        drawEdges(root, graph, metadata, anchorPointProvider, initProvider);
 
         document.adoptNode(root);
         document.getDocumentElement().appendChild(root);
@@ -500,10 +502,59 @@ public class SVGWriter {
                                + Precision.round(e1, precision) + "," + Precision.round(f1, precision) + ")");
     }
 
+    private void translateArrow(List<Double> points, double shiftX, double shiftY, Element g) {
+        double x = shiftX + (points.get(0) + points.get(points.size() - 2)) / 2;
+        double y = shiftY + (points.get(1) + points.get(points.size() - 1)) / 2;
+        g.setAttribute(TRANSFORM,
+                TRANSLATE + "(" + (layoutParameters.getTranslateX() + x) + ","
+                        + (layoutParameters.getTranslateY() + y) + ")");
+    }
+
+    private void insertArrowsAndLabels(String wireId, List<Double> points, Element root, Node n, GraphMetadata metadata, SubstationDiagramInitialValueProvider initProvider) {
+        InitialValue init = initProvider.getInitialValue(n);
+        ComponentMetadata cd = metadata.getComponentMetadata(ComponentType.ARROW);
+        int shX = (int) cd.getSize().getWidth() * 2;
+        int shY =  (int) (cd.getSize().getHeight() - 2);
+
+        Element g1 = root.getOwnerDocument().createElement("g");
+        g1.setAttribute("id", wireId + "_ARROW1");
+        SVGOMDocument arr = componentLibrary.getSvgDocument(ComponentType.ARROW);
+        translateArrow(points, -cd.getSize().getWidth() / 2, -10, g1);
+        insertComponentSVGIntoDocumentSVG(arr, g1);
+        if (init.getLabel1().isPresent()) {
+            drawLabel(init.getLabel1().get(), false, shX, shY, g1);
+        }
+        if (init.getArrowDirection1().isPresent()) {
+            try {
+                g1.setAttribute(CLASS, SubstationDiagramStyles.SUBSTATION_STYLE_CLASS + " "  + "ARROW1_" + SubstationDiagramStyles.escapeClassName(URLEncoder.encode(n.getId(), StandardCharsets.UTF_8.name())) + "_" +  init.getArrowDirection1().get());
+            } catch (UnsupportedEncodingException e) {
+                throw new UncheckedIOException(e);
+            }
+        }
+        root.appendChild(g1);
+
+        Element g2 = root.getOwnerDocument().createElement("g");
+        g2.setAttribute("id", wireId + "_ARROW2");
+        translateArrow(points, -cd.getSize().getWidth() / 2, 10, g2);
+        insertComponentSVGIntoDocumentSVG(arr, g2);
+        if (init.getLabel2().isPresent()) {
+            drawLabel(init.getLabel2().get(), false, shX, shY, g2);
+        }
+        if (init.getArrowDirection2().isPresent()) {
+            try {
+                g2.setAttribute("class", SubstationDiagramStyles.SUBSTATION_STYLE_CLASS + " "  + "ARROW2_" + SubstationDiagramStyles.escapeClassName(URLEncoder.encode(n.getId(), StandardCharsets.UTF_8.name())) + "_" +  init.getArrowDirection2().get());
+            } catch (UnsupportedEncodingException e) {
+                throw new UncheckedIOException(e);
+            }
+        }
+
+        root.appendChild(g2);
+    }
+
     /*
      * Drawing the graph edges
      */
-    private void drawEdges(Element root, Graph graph, GraphMetadata metadata, AnchorPointProvider anchorPointProvider) {
+    private void drawEdges(Element root, Graph graph, GraphMetadata metadata, AnchorPointProvider anchorPointProvider, SubstationDiagramInitialValueProvider initProvider) {
         String vId = graph.getVoltageLevel().getId();
         for (Edge edge : graph.getEdges()) {
             // for unicity purpose (in substation diagram), we prefix the id of the WireMetadata with the voltageLevel id and "_"
@@ -544,8 +595,22 @@ public class SVGWriter {
                 metadata.addWireMetadata(new GraphMetadata.WireMetadata(wireId,
                         URLEncoder.encode(edge.getNode1().getId(), StandardCharsets.UTF_8.name()),
                         URLEncoder.encode(edge.getNode2().getId(), StandardCharsets.UTF_8.name())));
+
             } catch (UnsupportedEncodingException e) {
                 throw new UncheckedIOException(e);
+            }
+
+            if (metadata.getComponentMetadata(ComponentType.ARROW) == null) {
+                metadata.addComponentMetadata(new ComponentMetadata(ComponentType.ARROW,
+                                                                    null,
+                                                                    componentLibrary.getAnchorPoints(ComponentType.ARROW),
+                                                                    componentLibrary.getSize(ComponentType.ARROW)));
+            }
+
+            if (edge.getNode1() instanceof FeederNode) {
+                insertArrowsAndLabels(wireId, pol, root, edge.getNode1(), metadata, initProvider);
+            } else if  (edge.getNode2() instanceof FeederNode) {
+                insertArrowsAndLabels(wireId, pol, root, edge.getNode2(), metadata, initProvider);
             }
         }
     }
@@ -553,7 +618,7 @@ public class SVGWriter {
     /*
      * Drawing the substation graph edges
      */
-    private void drawEdges(Element root, SubstationGraph graph, GraphMetadata metadata, AnchorPointProvider anchorPointProvider) {
+    private void drawEdges(Element root, SubstationGraph graph, GraphMetadata metadata, AnchorPointProvider anchorPointProvider,  SubstationDiagramInitialValueProvider initProvider) {
         for (Edge edge : graph.getEdges()) {
             String vId1 = edge.getNode1().getGraph().getVoltageLevel().getId();
             String vId2 = edge.getNode2().getGraph().getVoltageLevel().getId();
@@ -596,6 +661,19 @@ public class SVGWriter {
                     URLEncoder.encode(edge.getNode2().getId(), StandardCharsets.UTF_8.name())));
             } catch (UnsupportedEncodingException e) {
                 throw new UncheckedIOException(e);
+            }
+
+            if (metadata.getComponentMetadata(ComponentType.ARROW) == null) {
+                metadata.addComponentMetadata(new ComponentMetadata(ComponentType.ARROW,
+                                                                    null,
+                                                                    componentLibrary.getAnchorPoints(ComponentType.ARROW),
+                                                                    componentLibrary.getSize(ComponentType.ARROW)));
+            }
+
+            if (edge.getNode1() instanceof FeederNode) {
+                insertArrowsAndLabels(wireId, pol, root, edge.getNode1(), metadata, initProvider);
+            } else if  (edge.getNode2() instanceof FeederNode) {
+                insertArrowsAndLabels(wireId, pol, root, edge.getNode2(), metadata, initProvider);
             }
         }
     }

@@ -20,6 +20,7 @@ import com.powsybl.substationdiagram.cgmes.CgmesVoltageLevelLayoutFactory;
 import com.powsybl.substationdiagram.layout.*;
 import com.powsybl.substationdiagram.library.ComponentLibrary;
 import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
+import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramInitialValueProvider;
 import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramStyleProvider;
 import com.powsybl.substationdiagram.svg.SubstationDiagramStyleProvider;
 import com.powsybl.substationdiagram.view.AbstractContainerDiagramView;
@@ -207,10 +208,10 @@ public class SubstationDiagramViewer extends Application {
 
                 if (c.getContainerType() == ContainerType.VOLTAGE_LEVEL) {
                     VoltageLevelDiagram diagram = VoltageLevelDiagram.build((VoltageLevel) c, getVoltageLevelLayoutFactory(), showNames.isSelected());
-                    diagram.writeSvg(getComponentLibrary(), layoutParameters.get(), styleProvider, svgWriter, metadataWriter, null);
+                    diagram.writeSvg(getComponentLibrary(), layoutParameters.get(), new DefaultSubstationDiagramInitialValueProvider(networkProperty.get()), styleProvider, svgWriter, metadataWriter, null);
                 } else if (c.getContainerType() == ContainerType.SUBSTATION) {
                     SubstationDiagram diagram = SubstationDiagram.build((Substation) c, getSubstationLayoutFactory(), getVoltageLevelLayoutFactory(), showNames.isSelected());
-                    diagram.writeSvg(getComponentLibrary(), layoutParameters.get(), styleProvider, svgWriter, metadataWriter, null);
+                    diagram.writeSvg(getComponentLibrary(), layoutParameters.get(), new DefaultSubstationDiagramInitialValueProvider(networkProperty.get()), styleProvider, svgWriter, metadataWriter, null);
                 }
 
                 svgWriter.flush();

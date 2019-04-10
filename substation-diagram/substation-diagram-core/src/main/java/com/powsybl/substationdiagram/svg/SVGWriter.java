@@ -218,8 +218,10 @@ public class SVGWriter {
         Element style = document.createElement("style");
 
         StringBuilder graphStyle = new StringBuilder();
-        Optional<String> globalStyle = styleProvider.getGlobalStyle(graph.getNodes().get(0));
-        globalStyle.ifPresent(graphStyle::append);
+        for (Graph vlGraph : graph.getNodes()) {
+            Optional<String> globalStyle = styleProvider.getGlobalStyle(vlGraph);
+            globalStyle.ifPresent(graphStyle::append);
+        }
         graphStyle.append(componentLibrary.getStyleSheet());
 
         for (Graph vlGraph : graph.getNodes()) {
@@ -423,7 +425,7 @@ public class SVGWriter {
             line.setAttribute("x2", String.valueOf(node.getPxWidth()));
             line.setAttribute("y2", "0");
         }
-        line.setAttribute(CLASS, SubstationDiagramStyles.BUS_STYLE_CLASS);
+        line.setAttribute(CLASS, SubstationDiagramStyles.BUS_STYLE_CLASS + "_" + SubstationDiagramStyles.escapeClassName(node.getGraph().getVoltageLevel().getId()));
 
         g.appendChild(line);
 
@@ -537,7 +539,7 @@ public class SVGWriter {
             }
 
             g.setAttribute("points", polPoints.toString());
-            g.setAttribute(CLASS, SubstationDiagramStyles.WIRE_STYLE_CLASS);
+            g.setAttribute(CLASS, SubstationDiagramStyles.WIRE_STYLE_CLASS + "_" + SubstationDiagramStyles.escapeClassName(vId));
             root.appendChild(g);
 
             try {
@@ -587,7 +589,14 @@ public class SVGWriter {
             }
 
             g.setAttribute("points", polPoints.toString());
-            g.setAttribute(CLASS, SubstationDiagramStyles.WIRE_STYLE_CLASS);
+            String vId;
+            if (edge.getNode1().getGraph().getVoltageLevel().getNominalV() > edge.getNode2().getGraph().getVoltageLevel().getNominalV()) {
+                vId = vId1;
+            } else {
+                vId = vId2;
+            }
+
+            g.setAttribute(CLASS, SubstationDiagramStyles.WIRE_STYLE_CLASS + "_" + SubstationDiagramStyles.escapeClassName(vId));
             root.appendChild(g);
 
             try {

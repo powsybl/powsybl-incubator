@@ -502,24 +502,44 @@ public class SVGWriter {
                                + Precision.round(e1, precision) + "," + Precision.round(f1, precision) + ")");
     }
 
-    private void translateArrow(List<Double> points, double shiftX, double shiftY, Element g) {
-        double x = shiftX + (points.get(0) + points.get(points.size() - 2)) / 2;
-        double y = shiftY + (points.get(1) + points.get(points.size() - 1)) / 2;
+    private void transformArrow(List<Double> points, ComponentSize componentSize, double shift, Element g) {
+
+        double dx = points.get(0) - points.get(2);
+        double dy = points.get(1) - points.get(3);
+
+        double angle = Math.atan(dx / dy);
+
+        int precision = 4;
+
+        double cosRo = Math.cos(angle);
+        double sinRo = Math.sin(angle);
+        double cdx = componentSize.getWidth() / 2;
+        double cdy = componentSize.getHeight() / 2;
+
+        double x = shift * sinRo + (points.get(0) + points.get(2)) / 2;
+        double y = shift * cosRo + (points.get(1) + points.get(3)) / 2;
+
+        double e1 = layoutParameters.getTranslateX() - cdx * cosRo + cdy * sinRo + x;
+        double f1 = layoutParameters.getTranslateY() - cdx * sinRo - cdy * cosRo + y;
+
         g.setAttribute(TRANSFORM,
-                TRANSLATE + "(" + (layoutParameters.getTranslateX() + x) + ","
-                        + (layoutParameters.getTranslateY() + y) + ")");
+                       "matrix(" + Precision.round(cosRo, precision) + "," + Precision.round(sinRo, precision)
+                               + "," + Precision.round(-sinRo, precision) + "," + Precision.round(cosRo,
+                                                                                                  precision) + ","
+                               + Precision.round(e1, precision) + "," + Precision.round(f1, precision) + ")");
     }
 
     private void insertArrowsAndLabels(String wireId, List<Double> points, Element root, Node n, GraphMetadata metadata, SubstationDiagramInitialValueProvider initProvider) {
         InitialValue init = initProvider.getInitialValue(n);
         ComponentMetadata cd = metadata.getComponentMetadata(ComponentType.ARROW);
+
         int shX = (int) cd.getSize().getWidth() * 2;
         int shY =  (int) (cd.getSize().getHeight() - 2);
 
         Element g1 = root.getOwnerDocument().createElement("g");
         g1.setAttribute("id", wireId + "_ARROW1");
         SVGOMDocument arr = componentLibrary.getSvgDocument(ComponentType.ARROW);
-        translateArrow(points, -cd.getSize().getWidth() / 2, -10, g1);
+        transformArrow(points, cd.getSize(), -10, g1);
         insertComponentSVGIntoDocumentSVG(arr, g1);
         if (init.getLabel1().isPresent()) {
             drawLabel(init.getLabel1().get(), false, shX, shY, g1);
@@ -535,7 +555,7 @@ public class SVGWriter {
 
         Element g2 = root.getOwnerDocument().createElement("g");
         g2.setAttribute("id", wireId + "_ARROW2");
-        translateArrow(points, -cd.getSize().getWidth() / 2, 10, g2);
+        transformArrow(points, cd.getSize(), 10, g2);
         insertComponentSVGIntoDocumentSVG(arr, g2);
         if (init.getLabel2().isPresent()) {
             drawLabel(init.getLabel2().get(), false, shX, shY, g2);

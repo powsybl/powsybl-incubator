@@ -3,7 +3,6 @@ package com.powsybl.substationdiagram.svg;
 import java.util.Objects;
 
 import com.powsybl.iidm.network.Branch.Side;
-import com.powsybl.iidm.network.BusbarSection;
 import com.powsybl.iidm.network.Generator;
 import com.powsybl.iidm.network.Line;
 import com.powsybl.iidm.network.Load;

@@ -180,7 +180,7 @@ public class SVGWriter {
             return componentLibrary.getAnchorPoints(type);
         };
 
-        drawNodes(root, graph, metadata, anchorPointProvider);
+        drawNodes(root, graph, metadata, anchorPointProvider, initProvider);
         drawEdges(root, graph, metadata, anchorPointProvider, initProvider);
 
         document.adoptNode(root);
@@ -313,7 +313,7 @@ public class SVGWriter {
                     return componentLibrary.getAnchorPoints(type);
                 }
             };
-            drawNodes(root, vlGraph, metadata, anchorPointProvider);
+            drawNodes(root, vlGraph, metadata, anchorPointProvider, initProvider);
             drawEdges(root, vlGraph, metadata, anchorPointProvider, initProvider);
         }
 
@@ -364,7 +364,7 @@ public class SVGWriter {
     /*
      * Drawing the graph nodes
      */
-    private void drawNodes(Element root, Graph graph, GraphMetadata metadata, AnchorPointProvider anchorPointProvider) {
+    private void drawNodes(Element root, Graph graph, GraphMetadata metadata, AnchorPointProvider anchorPointProvider, SubstationDiagramInitialValueProvider initProvider) {
         graph.getNodes().forEach(node -> {
             try {
                 String nodeId = URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name());
@@ -388,7 +388,20 @@ public class SVGWriter {
                         }
                         drawLabel(node.getLabel(), node.isRotated(), -LABEL_OFFSET, yShift, g);
                     } else if (node instanceof BusNode) {
-                        drawLabel(node.getLabel(), false, -LABEL_OFFSET, -LABEL_OFFSET, g);
+                        InitialValue val = initProvider.getInitialValue(node);
+                        int d = (int) ((BusNode) node).getPxWidth();
+                        if (val.getLabel1().isPresent()) {
+                            drawLabel(val.getLabel1().get(), false, -LABEL_OFFSET, -LABEL_OFFSET, g);
+                        }
+                        if (val.getLabel2().isPresent()) {
+                            drawLabel(val.getLabel2().get(), false,  d - LABEL_OFFSET, -LABEL_OFFSET, g);
+                        }
+                        if (val.getLabel3().isPresent()) {
+                            drawLabel(val.getLabel3().get(), false, -LABEL_OFFSET, LABEL_OFFSET + FONT_SIZE / 2, g);
+                        }
+                        if (val.getLabel4().isPresent()) {
+                            drawLabel(val.getLabel4().get(), false, d - LABEL_OFFSET, LABEL_OFFSET + FONT_SIZE / 2, g);
+                        }
                     }
                 }
                 root.appendChild(g);
@@ -516,7 +529,7 @@ public class SVGWriter {
         double cdx = componentSize.getWidth() / 2;
         double cdy = componentSize.getHeight() / 2;
 
-        double x = shift * sinRo + (points.get(0) + points.get(2)) / 2;
+        double x = cdx * sinRo + (points.get(0) + points.get(2)) / 2;
         double y = shift * cosRo + (points.get(1) + points.get(3)) / 2;
 
         double e1 = layoutParameters.getTranslateX() - cdx * cosRo + cdy * sinRo + x;
@@ -533,13 +546,13 @@ public class SVGWriter {
         InitialValue init = initProvider.getInitialValue(n);
         ComponentMetadata cd = metadata.getComponentMetadata(ComponentType.ARROW);
 
-        int shX = (int) cd.getSize().getWidth() * 2;
-        int shY =  (int) (cd.getSize().getHeight() - 2);
+        int shX = (int) cd.getSize().getWidth()  + LABEL_OFFSET;
+        int shY =  (int) (cd.getSize().getHeight() - LABEL_OFFSET + FONT_SIZE / 2);
 
         Element g1 = root.getOwnerDocument().createElement("g");
         g1.setAttribute("id", wireId + "_ARROW1");
         SVGOMDocument arr = componentLibrary.getSvgDocument(ComponentType.ARROW);
-        transformArrow(points, cd.getSize(), -10, g1);
+        transformArrow(points, cd.getSize(), -cd.getSize().getHeight(), g1);
         insertComponentSVGIntoDocumentSVG(arr, g1);
         if (init.getLabel1().isPresent()) {
             drawLabel(init.getLabel1().get(), false, shX, shY, g1);
@@ -555,7 +568,7 @@ public class SVGWriter {
 
         Element g2 = root.getOwnerDocument().createElement("g");
         g2.setAttribute("id", wireId + "_ARROW2");
-        transformArrow(points, cd.getSize(), 10, g2);
+        transformArrow(points, cd.getSize(), cd.getSize().getHeight(), g2);
         insertComponentSVGIntoDocumentSVG(arr, g2);
         if (init.getLabel2().isPresent()) {
             drawLabel(init.getLabel2().get(), false, shX, shY, g2);
@@ -566,6 +579,12 @@ public class SVGWriter {
             } catch (UnsupportedEncodingException e) {
                 throw new UncheckedIOException(e);
             }
+        }
+        if (init.getLabel3().isPresent()) {
+            drawLabel(init.getLabel3().get(), false, -(init.getLabel3().get().length() * FONT_SIZE / 2 + LABEL_OFFSET), shY, g1);
+        }
+        if (init.getLabel4().isPresent()) {
+            drawLabel(init.getLabel4().get(), false, -(init.getLabel4().get().length() * FONT_SIZE / 2 + LABEL_OFFSET), shY, g2);
         }
 
         root.appendChild(g2);

@@ -517,24 +517,23 @@ public class SVGWriter {
 
     private void transformArrow(List<Double> points, ComponentSize componentSize, double shift, Element g) {
 
-        double dx = points.get(0) - points.get(2);
-        double dy = points.get(1) - points.get(3);
+        double dx = points.get(2) - points.get(0);
+        double dy = points.get(3) - points.get(1);
 
         double angle = Math.atan(dx / dy);
-
-        int precision = 4;
 
         double cosRo = Math.cos(angle);
         double sinRo = Math.sin(angle);
         double cdx = componentSize.getWidth() / 2;
         double cdy = componentSize.getHeight() / 2;
 
-        double x = cdx * sinRo + (points.get(0) + points.get(2)) / 2;
+        double x = shift * sinRo + (points.get(0) + points.get(2)) / 2;
         double y = shift * cosRo + (points.get(1) + points.get(3)) / 2;
 
         double e1 = layoutParameters.getTranslateX() - cdx * cosRo + cdy * sinRo + x;
         double f1 = layoutParameters.getTranslateY() - cdx * sinRo - cdy * cosRo + y;
-
+        
+        int precision = 4;
         g.setAttribute(TRANSFORM,
                        "matrix(" + Precision.round(cosRo, precision) + "," + Precision.round(sinRo, precision)
                                + "," + Precision.round(-sinRo, precision) + "," + Precision.round(cosRo,
@@ -545,9 +544,9 @@ public class SVGWriter {
     private void insertArrowsAndLabels(String wireId, List<Double> points, Element root, Node n, GraphMetadata metadata, SubstationDiagramInitialValueProvider initProvider) {
         InitialValue init = initProvider.getInitialValue(n);
         ComponentMetadata cd = metadata.getComponentMetadata(ComponentType.ARROW);
-
+        
         int shX = (int) cd.getSize().getWidth()  + LABEL_OFFSET;
-        int shY =  (int) (cd.getSize().getHeight() - LABEL_OFFSET + FONT_SIZE / 2);
+        int shY = (int) (cd.getSize().getHeight() - LABEL_OFFSET + FONT_SIZE / 2);
 
         Element g1 = root.getOwnerDocument().createElement("g");
         g1.setAttribute("id", wireId + "_ARROW1");

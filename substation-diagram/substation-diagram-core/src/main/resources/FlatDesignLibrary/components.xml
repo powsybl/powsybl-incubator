@@ -59,4 +59,11 @@
             <anchorPoint x="0" y="0" orientation="VERTICAL"/>
         </metadata>
     </component>
+    <component>
+        <fileName>arrow.svg</fileName>
+        <metadata type="ARROW">
+            <size height="10" width="10"/>
+            <anchorPoint x="0" y="0" orientation="VERTICAL"/>
+        </metadata>
+    </component>
 </components>

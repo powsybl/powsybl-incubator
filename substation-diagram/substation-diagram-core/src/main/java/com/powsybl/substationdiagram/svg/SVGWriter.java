@@ -532,7 +532,7 @@ public class SVGWriter {
 
         double e1 = layoutParameters.getTranslateX() - cdx * cosRo + cdy * sinRo + x;
         double f1 = layoutParameters.getTranslateY() - cdx * sinRo - cdy * cosRo + y;
-        
+
         int precision = 4;
         g.setAttribute(TRANSFORM,
                        "matrix(" + Precision.round(cosRo, precision) + "," + Precision.round(sinRo, precision)
@@ -544,7 +544,7 @@ public class SVGWriter {
     private void insertArrowsAndLabels(String wireId, List<Double> points, Element root, Node n, GraphMetadata metadata, SubstationDiagramInitialValueProvider initProvider) {
         InitialValue init = initProvider.getInitialValue(n);
         ComponentMetadata cd = metadata.getComponentMetadata(ComponentType.ARROW);
-        
+
         int shX = (int) cd.getSize().getWidth()  + LABEL_OFFSET;
         int shY = (int) (cd.getSize().getHeight() - LABEL_OFFSET + FONT_SIZE / 2);
 

@@ -8,6 +8,7 @@ package com.powsybl.substationdiagram.view.app;
 
 import com.powsybl.iidm.network.VoltageLevel;
 import com.powsybl.substationdiagram.model.Edge;
+import com.powsybl.substationdiagram.model.FeederNode;
 import com.powsybl.substationdiagram.model.Graph;
 import com.powsybl.substationdiagram.model.Node;
 import com.powsybl.substationdiagram.svg.SubstationDiagramStyleProvider;
@@ -67,7 +68,31 @@ public class NominalVoltageSubstationDiagramStyleProvider implements SubstationD
                         " .closed { visibility: " + (node.isOpen() ? "hidden;}" : "visible;}");
                 return Optional.of(style);
             } else {
-                return Optional.of("." + className + " {stroke:" + color + ";stroke-width:1;fill-opacity:0;}"); // FIXME Doesn't work?
+                StringBuilder style = new StringBuilder();
+                style.append("." + className + " {stroke:" + color + ";stroke-width:1;fill-opacity:0;}");
+
+                if (node instanceof FeederNode) {
+                    style.append(".ARROW1_").append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
+                            .append("_UP").append(" .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}");
+                    style.append(".ARROW1_").append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
+                    .append("_UP").append(" .arrow-down { visibility: hidden;}");
+
+                    style.append(".ARROW1_").append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
+                    .append("_DOWN").append(" .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}");
+                    style.append(".ARROW1_").append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
+                    .append("_DOWN").append(" .arrow-up { visibility: hidden;}");
+
+                    style.append(".ARROW2_").append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
+                    .append("_UP").append(" .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}");
+                    style.append(".ARROW2_").append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
+                    .append("_UP").append(" .arrow-down { visibility: hidden;}");
+
+                    style.append(".ARROW2_").append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
+                    .append("_DOWN").append(" .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}");
+                    style.append(".ARROW2_").append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
+                    .append("_DOWN").append(" .arrow-up { visibility: hidden;}");
+                }
+                return Optional.of(style.toString());
             }
         } catch (UnsupportedEncodingException e) {
             throw new UncheckedIOException(e);

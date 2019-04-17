@@ -25,6 +25,7 @@
         <module>substation-diagram-core</module>
         <module>substation-diagram-view</module>
         <module>substation-diagram-cgmes</module>
+        <module>substation-diagram-util</module>
         <!--<module>substation-diagram-force-layout</module>-->
     </modules>
 

@@ -25,10 +25,6 @@
     <name>Balances adjustment</name>
     <description>Balances adjustment feature module</description>
 
-    <properties>
-        <powsybl.hades2.version>2.3.0</powsybl.hades2.version>
-    </properties>
-
     <build>
         <plugins>
             <plugin>
@@ -80,12 +76,6 @@
             <groupId>com.powsybl</groupId>
             <artifactId>powsybl-iidm-xml-converter</artifactId>
             <version>${powsyblcore.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.rte-france.powsybl</groupId>
-            <artifactId>powsybl-hades2-integration</artifactId>
-            <version>${powsybl.hades2.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

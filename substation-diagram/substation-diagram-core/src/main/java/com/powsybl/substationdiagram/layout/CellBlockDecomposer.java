@@ -6,6 +6,7 @@
  */
 package com.powsybl.substationdiagram.layout;
 
+import com.powsybl.commons.PowsyblException;
 import com.powsybl.substationdiagram.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,8 +80,11 @@ public class CellBlockDecomposer {
 
         // Merge blocks to obtain a hierarchy of blocks
         while (organisedBlocks.size() != 1) {
-            searchParallelMerge(organisedBlocks, cell);
-            searchChainMerge(organisedBlocks, cell);
+            boolean merged = searchParallelMerge(organisedBlocks, cell);
+            merged |= searchChainMerge(organisedBlocks, cell);
+            if (!merged) {
+                throw new PowsyblException("Cannot merge any additional blocks, " + organisedBlocks.size() + " blocks remains");
+            }
         }
         cell.blocksSetting(organisedBlocks.get(0), blocksConnectedToBusbar);
     }
@@ -99,7 +103,7 @@ public class CellBlockDecomposer {
      * @param blocks list of blocks we can merge
      * @param cell   current cell
      */
-    private void searchChainMerge(List<Block> blocks, Cell cell) {
+    private boolean searchChainMerge(List<Block> blocks, Cell cell) {
         boolean chainEnded = false;
         int i = 0;
         while (i < blocks.size() && !chainEnded) {
@@ -125,6 +129,7 @@ public class CellBlockDecomposer {
             }
             i++;
         }
+        return chainEnded;
     }
 
     /**
@@ -133,7 +138,7 @@ public class CellBlockDecomposer {
      * @param blocks list of blocks we can merge
      * @param cell   current cell
      */
-    private void searchParallelMerge(List<Block> blocks, Cell cell) {
+    private boolean searchParallelMerge(List<Block> blocks, Cell cell) {
         List<List<Block>> blocksBundlesToMerge = new ArrayList<>();
         Node commonNode;
         int i = 0;
@@ -158,6 +163,7 @@ public class CellBlockDecomposer {
             bPar.setCell(cell);
             blocks.add(bPar);
         }
+        return !blocksBundlesToMerge.isEmpty();
     }
 
     /**

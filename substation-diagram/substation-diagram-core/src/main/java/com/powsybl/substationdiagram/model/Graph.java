@@ -315,7 +315,7 @@ public class Graph {
                 throw new AssertionError("Unknown topology kind: " + vl.getTopologyKind());
         }
 
-        LOGGER.info("Number of node : {} ", nodes.size());
+        LOGGER.info("{} nodes, {} edges", nodes.size(), edges.size());
 
         handleConnectedComponents();
     }

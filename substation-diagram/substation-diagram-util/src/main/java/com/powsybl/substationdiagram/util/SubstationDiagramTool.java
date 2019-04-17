@@ -94,8 +94,12 @@ public class SubstationDiagramTool implements Tool {
                              LayoutParameters parameters, VoltageLevelLayoutFactory voltageLevelLayoutFactory, VoltageLevel vl) throws UnsupportedEncodingException {
         Path svgFile = outputDir.resolve(URLEncoder.encode(vl.getId(), StandardCharsets.UTF_8.name()) + ".svg");
         context.getOutputStream().println("Generating '" + svgFile + "' (" + vl.getNominalV() + ")");
-        VoltageLevelDiagram.build(vl, voltageLevelLayoutFactory, true)
-                .writeSvg(componentLibrary, parameters, svgFile);
+        try {
+            VoltageLevelDiagram.build(vl, voltageLevelLayoutFactory, true)
+                    .writeSvg(componentLibrary, parameters, svgFile);
+        } catch (Exception e) {
+            e.printStackTrace(context.getErrorStream());
+        }
     }
 
     @Override

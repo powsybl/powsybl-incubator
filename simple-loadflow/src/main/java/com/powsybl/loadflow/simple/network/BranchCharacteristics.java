@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.powsybl.loadflow.simple.equations;
+package com.powsybl.loadflow.simple.network;
 
 import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.Branch;
@@ -77,6 +77,10 @@ public class BranchCharacteristics {
         b2 = 0d;
         r1 = Transformers.getRatio(tf);
         a1 = Transformers.getAngle(tf);
+    }
+
+    public Branch getBranch() {
+        return branch;
     }
 
     public double r() {

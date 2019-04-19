@@ -453,6 +453,11 @@
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.usefultoys</groupId>
+                <artifactId>slf4j-toys</artifactId>
+                <version>${slf4jtoys.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>com.rte-france.powsybl</groupId>
@@ -479,12 +484,6 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-simple</artifactId>
                 <version>${slf4j.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.usefultoys</groupId>
-                <artifactId>slf4j-toys</artifactId>
-                <version>${slf4jtoys.version}</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>

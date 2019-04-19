@@ -15,8 +15,10 @@ import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
 import com.powsybl.loadflow.LoadFlowResultImpl;
-import com.powsybl.loadflow.simple.equations.IndexedNetwork;
-import com.powsybl.loadflow.simple.equations.LoadFlowMatrix;
+import com.powsybl.loadflow.simple.dc.DcEquationSystemMaker;
+import com.powsybl.loadflow.simple.equations.EquationContext;
+import com.powsybl.loadflow.simple.equations.EquationSystem;
+import com.powsybl.loadflow.simple.network.NetworkContext;
 import com.powsybl.math.matrix.DenseMatrixFactory;
 import com.powsybl.math.matrix.LUDecomposition;
 import com.powsybl.math.matrix.Matrix;
@@ -24,6 +26,7 @@ import com.powsybl.math.matrix.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -60,26 +63,10 @@ public class SimpleLoadFlow implements LoadFlow {
         this.matrixFactory = Objects.requireNonNull(matrixFactory);
     }
 
-    private void initVoltage(LoadFlowParameters loadFlowParameters) {
-        switch (loadFlowParameters.getVoltageInitMode()) {
-            case DC_VALUES:
-                LOGGER.warn("Voltage initialization with DC values is not supported, falling back to uniform values");
-            case UNIFORM_VALUES:
-                network.getBusView().getBusStream()
-                        .forEach(b -> {
-                            b.setAngle(0);
-                            b.setV(b.getVoltageLevel().getNominalV());
-                        });
-                break;
-            case PREVIOUS_VALUES:
-                break;
-        }
-    }
-
-    private static void balance(IndexedNetwork indexedNetwork) {
+    private static void balance(NetworkContext networkContext) {
         double activeGeneration = 0;
         double activeLoad = 0;
-        for (Bus b : indexedNetwork.getBuses()) {
+        for (Bus b : networkContext.getBuses()) {
             for (Generator g : b.getGenerators()) {
                 activeGeneration += g.getTargetP();
             }
@@ -98,22 +85,27 @@ public class SimpleLoadFlow implements LoadFlow {
 
         network.getVariantManager().setWorkingVariant(state);
 
-        // initialize phase and voltage
-        initVoltage(loadFlowParameters);
+        NetworkContext networkContext = NetworkContext.of(network);
 
-        IndexedNetwork indexedNetwork = IndexedNetwork.of(network);
+        balance(networkContext);
 
-        balance(indexedNetwork);
+        EquationContext equationContext = new EquationContext();
 
-        int slackBusNum = 0;
+        EquationSystem equationSystem = new DcEquationSystemMaker()
+                .make(networkContext, equationContext);
 
-        double[] rhs = LoadFlowMatrix.buildDcRhs(indexedNetwork, slackBusNum);
-        Matrix lfMatrix = LoadFlowMatrix.buildDc(indexedNetwork, slackBusNum, matrixFactory, rhs);
+        double[] x = equationSystem.initState(loadFlowParameters.getVoltageInitMode());
+
+        double[] targets = equationSystem.getTargets();
+
+        Matrix j = equationSystem.buildJacobian(matrixFactory, x);
+
+        double[] dx = Arrays.copyOf(targets, targets.length);
 
         boolean status;
         try {
-            try (LUDecomposition lu = lfMatrix.decomposeLU()) {
-                lu.solve(rhs);
+            try (LUDecomposition lu = j.decomposeLU()) {
+                lu.solve(dx);
             }
             status = true;
         } catch (Exception e) {
@@ -121,7 +113,10 @@ public class SimpleLoadFlow implements LoadFlow {
             LOGGER.error("Failed to solve linear system for simple DC load flow.", e);
         }
 
-        LoadFlowMatrix.updateDcNetwork(indexedNetwork, rhs);
+        equationSystem.logLargestMistatches(dx);
+
+        networkContext.resetState();
+        equationSystem.updateState(dx);
 
         stopwatch.stop();
         LOGGER.info("DC loadflow complete in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));

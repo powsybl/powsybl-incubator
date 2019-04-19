@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.usefultoys.slf4j.LoggerFactory;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Sylvain Leclerc <sylvain.leclerc at rte-france.com>
@@ -61,8 +62,8 @@ public class SimpleLoadFlowTest {
 
         lf.run(network.getVariantManager().getWorkingVariantId(), parameters);
 
-        assertEquals(0, line1.getTerminal1().getP(), 0.01);
-        assertEquals(0, line1.getTerminal2().getP(), 0.01);
+        assertTrue(Double.isNaN(line1.getTerminal1().getP()));
+        assertTrue(Double.isNaN(line1.getTerminal2().getP()));
         assertEquals(600, line2.getTerminal1().getP(), 0.01);
         assertEquals(-600, line2.getTerminal2().getP(), 0.01);
 
@@ -70,8 +71,8 @@ public class SimpleLoadFlowTest {
 
         lf.run(network.getVariantManager().getWorkingVariantId(), parameters);
 
-        assertEquals(0, line1.getTerminal1().getP(), 0.01);
-        assertEquals(0, line1.getTerminal2().getP(), 0.01);
+        assertTrue(Double.isNaN(line1.getTerminal1().getP()));
+        assertTrue(Double.isNaN(line1.getTerminal2().getP()));
         assertEquals(450, line2.getTerminal1().getP(), 0.01);
         assertEquals(-450, line2.getTerminal2().getP(), 0.01);
     }

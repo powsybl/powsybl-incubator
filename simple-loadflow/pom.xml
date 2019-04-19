@@ -46,6 +46,11 @@
             <groupId>org.ojalgo</groupId>
             <artifactId>ojalgo</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.usefultoys</groupId>
+            <artifactId>slf4j-toys</artifactId>
+        </dependency>
+
 
         <!-- Test dependencies -->
         <dependency>
@@ -67,11 +72,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>log4j-over-slf4j</artifactId>
             <version>${slf4j.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.usefultoys</groupId>
-            <artifactId>slf4j-toys</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

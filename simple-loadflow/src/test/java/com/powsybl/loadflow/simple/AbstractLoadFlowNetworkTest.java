@@ -29,6 +29,10 @@ public abstract class AbstractLoadFlowNetworkTest {
     }
 
     protected static Generator createGenerator(Bus b, String id, double p) {
+        return createGenerator(b, id, p, 1);
+    }
+
+    protected static Generator createGenerator(Bus b, String id, double p, double v) {
         Generator g = b.getVoltageLevel()
                 .newGenerator()
                 .setId(id)
@@ -38,7 +42,7 @@ public abstract class AbstractLoadFlowNetworkTest {
                 .setMinP(0)
                 .setMaxP(p)
                 .setTargetP(p)
-                .setTargetV(1)
+                .setTargetV(v)
                 .setVoltageRegulatorOn(true)
                 .add();
         g.getTerminal().setP(-p).setQ(0);
@@ -46,14 +50,18 @@ public abstract class AbstractLoadFlowNetworkTest {
     }
 
     protected static Load createLoad(Bus b, String id, double p) {
+        return createLoad(b, id, p, 0);
+    }
+
+    protected static Load createLoad(Bus b, String id, double p, double q) {
         Load l = b.getVoltageLevel().newLoad()
                 .setId(id)
                 .setBus(b.getId())
                 .setConnectableBus(b.getId())
                 .setP0(p)
-                .setQ0(0)
+                .setQ0(q)
                 .add();
-        l.getTerminal().setP(p).setQ(0);
+        l.getTerminal().setP(p).setQ(q);
         return l;
     }
 

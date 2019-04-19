@@ -6,7 +6,6 @@
  */
 package com.powsybl.substationdiagram.layout;
 
-import com.powsybl.commons.PowsyblException;
 import com.powsybl.substationdiagram.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,7 +82,12 @@ public class CellBlockDecomposer {
             boolean merged = searchParallelMerge(organisedBlocks, cell);
             merged |= searchChainMerge(organisedBlocks, cell);
             if (!merged) {
-                throw new PowsyblException("Cannot merge any additional blocks, " + organisedBlocks.size() + " blocks remains");
+                LOGGER.warn("{} cell, cannot merge any additional blocks, {} blocks remains", cell.getType(), organisedBlocks.size());
+                Block undefinedBlock = new UndefinedBlock(new ArrayList<>(organisedBlocks));
+                undefinedBlock.setCell(cell);
+                organisedBlocks.clear();
+                organisedBlocks.add(undefinedBlock);
+                break;
             }
         }
         cell.blocksSetting(organisedBlocks.get(0), blocksConnectedToBusbar);

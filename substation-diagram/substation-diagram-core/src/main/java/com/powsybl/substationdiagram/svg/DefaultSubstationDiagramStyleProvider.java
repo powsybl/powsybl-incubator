@@ -26,12 +26,13 @@ public class DefaultSubstationDiagramStyleProvider implements SubstationDiagramS
 
     @Override
     public Optional<String> getGlobalStyle(Graph graph) {
+        String idVL = escapeClassName(graph.getVoltageLevel().getId());
         StringBuilder style = new StringBuilder();
         style.append(".").append(SUBSTATION_STYLE_CLASS).append(" {fill:rgb(255,255,255);stroke-width:1;fill-opacity:0;}");
-        style.append(".").append(WIRE_STYLE_CLASS).append(" {stroke:rgb(200,0,0);stroke-width:1;}");
+        style.append(".").append(WIRE_STYLE_CLASS).append("_").append(idVL).append(" {stroke:rgb(200,0,0);stroke-width:1;}");
         style.append(".").append(GRID_STYLE_CLASS).append(" {stroke:rgb(0,55,0);stroke-width:1;stroke-dasharray:1,10;}");
-        style.append(".").append(BUS_STYLE_CLASS).append(" {stroke:rgb(0,0,0);stroke-width:3;}");
-        style.append(".").append(LABEL_STYLE_CLASS).append(" {fill: black;color:black;stroke:none;fill-opacity:1;}");
+        style.append(".").append(BUS_STYLE_CLASS).append("_").append(idVL).append(" {stroke:rgb(0,0,0);stroke-width:3;}");
+        style.append(".").append(LABEL_STYLE_CLASS).append(" {fill:black;color:black;stroke:none;fill-opacity:1;}");
         return Optional.of(style.toString());
     }
 
@@ -41,10 +42,11 @@ public class DefaultSubstationDiagramStyleProvider implements SubstationDiagramS
         if (node.getType() == Node.NodeType.SWITCH) {
             try {
                 StringBuilder style = new StringBuilder();
-                style.append(".").append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
+                String className = escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name()));
+                style.append(".").append(className)
                         .append(" .open { visibility: ").append(node.isOpen() ? "visible;" : "hidden;}");
 
-                style.append(".").append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
+                style.append(".").append(className)
                         .append(" .closed { visibility: ").append(node.isOpen() ? "hidden;" : "visible;}");
 
                 return Optional.of(style.toString());

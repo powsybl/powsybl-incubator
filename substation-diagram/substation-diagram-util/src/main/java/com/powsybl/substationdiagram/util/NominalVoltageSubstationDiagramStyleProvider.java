@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.powsybl.substationdiagram.view.app;
+package com.powsybl.substationdiagram.util;
 
 import com.powsybl.iidm.network.VoltageLevel;
 import com.powsybl.substationdiagram.model.Edge;
@@ -45,14 +45,15 @@ public class NominalVoltageSubstationDiagramStyleProvider implements SubstationD
 
     @Override
     public Optional<String> getGlobalStyle(Graph graph) {
+        String idVL = escapeClassName(graph.getVoltageLevel().getId());
         String color = getColor(graph.getVoltageLevel());
-        String style = "." + SUBSTATION_STYLE_CLASS + " {fill:rgb(255,255,255);stroke-width:1;fill-opacity:0;}" +
-                "." + WIRE_STYLE_CLASS + " {stroke:" + color + ";stroke-width:1;}" +
-                "." + GRID_STYLE_CLASS + " {stroke:rgb(0,55,0);stroke-width:1;stroke-dasharray:1,10;}" +
-                "." + BUS_STYLE_CLASS + " {stroke:" + color + ";stroke-width:3;}" +
-                "." + LABEL_STYLE_CLASS + " {fill: black;color:black;stroke:none;fill-opacity:1;}";
-
-        return Optional.of(style);
+        StringBuilder style = new StringBuilder();
+        style.append(".").append(SUBSTATION_STYLE_CLASS).append(" {fill:rgb(255,255,255);stroke-width:1;fill-opacity:0;}");
+        style.append(".").append(WIRE_STYLE_CLASS).append("_").append(idVL).append(" {stroke:").append(color).append(";stroke-width:1;}");
+        style.append(".").append(GRID_STYLE_CLASS).append(" {stroke:rgb(0,55,0);stroke-width:1;stroke-dasharray:1,10;}");
+        style.append(".").append(BUS_STYLE_CLASS).append("_").append(idVL).append(" {stroke:").append(color).append(";stroke-width:3;}");
+        style.append(".").append(LABEL_STYLE_CLASS).append(" {fill: black;color:black;stroke:none;fill-opacity:1;}");
+        return Optional.of(style.toString());
     }
 
     @Override

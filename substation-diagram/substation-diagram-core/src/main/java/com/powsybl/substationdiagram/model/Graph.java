@@ -72,6 +72,9 @@ public class Graph {
     @JsonIgnore
     private int cellCounter = 0;
 
+    private double x = 0;
+    private double y = 0;
+
     /**
      * Constructor
      */
@@ -312,7 +315,7 @@ public class Graph {
                 throw new AssertionError("Unknown topology kind: " + vl.getTopologyKind());
         }
 
-        LOGGER.info("Number of node : {} ", nodes.size());
+        LOGGER.info("{} nodes, {} edges", nodes.size(), edges.size());
 
         handleConnectedComponents();
     }
@@ -442,7 +445,7 @@ public class Graph {
             LOGGER.warn("{} connected components found", connectedSets.size());
             connectedSets.stream()
                     .sorted(Comparator.comparingInt(Set::size))
-                    .map(nodes -> nodes.stream().map(Node::getId).collect(Collectors.toSet()))
+                    .map(setNodes -> setNodes.stream().map(Node::getId).collect(Collectors.toSet()))
                     .forEach(strings -> LOGGER.warn("   - {}", strings));
         }
         connectedSets.forEach(this::ensureOneBusInConnectedComponent);
@@ -612,8 +615,8 @@ public class Graph {
         getNodeBuses().stream()
                 .flatMap(node -> node.getAdjacentNodes().stream())
                 .filter(node -> node.getType() == Node.NodeType.SWITCH)
-                .forEach(nodeSwitch -> {
-                    nodeSwitch.getAdjacentNodes().stream()
+                .forEach(nodeSwitch ->
+                        nodeSwitch.getAdjacentNodes().stream()
                             .filter(node -> node.getType() == Node.NodeType.SWITCH)
                             .forEach(node -> {
                                 removeEdge(node, nodeSwitch);
@@ -621,8 +624,7 @@ public class Graph {
                                 addNode(newNode);
                                 addEdge(node, newNode);
                                 addEdge(nodeSwitch, newNode);
-                            });
-                });
+                            }));
     }
 
     //the first element shouldn't be a Breaker
@@ -739,4 +741,19 @@ public class Graph {
         return voltageLevel;
     }
 
+    public double getX() {
+        return x;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
 }

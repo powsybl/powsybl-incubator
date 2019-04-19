@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.powsybl.substationdiagram.view.app;
+package com.powsybl.substationdiagram.util;
 
 import com.powsybl.cgmes.iidm.extensions.dl.CouplingDeviceDiagramData;
 import com.powsybl.cgmes.iidm.extensions.dl.InjectionDiagramData;
@@ -14,7 +14,10 @@ import com.powsybl.iidm.network.Connectable;
 import com.powsybl.iidm.network.TopologyKind;
 import com.powsybl.iidm.network.VoltageLevel;
 import com.powsybl.substationdiagram.cgmes.CgmesVoltageLevelLayoutFactory;
-import com.powsybl.substationdiagram.layout.*;
+import com.powsybl.substationdiagram.layout.PositionFree;
+import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayoutFactory;
+import com.powsybl.substationdiagram.layout.VoltageLevelLayout;
+import com.powsybl.substationdiagram.layout.VoltageLevelLayoutFactory;
 import com.powsybl.substationdiagram.model.Graph;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;

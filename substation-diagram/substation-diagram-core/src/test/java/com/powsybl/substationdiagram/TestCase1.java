@@ -92,7 +92,7 @@ public class TestCase1 extends AbstractTestCase {
 
         assertEquals("bbs", g.getNodes().get(0).getId());
         assertEquals("l", g.getNodes().get(1).getId());
-        assertEquals("1", g.getNodes().get(2).getId());
+        assertEquals("FICT_vl_1", g.getNodes().get(2).getId());
         assertEquals("d", g.getNodes().get(3).getId());
         assertEquals("b", g.getNodes().get(4).getId());
 
@@ -135,8 +135,8 @@ public class TestCase1 extends AbstractTestCase {
         assertEquals("bbs", g.getEdges().get(0).getNode1().getId());
         assertEquals("d", g.getEdges().get(0).getNode2().getId());
         assertEquals("d", g.getEdges().get(1).getNode1().getId());
-        assertEquals("1", g.getEdges().get(1).getNode2().getId());
-        assertEquals("1", g.getEdges().get(2).getNode1().getId());
+        assertEquals("FICT_vl_1", g.getEdges().get(1).getNode2().getId());
+        assertEquals("FICT_vl_1", g.getEdges().get(2).getNode1().getId());
         assertEquals("b", g.getEdges().get(2).getNode2().getId());
         assertEquals("b", g.getEdges().get(3).getNode1().getId());
         assertEquals("l", g.getEdges().get(3).getNode2().getId());
@@ -157,7 +157,7 @@ public class TestCase1 extends AbstractTestCase {
         assertEquals("bbs", cell.getBusNodes().get(0).getId());
         assertNull(cell.getRootBlock());
         assertTrue(cell.getCellBridgingWith().isEmpty());
-        assertEquals("EXTERN[b, bbs, d, dFictif, l]", cell.getFullId());
+        assertEquals("EXTERN[FICT_vl_dFictif, b, bbs, d, l]", cell.getFullId());
         assertEquals(new Position(0, 0), cell.getMaxBusPosition());
 
         // build blocks
@@ -175,7 +175,7 @@ public class TestCase1 extends AbstractTestCase {
         assertTrue(bc.getUpperBlock() instanceof PrimaryBlock);
         PrimaryBlock ub = (PrimaryBlock) bc.getUpperBlock();
         assertEquals(new Position(0, 0, 1, 2, false, Orientation.VERTICAL), ub.getPosition());
-        assertEquals("dFictif", ub.getStartingNode().getId());
+        assertEquals("FICT_vl_dFictif", ub.getStartingNode().getId());
         assertEquals("l", ub.getEndingNode().getId());
         assertTrue(ub.getStackableBlocks().isEmpty());
 
@@ -183,7 +183,7 @@ public class TestCase1 extends AbstractTestCase {
         PrimaryBlock lb = (PrimaryBlock) bc.getLowerBlock();
         assertEquals(new Position(0, 0, 1, 0, false, Orientation.VERTICAL), lb.getPosition());
         assertEquals("bbs", lb.getStartingNode().getId());
-        assertEquals("dFictif", lb.getEndingNode().getId());
+        assertEquals("FICT_vl_dFictif", lb.getEndingNode().getId());
         assertTrue(lb.getStackableBlocks().isEmpty());
 
         assertFalse(g.getNodes().get(0).isRotated());
@@ -196,7 +196,7 @@ public class TestCase1 extends AbstractTestCase {
         LayoutParameters layoutParameters = new LayoutParameters(20, 50, 0, 260,
                                                                  25, 20,
                                                                  50, 250, 40,
-                                                                 30, true, true, 1);
+                                                                 30, true, true, 1, 50, 50);
 
         new PositionVoltageLevelLayout(g).run(layoutParameters);
 

@@ -99,7 +99,7 @@ public class TestCase3Coupling extends AbstractTestCase {
         assertEquals(Cell.CellType.INTERN, cell.getType());
         assertEquals(7, cell.getNodes().size());
         assertEquals(2, cell.getBusNodes().size());
-        assertEquals("INTERN[b, bbs1, bbs2, d1, d1Fictif, d2, d2Fictif]", cell.getFullId());
+        assertEquals("INTERN[FICT_vl_d1Fictif, FICT_vl_d2Fictif, b, bbs1, bbs2, d1, d2]", cell.getFullId());
 
         // build blocks
         assertTrue(new BlockOrganizer().organize(g));
@@ -111,7 +111,7 @@ public class TestCase3Coupling extends AbstractTestCase {
         ParallelBlock bp = (ParallelBlock) cell.getRootBlock();
         assertEquals(new Position(0, 1, 2, 1, false, Orientation.VERTICAL), bp.getPosition());
         assertEquals("bbs2", bp.getStartingNode().getId());
-        assertEquals("d1Fictif", bp.getEndingNode().getId());
+        assertEquals("FICT_vl_d1Fictif", bp.getEndingNode().getId());
         assertEquals(2, bp.getSubBlocks().size());
 
         assertTrue(bp.getSubBlocks().get(0) instanceof SerialBlock);
@@ -133,7 +133,7 @@ public class TestCase3Coupling extends AbstractTestCase {
         LayoutParameters layoutParameters = new LayoutParameters(20, 50, 0, 260,
                                                                  25, 20,
                                                                  50, 250, 40,
-                                                                 30, true, true, 1);
+                                                                 30, true, true, 1, 50, 50);
 
         new PositionVoltageLevelLayout(g).run(layoutParameters);
 

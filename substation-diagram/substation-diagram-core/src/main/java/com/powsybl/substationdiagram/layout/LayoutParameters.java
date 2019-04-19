@@ -35,6 +35,9 @@ public class LayoutParameters {
 
     private double scaleFactor = 1;
 
+    private double horizontalSubstationPadding = 50;
+    private double verticalSubstationPadding = 50;
+
     public LayoutParameters() {
     }
 
@@ -50,7 +53,9 @@ public class LayoutParameters {
                             double stackHeight,
                             boolean showGrid,
                             boolean showInternalNodes,
-                            double scaleFactor) {
+                            double scaleFactor,
+                            double horizontalSubstationPadding,
+                            double verticalSubstationPadding) {
         this.translateX = translateX;
         this.translateY = translateY;
         this.initialXBus = initialXBus;
@@ -64,6 +69,8 @@ public class LayoutParameters {
         this.showGrid = showGrid;
         this.showInternalNodes = showInternalNodes;
         this.scaleFactor = scaleFactor;
+        this.horizontalSubstationPadding = horizontalSubstationPadding;
+        this.verticalSubstationPadding = verticalSubstationPadding;
     }
 
     public LayoutParameters(LayoutParameters other) {
@@ -81,13 +88,15 @@ public class LayoutParameters {
         showGrid = other.showGrid;
         showInternalNodes = other.showInternalNodes;
         scaleFactor = other.scaleFactor;
+        horizontalSubstationPadding = other.horizontalSubstationPadding;
+        verticalSubstationPadding = other.verticalSubstationPadding;
     }
 
     public double getTranslateX() {
         return translateX;
     }
 
-    private LayoutParameters setTranslateX(double translateX) {
+    public LayoutParameters setTranslateX(double translateX) {
         this.translateX = translateX;
         return this;
     }
@@ -96,7 +105,7 @@ public class LayoutParameters {
         return translateY;
     }
 
-    private LayoutParameters setTranslateY(double translateY) {
+    public LayoutParameters setTranslateY(double translateY) {
         this.translateY = translateY;
         return this;
     }
@@ -197,6 +206,24 @@ public class LayoutParameters {
 
     public LayoutParameters setScaleFactor(double scaleFactor) {
         this.scaleFactor = scaleFactor;
+        return this;
+    }
+
+    public double getHorizontalSubstationPadding() {
+        return horizontalSubstationPadding;
+    }
+
+    public LayoutParameters setHorizontalSubstationPadding(double padding) {
+        this.horizontalSubstationPadding = padding;
+        return this;
+    }
+
+    public double getVerticalSubstationPadding() {
+        return verticalSubstationPadding;
+    }
+
+    public LayoutParameters setVerticalSubstationPadding(double padding) {
+        this.verticalSubstationPadding = padding;
         return this;
     }
 }

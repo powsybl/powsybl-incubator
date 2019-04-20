@@ -35,13 +35,18 @@ public interface EquationTerm {
     double eval(double[] x);
 
     /**
-     * Evaluate partial derivative.
+     * Get partial derivative.
      *
      * @param variable the variable the partial derivative is with respect to
      * @param x the state vector
      * @return value of the partial derivative
      */
-    double evalDer(Variable variable, double[] x);
+    double der(Variable variable, double[] x);
 
-    double evalRhs(Variable variable);
+    /**
+     * Get part of the partial derivative that has to be moved to right hand side.
+     * @param variable the variable the partial derivative is with respect to
+     * @return value of part of the partial derivative that has to be moved to right hand side
+     */
+    double rhs(Variable variable);
 }

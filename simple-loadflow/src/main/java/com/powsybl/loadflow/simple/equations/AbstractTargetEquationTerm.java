@@ -39,12 +39,12 @@ public abstract class AbstractTargetEquationTerm implements EquationTerm {
     }
 
     @Override
-    public double evalDer(Variable variable, double[] x) {
+    public double der(Variable variable, double[] x) {
         return 1;
     }
 
     @Override
-    public double evalRhs(Variable variable) {
+    public double rhs(Variable variable) {
         return 0;
     }
 }

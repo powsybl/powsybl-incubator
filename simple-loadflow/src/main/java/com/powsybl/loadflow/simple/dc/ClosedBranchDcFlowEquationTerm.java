@@ -75,7 +75,7 @@ public class ClosedBranchDcFlowEquationTerm implements EquationTerm {
     }
 
     @Override
-    public double evalDer(Variable variable, double[] x) {
+    public double der(Variable variable, double[] x) {
         Objects.requireNonNull(variable);
         Objects.requireNonNull(x);
         switch (side) {
@@ -101,7 +101,7 @@ public class ClosedBranchDcFlowEquationTerm implements EquationTerm {
     }
 
     @Override
-    public double evalRhs(Variable variable) {
+    public double rhs(Variable variable) {
         Objects.requireNonNull(variable);
         if (side == Branch.Side.ONE && variable.equals(branchContext.getPh1Var())) {
             return -branchContext.getPower() * (branchContext.getBc().a2() - branchContext.getBc().a1());

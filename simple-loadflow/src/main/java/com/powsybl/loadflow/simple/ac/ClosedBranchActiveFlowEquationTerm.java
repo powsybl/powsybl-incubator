@@ -74,7 +74,7 @@ public class ClosedBranchActiveFlowEquationTerm extends AbstractClosedBranchAcFl
     }
 
     @Override
-    public double evalDer(Variable variable, double[] x) {
+    public double der(Variable variable, double[] x) {
         Objects.requireNonNull(variable);
         double v1 = x[branchContext.getV1Var().getColumn()];
         double v2 = x[branchContext.getV2Var().getColumn()];
@@ -91,7 +91,7 @@ public class ClosedBranchActiveFlowEquationTerm extends AbstractClosedBranchAcFl
     }
 
     @Override
-    public double evalRhs(Variable variable) {
+    public double rhs(Variable variable) {
         return 0;
     }
 }

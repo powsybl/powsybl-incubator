@@ -49,7 +49,7 @@ public class OpenBranchSide2ReactiveFlowEquationTerm implements EquationTerm {
     }
 
     @Override
-    public double evalDer(Variable variable, double[] x) {
+    public double der(Variable variable, double[] x) {
         if (variable.equals(branchContext.getV1Var())) {
             BranchCharacteristics bc = branchContext.getBc();
             double v1 = x[branchContext.getV1Var().getColumn()];
@@ -61,7 +61,7 @@ public class OpenBranchSide2ReactiveFlowEquationTerm implements EquationTerm {
     }
 
     @Override
-    public double evalRhs(Variable variable) {
+    public double rhs(Variable variable) {
         return 0;
     }
 }

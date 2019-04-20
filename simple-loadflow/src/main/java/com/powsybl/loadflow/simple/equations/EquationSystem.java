@@ -72,7 +72,7 @@ public class EquationSystem {
         }
         for (EquationTerm equationTerm : equationTerms) {
             for (Variable variable : equationTerm.getVariables()) {
-                targets[equationTerm.getEquation().getRow()] -= equationTerm.evalRhs(variable);
+                targets[equationTerm.getEquation().getRow()] -= equationTerm.rhs(variable);
             }
         }
     }
@@ -134,7 +134,7 @@ public class EquationSystem {
             for (EquationTerm equationTerm : e.getValue()) {
                 fx[equation.getRow()] += equationTerm.eval(x);
                 for (Variable variable : equationTerm.getVariables()) {
-                    fx[equation.getRow()] -= equationTerm.evalRhs(variable);
+                    fx[equation.getRow()] -= equationTerm.rhs(variable);
                 }
             }
         }
@@ -180,7 +180,7 @@ public class EquationSystem {
                 Equation eq = e2.getKey();
                 int row = eq.getRow();
                 for (EquationTerm equationTerm : e2.getValue()) {
-                    double v = equationTerm.evalDer(var, x);
+                    double v = equationTerm.der(var, x);
                     if (v != 0) {
                         j.addValue(row, column, v);
                     }

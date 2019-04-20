@@ -74,7 +74,7 @@ public class ClosedBranchReactiveFlowEquationTerm extends AbstractClosedBranchAc
     }
 
     @Override
-    public double evalDer(Variable variable, double[] x) {
+    public double der(Variable variable, double[] x) {
         Objects.requireNonNull(variable);
         Objects.requireNonNull(x);
         double v1 = x[branchContext.getV1Var().getColumn()];

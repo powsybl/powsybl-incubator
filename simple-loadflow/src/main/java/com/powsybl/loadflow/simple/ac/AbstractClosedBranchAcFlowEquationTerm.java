@@ -71,7 +71,7 @@ public abstract class AbstractClosedBranchAcFlowEquationTerm implements Equation
     }
 
     @Override
-    public double evalRhs(Variable variable) {
+    public double rhs(Variable variable) {
         return 0;
     }
 }

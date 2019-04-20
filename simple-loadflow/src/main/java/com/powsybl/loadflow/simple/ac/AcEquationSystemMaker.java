@@ -6,7 +6,6 @@
  */
 package com.powsybl.loadflow.simple.ac;
 
-import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.Branch;
 import com.powsybl.iidm.network.Bus;
 import com.powsybl.loadflow.simple.equations.*;
@@ -52,11 +51,23 @@ public class AcEquationSystemMaker implements EquationSystemMaker {
                 }
                 variableUpdates.add(new ClosedBranchAcFlowUpdate(branchContext));
             } else if (bus1 != null) {
-                throw new PowsyblException("TODO"); // TODO
+                OpenBranchSide2AcContext branchContext = new OpenBranchSide2AcContext(branch, bus1, equationContext);
+                if (!networkContext.isSlackBus(bus1.getId())) {
+                    equationTerms.add(new OpenBranchSide2ActiveFlowEquationTerm(branchContext, bus1, equationContext));
+                }
+                if (!networkContext.isPvBus(bus1.getId())) {
+                    equationTerms.add(new OpenBranchSide2ReactiveFlowEquationTerm(branchContext, bus1, equationContext));
+                }
+                variableUpdates.add(new OpenBranchSide2AcFlowUpdate(branchContext));
             } else if (bus2 != null) {
-                throw new PowsyblException("TODO"); // TODO
-            } else {
-                throw new PowsyblException("TODO"); // TODO
+                OpenBranchSide1AcContext branchContext = new OpenBranchSide1AcContext(branch, bus2, equationContext);
+                if (!networkContext.isSlackBus(bus2.getId())) {
+                    equationTerms.add(new OpenBranchSide1ActiveFlowEquationTerm(branchContext, bus2, equationContext));
+                }
+                if (!networkContext.isPvBus(bus2.getId())) {
+                    equationTerms.add(new OpenBranchSide1ReactiveFlowEquationTerm(branchContext, bus2, equationContext));
+                }
+                variableUpdates.add(new OpenBranchSide1AcFlowUpdate(branchContext));
             }
         }
 

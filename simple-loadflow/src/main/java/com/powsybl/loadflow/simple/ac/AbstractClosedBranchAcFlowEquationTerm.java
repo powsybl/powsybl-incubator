@@ -35,30 +35,27 @@ public abstract class AbstractClosedBranchAcFlowEquationTerm implements Equation
         Objects.requireNonNull(bus1);
         Objects.requireNonNull(bus2);
 
-        String busId1 = bus1.getId();
-        String busId2 = bus2.getId();
-
         switch (side) {
             case ONE:
-                equation = equationContext.getEquation(busId1, equationType);
+                equation = equationContext.getEquation(bus1.getId(), equationType);
                 break;
             case TWO:
-                equation = equationContext.getEquation(busId2, equationType);
+                equation = equationContext.getEquation(bus2.getId(), equationType);
                 break;
             default:
                 throw new IllegalStateException("Unknown side: " + side);
         }
 
-        if (!networkContext.isPvBus(busId1)) {
+        if (!networkContext.isPvBus(bus1.getId())) {
             variables.add(branchContext.getV1Var());
         }
-        if (!networkContext.isPvBus(busId2)) {
+        if (!networkContext.isPvBus(bus2.getId())) {
             variables.add(branchContext.getV2Var());
         }
-        if (!networkContext.isSlackBus(busId1)) {
+        if (!networkContext.isSlackBus(bus1.getId())) {
             variables.add(branchContext.getPh1Var());
         }
-        if (!networkContext.isSlackBus(busId2)) {
+        if (!networkContext.isSlackBus(bus2.getId())) {
             variables.add(branchContext.getPh2Var());
         }
     }

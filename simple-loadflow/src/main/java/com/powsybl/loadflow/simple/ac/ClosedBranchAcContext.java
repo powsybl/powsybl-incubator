@@ -73,7 +73,7 @@ public class ClosedBranchAcContext {
         return p1(v1, v2, ph1, ph2);
     }
 
-    public double  p2(double v1, double v2, double ph1, double ph2) {
+    public double p2(double v1, double v2, double ph1, double ph2) {
         return bc.r2() * v2 * (bc.g2() * bc.r2() * v2 - bc.y() * bc.r1() * v1 * Math.sin(bc.ksi() + bc.a1() - bc.a2() + ph1 - ph2) + bc.y() * bc.r2() * v2 * Math.sin(bc.ksi()));
     }
 

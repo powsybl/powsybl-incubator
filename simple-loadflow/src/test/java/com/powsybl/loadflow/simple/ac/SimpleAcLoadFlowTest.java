@@ -15,7 +15,8 @@ import com.powsybl.loadflow.LoadFlowResult;
 import com.powsybl.math.matrix.DenseMatrixFactory;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -25,16 +26,17 @@ public class SimpleAcLoadFlowTest {
     @Test
     public void tuto1() {
         Network network = EurostagTutorialExample1Factory.create();
-        LoadFlowResult result = new SimpleAcLoadFlow(network, new DenseMatrixFactory())
-                .run();
-        assertTrue(result.isOk());
-
         Bus ngenBus = network.getBusBreakerView().getBusStream().filter(b -> b.getId().equals("NGEN")).findFirst().orElseThrow(AssertionError::new);
         Bus nhv1Bus = network.getBusBreakerView().getBusStream().filter(b -> b.getId().equals("NHV1")).findFirst().orElseThrow(AssertionError::new);
         Bus nhv2Bus = network.getBusBreakerView().getBusStream().filter(b -> b.getId().equals("NHV2")).findFirst().orElseThrow(AssertionError::new);
         Bus nloadBus = network.getBusBreakerView().getBusStream().filter(b -> b.getId().equals("NLOAD")).findFirst().orElseThrow(AssertionError::new);
         Line line1 = network.getLine("NHV1_NHV2_1");
         Line line2 = network.getLine("NHV1_NHV2_2");
+
+        SimpleAcLoadFlow loadFlow = new SimpleAcLoadFlow(network, new DenseMatrixFactory());
+
+        LoadFlowResult result = loadFlow.run();
+        assertTrue(result.isOk());
 
         assertEquals(24.5, ngenBus.getV(), 1E-3d);
         assertEquals(0, ngenBus.getAngle(), 1E-6d);
@@ -52,5 +54,10 @@ public class SimpleAcLoadFlowTest {
         assertEquals(98.74, line2.getTerminal1().getQ(), 1E-3d);
         assertEquals(-300.434, line2.getTerminal2().getP(), 1E-3d);
         assertEquals(-137.188, line2.getTerminal2().getQ(), 1E-3d);
+
+        line1.getTerminal1().disconnect();
+
+        result = loadFlow.run();
+        assertTrue(result.isOk());
     }
 }

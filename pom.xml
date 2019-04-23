@@ -53,6 +53,7 @@
         <module>simple-loadflow</module>
         <module>substation-diagram</module>
 		<module>cgmes-dl</module>
+		<module>cgmes-model-interpretation</module>
     </modules>
 
     <properties>

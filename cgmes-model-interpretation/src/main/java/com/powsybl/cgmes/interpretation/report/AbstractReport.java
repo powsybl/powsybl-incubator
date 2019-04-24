@@ -19,9 +19,9 @@ import com.powsybl.cgmes.interpretation.InterpretationResults;
 /**
  * @author Luma Zamarreño <zamarrenolm at aia.es>
  */
-public abstract class Report {
+public abstract class AbstractReport {
 
-    public Report(Path output) {
+    public AbstractReport(Path output) {
         this.output = output;
     }
 

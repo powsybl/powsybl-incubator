@@ -30,7 +30,7 @@ import com.powsybl.commons.PowsyblException;
  * @author José Antonio Marqués <marquesja at aia.es>
  * @author Marcos de Miguel <demiguelm at aia.es>
  */
-public class InterpretedComputedFlow {
+public final class InterpretedComputedFlow {
 
     private InterpretedComputedFlow() {
         this.p = 0.0;
@@ -314,8 +314,7 @@ public class InterpretedComputedFlow {
             LOG.warn("calculateEndToFlow. Unexpected node");
         }
         calculated = true;
-        double[] angles = { angleDegrees };
-        badVoltage = !anglesAreOk(angles);
+        badVoltage = !anglesAreOk(angleDegrees);
     }
 
     private void calculateBothEndsFlow(String n, String nEnd1, String nEnd2, double v1, double angleDegrees1, double v2,
@@ -341,8 +340,7 @@ public class InterpretedComputedFlow {
             LOG.warn("calculateBothEndsFlow. Unexpected node");
         }
         calculated = true;
-        double[] angles = { angleDegrees1, angleDegrees2 };
-        badVoltage = !anglesAreOk(angles);
+        badVoltage = !anglesAreOk(angleDegrees1, angleDegrees2);
     }
 
     // Xfmr3 flow calculations
@@ -370,8 +368,7 @@ public class InterpretedComputedFlow {
             LOG.warn("calculateEnd1Flow. Unexpected node");
         }
         calculated = true;
-        double[] angles = { angleDegrees };
-        badVoltage = !anglesAreOk(angles);
+        badVoltage = !anglesAreOk(angleDegrees);
     }
 
     private void calculateTwoConnectedEndsFlow(String n, String nEnd1, String nEnd2, double v1, double angleDegrees1,
@@ -406,8 +403,7 @@ public class InterpretedComputedFlow {
             LOG.warn("calculateEnd1End2Flow. Unexpected node");
         }
         calculated = true;
-        double[] angles = { angleDegrees1, angleDegrees2 };
-        badVoltage = !anglesAreOk(angles);
+        badVoltage = !anglesAreOk(angleDegrees1, angleDegrees2);
     }
 
     private void calculateThreeConnectedEndsFlow(String n, String nEnd1, String nEnd2, String nEnd3, double v1,
@@ -449,8 +445,7 @@ public class InterpretedComputedFlow {
             LOG.warn("calculate3EndsFlow. Unexpected node");
         }
         calculated = true;
-        double[] angles = { angleDegrees1, angleDegrees2, angleDegrees3 };
-        badVoltage = !anglesAreOk(angles);
+        badVoltage = !anglesAreOk(angleDegrees1, angleDegrees2, angleDegrees3);
     }
 
     private Complex calculateEndShunt(Complex y11, Complex y12, Complex y21, Complex y22, Complex yFirstOpen11,
@@ -520,7 +515,7 @@ public class InterpretedComputedFlow {
         return !(r1 == 0.0 && x1 == 0.0 || r2 == 0.0 && x2 == 0.0 || r3 == 0.0 && x3 == 0.0);
     }
 
-    private boolean anglesAreOk(double[] angleDegrees) {
+    private boolean anglesAreOk(double... angleDegrees) {
         for (double angleDegree : angleDegrees) {
             if (angleDegree == 0.0) {
                 return false;

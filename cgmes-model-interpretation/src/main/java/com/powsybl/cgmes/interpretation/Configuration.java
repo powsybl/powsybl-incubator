@@ -2,7 +2,7 @@ package com.powsybl.cgmes.interpretation;
 
 import java.nio.file.Path;
 
-public class Configuration {
+public final class Configuration {
 
     private Configuration() {
     }

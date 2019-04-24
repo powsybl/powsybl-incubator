@@ -22,7 +22,7 @@ import com.powsybl.cgmes.interpretation.model.interpreted.InterpretationAlternat
  * @author José Antonio Marqués <marquesja at aia.es>
  * @author Marcos de Miguel <demiguelm at aia.es>
  */
-public class InterpretationAlternatives {
+public final class InterpretationAlternatives {
 
     private InterpretationAlternatives() {
     }

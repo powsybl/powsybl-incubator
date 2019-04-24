@@ -32,7 +32,7 @@ import com.powsybl.commons.io.table.TableFormatterConfig;
  * @author José Antonio Marqués <marquesja at aia.es>
  * @author Marcos de Miguel <demiguelm at aia.es>
  */
-public class BestInterpretationReport extends Report {
+public class BestInterpretationReport extends AbstractReport {
 
     public BestInterpretationReport(Path output) {
         super(output);

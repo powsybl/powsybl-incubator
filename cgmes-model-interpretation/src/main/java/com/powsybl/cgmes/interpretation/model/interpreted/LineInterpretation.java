@@ -17,7 +17,7 @@ import com.powsybl.cgmes.interpretation.model.cgmes.CgmesNode;
  * @author José Antonio Marqués <marquesja at aia.es>
  * @author Marcos de Miguel <demiguelm at aia.es>
  */
-public class LineInterpretation extends Interpretation {
+public class LineInterpretation extends AbstractInterpretation {
 
     public LineInterpretation(
         CgmesLine line,

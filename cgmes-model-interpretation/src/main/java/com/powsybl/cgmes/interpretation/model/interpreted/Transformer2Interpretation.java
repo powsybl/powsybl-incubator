@@ -23,11 +23,11 @@ import com.powsybl.commons.PowsyblException;
  * @author José Antonio Marqués <marquesja at aia.es>
  * @author Marcos de Miguel <demiguelm at aia.es>
  */
-public class Transformer2Interpretation {
+public class Transformer2Interpretation extends AbstractInterpretation {
 
     public Transformer2Interpretation(CgmesTransformer transformer, InterpretationAlternative alternative) {
+        super(alternative);
         this.transformer = transformer;
-        this.alternative = alternative;
     }
 
     public InterpretedBranch interpret() {
@@ -310,5 +310,4 @@ public class Transformer2Interpretation {
     }
 
     private final CgmesTransformer transformer;
-    private final InterpretationAlternative alternative;
 }

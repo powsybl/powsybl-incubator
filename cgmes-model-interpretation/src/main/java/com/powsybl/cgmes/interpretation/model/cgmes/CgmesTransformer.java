@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2017, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 package com.powsybl.cgmes.interpretation.model.cgmes;
 
 import java.util.Comparator;
@@ -11,6 +18,9 @@ import com.powsybl.commons.PowsyblException;
 import com.powsybl.triplestore.api.PropertyBag;
 import com.powsybl.triplestore.api.PropertyBags;
 
+/**
+ * @author Luma Zamarreño <zamarrenolm at aia.es>
+ */
 public class CgmesTransformer {
 
     public CgmesTransformer(
@@ -63,9 +73,9 @@ public class CgmesTransformer {
 
     public CgmesTransformerEnd[] ends() {
         if (end3 != null) {
-            return new CgmesTransformerEnd[] { end1, end2, end3 };
+            return new CgmesTransformerEnd[] {end1, end2, end3};
         } else {
-            return new CgmesTransformerEnd[] { end1, end2 };
+            return new CgmesTransformerEnd[] {end1, end2};
         }
     }
 

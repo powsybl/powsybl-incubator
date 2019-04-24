@@ -10,8 +10,9 @@ package com.powsybl.cgmes.model;
 /**
  * @author Luma Zamarreño <zamarrenolm at aia.es>
  */
-// Extend powsybl-core CgmesNames constants 
 public final class CgmesNames1 {
+
+    // Extend powsybl-core CgmesNames constants
 
     public static final String TOPOLOGICAL_NODE = "TopologicalNode";
 

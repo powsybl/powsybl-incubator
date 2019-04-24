@@ -459,7 +459,7 @@ public class CgmesModelForInterpretation {
             double x2 = end2.asDouble("x");
             String nodeId1 = t1.topologicalNode();
             String nodeId2 = t2.topologicalNode();
-            return (t1.connected() && t2.connected() && isZ0(r1 + r2, x1 + x2, nodeId1, nodeId2));
+            return t1.connected() && t2.connected() && isZ0(r1 + r2, x1 + x2, nodeId1, nodeId2);
         }
         return false;
     }

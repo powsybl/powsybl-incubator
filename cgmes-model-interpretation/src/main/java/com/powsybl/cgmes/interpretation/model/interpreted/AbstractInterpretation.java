@@ -11,9 +11,9 @@ package com.powsybl.cgmes.interpretation.model.interpreted;
  * @author Marcos de Miguel <demiguelm at aia.es>
  */
 // TODO Consider renaming this class to EquipmentInterpretation
-public abstract class Interpretation {
+public abstract class AbstractInterpretation {
 
-    public Interpretation(InterpretationAlternative alternative) {
+    public AbstractInterpretation(InterpretationAlternative alternative) {
         this.alternative = alternative;
     }
 

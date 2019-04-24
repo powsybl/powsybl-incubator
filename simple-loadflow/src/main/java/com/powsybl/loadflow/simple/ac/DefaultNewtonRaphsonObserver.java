@@ -38,9 +38,4 @@ public class DefaultNewtonRaphsonObserver implements NewtonRaphsonObserver {
     public void fx(double[] fx, EquationSystem equationSystem, int iteration) {
         // empty
     }
-
-    @Override
-    public void dx(double[] dx, EquationSystem equationSystem, int iteration) {
-        // empty
-    }
 }

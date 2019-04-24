@@ -23,6 +23,4 @@ public interface NewtonRaphsonObserver {
     void x(double[] x, EquationSystem equationSystem, int iteration);
 
     void fx(double[] fx, EquationSystem equationSystem, int iteration);
-
-    void dx(double[] dx, EquationSystem equationSystem, int iteration);
 }

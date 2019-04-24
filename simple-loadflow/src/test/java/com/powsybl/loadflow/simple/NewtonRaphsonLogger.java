@@ -49,9 +49,4 @@ public class NewtonRaphsonLogger implements NewtonRaphsonObserver {
     public void fx(double[] fx, EquationSystem equationSystem, int iteration) {
         Vectors.log(fx, equationSystem.getRowNames(), LOGGER, "F(X" + iteration + ")");
     }
-
-    @Override
-    public void dx(double[] dx, EquationSystem equationSystem, int iteration) {
-        Vectors.log(dx, equationSystem.getColumnNames(), LOGGER, "DX" + iteration);
-    }
 }

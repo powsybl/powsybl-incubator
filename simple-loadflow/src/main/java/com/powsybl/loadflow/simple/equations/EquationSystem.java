@@ -35,10 +35,6 @@ public class EquationSystem {
 
     private final double[] targets;
 
-    public EquationSystem(List<EquationTerm> equationTerms, NetworkContext network) {
-        this(equationTerms, Collections.emptyList(), network);
-    }
-
     public EquationSystem(List<EquationTerm> equationTerms, List<VariableUpdate> variableUpdates, NetworkContext networkContext) {
         this.equationTerms = Objects.requireNonNull(equationTerms);
         this.variableUpdates = Objects.requireNonNull(variableUpdates);

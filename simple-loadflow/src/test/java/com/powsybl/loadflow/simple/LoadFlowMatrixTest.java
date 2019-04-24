@@ -47,7 +47,7 @@ public class LoadFlowMatrixTest {
 
     @Test
     public void testAc() {
-        //Network network = TwoBusNetwork.create();
+        //Network network = TwoBusNetworkFactory.create();
         Network network = EurostagTutorialExample1Factory.create();
 
         logNetwork(network);

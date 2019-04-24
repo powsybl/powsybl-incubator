@@ -14,6 +14,7 @@ import com.powsybl.iidm.network.test.EurostagTutorialExample1Factory;
 import com.powsybl.iidm.network.test.PhaseShifterTestCaseFactory;
 import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
+import com.powsybl.loadflow.simple.network.FourBusNetworkFactory;
 import com.powsybl.math.matrix.DenseMatrixFactory;
 import com.powsybl.math.matrix.MatrixFactory;
 import org.junit.Test;
@@ -79,7 +80,7 @@ public class SimpleLoadFlowTest {
 
     @Test
     public void fourBusesTest() {
-        Network network = FourBusNetworkTest.create();
+        Network network = FourBusNetworkFactory.create();
 
         LoadFlow lf = new SimpleLoadFlowFactory(matrixFactory).create(network, null, 0);
         lf.run(VariantManagerConstants.INITIAL_VARIANT_ID, new LoadFlowParameters());

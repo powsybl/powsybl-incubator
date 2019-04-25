@@ -10,6 +10,7 @@ package com.powsybl.cgmes.model.interpretation.test;
 import java.io.IOException;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.powsybl.cgmes.interpretation.Interpretation;
@@ -36,8 +37,8 @@ public class KronReductionTests {
 
     // FIXME This test fails,
     // error is not below tolerance for all interpretation alternatives
-    // Only the alternatives that have Xfmr2_yshunt_split have an error < tolerance
-    // @Test
+    @Ignore("Only alternatives with Xfmr2_yshunt_split have error < tolerance")
+    @Test
     public void xfmr2ConnectedTest() throws IOException {
         testInterpretationWithoutErrors(KronReductionTestsModelFactory.modelWithXfmr2(true));
     }

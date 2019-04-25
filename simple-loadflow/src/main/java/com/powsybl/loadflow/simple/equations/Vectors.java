@@ -45,8 +45,8 @@ public final class Vectors {
 
     public static double norm2(double[] vector) {
         double norm = 0;
-        for (int i = 0; i < vector.length; i++) {
-            norm += vector[i] * vector[i];
+        for (double v : vector) {
+            norm += v * v;
         }
         return Math.sqrt(norm);
     }

@@ -8,6 +8,8 @@ package com.powsybl.loadflow.simple.ac;
 
 import com.google.common.collect.ImmutableMap;
 import com.powsybl.iidm.network.Network;
+import com.powsybl.loadflow.LoadFlow;
+import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
 import com.powsybl.loadflow.LoadFlowResultImpl;
 import com.powsybl.loadflow.simple.network.NetworkContext;
@@ -16,11 +18,12 @@ import com.powsybl.math.matrix.SparseMatrixFactory;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class SimpleAcLoadFlow {
+public class SimpleAcLoadFlow implements LoadFlow {
 
     private final Network network;
 
@@ -35,15 +38,30 @@ public class SimpleAcLoadFlow {
         return new SimpleAcLoadFlow(network, new SparseMatrixFactory());
     }
 
-    public LoadFlowResult run() {
+    @Override
+    public String getName() {
+        return "Simple loadflow";
+    }
+
+    @Override
+    public String getVersion() {
+        return "1.0";
+    }
+
+    @Override
+    public CompletableFuture<LoadFlowResult> run(String workingStateId, LoadFlowParameters parameters) {
+        Objects.requireNonNull(workingStateId);
+        Objects.requireNonNull(parameters);
+
         NetworkContext networkContext = NetworkContext.of(network);
 
+        NewtonRaphsonParameters nrParameters = new NewtonRaphsonParameters().setVoltageInitMode(parameters.getVoltageInitMode());
         NewtonRaphsonResult result = new NewtonRaphson(networkContext, matrixFactory, new DefaultNewtonRaphsonObserver())
-                .run(new NewtonRaphsonParameters());
+                .run(nrParameters);
 
         Map<String, String> metrics = ImmutableMap.of("iterations", Integer.toString(result.getIterations()),
-                                                      "status", result.getStatus().name());
+                "status", result.getStatus().name());
 
-        return new LoadFlowResultImpl(result.getStatus() == NewtonRaphsonStatus.CONVERGED, metrics, null);
+        return CompletableFuture.completedFuture(new LoadFlowResultImpl(result.getStatus() == NewtonRaphsonStatus.CONVERGED, metrics, null));
     }
 }

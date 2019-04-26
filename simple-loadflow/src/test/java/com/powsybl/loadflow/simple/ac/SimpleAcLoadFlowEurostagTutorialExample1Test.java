@@ -7,10 +7,9 @@
 
 package com.powsybl.loadflow.simple.ac;
 
-import com.powsybl.iidm.network.Bus;
-import com.powsybl.iidm.network.Line;
-import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.network.*;
 import com.powsybl.iidm.network.test.EurostagTutorialExample1Factory;
+import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
 import com.powsybl.math.matrix.DenseMatrixFactory;
 import org.junit.Before;
@@ -48,7 +47,7 @@ public class SimpleAcLoadFlowEurostagTutorialExample1Test {
 
     @Test
     public void baseCaseTest() {
-        LoadFlowResult result = loadFlow.run();
+        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, new LoadFlowParameters()).join();
         assertTrue(result.isOk());
 
         assertVoltageEquals(24.5, genBus);
@@ -73,7 +72,7 @@ public class SimpleAcLoadFlowEurostagTutorialExample1Test {
     public void line1Side1DeconnectionTest() {
         line1.getTerminal1().disconnect();
 
-        LoadFlowResult result = loadFlow.run();
+        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, new LoadFlowParameters()).join();
         assertTrue(result.isOk());
 
         assertVoltageEquals(24.5, genBus);
@@ -98,7 +97,7 @@ public class SimpleAcLoadFlowEurostagTutorialExample1Test {
     public void line1Side2DeconnectionTest() {
         line1.getTerminal2().disconnect();
 
-        LoadFlowResult result = loadFlow.run();
+        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, new LoadFlowParameters()).join();
         assertTrue(result.isOk());
 
         assertVoltageEquals(24.5, genBus);
@@ -124,7 +123,7 @@ public class SimpleAcLoadFlowEurostagTutorialExample1Test {
         line1.getTerminal1().disconnect();
         line1.getTerminal2().disconnect();
 
-        LoadFlowResult result = loadFlow.run();
+        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, new LoadFlowParameters()).join();
         assertTrue(result.isOk());
 
         assertVoltageEquals(24.5, genBus);

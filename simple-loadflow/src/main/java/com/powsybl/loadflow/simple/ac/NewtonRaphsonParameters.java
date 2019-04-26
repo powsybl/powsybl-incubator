@@ -6,6 +6,10 @@
  */
 package com.powsybl.loadflow.simple.ac;
 
+import com.powsybl.loadflow.LoadFlowParameters;
+
+import java.util.Objects;
+
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
@@ -15,14 +19,26 @@ public class NewtonRaphsonParameters {
 
     private int maxIteration = DEFAULT_MAX_ITERATION;
 
+    private LoadFlowParameters.VoltageInitMode voltageInitMode = LoadFlowParameters.VoltageInitMode.UNIFORM_VALUES;
+
     public int getMaxIteration() {
         return maxIteration;
     }
 
-    public void setMaxIteration(int maxIteration) {
+    public NewtonRaphsonParameters setMaxIteration(int maxIteration) {
         if (maxIteration < 1) {
             throw new IllegalArgumentException("Invalid max iteration value: " + maxIteration);
         }
         this.maxIteration = maxIteration;
+        return this;
+    }
+
+    public LoadFlowParameters.VoltageInitMode getVoltageInitMode() {
+        return voltageInitMode;
+    }
+
+    public NewtonRaphsonParameters setVoltageInitMode(LoadFlowParameters.VoltageInitMode voltageInitMode) {
+        this.voltageInitMode = Objects.requireNonNull(voltageInitMode);
+        return this;
     }
 }

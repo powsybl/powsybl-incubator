@@ -40,22 +40,28 @@ public class NewtonRaphson {
     }
 
     public NewtonRaphsonResult run(NewtonRaphsonParameters parameters) {
+        Objects.requireNonNull(parameters);
+
         EquationContext context = new EquationContext();
 
         EquationSystem system = new AcEquationSystemMaker()
                 .make(networkContext, context);
 
         // initialize state vector (flat start)
-        double[] x = system.initState();
+        double[] x = system.initState(parameters.getVoltageInitMode());
         observer.x(x, system, 0);
 
         double[] fx = new double[system.getEquations().size()];
         system.evalFx(x, fx);
 
         int iteration = 0;
-        double norm;
+        double norm = Vectors.norm2(fx);
+        if (norm < EPS_CONV) { // perfect match!
+            return new NewtonRaphsonResult(NewtonRaphsonStatus.CONVERGED, 0);
+        }
+
         NewtonRaphsonStatus status = NewtonRaphsonStatus.CONVERGED;
-        while (iteration < parameters.getMaxIteration() && (norm = Vectors.norm2(fx)) > EPS_CONV) {
+        while (iteration < parameters.getMaxIteration() && norm > EPS_CONV) {
             observer.beginIteration(iteration);
 
             // build jacobian
@@ -79,6 +85,9 @@ public class NewtonRaphson {
             // update x
             Vectors.minus(x, fx);
             observer.x(x, system, iteration + 1);
+
+            // update norm f(x)
+            norm = Vectors.norm2(fx);
 
             iteration++;
         }

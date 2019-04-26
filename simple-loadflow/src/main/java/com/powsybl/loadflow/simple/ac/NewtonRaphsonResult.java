@@ -18,6 +18,9 @@ public class NewtonRaphsonResult {
     private NewtonRaphsonStatus status;
 
     public NewtonRaphsonResult(NewtonRaphsonStatus status, int iterations) {
+        if (iterations < 0) {
+            throw new IllegalArgumentException("Invalid iteration count: " + iterations);
+        }
         this.status = Objects.requireNonNull(status);
         this.iterations = iterations;
     }

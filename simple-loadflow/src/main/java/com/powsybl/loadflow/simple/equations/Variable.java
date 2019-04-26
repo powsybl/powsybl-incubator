@@ -70,7 +70,7 @@ public class Variable implements Comparable<Variable> {
                         x[column] = 0;
                         break;
                     case PREVIOUS_VALUES:
-                        x[column] = networkContext.getBus(id).getAngle();
+                        x[column] = Math.toRadians(networkContext.getBus(id).getAngle());
                         break;
                     default:
                         throw new UnsupportedOperationException("Unsupported voltage init mode: " + mode);

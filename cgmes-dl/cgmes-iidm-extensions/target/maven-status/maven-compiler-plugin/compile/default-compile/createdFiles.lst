@@ -1,9 +1,0 @@
-com/powsybl/cgmes/iidm/extensions/dl/CouplingDeviceDiagramData.class
-com/powsybl/cgmes/iidm/extensions/dl/DiagramTerminal.class
-com/powsybl/cgmes/iidm/extensions/dl/NodeDiagramData.class
-com/powsybl/cgmes/iidm/extensions/dl/InjectionDiagramData.class
-com/powsybl/cgmes/iidm/extensions/dl/LineDiagramData.class
-com/powsybl/cgmes/iidm/extensions/dl/ThreeWindingsTransformerDiagramData$1.class
-com/powsybl/cgmes/iidm/extensions/dl/ThreeWindingsTransformerDiagramData.class
-com/powsybl/cgmes/iidm/extensions/dl/DiagramPoint.class
-com/powsybl/cgmes/iidm/extensions/dl/CouplingDeviceDiagramData$1.class

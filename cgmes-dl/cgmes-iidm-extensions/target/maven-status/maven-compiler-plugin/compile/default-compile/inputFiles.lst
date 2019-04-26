@@ -1,7 +1,0 @@
-/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-iidm-extensions/src/main/java/com/powsybl/cgmes/iidm/extensions/dl/LineDiagramData.java
-/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-iidm-extensions/src/main/java/com/powsybl/cgmes/iidm/extensions/dl/NodeDiagramData.java
-/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-iidm-extensions/src/main/java/com/powsybl/cgmes/iidm/extensions/dl/DiagramTerminal.java
-/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-iidm-extensions/src/main/java/com/powsybl/cgmes/iidm/extensions/dl/ThreeWindingsTransformerDiagramData.java
-/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-iidm-extensions/src/main/java/com/powsybl/cgmes/iidm/extensions/dl/CouplingDeviceDiagramData.java
-/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-iidm-extensions/src/main/java/com/powsybl/cgmes/iidm/extensions/dl/InjectionDiagramData.java
-/home/walhaame/powsybl-incubator/cgmes-dl/cgmes-iidm-extensions/src/main/java/com/powsybl/cgmes/iidm/extensions/dl/DiagramPoint.java

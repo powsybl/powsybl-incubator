@@ -59,10 +59,6 @@ public class OpenBranchSide2AcContext {
         return p1(v1);
     }
 
-    public double p2() {
-        return 0;
-    }
-
     public double q1(double v1) {
         return -bc.r1() * bc.r1() * v1 * v1 * (bc.b1() + bc.y() * bc.y() * bc.b2() / shunt
                 - (bc.b2() * bc.b2() + bc.g2() * bc.g2()) * bc.y() * Math.cos(bc.ksi()) / shunt);
@@ -71,9 +67,5 @@ public class OpenBranchSide2AcContext {
     public double q1(double[] x) {
         double v1 = x[v1Var.getColumn()];
         return q1(v1);
-    }
-
-    public double q2() {
-        return 0;
     }
 }

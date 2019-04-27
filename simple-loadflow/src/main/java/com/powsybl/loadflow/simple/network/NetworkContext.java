@@ -34,6 +34,12 @@ public class NetworkContext {
 
     public NetworkContext(Network network) {
         this.network = Objects.requireNonNull(network);
+        if (network.getDanglingLineCount() > 0) {
+            throw new UnsupportedOperationException("TODO: dangling lines");
+        }
+        if (network.getThreeWindingsTransformerCount() > 0) {
+            throw new UnsupportedOperationException("TODO: 3 windings transformers");
+        }
         buses = network.getBusView().getBusStream().filter(Bus::isInMainConnectedComponent).collect(ImmutableList.toImmutableList());
         busesById = buses.stream().collect(Collectors.toMap(Identifiable::getId, b -> b));
 
@@ -77,6 +83,10 @@ public class NetworkContext {
             }
             busP.compute(bus.getId(), (id, value) -> value == null ? -load.getP0() : value - load.getP0());
             busQ.compute(bus.getId(), (id, value) -> value == null ? -load.getQ0() : value - load.getQ0());
+        }
+
+        for (ShuntCompensator sc : network.getShuntCompensators()) {
+            throw new UnsupportedOperationException("TODO: shunt compensators");
         }
 
         for (HvdcLine line : network.getHvdcLines()) {

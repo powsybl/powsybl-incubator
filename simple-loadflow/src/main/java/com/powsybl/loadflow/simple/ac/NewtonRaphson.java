@@ -80,14 +80,14 @@ public class NewtonRaphson {
                 status = NewtonRaphsonStatus.SOLVER_FAILED;
             }
 
+            // update norm f(x)
+            norm = Vectors.norm2(fx);
+
             observer.endIteration(iteration, norm);
 
             // update x
             Vectors.minus(x, fx);
             observer.x(x, system, iteration + 1);
-
-            // update norm f(x)
-            norm = Vectors.norm2(fx);
 
             iteration++;
         }

@@ -59,15 +59,25 @@ public class SimpleLoadFlowTest {
         assertEquals(-300, line2.getTerminal2().getP(), 0.01);
 
         network.getLine("NHV1_NHV2_1").getTerminal1().disconnect();
-        network.getLine("NHV1_NHV2_1").getTerminal2().disconnect();
 
         lf.run(network.getVariantManager().getWorkingVariantId(), parameters);
 
         assertTrue(Double.isNaN(line1.getTerminal1().getP()));
+        assertEquals(0, line1.getTerminal2().getP(), 0);
+        assertEquals(600, line2.getTerminal1().getP(), 0.01);
+        assertEquals(-600, line2.getTerminal2().getP(), 0.01);
+
+        network.getLine("NHV1_NHV2_1").getTerminal1().connect();
+        network.getLine("NHV1_NHV2_1").getTerminal2().disconnect();
+
+        lf.run(network.getVariantManager().getWorkingVariantId(), parameters);
+
+        assertEquals(0, line1.getTerminal1().getP(), 0);
         assertTrue(Double.isNaN(line1.getTerminal2().getP()));
         assertEquals(600, line2.getTerminal1().getP(), 0.01);
         assertEquals(-600, line2.getTerminal2().getP(), 0.01);
 
+        network.getLine("NHV1_NHV2_1").getTerminal1().disconnect();
         network.getLoad("LOAD").setP0(450);
 
         lf.run(network.getVariantManager().getWorkingVariantId(), parameters);

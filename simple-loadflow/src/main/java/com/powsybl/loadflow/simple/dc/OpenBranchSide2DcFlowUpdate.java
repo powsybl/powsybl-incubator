@@ -14,17 +14,17 @@ import java.util.Objects;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class OpenBranchDcFlowUpdate implements VariableUpdate {
+public class OpenBranchSide2DcFlowUpdate implements VariableUpdate {
 
     private final Branch branch;
 
-    public OpenBranchDcFlowUpdate(Branch branch) {
+    public OpenBranchSide2DcFlowUpdate(Branch branch) {
         this.branch = Objects.requireNonNull(branch);
     }
 
     @Override
     public void update(double[] x) {
         branch.getTerminal1().setP(0);
-        branch.getTerminal2().setP(0);
+        branch.getTerminal2().setP(Double.NaN);
     }
 }

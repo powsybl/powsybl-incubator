@@ -55,7 +55,7 @@ public class NetworkContext {
             if (cc2) {
                 neighbors.merge(bus2.getId(), 1, Integer::sum);
             }
-            if (cc1 || cc2) {
+            if ((cc1 && cc2) || (cc1 && bus2 == null) || (cc2 && bus1 == null)) {
                 branches.add(branch);
             }
         }

@@ -38,8 +38,10 @@ public class DcEquationSystemMaker implements EquationSystemMaker {
                     equationTerms.add(new ClosedBranchDcFlowEquationTerm(branchContext, Branch.Side.TWO, bus1, bus2, networkContext, equationContext));
                 }
                 variableUpdates.add(new ClosedBranchDcFlowUpdate(branchContext));
-            } else {
-                variableUpdates.add(new OpenBranchDcFlowUpdate(branch));
+            } else if (bus1 != null) {
+                variableUpdates.add(new OpenBranchSide2DcFlowUpdate(branch));
+            } else if (bus2 != null) {
+                variableUpdates.add(new OpenBranchSide1DcFlowUpdate(branch));
             }
         }
 

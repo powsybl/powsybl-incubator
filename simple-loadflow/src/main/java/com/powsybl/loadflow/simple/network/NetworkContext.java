@@ -43,18 +43,11 @@ public class NetworkContext {
         buses = network.getBusView().getBusStream().filter(Bus::isInMainConnectedComponent).collect(ImmutableList.toImmutableList());
         busesById = buses.stream().collect(Collectors.toMap(Identifiable::getId, b -> b));
 
-        Map<String, Integer> neighbors = new HashMap<>();
         for (Branch branch : network.getBranches()) {
             Bus bus1 = branch.getTerminal1().getBusView().getBus();
             Bus bus2 = branch.getTerminal2().getBusView().getBus();
             boolean cc1 = bus1 != null && bus1.isInMainConnectedComponent();
             boolean cc2 = bus2 != null && bus2.isInMainConnectedComponent();
-            if (cc1) {
-                neighbors.merge(bus1.getId(), 1, Integer::sum);
-            }
-            if (cc2) {
-                neighbors.merge(bus2.getId(), 1, Integer::sum);
-            }
             if ((cc1 && cc2) || (cc1 && bus2 == null) || (cc2 && bus1 == null)) {
                 branches.add(branch);
             }

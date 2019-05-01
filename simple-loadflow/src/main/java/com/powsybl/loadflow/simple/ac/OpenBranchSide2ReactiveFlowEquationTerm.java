@@ -7,40 +7,24 @@
 package com.powsybl.loadflow.simple.ac;
 
 import com.powsybl.iidm.network.Bus;
-import com.powsybl.loadflow.simple.equations.*;
+import com.powsybl.loadflow.simple.equations.EquationContext;
+import com.powsybl.loadflow.simple.equations.EquationType;
+import com.powsybl.loadflow.simple.equations.Variable;
+import com.powsybl.loadflow.simple.equations.VariableType;
 import com.powsybl.loadflow.simple.network.BranchCharacteristics;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class OpenBranchSide2ReactiveFlowEquationTerm implements EquationTerm {
+public class OpenBranchSide2ReactiveFlowEquationTerm extends AbstractOpenBranchAcEquationTerm {
 
     private final OpenBranchSide2AcContext branchContext;
 
-    private final Equation equation;
-
-    private final List<Variable> variables;
-
     public OpenBranchSide2ReactiveFlowEquationTerm(OpenBranchSide2AcContext branchContext, Bus bus1, EquationContext equationContext) {
+        super(EquationType.BUS_Q, VariableType.BUS_V, bus1, equationContext);
         this.branchContext = Objects.requireNonNull(branchContext);
-        Objects.requireNonNull(bus1);
-        Objects.requireNonNull(equationContext);
-        equation = equationContext.getEquation(bus1.getId(), EquationType.BUS_Q);
-        variables = Collections.singletonList(equationContext.getVariable(bus1.getId(), VariableType.BUS_V));
-    }
-
-    @Override
-    public Equation getEquation() {
-        return equation;
-    }
-
-    @Override
-    public List<Variable> getVariables() {
-        return variables;
     }
 
     @Override
@@ -58,10 +42,5 @@ public class OpenBranchSide2ReactiveFlowEquationTerm implements EquationTerm {
         } else {
             throw new IllegalStateException("Unknown variable: " + variable);
         }
-    }
-
-    @Override
-    public double rhs(Variable variable) {
-        return 0;
     }
 }

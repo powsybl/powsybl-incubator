@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.powsybl.loadflow.simple;
+package com.powsybl.loadflow.simple.dc;
 
 import com.powsybl.iidm.network.Line;
 import com.powsybl.iidm.network.Network;
@@ -27,9 +27,9 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author Sylvain Leclerc <sylvain.leclerc at rte-france.com>
  */
-public class SimpleLoadFlowTest {
+public class SimpleDcLoadFlowTest {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleLoadFlowTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleDcLoadFlowTest.class);
 
     private final MatrixFactory matrixFactory = new DenseMatrixFactory();
 
@@ -50,7 +50,7 @@ public class SimpleLoadFlowTest {
         assertEquals(Double.NaN, line2.getTerminal2().getP(), 0);
 
         LoadFlowParameters parameters = new LoadFlowParameters();
-        LoadFlow lf = new SimpleLoadFlowFactory(matrixFactory).create(network, null, 0);
+        LoadFlow lf = new SimpleDcLoadFlowFactory(matrixFactory).create(network, null, 0);
         lf.run(network.getVariantManager().getWorkingVariantId(), parameters);
 
         assertEquals(300, line1.getTerminal1().getP(), 0.01);
@@ -92,7 +92,7 @@ public class SimpleLoadFlowTest {
     public void fourBusesTest() {
         Network network = FourBusNetworkFactory.create();
 
-        LoadFlow lf = new SimpleLoadFlowFactory(matrixFactory).create(network, null, 0);
+        LoadFlow lf = new SimpleDcLoadFlowFactory(matrixFactory).create(network, null, 0);
         lf.run(VariantManagerConstants.INITIAL_VARIANT_ID, new LoadFlowParameters());
 
         Line l14 = network.getLine("l14");
@@ -123,7 +123,7 @@ public class SimpleLoadFlowTest {
         ps1.getPhaseTapChanger().getStep(2).setAlpha(5);
 
         LoadFlowParameters parameters = new LoadFlowParameters();
-        LoadFlow lf = new SimpleLoadFlowFactory(matrixFactory).create(network, null, 0);
+        LoadFlow lf = new SimpleDcLoadFlowFactory(matrixFactory).create(network, null, 0);
         lf.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters);
 
         assertEquals(50, l1.getTerminal1().getP(), 0.01);

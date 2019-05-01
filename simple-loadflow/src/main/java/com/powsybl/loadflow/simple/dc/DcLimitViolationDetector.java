@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.powsybl.loadflow.simple;
+package com.powsybl.loadflow.simple.dc;
 
 import com.powsybl.iidm.network.Branch;
 import com.powsybl.iidm.network.Bus;
@@ -20,7 +20,7 @@ import java.util.function.Consumer;
  *
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class SimpleLimitViolationDetector extends AbstractLimitViolationDetector {
+public class DcLimitViolationDetector extends AbstractLimitViolationDetector {
 
     private static final double COS_PHI = 1d;
 

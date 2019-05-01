@@ -4,15 +4,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.powsybl.loadflow.simple;
+package com.powsybl.loadflow.simple.dc;
 
 import com.powsybl.iidm.network.Bus;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.test.EurostagTutorialExample1Factory;
-import com.powsybl.iidm.xml.NetworkXml;
-import com.powsybl.loadflow.simple.ac.NewtonRaphson;
-import com.powsybl.loadflow.simple.ac.NewtonRaphsonParameters;
-import com.powsybl.loadflow.simple.dc.DcEquationSystemMaker;
 import com.powsybl.loadflow.simple.equations.EquationSystem;
 import com.powsybl.loadflow.simple.equations.EquationContext;
 import com.powsybl.loadflow.simple.equations.EquationType;
@@ -32,9 +28,9 @@ import static org.junit.Assert.assertEquals;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class LoadFlowMatrixTest {
+public class DcLoadFlowMatrixTest {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LoadFlowMatrixTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DcLoadFlowMatrixTest.class);
 
     private final MatrixFactory matrixFactory = new DenseMatrixFactory();
 
@@ -43,21 +39,6 @@ public class LoadFlowMatrixTest {
         network.getGenerators().forEach(g ->  LOGGER.info("{} : p = {}.", g.getId(), g.getTargetP()));
         network.getBranchStream().forEach(b -> LOGGER.info("{} : p1 = {}, p2 = {}.",
                 b.getId(), b.getTerminal1().getP(), b.getTerminal2().getP()));
-    }
-
-    @Test
-    public void testAc() {
-        //Network network = TwoBusNetworkFactory.create();
-        Network network = EurostagTutorialExample1Factory.create();
-
-        logNetwork(network);
-
-        NetworkContext networkContext = NetworkContext.of(network);
-
-        new NewtonRaphson(networkContext, matrixFactory, new NewtonRaphsonLogger())
-                .run(new NewtonRaphsonParameters());
-
-        NetworkXml.write(network, System.out);
     }
 
     @Test

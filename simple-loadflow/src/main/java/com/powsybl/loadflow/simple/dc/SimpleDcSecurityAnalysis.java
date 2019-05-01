@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.powsybl.loadflow.simple;
+package com.powsybl.loadflow.simple.dc;
 
 import com.powsybl.contingency.ContingenciesProvider;
 import com.powsybl.contingency.Contingency;
@@ -23,20 +23,20 @@ import java.util.concurrent.CompletableFuture;
 /**
  * @author Sylvain Leclerc <sylvain.leclerc at rte-france.com>
  */
-public class SimpleSecurityAnalysis extends AbstractSecurityAnalysis {
+public class SimpleDcSecurityAnalysis extends AbstractSecurityAnalysis {
 
     private final MatrixFactory matrixFactory;
 
-    public SimpleSecurityAnalysis(Network network) {
+    public SimpleDcSecurityAnalysis(Network network) {
         this(network, new DenseMatrixFactory());
     }
 
-    public SimpleSecurityAnalysis(Network network, MatrixFactory matrixFactory) {
-        this(network, new SimpleLimitViolationDetector(), new LimitViolationFilter(), matrixFactory);
+    public SimpleDcSecurityAnalysis(Network network, MatrixFactory matrixFactory) {
+        this(network, new DcLimitViolationDetector(), new LimitViolationFilter(), matrixFactory);
     }
 
-    public SimpleSecurityAnalysis(Network network, LimitViolationDetector detector, LimitViolationFilter filter,
-                                  MatrixFactory matrixFactory) {
+    public SimpleDcSecurityAnalysis(Network network, LimitViolationDetector detector, LimitViolationFilter filter,
+                                    MatrixFactory matrixFactory) {
         super(network, detector, filter);
         this.matrixFactory = Objects.requireNonNull(matrixFactory);
     }
@@ -50,7 +50,7 @@ public class SimpleSecurityAnalysis extends AbstractSecurityAnalysis {
 
         LoadFlowParameters loadFlowParameters = securityAnalysisParameters.getLoadFlowParameters();
 
-        LoadFlow loadFlow = new SimpleLoadFlow(network, matrixFactory);
+        LoadFlow loadFlow = new SimpleDcLoadFlow(network, matrixFactory);
 
         // start post contingency LF from pre-contingency state variables
         LoadFlowParameters postContParameters = loadFlowParameters.copy().setVoltageInitMode(LoadFlowParameters.VoltageInitMode.PREVIOUS_VALUES);

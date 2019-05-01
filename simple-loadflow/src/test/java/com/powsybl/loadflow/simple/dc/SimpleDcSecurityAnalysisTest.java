@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.powsybl.loadflow.simple;
+package com.powsybl.loadflow.simple.dc;
 
 import com.google.common.collect.ImmutableList;
 import com.powsybl.commons.io.table.AsciiTableFormatterFactory;
@@ -33,9 +33,9 @@ import static org.junit.Assert.*;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class SimpleSecurityAnalysisTest {
+public class SimpleDcSecurityAnalysisTest {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleSecurityAnalysisTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleDcSecurityAnalysisTest.class);
 
     private final MatrixFactory matrixFactory = new DenseMatrixFactory();
 
@@ -44,7 +44,7 @@ public class SimpleSecurityAnalysisTest {
         Network network = EurostagTutorialExample1Factory.createWithFixedCurrentLimits();
 
         LimitViolationFilter currentFilter = new LimitViolationFilter(EnumSet.of(LimitViolationType.CURRENT));
-        SecurityAnalysis securityAnalysis = new SimpleSecurityAnalysisFactory(matrixFactory).create(network, currentFilter, null, 0);
+        SecurityAnalysis securityAnalysis = new SimpleDcSecurityAnalysisFactory(matrixFactory).create(network, currentFilter, null, 0);
 
         ContingenciesProvider provider = n -> ImmutableList.of("NHV1_NHV2_1", "NHV1_NHV2_2").stream()
                 .map(id -> new Contingency(id, new BranchContingency(id)))

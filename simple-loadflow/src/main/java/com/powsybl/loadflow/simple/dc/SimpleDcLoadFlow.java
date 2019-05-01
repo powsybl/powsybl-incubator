@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.powsybl.loadflow.simple;
+package com.powsybl.loadflow.simple.dc;
 
 import com.google.common.base.Stopwatch;
 import com.powsybl.iidm.network.Bus;
@@ -15,7 +15,6 @@ import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
 import com.powsybl.loadflow.LoadFlowResultImpl;
-import com.powsybl.loadflow.simple.dc.DcEquationSystemMaker;
 import com.powsybl.loadflow.simple.equations.EquationContext;
 import com.powsybl.loadflow.simple.equations.EquationSystem;
 import com.powsybl.loadflow.simple.network.NetworkContext;
@@ -46,19 +45,19 @@ import java.util.concurrent.TimeUnit;
 
  * @author Sylvain Leclerc <sylvain.leclerc at rte-france.com>
  */
-public class SimpleLoadFlow implements LoadFlow {
+public class SimpleDcLoadFlow implements LoadFlow {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleLoadFlow.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleDcLoadFlow.class);
 
     private final Network network;
 
     private final MatrixFactory matrixFactory;
 
-    public SimpleLoadFlow(Network network) {
+    public SimpleDcLoadFlow(Network network) {
         this(network, new DenseMatrixFactory());
     }
 
-    public SimpleLoadFlow(Network network, MatrixFactory matrixFactory) {
+    public SimpleDcLoadFlow(Network network, MatrixFactory matrixFactory) {
         this.network = Objects.requireNonNull(network);
         this.matrixFactory = Objects.requireNonNull(matrixFactory);
     }

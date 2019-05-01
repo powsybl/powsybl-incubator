@@ -143,11 +143,11 @@ public class EquationSystem {
         return fx;
     }
 
-    public void logLargestMistatches(double[] x) {
-        logLargestMistatches(x, 10);
+    public void logLargestMismatches(double[] x) {
+        logLargestMismatches(x, 10);
     }
 
-    public void logLargestMistatches(double[] x, int count) {
+    public void logLargestMismatches(double[] x, int count) {
         double[] fx = evalFx(x);
         Map<String, Double> mismatches = new HashMap<>(equations.size());
         for (Equation equation : equations.keySet()) {

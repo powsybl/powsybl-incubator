@@ -7,10 +7,7 @@
 package com.powsybl.loadflow.simple.dc;
 
 import com.google.common.base.Stopwatch;
-import com.powsybl.iidm.network.Bus;
-import com.powsybl.iidm.network.Generator;
-import com.powsybl.iidm.network.Load;
-import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.network.*;
 import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
@@ -72,6 +69,9 @@ public class SimpleDcLoadFlow implements LoadFlow {
             for (Load l : b.getLoads()) {
                 activeLoad += l.getP0();
             }
+            for (DanglingLine dl : b.getDanglingLines()) {
+                activeLoad += dl.getP0();
+            }
         }
 
         LOGGER.info("Active generation={} Mw, active load={} Mw", Math.round(activeGeneration), Math.round(activeLoad));
@@ -112,7 +112,7 @@ public class SimpleDcLoadFlow implements LoadFlow {
             LOGGER.error("Failed to solve linear system for simple DC load flow.", e);
         }
 
-        equationSystem.logLargestMistatches(dx);
+        equationSystem.logLargestMismatches(dx);
 
         networkContext.resetState();
         equationSystem.updateState(dx);

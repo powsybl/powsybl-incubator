@@ -43,31 +43,63 @@ public class ClosedBranchActiveFlowEquationTerm extends AbstractClosedBranchAcFl
         }
     }
 
+    private double dp1dv1(double v1, double v2, double ph1, double ph2, BranchCharacteristics bc) {
+        return bc.r1() * (2 * bc.g1() * bc.r1() * v1 + 2 * bc.y() * bc.r1() * v1 * Math.sin(bc.ksi()) - bc.y() * bc.r2() * v2 * Math.sin(bc.ksi() - bc.a1() + bc.a2() - ph1 + ph2));
+    }
+
+    private double dp1dv2(double v1, double ph1, double ph2, BranchCharacteristics bc) {
+        return -bc.y() * bc.r1() * bc.r2() * v1 * Math.sin(bc.ksi() - bc.a1() + bc.a2() - ph1 + ph2);
+    }
+
+    private double dp1dph1(double v1, double v2, double ph1, double ph2, BranchCharacteristics bc) {
+        return bc.y() * bc.r1() * bc.r2() * v1 * v2 * Math.cos(bc.ksi() - bc.a1() + bc.a2() - ph1 + ph2);
+    }
+
+    private double dp1dph2(double v1, double v2, double ph1, double ph2, BranchCharacteristics bc) {
+        return -bc.y() * bc.r1() * bc.r2() * v1 * v2 * Math.cos(bc.ksi() - bc.a1() + bc.a2() - ph1 + ph2);
+    }
+
     private double dp1(Variable variable, double v1, double v2, double ph1, double ph2) {
         BranchCharacteristics bc = branchContext.getBc();
         if (variable.equals(branchContext.getV1Var())) {
-            return bc.r1() * (2 * bc.g1() * bc.r1() * v1 + 2 * bc.y() * bc.r1() * v1 * Math.sin(bc.ksi()) - bc.y() * bc.r2() * v2 * Math.sin(bc.ksi() - bc.a1() + bc.a2() - ph1 + ph2));
+            return dp1dv1(v1, v2, ph1, ph2, bc);
         } else if (variable.equals(branchContext.getV2Var())) {
-            return -bc.y() * bc.r1() * bc.r2() * v1 * Math.sin(bc.ksi() - bc.a1() + bc.a2() - ph1 + ph2);
+            return dp1dv2(v1, ph1, ph2, bc);
         } else if (variable.equals(branchContext.getPh1Var())) {
-            return bc.y() * bc.r1() * bc.r2() * v1 * v2 * Math.cos(bc.ksi() - bc.a1() + bc.a2() - ph1 + ph2);
+            return dp1dph1(v1, v2, ph1, ph2, bc);
         } else if (variable.equals(branchContext.getPh2Var())) {
-            return -bc.y() * bc.r1() * bc.r2() * v1 * v2 * Math.cos(bc.ksi() - bc.a1() + bc.a2() - ph1 + ph2);
+            return dp1dph2(v1, v2, ph1, ph2, bc);
         } else {
             throw new IllegalStateException("Unknown variable: " + variable);
         }
     }
 
+    private double dp2dv1(double v2, double ph1, double ph2, BranchCharacteristics bc) {
+        return -bc.y() * bc.r1() * bc.r2() * v2 * Math.sin(bc.ksi() + bc.a1() - bc.a2() + ph1 - ph2);
+    }
+
+    private double dp2dv2(double v1, double v2, double ph1, double ph2, BranchCharacteristics bc) {
+        return bc.r2() * (2 * bc.g2() * bc.r2() * v2 - bc.y() * bc.r1() * v1 * Math.sin(bc.ksi() + bc.a1() - bc.a2() + ph1 - ph2) + 2 * bc.y() * bc.r2() * v2 * Math.sin(bc.ksi()));
+    }
+
+    private double dp2dph1(double v1, double v2, double ph1, double ph2, BranchCharacteristics bc) {
+        return -bc.y() * bc.r1() * bc.r2() * v1 * v2 * Math.cos(bc.ksi() + bc.a1() - bc.a2() + ph1 - ph2);
+    }
+
+    private double dp2dph2(double v1, double v2, double ph1, double ph2, BranchCharacteristics bc) {
+        return bc.y() * bc.r1() * bc.r2() * v1 * v2 * Math.cos(bc.ksi() + bc.a1() - bc.a2() + ph1 - ph2);
+    }
+
     private double dp2(Variable variable, double v1, double v2, double ph1, double ph2) {
         BranchCharacteristics bc = branchContext.getBc();
         if (variable.equals(branchContext.getV1Var())) {
-            return -bc.y() * bc.r1() * bc.r2() * v2 * Math.sin(bc.ksi() + bc.a1() - bc.a2() + ph1 - ph2);
+            return dp2dv1(v2, ph1, ph2, bc);
         } else if (variable.equals(branchContext.getV2Var())) {
-            return bc.r2() * (2 * bc.g2() * bc.r2() * v2 - bc.y() * bc.r1() * v1 * Math.sin(bc.ksi() + bc.a1() - bc.a2() + ph1 - ph2) + 2 * bc.y() * bc.r2() * v2 * Math.sin(bc.ksi()));
+            return dp2dv2(v1, v2, ph1, ph2, bc);
         } else if (variable.equals(branchContext.getPh1Var())) {
-            return -bc.y() * bc.r1() * bc.r2() * v1 * v2 * Math.cos(bc.ksi() + bc.a1() - bc.a2() + ph1 - ph2);
+            return dp2dph1(v1, v2, ph1, ph2, bc);
         } else if (variable.equals(branchContext.getPh2Var())) {
-            return bc.y() * bc.r1() * bc.r2() * v1 * v2 * Math.cos(bc.ksi() + bc.a1() - bc.a2() + ph1 - ph2);
+            return dp2dph2(v1, v2, ph1, ph2, bc);
         } else {
             throw new IllegalStateException("Unknown variable: " + variable);
         }

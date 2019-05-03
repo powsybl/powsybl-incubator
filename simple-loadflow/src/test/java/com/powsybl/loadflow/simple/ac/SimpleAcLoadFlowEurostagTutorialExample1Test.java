@@ -143,4 +143,21 @@ public class SimpleAcLoadFlowEurostagTutorialExample1Test {
         assertActivePowerEquals(-600.996, line2.getTerminal2());
         assertReactivePowerEquals(-285.379, line2.getTerminal2());
     }
+
+    @Test
+    public void shuntCompensatorTest() {
+        loadBus.getVoltageLevel().newShuntCompensator()
+                .setId("SC")
+                .setBus(loadBus.getId())
+                .setConnectableBus(loadBus.getId())
+                .setbPerSection(3.25 * Math.pow(10, -3))
+                .setMaximumSectionCount(1)
+                .setCurrentSectionCount(1)
+                .add();
+
+        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, new LoadFlowParameters()).join();
+        assertTrue(result.isOk());
+
+        assertVoltageEquals(152.327, loadBus);
+    }
 }

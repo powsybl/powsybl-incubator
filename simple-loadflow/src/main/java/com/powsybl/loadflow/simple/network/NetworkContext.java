@@ -79,7 +79,13 @@ public class NetworkContext {
         }
 
         for (ShuntCompensator sc : network.getShuntCompensators()) {
-            throw new UnsupportedOperationException("TODO: shunt compensators");
+            Bus bus = sc.getTerminal().getBusView().getBus();
+            if (bus == null || !bus.isInMainConnectedComponent()) {
+                continue;
+            }
+            double nominalV = sc.getTerminal().getVoltageLevel().getNominalV();
+            double q = sc.getCurrentB() * nominalV * nominalV;
+            busQ.compute(bus.getId(), (id, value) -> value == null ? q : value + q);
         }
 
         for (HvdcLine line : network.getHvdcLines()) {

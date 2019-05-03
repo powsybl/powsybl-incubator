@@ -23,6 +23,8 @@ public class NetworkContext {
 
     private final List<Branch> branches = new ArrayList<>();
 
+    private final List<ShuntCompensator> shuntCompensators = new ArrayList<>();
+
     private final Map<String, Bus> busesById;
 
     private final String slackBusId;
@@ -83,9 +85,7 @@ public class NetworkContext {
             if (bus == null || !bus.isInMainConnectedComponent()) {
                 continue;
             }
-            double nominalV = sc.getTerminal().getVoltageLevel().getNominalV();
-            double q = sc.getCurrentB() * nominalV * nominalV;
-            busQ.compute(bus.getId(), (id, value) -> value == null ? q : value + q);
+            shuntCompensators.add(sc);
         }
 
         for (HvdcLine line : network.getHvdcLines()) {
@@ -113,6 +113,10 @@ public class NetworkContext {
 
     public List<Branch> getBranches() {
         return branches;
+    }
+
+    public List<ShuntCompensator> getShuntCompensators() {
+        return shuntCompensators;
     }
 
     public List<Bus> getBuses() {
@@ -154,6 +158,9 @@ public class NetworkContext {
         for (Bus b : network.getBusView().getBuses()) {
             b.setV(Double.NaN);
             b.setAngle(Double.NaN);
+        }
+        for (ShuntCompensator sc : network.getShuntCompensators()) {
+            sc.getTerminal().setQ(Double.NaN);
         }
         for (Branch b : network.getBranches()) {
             b.getTerminal1().setP(Double.NaN);

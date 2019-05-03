@@ -8,6 +8,7 @@ package com.powsybl.loadflow.simple.ac;
 
 import com.powsybl.iidm.network.Branch;
 import com.powsybl.iidm.network.Bus;
+import com.powsybl.iidm.network.ShuntCompensator;
 import com.powsybl.loadflow.simple.equations.*;
 import com.powsybl.loadflow.simple.network.NetworkContext;
 
@@ -68,6 +69,15 @@ public class AcEquationSystemMaker implements EquationSystemMaker {
                     equationTerms.add(new OpenBranchSide1ReactiveFlowEquationTerm(branchContext, bus2, equationContext));
                 }
                 variableUpdates.add(new OpenBranchSide1AcFlowUpdate(branchContext));
+            }
+        }
+
+        for (ShuntCompensator sc : networkContext.getShuntCompensators()) {
+            Bus bus = sc.getTerminal().getBusView().getBus();
+            if (bus != null && !networkContext.isPvBus(bus.getId())) {
+                ShuntCompensatorContext shuntContext = new ShuntCompensatorContext(sc, bus, equationContext);
+                equationTerms.add(new ShuntCompensatorReactiveFlowEquationTerm(shuntContext, bus, networkContext, equationContext));
+                variableUpdates.add(new ShuntCompensatorReactiveFlowUpdate(shuntContext));
             }
         }
 

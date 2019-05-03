@@ -159,5 +159,9 @@ public class SimpleAcLoadFlowEurostagTutorialExample1Test {
         assertTrue(result.isOk());
 
         assertVoltageEquals(152.327, loadBus);
+        assertReactivePowerEquals(52.988, line1.getTerminal1());
+        assertReactivePowerEquals(-95.064, line1.getTerminal2());
+        assertReactivePowerEquals(52.988, line2.getTerminal1());
+        assertReactivePowerEquals(-95.064, line2.getTerminal2());
     }
 }

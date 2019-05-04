@@ -144,20 +144,20 @@ public class EquationSystem {
     }
 
     public void logLargestMismatches(double[] x) {
-        logLargestMismatches(x, 10);
+        logLargestMismatches(x, 5);
     }
 
     public void logLargestMismatches(double[] x, int count) {
         double[] fx = evalFx(x);
-        Map<String, Double> mismatches = new HashMap<>(equations.size());
+        Map<Equation, Double> mismatches = new HashMap<>(equations.size());
         for (Equation equation : equations.keySet()) {
-            mismatches.put(equation.getId(), fx[equation.getRow()]);
+            mismatches.put(equation, fx[equation.getRow()]);
         }
         mismatches.entrySet().stream()
-                .filter(e -> Math.abs(e.getValue()) > Math.pow(10, 7))
-                .sorted(Comparator.comparingDouble((Map.Entry<String, Double> e) -> Math.abs(e.getValue())).reversed())
+                .filter(e -> Math.abs(e.getValue()) > Math.pow(10, -7))
+                .sorted(Comparator.comparingDouble((Map.Entry<Equation, Double> e) -> Math.abs(e.getValue())).reversed())
                 .limit(count)
-                .forEach(e -> LOGGER.info("Mismatch at {}: {}", e.getKey(), e.getValue()));
+                .forEach(e -> LOGGER.debug("Mismatch for {}: {}", e.getKey(), e.getValue()));
     }
 
     public Matrix buildJacobian(MatrixFactory matrixFactory, double[] x) {

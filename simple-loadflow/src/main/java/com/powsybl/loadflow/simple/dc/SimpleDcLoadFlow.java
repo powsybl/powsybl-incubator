@@ -112,8 +112,6 @@ public class SimpleDcLoadFlow implements LoadFlow {
             LOGGER.error("Failed to solve linear system for simple DC load flow.", e);
         }
 
-        equationSystem.logLargestMismatches(dx);
-
         networkContext.resetState();
         equationSystem.updateState(dx);
 

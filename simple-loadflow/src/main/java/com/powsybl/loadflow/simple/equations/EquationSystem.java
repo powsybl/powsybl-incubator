@@ -137,29 +137,6 @@ public class EquationSystem {
         Vectors.minus(fx, targets);
     }
 
-    public double[] evalFx(double[] x) {
-        double[] fx = new double[equations.size()];
-        evalFx(x, fx);
-        return fx;
-    }
-
-    public void logLargestMismatches(double[] x) {
-        logLargestMismatches(x, 5);
-    }
-
-    public void logLargestMismatches(double[] x, int count) {
-        double[] fx = evalFx(x);
-        Map<Equation, Double> mismatches = new HashMap<>(equations.size());
-        for (Equation equation : equations.keySet()) {
-            mismatches.put(equation, fx[equation.getRow()]);
-        }
-        mismatches.entrySet().stream()
-                .filter(e -> Math.abs(e.getValue()) > Math.pow(10, -7))
-                .sorted(Comparator.comparingDouble((Map.Entry<Equation, Double> e) -> Math.abs(e.getValue())).reversed())
-                .limit(count)
-                .forEach(e -> LOGGER.debug("Mismatch for {}: {}", e.getKey(), e.getValue()));
-    }
-
     public Matrix buildJacobian(MatrixFactory matrixFactory, double[] x) {
         Objects.requireNonNull(matrixFactory);
         Objects.requireNonNull(x);

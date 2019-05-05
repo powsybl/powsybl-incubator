@@ -6,8 +6,8 @@
  */
 package com.powsybl.loadflow.simple.ac;
 
-import com.powsybl.loadflow.simple.equations.EquationSystem;
 import com.powsybl.loadflow.simple.equations.EquationContext;
+import com.powsybl.loadflow.simple.equations.EquationSystem;
 import com.powsybl.loadflow.simple.equations.Vectors;
 import com.powsybl.loadflow.simple.network.NetworkContext;
 import com.powsybl.math.matrix.LUDecomposition;

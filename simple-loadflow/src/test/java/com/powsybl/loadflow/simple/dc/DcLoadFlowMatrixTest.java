@@ -47,7 +47,7 @@ public class DcLoadFlowMatrixTest {
 
         logNetwork(network);
 
-        NetworkContext networkContext = NetworkContext.of(network);
+        NetworkContext networkContext = NetworkContext.of(network).get(0);
 
         EquationContext context = new EquationContext();
         for (Bus b : networkContext.getBuses()) {
@@ -116,7 +116,7 @@ public class DcLoadFlowMatrixTest {
         network.getLine("NHV1_NHV2_1").getTerminal1().disconnect();
         network.getLine("NHV1_NHV2_1").getTerminal2().disconnect();
 
-        networkContext = NetworkContext.of(network);
+        networkContext = NetworkContext.of(network).get(0);
 
         equationSystem = new DcEquationSystemMaker()
                 .make(networkContext, context);

@@ -6,7 +6,6 @@
  */
 package com.powsybl.loadflow.simple.network;
 
-import com.google.common.collect.ImmutableList;
 import com.powsybl.iidm.network.*;
 
 import java.util.*;
@@ -21,90 +20,129 @@ public class NetworkContext {
 
     private final List<Bus> buses;
 
-    private final List<Branch> branches = new ArrayList<>();
+    private final List<Branch> branches;
 
     private final List<ShuntCompensator> shuntCompensators = new ArrayList<>();
 
     private final Map<String, Bus> busesById;
 
-    private final String slackBusId;
+    private final String mostMeshedBusId;
+
+    private String slackBusId;
 
     private final Set<String> pvBusIds = new HashSet<>();
 
     private final Map<String, Double> busP = new HashMap<>();
     private final Map<String, Double> busQ = new HashMap<>();
 
-    public NetworkContext(Network network) {
+    public NetworkContext(Network network, List<Bus> buses, Map<HvdcConverterStation, HvdcLine> hvdcLines) {
         this.network = Objects.requireNonNull(network);
-        if (network.getDanglingLineCount() > 0) {
-            throw new UnsupportedOperationException("TODO: dangling lines");
-        }
-        if (network.getThreeWindingsTransformerCount() > 0) {
-            throw new UnsupportedOperationException("TODO: 3 windings transformers");
-        }
-        buses = network.getBusView().getBusStream().filter(Bus::isInMainConnectedComponent).collect(ImmutableList.toImmutableList());
+        this.buses = Objects.requireNonNull(buses);
+        Objects.requireNonNull(hvdcLines);
+
         busesById = buses.stream().collect(Collectors.toMap(Identifiable::getId, b -> b));
 
-        for (Branch branch : network.getBranches()) {
-            Bus bus1 = branch.getTerminal1().getBusView().getBus();
-            Bus bus2 = branch.getTerminal2().getBusView().getBus();
-            boolean cc1 = bus1 != null && bus1.isInMainConnectedComponent();
-            boolean cc2 = bus2 != null && bus2.isInMainConnectedComponent();
-            if ((cc1 && cc2) || (cc1 && bus2 == null) || (cc2 && bus1 == null)) {
-                branches.add(branch);
-            }
-        }
+        Set<Branch> branchSet = new HashSet<>();
+        Map<String, Integer> neighbors = new HashMap<>();
+        for (Bus bus : buses) {
+            bus.visitConnectedEquipments(new DefaultTopologyVisitor() {
 
-        for (Generator gen : network.getGenerators()) {
-            Bus bus = gen.getTerminal().getBusView().getBus();
-            if (bus == null || !bus.isInMainConnectedComponent()) {
-                continue;
-            }
-            busP.compute(bus.getId(), (id, value) -> value == null ? gen.getTargetP() : value + gen.getTargetP());
-            if (!gen.isVoltageRegulatorOn()) {
-                busQ.compute(bus.getId(), (id, value) -> value == null ? gen.getTargetQ() : value + gen.getTargetQ());
-            }
-            if (gen.isVoltageRegulatorOn()) {
-                pvBusIds.add(bus.getId());
-            }
+                private void visitBranch(Branch branch) {
+                    branchSet.add(branch);
+                    neighbors.merge(bus.getId(), 1, Integer::sum);
+                }
+
+                @Override
+                public void visitLine(Line line, Line.Side side) {
+                    visitBranch(line);
+                }
+
+                @Override
+                public void visitTwoWindingsTransformer(TwoWindingsTransformer transformer, TwoWindingsTransformer.Side side) {
+                    visitBranch(transformer);
+                }
+
+                @Override
+                public void visitThreeWindingsTransformer(ThreeWindingsTransformer transformer, ThreeWindingsTransformer.Side side) {
+                    throw new UnsupportedOperationException("TODO: 3 windings transformers");
+                }
+
+                @Override
+                public void visitGenerator(Generator generator) {
+                    busP.compute(bus.getId(), (id, value) -> value == null ? generator.getTargetP() : value + generator.getTargetP());
+                    if (!generator.isVoltageRegulatorOn()) {
+                        busQ.compute(bus.getId(), (id, value) -> value == null ? generator.getTargetQ() : value + generator.getTargetQ());
+                    }
+                    if (generator.isVoltageRegulatorOn()) {
+                        pvBusIds.add(bus.getId());
+                    }
+                }
+
+                @Override
+                public void visitLoad(Load load) {
+                    busP.compute(bus.getId(), (id, value) -> value == null ? -load.getP0() : value - load.getP0());
+                    busQ.compute(bus.getId(), (id, value) -> value == null ? -load.getQ0() : value - load.getQ0());
+                }
+
+                @Override
+                public void visitShuntCompensator(ShuntCompensator sc) {
+                    shuntCompensators.add(sc);
+                }
+
+                @Override
+                public void visitDanglingLine(DanglingLine danglingLine) {
+                    throw new UnsupportedOperationException("TODO: dangling lines");
+                }
+
+                @Override
+                public void visitStaticVarCompensator(StaticVarCompensator staticVarCompensator) {
+                    //throw new UnsupportedOperationException("TODO: static var compensator");
+                }
+
+                @Override
+                public void visitBattery(Battery battery) {
+                    throw new UnsupportedOperationException("TODO: battery");
+                }
+
+                @Override
+                public void visitHvdcConverterStation(HvdcConverterStation<?> converterStation) {
+                    HvdcLine line = hvdcLines.get(converterStation);
+                    double p = line.getConverterStation1() == converterStation && line.getConvertersMode() == HvdcLine.ConvertersMode.SIDE_1_RECTIFIER_SIDE_2_INVERTER
+                            ? line.getActivePowerSetpoint()
+                            : -line.getActivePowerSetpoint();
+                    busP.compute(bus.getId(), (id, value) -> value == null ? -p : value - p);
+                }
+            });
         }
+        branches = new ArrayList<>(branchSet);
+
+        mostMeshedBusId = neighbors.entrySet().stream().max(Comparator.comparingInt(Map.Entry::getValue))
+                .orElseThrow(AssertionError::new).getKey();
 
         slackBusId = buses.get(0).getId();
-
-        for (Load load : network.getLoads()) {
-            Bus bus = load.getTerminal().getBusView().getBus();
-            if (bus == null || !bus.isInMainConnectedComponent()) {
-                continue;
-            }
-            busP.compute(bus.getId(), (id, value) -> value == null ? -load.getP0() : value - load.getP0());
-            busQ.compute(bus.getId(), (id, value) -> value == null ? -load.getQ0() : value - load.getQ0());
-        }
-
-        for (ShuntCompensator sc : network.getShuntCompensators()) {
-            Bus bus = sc.getTerminal().getBusView().getBus();
-            if (bus == null || !bus.isInMainConnectedComponent()) {
-                continue;
-            }
-            shuntCompensators.add(sc);
-        }
-
-        for (HvdcLine line : network.getHvdcLines()) {
-            Bus bus1 = line.getConverterStation1().getTerminal().getBusView().getBus();
-            Bus bus2 = line.getConverterStation2().getTerminal().getBusView().getBus();
-            double p = line.getConvertersMode() == HvdcLine.ConvertersMode.SIDE_1_RECTIFIER_SIDE_2_INVERTER
-                    ? line.getActivePowerSetpoint()
-                    : -line.getActivePowerSetpoint();
-            if (bus1 != null && bus1.isInMainConnectedComponent()) {
-                busP.compute(bus1.getId(), (id, value) -> value == null ? -p : value - p);
-            }
-            if (bus2 != null && bus2.isInMainConnectedComponent()) {
-                busP.compute(bus2.getId(), (id, value) -> value == null ? p : value + p);
-            }
-        }
     }
 
-    public static NetworkContext of(Network network) {
-        return new NetworkContext(network);
+    public static List<NetworkContext> of(Network network) {
+        Objects.requireNonNull(network);
+        Map<Integer, List<Bus>> buseByCc = new TreeMap<>();
+        for (Bus bus : network.getBusView().getBuses()) {
+            Component cc = bus.getConnectedComponent();
+            if (cc != null) {
+                buseByCc.computeIfAbsent(cc.getNum(), k -> new ArrayList<>()).add(bus);
+            }
+        }
+
+        // FIXME hack because there is no way to get HVDC line from converter station
+        Map<HvdcConverterStation, HvdcLine> hvdcLines = new HashMap<>();
+        for (HvdcLine line : network.getHvdcLines()) {
+            hvdcLines.put(line.getConverterStation1(), line);
+            hvdcLines.put(line.getConverterStation2(), line);
+        }
+
+        return buseByCc.entrySet().stream()
+                .filter(e -> e.getKey() == ComponentConstants.MAIN_NUM)
+                .map(e -> new NetworkContext(network, e.getValue(), hvdcLines))
+                .collect(Collectors.toList());
     }
 
     public Network getNetwork() {
@@ -152,6 +190,10 @@ public class NetworkContext {
 
     public Bus getSlackBus() {
         return busesById.get(slackBusId);
+    }
+
+    public void setMostMeshedBusAsSlack() {
+        slackBusId = mostMeshedBusId;
     }
 
     public void resetState() {

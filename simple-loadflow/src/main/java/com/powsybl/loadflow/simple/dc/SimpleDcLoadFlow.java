@@ -84,7 +84,7 @@ public class SimpleDcLoadFlow implements LoadFlow {
 
         network.getVariantManager().setWorkingVariant(state);
 
-        NetworkContext networkContext = NetworkContext.of(network);
+        NetworkContext networkContext = NetworkContext.of(network).get(0);
 
         balance(networkContext);
 

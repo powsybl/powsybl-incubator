@@ -24,6 +24,8 @@ public class ClosedBranchDcFlowUpdate implements VariableUpdate {
     @Override
     public void update(double[] x) {
         branchContext.getBc().getBranch().getTerminal1().setP(branchContext.p1(x));
+        branchContext.getBc().getBranch().getTerminal1().setQ(Double.NaN);
         branchContext.getBc().getBranch().getTerminal2().setP(branchContext.p2(x));
+        branchContext.getBc().getBranch().getTerminal2().setQ(Double.NaN);
     }
 }

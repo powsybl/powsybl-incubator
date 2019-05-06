@@ -20,32 +20,28 @@ import com.powsybl.cgmes.interpretation.model.cgmes.CgmesNode;
 public class InterpretedLine {
 
     public InterpretedLine(CgmesLine line, CgmesNode node1, CgmesNode node2, InterpretationAlternative alternative) {
-        super();
-
         InitialParameters initialParameters = getInitialParameters(line);
-
         YShuntData yshuntData = interpretYShunt(initialParameters, alternative);
-
-        RatioData structuralRatioData = interpretStructuralRatio(line, node1, node2, alternative);
+        RatioData structuralRatioData = interpretStructuralRatio(node1, node2, alternative);
 
         branchModel = new DetectedBranchModel(yshuntData.ysh1, yshuntData.ysh2);
-
         admittanceMatrix = new BranchAdmittanceMatrix(initialParameters.r, initialParameters.x,
-                structuralRatioData.a1, 0.0, yshuntData.ysh1, structuralRatioData.a2, 0.0, yshuntData.ysh2);
+            structuralRatioData.a1, 0.0, yshuntData.ysh1, structuralRatioData.a2, 0.0, yshuntData.ysh2);
     }
 
-    private RatioData interpretStructuralRatio(CgmesLine line, CgmesNode node1, CgmesNode node2, InterpretationAlternative alternative) {
+    private RatioData interpretStructuralRatio(CgmesNode node1, CgmesNode node2,
+        InterpretationAlternative alternative) {
         RatioData structuralRatioData = new RatioData();
 
         if (alternative.isLineRatio0()
-                && node1 != null
-                && node2 != null) {
+            && node1 != null
+            && node2 != null) {
             double nominalV1 = node1.nominalV();
             double nominalV2 = node2.nominalV();
             if (Math.abs(nominalV1 - nominalV2) > 0
-                    && nominalV1 != 0.0
-                    && !Double.isNaN(nominalV1)
-                    && !Double.isNaN(nominalV2)) {
+                && nominalV1 != 0.0
+                && !Double.isNaN(nominalV1)
+                && !Double.isNaN(nominalV2)) {
                 structuralRatioData.a1 = nominalV1 / nominalV2;
             }
         }

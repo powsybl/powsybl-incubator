@@ -91,7 +91,7 @@ public class CgmesTapChanger {
         return x * (1.0 + xc / 100.0);
     }
 
-    public static double correction(double xc) {
+    public static double getCorrectionFactor(double xc) {
         return 1.0 + xc / 100.0;
     }
 

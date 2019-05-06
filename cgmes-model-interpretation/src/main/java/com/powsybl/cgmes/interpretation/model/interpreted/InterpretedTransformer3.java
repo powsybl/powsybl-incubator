@@ -23,47 +23,50 @@ import com.powsybl.cgmes.interpretation.model.interpreted.InterpretationAlternat
  */
 public class InterpretedTransformer3 {
 
-    public InterpretedTransformer3(CgmesTransformer transformer, InterpretationAlternative config) {
+    public InterpretedTransformer3(CgmesTransformer transformer, InterpretationAlternative alternative) {
         super();
 
         EndParameters end1Parameters = getEndParameters(transformer.end1());
         EndParameters end2Parameters = getEndParameters(transformer.end2());
         EndParameters end3Parameters = getEndParameters(transformer.end3());
 
-        RatioPhaseData end1RatioPhaseData = getRatioPhaseEnd(transformer.end1(), end1Parameters, config);
-        RatioPhaseData end2RatioPhaseData = getRatioPhaseEnd(transformer.end2(), end2Parameters, config);
-        RatioPhaseData end3RatioPhaseData = getRatioPhaseEnd(transformer.end3(), end3Parameters, config);
+        RatioPhaseData end1RatioPhaseData = interpretRatioPhaseEnd(transformer.end1(), end1Parameters, alternative);
+        RatioPhaseData end2RatioPhaseData = interpretRatioPhaseEnd(transformer.end2(), end2Parameters, alternative);
+        RatioPhaseData end3RatioPhaseData = interpretRatioPhaseEnd(transformer.end3(), end3Parameters, alternative);
 
         // yshunt
-        YShuntData end1YShuntData = getYShuntEnd(end1RatioPhaseData.parameters, config);
-        YShuntData end2YShuntData = getYShuntEnd(end2RatioPhaseData.parameters, config);
-        YShuntData end3YShuntData = getYShuntEnd(end3RatioPhaseData.parameters, config);
+        YShuntData end1YShuntData = interpretYShuntEnd(end1RatioPhaseData.parameters, alternative);
+        YShuntData end2YShuntData = interpretYShuntEnd(end2RatioPhaseData.parameters, alternative);
+        YShuntData end3YShuntData = interpretYShuntEnd(end3RatioPhaseData.parameters, alternative);
 
         // phaseAngleClock
-        PhaseAngleClockData end1PhaseAngleClockData = getPhaseAngleClockEnd(transformer.end1(), config);
-        PhaseAngleClockData end2PhaseAngleClockData = getPhaseAngleClockEnd(transformer.end2(), config);
-        PhaseAngleClockData end3PhaseAngleClockData = getPhaseAngleClockEnd(transformer.end3(), config);
+        PhaseAngleClockData end1PhaseAngleClockData = interpretPhaseAngleClockEnd(transformer.end1(), alternative);
+        PhaseAngleClockData end2PhaseAngleClockData = interpretPhaseAngleClockEnd(transformer.end2(), alternative);
+        PhaseAngleClockData end3PhaseAngleClockData = interpretPhaseAngleClockEnd(transformer.end3(), alternative);
 
         end1RatioPhaseData.addPhase(end1PhaseAngleClockData);
         end2RatioPhaseData.addPhase(end2PhaseAngleClockData);
         end3RatioPhaseData.addPhase(end3PhaseAngleClockData);
 
         branchModelEnd1 = new DetectedBranchModel(end1YShuntData.ysh1, end1YShuntData.ysh2,
-                end1RatioPhaseData.tapChanger.rtc1, end1RatioPhaseData.tapChanger.ptc1, end1RatioPhaseData.tapChanger.rtc2, end1RatioPhaseData.tapChanger.ptc2);
+                end1RatioPhaseData.tapChanger.rtc1, end1RatioPhaseData.tapChanger.ptc1,
+                end1RatioPhaseData.tapChanger.rtc2, end1RatioPhaseData.tapChanger.ptc2);
         branchModelEnd2 = new DetectedBranchModel(end2YShuntData.ysh1, end2YShuntData.ysh2,
-                end2RatioPhaseData.tapChanger.rtc1, end2RatioPhaseData.tapChanger.ptc1, end2RatioPhaseData.tapChanger.rtc2, end2RatioPhaseData.tapChanger.ptc2);
+                end2RatioPhaseData.tapChanger.rtc1, end2RatioPhaseData.tapChanger.ptc1,
+                end2RatioPhaseData.tapChanger.rtc2, end2RatioPhaseData.tapChanger.ptc2);
         branchModelEnd3 = new DetectedBranchModel(end3YShuntData.ysh1, end3YShuntData.ysh2,
-                end3RatioPhaseData.tapChanger.rtc1, end3RatioPhaseData.tapChanger.ptc1, end3RatioPhaseData.tapChanger.rtc2, end3RatioPhaseData.tapChanger.ptc2);
+                end3RatioPhaseData.tapChanger.rtc1, end3RatioPhaseData.tapChanger.ptc1,
+                end3RatioPhaseData.tapChanger.rtc2, end3RatioPhaseData.tapChanger.ptc2);
 
         // add structural ratio after detected branch model
         double ratedU0 = transformer.end1().ratedU();
-        Ratio0Data end1Ratio0Data = getRatio0End(transformer.end1(), config, ratedU0);
-        Ratio0Data end2Ratio0Data = getRatio0End(transformer.end2(), config, ratedU0);
-        Ratio0Data end3Ratio0Data = getRatio0End(transformer.end3(), config, ratedU0);
+        RatioData end1StructuralRatioData = interpretStructuralRatioEnd(transformer.end1(), alternative, ratedU0);
+        RatioData end2StructuralRatioData = interpretStructuralRatioEnd(transformer.end2(), alternative, ratedU0);
+        RatioData end3StructuralRatioData = interpretStructuralRatioEnd(transformer.end3(), alternative, ratedU0);
 
-        RatioData end1RatioData = calculateRatioEnd(end1RatioPhaseData, end1Ratio0Data);
-        RatioData end2RatioData = calculateRatioEnd(end2RatioPhaseData, end2Ratio0Data);
-        RatioData end3RatioData = calculateRatioEnd(end3RatioPhaseData, end3Ratio0Data);
+        RatioData end1RatioData = calculateRatioEnd(end1RatioPhaseData, end1StructuralRatioData);
+        RatioData end2RatioData = calculateRatioEnd(end2RatioPhaseData, end2StructuralRatioData);
+        RatioData end3RatioData = calculateRatioEnd(end3RatioPhaseData, end3StructuralRatioData);
 
         // admittance
         admittanceMatrixEnd1 = new BranchAdmittanceMatrix(end1RatioPhaseData.parameters.r,
@@ -77,37 +80,25 @@ public class InterpretedTransformer3 {
                 end3YShuntData.ysh1, end3RatioData.a2, end3RatioPhaseData.tapChanger.ptc2.angle, end3YShuntData.ysh2);
     }
 
-    private Ratio0Data getRatio0End(CgmesTransformerEnd transformerEnd, InterpretationAlternative config, double ratedU0) {
-        double ratedU = transformerEnd.ratedU();
-        Ratio0Data ratio0Data = new Ratio0Data();
-        if (config.getXfmr3Ratio0StarBusSide() == Xfmr3RatioPhaseInterpretationAlternative.STAR_BUS_SIDE) {
-            ratio0Data.a01 = 1.0;
-            ratio0Data.a02 = ratedU0 / ratedU;
-        } else if (config.getXfmr3Ratio0StarBusSide() == Xfmr3RatioPhaseInterpretationAlternative.NETWORK_SIDE) {
-            ratio0Data.a01 = ratedU / ratedU0;
-            ratio0Data.a02 = 1.0;
-        }
-        return ratio0Data;
-    }
-
-    private RatioPhaseData getRatioPhaseEnd(CgmesTransformerEnd transformerEnd,
-            EndParameters endParameters, InterpretationAlternative config) {
+    private RatioPhaseData interpretRatioPhaseEnd(CgmesTransformerEnd transformerEnd,
+            EndParameters endParameters, InterpretationAlternative alternative) {
 
         RatioPhaseData ratioPhaseData = new RatioPhaseData();
 
         // rtc
         CgmesTapChangerStatus rtcStatus = transformerEnd.rtc().status();
-        EndParameters rtcEndParameters = correctParametersEnd(rtcStatus);
+        EndParameters rtcEndCorrectionFactors = correctionFactorsEnd(rtcStatus);
 
         // ptc
         CgmesTapChangerStatus ptcStatus = transformerEnd.ptc().status();
         double newX = transformerEnd.ptc().overrideX(endParameters.x, ptcStatus.angle());
-        EndParameters ptcEndParameters = correctParametersEnd(ptcStatus);
+        EndParameters ptcEndCorrectionFactors = correctionFactorsEnd(ptcStatus);
 
-        ratioPhaseData.parameters = mergeFactorCorrectionsParameters(endParameters, rtcEndParameters, ptcEndParameters, newX);
+        ratioPhaseData.parameters = mergeFactorCorrectionsParameters(endParameters, rtcEndCorrectionFactors,
+                ptcEndCorrectionFactors, newX);
 
         // network side always at end1
-        if (config.getXfmr3RatioPhaseStarBusSide() == Xfmr3RatioPhaseInterpretationAlternative.STAR_BUS_SIDE) {
+        if (alternative.getXfmr3RatioPhaseStarBusSide() == Xfmr3RatioPhaseInterpretationAlternative.STAR_BUS_SIDE) {
 
             ratioPhaseData.tapChanger.rtc2.ratio = rtcStatus.ratio();
             ratioPhaseData.tapChanger.rtc2.regulatingControl = transformerEnd.rtc().isRegulatingControlEnabled();
@@ -117,7 +108,7 @@ public class InterpretedTransformer3 {
             ratioPhaseData.tapChanger.ptc2.regulatingControl = transformerEnd.rtc().isRegulatingControlEnabled();
             ratioPhaseData.tapChanger.ptc2.changeable = transformerEnd.ptc().hasDifferentRatiosAngles();
 
-        } else if (config.getXfmr3RatioPhaseStarBusSide() == Xfmr3RatioPhaseInterpretationAlternative.NETWORK_SIDE) {
+        } else if (alternative.getXfmr3RatioPhaseStarBusSide() == Xfmr3RatioPhaseInterpretationAlternative.NETWORK_SIDE) {
 
             ratioPhaseData.tapChanger.rtc1.ratio = rtcStatus.ratio();
             ratioPhaseData.tapChanger.rtc1.regulatingControl = transformerEnd.rtc().isRegulatingControlEnabled();
@@ -131,8 +122,8 @@ public class InterpretedTransformer3 {
         return ratioPhaseData;
     }
 
-    private YShuntData getYShuntEnd(EndParameters endParameters, InterpretationAlternative config) {
-        Xfmr3ShuntInterpretationAlternative xfmr3YShunt = config.getXfmr3YShunt();
+    private YShuntData interpretYShuntEnd(EndParameters endParameters, InterpretationAlternative alternative) {
+        Xfmr3ShuntInterpretationAlternative xfmr3YShunt = alternative.getXfmr3YShunt();
         YShuntData yShuntData = new YShuntData();
         switch (xfmr3YShunt) {
             case NETWORK_SIDE:
@@ -149,16 +140,30 @@ public class InterpretedTransformer3 {
         return yShuntData;
     }
 
-    private PhaseAngleClockData getPhaseAngleClockEnd(CgmesTransformerEnd transformerEnd,
-            InterpretationAlternative config) {
-        double angle = transformerEnd.phaseAngleClockDegrees();
+    private PhaseAngleClockData interpretPhaseAngleClockEnd(CgmesTransformerEnd transformerEnd,
+            InterpretationAlternative alternative) {
+
         PhaseAngleClockData phaseAngleClockData = new PhaseAngleClockData();
-        if (config.getXfmr3PhaseAngleClock() == Xfmr3PhaseAngleClockAlternative.STAR_BUS_SIDE) {
-            phaseAngleClockData.angle2 = angle;
-        } else if (config.getXfmr3PhaseAngleClock() == Xfmr3PhaseAngleClockAlternative.NETWORK_SIDE) {
-            phaseAngleClockData.angle1 = angle;
+        if (alternative.getXfmr3PhaseAngleClock() == Xfmr3PhaseAngleClockAlternative.STAR_BUS_SIDE) {
+            phaseAngleClockData.angle2 = transformerEnd.phaseAngleClockDegrees();
+        } else if (alternative.getXfmr3PhaseAngleClock() == Xfmr3PhaseAngleClockAlternative.NETWORK_SIDE) {
+            phaseAngleClockData.angle1 = transformerEnd.phaseAngleClockDegrees();
         }
         return phaseAngleClockData;
+    }
+
+    private RatioData interpretStructuralRatioEnd(CgmesTransformerEnd transformerEnd,
+            InterpretationAlternative alternative, double ratedU0) {
+        double ratedU = transformerEnd.ratedU();
+        RatioData structuralRatioData = new RatioData();
+        if (alternative.getXfmr3Ratio0StarBusSide() == Xfmr3RatioPhaseInterpretationAlternative.STAR_BUS_SIDE) {
+            structuralRatioData.a1 = 1.0;
+            structuralRatioData.a2 = ratedU0 / ratedU;
+        } else if (alternative.getXfmr3Ratio0StarBusSide() == Xfmr3RatioPhaseInterpretationAlternative.NETWORK_SIDE) {
+            structuralRatioData.a1 = ratedU / ratedU0;
+            structuralRatioData.a2 = 1.0;
+        }
+        return structuralRatioData;
     }
 
     private EndParameters getEndParameters(CgmesTransformerEnd transformerEnd) {
@@ -172,19 +177,19 @@ public class InterpretedTransformer3 {
         return endParameters;
     }
 
-    private EndParameters correctParametersEnd(CgmesTapChangerStatus tapChangerData) {
+    private EndParameters correctionFactorsEnd(CgmesTapChangerStatus tapChangerData) {
 
         EndParameters newEndParameters = new EndParameters();
 
-        newEndParameters.r = CgmesTapChanger.correction(tapChangerData.rc());
-        newEndParameters.x = CgmesTapChanger.correction(tapChangerData.xc());
-        newEndParameters.g = CgmesTapChanger.correction(tapChangerData.gc());
-        newEndParameters.b = CgmesTapChanger.correction(tapChangerData.bc());
+        newEndParameters.r = CgmesTapChanger.getCorrectionFactor(tapChangerData.rc());
+        newEndParameters.x = CgmesTapChanger.getCorrectionFactor(tapChangerData.xc());
+        newEndParameters.g = CgmesTapChanger.getCorrectionFactor(tapChangerData.gc());
+        newEndParameters.b = CgmesTapChanger.getCorrectionFactor(tapChangerData.bc());
 
         return newEndParameters;
     }
 
-    // TODO warnings under incoherent configurations
+    // TODO warnings under incoherent cases
     private EndParameters mergeFactorCorrectionsParameters(EndParameters initialEndParameters,
             EndParameters rtcEndParameterCorrections, EndParameters ptcEndParameterCorrections, double newX) {
 
@@ -199,12 +204,12 @@ public class InterpretedTransformer3 {
         return finalEndParameters;
     }
 
-    private RatioData calculateRatioEnd(RatioPhaseData endRatioPhaseData, Ratio0Data endRatio0Data) {
+    private RatioData calculateRatioEnd(RatioPhaseData endRatioPhaseData, RatioData endStructuralRatioData) {
 
         RatioData ratioData = new RatioData();
 
-        ratioData.a1 = endRatioPhaseData.tapChanger.rtc1.ratio * endRatioPhaseData.tapChanger.ptc1.ratio * endRatio0Data.a01;
-        ratioData.a2 = endRatioPhaseData.tapChanger.rtc2.ratio * endRatioPhaseData.tapChanger.ptc2.ratio * endRatio0Data.a02;
+        ratioData.a1 = endRatioPhaseData.tapChanger.rtc1.ratio * endRatioPhaseData.tapChanger.ptc1.ratio * endStructuralRatioData.a1;
+        ratioData.a2 = endRatioPhaseData.tapChanger.rtc2.ratio * endRatioPhaseData.tapChanger.ptc2.ratio * endStructuralRatioData.a2;
 
         return ratioData;
     }
@@ -240,11 +245,6 @@ public class InterpretedTransformer3 {
     static class RatioData {
         double a1 = 1.0;
         double a2 = 1.0;
-    }
-
-    static class Ratio0Data {
-        double a01 = 1.0;
-        double a02 = 1.0;
     }
 
     public DetectedBranchModel getBranchModelEnd1() {

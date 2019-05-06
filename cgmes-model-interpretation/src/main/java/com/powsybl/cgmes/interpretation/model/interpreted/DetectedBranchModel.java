@@ -29,26 +29,13 @@ public class DetectedBranchModel {
         this.phase2 = xfmrPhaseModel(phase2);
     }
 
-    public DetectedBranchModel(Complex ysh1, Complex ysh2, BranchInterpretedTapChangers tcs) {
-        this.ratio1 = xfmrRatioModel(tcs.rtc1);
-        this.phase1 = xfmrPhaseModel(tcs.ptc1);
-        this.shunt1 = isShuntModel(ysh1);
-        this.shunt2 = isShuntModel(ysh2);
-        this.ratio2 = xfmrRatioModel(tcs.rtc2);
-        this.phase2 = xfmrPhaseModel(tcs.ptc2);
-    }
-
-    private DetectedBranchModel(Complex ysh1, Complex ysh2) {
+    public DetectedBranchModel(Complex ysh1, Complex ysh2) {
         this.shunt1 = isShuntModel(ysh1);
         this.shunt2 = isShuntModel(ysh2);
         this.ratio1 = null;
         this.phase1 = null;
         this.ratio2 = null;
         this.phase2 = null;
-    }
-
-    public static DetectedBranchModel forLine(Complex ysh1, Complex ysh2) {
-        return new DetectedBranchModel(ysh1, ysh2);
     }
 
     enum DetectedTapChanger {

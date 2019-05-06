@@ -52,19 +52,19 @@ public class CgmesTapChanger {
         }
         this.table = table0;
         this.tabularDifferentRatios = table != null
-            && table.stream()
-                .map(pb -> pb.asDouble(CgmesNames1.RATIO))
-                .mapToDouble(Double::doubleValue)
-                .distinct()
-                .limit(2)
-                .count() > 1;
+                && table.stream()
+                        .map(pb -> pb.asDouble(CgmesNames1.RATIO))
+                        .mapToDouble(Double::doubleValue)
+                        .distinct()
+                        .limit(2)
+                        .count() > 1;
         this.tabularDifferentAngles = table != null
-            && table.stream()
-                .map(pb -> pb.asDouble("angle"))
-                .mapToDouble(Double::doubleValue)
-                .distinct()
-                .limit(2)
-                .count() > 1;
+                && table.stream()
+                        .map(pb -> pb.asDouble("angle"))
+                        .mapToDouble(Double::doubleValue)
+                        .distinct()
+                        .limit(2)
+                        .count() > 1;
     }
 
     public boolean isRegulatingControlEnabled() {
@@ -89,6 +89,10 @@ public class CgmesTapChanger {
 
     public static double applyCorrection(double x, double xc) {
         return x * (1.0 + xc / 100.0);
+    }
+
+    public static double correction(double xc) {
+        return 1.0 + xc / 100.0;
     }
 
     static double pointValue(PropertyBag point, String parameter, double defaultValue) {

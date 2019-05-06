@@ -15,8 +15,8 @@ public class CgmesTapChangerStatus {
     double angle = 0.0;
     double rc = 0.0;
     double xc = 0.0;
-    double bc = 0.0;
     double gc = 0.0;
+    double bc = 0.0;
 
     public double ratio() {
         return ratio;
@@ -34,11 +34,11 @@ public class CgmesTapChangerStatus {
         return xc;
     }
 
-    public double bc() {
-        return bc;
-    }
-
     public double gc() {
         return gc;
+    }
+
+    public double bc() {
+        return bc;
     }
 }

@@ -83,6 +83,10 @@ public class CgmesModelForInterpretation {
         return name;
     }
 
+    public CgmesModel cgmes() {
+        return cgmes;
+    }
+
     public CgmesNode getNode(String id) {
         return nodes.get(id);
     }

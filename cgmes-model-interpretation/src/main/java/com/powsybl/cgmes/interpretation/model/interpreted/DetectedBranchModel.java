@@ -9,18 +9,15 @@ package com.powsybl.cgmes.interpretation.model.interpreted;
 
 import org.apache.commons.math3.complex.Complex;
 
-import com.powsybl.cgmes.interpretation.model.interpreted.BranchInterpretedTapChangers.InterpretedPhaseTapChanger;
-import com.powsybl.cgmes.interpretation.model.interpreted.BranchInterpretedTapChangers.InterpretedRatioTapChanger;
-
 /**
  * @author José Antonio Marqués <marquesja at aia.es>
  * @author Marcos de Miguel <demiguelm at aia.es>
  */
 public class DetectedBranchModel {
 
-    public DetectedBranchModel(Complex ysh1, Complex ysh2, InterpretedRatioTapChanger ratio1,
-        InterpretedPhaseTapChanger phase1,
-        InterpretedRatioTapChanger ratio2, InterpretedPhaseTapChanger phase2) {
+    public DetectedBranchModel(Complex ysh1, Complex ysh2,
+        InterpretedBranch.RatioTapChanger ratio1, InterpretedBranch.PhaseTapChanger phase1,
+        InterpretedBranch.RatioTapChanger ratio2, InterpretedBranch.PhaseTapChanger phase2) {
         this.ratio1 = xfmrRatioModel(ratio1);
         this.phase1 = xfmrPhaseModel(phase1);
         this.shunt1 = isShuntModel(ysh1);
@@ -61,7 +58,7 @@ public class DetectedBranchModel {
         return code.toString();
     }
 
-    private DetectedTapChanger xfmrRatioModel(InterpretedRatioTapChanger ratio) {
+    private DetectedTapChanger xfmrRatioModel(InterpretedBranch.RatioTapChanger ratio) {
         if (ratio.regulatingControl && ratio.changeable) {
             return DetectedTapChanger.REGULATING_CONTROL;
         }
@@ -80,7 +77,7 @@ public class DetectedBranchModel {
         }
     }
 
-    private DetectedTapChanger xfmrPhaseModel(InterpretedPhaseTapChanger phase) {
+    private DetectedTapChanger xfmrPhaseModel(InterpretedBranch.PhaseTapChanger phase) {
         if (phase.regulatingControl && phase.changeable) {
             return DetectedTapChanger.REGULATING_CONTROL;
         }

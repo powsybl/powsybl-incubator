@@ -20,19 +20,20 @@ import com.powsybl.cgmes.interpretation.model.cgmes.CgmesNode;
 public class InterpretedLine {
 
     public InterpretedLine(CgmesLine line, CgmesNode node1, CgmesNode node2, InterpretationAlternative alternative) {
-        InitialParameters initialParameters = getInitialParameters(line);
-        YShuntData yshuntData = interpretYShunt(initialParameters, alternative);
-        RatioData structuralRatioData = interpretStructuralRatio(node1, node2, alternative);
-
-        branchModel = new DetectedBranchModel(yshuntData.ysh1, yshuntData.ysh2);
-        admittanceMatrix = new BranchAdmittanceMatrix(initialParameters.r, initialParameters.x,
-            structuralRatioData.a1, 0.0, yshuntData.ysh1, structuralRatioData.a2, 0.0, yshuntData.ysh2);
+        LineParameters lineParams = interpretLineParameters(line);
+        InterpretedBranch.ShuntAdmittances ysh = interpretAsShuntAdmittances(lineParams, alternative);
+        InterpretedBranch.Ratios structuralRatios = interpretAsStructuralRatio(node1, node2, alternative);
+        branchModel = new DetectedBranchModel(ysh.ysh1, ysh.ysh2);
+        admittanceMatrix = new BranchAdmittanceMatrix(
+            lineParams.r, lineParams.x,
+            structuralRatios.a1, 0.0, ysh.ysh1,
+            structuralRatios.a2, 0.0, ysh.ysh2);
     }
 
-    private RatioData interpretStructuralRatio(CgmesNode node1, CgmesNode node2,
+    private InterpretedBranch.Ratios interpretAsStructuralRatio(
+        CgmesNode node1, CgmesNode node2,
         InterpretationAlternative alternative) {
-        RatioData structuralRatioData = new RatioData();
-
+        InterpretedBranch.Ratios structuralRatios = new InterpretedBranch.Ratios();
         if (alternative.isLineRatio0()
             && node1 != null
             && node2 != null) {
@@ -42,62 +43,48 @@ public class InterpretedLine {
                 && nominalV1 != 0.0
                 && !Double.isNaN(nominalV1)
                 && !Double.isNaN(nominalV2)) {
-                structuralRatioData.a1 = nominalV1 / nominalV2;
+                structuralRatios.a1 = nominalV1 / nominalV2;
             }
         }
-
-        return structuralRatioData;
+        return structuralRatios;
     }
 
-    private YShuntData interpretYShunt(InitialParameters initialParameters, InterpretationAlternative alternative) {
-        YShuntData yShuntData = new YShuntData();
-
+    private InterpretedBranch.ShuntAdmittances interpretAsShuntAdmittances(
+        LineParameters lineParams,
+        InterpretationAlternative alternative) {
+        InterpretedBranch.ShuntAdmittances ysh = new InterpretedBranch.ShuntAdmittances();
         switch (alternative.getLineBshunt()) {
             case END1:
-                yShuntData.ysh1 = new Complex(initialParameters.gch, initialParameters.bch);
+                ysh.ysh1 = new Complex(lineParams.gch, lineParams.bch);
                 break;
             case END2:
-                yShuntData.ysh2 = new Complex(initialParameters.gch, initialParameters.bch);
+                ysh.ysh2 = new Complex(lineParams.gch, lineParams.bch);
                 break;
             case SPLIT:
-                yShuntData.ysh1 = new Complex(initialParameters.gch * 0.5, initialParameters.bch * 0.5);
-                yShuntData.ysh2 = new Complex(initialParameters.gch * 0.5, initialParameters.bch * 0.5);
+                ysh.ysh1 = new Complex(lineParams.gch * 0.5, lineParams.bch * 0.5);
+                ysh.ysh2 = new Complex(lineParams.gch * 0.5, lineParams.bch * 0.5);
                 break;
         }
-
-        return yShuntData;
+        return ysh;
     }
 
-    private InitialParameters getInitialParameters(CgmesLine line) {
-        InitialParameters initialParameters = new InitialParameters();
-
-        initialParameters.r = line.r();
-        initialParameters.x = line.x();
-        initialParameters.gch = line.gch();
-        initialParameters.bch = line.bch();
-
+    private LineParameters interpretLineParameters(CgmesLine line) {
+        LineParameters p = new LineParameters();
+        p.r = line.r();
+        p.x = line.x();
+        p.gch = line.gch();
+        p.bch = line.bch();
         if (!Configuration.CONSIDER_GCH_FOR_LINES) {
-            initialParameters.gch = 0;
+            p.gch = 0;
         }
-
-        return initialParameters;
+        return p;
     }
 
-    static class InitialParameters {
+    static class LineParameters {
         double r = 0.0;
         double x = 0.0;
         double gch = 0.0;
         double bch = 0.0;
-    }
-
-    static class YShuntData {
-        Complex ysh1 = Complex.ZERO;
-        Complex ysh2 = Complex.ZERO;
-    }
-
-    static class RatioData {
-        double a1 = 1.0;
-        double a2 = 1.0;
     }
 
     public DetectedBranchModel getBranchModel() {

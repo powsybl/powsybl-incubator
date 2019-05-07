@@ -24,57 +24,40 @@ import com.powsybl.cgmes.interpretation.model.interpreted.InterpretedBranch.Tran
 public class InterpretedTransformer3 {
 
     public InterpretedTransformer3(CgmesTransformer transformer, InterpretationAlternative alternative) {
-        InterpretedBranch.TransformerEndParameters end1 = InterpretedBranch.getEndParameters(transformer.end1());
-        InterpretedBranch.TransformerEndParameters end2 = InterpretedBranch.getEndParameters(transformer.end2());
-        InterpretedBranch.TransformerEndParameters end3 = InterpretedBranch.getEndParameters(transformer.end3());
-        // Interpret the tap changers AND modify, as a side effect, the transformer parameters
-        InterpretedBranch.TransformerEndParameters modifiedEnd1 = new InterpretedBranch.TransformerEndParameters();
-        InterpretedBranch.TapChangers tcsEnd1 = interpretTapChangerStatus(transformer.end1(), end1, alternative, modifiedEnd1);
-        InterpretedBranch.TransformerEndParameters modifiedEnd2 = new InterpretedBranch.TransformerEndParameters();
-        InterpretedBranch.TapChangers tcsEnd2 = interpretTapChangerStatus(transformer.end2(), end2, alternative, modifiedEnd2);
-        InterpretedBranch.TransformerEndParameters modifiedEnd3 = new InterpretedBranch.TransformerEndParameters();
-        InterpretedBranch.TapChangers tcsEnd3 = interpretTapChangerStatus(transformer.end3(), end3, alternative, modifiedEnd3);
 
-        InterpretedBranch.ShuntAdmittances yshEnd1 = interpretAsShuntAdmittances(modifiedEnd1, alternative);
-        InterpretedBranch.ShuntAdmittances yshEnd2 = interpretAsShuntAdmittances(modifiedEnd2, alternative);
-        InterpretedBranch.ShuntAdmittances yshEnd3 = interpretAsShuntAdmittances(modifiedEnd3, alternative);
-
-        InterpretedBranch.PhaseAngleClocks pacsEnd1 = interpretPhaseAngleClock(transformer.end1(), alternative);
-        tcsEnd1.addPhaseAngleClocks(pacsEnd1);
-        InterpretedBranch.PhaseAngleClocks pacsEnd2 = interpretPhaseAngleClock(transformer.end2(), alternative);
-        tcsEnd2.addPhaseAngleClocks(pacsEnd2);
-        InterpretedBranch.PhaseAngleClocks pacsEnd3 = interpretPhaseAngleClock(transformer.end3(), alternative);
-        tcsEnd3.addPhaseAngleClocks(pacsEnd3);
-
-        branchModelEnd1 = new DetectedBranchModel(yshEnd1.ysh1, yshEnd1.ysh2,
-                tcsEnd1.rtc1, tcsEnd1.ptc1,
-                tcsEnd1.rtc2, tcsEnd1.ptc2);
-        branchModelEnd2 = new DetectedBranchModel(yshEnd2.ysh1, yshEnd2.ysh2,
-                tcsEnd2.rtc1, tcsEnd2.ptc1,
-                tcsEnd2.rtc2, tcsEnd2.ptc2);
-        branchModelEnd3 = new DetectedBranchModel(yshEnd3.ysh1, yshEnd3.ysh2,
-                tcsEnd3.rtc1, tcsEnd3.ptc1,
-                tcsEnd3.rtc2, tcsEnd3.ptc2);
-
-        // add structural ratio after detected branch model
         double ratedU0 = transformer.end1().ratedU();
-        InterpretedBranch.Ratios structuralRatiosEnd1 = interpretStructuralRatioEnd(transformer.end1(), alternative,
-                ratedU0);
-        InterpretedBranch.Ratios structuralRatiosEnd2 = interpretStructuralRatioEnd(transformer.end2(), alternative,
-                ratedU0);
-        InterpretedBranch.Ratios structuralRatiosEnd3 = interpretStructuralRatioEnd(transformer.end3(), alternative,
-                ratedU0);
+        End end1 = interpretEnd(transformer.end1(), ratedU0, alternative);
+        branchModelEnd1 = end1.branchModelEnd;
+        admittanceMatrixEnd1 = end1.admittanceMatrixEnd;
 
-        InterpretedBranch.Ratios ratiosEnd1 = InterpretedBranch.calculateRatios(tcsEnd1, structuralRatiosEnd1);
-        InterpretedBranch.Ratios ratiosEnd2 = InterpretedBranch.calculateRatios(tcsEnd2, structuralRatiosEnd2);
-        InterpretedBranch.Ratios ratiosEnd3 = InterpretedBranch.calculateRatios(tcsEnd3, structuralRatiosEnd3);
+        End end2 = interpretEnd(transformer.end2(), ratedU0, alternative);
+        branchModelEnd2 = end2.branchModelEnd;
+        admittanceMatrixEnd2 = end2.admittanceMatrixEnd;
 
-        admittanceMatrixEnd1 = new BranchAdmittanceMatrix(modifiedEnd1.r, modifiedEnd1.x, ratiosEnd1.a1, tcsEnd1.ptc1.angle, yshEnd1.ysh1, ratiosEnd1.a2,
-                tcsEnd1.ptc2.angle, yshEnd1.ysh2);
-        admittanceMatrixEnd2 = new BranchAdmittanceMatrix(modifiedEnd2.r, modifiedEnd2.x, ratiosEnd2.a1, tcsEnd2.ptc1.angle, yshEnd2.ysh1, ratiosEnd2.a2,
-                tcsEnd2.ptc2.angle, yshEnd2.ysh2);
-        admittanceMatrixEnd3 = new BranchAdmittanceMatrix(modifiedEnd3.r, modifiedEnd3.x, ratiosEnd3.a1, tcsEnd3.ptc1.angle, yshEnd3.ysh1, ratiosEnd3.a2,
-                tcsEnd3.ptc2.angle, yshEnd3.ysh2);
+        End end3 = interpretEnd(transformer.end3(), ratedU0, alternative);
+        branchModelEnd3 = end3.branchModelEnd;
+        admittanceMatrixEnd3 = end3.admittanceMatrixEnd;
+    }
+
+    private End interpretEnd(CgmesTransformerEnd transformerEnd, double ratedU0, InterpretationAlternative alternative) {
+        InterpretedBranch.TransformerEndParameters end = InterpretedBranch.getEndParameters(transformerEnd);
+        // Interpret the tap changers AND modify, as a side effect, the transformer parameters
+        InterpretedBranch.TransformerEndParameters modifiedEnd = new InterpretedBranch.TransformerEndParameters();
+        InterpretedBranch.TapChangers tcsEnd = interpretTapChangerStatus(transformerEnd, end, alternative, modifiedEnd);
+        InterpretedBranch.ShuntAdmittances yshEnd = interpretAsShuntAdmittances(modifiedEnd, alternative);
+        InterpretedBranch.PhaseAngleClocks pacsEnd = interpretPhaseAngleClock(transformerEnd, alternative);
+        tcsEnd.addPhaseAngleClocks(pacsEnd);
+
+        End e = new End();
+        e.branchModelEnd = new DetectedBranchModel(yshEnd.ysh1, yshEnd.ysh2, tcsEnd.rtc1, tcsEnd.ptc1, tcsEnd.rtc2, tcsEnd.ptc2);
+
+        InterpretedBranch.Ratios structuralRatiosEnd = interpretStructuralRatioEnd(transformerEnd, alternative, ratedU0);
+        InterpretedBranch.Ratios ratiosEnd = InterpretedBranch.calculateRatios(tcsEnd, structuralRatiosEnd);
+
+        e.admittanceMatrixEnd = new BranchAdmittanceMatrix(modifiedEnd.r, modifiedEnd.x, ratiosEnd.a1, tcsEnd.ptc1.angle, yshEnd.ysh1, ratiosEnd.a2,
+                tcsEnd.ptc2.angle, yshEnd.ysh2);
+
+        return e;
     }
 
     private InterpretedBranch.TapChangers interpretTapChangerStatus(CgmesTransformerEnd transformerEnd,
@@ -175,6 +158,11 @@ public class InterpretedTransformer3 {
         modifiedEnd.b = initialEndParameters.b * rtcEndParameterCorrections.b * ptcEndParameterCorrections.b;
 
         modifiedEnd.x = newX * rtcEndParameterCorrections.x * ptcEndParameterCorrections.x;
+    }
+
+    static class End {
+        BranchAdmittanceMatrix admittanceMatrixEnd;
+        DetectedBranchModel branchModelEnd;
     }
 
     public DetectedBranchModel getBranchModelEnd1() {

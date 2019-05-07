@@ -86,9 +86,9 @@ public class CgmesDLImporterTest extends AbstractCgmesDLTest {
         cgmesDLImporter.importDLData();
         Network network = cgmesDLImporter.getNetworkWithDLData();
         BusbarSection busbar = network.getBusbarSection("Busbar");
-        NodeDiagramData<BusbarSection> busDiagramData = busbar.getExtension(NodeDiagramData.class);
+        NodeDiagramData<BusbarSection> busbarDiagramData = busbar.getExtension(NodeDiagramData.class);
 
-        checkDiagramData(busDiagramData);
+        checkDiagramData(busbarDiagramData);
     }
 
     private <T> void checkDiagramData(LineDiagramData<?> diagramData) {

@@ -34,6 +34,8 @@ public abstract class AbstractCgmesDLTest {
     protected PropertyBags tranformers3wPropertyBags;
     protected PropertyBags hvdcLinesPropertyBags;
     protected PropertyBags svcsPropertyBags;
+    protected PropertyBags terminals;
+    protected PropertyBags busbarNodes;
 
     @Before
     public void setUp() {
@@ -76,6 +78,24 @@ public abstract class AbstractCgmesDLTest {
         hvdcLinesPropertyBags = new PropertyBags(Arrays.asList(createPropertyBag(NAMESPACE + "HvdcLine", "HvdcLine", 20, 5, 1),
                                                                createPropertyBag(NAMESPACE + "HvdcLine", "HvdcLine", 20, 40, 2)));
         svcsPropertyBags = new PropertyBags(Arrays.asList(createPropertyBag(NAMESPACE + "Svc", "Svc", 10, 10, 0, 90)));
+        terminals = new PropertyBags(Arrays.asList(createTerminal(NAMESPACE + "Generator_0", 1, NAMESPACE + "Generator"),
+                                                   createTerminal(NAMESPACE + "Load_0", 1, NAMESPACE + "Load"),
+                                                   createTerminal(NAMESPACE + "Shunt_0", 1, NAMESPACE + "Shunt"),
+                                                   createTerminal(NAMESPACE + "Svc_0", 1, NAMESPACE + "Svc"),
+                                                   createTerminal(NAMESPACE + "Line_0", 1, NAMESPACE + "Line"),
+                                                   createTerminal(NAMESPACE + "Line_1", 2, NAMESPACE + "Line"),
+                                                   createTerminal(NAMESPACE + "DanglingLine_0", 1, NAMESPACE + "DanglingLine"),
+                                                   createTerminal(NAMESPACE + "DanglingLine_1", 2, NAMESPACE + "DanglingLine"),
+                                                   createTerminal(NAMESPACE + "Switch_0", 1, NAMESPACE + "Switch"),
+                                                   createTerminal(NAMESPACE + "Switch_1", 2, NAMESPACE + "Switch"),
+                                                   createTerminal(NAMESPACE + "Transformer_0", 1, NAMESPACE + "Transformer"),
+                                                   createTerminal(NAMESPACE + "Transformer_1", 2, NAMESPACE + "Transformer"),
+                                                   createTerminal(NAMESPACE + "Transformer3w_0", 1, NAMESPACE + "Transformer3w"),
+                                                   createTerminal(NAMESPACE + "Transformer3w_1", 2, NAMESPACE + "Transformer3w"),
+                                                   createTerminal(NAMESPACE + "Transformer3w_0", 3, NAMESPACE + "Transformer3w"),
+                                                   createTerminal(NAMESPACE + "HvdcLine_0", 1, NAMESPACE + "HvdcLine"),
+                                                   createTerminal(NAMESPACE + "HvdcLine_1", 2, NAMESPACE + "HvdcLine")));
+        busbarNodes = new PropertyBags(Arrays.asList(createBusbarNode(NAMESPACE + "Busbar", NAMESPACE + "BusbarNode")));
     }
 
     protected PropertyBag createPropertyBag(String identifiedObject, String name, double x, double y, int seq) {
@@ -138,6 +158,21 @@ public abstract class AbstractCgmesDLTest {
         propertyBag.put("x", Double.toString(x));
         propertyBag.put("y", Double.toString(y));
         propertyBag.put("rotation", Integer.toString(rotation));
+        return propertyBag;
+    }
+
+    private PropertyBag createTerminal(String terminal, int terminalSide, String equipment) {
+        PropertyBag propertyBag = new PropertyBag(Arrays.asList("terminal", "terminalSide", "equipment"));
+        propertyBag.put("terminal", terminal);
+        propertyBag.put("terminalSide", Integer.toString(terminalSide));
+        propertyBag.put("equipment", equipment);
+        return propertyBag;
+    }
+
+    private PropertyBag createBusbarNode(String busbar, String busbarNode) {
+        PropertyBag propertyBag = new PropertyBag(Arrays.asList("busbarNode", "busbarSection"));
+        propertyBag.put("busbarNode", busbarNode);
+        propertyBag.put("busbarSection", busbar);
         return propertyBag;
     }
 

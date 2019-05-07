@@ -69,6 +69,14 @@ public final class InterpretedBranch {
         return cs;
     }
 
+    static InterpretedBranch.Ratios calculateRatios(InterpretedBranch.TapChangers tcs,
+            InterpretedBranch.Ratios structuralRatios) {
+        InterpretedBranch.Ratios ratios = new InterpretedBranch.Ratios();
+        ratios.a1 = tcs.rtc1.ratio * tcs.ptc1.ratio * structuralRatios.a1;
+        ratios.a2 = tcs.rtc2.ratio * tcs.ptc2.ratio * structuralRatios.a2;
+        return ratios;
+    }
+
     static class TapChanger {
         double ratio = 1.0;
         boolean regulatingControl = false;

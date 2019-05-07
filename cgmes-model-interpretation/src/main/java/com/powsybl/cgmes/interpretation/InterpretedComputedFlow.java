@@ -452,9 +452,8 @@ public final class InterpretedComputedFlow {
             Complex ySecondOpen12, Complex ySecondOpen21, Complex ySecondOpen22) {
         Complex ysh1 = kronAntenna(yFirstOpen11, yFirstOpen12, yFirstOpen21, yFirstOpen22, true);
         Complex ysh2 = kronAntenna(ySecondOpen11, ySecondOpen12, ySecondOpen21, ySecondOpen22, true);
-        y22.add(ysh1).add(ysh2);
 
-        return kronAntenna(y11, y12, y21, y22, false);
+        return kronAntenna(y11, y12, y21, y22.add(ysh1).add(ysh2), false);
     }
 
     private BranchAdmittanceMatrix calculateTwoConnectedEndsAdmittance(Complex yFirstConnected11,
@@ -464,10 +463,9 @@ public final class InterpretedComputedFlow {
             Complex ySecondConnected21, Complex ySecondConnected22, Complex yOpen11, Complex yOpen12, Complex yOpen21,
             Complex yOpen22) {
         Complex ysh = kronAntenna(yOpen11, yOpen12, yOpen21, yOpen22, true);
-        ySecondConnected22.add(ysh);
 
         return kronChain(yFirstConnected11, yFirstConnected12, yFirstConnected21, yFirstConnected22, ySecondConnected11,
-                ySecondConnected12, ySecondConnected21, ySecondConnected22);
+                ySecondConnected12, ySecondConnected21, ySecondConnected22.add(ysh));
     }
 
     private Complex kronAntenna(Complex y11, Complex y12, Complex y21, Complex y22, boolean isOpenFrom) {

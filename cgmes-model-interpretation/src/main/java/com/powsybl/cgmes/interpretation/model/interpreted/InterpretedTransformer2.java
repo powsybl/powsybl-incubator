@@ -25,7 +25,7 @@ public class InterpretedTransformer2 {
     public InterpretedTransformer2(CgmesTransformer transformer, InterpretationAlternative alternative) {
         TransformerEndParameters end1 = InterpretedBranch.getEndParameters(transformer.end1());
         TransformerEndParameters end2 = InterpretedBranch.getEndParameters(transformer.end2());
-        // TODO Review: Interpret the tap changers AND modify, as a side effect, the
+        // Interpret the tap changers AND modify, as a side effect, the
         // transformer parameters
         TransformerParameters transformerParameters = new TransformerParameters();
         InterpretedBranch.TapChangers tcs = interpretTapChangerStatus(transformer, end1, end2, alternative,
@@ -39,7 +39,7 @@ public class InterpretedTransformer2 {
             tcs.rtc2, tcs.ptc2);
 
         InterpretedBranch.Ratios structuralRatios = interpretStructuralRatio(transformer, alternative);
-        InterpretedBranch.Ratios ratios = calculateRatios(tcs, structuralRatios);
+        InterpretedBranch.Ratios ratios = InterpretedBranch.calculateRatios(tcs, structuralRatios);
 
         admittanceMatrix = new BranchAdmittanceMatrix(
             transformerParameters.r, transformerParameters.x,
@@ -255,15 +255,6 @@ public class InterpretedTransformer2 {
             p1.b2 = initialEnd2Parameters.b * rtc1EndCorrectionFactors.b * ptc1EndCorrectionFactors.b;
             p1.b2 *= rtc2EndCorrectionFactors.b * ptc2EndCorrectionFactors.b;
         }
-    }
-
-    private InterpretedBranch.Ratios calculateRatios(
-        InterpretedBranch.TapChangers tcs,
-        InterpretedBranch.Ratios structuralRatioData) {
-        InterpretedBranch.Ratios ratios = new InterpretedBranch.Ratios();
-        ratios.a1 = tcs.rtc1.ratio * tcs.ptc1.ratio * structuralRatioData.a1;
-        ratios.a2 = tcs.rtc2.ratio * tcs.ptc2.ratio * structuralRatioData.a2;
-        return ratios;
     }
 
     static class TransformerParameters {

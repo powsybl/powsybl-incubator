@@ -15,13 +15,15 @@ import com.powsybl.substationdiagram.layout.LayoutParameters;
  */
 public interface Block {
     enum Type {
-        PRIMARY, PARALLEL, SERIAL
+        PRIMARY, PARALLEL, SERIAL, UNDEFINED
     }
 
     enum Extremity {
         START,
         END
     }
+
+    Graph getGraph();
 
     Node getStartingNode();
 

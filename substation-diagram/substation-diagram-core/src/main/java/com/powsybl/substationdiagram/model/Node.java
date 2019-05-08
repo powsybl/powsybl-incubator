@@ -252,13 +252,13 @@ public class Node implements BaseNode {
                 || (n.getType() == NodeType.FICTITIOUS && n.adjacentEdges.size() == 1);
     }
 
-    @Override
-    public String toString() {
-        return "Node(id='" + getId() + "', type= " + type + ")";
-    }
-
     public void finalizeCoord() {
         x = xs.stream().mapToDouble(Node::applyAsDouble).average().orElse(0);
         y = ys.stream().mapToDouble(Node::applyAsDouble).average().orElse(0);
+    }
+
+    @Override
+    public String toString() {
+        return "Node(id='" + getId() + "' name='" + name + "', type= " + type + ")";
     }
 }

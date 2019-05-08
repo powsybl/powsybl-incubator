@@ -10,6 +10,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
 
+import java.util.Objects;
+
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
@@ -17,14 +19,17 @@ import com.powsybl.substationdiagram.layout.LayoutParameters;
  */
 public abstract class AbstractBlock implements Block {
 
-    protected Type type;
+    protected final Type type;
 
     @JsonIgnore
     private int cardinalityStart;
+
     @JsonIgnore
     private int cardinalityEnd;
+
     @JsonBackReference
     private Block parentBlock;
+
     @JsonIgnore
     private BusNode busNode;
 
@@ -32,24 +37,17 @@ public abstract class AbstractBlock implements Block {
     private Cell cell;
 
     private Position position;
+
     private Coord coord;
 
     /**
      * Constructor for primary layout.block with the list of nodes corresponding to the
      * layout.block
      */
-    AbstractBlock() {
+    AbstractBlock(Type type) {
+        this.type = Objects.requireNonNull(type);
         position = new Position(-1, -1);
         coord = new Coord(-1, -1);
-        this.parentBlock = null;
-        this.busNode = null;
-    }
-
-    AbstractBlock(Cell cell) {
-        this();
-        if (cell != null) {
-            setCell(cell);
-        }
     }
 
     @Override

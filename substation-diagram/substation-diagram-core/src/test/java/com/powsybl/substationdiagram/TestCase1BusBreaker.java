@@ -22,7 +22,7 @@ import static org.junit.Assert.assertTrue;
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class BusBreakerTestCase1 extends AbstractTestCase {
+public class TestCase1BusBreaker extends AbstractTestCase {
 
     @Before
     public void setUp() {
@@ -64,14 +64,26 @@ public class BusBreakerTestCase1 extends AbstractTestCase {
         assertTrue(new BlockOrganizer().organize(g));
 
         // calculate coordinates
-        LayoutParameters layoutParameters = new LayoutParameters(20, 50, 0, 260,
-                25, 20,
-                50, 250, 40,
-                30, true, true, 1, 50, 50);
+        LayoutParameters layoutParameters = new LayoutParameters()
+                .setTranslateX(20)
+                .setTranslateY(50)
+                .setInitialXBus(0)
+                .setInitialYBus(260)
+                .setVerticalSpaceBus(25)
+                .setHorizontalBusPadding(20)
+                .setCellWidth(50)
+                .setExternCellHeight(250)
+                .setInternCellHeight(40)
+                .setStackHeight(30)
+                .setShowGrid(true)
+                .setShowInternalNodes(true)
+                .setScaleFactor(1)
+                .setHorizontalSubstationPadding(50)
+                .setVerticalSubstationPadding(50);
 
         new PositionVoltageLevelLayout(g).run(layoutParameters);
 
         // write SVG and compare to reference
-        compareSvg(g, layoutParameters, "/BusBreakerTestCase1.svg");
+        compareSvg(g, layoutParameters, "/TestCase1BusBreaker.svg");
     }
 }

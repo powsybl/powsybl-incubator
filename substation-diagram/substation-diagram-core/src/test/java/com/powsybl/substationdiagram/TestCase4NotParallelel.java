@@ -224,10 +224,22 @@ public class TestCase4NotParallelel extends AbstractTestCase {
         assertEquals(new Position(2, 0, 1, 2, false, Orientation.VERTICAL), bc3.getPosition());
 
         // calculate coordinates
-        LayoutParameters layoutParameters = new LayoutParameters(20, 50, 0, 260,
-                25, 20,
-                50, 250, 40,
-                30, true, true, 1, 50, 50);
+        LayoutParameters layoutParameters = new LayoutParameters()
+                .setTranslateX(20)
+                .setTranslateY(50)
+                .setInitialXBus(0)
+                .setInitialYBus(260)
+                .setVerticalSpaceBus(25)
+                .setHorizontalBusPadding(20)
+                .setCellWidth(50)
+                .setExternCellHeight(250)
+                .setInternCellHeight(40)
+                .setStackHeight(30)
+                .setShowGrid(true)
+                .setShowInternalNodes(true)
+                .setScaleFactor(1)
+                .setHorizontalSubstationPadding(50)
+                .setVerticalSubstationPadding(50);
 
         new PositionVoltageLevelLayout(g).run(layoutParameters);
 

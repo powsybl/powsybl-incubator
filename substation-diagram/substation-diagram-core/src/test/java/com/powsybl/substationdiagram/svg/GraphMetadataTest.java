@@ -15,8 +15,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
@@ -34,7 +33,7 @@ public class GraphMetadataTest {
                                                             new ComponentSize(10, 12)));
         metadata.addNodeMetadata(new GraphMetadata.NodeMetadata("id1", ComponentType.BREAKER, true, false));
         metadata.addNodeMetadata(new GraphMetadata.NodeMetadata("id2", ComponentType.BUSBAR_SECTION, false, false));
-        metadata.addWireMetadata(new GraphMetadata.WireMetadata("id3", "id1", "id2"));
+        metadata.addWireMetadata(new GraphMetadata.WireMetadata("id3", "id1", "id2", false));
 
         ObjectMapper objectMapper = JsonUtil.createObjectMapper();
         String json = objectMapper.writerWithDefaultPrettyPrinter()
@@ -61,5 +60,6 @@ public class GraphMetadataTest {
         assertEquals("id3", metadata2.getWireMetadata("id3").getId());
         assertEquals("id1", metadata2.getWireMetadata("id3").getNodeId1());
         assertEquals("id2", metadata2.getWireMetadata("id3").getNodeId2());
+        assertFalse(metadata2.getWireMetadata("id3").isStraight());
     }
 }

@@ -72,12 +72,15 @@ public class GraphMetadata implements AnchorPointProvider {
 
         private final String nodeId2;
 
+        private final boolean straight;
+
         @JsonCreator
         public WireMetadata(@JsonProperty("id") String id, @JsonProperty("nodeId1") String nodeId1,
-                            @JsonProperty("nodeId2") String nodeId2) {
+                            @JsonProperty("nodeId2") String nodeId2, @JsonProperty("straight") boolean straight) {
             this.id = Objects.requireNonNull(id);
             this.nodeId1 = Objects.requireNonNull(nodeId1);
             this.nodeId2 = Objects.requireNonNull(nodeId2);
+            this.straight = straight;
         }
 
         public String getId() {
@@ -90,6 +93,10 @@ public class GraphMetadata implements AnchorPointProvider {
 
         public String getNodeId2() {
             return nodeId2;
+        }
+
+        public boolean isStraight() {
+            return straight;
         }
     }
 

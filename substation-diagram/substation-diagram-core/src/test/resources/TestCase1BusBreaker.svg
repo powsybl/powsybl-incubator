@@ -27,62 +27,36 @@
 .VSC_CONVERTER_STATION {stroke:rgb(0,0,255);font-size:7.4314661px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;stroke-miterlimit:4;}
 .DANGLING_LINE {stroke:rgb(0,0,0);stroke-width:2;}
 .PHASE_SHIFT_TRANSFORMER {stroke:rgb(0,0,255);stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;}
-.d1 .open { visibility: hidden;}.d1 .closed { visibility: visible;}.d2 .open { visibility: hidden;}.d2 .closed { visibility: visible;}._b .open { visibility: hidden;}._b .closed { visibility: visible;}]]></style>
+.b1_l .open { visibility: hidden;}.b1_l .closed { visibility: visible;}]]></style>
     <g class="substation-diagram">
         <g>
             <line y2="590.0" x1="0.0" class="grid" x2="0.0" transform="translate(20.0,50.0)" y1="-20.0"/>
             <line y2="590.0" x1="50.0" class="grid" x2="50.0" transform="translate(20.0,50.0)" y1="-20.0"/>
         </g>
-        <g class="substation-diagram BUSBAR_SECTION bbs1" id="bbs1" transform="translate(30.0,310.0)">
+        <g class="substation-diagram BUSBAR_SECTION b1" id="b1" transform="translate(30.0,310.0)">
             <line y2="0" x1="0" class="bus_vl" x2="30.0" y1="0"/>
-            <text x="-5" font-size="8" y="-5" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs1</text>
+            <text x="-5" font-size="8" y="-5" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">b1</text>
         </g>
-        <g class="substation-diagram BUSBAR_SECTION bbs2" id="bbs2" transform="translate(30.0,335.0)">
-            <line y2="0" x1="0" class="bus_vl" x2="30.0" y1="0"/>
-            <text x="-5" font-size="8" y="-5" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs2</text>
+        <g class="substation-diagram BUSBAR_SECTION b2" id="b2" transform="translate(-20.0,335.0)">
+            <line y2="0" x1="0" class="bus_vl" x2="-20.0" y1="0"/>
+            <text x="-5" font-size="8" y="-5" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">b2</text>
         </g>
-        <g class="substation-diagram LOAD _l" id="l" transform="translate(37.0,25.5)">
+        <g class="substation-diagram LOAD _l" id="l" transform="translate(37.0,45.5)">
     <rect height="9" width="16"/>
     <line y2="9" x1="0" x2="16" y1="0"/>
     <line y2="9" x1="16" x2="0" y1="0"/>
 <text x="-5" font-size="8" y="-5" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">l</text>
         </g>
-        <g class="substation-diagram NODE FICT_vl_2" id="FICT_vl_2" transform="translate(41.0,276.0)">
-    <circle r="4" cx="4" cy="4"/>
-</g>
-        <g class="substation-diagram DISCONNECTOR d1" id="d1" transform="translate(41.0,306.0)">
+        <g class="substation-diagram DISCONNECTOR b1_l" id="b1_l" transform="translate(41.0,306.0)">
     <g id="closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
     <g id="open">
         <line y2="8" x1="8" x2="0" y1="0"/>
-    </g>
-</g>
-        <g class="substation-diagram DISCONNECTOR d2" id="d2" transform="translate(41.0,331.0)">
-    <g id="closed">
-        <line y2="8" x1="0" x2="8" y1="0"/>
-        <line y2="8" x1="8" x2="0" y1="0"/>
-    </g>
-    <g id="open">
-        <line y2="8" x1="8" x2="0" y1="0"/>
-    </g>
-</g>
-        <g class="substation-diagram BREAKER _b" id="b" transform="translate(35.0,145.0)">
-    <g class="closed" id="closed">
-        <rect x="1" width="18" y="1" height="18"/>
-        <line y2="15" x1="10" x2="10" y1="5"/>
-    </g>
-    <g class="open" id="open">
-        <rect x="1" width="18" y="1" height="18"/>
-        <line y2="10" x1="5" x2="15" y1="10"/>
     </g>
 </g>
         <polyline class="wire_vl" points="45.0,310.0 45.0,310.0" id="vl_Wire0"/>
-        <polyline class="wire_vl" points="45.0,310.0 45.0,280.0" id="vl_Wire1"/>
-        <polyline class="wire_vl" points="45.0,335.0 45.0,335.0" id="vl_Wire2"/>
-        <polyline class="wire_vl" points="45.0,335.0 45.0,280.0" id="vl_Wire3"/>
-        <polyline class="wire_vl" points="45.0,280.0 45.0,165.0" id="vl_Wire4"/>
-        <polyline class="wire_vl" points="45.0,145.0 45.0,34.0" id="vl_Wire5"/>
+        <polyline class="wire_vl" points="45.0,310.0 45.0,54.0" id="vl_Wire1"/>
     </g>
 </svg>

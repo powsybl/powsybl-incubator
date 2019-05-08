@@ -118,25 +118,24 @@ public class BestInterpretationReport extends AbstractReport {
             .filter(b -> !b.isCalculated() && !b.isIsolated())
             .count();
         long okNodes = nodesResults.stream()
-            .filter(NodeInterpretationResult::isCalculated)
-            .filter(NodeInterpretationResult::isOk)
+            .filter(b -> b.isCalculated() && b.isErrorOk())
             .count();
         long badNodes = nodesResults.stream()
-            .filter(NodeInterpretationResult::isBad)
+            .filter(b -> b.isCalculated() && !b.isBadVoltage() && !b.isErrorOk())
             .count();
         long isolatedNodes = nodesResults.stream()
             .filter(NodeInterpretationResult::isIsolated)
             .count();
         long badVoltageNodes = nodesResults.stream()
-            .filter(b -> b.isCalculated() && b.isBadVoltage() && !b.isOk())
+            .filter(b -> b.isCalculated() && b.isBadVoltage() && !b.isErrorOk())
             .count();
         double badNodesError = nodesResults.stream()
-            .filter(NodeInterpretationResult::isBad)
+            .filter(b -> b.isCalculated() && !b.isBadVoltage() && !b.isErrorOk())
             .map(NodeInterpretationResult::error)
             .mapToDouble(Double::doubleValue)
             .sum();
         double badVoltageNodesError = nodesResults.stream()
-            .filter(b -> b.isCalculated() && b.isBadVoltage() && !b.isOk())
+            .filter(b -> b.isCalculated() && b.isBadVoltage() && !b.isErrorOk())
             .map(NodeInterpretationResult::error)
             .mapToDouble(Double::doubleValue)
             .sum();

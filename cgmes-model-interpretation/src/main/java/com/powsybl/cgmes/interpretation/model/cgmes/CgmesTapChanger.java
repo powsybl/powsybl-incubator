@@ -34,7 +34,7 @@ public class CgmesTapChanger {
         this.lowStep = tcp.asInt("lowStep");
         this.highStep = tcp.asInt("highStep");
         this.neutralStep = tcp.asInt("neutralStep");
-        // TODO Consider finding the closest step to given value for step
+        // Consider finding the closest step to given value for step
         // and keep the original value but add an int attribute "stepk" or "stepi"?
         this.step = tcp.asDouble("SVtapStep");
         this.regulatingControlEnabled = tcp.asBoolean("regulatingControlEnabled", false);

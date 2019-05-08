@@ -50,15 +50,7 @@ public class NodeInterpretationResult {
         return Math.abs(p) + Math.abs(q);
     }
 
-    // TODO isBad and isOk are preserved from previous expressions
-    // TODO but we should have a single way of querying node has error
-    public boolean isBad() {
-        return calculated
-            && !badVoltage
-            && error() > Configuration.ERROR_TOLERANCE;
-    }
-
-    public boolean isOk() {
+    public boolean isErrorOk() {
         return error() <= Configuration.ERROR_TOLERANCE;
     }
 
@@ -127,15 +119,14 @@ public class NodeInterpretationResult {
     private final CgmesZ0Node z0node;
     private final Map<String, DetectedEquipmentModel> detectedModels = new HashMap<>();
 
-    // TODO This is a strange default value (calculated is true by default)?
-    private boolean calculated = true;
-    private boolean isolated;
-    private boolean badVoltage;
+    private boolean calculated = false;
+    private boolean isolated = false;
+    private boolean badVoltage = false;
 
-    private double p;
-    private double q;
+    private double p = 0.0;
+    private double q = 0.0;
 
-    private int numLines;
-    private int numTransformers2;
-    private int numTransformers3;
+    private int numLines = 0;
+    private int numTransformers2 = 0;
+    private int numTransformers3 = 0;
 }

@@ -100,8 +100,7 @@ public class CgmesPhaseTapChanger extends CgmesTapChanger {
             } else if (type == Type.SYMMETRICAL) {
                 x1 = symmetricalX(angle, alphaMax);
             } else {
-                // TODO we are calculating x even for tabular. Is this correct?
-                x1 = symmetricalX(angle, alphaMax);
+                // Nothing to do for tabular
             }
         }
         return x1;

@@ -117,7 +117,6 @@ public class Interpretation {
             if (flow.isBadVoltage()) {
                 z0nodeResult.setBadVoltage(true);
             }
-        } else {
             z0nodeResult.setCalculated(flow.isCalculated());
         }
         if (flow.isLine()) {

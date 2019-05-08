@@ -40,7 +40,7 @@ public class CgmesModelForInterpretation {
         prepareForInterpretation();
     }
 
-    // TODO Unit tests should be able to use the same default constructor
+    // Used only for unit tests
     public CgmesModelForInterpretation(
         String name,
         Map<String, CgmesNode> nodes,
@@ -525,8 +525,7 @@ public class CgmesModelForInterpretation {
     private static final String SELECT_WHERE = "SELECT * WHERE { ";
     private static final Logger LOG = LoggerFactory.getLogger(CgmesModelForInterpretation.class);
 
-    // TODO This is only required for Kron reduction units tests (remove it)
-    public static final CgmesModel CGMES_EMPTY_MODEL = new CgmesModelTripleStore(
-        CgmesNamespace.CIM_16_NAMESPACE,
+    // This is only required for Kron reduction units tests
+    public static final CgmesModel CGMES_EMPTY_MODEL = new CgmesModelTripleStore(CgmesNamespace.CIM_16_NAMESPACE,
         TripleStoreFactory.create());
 }

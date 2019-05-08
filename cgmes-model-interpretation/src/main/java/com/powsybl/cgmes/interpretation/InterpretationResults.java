@@ -61,7 +61,7 @@ public class InterpretationResults {
                 DetectedEquipmentModel aggregateEqModel = detectedModels.computeIfAbsent(eqm,
                     id -> new DetectedEquipmentModel(eqModel.detectedBranchModels()));
                 if (nodeResult.isCalculated() && !nodeResult.isIsolated()) {
-                    if (nodeResult.isOk()) {
+                    if (nodeResult.isErrorOk()) {
                         aggregateEqModel.incTotal(eqModel.total());
                         aggregateEqModel.incCalculated(eqModel.total());
                         aggregateEqModel.incOk(eqModel.total());
@@ -97,7 +97,7 @@ public class InterpretationResults {
     public long countBadNodes() {
         return interpretationAlternativeResults.values().stream()
             .map(alternativeResults -> alternativeResults.nodesResults().stream()
-                .filter(NodeInterpretationResult::isBad)
+                .filter(b -> b.isCalculated() && !b.isBadVoltage() && !b.isErrorOk())
                 .count())
             .mapToLong(Long::longValue)
             .sum();

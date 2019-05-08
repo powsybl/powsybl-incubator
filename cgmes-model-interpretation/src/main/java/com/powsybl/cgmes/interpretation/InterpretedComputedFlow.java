@@ -352,13 +352,7 @@ public final class InterpretedComputedFlow {
         double angle = Math.toRadians(angleDegrees);
         Complex vf = new Complex(v * Math.cos(angle), v * Math.sin(angle));
 
-        Complex ysh = calculateEndShunt(
-                // TODO We should pass directly the admittance matrixes instead of each element
-                admittanceMatrixEnd.y11(), admittanceMatrixEnd.y12(), admittanceMatrixEnd.y21(), admittanceMatrixEnd.y22(),
-                admittanceMatrixOpenEnd1.y11(), admittanceMatrixOpenEnd1.y12(), admittanceMatrixOpenEnd1.y21(),
-                admittanceMatrixOpenEnd1.y22(),
-                admittanceMatrixOpenEnd2.y11(), admittanceMatrixOpenEnd2.y12(), admittanceMatrixOpenEnd2.y21(),
-                admittanceMatrixOpenEnd2.y22());
+        Complex ysh = calculateEndShunt(admittanceMatrixEnd, admittanceMatrixOpenEnd1, admittanceMatrixOpenEnd2);
 
         if (nEnd.equals(n)) {
             p = ysh.getReal() * vf.abs() * vf.abs();
@@ -382,13 +376,8 @@ public final class InterpretedComputedFlow {
         Complex vf1 = new Complex(v1 * Math.cos(angle1), v1 * Math.sin(angle1));
         Complex vf2 = new Complex(v2 * Math.cos(angle2), v2 * Math.sin(angle2));
 
-        BranchAdmittanceMatrix admittance = calculateTwoConnectedEndsAdmittance(
-                admittanceMatrixEnd1.y11(), admittanceMatrixEnd1.y12(), admittanceMatrixEnd1.y21(),
-                admittanceMatrixEnd1.y22(),
-                admittanceMatrixEnd2.y11(), admittanceMatrixEnd2.y12(), admittanceMatrixEnd2.y21(),
-                admittanceMatrixEnd2.y22(),
-                admittanceMatrixOpenEnd.y11(), admittanceMatrixOpenEnd.y12(), admittanceMatrixOpenEnd.y21(),
-                admittanceMatrixOpenEnd.y22());
+        BranchAdmittanceMatrix admittance = calculateTwoConnectedEndsAdmittance(admittanceMatrixEnd1,
+                admittanceMatrixEnd2, admittanceMatrixOpenEnd);
 
         flowBothEnds(admittance.y11(), admittance.y12(), admittance.y21(), admittance.y22(), vf1, vf2);
 
@@ -447,25 +436,23 @@ public final class InterpretedComputedFlow {
         badVoltage = !anglesAreOk(angleDegrees1, angleDegrees2, angleDegrees3);
     }
 
-    private Complex calculateEndShunt(Complex y11, Complex y12, Complex y21, Complex y22, Complex yFirstOpen11,
-            Complex yFirstOpen12, Complex yFirstOpen21, Complex yFirstOpen22, Complex ySecondOpen11,
-            Complex ySecondOpen12, Complex ySecondOpen21, Complex ySecondOpen22) {
-        Complex ysh1 = kronAntenna(yFirstOpen11, yFirstOpen12, yFirstOpen21, yFirstOpen22, true);
-        Complex ysh2 = kronAntenna(ySecondOpen11, ySecondOpen12, ySecondOpen21, ySecondOpen22, true);
+    private Complex calculateEndShunt(BranchAdmittanceMatrix closeEnd,
+            BranchAdmittanceMatrix firstOpenEnd, BranchAdmittanceMatrix secondOpenEnd) {
 
-        return kronAntenna(y11, y12, y21, y22.add(ysh1).add(ysh2), false);
+        Complex ysh1 = kronAntenna(firstOpenEnd.y11(), firstOpenEnd.y12(), firstOpenEnd.y21(), firstOpenEnd.y22(), true);
+        Complex ysh2 = kronAntenna(secondOpenEnd.y11(), secondOpenEnd.y12(), secondOpenEnd.y21(), secondOpenEnd.y22(), true);
+
+        Complex y22 = closeEnd.y22().add(ysh1).add(ysh2);
+        return kronAntenna(closeEnd.y11(), closeEnd.y12(), closeEnd.y21(), y22, false);
     }
 
-    private BranchAdmittanceMatrix calculateTwoConnectedEndsAdmittance(Complex yFirstConnected11,
-            Complex yFirstConnected12,
-            Complex yFirstConnected21, Complex yFirstConnected22, Complex ySecondConnected11,
-            Complex ySecondConnected12,
-            Complex ySecondConnected21, Complex ySecondConnected22, Complex yOpen11, Complex yOpen12, Complex yOpen21,
-            Complex yOpen22) {
-        Complex ysh = kronAntenna(yOpen11, yOpen12, yOpen21, yOpen22, true);
+    private BranchAdmittanceMatrix calculateTwoConnectedEndsAdmittance(BranchAdmittanceMatrix firstCloseEnd,
+            BranchAdmittanceMatrix secondCloseEnd, BranchAdmittanceMatrix openEnd) {
+        Complex ysh = kronAntenna(openEnd.y11(), openEnd.y12(), openEnd.y21(), openEnd.y22(), true);
 
-        return kronChain(yFirstConnected11, yFirstConnected12, yFirstConnected21, yFirstConnected22, ySecondConnected11,
-                ySecondConnected12, ySecondConnected21, ySecondConnected22.add(ysh));
+        Complex y22 = secondCloseEnd.y22().add(ysh);
+        return kronChain(firstCloseEnd.y11(), firstCloseEnd.y12(), firstCloseEnd.y21(), firstCloseEnd.y22(),
+                secondCloseEnd.y11(), secondCloseEnd.y12(), secondCloseEnd.y21(), y22);
     }
 
     private Complex kronAntenna(Complex y11, Complex y12, Complex y21, Complex y22, boolean isOpenFrom) {

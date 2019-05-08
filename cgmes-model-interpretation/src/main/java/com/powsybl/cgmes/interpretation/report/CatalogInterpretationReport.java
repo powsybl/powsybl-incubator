@@ -139,25 +139,24 @@ public class CatalogInterpretationReport extends AbstractReport {
             .filter(b -> !b.isCalculated() && !b.isIsolated())
             .count();
         long badNodes = nodesResults.stream()
-            .filter(NodeInterpretationResult::isBad)
+            .filter(b -> b.isCalculated() && !b.isBadVoltage() && !b.isErrorOk())
             .count();
         long badVoltageNodes = nodesResults.stream()
-            .filter(b -> b.isCalculated() && b.isBadVoltage() && !b.isOk())
+            .filter(b -> b.isCalculated() && b.isBadVoltage() && !b.isErrorOk())
             .count();
         long okNodes = nodesResults.stream()
-            .filter(NodeInterpretationResult::isCalculated)
-            .filter(NodeInterpretationResult::isOk)
+            .filter(b -> b.isCalculated() && b.isErrorOk())
             .count();
         long isolatedNodes = nodesResults.stream()
             .filter(NodeInterpretationResult::isIsolated)
             .count();
         double badVoltageNodesError = nodesResults.stream()
-            .filter(b -> b.isCalculated() && b.isBadVoltage() && !b.isOk())
+            .filter(b -> b.isCalculated() && b.isBadVoltage() && !b.isErrorOk())
             .map(NodeInterpretationResult::error)
             .mapToDouble(Double::doubleValue)
             .sum();
         double badNodesError = nodesResults.stream()
-            .filter(b -> b.isCalculated() && !b.isBadVoltage() && !b.isOk())
+            .filter(b -> b.isCalculated() && !b.isBadVoltage() && !b.isErrorOk())
             .map(NodeInterpretationResult::error)
             .mapToDouble(Double::doubleValue)
             .sum();
@@ -249,7 +248,7 @@ public class CatalogInterpretationReport extends AbstractReport {
             TableFormatter formatter = factory.create(writer, prefix, config, columns)) {
             alternativeResults.nodesResults().stream()
                 .filter(b -> {
-                    boolean badError = b.isCalculated() && !b.isOk();
+                    boolean badError = b.isCalculated() && !b.isErrorOk();
                     return showOnlyBadNodes && !b.isBadVoltage() && badError
                         || showOnlyBadVoltageNodes && b.isBadVoltage() && badError;
                 })

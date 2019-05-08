@@ -107,7 +107,7 @@ public final class VoltageLevelDiagramView extends AbstractContainerDiagramView 
                     if (nodeHandler2 == null) {
                         throw new PowsyblException("Node 2 " + wireMetadata.getNodeId2() + " not found");
                     }
-                    WireHandler wireHandler = new WireHandler((Polyline) node, nodeHandler1, nodeHandler2, metadata);
+                    WireHandler wireHandler = new WireHandler((Polyline) node, nodeHandler1, nodeHandler2, wireMetadata.isStraight(), metadata);
                     LOGGER.trace(" Added handler to wire between {} and {}", wireMetadata.getNodeId1(), wireMetadata.getNodeId2());
                     wireHandlers.add(wireHandler);
                 }

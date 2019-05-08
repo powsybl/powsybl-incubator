@@ -545,7 +545,8 @@ public class SVGWriter {
             try {
                 metadata.addWireMetadata(new GraphMetadata.WireMetadata(wireId,
                         URLEncoder.encode(edge.getNode1().getId(), StandardCharsets.UTF_8.name()),
-                        URLEncoder.encode(edge.getNode2().getId(), StandardCharsets.UTF_8.name())));
+                        URLEncoder.encode(edge.getNode2().getId(), StandardCharsets.UTF_8.name()),
+                        layoutParameters.isDrawStraightWires()));
             } catch (UnsupportedEncodingException e) {
                 throw new UncheckedIOException(e);
             }
@@ -601,8 +602,9 @@ public class SVGWriter {
 
             try {
                 metadata.addWireMetadata(new GraphMetadata.WireMetadata(wireId,
-                    URLEncoder.encode(edge.getNode1().getId(), StandardCharsets.UTF_8.name()),
-                    URLEncoder.encode(edge.getNode2().getId(), StandardCharsets.UTF_8.name())));
+                        URLEncoder.encode(edge.getNode1().getId(), StandardCharsets.UTF_8.name()),
+                        URLEncoder.encode(edge.getNode2().getId(), StandardCharsets.UTF_8.name()),
+                        layoutParameters.isDrawStraightWires()));
             } catch (UnsupportedEncodingException e) {
                 throw new UncheckedIOException(e);
             }
@@ -615,7 +617,7 @@ public class SVGWriter {
         double x2 = edge.getNode2().getX() + anchorPoint2.getX();
         double y2 = edge.getNode2().getY() + anchorPoint2.getY();
 
-        if (x1 == x2 || y1 == y2) {
+        if (layoutParameters.isDrawStraightWires() || (x1 == x2 || y1 == y2)) {
             return Arrays.asList(x1, y1, x2, y2);
         }
         List<Double> pol = new ArrayList<>();

@@ -7,8 +7,10 @@
 
 package com.powsybl.substationdiagram.model;
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
@@ -64,7 +66,13 @@ public class UndefinedBlock extends AbstractBlock {
             block.calculateDimensionAndInternPos();
         }
         if (getPosition().getOrientation() == Orientation.VERTICAL) {
-            // TODO
+            int h = 0;
+            for (Block subBlock : subBlocks) {
+                subBlock.getPosition().setHV(h, 0);
+                h += subBlock.getPosition().getHSpan();
+            }
+            getPosition().setHSpan(subBlocks.stream().mapToInt(block -> block.getPosition().getHSpan()).sum());
+            getPosition().setVSpan(subBlocks.stream().mapToInt(block -> block.getPosition().getVSpan()).max().orElseThrow(IllegalStateException::new));
         } else {
             throw new UnsupportedOperationException("Horizontal layout of undefined  block not supported");
         }
@@ -77,10 +85,11 @@ public class UndefinedBlock extends AbstractBlock {
 
     @Override
     public void coordVerticalCase(LayoutParameters layoutParam) {
+        double dx = getCoord().getXSpan() / getPosition().getHSpan();
         for (Block block : subBlocks) {
-            block.setX(getCoord().getX());
+            block.setX(getCoord().getX() + block.getPosition().getH() * dx);
+            block.setXSpan(dx);
             block.setY(getCoord().getY());
-            block.setXSpan(getCoord().getXSpan());
             block.setYSpan(getCoord().getYSpan());
             block.coordVerticalCase(layoutParam);
         }
@@ -89,6 +98,16 @@ public class UndefinedBlock extends AbstractBlock {
     @Override
     public void coordHorizontalCase(LayoutParameters layoutParam) {
         throw new UnsupportedOperationException("Horizontal layout of undefined  block not supported");
+    }
+
+    @Override
+    protected void writeJsonContent(JsonGenerator generator) throws IOException {
+        generator.writeFieldName("blocks");
+        generator.writeStartArray();
+        for (Block subBlock : subBlocks) {
+            subBlock.writeJson(generator);
+        }
+        generator.writeEndArray();
     }
 
     @Override

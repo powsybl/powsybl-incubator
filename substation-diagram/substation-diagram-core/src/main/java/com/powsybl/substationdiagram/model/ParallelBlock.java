@@ -6,9 +6,10 @@
  */
 package com.powsybl.substationdiagram.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -20,7 +21,6 @@ import java.util.List;
  */
 public class ParallelBlock extends AbstractBlock {
 
-    @JsonManagedReference
     private final List<Block> subBlocks = new ArrayList<>();
 
     public ParallelBlock(List<Block> subBlocks, Cell cell, boolean allowMerge) {
@@ -201,6 +201,16 @@ public class ParallelBlock extends AbstractBlock {
             sub.setYSpan(getCoord().getYSpan());
             sub.calculateCoord(layoutParam);
         });
+    }
+
+    @Override
+    protected void writeJsonContent(JsonGenerator generator) throws IOException {
+        generator.writeFieldName("nodes");
+        generator.writeStartArray();
+        for (Block subBlock : subBlocks) {
+            subBlock.writeJson(generator);
+        }
+        generator.writeEndArray();
     }
 
     @Override

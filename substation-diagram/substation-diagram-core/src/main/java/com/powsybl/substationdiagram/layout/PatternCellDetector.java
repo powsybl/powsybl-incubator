@@ -78,7 +78,7 @@ public class PatternCellDetector implements CellDetector {
                 List<Node> shuntNodes = cell.getNodes()
                         .stream()
                         .filter(node -> node.getListNodeAdjInCell(cell).count() == 1).collect(Collectors.toList());
-                shuntNodes.forEach(node -> node.setType(Node.NodeType.SHUNT));
+           //     shuntNodes.forEach(node -> node.setType(Node.NodeType.SHUNT));
             }
         }
         graph.getCells().stream()

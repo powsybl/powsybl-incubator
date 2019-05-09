@@ -6,10 +6,10 @@
  */
 package com.powsybl.substationdiagram.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
 
+import java.io.IOException;
 import java.util.Objects;
 
 /**
@@ -21,19 +21,14 @@ public abstract class AbstractBlock implements Block {
 
     protected final Type type;
 
-    @JsonIgnore
     private int cardinalityStart;
 
-    @JsonIgnore
     private int cardinalityEnd;
 
-    @JsonBackReference
     private Block parentBlock;
 
-    @JsonIgnore
     private BusNode busNode;
 
-    @JsonIgnore
     private Cell cell;
 
     private Position position;
@@ -139,6 +134,7 @@ public abstract class AbstractBlock implements Block {
         getPosition().setOrientation(orientation);
     }
 
+    @Override
     public Coord getCoord() {
         return coord;
     }
@@ -193,9 +189,7 @@ public abstract class AbstractBlock implements Block {
         }
 
         coord.setX(layoutParam.getInitialXBus()
-                           + layoutParam.getCellWidth() * position.getH()
-                           + coord.getXSpan() / 2);
-
+                           + layoutParam.getCellWidth() * position.getH());
         switch (cell.getDirection()) {
             case BOTTOM:
                 coord.setY(layoutParam.getInitialYBus()
@@ -217,5 +211,15 @@ public abstract class AbstractBlock implements Block {
     @Override
     public Block.Type getType() {
         return this.type;
+    }
+
+    protected abstract void writeJsonContent(JsonGenerator generator) throws IOException;
+
+    @Override
+    public void writeJson(JsonGenerator generator) throws IOException {
+        generator.writeStartObject();
+        generator.writeStringField("type", type.name());
+        writeJsonContent(generator);
+        generator.writeEndObject();
     }
 }

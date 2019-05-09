@@ -6,7 +6,10 @@
  */
 package com.powsybl.substationdiagram.model;
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
+
+import java.io.IOException;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
@@ -36,6 +39,8 @@ public interface Block {
     void setParentBlock(Block parentBlock);
 
     Position getPosition();
+
+    Coord getCoord();
 
     void setXSpan(double xSpan);
 
@@ -79,4 +84,6 @@ public interface Block {
     void setOrientation(Orientation orientation);
 
     Type getType();
+
+    void writeJson(JsonGenerator generator) throws IOException;
 }

@@ -15,11 +15,22 @@ import com.powsybl.substationdiagram.library.ComponentType;
  */
 public class FictitiousNode extends Node {
 
+    private int shunts = 0;
+
     public FictitiousNode(Graph graph, String id) {
         super(NodeType.FICTITIOUS, id, id, ComponentType.NODE, true, graph);
     }
 
+    public void addShunt() {
+        shunts++;
+    }
+
+    @Override
+    public boolean isShunt() {
+        return shunts > 0;
+    }
+
     public int getCardinality() {
-        return this.getAdjacentNodes().size() - (getType() == NodeType.SHUNT ? 1 : 0);
+        return this.getAdjacentNodes().size() - shunts;
     }
 }

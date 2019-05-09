@@ -10,9 +10,8 @@ import com.powsybl.substationdiagram.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -23,6 +22,10 @@ import java.util.stream.Collectors;
 public class ImplicitCellDetector implements CellDetector {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ImplicitCellDetector.class);
+
+    private static final Predicate<Node> SHUNT_EXPLORE_STOP_CRITERIA
+            = n -> n.getType() == Node.NodeType.BUS || n.getType() == Node.NodeType.FEEDER || n.isShunt();
+
     private boolean removeUnnecessaryFictitiousNodes;
     private boolean substituteSingularFictitiousByFeederNode;
 
@@ -55,15 +58,13 @@ public class ImplicitCellDetector implements CellDetector {
 
         List<Node> allocatedNodes = new ArrayList<>();
         // **************INTERN CELL*******************
-        List<Node.NodeType> exclusionTypes = new ArrayList<>();
-        exclusionTypes.add(Node.NodeType.FEEDER);
-        List<Node.NodeType> stopTypes = new ArrayList<>();
-        stopTypes.add(Node.NodeType.BUS);
+        Set<Node.NodeType> exclusionTypes = EnumSet.of(Node.NodeType.FEEDER);
+        Set<Node.NodeType> stopTypes = EnumSet.of(Node.NodeType.BUS);
         genericDetectCell(graph, stopTypes, exclusionTypes, true, allocatedNodes);
 
         // ****************EXTERN AND SHUNT CELLS******
         stopTypes.add(Node.NodeType.FEEDER);
-        genericDetectCell(graph, stopTypes, new ArrayList<>(), false, allocatedNodes);
+        genericDetectCell(graph, stopTypes, Collections.emptySet(), false, allocatedNodes);
         for (Cell cell : graph.getCells().stream()
                 .filter(cell -> cell.getType() == Cell.CellType.UNDEFINED)
                 .collect(Collectors.toList())) {
@@ -101,8 +102,8 @@ public class ImplicitCellDetector implements CellDetector {
      * @param allocatedNodes is the list of nodes already allocated to a cell.
      **/
     private void genericDetectCell(Graph graph,
-                                   List<Node.NodeType> typeStops,
-                                   List<Node.NodeType> exclusionTypes,
+                                   Set<Node.NodeType> typeStops,
+                                   Set<Node.NodeType> exclusionTypes,
                                    boolean isCellIntern,
                                    List<Node> allocatedNodes) {
         graph.getNodeBuses().forEach(bus -> {
@@ -112,7 +113,7 @@ public class ImplicitCellDetector implements CellDetector {
                 List<Node> cellNodes = new ArrayList<>();
                 List<Node> visitedNodes = new ArrayList<>(allocatedNodes);
                 visitedNodes.addAll(visitedBus);
-                boolean searchOK = rDelimitedExploration(adj, typeStops, exclusionTypes, cellNodes, visitedNodes);
+                boolean searchOK = rDelimitedExploration(adj, node -> typeStops.contains(node.getType()), exclusionTypes, cellNodes, visitedNodes);
                 if (searchOK && !cellNodes.isEmpty()) {
                     cellNodes.add(adj);
                     cellNodes.add(bus);
@@ -131,15 +132,15 @@ public class ImplicitCellDetector implements CellDetector {
 
     /**
      * @param node           the starting point for the exploration
-     * @param typeStops      is the types of node that stops the exploration
+     * @param stopCriteria   stops exploration criteria
      * @param exclusionTypes is the types when reached considers the exploration unsuccessful
      * @param nodesResult    the resulting list of nodes
      * @param exploredNodes  nodes already visited
      * @return true if no exclusionType found
      **/
     private boolean rDelimitedExploration(Node node,
-                                          List<Node.NodeType> typeStops,
-                                          List<Node.NodeType> exclusionTypes,
+                                          Predicate<Node> stopCriteria,
+                                          Set<Node.NodeType> exclusionTypes,
                                           List<Node> nodesResult,
                                           List<Node> exploredNodes) {
 
@@ -156,10 +157,10 @@ public class ImplicitCellDetector implements CellDetector {
         for (Node n : nodesToVisit) {
             if (exclusionTypes.contains(n.getType())) {
                 return false;
-            } else if (typeStops.contains(n.getType())) {
+            } else if (stopCriteria.test(n)) {
                 nodesResult.add(n);
                 exploredNodes.add(n);
-            } else if (rDelimitedExploration(n, typeStops, exclusionTypes, nodesResult,
+            } else if (rDelimitedExploration(n, stopCriteria, exclusionTypes, nodesResult,
                     exploredNodes)) {
                 nodesResult.add(n);
             } else {
@@ -241,11 +242,11 @@ public class ImplicitCellDetector implements CellDetector {
                 cell.removeAllNodes(cellNodesExtern1.stream()
                         .filter(m -> !m.getType().equals(Node.NodeType.BUS))
                         .collect(Collectors.toList()));
-                n.setType(Node.NodeType.SHUNT);
-                Cell newCell1 = new Cell(graph);
-                newCell1.setType(Cell.CellType.EXTERN);
+                ((FictitiousNode) n).addShunt();
+                Cell newExternCell1 = new Cell(graph);
+                newExternCell1.setType(Cell.CellType.EXTERN);
                 cellNodesExtern1.add(n);
-                newCell1.setNodes(cellNodesExtern1);
+                newExternCell1.setNodes(cellNodesExtern1);
 
                 //create the shunt cell
 
@@ -254,7 +255,7 @@ public class ImplicitCellDetector implements CellDetector {
                 // create the 2nd external cell
                 List<Node> cellNodesExtern2 = cell.getNodes().stream()
                         .filter(node -> (!cellNodesExtern1.contains(node) || node.getType() == Node.NodeType.BUS)
-                                && (!shuntCell.getNodes().contains(node) || node.getType() == Node.NodeType.SHUNT))
+                                && (!shuntCell.getNodes().contains(node) || node.isShunt()))
                         .collect(Collectors.toList());
 
                 cellNodesExtern2.removeAll(cellNodesExtern2.stream()
@@ -263,21 +264,23 @@ public class ImplicitCellDetector implements CellDetector {
                                 cellNodesExtern2::contains))
                         .collect(Collectors.toList()));
 
-                Cell newCell2 = new Cell(graph);
-                newCell2.setType(Cell.CellType.EXTERN);
-                newCell2.setNodes(cellNodesExtern2);
+                Cell newExternCell2 = new Cell(graph);
+                newExternCell2.setType(Cell.CellType.EXTERN);
+                newExternCell2.setNodes(cellNodesExtern2);
 
                 graph.removeCell(cell);
                 shuntCell.setBridgingCellsFromShuntNodes();
+
+                detectAndTypeShunt(graph, newExternCell1);
+                detectAndTypeShunt(graph, newExternCell2);
+
                 break;
             }
         }
     }
 
     private List<Node> checkCandidateShuntNode(Node n, List<Node> externalNodes) {
-        List<Node.NodeType> kindToFilter = Arrays.asList(Node.NodeType.BUS,
-                Node.NodeType.FEEDER,
-                Node.NodeType.SHUNT);
+
         /*
         the node n is candidate to be a SHUNT node if there is
         (i) at least one branch exclusively reaching BUSes
@@ -301,25 +304,28 @@ public class ImplicitCellDetector implements CellDetector {
             if (!visitedNodes.contains(adj)) {
                 List<Node> resultNodes = new ArrayList<>();
                 rDelimitedExploration(adj,
-                        kindToFilter,
-                        new ArrayList<>(),
+                        SHUNT_EXPLORE_STOP_CRITERIA,
+                        Collections.emptySet(),
                         resultNodes,
                         visitedNodes);
                 resultNodes.add(adj);
 
-                List<Node.NodeType> types = resultNodes.stream() // what are the types of terminal node of the branch
+                Set<Node.NodeType> types = resultNodes.stream() // what are the types of terminal node of the branch
+                        .filter(SHUNT_EXPLORE_STOP_CRITERIA)
                         .map(Node::getType)
-                        .distinct().filter(kindToFilter::contains)
-                        .collect(Collectors.toList());
+                        .collect(Collectors.toSet());
 
-                if (types.size() > 1) {
-                    hasMixBranch = true;
-                } else {
-                    hasBusBranch |= types.get(0).equals(Node.NodeType.BUS);
-                    hasFeederBranch |= types.get(0).equals(Node.NodeType.FEEDER);
+                if (!types.isEmpty()) {
+                    if (types.size() > 1) {
+                        hasMixBranch = true;
+                    } else {
+                        Node.NodeType type = types.iterator().next();
+                        hasBusBranch |= type.equals(Node.NodeType.BUS);
+                        hasFeederBranch |= type.equals(Node.NodeType.FEEDER);
 
-                    if (types.get(0).equals(Node.NodeType.BUS) || types.get(0).equals(Node.NodeType.FEEDER)) {
-                        cellNodesExtern.addAll(resultNodes);
+                        if (type.equals(Node.NodeType.BUS) || type.equals(Node.NodeType.FEEDER)) {
+                            cellNodesExtern.addAll(resultNodes);
+                        }
                     }
                 }
                 visitedNodes.removeAll(resultNodes
@@ -345,7 +351,7 @@ public class ImplicitCellDetector implements CellDetector {
                         ? currentNode.getAdjacentNodes().get(1) : currentNode.getAdjacentNodes().get(0);
             }
             shuntCellNodes.add(currentNode);
-            currentNode.setType(Node.NodeType.SHUNT);
+            ((FictitiousNode) currentNode).addShunt();
         }
         Cell shuntCell = new Cell(graph); // the shunt branch is made of the remaining cells + the actual node n
         shuntCell.setType(Cell.CellType.SHUNT);

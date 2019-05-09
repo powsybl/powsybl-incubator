@@ -183,11 +183,11 @@ public class CellBlockDecomposer {
         Node s2 = block2.getStartingNode();
         Node e2 = block2.getEndingNode();
 
-        if ((s1.getType() == Node.NodeType.FICTITIOUS || s1.getType() == Node.NodeType.SHUNT)
+        if ((s1.getType() == Node.NodeType.FICTITIOUS)
                 && (s1.equals(s2) || s1.equals(e2))) {
             return s1;
         }
-        if ((e1.getType() == Node.NodeType.FICTITIOUS || e1.getType() == Node.NodeType.SHUNT)
+        if ((e1.getType() == Node.NodeType.FICTITIOUS)
                 && (e1.equals(s2) || e1.equals(e2))) {
             return e1;
         }

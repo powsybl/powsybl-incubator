@@ -7,40 +7,16 @@
 package com.powsybl.substationdiagram.svg;
 
 import com.powsybl.commons.exceptions.UncheckedTransformerException;
-import com.powsybl.substationdiagram.layout.HorizontalSubstationLayout;
-import com.powsybl.substationdiagram.layout.HorizontalSubstationLayoutFactory;
-import com.powsybl.substationdiagram.layout.LayoutParameters;
-import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayoutFactory;
-import com.powsybl.substationdiagram.layout.SubstationLayout;
-import com.powsybl.substationdiagram.layout.SubstationLayoutFactory;
-import com.powsybl.substationdiagram.layout.VerticalSubstationLayout;
-import com.powsybl.substationdiagram.layout.VoltageLevelLayout;
-import com.powsybl.substationdiagram.layout.VoltageLevelLayoutFactory;
-import com.powsybl.substationdiagram.library.AnchorOrientation;
-import com.powsybl.substationdiagram.library.AnchorPoint;
-import com.powsybl.substationdiagram.library.AnchorPointProvider;
-import com.powsybl.substationdiagram.library.ComponentLibrary;
-import com.powsybl.substationdiagram.library.ComponentMetadata;
-import com.powsybl.substationdiagram.library.ComponentSize;
-import com.powsybl.substationdiagram.library.ComponentType;
-import com.powsybl.substationdiagram.model.BusNode;
-import com.powsybl.substationdiagram.model.Cell;
-import com.powsybl.substationdiagram.model.Coord;
-import com.powsybl.substationdiagram.model.Edge;
-import com.powsybl.substationdiagram.model.FeederNode;
-import com.powsybl.substationdiagram.model.Graph;
+import com.powsybl.substationdiagram.layout.*;
+import com.powsybl.substationdiagram.library.*;
 import com.powsybl.substationdiagram.model.Node;
-import com.powsybl.substationdiagram.model.SubstationGraph;
+import com.powsybl.substationdiagram.model.*;
 import org.apache.batik.anim.dom.SVGOMDocument;
 import org.apache.batik.dom.GenericDOMImplementation;
 import org.apache.commons.math3.util.Precision;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.CDATASection;
-import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Text;
+import org.w3c.dom.*;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -56,11 +32,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
@@ -447,8 +419,7 @@ public class SVGWriter {
     }
 
     private boolean canInsertComponentSVG(Node node) {
-        return layoutParameters.isShowInternalNodes() ||
-                (!node.isFictitious() && node.getType() != Node.NodeType.SHUNT);
+        return layoutParameters.isShowInternalNodes() || !node.isFictitious();
     }
 
     private void incorporateComponents(Node node, Element g) {

@@ -67,7 +67,7 @@ public class PositionFromExtension implements PositionFinder {
         for (Cell cell : graph.getCells().stream()
                 .filter(c -> c.getType() == Cell.CellType.SHUNT).collect(Collectors.toList())) {
             List<Node> shNodes = cell.getNodes().stream()
-                    .filter(node -> node.getType() == Node.NodeType.SHUNT).collect(Collectors.toList());
+                    .filter(Node::isShunt).collect(Collectors.toList());
             shNodes.get(1).getCell().setDirection(shNodes.get(0).getCell().getDirection());
         }
     }

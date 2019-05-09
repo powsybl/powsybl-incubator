@@ -49,47 +49,61 @@ public class NewtonRaphson {
 
         // initialize state vector (flat start)
         double[] x = system.initState(parameters.getVoltageInitMode());
-        observer.x(x, system, 0);
+        observer.afterStateUpdate(x, system, 0);
 
         double[] fx = new double[system.getEquations().size()];
-        system.evalFx(x, fx);
 
         int iteration = 0;
-        double norm = Vectors.norm2(fx);
-        if (norm < EPS_CONV) { // perfect match!
-            return new NewtonRaphsonResult(NewtonRaphsonStatus.CONVERGED, 0);
-        }
 
         NewtonRaphsonStatus status = NewtonRaphsonStatus.CONVERGED;
-        while (iteration < parameters.getMaxIteration() && norm > EPS_CONV) {
-            observer.beginIteration(iteration);
+        while (iteration < parameters.getMaxIteration()) {
+
+            // evaluate equations
+            observer.beforeEquationEvaluation(iteration);
+
+            system.evalEquations(x, fx);
+
+            observer.afterEquationEvaluation(fx, system, iteration);
+
+            // calculate norm L2 of equations
+            double norm = Vectors.norm2(fx);
+            observer.beginIteration(iteration, norm);
+            if (norm < EPS_CONV) { // perfect match!
+                break;
+            }
 
             // build jacobian
-            Matrix j = system.buildJacobian(matrixFactory, x);
-            observer.j(j, system, iteration);
+            observer.beforeJacobianBuild(iteration);
 
-            // evaluate f(x)
-            system.evalFx(x, fx);
-            observer.fx(fx, system, iteration);
+            Matrix j = system.buildJacobian(matrixFactory, x);
+
+            observer.afterJacobianBuild(j, system, iteration);
 
             // solve f(x) = j * dx
+
+            observer.beforeLuDecomposition(iteration);
+
             try (LUDecomposition lu = j.decomposeLU()) {
+                observer.afterLuDecomposition(iteration);
+
+                observer.beforeLuSolve(iteration);
+
                 lu.solve(fx);
+
+                observer.afterLuSolve(iteration);
             } catch (Exception e) {
                 LOGGER.error(e.toString(), e);
                 status = NewtonRaphsonStatus.SOLVER_FAILED;
             }
 
-            // update norm f(x)
-            norm = Vectors.norm2(fx);
-
-            observer.endIteration(iteration, norm);
+            observer.endIteration(iteration);
 
             // update x
             Vectors.minus(x, fx);
-            observer.x(x, system, iteration + 1);
 
             iteration++;
+
+            observer.afterStateUpdate(x, system, iteration);
         }
 
         networkContext.resetState();
@@ -100,6 +114,6 @@ public class NewtonRaphson {
             status = NewtonRaphsonStatus.MAX_ITERATION_REACHED;
         }
 
-        return new NewtonRaphsonResult(status, iteration - 1);
+        return new NewtonRaphsonResult(status, iteration);
     }
 }

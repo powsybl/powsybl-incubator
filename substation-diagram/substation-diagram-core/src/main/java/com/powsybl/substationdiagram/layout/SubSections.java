@@ -6,7 +6,6 @@
  */
 package com.powsybl.substationdiagram.layout;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.powsybl.substationdiagram.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,11 +24,10 @@ import java.util.stream.Collectors;
  */
 class SubSections {
 
-    @JsonIgnore
     private Graph graph;
-    @JsonIgnore
+
     private static final Logger LOGGER = LoggerFactory.getLogger(SubSections.class);
-    @JsonIgnore
+
     private Map<SubSectionIndexes, HorizontalSubSection> subsectionMap;
 
     private static final String STR_SIDE = "\t side ";

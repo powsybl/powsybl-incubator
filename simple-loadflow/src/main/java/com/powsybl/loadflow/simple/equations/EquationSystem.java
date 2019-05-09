@@ -23,8 +23,6 @@ public class EquationSystem {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EquationSystem.class);
 
-    private final List<EquationTerm> equationTerms;
-
     private final List<VariableUpdate> variableUpdates;
 
     private final NetworkContext networkContext;
@@ -36,7 +34,7 @@ public class EquationSystem {
     private final double[] targets;
 
     public EquationSystem(List<EquationTerm> equationTerms, List<VariableUpdate> variableUpdates, NetworkContext networkContext) {
-        this.equationTerms = Objects.requireNonNull(equationTerms);
+        Objects.requireNonNull(equationTerms);
         this.variableUpdates = Objects.requireNonNull(variableUpdates);
         this.networkContext = Objects.requireNonNull(networkContext);
 
@@ -120,9 +118,9 @@ public class EquationSystem {
         }
     }
 
-    public void evalFx(double[] x, double[] fx) {
+    public void evalEquations(double[] x, double[] fx) {
         if (fx.length != equations.size()) {
-            throw new IllegalArgumentException("Bad fx vector length: " + fx.length);
+            throw new IllegalArgumentException("Bad afterEquationEvaluation vector length: " + fx.length);
         }
         Arrays.fill(fx, 0);
         for (Map.Entry<Equation, List<EquationTerm>> e : equations.entrySet()) {
@@ -155,7 +153,7 @@ public class EquationSystem {
                 for (EquationTerm equationTerm : e2.getValue()) {
                     double v = equationTerm.der(var, x);
                     if (v != 0) {
-                        j.addValue(row, column, v);
+                        j.add(row, column, v);
                     }
                 }
             }

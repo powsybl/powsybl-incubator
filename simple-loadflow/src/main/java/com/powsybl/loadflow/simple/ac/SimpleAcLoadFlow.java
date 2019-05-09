@@ -63,8 +63,10 @@ public class SimpleAcLoadFlow implements LoadFlow {
 
         NetworkContext networkContext = NetworkContext.of(network).get(0);
 
-        NewtonRaphsonParameters nrParameters = new NewtonRaphsonParameters().setVoltageInitMode(parameters.getVoltageInitMode());
-        NewtonRaphsonResult result = new NewtonRaphson(networkContext, matrixFactory, new NewtonRaphsonObserverLogger())
+        NewtonRaphsonParameters nrParameters = new NewtonRaphsonParameters()
+                .setVoltageInitMode(parameters.getVoltageInitMode());
+        NewtonRaphsonObserver observer = NewtonRaphsonObserver.of(new NewtonRaphsonObserverLogger(), new NewtonRaphsonProfiler());
+        NewtonRaphsonResult result = new NewtonRaphson(networkContext, matrixFactory, observer)
                 .run(nrParameters);
 
         stopwatch.stop();

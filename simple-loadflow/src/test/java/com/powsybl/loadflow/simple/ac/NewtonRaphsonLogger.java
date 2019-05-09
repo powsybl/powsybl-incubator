@@ -17,27 +17,27 @@ import java.io.PrintStream;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class NewtonRaphsonLogger implements NewtonRaphsonObserver {
+public class NewtonRaphsonLogger extends DefaultNewtonRaphsonObserver {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NewtonRaphsonLogger.class);
 
     @Override
-    public void beginIteration(int iteration) {
-        LOGGER.info("BEGIN ITERATION {}", iteration);
+    public void beginIteration(int iteration, double fxNorm) {
+        LOGGER.info("BEGIN ITERATION {}: {}", iteration, fxNorm);
     }
 
     @Override
-    public void endIteration(int iteration, double fxNorm) {
-        LOGGER.info("END ITERATION {}: {}", iteration, fxNorm);
+    public void endIteration(int iteration) {
+        LOGGER.info("END ITERATION {}", iteration);
     }
 
     @Override
-    public void x(double[] x, EquationSystem equationSystem, int iteration) {
+    public void afterStateUpdate(double[] x, EquationSystem equationSystem, int iteration) {
         Vectors.log(x, equationSystem.getColumnNames(), LOGGER, "X" + iteration);
     }
 
     @Override
-    public void j(Matrix j, EquationSystem equationSystem, int iteration) {
+    public void afterJacobianBuild(Matrix j, EquationSystem equationSystem, int iteration) {
         try (PrintStream ps = LoggerFactory.getInfoPrintStream(LOGGER)) {
             ps.println("J(X" + iteration + ")=");
             j.print(ps, equationSystem.getRowNames(), equationSystem.getColumnNames());
@@ -45,7 +45,7 @@ public class NewtonRaphsonLogger implements NewtonRaphsonObserver {
     }
 
     @Override
-    public void fx(double[] fx, EquationSystem equationSystem, int iteration) {
+    public void afterEquationEvaluation(double[] fx, EquationSystem equationSystem, int iteration) {
         Vectors.log(fx, equationSystem.getRowNames(), LOGGER, "F(X" + iteration + ")");
     }
 }

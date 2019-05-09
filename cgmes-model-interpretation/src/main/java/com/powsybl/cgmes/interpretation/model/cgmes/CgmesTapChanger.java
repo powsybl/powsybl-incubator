@@ -87,10 +87,6 @@ public class CgmesTapChanger {
         return closestPoint;
     }
 
-    public static double applyCorrection(double x, double xc) {
-        return x * (1.0 + xc / 100.0);
-    }
-
     public static double getCorrectionFactor(double xc) {
         return 1.0 + xc / 100.0;
     }

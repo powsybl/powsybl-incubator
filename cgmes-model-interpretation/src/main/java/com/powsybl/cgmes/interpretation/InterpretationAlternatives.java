@@ -15,8 +15,8 @@ import com.powsybl.cgmes.interpretation.model.interpreted.InterpretationAlternat
 import com.powsybl.cgmes.interpretation.model.interpreted.InterpretationAlternative.Xfmr2RatioPhaseIntepretationAlternative;
 import com.powsybl.cgmes.interpretation.model.interpreted.InterpretationAlternative.Xfmr2ShuntInterpretationAlternative;
 import com.powsybl.cgmes.interpretation.model.interpreted.InterpretationAlternative.Xfmr3PhaseAngleClockAlternative;
-import com.powsybl.cgmes.interpretation.model.interpreted.InterpretationAlternative.Xfmr3RatioPhaseInterpretationAlternative;
 import com.powsybl.cgmes.interpretation.model.interpreted.InterpretationAlternative.Xfmr3ShuntInterpretationAlternative;
+import com.powsybl.cgmes.interpretation.model.interpreted.InterpretationAlternative.Xfmr3StructuralRatioInterpretationAlternative;
 
 /**
  * @author José Antonio Marqués <marquesja at aia.es>
@@ -96,7 +96,19 @@ public final class InterpretationAlternatives {
         alternatives.add(a);
 
         a = new InterpretationAlternative();
-        a.setXfmr3Ratio0StarBusSide(Xfmr3RatioPhaseInterpretationAlternative.NETWORK_SIDE);
+        a.setXfmr3Ratio0StarBusSide(Xfmr3StructuralRatioInterpretationAlternative.NETWORK_SIDE);
+        alternatives.add(a);
+
+        a = new InterpretationAlternative();
+        a.setXfmr3Ratio0StarBusSide(Xfmr3StructuralRatioInterpretationAlternative.END1);
+        alternatives.add(a);
+
+        a = new InterpretationAlternative();
+        a.setXfmr3Ratio0StarBusSide(Xfmr3StructuralRatioInterpretationAlternative.END2);
+        alternatives.add(a);
+
+        a = new InterpretationAlternative();
+        a.setXfmr3Ratio0StarBusSide(Xfmr3StructuralRatioInterpretationAlternative.END3);
         alternatives.add(a);
 
         return alternatives;

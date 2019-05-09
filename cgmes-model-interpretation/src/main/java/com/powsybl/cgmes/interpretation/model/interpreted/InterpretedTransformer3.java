@@ -25,7 +25,7 @@ public class InterpretedTransformer3 {
 
     public InterpretedTransformer3(CgmesTransformer transformer, InterpretationAlternative alternative) {
 
-        double ratedU0 = transformer.end1().ratedU();
+        double ratedU0 = getRatedU0(transformer, alternative);
         End end1 = interpretEnd(transformer.end1(), ratedU0, alternative);
         branchModelEnd1 = end1.branchModelEnd;
         admittanceMatrixEnd1 = end1.admittanceMatrixEnd;
@@ -51,7 +51,7 @@ public class InterpretedTransformer3 {
         End e = new End();
         e.branchModelEnd = new DetectedBranchModel(yshEnd.ysh1, yshEnd.ysh2, tcsEnd.rtc1, tcsEnd.ptc1, tcsEnd.rtc2, tcsEnd.ptc2);
 
-        InterpretedBranch.Ratios structuralRatiosEnd = interpretStructuralRatioEnd(transformerEnd, alternative, ratedU0);
+        InterpretedBranch.Ratios structuralRatiosEnd = interpretStructuralRatioEnd(transformerEnd, ratedU0, alternative);
         InterpretedBranch.Ratios ratiosEnd = InterpretedBranch.calculateRatios(tcsEnd, structuralRatiosEnd);
 
         e.admittanceMatrixEnd = new BranchAdmittanceMatrix(modifiedEnd.r, modifiedEnd.x, ratiosEnd.a1, tcsEnd.ptc1.angle, yshEnd.ysh1, ratiosEnd.a2,
@@ -132,16 +132,38 @@ public class InterpretedTransformer3 {
         return pacs;
     }
 
+    private double getRatedU0(CgmesTransformer transformer, InterpretationAlternative alternative) {
+        double ratedU0;
+        switch (alternative.getXfmr3Ratio0StarBusSide()) {
+            case END1:
+                ratedU0 = transformer.end1().ratedU();
+                break;
+            case END2:
+                ratedU0 = transformer.end2().ratedU();
+                break;
+            case END3:
+                ratedU0 = transformer.end3().ratedU();
+                break;
+            default:
+                ratedU0 = 1.0;
+                break;
+        }
+        return ratedU0;
+    }
+
     private InterpretedBranch.Ratios interpretStructuralRatioEnd(CgmesTransformerEnd transformerEnd,
-            InterpretationAlternative alternative, double ratedU0) {
+        double ratedU0, InterpretationAlternative alternative) {
         double ratedU = transformerEnd.ratedU();
         InterpretedBranch.Ratios structuralRatioData = new InterpretedBranch.Ratios();
-        if (alternative.getXfmr3Ratio0StarBusSide() == Xfmr3RatioPhaseInterpretationAlternative.STAR_BUS_SIDE) {
-            structuralRatioData.a1 = 1.0;
-            structuralRatioData.a2 = ratedU0 / ratedU;
-        } else if (alternative.getXfmr3Ratio0StarBusSide() == Xfmr3RatioPhaseInterpretationAlternative.NETWORK_SIDE) {
-            structuralRatioData.a1 = ratedU / ratedU0;
-            structuralRatioData.a2 = 1.0;
+        switch (alternative.getXfmr3Ratio0StarBusSide()) {
+            case STAR_BUS_SIDE:
+                structuralRatioData.a1 = 1.0;
+                structuralRatioData.a2 = ratedU0 / ratedU;
+                break;
+            default:
+                structuralRatioData.a1 = ratedU / ratedU0;
+                structuralRatioData.a2 = 1.0;
+                break;
         }
         return structuralRatioData;
     }

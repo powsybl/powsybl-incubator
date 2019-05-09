@@ -24,6 +24,7 @@ public class InterpretationResults {
 
     public InterpretationResults(String cgmesName) {
         this.cgmesName = cgmesName;
+        this.bestInterpretationError = Double.POSITIVE_INFINITY;
     }
 
     public String cgmesName() {

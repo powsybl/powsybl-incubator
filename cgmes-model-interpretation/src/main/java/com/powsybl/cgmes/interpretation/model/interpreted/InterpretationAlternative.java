@@ -29,6 +29,10 @@ public class InterpretationAlternative {
         OFF, END1_END2
     }
 
+    public enum Xfmr3StructuralRatioInterpretationAlternative {
+        STAR_BUS_SIDE, NETWORK_SIDE, END1, END2, END3
+    }
+
     public enum Xfmr3RatioPhaseInterpretationAlternative {
         STAR_BUS_SIDE, NETWORK_SIDE
     }
@@ -105,11 +109,11 @@ public class InterpretationAlternative {
         this.xfmr2Pac2Negate = xfmr2Pac2Negate;
     }
 
-    public Xfmr3RatioPhaseInterpretationAlternative getXfmr3Ratio0StarBusSide() {
+    public Xfmr3StructuralRatioInterpretationAlternative getXfmr3Ratio0StarBusSide() {
         return xfmr3Ratio0StarBusSide;
     }
 
-    public void setXfmr3Ratio0StarBusSide(Xfmr3RatioPhaseInterpretationAlternative xfmr3Ratio0StarBusSide) {
+    public void setXfmr3Ratio0StarBusSide(Xfmr3StructuralRatioInterpretationAlternative xfmr3Ratio0StarBusSide) {
         this.xfmr3Ratio0StarBusSide = xfmr3Ratio0StarBusSide;
     }
 
@@ -205,8 +209,19 @@ public class InterpretationAlternative {
         if (xfmr2Pac2Negate) {
             configuration.append("Xfmr2_pac2_negate_on.");
         }
-        if (xfmr3Ratio0StarBusSide == Xfmr3RatioPhaseInterpretationAlternative.NETWORK_SIDE) {
-            configuration.append("Xfmr3_ratio0_network_side.");
+        switch (xfmr3Ratio0StarBusSide) {
+            case END1:
+                configuration.append("Xfmr3_ratedU0_end1.");
+                break;
+            case END2:
+                configuration.append("Xfmr3_ratedU0_end2.");
+                break;
+            case END3:
+                configuration.append("Xfmr3_ratedU0_end3.");
+                break;
+            case NETWORK_SIDE:
+                configuration.append("Xfmr3_ratedU0_network_side.");
+                break;
         }
         if (xfmr3RatioPhaseStarBusSide == Xfmr3RatioPhaseInterpretationAlternative.STAR_BUS_SIDE) {
             configuration.append("Xfmr3_ratio_star_bus_side.");
@@ -246,7 +261,7 @@ public class InterpretationAlternative {
     Xfmr2ShuntInterpretationAlternative xfmr2YShunt = Xfmr2ShuntInterpretationAlternative.END1;
     Xfmr2PhaseAngleClockAlternative xfmr2PhaseAngleClock = Xfmr2PhaseAngleClockAlternative.OFF;
     boolean xfmr2Pac2Negate = false;
-    Xfmr3RatioPhaseInterpretationAlternative xfmr3Ratio0StarBusSide = Xfmr3RatioPhaseInterpretationAlternative.STAR_BUS_SIDE;
+    Xfmr3StructuralRatioInterpretationAlternative xfmr3Ratio0StarBusSide = Xfmr3StructuralRatioInterpretationAlternative.STAR_BUS_SIDE;
     Xfmr3RatioPhaseInterpretationAlternative xfmr3RatioPhaseStarBusSide = Xfmr3RatioPhaseInterpretationAlternative.NETWORK_SIDE;
     Xfmr3ShuntInterpretationAlternative xfmr3YShunt = Xfmr3ShuntInterpretationAlternative.NETWORK_SIDE;
     Xfmr3PhaseAngleClockAlternative xfmr3PhaseAngleClock = Xfmr3PhaseAngleClockAlternative.OFF;

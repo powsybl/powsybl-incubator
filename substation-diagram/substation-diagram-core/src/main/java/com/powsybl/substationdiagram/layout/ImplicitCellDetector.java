@@ -238,6 +238,8 @@ public class ImplicitCellDetector implements CellDetector {
 
             List<Node> cellNodesExtern1 = checkCandidateShuntNode(n, externalNodes);
             if (cellNodesExtern1 != null) {
+                LOGGER.info("Found shunt at {}", n);
+
                 // create the 1st new external cell
                 cell.removeAllNodes(cellNodesExtern1.stream()
                         .filter(m -> !m.getType().equals(Node.NodeType.BUS))

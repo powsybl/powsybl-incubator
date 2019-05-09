@@ -6,7 +6,10 @@
  */
 package com.powsybl.substationdiagram.model;
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.powsybl.substationdiagram.library.ComponentType;
+
+import java.io.IOException;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
@@ -28,6 +31,11 @@ public class FictitiousNode extends Node {
     @Override
     public boolean isShunt() {
         return shunts > 0;
+    }
+
+    @Override
+    protected void writeJsonContent(JsonGenerator generator) throws IOException {
+        generator.writeNumberField("shunts", shunts);
     }
 
     public int getCardinality() {

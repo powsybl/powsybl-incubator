@@ -141,6 +141,33 @@ public class TestCase5DoubleShunt extends AbstractTestCase {
                 .setNode1(4)
                 .setNode2(6)
                 .add();
+
+        Load ld = vl.newLoad()
+                .setId("ld")
+                .setNode(8)
+                .setP0(10)
+                .setQ0(10)
+                .add();
+        ld.addExtension(ConnectablePosition.class, new ConnectablePosition<>(ld, new ConnectablePosition
+                .Feeder("ld", 30, ConnectablePosition.Direction.TOP), null, null, null));
+
+        view.newBreaker()
+                .setId("bd")
+                .setNode1(8)
+                .setNode2(7)
+                .add();
+
+        view.newDisconnector()
+                .setId("dd")
+                .setNode1(7)
+                .setNode2(0)
+                .add();
+
+        view.newBreaker()
+                .setId("bs3")
+                .setNode1(4)
+                .setNode2(8)
+                .add();
     }
 
     @Test

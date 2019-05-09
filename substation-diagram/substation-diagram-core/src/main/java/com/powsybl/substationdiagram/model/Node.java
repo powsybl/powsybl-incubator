@@ -254,6 +254,9 @@ public class Node implements BaseNode {
         y = ys.stream().mapToDouble(d -> d).average().orElse(0);
     }
 
+    protected void writeJsonContent(JsonGenerator generator) throws IOException {
+    }
+
     public void writeJson(JsonGenerator generator) throws IOException {
         generator.writeStartObject();
         generator.writeStringField("type", type.name());
@@ -261,6 +264,7 @@ public class Node implements BaseNode {
         if (name != null) {
             generator.writeStringField("name", name);
         }
+        writeJsonContent(generator);
         generator.writeEndObject();
     }
 

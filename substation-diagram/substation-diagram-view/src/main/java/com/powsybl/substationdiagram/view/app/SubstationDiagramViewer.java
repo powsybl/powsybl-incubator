@@ -22,6 +22,8 @@ import com.powsybl.substationdiagram.library.ComponentLibrary;
 import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
 import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramStyleProvider;
 import com.powsybl.substationdiagram.svg.SubstationDiagramStyleProvider;
+import com.powsybl.substationdiagram.util.NominalVoltageSubstationDiagramStyleProvider;
+import com.powsybl.substationdiagram.util.SmartVoltageLevelLayoutFactory;
 import com.powsybl.substationdiagram.view.AbstractContainerDiagramView;
 import com.powsybl.substationdiagram.view.SubstationDiagramView;
 import com.powsybl.substationdiagram.view.VoltageLevelDiagramView;
@@ -500,6 +502,8 @@ public class SubstationDiagramViewer extends Application {
         addCheckBox("Show grid", rowIndex, LayoutParameters::isShowGrid, LayoutParameters::setShowGrid);
         rowIndex += 1;
         addCheckBox("Show internal nodes", rowIndex, LayoutParameters::isShowInternalNodes, LayoutParameters::setShowInternalNodes);
+        rowIndex += 1;
+        addCheckBox("Draw straight wires", rowIndex, LayoutParameters::isDrawStraightWires, LayoutParameters::setDrawStraightWires);
         rowIndex += 1;
         addPositionLayoutCheckBox("Stack feeders", rowIndex, PositionVoltageLevelLayoutFactory::isFeederStacked, PositionVoltageLevelLayoutFactory::setFeederStacked);
         rowIndex += 1;

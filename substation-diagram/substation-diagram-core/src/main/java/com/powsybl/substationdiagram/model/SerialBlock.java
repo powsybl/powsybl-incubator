@@ -8,7 +8,11 @@ package com.powsybl.substationdiagram.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.google.common.collect.ImmutableList;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
+
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
@@ -19,10 +23,12 @@ public class SerialBlock extends AbstractBlock {
 
     @JsonManagedReference
     private Block lowerBlock;
+
     @JsonManagedReference
     private Block upperBlock;
+
     @JsonIgnore
-    private Block[] subBlocks;
+    private List<Block> subBlocks;
 
     private boolean isH2V = false;
 
@@ -50,7 +56,11 @@ public class SerialBlock extends AbstractBlock {
     public SerialBlock(Block block1,
                        Block block2,
                        Node commonNode) {
-        type = Type.SERIAL;
+        super(Type.SERIAL);
+        Objects.requireNonNull(block1);
+        Objects.requireNonNull(block2);
+        Objects.requireNonNull(commonNode);
+
         if (block1.isEmbedingNodeType(Node.NodeType.BUS) || block2.isEmbedingNodeType(Node.NodeType.FEEDER)) {
             upperBlock = block2;
             lowerBlock = block1;
@@ -62,9 +72,7 @@ public class SerialBlock extends AbstractBlock {
         upperBlock.getPosition().setHV(0, 1);
         lowerBlock.getPosition().setHV(0, 0);
 
-        subBlocks = new Block[2];
-        subBlocks[0] = this.lowerBlock;
-        subBlocks[1] = this.upperBlock;
+        subBlocks = ImmutableList.of(lowerBlock, upperBlock);
 
         for (Block child : subBlocks) {
             child.setParentBlock(this);
@@ -75,6 +83,11 @@ public class SerialBlock extends AbstractBlock {
         setCardinalityEnd(upperBlock.getCardinalityInverse(commonNode));
         upperBlock.defineExtremity(commonNode, Extremity.START);
         lowerBlock.defineExtremity(commonNode, Extremity.END);
+    }
+
+    @Override
+    public Graph getGraph() {
+        return lowerBlock.getGraph();
     }
 
     @Override
@@ -179,5 +192,10 @@ public class SerialBlock extends AbstractBlock {
             sub.setYSpan(getCoord().getYSpan());
             sub.calculateCoord(layoutParam);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "SerialBlock(subBlocks=" + subBlocks + ")";
     }
 }

@@ -7,8 +7,10 @@
 
 package com.powsybl.substationdiagram.model;
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
@@ -89,6 +91,16 @@ public class UndefinedBlock extends AbstractBlock {
     @Override
     public void coordHorizontalCase(LayoutParameters layoutParam) {
         throw new UnsupportedOperationException("Horizontal layout of undefined  block not supported");
+    }
+
+    @Override
+    protected void writeJsonContent(JsonGenerator generator) throws IOException {
+        generator.writeFieldName("blocks");
+        generator.writeStartArray();
+        for (Block subBlock : subBlocks) {
+            subBlock.writeJson(generator);
+        }
+        generator.writeEndArray();
     }
 
     @Override

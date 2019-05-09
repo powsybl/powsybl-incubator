@@ -7,17 +7,13 @@
 package com.powsybl.substationdiagram;
 
 import com.powsybl.iidm.network.Substation;
-import com.powsybl.substationdiagram.layout.LayoutParameters;
-import com.powsybl.substationdiagram.layout.HorizontalSubstationLayoutFactory;
-import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayoutFactory;
-import com.powsybl.substationdiagram.layout.SubstationLayoutFactory;
-import com.powsybl.substationdiagram.layout.VoltageLevelLayoutFactory;
+import com.powsybl.substationdiagram.layout.*;
 import com.powsybl.substationdiagram.library.ComponentLibrary;
+import com.powsybl.substationdiagram.model.SubstationGraph;
 import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramStyleProvider;
 import com.powsybl.substationdiagram.svg.GraphMetadata;
 import com.powsybl.substationdiagram.svg.SVGWriter;
 import com.powsybl.substationdiagram.svg.SubstationDiagramStyleProvider;
-import com.powsybl.substationdiagram.model.SubstationGraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,30 +73,24 @@ public final class SubstationDiagram {
         }
 
         try (Writer svgWriter = Files.newBufferedWriter(svgFile, StandardCharsets.UTF_8);
-             Writer metadataWriter = Files.newBufferedWriter(dir.resolve(svgFileName.replace(".svg", "_metadata.json")), StandardCharsets.UTF_8);
-             Writer graphWriter = debug ? Files.newBufferedWriter(dir.resolve(svgFileName.replace(".svg", "_graph.json")), StandardCharsets.UTF_8) : null) {
-            writeSvg(componentLibrary, layoutParameters, svgWriter, metadataWriter, graphWriter);
+             Writer metadataWriter = Files.newBufferedWriter(dir.resolve(svgFileName.replace(".svg", "_metadata.json")), StandardCharsets.UTF_8)) {
+            writeSvg(componentLibrary, layoutParameters, svgWriter, metadataWriter);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }
 
     public void writeSvg(ComponentLibrary componentLibrary, LayoutParameters layoutParameters,
-                         Writer svgWriter, Writer metadataWriter, Writer graphWriter) {
-        writeSvg(componentLibrary, layoutParameters, new DefaultSubstationDiagramStyleProvider(), svgWriter, metadataWriter, graphWriter);
+                         Writer svgWriter, Writer metadataWriter) {
+        writeSvg(componentLibrary, layoutParameters, new DefaultSubstationDiagramStyleProvider(), svgWriter, metadataWriter);
     }
 
     public void writeSvg(ComponentLibrary componentLibrary, LayoutParameters layoutParameters, SubstationDiagramStyleProvider styleProvider,
-                         Writer svgWriter, Writer metadataWriter, Writer graphWriter) {
+                         Writer svgWriter, Writer metadataWriter) {
         Objects.requireNonNull(componentLibrary);
         Objects.requireNonNull(layoutParameters);
         Objects.requireNonNull(svgWriter);
         Objects.requireNonNull(metadataWriter);
-
-        // write graph debug file
-        if (graphWriter != null) {
-            graph.whenSerializingUsingJsonAnyGetterThenCorrect(graphWriter);
-        }
 
         // write SVG file
         LOGGER.info("Writing SVG and JSON metadata files...");

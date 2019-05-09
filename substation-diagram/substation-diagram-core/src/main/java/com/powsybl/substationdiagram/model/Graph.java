@@ -6,12 +6,8 @@
  */
 package com.powsybl.substationdiagram.model;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.powsybl.iidm.network.*;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
@@ -24,6 +20,9 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -39,37 +38,27 @@ import java.util.stream.Stream;
  */
 public class Graph {
 
-    @JsonIgnore
     private static final Logger LOGGER = LoggerFactory.getLogger(Graph.class);
 
-    @JsonIgnore
     private VoltageLevel voltageLevel;
 
-    @JsonIgnore
     private final boolean useName;
 
-    @JsonIgnore
     private final List<Node> nodes = new ArrayList<>();
 
-    @JsonIgnore
     private final List<Edge> edges = new ArrayList<>();
 
-    @JsonManagedReference
     private final SortedSet<Cell> cells = new TreeSet<>(
             Comparator.comparingInt(Cell::getNumber)); // cells sorted to avoid randomness
 
-    @JsonIgnore
     private final Map<Node.NodeType, List<Node>> nodesByType = new EnumMap<>(Node.NodeType.class);
 
     private final Map<String, Node> nodesById = new HashMap<>();
 
-    @JsonIgnore
     private Position maxBusStructuralPosition = new Position(0, 0);
 
-    @JsonIgnore
     private Map<Integer, Map<Integer, BusNode>> vPosToHPosToNodeBus;
 
-    @JsonIgnore
     private int cellCounter = 0;
 
     private double x = 0;
@@ -412,17 +401,6 @@ public class Graph {
         }
     }
 
-    public void whenSerializingUsingJsonAnyGetterThenCorrect(Writer writer) {
-        ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
-        mapper.setVisibility(PropertyAccessor.ALL, Visibility.NONE);
-        mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
-        try {
-            mapper.writeValue(writer, this);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-    }
-
     private UndirectedGraph<Node, Edge> toJgrapht() {
         UndirectedGraph<Node, Edge> graph = new Pseudograph<>(Edge.class);
         for (Node node : nodes) {
@@ -755,5 +733,28 @@ public class Graph {
 
     public void setY(double y) {
         this.y = y;
+    }
+
+    public void writeJson(Path file) {
+        try (Writer writer = Files.newBufferedWriter(file, StandardCharsets.UTF_8)) {
+            writeJson(writer);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    public void writeJson(Writer writer) {
+        Objects.requireNonNull(writer);
+        try (JsonGenerator generator = new JsonFactory()
+                .createGenerator(writer)
+                .useDefaultPrettyPrinter()) {
+            generator.writeStartArray();
+            for (Cell cell : cells) {
+                cell.writeJson(generator);
+            }
+            generator.writeEndArray();
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 }

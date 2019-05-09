@@ -31,9 +31,9 @@ public abstract class AbstractTestCase {
 
     protected VoltageLevel vl;
 
-    private final ResourcesComponentLibrary componentLibrary = new ResourcesComponentLibrary("/ConvergenceLibrary");
+    protected final ResourcesComponentLibrary componentLibrary = new ResourcesComponentLibrary("/ConvergenceLibrary");
 
-    private final SubstationDiagramStyleProvider styleProvider = new DefaultSubstationDiagramStyleProvider();
+    protected final SubstationDiagramStyleProvider styleProvider = new DefaultSubstationDiagramStyleProvider();
 
     private static String normalizeLineSeparator(String str) {
         return str.replace("\r\n", "\n")

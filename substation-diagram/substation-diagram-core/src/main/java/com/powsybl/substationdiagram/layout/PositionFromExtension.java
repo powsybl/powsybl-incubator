@@ -6,11 +6,10 @@
  */
 package com.powsybl.substationdiagram.layout;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.powsybl.substationdiagram.model.Cell;
+import com.powsybl.substationdiagram.model.FeederNode;
 import com.powsybl.substationdiagram.model.Graph;
 import com.powsybl.substationdiagram.model.Node;
-import com.powsybl.substationdiagram.model.FeederNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +23,6 @@ import java.util.stream.Collectors;
  */
 public class PositionFromExtension implements PositionFinder {
 
-    @JsonIgnore
     private static final Logger LOGGER = LoggerFactory.getLogger(PositionFromExtension.class);
 
     private static final Cell.Direction DEFAULTDIRECTION = Cell.Direction.TOP;

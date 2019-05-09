@@ -7,28 +7,18 @@
 package com.powsybl.substationdiagram.model;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.powsybl.commons.PowsyblException;
-import com.powsybl.iidm.network.Network;
-import com.powsybl.iidm.network.Substation;
-import com.powsybl.iidm.network.Terminal;
-import com.powsybl.iidm.network.TwoWindingsTransformer;
-import com.powsybl.iidm.network.VoltageLevel;
+import com.powsybl.iidm.network.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * This class builds the connectivity among the voltageLevels of a substation
@@ -38,19 +28,14 @@ import java.util.Objects;
  */
 public class SubstationGraph {
 
-    @JsonIgnore
     private static final Logger LOGGER = LoggerFactory.getLogger(SubstationGraph.class);
 
-    @JsonIgnore
     private Substation substation;
 
-    @JsonIgnore
     private final boolean useName;
 
-    @JsonIgnore
     private final List<Graph> nodes = new ArrayList<>();
 
-    @JsonIgnore
     private final List<Edge> edges = new ArrayList<>();
 
     private final Map<String, Graph> nodesById = new HashMap<>();

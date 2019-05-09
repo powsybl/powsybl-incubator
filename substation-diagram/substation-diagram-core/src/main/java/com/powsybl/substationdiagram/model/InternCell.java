@@ -6,7 +6,6 @@
  */
 package com.powsybl.substationdiagram.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,9 +22,9 @@ public class InternCell extends Cell {
     private static final Logger LOGGER = LoggerFactory.getLogger(InternCell.class);
 
     private Block centralBlock;
-    @JsonIgnore
+
     private Map<Side, Block> sideToBlock;
-    @JsonIgnore
+
     private Map<Side, List<PrimaryBlock>> sideToConnectedBlocks;
 
     public InternCell(Graph graph) {
@@ -263,15 +262,5 @@ public class InternCell extends Cell {
 
     public Block getCentralBlock() {
         return centralBlock;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return super.equals(obj);
-    }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode();
     }
 }

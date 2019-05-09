@@ -32,6 +32,7 @@ public class SimpleAcLoadFlowPhaseShifterTest {
     private TwoWindingsTransformer ps1;
 
     private SimpleAcLoadFlow loadFlow;
+    private LoadFlowParameters parameters;
 
     @Before
     public void setUp() {
@@ -47,11 +48,13 @@ public class SimpleAcLoadFlowPhaseShifterTest {
         ps1.getPhaseTapChanger().getStep(2).setAlpha(5);
 
         loadFlow = new SimpleAcLoadFlow(network, new DenseMatrixFactory());
+        parameters = new LoadFlowParameters();
+        parameters.addExtension(SimpleAcLoadFlowParameters.class, new SimpleAcLoadFlowParameters().setSlackBusSelection(SimpleAcLoadFlowParameters.SlackBusSelection.FIRST));
     }
 
     @Test
     public void baseCaseTest() {
-        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, new LoadFlowParameters()).join();
+        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
         assertTrue(result.isOk());
 
         assertVoltageEquals(400, bus1);
@@ -74,7 +77,7 @@ public class SimpleAcLoadFlowPhaseShifterTest {
     public void tapPlusOneTest() {
         ps1.getPhaseTapChanger().setTapPosition(2);
 
-        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, new LoadFlowParameters()).join();
+        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
         assertTrue(result.isOk());
 
         assertVoltageEquals(400, bus1);

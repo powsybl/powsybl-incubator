@@ -61,7 +61,15 @@ public class SimpleAcLoadFlow implements LoadFlow {
 
         Stopwatch stopwatch = Stopwatch.createStarted();
 
+        SimpleAcLoadFlowParameters parametersExt = parameters.getExtension(SimpleAcLoadFlowParameters.class);
+        if (parametersExt == null) {
+            parametersExt = new SimpleAcLoadFlowParameters();
+        }
+
         NetworkContext networkContext = NetworkContext.of(network).get(0);
+        if (parametersExt.getSlackBusSelection() == SimpleAcLoadFlowParameters.SlackBusSelection.MOST_MESHED) {
+            networkContext.setMostMeshedBusAsSlack();
+        }
 
         NewtonRaphsonParameters nrParameters = new NewtonRaphsonParameters()
                 .setVoltageInitMode(parameters.getVoltageInitMode());

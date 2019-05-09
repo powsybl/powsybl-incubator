@@ -32,6 +32,7 @@ public class SimpleAcLoadFlowTwoBusNetworkTest {
     private Line line1;
 
     private SimpleAcLoadFlow loadFlow;
+    private LoadFlowParameters parameters;
 
     @Before
     public void setUp() {
@@ -41,11 +42,13 @@ public class SimpleAcLoadFlowTwoBusNetworkTest {
         line1 = network.getLine("l12");
 
         loadFlow = new SimpleAcLoadFlow(network, new DenseMatrixFactory());
+        parameters = new LoadFlowParameters();
+        parameters.addExtension(SimpleAcLoadFlowParameters.class, new SimpleAcLoadFlowParameters().setSlackBusSelection(SimpleAcLoadFlowParameters.SlackBusSelection.FIRST));
     }
 
     @Test
     public void baseCaseTest() {
-        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, new LoadFlowParameters()).join();
+        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
         assertTrue(result.isOk());
 
         assertVoltageEquals(1, bus1);
@@ -60,12 +63,11 @@ public class SimpleAcLoadFlowTwoBusNetworkTest {
 
     @Test
     public void voltageInitModeTest() {
-        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, new LoadFlowParameters()).join();
+        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
         assertTrue(result.isOk());
         assertEquals("4", result.getMetrics().get("iterations"));
         // restart loadflow from previous calculated state, it should convergence in zero iteration
-        result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, new LoadFlowParameters()
-                                                                              .setVoltageInitMode(LoadFlowParameters.VoltageInitMode.PREVIOUS_VALUES))
+        result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters.setVoltageInitMode(LoadFlowParameters.VoltageInitMode.PREVIOUS_VALUES))
                 .join();
         assertTrue(result.isOk());
         assertEquals("0", result.getMetrics().get("iterations"));

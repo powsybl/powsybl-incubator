@@ -6,10 +6,11 @@
  */
 package com.powsybl.substationdiagram.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.powsybl.substationdiagram.library.ComponentType;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -22,9 +23,6 @@ import java.util.stream.Stream;
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
 public class Node implements BaseNode {
-    private static double applyAsDouble(Double x) {
-        return x;
-    }
 
     public enum NodeType {
         BUS,
@@ -55,16 +53,12 @@ public class Node implements BaseNode {
     private boolean xPriority = false;
     private boolean yPriority = false;
 
-    @JsonIgnore
     private Cell cell;
 
-    @JsonIgnore
     private boolean rotated = false;
 
-    @JsonIgnore
     private boolean open = false;
 
-    @JsonIgnore
     private final List<Edge> adjacentEdges = new ArrayList<>();
 
     private String label;
@@ -253,8 +247,18 @@ public class Node implements BaseNode {
     }
 
     public void finalizeCoord() {
-        x = xs.stream().mapToDouble(Node::applyAsDouble).average().orElse(0);
-        y = ys.stream().mapToDouble(Node::applyAsDouble).average().orElse(0);
+        x = xs.stream().mapToDouble(d -> d).average().orElse(0);
+        y = ys.stream().mapToDouble(d -> d).average().orElse(0);
+    }
+
+    public void writeJson(JsonGenerator generator) throws IOException {
+        generator.writeStartObject();
+        generator.writeStringField("type", type.name());
+        generator.writeStringField("id", id);
+        if (name != null) {
+            generator.writeStringField("name", name);
+        }
+        generator.writeEndObject();
     }
 
     @Override

@@ -6,10 +6,10 @@
  */
 package com.powsybl.substationdiagram.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonGenerator;
 
 import javax.annotation.Nonnull;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -31,28 +31,22 @@ public class Cell implements Comparable<Cell> {
         INTERN, INTERNBOUND, EXTERN, SHUNT, UNDEFINED
     }
 
-    @JsonBackReference
     final Graph graph;
 
-    @JsonIgnore
     private int number;
 
-    @JsonIgnore
     private final List<Node> nodes = new ArrayList<>();
 
     private CellType type;
 
-    @JsonIgnore
     private int order = -1;
 
     private Direction direction = Direction.UNDEFINED;
 
     private Block rootBlock;
 
-    @JsonIgnore
     private List<PrimaryBlock> primaryBlocksConnectedToBus = new ArrayList<>();
 
-    @JsonIgnore
     private final List<Cell> cellBridgingWith = new ArrayList<>();
 
     public Cell(Graph graph) {
@@ -179,6 +173,16 @@ public class Cell implements Comparable<Cell> {
         return getRootBlock().getPosition();
     }
 
+    public void writeJson(JsonGenerator generator) throws IOException {
+        generator.writeStartObject();
+        generator.writeStringField("type", type.name());
+        if (rootBlock != null) {
+            generator.writeFieldName("rootBlock");
+            rootBlock.writeJson(generator);
+        }
+        generator.writeEndObject();
+    }
+
     @Override
     public int compareTo(@Nonnull Cell o) {
         if (order == o.order && !this.equals(o)) {
@@ -197,12 +201,12 @@ public class Cell implements Comparable<Cell> {
         return super.equals(obj);
     }
 
+    public String getFullId() {
+        return type + nodes.stream().map(Node::getId).sorted().collect(Collectors.toList()).toString();
+    }
+
     @Override
     public String toString() {
         return "Cell(type=" + type + ", order=" + order + ", direction=" + direction + ", nodes=" + nodes + ")";
-    }
-
-    public String getFullId() {
-        return type + nodes.stream().map(Node::getId).sorted().collect(Collectors.toList()).toString();
     }
 }

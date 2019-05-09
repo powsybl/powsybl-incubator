@@ -6,11 +6,11 @@
  */
 package com.powsybl.substationdiagram.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.google.common.collect.ImmutableList;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
@@ -21,13 +21,10 @@ import java.util.Objects;
  */
 public class SerialBlock extends AbstractBlock {
 
-    @JsonManagedReference
     private Block lowerBlock;
 
-    @JsonManagedReference
     private Block upperBlock;
 
-    @JsonIgnore
     private List<Block> subBlocks;
 
     private boolean isH2V = false;
@@ -192,6 +189,16 @@ public class SerialBlock extends AbstractBlock {
             sub.setYSpan(getCoord().getYSpan());
             sub.calculateCoord(layoutParam);
         }
+    }
+
+    @Override
+    protected void writeJsonContent(JsonGenerator generator) throws IOException {
+        generator.writeFieldName("blocks");
+        generator.writeStartArray();
+        for (Block subBlock : subBlocks) {
+            subBlock.writeJson(generator);
+        }
+        generator.writeEndArray();
     }
 
     @Override

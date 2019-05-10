@@ -45,6 +45,7 @@ public class InputDataValidationTest {
     private BalanceComputationFactory balanceComputationFactory;
     private String workingVariantId;
     private LoadFlowFactory loadFlowFactory;
+    private String error = "The input data for balance computation is not valid";
 
     @Before
     public void setUp() {
@@ -92,10 +93,10 @@ public class InputDataValidationTest {
         assertTrue(listOfViolations.contains("The " + countryAreaNotFound + " is not found in the network " + testNetwork1));
 
         try {
-            BalanceComputationResult result = balanceComputation.run(workingVariantId, parameters).join();
+            balanceComputation.run(workingVariantId, parameters).join();
             fail("My method didn't throw when I expected it to");
         } catch (PowsyblException e) {
-            assertEquals("The input data for balance computation is not valid", e.getMessage());
+            assertEquals(error, e.getMessage());
         }
     }
 
@@ -115,10 +116,10 @@ public class InputDataValidationTest {
         assertTrue(listOfViolations.contains("The " + testNetwork1 + " doesn't contain all voltage levels of " + networkAreaTest));
 
         try {
-            BalanceComputationResult result = balanceComputation.run(workingVariantId, parameters).join();
+            balanceComputation.run(workingVariantId, parameters).join();
             fail("My method didn't throw when I expected it to");
         } catch (PowsyblException e) {
-            assertEquals("The input data for balance computation is not valid", e.getMessage());
+            assertEquals(error, e.getMessage());
         }
     }
 
@@ -138,10 +139,10 @@ public class InputDataValidationTest {
         assertTrue(listOfViolations.contains("The scalable of " + countryAreaFR + " doesn't contain injections in network"));
 
         try {
-            BalanceComputationResult result = balanceComputation.run(workingVariantId, parameters).join();
+            balanceComputation.run(workingVariantId, parameters).join();
             fail("My method didn't throw when I expected it to");
         } catch (PowsyblException e) {
-            assertEquals("The input data for balance computation is not valid", e.getMessage());
+            assertEquals(error, e.getMessage());
         }
     }
 
@@ -165,10 +166,10 @@ public class InputDataValidationTest {
         assertTrue(listOfViolations.contains("The scalable network areas map contains null values"));
 
         try {
-            BalanceComputationResult result = balanceComputation.run(workingVariantId, parameters).join();
+            balanceComputation.run(workingVariantId, parameters).join();
             fail("My method didn't throw when I expected it to");
         } catch (PowsyblException e) {
-            assertEquals("The input data for balance computation is not valid", e.getMessage());
+            assertEquals(error, e.getMessage());
         }
     }
 
@@ -194,10 +195,10 @@ public class InputDataValidationTest {
         assertTrue(listOfViolations.contains("The scalable of " + countryAreaBE + " contains injections " + Arrays.asList("BBE1AA1  BBE2AA1  1") + " not found in the network"));
 
         try {
-            BalanceComputationResult result = balanceComputation.run(workingVariantId, parameters).join();
+            balanceComputation.run(workingVariantId, parameters).join();
             fail("My method didn't throw when I expected it to");
         } catch (PowsyblException e) {
-            assertEquals("The input data for balance computation is not valid", e.getMessage());
+            assertEquals(error, e.getMessage());
         }
     }
 

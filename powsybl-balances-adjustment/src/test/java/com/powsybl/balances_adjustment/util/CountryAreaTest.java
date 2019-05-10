@@ -70,7 +70,7 @@ public class CountryAreaTest {
         assertEquals("FFR2AA1  DDE3AA1  1", borderDevicesFR.get(0).getId());
         assertEquals("BBE2AA1  FFR3AA1  1", borderDevicesFR.get(1).getId());
 
-        //Test HVDCLines
+        // Test HVDCLines
         assertEquals(1, testNetwork2.getHvdcLineCount());
         List<BorderDevice> borderDevicesFR2 = countryAreaFR.getBorderDevices(testNetwork2);
         assertEquals(1, borderDevicesFR2.size());
@@ -95,7 +95,6 @@ public class CountryAreaTest {
         List<Injection> injections = getInjectionStream(network).filter(i -> country.equals(i.getTerminal().getVoltageLevel().getSubstation().getCountry()))
                 .collect(Collectors.toList());
         for (Injection injection : injections) {
-            //sumFlow += injection.getTerminal().isConnected() ? injection.getTerminal().getP() : 0;
             sumFlow += injection.getTerminal().getBusBreakerView().getBus().isInMainConnectedComponent() ? injection.getTerminal().getP() : 0;
 
         }

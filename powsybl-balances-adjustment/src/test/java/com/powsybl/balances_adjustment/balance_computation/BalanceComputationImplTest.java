@@ -8,15 +8,15 @@ package com.powsybl.balances_adjustment.balance_computation;
 
 import com.powsybl.action.util.Scalable;
 import com.powsybl.balances_adjustment.util.*;
-import com.powsybl.commons.config.ComponentDefaultConfig;
+
 import com.powsybl.computation.ComputationManager;
 import com.powsybl.computation.local.LocalComputationManager;
 import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Country;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.loadflow.LoadFlowFactory;
+import com.powsybl.loadflow.simple.dc.SimpleDcLoadFlowFactory;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author Ameni Walha <ameni.walha at rte-france.com>
@@ -41,9 +40,6 @@ public class BalanceComputationImplTest {
     private BalanceComputationFactory balanceComputationFactory;
     private LoadFlowFactory loadFlowFactory;
 
-    // todo use SimpleLoadFLow or delete before merging
-
-    @Ignore
     @Before
     public void setUp() {
         testNetwork1 = Importers.loadNetwork("testCase.xiidm", CountryAreaTest.class.getResourceAsStream("/testCase.xiidm"));
@@ -56,12 +52,19 @@ public class BalanceComputationImplTest {
         parameters = new BalanceComputationParameters();
         balanceComputationFactory = new BalanceComputationFactoryImpl();
 
-        loadFlowFactory = ComponentDefaultConfig.load().newFactoryImpl(LoadFlowFactory.class);
-        //LoadFlowFactory loadFlowFactory = new SimpleLoadFlowFactory();
+        loadFlowFactory = new SimpleDcLoadFlowFactory();
+
+        networkAreasScalableMap = new HashMap<>();
+        Scalable scalableFR = Scalable.proportional(Arrays.asList(60f, 30f, 10f),
+                Arrays.asList(Scalable.onGenerator("FFR1AA1 _generator"), Scalable.onGenerator("FFR2AA1 _generator"), Scalable.onGenerator("FFR3AA1 _generator")));
+        networkAreasScalableMap.put(countryAreaFR, scalableFR);
+
+        Scalable scalableBE = Scalable.proportional(Arrays.asList(60f, 30f, 10f),
+                Arrays.asList(Scalable.onGenerator("BBE1AA1 _generator"), Scalable.onGenerator("BBE3AA1 _generator"), Scalable.onGenerator("BBE2AA1 _generator")));
+        networkAreasScalableMap.put(countryAreaBE, scalableBE);
 
     }
 
-    @Ignore
     @Test
     public void testBalancedNetwork() {
 
@@ -69,39 +72,19 @@ public class BalanceComputationImplTest {
         networkAreaNetPositionTargetMap.put(countryAreaFR, 1000.);
         networkAreaNetPositionTargetMap.put(countryAreaBE, 1500.);
 
-        networkAreasScalableMap = new HashMap<>();
-        Scalable scalableFR = Scalable.proportional(Arrays.asList(60f, 30f, 10f),
-                Arrays.asList(Scalable.onGenerator("FFR1AA1 _generator"), Scalable.onGenerator("FFR2AA1 _generator"), Scalable.onGenerator("FFR3AA1 _generator")));
-        networkAreasScalableMap.put(countryAreaFR, scalableFR);
-
-        Scalable scalableBE = Scalable.proportional(Arrays.asList(60f, 30f, 10f),
-                Arrays.asList(Scalable.onGenerator("BBE1AA1 _generator"), Scalable.onGenerator("BBE3AA1 _generator"), Scalable.onGenerator("BBE2AA1 _generator")));
-        networkAreasScalableMap.put(countryAreaBE, scalableBE);
-
         BalanceComputation balanceComputation = balanceComputationFactory.create(testNetwork1, networkAreaNetPositionTargetMap, networkAreasScalableMap, loadFlowFactory, computationManager, 1);
 
         BalanceComputationResult result = balanceComputation.run(testNetwork1.getVariantManager().getWorkingVariantId(), parameters).join();
 
         assertEquals(BalanceComputationResult.Status.SUCCESS, result.getStatus());
         assertEquals(1, result.getIterationCount());
-        assertTrue(result.getUnbalancedNetworkAreas().isEmpty());
     }
 
-    @Ignore
     @Test
     public void testBalancedNetworkAfter1Scaling() {
         networkAreaNetPositionTargetMap = new HashMap<>();
         networkAreaNetPositionTargetMap.put(countryAreaFR, 1200.);
         networkAreaNetPositionTargetMap.put(countryAreaBE, 1300.);
-
-        networkAreasScalableMap = new HashMap<>();
-        Scalable scalableFR = Scalable.proportional(Arrays.asList(60f, 30f, 10f),
-                Arrays.asList(Scalable.onGenerator("FFR1AA1 _generator"), Scalable.onGenerator("FFR2AA1 _generator"), Scalable.onGenerator("FFR3AA1 _generator")));
-        networkAreasScalableMap.put(countryAreaFR, scalableFR);
-
-        Scalable scalableBE = Scalable.proportional(Arrays.asList(60f, 30f, 10f),
-                Arrays.asList(Scalable.onGenerator("BBE1AA1 _generator"), Scalable.onGenerator("BBE3AA1 _generator"), Scalable.onGenerator("BBE2AA1 _generator")));
-        networkAreasScalableMap.put(countryAreaBE, scalableBE);
 
         BalanceComputation balanceComputation = balanceComputationFactory.create(testNetwork1, networkAreaNetPositionTargetMap, networkAreasScalableMap, loadFlowFactory, computationManager, 1);
 
@@ -112,33 +95,6 @@ public class BalanceComputationImplTest {
 
     }
 
-    @Ignore
-    @Test
-    public void testBalancedNetworkAfter2Scaling() {
-
-        networkAreaNetPositionTargetMap = new HashMap<>();
-        networkAreaNetPositionTargetMap.put(countryAreaFR, 1200.);
-        networkAreaNetPositionTargetMap.put(countryAreaBE, 1305.);
-
-        networkAreasScalableMap = new HashMap<>();
-        Scalable scalableFR = Scalable.proportional(Arrays.asList(60f, 30f, 10f),
-                Arrays.asList(Scalable.onGenerator("FFR1AA1 _generator"), Scalable.onGenerator("FFR2AA1 _generator"), Scalable.onGenerator("FFR3AA1 _generator")));
-        networkAreasScalableMap.put(countryAreaFR, scalableFR);
-
-        Scalable scalableBE = Scalable.proportional(Arrays.asList(60f, 30f, 10f),
-                Arrays.asList(Scalable.onGenerator("BBE1AA1 _generator"), Scalable.onGenerator("BBE3AA1 _generator"), Scalable.onGenerator("BBE2AA1 _generator")));
-        networkAreasScalableMap.put(countryAreaBE, scalableBE);
-
-        BalanceComputation balanceComputation = balanceComputationFactory.create(testNetwork1, networkAreaNetPositionTargetMap, networkAreasScalableMap, loadFlowFactory, computationManager, 1);
-
-        BalanceComputationResult result = balanceComputation.run(testNetwork1.getVariantManager().getWorkingVariantId(), parameters).join();
-
-        assertEquals(BalanceComputationResult.Status.SUCCESS, result.getStatus());
-        assertEquals(3, result.getIterationCount());
-
-    }
-
-    @Ignore
     @Test
     public void testUnBalancedNetwork() {
 
@@ -146,21 +102,14 @@ public class BalanceComputationImplTest {
         networkAreaNetPositionTargetMap.put(countryAreaFR, 1200.);
         networkAreaNetPositionTargetMap.put(countryAreaBE, 1500.);
 
-        networkAreasScalableMap = new HashMap<>();
-        Scalable scalableFR = Scalable.proportional(Arrays.asList(60f, 30f, 10f),
-                Arrays.asList(Scalable.onGenerator("FFR1AA1 _generator"), Scalable.onGenerator("FFR2AA1 _generator"), Scalable.onGenerator("FFR3AA1 _generator")));
-        networkAreasScalableMap.put(countryAreaFR, scalableFR);
-
-        Scalable scalableBE = Scalable.proportional(Arrays.asList(60f, 30f, 10f),
-                Arrays.asList(Scalable.onGenerator("BBE1AA1 _generator"), Scalable.onGenerator("BBE3AA1 _generator"), Scalable.onGenerator("BBE2AA1 _generator")));
-        networkAreasScalableMap.put(countryAreaBE, scalableBE);
-
         BalanceComputation balanceComputation = balanceComputationFactory.create(testNetwork1, networkAreaNetPositionTargetMap, networkAreasScalableMap, loadFlowFactory, computationManager, 1);
 
         BalanceComputationResult result = balanceComputation.run(testNetwork1.getVariantManager().getWorkingVariantId(), parameters).join();
 
         assertEquals(BalanceComputationResult.Status.FAILED, result.getStatus());
         assertEquals(5, result.getIterationCount());
-        assertEquals(2, result.getUnbalancedNetworkAreas().size());
+        assertEquals(1000, countryAreaFR.getNetPosition(testNetwork1), 1e-3);
+        assertEquals(1500, countryAreaBE.getNetPosition(testNetwork1), 1e-3);
+
     }
 }

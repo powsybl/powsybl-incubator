@@ -125,7 +125,7 @@ public class BalanceComputationImpl implements BalanceComputation {
 
             } else {
                 // Step 4 : scaling network areas
-                result = new BalanceComputationResult(BalanceComputationResult.Status.FAILED, iterationCounter, unbalancedNetworkAreas);
+                result = new BalanceComputationResult(BalanceComputationResult.Status.FAILED, iterationCounter);
                 network.getVariantManager().removeVariant(workingVariantCopyId);
                 network.getVariantManager().cloneVariant(workingStateId, workingVariantCopyId);
                 network.getVariantManager().setWorkingVariant(workingVariantCopyId);
@@ -142,9 +142,11 @@ public class BalanceComputationImpl implements BalanceComputation {
             LOGGER.info(" Network areas : {} are balanced after {} iterations", networkAreasName, result.getIterationCount());
 
         } else {
-            List<String> unbalancedNetworkAreasName = result.getUnbalancedNetworkAreas().stream()
-                    .map(networkArea -> networkArea.getName()).collect(Collectors.toList());
-            LOGGER.error(" Network areas : {} are unbalanced", unbalancedNetworkAreasName);
+            // return the network at initial working state id
+            network.getVariantManager().removeVariant(workingVariantCopyId);
+            network.getVariantManager().cloneVariant(workingStateId, workingVariantCopyId);
+            network.getVariantManager().setWorkingVariant(workingVariantCopyId);
+            LOGGER.error(" Network areas are unbalanced after 5 iterations");
         }
 
         network.getVariantManager().removeVariant(workingVariantCopyId);
@@ -157,7 +159,7 @@ public class BalanceComputationImpl implements BalanceComputation {
      * Run <code>LoadFlow</code> on network working state
      */
     LoadFlowResult runLoadFlow(LoadFlow loadFlow, String workingStateId) {
-        LoadFlowResult loadFlowResult = loadFlow.run(workingStateId, LoadFlowParameters.load()).join();
+        LoadFlowResult loadFlowResult = loadFlow.run(workingStateId, new LoadFlowParameters()).join();
         LOGGER.info("Running LoadFlow on {} variant manager id", workingStateId);
         return loadFlowResult;
     }
@@ -165,7 +167,7 @@ public class BalanceComputationImpl implements BalanceComputation {
     /**
      * @return the net position residue for each network area
      */
-    Map<NetworkArea, Double> getNetworkAreasResidue(Network network) {
+    private Map<NetworkArea, Double> getNetworkAreasResidue(Network network) {
         Map<NetworkArea, Double> networkAreasResidualMap = new HashMap<>();
         for (Map.Entry<NetworkArea, Double> entry : networkAreaNetPositionTargetMap.entrySet()) {
             NetworkArea networkArea = entry.getKey();
@@ -179,7 +181,7 @@ public class BalanceComputationImpl implements BalanceComputation {
      * @return the unbalanced network areas list
      * If net position residue is above the threshold, the network area is unbalanced
      */
-    List<NetworkArea> listUnbalancedNetworkAreas(BalanceComputationParameters parameters, Map<NetworkArea, Double> networkAreasResidualMap) {
+    private List<NetworkArea> listUnbalancedNetworkAreas(BalanceComputationParameters parameters, Map<NetworkArea, Double> networkAreasResidualMap) {
         double threshold = parameters.getThresholdNetPosition();
 
         return networkAreasResidualMap.keySet().stream()

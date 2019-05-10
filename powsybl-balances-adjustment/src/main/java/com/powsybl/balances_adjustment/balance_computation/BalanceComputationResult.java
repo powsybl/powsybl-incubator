@@ -9,9 +9,7 @@ package com.powsybl.balances_adjustment.balance_computation;
 import com.powsybl.balances_adjustment.util.NetworkArea;
 
 import java.beans.ConstructorProperties;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,13 +17,12 @@ import java.util.Map;
  */
 public class BalanceComputationResult {
 
-
     /**
      * Status of balance computation
      */
     public enum Status {
         FAILED,
-        SUCCESS;
+        SUCCESS
 
     }
     private final Status status;
@@ -34,11 +31,6 @@ public class BalanceComputationResult {
      * Number of iteration for this balance computation result (optional)
      */
     private final int iterationCount;
-
-    /**
-     * List of unbalanced network areas (optional)
-     */
-    private final List<NetworkArea> unbalancedNetworkAreas;
 
     /**
      * Values of scaling power applied for each network area to reach the target net position
@@ -51,21 +43,12 @@ public class BalanceComputationResult {
     }
 
     public BalanceComputationResult(Status status, int iterationCount) {
-        this(status, iterationCount, new ArrayList<>());
-    }
-
-    public BalanceComputationResult(Status status, int iterationCount, List<NetworkArea> unbalancedNetworkAreas) {
-        this(status, iterationCount, unbalancedNetworkAreas, new HashMap<>());
+        this(status, iterationCount, new HashMap<>());
     }
 
     public BalanceComputationResult(Status status, int iterationCount, Map<NetworkArea, Double> scalingMap) {
-        this(status, iterationCount, new ArrayList<>(), scalingMap);
-    }
-
-    public BalanceComputationResult(Status status, int iterationCount, List<NetworkArea> unbalancedNetworkAreas, Map<NetworkArea, Double> scalingMap) {
         this.status = status;
         this.iterationCount = iterationCount;
-        this.unbalancedNetworkAreas = unbalancedNetworkAreas;
         this.balancedScalingMap = scalingMap;
     }
 
@@ -75,10 +58,6 @@ public class BalanceComputationResult {
 
     public int getIterationCount() {
         return iterationCount;
-    }
-
-    public List<NetworkArea> getUnbalancedNetworkAreas() {
-        return unbalancedNetworkAreas;
     }
 
     public Map<NetworkArea, Double> getBalancedScalingMap() {

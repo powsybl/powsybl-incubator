@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.powsybl.loadflow.simple.dc;
+package com.powsybl.loadflow.simple.ac.equations;
 
 import com.powsybl.loadflow.simple.equations.VariableUpdate;
 
@@ -13,19 +13,19 @@ import java.util.Objects;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class ClosedBranchDcFlowUpdate implements VariableUpdate {
+public class OpenBranchSide1AcFlowUpdate implements VariableUpdate {
 
-    private final ClosedBranchDcContext branchContext;
+    private final OpenBranchSide1AcContext branchContext;
 
-    public ClosedBranchDcFlowUpdate(ClosedBranchDcContext branchContext) {
+    public OpenBranchSide1AcFlowUpdate(OpenBranchSide1AcContext branchContext) {
         this.branchContext = Objects.requireNonNull(branchContext);
     }
 
     @Override
     public void update(double[] x) {
-        branchContext.getBc().getBranch().getTerminal1().setP(branchContext.p1(x));
+        branchContext.getBc().getBranch().getTerminal1().setP(Double.NaN);
         branchContext.getBc().getBranch().getTerminal1().setQ(Double.NaN);
         branchContext.getBc().getBranch().getTerminal2().setP(branchContext.p2(x));
-        branchContext.getBc().getBranch().getTerminal2().setQ(Double.NaN);
+        branchContext.getBc().getBranch().getTerminal2().setQ(branchContext.q2(x));
     }
 }

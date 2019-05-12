@@ -9,6 +9,7 @@ package com.powsybl.loadflow.simple.dc;
 import com.powsybl.iidm.network.Bus;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.test.EurostagTutorialExample1Factory;
+import com.powsybl.loadflow.simple.dc.equations.DcEquationSystem;
 import com.powsybl.loadflow.simple.equations.EquationSystem;
 import com.powsybl.loadflow.simple.equations.EquationContext;
 import com.powsybl.loadflow.simple.equations.EquationType;
@@ -55,8 +56,7 @@ public class DcLoadFlowMatrixTest {
             context.getVariable(b.getId(), VariableType.BUS_PHI);
         }
 
-        EquationSystem equationSystem = new DcEquationSystemMaker()
-                .make(networkContext, context);
+        EquationSystem equationSystem = DcEquationSystem.create(networkContext, context);
 
         double[] x = equationSystem.initState();
         try (PrintStream ps = LoggerFactory.getInfoPrintStream(LOGGER)) {
@@ -118,8 +118,7 @@ public class DcLoadFlowMatrixTest {
 
         networkContext = NetworkContext.of(network).get(0);
 
-        equationSystem = new DcEquationSystemMaker()
-                .make(networkContext, context);
+        equationSystem = DcEquationSystem.create(networkContext, context);
 
         j = equationSystem.buildJacobian(matrixFactory, x);
 

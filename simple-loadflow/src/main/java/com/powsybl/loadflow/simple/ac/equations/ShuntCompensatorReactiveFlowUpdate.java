@@ -18,15 +18,15 @@ public class ShuntCompensatorReactiveFlowUpdate implements VariableUpdate {
 
     private final ShuntCompensator sc;
 
-    private final ShuntCompensatorReactiveFlowEquationTerm equationTerm;
+    private final ShuntCompensatorReactiveFlowEquationTerm q;
 
-    public ShuntCompensatorReactiveFlowUpdate(ShuntCompensator sc, ShuntCompensatorReactiveFlowEquationTerm equationTerm) {
+    public ShuntCompensatorReactiveFlowUpdate(ShuntCompensator sc, ShuntCompensatorReactiveFlowEquationTerm q) {
         this.sc = Objects.requireNonNull(sc);
-        this.equationTerm = Objects.requireNonNull(equationTerm);
+        this.q = Objects.requireNonNull(q);
     }
 
     @Override
     public void update(double[] x) {
-        sc.getTerminal().setQ(equationTerm.eval(x));
+        sc.getTerminal().setQ(q.eval(x));
     }
 }

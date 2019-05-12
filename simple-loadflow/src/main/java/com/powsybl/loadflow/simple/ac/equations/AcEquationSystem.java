@@ -84,9 +84,9 @@ public final class AcEquationSystem {
         for (ShuntCompensator sc : networkContext.getShuntCompensators()) {
             Bus bus = sc.getTerminal().getBusView().getBus();
             if (bus != null && !networkContext.isPvBus(bus.getId())) {
-                ShuntCompensatorReactiveFlowEquationTerm equationTerm = new ShuntCompensatorReactiveFlowEquationTerm(sc, bus, networkContext, equationContext);
-                equationTerms.add(equationTerm);
-                variableUpdates.add(new ShuntCompensatorReactiveFlowUpdate(sc, equationTerm));
+                ShuntCompensatorReactiveFlowEquationTerm q = new ShuntCompensatorReactiveFlowEquationTerm(sc, bus, networkContext, equationContext);
+                equationTerms.add(q);
+                variableUpdates.add(new ShuntCompensatorReactiveFlowUpdate(sc, q));
             }
         }
 

@@ -34,10 +34,10 @@ public final class DcEquationSystem {
             if (bus1 != null && bus2 != null) {
                 ClosedBranchDcContext branchContext = new ClosedBranchDcContext(branch, bus1, bus2, equationContext);
                 if (!networkContext.isSlackBus(bus1.getId())) {
-                    equationTerms.add(new ClosedBranchDcFlowEquationTerm(branchContext, Branch.Side.ONE, bus1, bus2, networkContext, equationContext));
+                    equationTerms.add(new ClosedBranchSide1DcFlowEquationTerm(branchContext, bus1, equationContext));
                 }
                 if (!networkContext.isSlackBus(bus2.getId())) {
-                    equationTerms.add(new ClosedBranchDcFlowEquationTerm(branchContext, Branch.Side.TWO, bus1, bus2, networkContext, equationContext));
+                    equationTerms.add(new ClosedBranchSide2DcFlowEquationTerm(branchContext, bus2, equationContext));
                 }
                 variableUpdates.add(new ClosedBranchDcFlowUpdate(branchContext));
             } else if (bus1 != null) {

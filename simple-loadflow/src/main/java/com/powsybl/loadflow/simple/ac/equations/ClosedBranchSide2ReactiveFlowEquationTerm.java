@@ -6,7 +6,6 @@
  */
 package com.powsybl.loadflow.simple.ac.equations;
 
-import com.powsybl.iidm.network.Branch;
 import com.powsybl.iidm.network.Bus;
 import com.powsybl.loadflow.simple.equations.EquationContext;
 import com.powsybl.loadflow.simple.equations.EquationType;
@@ -18,11 +17,10 @@ import java.util.Objects;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class ClosedBranchReactiveFlowEquationTerm extends AbstractClosedBranchAcFlowEquationTerm {
+public class ClosedBranchSide2ReactiveFlowEquationTerm extends AbstractClosedBranchAcFlowEquationTerm {
 
-    public ClosedBranchReactiveFlowEquationTerm(ClosedBranchAcContext branchContext, Branch.Side side, Bus bus1, Bus bus2,
-                                                EquationContext equationContext) {
-        super(branchContext, side, bus1, bus2, EquationType.BUS_Q, equationContext);
+    public ClosedBranchSide2ReactiveFlowEquationTerm(ClosedBranchAcContext branchContext, Bus bus, EquationContext equationContext) {
+        super(branchContext, bus, EquationType.BUS_Q, equationContext);
     }
 
     @Override
@@ -32,45 +30,7 @@ public class ClosedBranchReactiveFlowEquationTerm extends AbstractClosedBranchAc
         double v2 = x[branchContext.getV2Var().getColumn()];
         double ph1 = x[branchContext.getPh1Var().getColumn()];
         double ph2 = x[branchContext.getPh2Var().getColumn()];
-        switch (side) {
-            case ONE:
-                return branchContext.q1(v1, v2, ph1, ph2);
-            case TWO:
-                return branchContext.q2(v1, v2, ph1, ph2);
-            default:
-                throw new IllegalStateException("Unknown side: " + side);
-        }
-    }
-
-    private double dq1dv1(double v1, double v2, double ph1, double ph2, BranchCharacteristics bc) {
-        return bc.r1() * (-2 * bc.b1() * bc.r1() * v1 + 2 * bc.y() * bc.r1() * v1 * Math.cos(bc.ksi()) - bc.y() * bc.r2() * v2 * Math.cos(bc.ksi() - bc.a1() + bc.a2() - ph1 + ph2));
-    }
-
-    private double dq1dv2(double v1, double ph1, double ph2, BranchCharacteristics bc) {
-        return -bc.y() * bc.r1() * bc.r2() * v1 * Math.cos(bc.ksi() - bc.a1() + bc.a2() - ph1 + ph2);
-    }
-
-    private double dq1dph1(double v1, double v2, double ph1, double ph2, BranchCharacteristics bc) {
-        return -bc.y() * bc.r1() * bc.r2() * v1 * v2 * Math.sin(bc.ksi() - bc.a1() + bc.a2() - ph1 + ph2);
-    }
-
-    private double dq1dph2(double v1, double v2, double ph1, double ph2, BranchCharacteristics bc) {
-        return bc.y() * bc.r1() * bc.r2() * v1 * v2 * Math.sin(bc.ksi() - bc.a1() + bc.a2() - ph1 + ph2);
-    }
-
-    private double dq1(Variable variable, double v1, double v2, double ph1, double ph2) {
-        BranchCharacteristics bc = branchContext.getBc();
-        if (variable.equals(branchContext.getV1Var())) {
-            return dq1dv1(v1, v2, ph1, ph2, bc);
-        } else if (variable.equals(branchContext.getV2Var())) {
-            return dq1dv2(v1, ph1, ph2, bc);
-        } else if (variable.equals(branchContext.getPh1Var())) {
-            return dq1dph1(v1, v2, ph1, ph2, bc);
-        } else if (variable.equals(branchContext.getPh2Var())) {
-            return dq1dph2(v1, v2, ph1, ph2, bc);
-        } else {
-            throw new IllegalStateException("Unknown variable: " + variable);
-        }
+        return branchContext.q2(v1, v2, ph1, ph2);
     }
 
     private double dq2dv1(double v2, double ph1, double ph2, BranchCharacteristics bc) {
@@ -112,13 +72,6 @@ public class ClosedBranchReactiveFlowEquationTerm extends AbstractClosedBranchAc
         double v2 = x[branchContext.getV2Var().getColumn()];
         double ph1 = x[branchContext.getPh1Var().getColumn()];
         double ph2 = x[branchContext.getPh2Var().getColumn()];
-        switch (side) {
-            case ONE:
-                return dq1(variable, v1, v2, ph1, ph2);
-            case TWO:
-                return dq2(variable, v1, v2, ph1, ph2);
-            default:
-                throw new IllegalStateException("Unknown side: " + side);
-        }
+        return dq2(variable, v1, v2, ph1, ph2);
     }
 }

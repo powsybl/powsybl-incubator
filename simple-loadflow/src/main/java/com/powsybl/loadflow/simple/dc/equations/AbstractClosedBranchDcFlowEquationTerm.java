@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.powsybl.loadflow.simple.ac.equations;
+package com.powsybl.loadflow.simple.dc.equations;
 
 import com.google.common.collect.ImmutableList;
 import com.powsybl.iidm.network.Bus;
@@ -16,20 +16,18 @@ import java.util.Objects;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public abstract class AbstractClosedBranchAcFlowEquationTerm implements EquationTerm {
+public abstract class AbstractClosedBranchDcFlowEquationTerm implements EquationTerm {
 
-    protected final ClosedBranchAcContext branchContext;
-
-    private final Equation equation;
+    protected final ClosedBranchDcContext branchContext;
 
     protected final List<Variable> variables;
 
-    protected AbstractClosedBranchAcFlowEquationTerm(ClosedBranchAcContext branchContext, Bus bus, EquationType equationType,
-                                                     EquationContext equationContext) {
+    protected final Equation equation;
+
+    protected AbstractClosedBranchDcFlowEquationTerm(ClosedBranchDcContext branchContext, Bus bus, EquationContext equationContext) {
         this.branchContext = Objects.requireNonNull(branchContext);
-        Objects.requireNonNull(bus);
-        equation = equationContext.getEquation(bus.getId(), equationType);
-        variables = ImmutableList.of(branchContext.getV1Var(), branchContext.getV2Var(), branchContext.getPh1Var(), branchContext.getPh2Var());
+        equation = equationContext.getEquation(bus.getId(), EquationType.BUS_P);
+        variables = ImmutableList.of(branchContext.getPh1Var(), branchContext.getPh2Var());
     }
 
     @Override
@@ -40,10 +38,5 @@ public abstract class AbstractClosedBranchAcFlowEquationTerm implements Equation
     @Override
     public List<Variable> getVariables() {
         return variables;
-    }
-
-    @Override
-    public double rhs(Variable variable) {
-        return 0;
     }
 }

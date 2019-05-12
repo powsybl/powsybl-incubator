@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.powsybl.loadflow.simple.ac;
+package com.powsybl.loadflow.simple.ac.equations;
 
 import com.powsybl.iidm.network.Branch;
 import com.powsybl.iidm.network.Bus;
@@ -18,10 +18,12 @@ import java.util.List;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class AcEquationSystemMaker implements EquationSystemMaker {
+public final class AcEquationSystem {
 
-    @Override
-    public EquationSystem make(NetworkContext networkContext, EquationContext equationContext) {
+    private AcEquationSystem() {
+    }
+
+    public static EquationSystem create(NetworkContext networkContext, EquationContext equationContext) {
         List<EquationTerm> equationTerms = new ArrayList<>();
         List<VariableUpdate> variableUpdates = new ArrayList<>();
 

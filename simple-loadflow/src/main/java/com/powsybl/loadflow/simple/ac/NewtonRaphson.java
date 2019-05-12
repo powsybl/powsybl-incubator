@@ -6,6 +6,7 @@
  */
 package com.powsybl.loadflow.simple.ac;
 
+import com.powsybl.loadflow.simple.ac.equations.AcEquationSystem;
 import com.powsybl.loadflow.simple.equations.EquationContext;
 import com.powsybl.loadflow.simple.equations.EquationSystem;
 import com.powsybl.loadflow.simple.equations.Vectors;
@@ -44,8 +45,7 @@ public class NewtonRaphson {
 
         EquationContext context = new EquationContext();
 
-        EquationSystem system = new AcEquationSystemMaker()
-                .make(networkContext, context);
+        EquationSystem system = AcEquationSystem.create(networkContext, context);
 
         // initialize state vector (flat start)
         double[] x = system.initState(parameters.getVoltageInitMode());

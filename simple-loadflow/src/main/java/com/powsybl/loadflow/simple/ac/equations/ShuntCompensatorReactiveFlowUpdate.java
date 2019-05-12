@@ -4,9 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.powsybl.loadflow.simple.dc;
+package com.powsybl.loadflow.simple.ac.equations;
 
-import com.powsybl.iidm.network.Branch;
 import com.powsybl.loadflow.simple.equations.VariableUpdate;
 
 import java.util.Objects;
@@ -14,19 +13,16 @@ import java.util.Objects;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class OpenBranchSide2DcFlowUpdate implements VariableUpdate {
+public class ShuntCompensatorReactiveFlowUpdate implements VariableUpdate {
 
-    private final Branch branch;
+    private final ShuntCompensatorContext shuntContext;
 
-    public OpenBranchSide2DcFlowUpdate(Branch branch) {
-        this.branch = Objects.requireNonNull(branch);
+    public ShuntCompensatorReactiveFlowUpdate(ShuntCompensatorContext shuntContext) {
+        this.shuntContext = Objects.requireNonNull(shuntContext);
     }
 
     @Override
     public void update(double[] x) {
-        branch.getTerminal1().setP(0);
-        branch.getTerminal1().setQ(Double.NaN);
-        branch.getTerminal2().setP(Double.NaN);
-        branch.getTerminal2().setQ(Double.NaN);
+        shuntContext.getSc().getTerminal().setQ(shuntContext.q(x));
     }
 }

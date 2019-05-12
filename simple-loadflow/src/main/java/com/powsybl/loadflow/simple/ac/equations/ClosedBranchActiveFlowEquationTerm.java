@@ -12,7 +12,6 @@ import com.powsybl.loadflow.simple.equations.EquationContext;
 import com.powsybl.loadflow.simple.equations.EquationType;
 import com.powsybl.loadflow.simple.equations.Variable;
 import com.powsybl.loadflow.simple.network.BranchCharacteristics;
-import com.powsybl.loadflow.simple.network.NetworkContext;
 
 import java.util.Objects;
 
@@ -22,8 +21,8 @@ import java.util.Objects;
 public class ClosedBranchActiveFlowEquationTerm extends AbstractClosedBranchAcFlowEquationTerm {
 
     public ClosedBranchActiveFlowEquationTerm(ClosedBranchAcContext branchContext, Branch.Side side, Bus bus1, Bus bus2,
-                                              NetworkContext networkContext, EquationContext equationContext) {
-        super(branchContext, side, bus1, bus2, EquationType.BUS_P, networkContext, equationContext);
+                                              EquationContext equationContext) {
+        super(branchContext, side, bus1, bus2, EquationType.BUS_P, equationContext);
     }
 
     @Override

@@ -71,25 +71,25 @@ public class DcLoadFlowMatrixTest {
             j.print(ps, equationSystem.getRowNames(), equationSystem.getColumnNames());
         }
 
-        assertEquals(1d, j.toDense().getValue(0, 0), 0d);
-        assertEquals(0d, j.toDense().getValue(0, 1), 0d);
-        assertEquals(0d, j.toDense().getValue(0, 2), 0d);
-        assertEquals(0d, j.toDense().getValue(0, 3), 0d);
+        assertEquals(1d, j.toDense().get(0, 0), 0d);
+        assertEquals(0d, j.toDense().get(0, 1), 0d);
+        assertEquals(0d, j.toDense().get(0, 2), 0d);
+        assertEquals(0d, j.toDense().get(0, 3), 0d);
 
-        assertEquals(0d, j.toDense().getValue(1, 0), 0d);
-        assertEquals(22439.668433814884d, j.toDense().getValue(1, 1), 0d);
-        assertEquals(-8751.515151515152d, j.toDense().getValue(1, 2), 0d);
-        assertEquals(0d, j.toDense().getValue(1, 3), 0d);
+        assertEquals(-13688.153282299732, j.toDense().get(1, 0), 0d);
+        assertEquals(22439.668433814884d, j.toDense().get(1, 1), 0d);
+        assertEquals(-8751.515151515152d, j.toDense().get(1, 2), 0d);
+        assertEquals(0d, j.toDense().get(1, 3), 0d);
 
-        assertEquals(0d, j.toDense().getValue(2, 0), 0d);
-        assertEquals(-8751.515151515152d, j.toDense().getValue(2, 1), 0d);
-        assertEquals(14314.85921296912d, j.toDense().getValue(2, 2), 0d);
-        assertEquals(-5563.344061453969d, j.toDense().getValue(2, 3), 0d);
+        assertEquals(0d, j.toDense().get(2, 0), 0d);
+        assertEquals(-8751.515151515152d, j.toDense().get(2, 1), 0d);
+        assertEquals(14314.85921296912d, j.toDense().get(2, 2), 0d);
+        assertEquals(-5563.344061453969d, j.toDense().get(2, 3), 0d);
 
-        assertEquals(0d, j.toDense().getValue(3, 0), 0d);
-        assertEquals(0d, j.toDense().getValue(3, 1), 0d);
-        assertEquals(-5563.344061453969d, j.toDense().getValue(3, 2), 0d);
-        assertEquals(5563.344061453969d, j.toDense().getValue(3, 3), 0d);
+        assertEquals(0d, j.toDense().get(3, 0), 0d);
+        assertEquals(0d, j.toDense().get(3, 1), 0d);
+        assertEquals(-5563.344061453969d, j.toDense().get(3, 2), 0d);
+        assertEquals(5563.344061453969d, j.toDense().get(3, 3), 0d);
 
         double[] targets = equationSystem.getTargets();
         try (PrintStream ps = LoggerFactory.getInfoPrintStream(LOGGER)) {

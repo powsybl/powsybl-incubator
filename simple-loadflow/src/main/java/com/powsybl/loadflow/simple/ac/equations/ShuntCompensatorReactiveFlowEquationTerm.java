@@ -10,7 +10,7 @@ import com.powsybl.iidm.network.Bus;
 import com.powsybl.loadflow.simple.equations.*;
 import com.powsybl.loadflow.simple.network.NetworkContext;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,7 +23,7 @@ public class ShuntCompensatorReactiveFlowEquationTerm implements EquationTerm {
 
     private final Equation equation;
 
-    private final List<Variable> variables = new ArrayList<>();
+    private final List<Variable> variables;
 
     public ShuntCompensatorReactiveFlowEquationTerm(ShuntCompensatorContext shuntContext, Bus bus,
                                                     NetworkContext networkContext, EquationContext equationContext) {
@@ -32,10 +32,7 @@ public class ShuntCompensatorReactiveFlowEquationTerm implements EquationTerm {
         Objects.requireNonNull(networkContext);
         Objects.requireNonNull(equationContext);
         equation = equationContext.getEquation(bus.getId(), EquationType.BUS_Q);
-
-        if (!networkContext.isPvBus(bus.getId())) {
-            variables.add(shuntContext.getvVar());
-        }
+        variables = Collections.singletonList(shuntContext.getvVar());
     }
 
     @Override

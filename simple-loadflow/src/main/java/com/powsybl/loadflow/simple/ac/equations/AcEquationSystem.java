@@ -41,16 +41,16 @@ public final class AcEquationSystem {
             if (bus1 != null && bus2 != null) {
                 ClosedBranchAcContext branchContext = new ClosedBranchAcContext(branch, bus1, bus2, equationContext);
                 if (!networkContext.isSlackBus(bus1.getId())) {
-                    equationTerms.add(new ClosedBranchActiveFlowEquationTerm(branchContext, Branch.Side.ONE, bus1, bus2, networkContext, equationContext));
+                    equationTerms.add(new ClosedBranchActiveFlowEquationTerm(branchContext, Branch.Side.ONE, bus1, bus2, equationContext));
                 }
                 if (!networkContext.isPvBus(bus1.getId())) {
-                    equationTerms.add(new ClosedBranchReactiveFlowEquationTerm(branchContext, Branch.Side.ONE, bus1, bus2, networkContext, equationContext));
+                    equationTerms.add(new ClosedBranchReactiveFlowEquationTerm(branchContext, Branch.Side.ONE, bus1, bus2, equationContext));
                 }
                 if (!networkContext.isSlackBus(bus2.getId())) {
-                    equationTerms.add(new ClosedBranchActiveFlowEquationTerm(branchContext, Branch.Side.TWO, bus1, bus2, networkContext, equationContext));
+                    equationTerms.add(new ClosedBranchActiveFlowEquationTerm(branchContext, Branch.Side.TWO, bus1, bus2, equationContext));
                 }
                 if (!networkContext.isPvBus(bus2.getId())) {
-                    equationTerms.add(new ClosedBranchReactiveFlowEquationTerm(branchContext, Branch.Side.TWO, bus1, bus2, networkContext, equationContext));
+                    equationTerms.add(new ClosedBranchReactiveFlowEquationTerm(branchContext, Branch.Side.TWO, bus1, bus2, equationContext));
                 }
                 variableUpdates.add(new ClosedBranchAcFlowUpdate(branchContext));
             } else if (bus1 != null) {

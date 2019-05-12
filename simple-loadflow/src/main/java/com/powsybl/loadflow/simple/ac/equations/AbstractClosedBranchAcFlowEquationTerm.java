@@ -6,12 +6,11 @@
  */
 package com.powsybl.loadflow.simple.ac.equations;
 
+import com.google.common.collect.ImmutableList;
 import com.powsybl.iidm.network.Branch;
 import com.powsybl.iidm.network.Bus;
 import com.powsybl.loadflow.simple.equations.*;
-import com.powsybl.loadflow.simple.network.NetworkContext;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -26,10 +25,10 @@ public abstract class AbstractClosedBranchAcFlowEquationTerm implements Equation
 
     protected final Equation equation;
 
-    protected final List<Variable> variables = new ArrayList<>(4);
+    protected final List<Variable> variables;
 
     protected AbstractClosedBranchAcFlowEquationTerm(ClosedBranchAcContext branchContext, Branch.Side side, Bus bus1, Bus bus2,
-                                                     EquationType equationType, NetworkContext networkContext, EquationContext equationContext) {
+                                                     EquationType equationType, EquationContext equationContext) {
         this.branchContext = Objects.requireNonNull(branchContext);
         this.side = Objects.requireNonNull(side);
         Objects.requireNonNull(bus1);
@@ -46,18 +45,7 @@ public abstract class AbstractClosedBranchAcFlowEquationTerm implements Equation
                 throw new IllegalStateException("Unknown side: " + side);
         }
 
-        if (!networkContext.isPvBus(bus1.getId())) {
-            variables.add(branchContext.getV1Var());
-        }
-        if (!networkContext.isPvBus(bus2.getId())) {
-            variables.add(branchContext.getV2Var());
-        }
-        if (!networkContext.isSlackBus(bus1.getId())) {
-            variables.add(branchContext.getPh1Var());
-        }
-        if (!networkContext.isSlackBus(bus2.getId())) {
-            variables.add(branchContext.getPh2Var());
-        }
+        variables = ImmutableList.of(branchContext.getV1Var(), branchContext.getV2Var(), branchContext.getPh1Var(), branchContext.getPh2Var());
     }
 
     @Override

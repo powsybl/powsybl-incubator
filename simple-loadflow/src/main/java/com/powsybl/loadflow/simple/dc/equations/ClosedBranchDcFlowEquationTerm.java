@@ -43,12 +43,8 @@ public class ClosedBranchDcFlowEquationTerm implements EquationTerm {
                 throw new IllegalStateException("Unknown side: " + side);
         }
 
-        if (!networkContext.isSlackBus(bus1.getId())) {
-            variables.add(branchContext.getPh1Var());
-        }
-        if (!networkContext.isSlackBus(bus2.getId())) {
-            variables.add(branchContext.getPh2Var());
-        }
+        variables.add(branchContext.getPh1Var());
+        variables.add(branchContext.getPh2Var());
     }
 
     @Override

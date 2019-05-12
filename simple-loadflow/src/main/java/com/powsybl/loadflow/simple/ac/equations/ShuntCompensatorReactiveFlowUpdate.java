@@ -6,6 +6,7 @@
  */
 package com.powsybl.loadflow.simple.ac.equations;
 
+import com.powsybl.iidm.network.ShuntCompensator;
 import com.powsybl.loadflow.simple.equations.VariableUpdate;
 
 import java.util.Objects;
@@ -15,14 +16,17 @@ import java.util.Objects;
  */
 public class ShuntCompensatorReactiveFlowUpdate implements VariableUpdate {
 
-    private final ShuntCompensatorContext shuntContext;
+    private final ShuntCompensator sc;
 
-    public ShuntCompensatorReactiveFlowUpdate(ShuntCompensatorContext shuntContext) {
-        this.shuntContext = Objects.requireNonNull(shuntContext);
+    private final ShuntCompensatorReactiveFlowEquationTerm equationTerm;
+
+    public ShuntCompensatorReactiveFlowUpdate(ShuntCompensator sc, ShuntCompensatorReactiveFlowEquationTerm equationTerm) {
+        this.sc = Objects.requireNonNull(sc);
+        this.equationTerm = Objects.requireNonNull(equationTerm);
     }
 
     @Override
     public void update(double[] x) {
-        shuntContext.getSc().getTerminal().setQ(shuntContext.q(x));
+        sc.getTerminal().setQ(equationTerm.eval(x));
     }
 }

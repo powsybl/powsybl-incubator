@@ -8,7 +8,9 @@ package com.powsybl.loadflow.simple.dc.equations;
 
 import com.powsybl.iidm.network.Bus;
 import com.powsybl.loadflow.simple.equations.EquationContext;
+import com.powsybl.loadflow.simple.equations.EquationType;
 import com.powsybl.loadflow.simple.equations.Variable;
+import com.powsybl.loadflow.simple.network.BranchCharacteristics;
 
 import java.util.Objects;
 
@@ -17,24 +19,27 @@ import java.util.Objects;
  */
 public class ClosedBranchSide2DcFlowEquationTerm extends AbstractClosedBranchDcFlowEquationTerm {
 
-    public ClosedBranchSide2DcFlowEquationTerm(ClosedBranchDcContext branchContext, Bus bus, EquationContext equationContext) {
-        super(branchContext, bus, equationContext);
+    public ClosedBranchSide2DcFlowEquationTerm(BranchCharacteristics bc, Bus bus1, Bus bus2, EquationContext equationContext) {
+        super(bc, bus1, bus2, equationContext.getEquation(bus2.getId(), EquationType.BUS_P), equationContext);
     }
 
     @Override
     public double eval(double[] x) {
         Objects.requireNonNull(x);
-        return branchContext.p2(x);
+        double ph1 = x[ph1Var.getColumn()];
+        double ph2 = x[ph2Var.getColumn()];
+        double deltaPhase =  ph2 - ph1 + bc.a2() - bc.a1();
+        return bc.dcPower() * deltaPhase;
     }
 
     @Override
     public double der(Variable variable, double[] x) {
         Objects.requireNonNull(variable);
         Objects.requireNonNull(x);
-        if (variable.equals(branchContext.getPh1Var())) {
-            return -branchContext.getPower();
-        } else if (variable.equals(branchContext.getPh2Var())) {
-            return branchContext.getPower();
+        if (variable.equals(ph1Var)) {
+            return -bc.dcPower();
+        } else if (variable.equals(ph2Var)) {
+            return bc.dcPower();
         } else {
             throw new IllegalStateException("Unknown variable: " + variable);
         }
@@ -43,8 +48,8 @@ public class ClosedBranchSide2DcFlowEquationTerm extends AbstractClosedBranchDcF
     @Override
     public double rhs(Variable variable) {
         Objects.requireNonNull(variable);
-        if (variable.equals(branchContext.getPh2Var())) {
-            return branchContext.getPower() * (branchContext.getBc().a2() - branchContext.getBc().a1());
+        if (variable.equals(ph2Var)) {
+            return bc.dcPower() * (bc.a2() - bc.a1());
         }
         return 0;
     }

@@ -19,18 +19,18 @@ import java.util.Objects;
  */
 public class ClosedBranchSide2ReactiveFlowEquationTerm extends AbstractClosedBranchAcFlowEquationTerm {
 
-    public ClosedBranchSide2ReactiveFlowEquationTerm(ClosedBranchAcContext branchContext, Bus bus, EquationContext equationContext) {
-        super(branchContext, bus, EquationType.BUS_Q, equationContext);
+    public ClosedBranchSide2ReactiveFlowEquationTerm(BranchCharacteristics bc, Bus bus1, Bus bus2, EquationContext equationContext) {
+        super(bc, bus1, bus2, equationContext.getEquation(bus2.getId(), EquationType.BUS_Q), equationContext);
     }
 
     @Override
     public double eval(double[] x) {
         Objects.requireNonNull(x);
-        double v1 = x[branchContext.getV1Var().getColumn()];
-        double v2 = x[branchContext.getV2Var().getColumn()];
-        double ph1 = x[branchContext.getPh1Var().getColumn()];
-        double ph2 = x[branchContext.getPh2Var().getColumn()];
-        return branchContext.q2(v1, v2, ph1, ph2);
+        double v1 = x[v1Var.getColumn()];
+        double v2 = x[v2Var.getColumn()];
+        double ph1 = x[ph1Var.getColumn()];
+        double ph2 = x[ph2Var.getColumn()];
+        return bc.r2() * v2 * (-bc.b2() * bc.r2() * v2 - bc.y() * bc.r1() * v1 * Math.cos(bc.ksi() + bc.a1() - bc.a2() + ph1 - ph2) + bc.y() * bc.r2() * v2 * Math.cos(bc.ksi()));
     }
 
     private double dq2dv1(double v2, double ph1, double ph2, BranchCharacteristics bc) {
@@ -50,14 +50,13 @@ public class ClosedBranchSide2ReactiveFlowEquationTerm extends AbstractClosedBra
     }
 
     private double dq2(Variable variable, double v1, double v2, double ph1, double ph2) {
-        BranchCharacteristics bc = branchContext.getBc();
-        if (variable.equals(branchContext.getV1Var())) {
+        if (variable.equals(v1Var)) {
             return dq2dv1(v2, ph1, ph2, bc);
-        } else if (variable.equals(branchContext.getV2Var())) {
+        } else if (variable.equals(v2Var)) {
             return dq2dv2(v1, v2, ph1, ph2, bc);
-        } else if (variable.equals(branchContext.getPh1Var())) {
+        } else if (variable.equals(ph1Var)) {
             return dq2dph1(v1, v2, ph1, ph2, bc);
-        } else if (variable.equals(branchContext.getPh2Var())) {
+        } else if (variable.equals(ph2Var)) {
             return dq2dph2(v1, v2, ph1, ph2, bc);
         } else {
             throw new IllegalStateException("Unknown variable: " + variable);
@@ -68,10 +67,10 @@ public class ClosedBranchSide2ReactiveFlowEquationTerm extends AbstractClosedBra
     public double der(Variable variable, double[] x) {
         Objects.requireNonNull(variable);
         Objects.requireNonNull(x);
-        double v1 = x[branchContext.getV1Var().getColumn()];
-        double v2 = x[branchContext.getV2Var().getColumn()];
-        double ph1 = x[branchContext.getPh1Var().getColumn()];
-        double ph2 = x[branchContext.getPh2Var().getColumn()];
+        double v1 = x[v1Var.getColumn()];
+        double v2 = x[v2Var.getColumn()];
+        double ph1 = x[ph1Var.getColumn()];
+        double ph2 = x[ph2Var.getColumn()];
         return dq2(variable, v1, v2, ph1, ph2);
     }
 }

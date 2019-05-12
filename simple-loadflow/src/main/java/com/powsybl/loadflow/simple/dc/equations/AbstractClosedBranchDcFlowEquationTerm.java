@@ -9,6 +9,7 @@ package com.powsybl.loadflow.simple.dc.equations;
 import com.google.common.collect.ImmutableList;
 import com.powsybl.iidm.network.Bus;
 import com.powsybl.loadflow.simple.equations.*;
+import com.powsybl.loadflow.simple.network.BranchCharacteristics;
 
 import java.util.List;
 import java.util.Objects;
@@ -18,16 +19,23 @@ import java.util.Objects;
  */
 public abstract class AbstractClosedBranchDcFlowEquationTerm implements EquationTerm {
 
-    protected final ClosedBranchDcContext branchContext;
+    protected final BranchCharacteristics bc;
+
+    protected final Variable ph1Var;
+
+    protected final Variable ph2Var;
 
     protected final List<Variable> variables;
 
     protected final Equation equation;
 
-    protected AbstractClosedBranchDcFlowEquationTerm(ClosedBranchDcContext branchContext, Bus bus, EquationContext equationContext) {
-        this.branchContext = Objects.requireNonNull(branchContext);
-        equation = equationContext.getEquation(bus.getId(), EquationType.BUS_P);
-        variables = ImmutableList.of(branchContext.getPh1Var(), branchContext.getPh2Var());
+    protected AbstractClosedBranchDcFlowEquationTerm(BranchCharacteristics bc, Bus bus1, Bus bus2,
+                                                     Equation equation, EquationContext equationContext) {
+        this.bc = Objects.requireNonNull(bc);
+        this.equation = Objects.requireNonNull(equation);
+        ph1Var = equationContext.getVariable(bus1.getId(), VariableType.BUS_PHI);
+        ph2Var = equationContext.getVariable(bus2.getId(), VariableType.BUS_PHI);
+        variables = ImmutableList.of(ph1Var, ph2Var);
     }
 
     @Override

@@ -20,25 +20,29 @@ import java.util.Objects;
  */
 public class OpenBranchSide2ReactiveFlowEquationTerm extends AbstractOpenBranchAcEquationTerm {
 
-    private final OpenBranchSide2AcContext branchContext;
+    private final Variable v1Var;
 
-    public OpenBranchSide2ReactiveFlowEquationTerm(OpenBranchSide2AcContext branchContext, Bus bus1, EquationContext equationContext) {
-        super(EquationType.BUS_Q, VariableType.BUS_V, bus1, equationContext);
-        this.branchContext = Objects.requireNonNull(branchContext);
+    public OpenBranchSide2ReactiveFlowEquationTerm(BranchCharacteristics bc, Bus bus1, EquationContext equationContext) {
+        super(bc, EquationType.BUS_Q, VariableType.BUS_V, bus1, equationContext);
+        v1Var = equationContext.getVariable(bus1.getId(), VariableType.BUS_V);
     }
 
     @Override
     public double eval(double[] x) {
-        return branchContext.q1(x);
+        Objects.requireNonNull(x);
+        double v1 = x[v1Var.getColumn()];
+        return -bc.r1() * bc.r1() * v1 * v1 * (bc.b1() + bc.y() * bc.y() * bc.b2() / bc.shunt()
+                - (bc.b2() * bc.b2() + bc.g2() * bc.g2()) * bc.y() * Math.cos(bc.ksi()) / bc.shunt());
     }
 
     @Override
     public double der(Variable variable, double[] x) {
-        if (variable.equals(branchContext.getV1Var())) {
-            BranchCharacteristics bc = branchContext.getBc();
-            double v1 = x[branchContext.getV1Var().getColumn()];
-            return -2 * v1 * bc.r1() * bc.r1() * (bc.b1() + bc.y() * bc.y() * bc.b2() / branchContext.getShunt()
-                    - (bc.b2() * bc.b2() + bc.g2() * bc.g2()) * bc.y() * Math.cos(bc.ksi()) / branchContext.getShunt());
+        Objects.requireNonNull(variable);
+        Objects.requireNonNull(x);
+        if (variable.equals(v1Var)) {
+            double v1 = x[v1Var.getColumn()];
+            return -2 * v1 * bc.r1() * bc.r1() * (bc.b1() + bc.y() * bc.y() * bc.b2() / bc.shunt()
+                    - (bc.b2() * bc.b2() + bc.g2() * bc.g2()) * bc.y() * Math.cos(bc.ksi()) / bc.shunt());
         } else {
             throw new IllegalStateException("Unknown variable: " + variable);
         }

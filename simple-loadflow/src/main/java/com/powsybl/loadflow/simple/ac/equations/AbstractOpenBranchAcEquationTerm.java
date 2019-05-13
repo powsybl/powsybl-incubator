@@ -8,6 +8,7 @@ package com.powsybl.loadflow.simple.ac.equations;
 
 import com.powsybl.iidm.network.Bus;
 import com.powsybl.loadflow.simple.equations.*;
+import com.powsybl.loadflow.simple.network.BranchCharacteristics;
 
 import java.util.Collections;
 import java.util.List;
@@ -18,12 +19,15 @@ import java.util.Objects;
  */
 abstract class AbstractOpenBranchAcEquationTerm implements EquationTerm {
 
+    protected final BranchCharacteristics bc;
+
     private final Equation equation;
 
     private final List<Variable> variables;
 
-    protected AbstractOpenBranchAcEquationTerm(EquationType equationType, VariableType variableType,
+    protected AbstractOpenBranchAcEquationTerm(BranchCharacteristics bc, EquationType equationType, VariableType variableType,
                                                Bus bus, EquationContext equationContext) {
+        this.bc = Objects.requireNonNull(bc);
         Objects.requireNonNull(equationType);
         Objects.requireNonNull(variableType);
         Objects.requireNonNull(bus);

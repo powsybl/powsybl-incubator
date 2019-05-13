@@ -7,10 +7,11 @@
 package com.powsybl.loadflow.simple.ac.equations;
 
 import com.powsybl.iidm.network.Bus;
+import com.powsybl.iidm.network.ShuntCompensator;
 import com.powsybl.loadflow.simple.equations.*;
 import com.powsybl.loadflow.simple.network.NetworkContext;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -19,23 +20,23 @@ import java.util.Objects;
  */
 public class ShuntCompensatorReactiveFlowEquationTerm implements EquationTerm {
 
-    private final ShuntCompensatorContext shuntContext;
+    private final ShuntCompensator sc;
+
+    private final Variable vVar;
 
     private final Equation equation;
 
-    private final List<Variable> variables = new ArrayList<>();
+    private final List<Variable> variables;
 
-    public ShuntCompensatorReactiveFlowEquationTerm(ShuntCompensatorContext shuntContext, Bus bus,
-                                                    NetworkContext networkContext, EquationContext equationContext) {
-        this.shuntContext = Objects.requireNonNull(shuntContext);
+    public ShuntCompensatorReactiveFlowEquationTerm(ShuntCompensator sc, Bus bus, NetworkContext networkContext,
+                                                    EquationContext equationContext) {
+        this.sc = Objects.requireNonNull(sc);
         Objects.requireNonNull(bus);
         Objects.requireNonNull(networkContext);
         Objects.requireNonNull(equationContext);
         equation = equationContext.getEquation(bus.getId(), EquationType.BUS_Q);
-
-        if (!networkContext.isPvBus(bus.getId())) {
-            variables.add(shuntContext.getvVar());
-        }
+        vVar = equationContext.getVariable(bus.getId(), VariableType.BUS_V);
+        variables = Collections.singletonList(vVar);
     }
 
     @Override
@@ -50,14 +51,18 @@ public class ShuntCompensatorReactiveFlowEquationTerm implements EquationTerm {
 
     @Override
     public double eval(double[] x) {
-        return shuntContext.q(x);
+        Objects.requireNonNull(x);
+        double v = x[vVar.getColumn()];
+        return -sc.getCurrentB() * v * v;
     }
 
     @Override
     public double der(Variable variable, double[] x) {
-        if (variable.equals(shuntContext.getvVar())) {
+        Objects.requireNonNull(variable);
+        Objects.requireNonNull(x);
+        if (variable.equals(vVar)) {
             double v = x[variable.getColumn()];
-            return -2 * shuntContext.b() * v;
+            return -2 * sc.getCurrentB() * v;
         } else {
             throw new IllegalStateException("Unknown variable: " + variable);
         }

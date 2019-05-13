@@ -6,6 +6,7 @@
  */
 package com.powsybl.loadflow.simple.ac.equations;
 
+import com.powsybl.iidm.network.Branch;
 import com.powsybl.loadflow.simple.equations.VariableUpdate;
 
 import java.util.Objects;
@@ -15,17 +16,23 @@ import java.util.Objects;
  */
 public class OpenBranchSide2AcFlowUpdate implements VariableUpdate {
 
-    private final OpenBranchSide2AcContext branchContext;
+    private final Branch branch;
 
-    public OpenBranchSide2AcFlowUpdate(OpenBranchSide2AcContext branchContext) {
-        this.branchContext = Objects.requireNonNull(branchContext);
+    private final OpenBranchSide2ActiveFlowEquationTerm p1;
+
+    private final OpenBranchSide2ReactiveFlowEquationTerm q1;
+
+    public OpenBranchSide2AcFlowUpdate(Branch branch, OpenBranchSide2ActiveFlowEquationTerm p1, OpenBranchSide2ReactiveFlowEquationTerm q1) {
+        this.branch = Objects.requireNonNull(branch);
+        this.p1 = Objects.requireNonNull(p1);
+        this.q1 = Objects.requireNonNull(q1);
     }
 
     @Override
     public void update(double[] x) {
-        branchContext.getBc().getBranch().getTerminal1().setP(branchContext.p1(x));
-        branchContext.getBc().getBranch().getTerminal1().setQ(branchContext.q1(x));
-        branchContext.getBc().getBranch().getTerminal2().setP(Double.NaN);
-        branchContext.getBc().getBranch().getTerminal2().setQ(Double.NaN);
+        branch.getTerminal1().setP(p1.eval(x));
+        branch.getTerminal1().setQ(q1.eval(x));
+        branch.getTerminal2().setP(Double.NaN);
+        branch.getTerminal2().setQ(Double.NaN);
     }
 }

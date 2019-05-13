@@ -9,6 +9,7 @@ package com.powsybl.loadflow.simple.dc.equations;
 import com.powsybl.iidm.network.Branch;
 import com.powsybl.iidm.network.Bus;
 import com.powsybl.loadflow.simple.equations.*;
+import com.powsybl.loadflow.simple.network.BranchCharacteristics;
 import com.powsybl.loadflow.simple.network.NetworkContext;
 
 import java.util.ArrayList;
@@ -32,14 +33,16 @@ public final class DcEquationSystem {
             Bus bus1 = branch.getTerminal1().getBusView().getBus();
             Bus bus2 = branch.getTerminal2().getBusView().getBus();
             if (bus1 != null && bus2 != null) {
-                ClosedBranchDcContext branchContext = new ClosedBranchDcContext(branch, bus1, bus2, equationContext);
+                BranchCharacteristics bc = new BranchCharacteristics(branch);
+                ClosedBranchSide1DcFlowEquationTerm p1 = new ClosedBranchSide1DcFlowEquationTerm(bc, bus1, bus2, equationContext);
+                ClosedBranchSide2DcFlowEquationTerm p2 = new ClosedBranchSide2DcFlowEquationTerm(bc, bus1, bus2, equationContext);
                 if (!networkContext.isSlackBus(bus1.getId())) {
-                    equationTerms.add(new ClosedBranchDcFlowEquationTerm(branchContext, Branch.Side.ONE, bus1, bus2, networkContext, equationContext));
+                    equationTerms.add(p1);
                 }
                 if (!networkContext.isSlackBus(bus2.getId())) {
-                    equationTerms.add(new ClosedBranchDcFlowEquationTerm(branchContext, Branch.Side.TWO, bus1, bus2, networkContext, equationContext));
+                    equationTerms.add(p2);
                 }
-                variableUpdates.add(new ClosedBranchDcFlowUpdate(branchContext));
+                variableUpdates.add(new ClosedBranchDcFlowUpdate(branch, p1, p2));
             } else if (bus1 != null) {
                 variableUpdates.add(new OpenBranchSide2DcFlowUpdate(branch));
             } else if (bus2 != null) {

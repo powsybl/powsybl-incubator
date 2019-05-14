@@ -8,7 +8,7 @@ public final class Configuration {
     }
 
     // To keep results identical to previous implementation
-    public static final boolean CONSIDER_GCH_FOR_LINES = false;
+    public static final boolean CONSIDER_GCH_FOR_LINES = true;
 
     // Process only default interpretation alternative
     public static final boolean ONLY_DEFAULT_CONFIGURATION = false;

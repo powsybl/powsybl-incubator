@@ -134,7 +134,7 @@ public class InterpretedTransformer3 {
 
     private double getRatedU0(CgmesTransformer transformer, InterpretationAlternative alternative) {
         double ratedU0;
-        switch (alternative.getXfmr3Ratio0StarBusSide()) {
+        switch (alternative.getXfmr3Ratio0Side()) {
             case END1:
                 ratedU0 = transformer.end1().ratedU();
                 break;
@@ -155,7 +155,7 @@ public class InterpretedTransformer3 {
         double ratedU0, InterpretationAlternative alternative) {
         double ratedU = transformerEnd.ratedU();
         InterpretedBranch.Ratios structuralRatioData = new InterpretedBranch.Ratios();
-        switch (alternative.getXfmr3Ratio0StarBusSide()) {
+        switch (alternative.getXfmr3Ratio0Side()) {
             case STAR_BUS_SIDE:
                 structuralRatioData.a1 = 1.0;
                 structuralRatioData.a2 = ratedU0 / ratedU;

@@ -8,6 +8,8 @@
 package com.powsybl.cgmes.interpretation.model.interpreted;
 
 import org.apache.commons.math3.complex.Complex;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.powsybl.cgmes.interpretation.model.cgmes.CgmesTapChangerStatus;
 import com.powsybl.cgmes.interpretation.model.cgmes.CgmesTransformer;
@@ -30,6 +32,12 @@ public class InterpretedTransformer2 {
         TransformerParameters transformerParameters = new TransformerParameters();
         InterpretedBranch.TapChangers tcs = interpretTapChangerStatus(transformer, end1, end2, alternative,
             transformerParameters);
+        /*if (transformer.id().equals("_475ae609-3691-4af0-a4af-2d34029312df")) {
+            LOG.info("g1 {}", end1.g);
+            LOG.info("b1 {}", end1.b);
+            LOG.info("g2 {}", end2.g);
+            LOG.info("b2 {}", end2.b);
+        }*/
         InterpretedBranch.ShuntAdmittances ysh = interpretAsShuntAdmittances(transformerParameters, alternative);
         InterpretedBranch.PhaseAngleClocks pacs = interpretPhaseAngleClock(transformer, alternative);
         tcs.addPhaseAngleClocks(pacs);
@@ -45,6 +53,16 @@ public class InterpretedTransformer2 {
             transformerParameters.r, transformerParameters.x,
             ratios.a1, tcs.ptc1.angle, ysh.ysh1,
             ratios.a2, tcs.ptc2.angle, ysh.ysh2);
+        /*if (transformer.id().equals("_f9aec7ee-396b-4401-aebf-31644eb4b06d")) {
+            LOG.info("a1 {} angle1 {}", ratios.a1, Math.toRadians(tcs.ptc1.angle));
+            LOG.info("a2 {} angle2 {}", ratios.a2, Math.toRadians(tcs.ptc2.angle));
+            LOG.info("rateU1 {} rateU2 {}", transformer.end1().ratedU(), transformer.end2().ratedU());
+            LOG.info("struct a1 {} a2 {}", structuralRatios.a1, structuralRatios.a2);
+            LOG.info("y11 {}", admittanceMatrix.y11());
+            LOG.info("y12 {}", admittanceMatrix.y12());
+            LOG.info("y21 {}", admittanceMatrix.y21());
+            LOG.info("y22 {}", admittanceMatrix.y22());
+        }*/
     }
 
     private InterpretedBranch.TapChangers interpretTapChangerStatus(CgmesTransformer transformer,
@@ -213,7 +231,7 @@ public class InterpretedTransformer2 {
         CorrectionFactors rtc2EndCorrectionFactors, CorrectionFactors ptc2EndCorrectionFactors, double newX2,
         TransformerParameters p1) {
 
-        if (initialEnd1Parameters.x != 0.0 && initialEnd2Parameters.x != 0.0) {
+        if (hasInitialParameters(initialEnd1Parameters) && hasInitialParameters(initialEnd2Parameters)) {
             p1.r = initialEnd1Parameters.r * rtc1EndCorrectionFactors.r * ptc1EndCorrectionFactors.r;
             p1.r += initialEnd2Parameters.r * rtc2EndCorrectionFactors.r * ptc2EndCorrectionFactors.r;
             p1.x = newX1 * rtc1EndCorrectionFactors.x * ptc1EndCorrectionFactors.x;
@@ -222,7 +240,7 @@ public class InterpretedTransformer2 {
             p1.g2 = initialEnd2Parameters.g * rtc2EndCorrectionFactors.g * ptc2EndCorrectionFactors.g;
             p1.b1 = initialEnd1Parameters.b * rtc1EndCorrectionFactors.b * ptc1EndCorrectionFactors.b;
             p1.b2 = initialEnd2Parameters.b * rtc2EndCorrectionFactors.b * ptc2EndCorrectionFactors.b;
-        } else if (initialEnd1Parameters.x != 0.0) {
+        } else if (hasInitialParameters(initialEnd1Parameters)) {
             p1.r = initialEnd1Parameters.r * rtc1EndCorrectionFactors.r * ptc1EndCorrectionFactors.r;
             p1.r *= rtc2EndCorrectionFactors.r * ptc2EndCorrectionFactors.r;
             if (newX1 != 0.0 && newX1 != initialEnd1Parameters.x) {
@@ -257,6 +275,14 @@ public class InterpretedTransformer2 {
         }
     }
 
+    private boolean hasInitialParameters(TransformerEndParameters initialEndParameters) {
+        if (initialEndParameters.x != 0 || initialEndParameters.r != 0.0 || initialEndParameters.g != 0.0
+            || initialEndParameters.b != 0.0) {
+            return true;
+        }
+        return false;
+    }
+
     static class TransformerParameters {
         double r = 0.0;
         double x = 0.0;
@@ -276,4 +302,5 @@ public class InterpretedTransformer2 {
 
     private final BranchAdmittanceMatrix admittanceMatrix;
     private final DetectedBranchModel branchModel;
+    private static final Logger LOG = LoggerFactory.getLogger(InterpretedTransformer2.class);
 }

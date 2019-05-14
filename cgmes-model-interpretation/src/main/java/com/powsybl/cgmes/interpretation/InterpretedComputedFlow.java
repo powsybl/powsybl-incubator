@@ -356,7 +356,7 @@ public final class InterpretedComputedFlow {
 
         if (nEnd.equals(n)) {
             p = ysh.getReal() * vf.abs() * vf.abs();
-            q = ysh.getImaginary() * vf.abs() * vf.abs();
+            q = -ysh.getImaginary() * vf.abs() * vf.abs();
         } else {
             LOG.warn("calculateEnd1Flow. Unexpected node");
         }

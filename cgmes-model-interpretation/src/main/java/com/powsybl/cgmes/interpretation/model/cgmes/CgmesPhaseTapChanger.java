@@ -43,8 +43,8 @@ public class CgmesPhaseTapChanger extends CgmesTapChanger {
         asymmetricalDifferentRatios = false;
     }
 
-    CgmesPhaseTapChanger(PropertyBag ptcp, CgmesModel cgmes) {
-        super(ptcp, "PhaseTapChangerTable", cgmes);
+    CgmesPhaseTapChanger(PropertyBag ptcp, CgmesModel cgmes, boolean discreteStep) {
+        super(ptcp, "PhaseTapChangerTable", cgmes, discreteStep);
         this.stepVoltageIncrement = ptcp.asDouble("voltageStepIncrement", 0);
         this.stepPhaseShiftIncrement = ptcp.asDouble("stepPhaseShiftIncrement", 0);
         this.windingConnectionAngle = ptcp.asDouble("windingConnectionAngle", 0);

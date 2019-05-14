@@ -21,7 +21,8 @@ public class CgmesTransformerEnd {
     CgmesTransformerEnd(
         CgmesModel cgmes,
         PropertyBag endp,
-        Map<String, PropertyBag> allTapChangers) {
+        Map<String, PropertyBag> allTapChangers,
+        boolean discreteStep) {
         this.endNumber = endp.asInt("endNumber");
         this.r = endp.asDouble("r", 0);
         this.x = endp.asDouble("x", 0);
@@ -30,9 +31,9 @@ public class CgmesTransformerEnd {
         this.phaseAngleClock = endp.asInt("phaseAngleClock", 0);
         this.ratedU = endp.asDouble("ratedU");
         PropertyBag rtcp = allTapChangers.get(endp.getId("RatioTapChanger"));
-        this.rtc = rtcp != null ? new CgmesRatioTapChanger(rtcp, cgmes) : CgmesRatioTapChanger.EMPTY;
+        this.rtc = rtcp != null ? new CgmesRatioTapChanger(rtcp, cgmes, discreteStep) : CgmesRatioTapChanger.EMPTY;
         PropertyBag ptcp = allTapChangers.get(endp.getId("PhaseTapChanger"));
-        this.ptc = ptcp != null ? new CgmesPhaseTapChanger(ptcp, cgmes) : CgmesPhaseTapChanger.EMPTY;
+        this.ptc = ptcp != null ? new CgmesPhaseTapChanger(ptcp, cgmes, discreteStep) : CgmesPhaseTapChanger.EMPTY;
         CgmesTerminal t = cgmes.terminal(endp.getId(CgmesNames.TERMINAL));
         this.nodeId = t.topologicalNode();
         this.connected = t.connected();

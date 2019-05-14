@@ -51,9 +51,9 @@ public class CgmesTransformer {
         this.end3 = null;
     }
 
-    CgmesTransformer(CgmesModel cgmes, String id, PropertyBags endsp, Map<String, PropertyBag> allTapChangers) {
+    CgmesTransformer(CgmesModel cgmes, String id, PropertyBags endsp, Map<String, PropertyBag> allTapChangers, boolean discreteStep) {
         List<CgmesTransformerEnd> ends = endsp.stream()
-            .map(end -> new CgmesTransformerEnd(cgmes, end, allTapChangers))
+            .map(end -> new CgmesTransformerEnd(cgmes, end, allTapChangers, discreteStep))
             .sorted(Comparator.comparingInt(CgmesTransformerEnd::endNumber))
             .collect(Collectors.toList());
         Objects.requireNonNull(id);

@@ -29,14 +29,24 @@ public class CgmesTapChanger {
         tabularDifferentAngles = false;
     }
 
-    CgmesTapChanger(PropertyBag tcp, String tableIdPropertyName, CgmesModel cgmes) {
+    CgmesTapChanger(PropertyBag tcp, String tableIdPropertyName, CgmesModel cgmes, boolean discreteStep) {
         this.neutralU = tcp.asDouble("neutralU");
         this.lowStep = tcp.asInt("lowStep");
         this.highStep = tcp.asInt("highStep");
         this.neutralStep = tcp.asInt("neutralStep");
         // Consider finding the closest step to given value for step
         // and keep the original value but add an int attribute "stepk" or "stepi"?
-        this.step = tcp.asDouble("SVtapStep");
+        double step;
+        if (discreteStep) {
+            step = (int) tcp.asDouble("SVtapStep");
+        } else {
+            step = tcp.asDouble("SVtapStep");
+        }
+        if (step > highStep || step < lowStep) {
+            this.step = neutralStep;
+        } else {
+            this.step = step;
+        }
         this.regulatingControlEnabled = tcp.asBoolean("regulatingControlEnabled", false);
         this.tableId = tcp.getId(tableIdPropertyName);
         // TODO Check if we can access "all tables"

@@ -109,12 +109,12 @@ public class InterpretationAlternative {
         this.xfmr2Pac2Negate = xfmr2Pac2Negate;
     }
 
-    public Xfmr3StructuralRatioInterpretationAlternative getXfmr3Ratio0StarBusSide() {
-        return xfmr3Ratio0StarBusSide;
+    public Xfmr3StructuralRatioInterpretationAlternative getXfmr3Ratio0Side() {
+        return xfmr3Ratio0Side;
     }
 
-    public void setXfmr3Ratio0StarBusSide(Xfmr3StructuralRatioInterpretationAlternative xfmr3Ratio0StarBusSide) {
-        this.xfmr3Ratio0StarBusSide = xfmr3Ratio0StarBusSide;
+    public void setXfmr3Ratio0Side(Xfmr3StructuralRatioInterpretationAlternative xfmr3Ratio0StarBusSide) {
+        this.xfmr3Ratio0Side = xfmr3Ratio0StarBusSide;
     }
 
     public Xfmr3RatioPhaseInterpretationAlternative getXfmr3RatioPhaseStarBusSide() {
@@ -209,7 +209,7 @@ public class InterpretationAlternative {
         if (xfmr2Pac2Negate) {
             configuration.append("Xfmr2_pac2_negate_on.");
         }
-        switch (xfmr3Ratio0StarBusSide) {
+        switch (xfmr3Ratio0Side) {
             case END1:
                 configuration.append("Xfmr3_ratedU0_end1.");
                 break;
@@ -254,14 +254,14 @@ public class InterpretationAlternative {
     }
 
     LineShuntInterpretationAlternative lineBshunt = LineShuntInterpretationAlternative.SPLIT;
-    boolean lineRatio0 = false;
+    boolean lineRatio0 = true;
     Xfmr2RatioPhaseIntepretationAlternative xfmr2Ratio0 = Xfmr2RatioPhaseIntepretationAlternative.END2;
     Xfmr2RatioPhaseIntepretationAlternative xfmr2RatioPhase = Xfmr2RatioPhaseIntepretationAlternative.END1_END2;
     boolean xfmr2Ptc2Negate = false;
     Xfmr2ShuntInterpretationAlternative xfmr2YShunt = Xfmr2ShuntInterpretationAlternative.END1;
     Xfmr2PhaseAngleClockAlternative xfmr2PhaseAngleClock = Xfmr2PhaseAngleClockAlternative.OFF;
     boolean xfmr2Pac2Negate = false;
-    Xfmr3StructuralRatioInterpretationAlternative xfmr3Ratio0StarBusSide = Xfmr3StructuralRatioInterpretationAlternative.STAR_BUS_SIDE;
+    Xfmr3StructuralRatioInterpretationAlternative xfmr3Ratio0Side = Xfmr3StructuralRatioInterpretationAlternative.STAR_BUS_SIDE;
     Xfmr3RatioPhaseInterpretationAlternative xfmr3RatioPhaseStarBusSide = Xfmr3RatioPhaseInterpretationAlternative.NETWORK_SIDE;
     Xfmr3ShuntInterpretationAlternative xfmr3YShunt = Xfmr3ShuntInterpretationAlternative.NETWORK_SIDE;
     Xfmr3PhaseAngleClockAlternative xfmr3PhaseAngleClock = Xfmr3PhaseAngleClockAlternative.OFF;

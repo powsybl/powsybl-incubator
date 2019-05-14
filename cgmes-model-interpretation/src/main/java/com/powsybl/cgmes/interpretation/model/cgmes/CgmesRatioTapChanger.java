@@ -21,8 +21,8 @@ public class CgmesRatioTapChanger extends CgmesTapChanger {
         stepVoltageIncrement = 0;
     }
 
-    CgmesRatioTapChanger(PropertyBag rtcp, CgmesModel cgmes) {
-        super(rtcp, "RatioTapChangerTable", cgmes);
+    CgmesRatioTapChanger(PropertyBag rtcp, CgmesModel cgmes, boolean discreteStep) {
+        super(rtcp, "RatioTapChangerTable", cgmes, discreteStep);
         this.stepVoltageIncrement = rtcp.asDouble("stepVoltageIncrement");
     }
 

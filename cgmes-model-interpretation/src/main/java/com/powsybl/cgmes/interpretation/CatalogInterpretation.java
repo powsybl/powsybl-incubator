@@ -39,10 +39,12 @@ public class CatalogInterpretation extends CatalogReview {
             if (Configuration.excluded(p)) {
                 return;
             }
+            boolean discreteStep = false;
             Interpretation i = new Interpretation(
                 new CgmesModelForInterpretation(
                     modelName(p),
-                    cgmes(p)));
+                    cgmes(p),
+                    discreteStep));
             InterpretationResults r = i.interpret(alternatives);
             results.add(r);
         });

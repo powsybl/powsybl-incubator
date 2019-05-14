@@ -34,9 +34,10 @@ import com.powsybl.triplestore.api.TripleStoreFactory;
  */
 public class CgmesModelForInterpretation {
 
-    public CgmesModelForInterpretation(String name, CgmesModel cgmes) {
+    public CgmesModelForInterpretation(String name, CgmesModel cgmes, boolean discreteStep) {
         this.name = name;
         this.cgmes = cgmes;
+        this.discreteStep = discreteStep;
         prepareForInterpretation();
     }
 
@@ -49,6 +50,7 @@ public class CgmesModelForInterpretation {
         Map<String, List<String>> equipmentAtNode) {
         this.name = name;
         this.cgmes = CGMES_EMPTY_MODEL;
+        this.discreteStep = false;
         this.nodes = nodes;
 
         this.z0nodes = new HashSet<>();
@@ -327,7 +329,7 @@ public class CgmesModelForInterpretation {
                 return;
             }
             if (isConnectedTransformer(ends)) {
-                CgmesTransformer transformer = new CgmesTransformer(cgmes, transformerId, ends, allTapChangers);
+                CgmesTransformer transformer = new CgmesTransformer(cgmes, transformerId, ends, allTapChangers, discreteStep);
                 transformers.put(transformerId, transformer);
                 for (CgmesTransformerEnd end : transformer.ends()) {
                     if (end.connected()) {
@@ -514,6 +516,7 @@ public class CgmesModelForInterpretation {
 
     private final String name;
     private final CgmesModel cgmes;
+    private final boolean discreteStep;
 
     private Map<String, CgmesNode> nodes;
     private Map<String, CgmesLine> lines;

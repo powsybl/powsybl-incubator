@@ -37,10 +37,6 @@ public final class InterpretationAlternatives {
         }
 
         a = new InterpretationAlternative();
-        a.setLineRatio0(true);
-        alternatives.add(a);
-
-        a = new InterpretationAlternative();
         a.setXfmr2Ratio0(Xfmr2RatioPhaseIntepretationAlternative.X);
         alternatives.add(a);
 
@@ -69,7 +65,6 @@ public final class InterpretationAlternatives {
         a = new InterpretationAlternative();
         a.setXfmr2YShunt(Xfmr2ShuntInterpretationAlternative.SPLIT);
         a.setXfmr3YShunt(Xfmr3ShuntInterpretationAlternative.SPLIT);
-        a.setLineRatio0(true);
         alternatives.add(a);
 
         a = new InterpretationAlternative();
@@ -92,23 +87,22 @@ public final class InterpretationAlternatives {
         a.setXfmr2PhaseAngleClock(Xfmr2PhaseAngleClockAlternative.END1_END2);
         a.setXfmr3PhaseAngleClock(Xfmr3PhaseAngleClockAlternative.STAR_BUS_SIDE);
         a.setXfmr2Pac2Negate(true);
-        a.setLineRatio0(true);
         alternatives.add(a);
 
         a = new InterpretationAlternative();
-        a.setXfmr3Ratio0StarBusSide(Xfmr3StructuralRatioInterpretationAlternative.NETWORK_SIDE);
+        a.setXfmr3Ratio0Side(Xfmr3StructuralRatioInterpretationAlternative.NETWORK_SIDE);
         alternatives.add(a);
 
         a = new InterpretationAlternative();
-        a.setXfmr3Ratio0StarBusSide(Xfmr3StructuralRatioInterpretationAlternative.END1);
+        a.setXfmr3Ratio0Side(Xfmr3StructuralRatioInterpretationAlternative.END1);
         alternatives.add(a);
 
         a = new InterpretationAlternative();
-        a.setXfmr3Ratio0StarBusSide(Xfmr3StructuralRatioInterpretationAlternative.END2);
+        a.setXfmr3Ratio0Side(Xfmr3StructuralRatioInterpretationAlternative.END2);
         alternatives.add(a);
 
         a = new InterpretationAlternative();
-        a.setXfmr3Ratio0StarBusSide(Xfmr3StructuralRatioInterpretationAlternative.END3);
+        a.setXfmr3Ratio0Side(Xfmr3StructuralRatioInterpretationAlternative.END3);
         alternatives.add(a);
 
         return alternatives;

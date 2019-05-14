@@ -33,10 +33,40 @@ public class EquationSystem {
 
     private final double[] targets;
 
+    private static final class JacobianElement {
+
+        private final EquationTerm equationTerm;
+
+        private final Matrix.Element element;
+
+        private final Variable variable;
+
+        private JacobianElement(EquationTerm equationTerm, Matrix.Element element, Variable variable) {
+            this.equationTerm = Objects.requireNonNull(equationTerm);
+            this.element = Objects.requireNonNull(element);
+            this.variable = Objects.requireNonNull(variable);
+        }
+
+        public EquationTerm getEquationTerm() {
+            return equationTerm;
+        }
+
+        public Matrix.Element getElement() {
+            return element;
+        }
+
+        public Variable getVariable() {
+            return variable;
+        }
+    }
+
+    private final List<JacobianElement> jacobianElements;
+
     public EquationSystem(List<EquationTerm> equationTerms, List<VariableUpdate> variableUpdates, NetworkContext networkContext) {
         Objects.requireNonNull(equationTerms);
         this.variableUpdates = Objects.requireNonNull(variableUpdates);
         this.networkContext = Objects.requireNonNull(networkContext);
+        jacobianElements = new ArrayList<>(equationTerms.size());
 
         // index derivatives per variable then per equation
         for (EquationTerm equationTerm : equationTerms) {
@@ -151,14 +181,26 @@ public class EquationSystem {
                 Equation eq = e2.getKey();
                 int row = eq.getRow();
                 for (EquationTerm equationTerm : e2.getValue()) {
-                    double v = equationTerm.der(var, x);
-                    if (v != 0) {
-                        j.add(row, column, v);
-                    }
+                    double value = equationTerm.der(var, x);
+                    Matrix.Element element = j.addAndGetElement(row, column, value);
+                    jacobianElements.add(new JacobianElement(equationTerm, element, var));
                 }
             }
         }
 
         return j;
+    }
+
+    public void updateJacobian(Matrix j, double[] x) {
+        Objects.requireNonNull(j);
+        Objects.requireNonNull(x);
+        j.reset();
+        for (JacobianElement jacobianElement : jacobianElements) {
+            EquationTerm equationTerm = jacobianElement.getEquationTerm();
+            Matrix.Element element = jacobianElement.getElement();
+            Variable var = jacobianElement.getVariable();
+            double value = equationTerm.der(var, x);
+            element.add(value);
+        }
     }
 }

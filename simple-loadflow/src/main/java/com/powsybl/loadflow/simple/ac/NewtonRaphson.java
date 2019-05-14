@@ -53,6 +53,9 @@ public class NewtonRaphson {
 
         double[] fx = new double[system.getEquations().size()];
 
+        Matrix j = null;
+        LUDecomposition lu = null;
+
         int iteration = 0;
 
         NewtonRaphsonStatus status = NewtonRaphsonStatus.CONVERGED;
@@ -75,7 +78,11 @@ public class NewtonRaphson {
             // build jacobian
             observer.beforeJacobianBuild(iteration);
 
-            Matrix j = system.buildJacobian(matrixFactory, x);
+            if (j == null) {
+                j = system.buildJacobian(matrixFactory, x);
+            } else {
+                system.updateJacobian(j, x);
+            }
 
             observer.afterJacobianBuild(j, system, iteration);
 
@@ -83,9 +90,15 @@ public class NewtonRaphson {
 
             observer.beforeLuDecomposition(iteration);
 
-            try (LUDecomposition lu = j.decomposeLU()) {
-                observer.afterLuDecomposition(iteration);
+            if (lu == null) {
+                lu = j.decomposeLU();
+            } else {
+                lu.reload();
+            }
 
+            observer.afterLuDecomposition(iteration);
+
+            try {
                 observer.beforeLuSolve(iteration);
 
                 lu.solve(fx);
@@ -104,6 +117,10 @@ public class NewtonRaphson {
             iteration++;
 
             observer.afterStateUpdate(x, system, iteration);
+        }
+
+        if (lu != null) {
+            lu.close();
         }
 
         networkContext.resetState();

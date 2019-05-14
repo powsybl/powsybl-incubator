@@ -8,6 +8,7 @@ package com.powsybl.substationdiagram.model;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.*;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
@@ -433,11 +434,14 @@ public class Graph {
         if (nodes.stream().anyMatch(node -> node.getType() == Node.NodeType.BUS)) {
             return;
         }
-        TreeSet<FictitiousNode> fictitiousNodeSet = new TreeSet<>(Comparator.comparingInt(n -> n.getAdjacentEdges().size()));
-        nodes.stream().filter(node -> node.getType() == Node.NodeType.FICTITIOUS)
+        FictitiousNode biggestFn = nodes.stream()
+                .filter(node -> node.getType() == Node.NodeType.FICTITIOUS)
+                .sorted(Comparator.<Node>comparingInt(node -> node.getAdjacentEdges().size())
+                                  .reversed()
+                                  .thenComparing(Node::getId)) // for stable fictitious node selection, also sort on id
                 .map(FictitiousNode.class::cast)
-                .forEach(fictitiousNodeSet::add);
-        FictitiousNode biggestFn = fictitiousNodeSet.last();
+                .findFirst()
+                .orElseThrow(() -> new PowsyblException("Empty node set"));
         BusNode bn = BusNode.createFictitious(this, biggestFn.getId() + "FictitiousBus");
         addNode(bn);
         substitueNode(biggestFn, bn);

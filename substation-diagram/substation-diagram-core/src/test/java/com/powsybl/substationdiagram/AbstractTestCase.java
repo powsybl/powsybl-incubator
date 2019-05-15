@@ -87,10 +87,6 @@ public abstract class AbstractTestCase {
 
             String refSvg = normalizeLineSeparator(new String(ByteStreams.toByteArray(getClass().getResourceAsStream(refSvgName)), StandardCharsets.UTF_8));
             String svg = normalizeLineSeparator(writer.toString());
-//            File file = new File("/home/lecuyerfra" + refSvgName);
-//            FileWriter fileW = new FileWriter(file);
-//            fileW.write(svg);
-//            fileW.close();
             assertEquals(refSvg, svg);
         } catch (IOException e) {
             throw new UncheckedIOException(e);

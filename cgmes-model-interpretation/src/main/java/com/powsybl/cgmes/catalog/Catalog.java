@@ -103,8 +103,12 @@ public class Catalog {
             i = sp.indexOf("_2D_") + 4;
         }
         int j = sp.indexOf('_', i);
-        if (sp.indexOf('_', i) > sp.indexOf('\\', i)) {
-            j = sp.indexOf('\\', i);
+        int j2 = sp.indexOf('\\', i);
+        if (j2 < 0) {
+            j2 = sp.indexOf('/', i);
+        }
+        if (sp.indexOf('_', i) > j2) {
+            j = j2;
         }
         if (j > i) {
             return sp.substring(i, j);

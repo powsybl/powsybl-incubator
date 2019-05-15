@@ -6,33 +6,46 @@
  */
 package com.powsybl.loadflow.simple.ac.equations;
 
+import com.google.common.base.Stopwatch;
 import com.powsybl.iidm.network.Branch;
 import com.powsybl.iidm.network.Bus;
 import com.powsybl.iidm.network.ShuntCompensator;
 import com.powsybl.loadflow.simple.equations.*;
 import com.powsybl.loadflow.simple.network.BranchCharacteristics;
 import com.powsybl.loadflow.simple.network.NetworkContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
 public final class AcEquationSystem {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(AcEquationSystem.class);
+
     private AcEquationSystem() {
     }
 
     public static EquationSystem create(NetworkContext networkContext, EquationContext equationContext) {
+        Stopwatch stopwatch = Stopwatch.createStarted();
+
         List<EquationTerm> equationTerms = new ArrayList<>();
+        List<EquationTerm> systemEquationTerms = new ArrayList<>();
         List<VariableUpdate> variableUpdates = new ArrayList<>();
 
-        equationTerms.add(new BusPhaseEquationTerm(networkContext.getSlackBus(), equationContext));
+        BusPhaseEquationTerm ph = new BusPhaseEquationTerm(networkContext.getSlackBus(), equationContext);
+        equationTerms.add(ph);
+        systemEquationTerms.add(ph);
 
         for (Bus bus : networkContext.getBuses()) {
             if (networkContext.isPvBus(bus.getId())) {
-                equationTerms.add(new BusVoltageEquationTerm(bus, equationContext));
+                BusVoltageEquationTerm v = new BusVoltageEquationTerm(bus, equationContext);
+                equationTerms.add(v);
+                systemEquationTerms.add(v);
             }
         }
 
@@ -45,37 +58,45 @@ public final class AcEquationSystem {
                 ClosedBranchSide1ReactiveFlowEquationTerm q1 = new ClosedBranchSide1ReactiveFlowEquationTerm(bc, bus1, bus2, equationContext);
                 ClosedBranchSide2ActiveFlowEquationTerm p2 = new ClosedBranchSide2ActiveFlowEquationTerm(bc, bus1, bus2, equationContext);
                 ClosedBranchSide2ReactiveFlowEquationTerm q2 = new ClosedBranchSide2ReactiveFlowEquationTerm(bc, bus1, bus2, equationContext);
+                equationTerms.add(p1);
+                equationTerms.add(q1);
+                equationTerms.add(p2);
+                equationTerms.add(q2);
                 if (!networkContext.isSlackBus(bus1.getId())) {
-                    equationTerms.add(p1);
+                    systemEquationTerms.add(p1);
                 }
                 if (!networkContext.isPvBus(bus1.getId())) {
-                    equationTerms.add(q1);
+                    systemEquationTerms.add(q1);
                 }
                 if (!networkContext.isSlackBus(bus2.getId())) {
-                    equationTerms.add(p2);
+                    systemEquationTerms.add(p2);
                 }
                 if (!networkContext.isPvBus(bus2.getId())) {
-                    equationTerms.add(q2);
+                    systemEquationTerms.add(q2);
                 }
                 variableUpdates.add(new ClosedBranchAcFlowUpdate(branch, p1, q1, p2, q2));
             } else if (bus1 != null) {
                 OpenBranchSide2ActiveFlowEquationTerm p1 = new OpenBranchSide2ActiveFlowEquationTerm(bc, bus1, equationContext);
                 OpenBranchSide2ReactiveFlowEquationTerm q1 = new OpenBranchSide2ReactiveFlowEquationTerm(bc, bus1, equationContext);
+                equationTerms.add(p1);
+                equationTerms.add(q1);
                 if (!networkContext.isSlackBus(bus1.getId())) {
-                    equationTerms.add(p1);
+                    systemEquationTerms.add(p1);
                 }
                 if (!networkContext.isPvBus(bus1.getId())) {
-                    equationTerms.add(q1);
+                    systemEquationTerms.add(q1);
                 }
                 variableUpdates.add(new OpenBranchSide2AcFlowUpdate(branch, p1, q1));
             } else if (bus2 != null) {
                 OpenBranchSide1ActiveFlowEquationTerm p2 = new OpenBranchSide1ActiveFlowEquationTerm(bc, bus2, equationContext);
                 OpenBranchSide1ReactiveFlowEquationTerm q2 = new OpenBranchSide1ReactiveFlowEquationTerm(bc, bus2, equationContext);
+                equationTerms.add(p2);
+                equationTerms.add(q2);
                 if (!networkContext.isSlackBus(bus2.getId())) {
-                    equationTerms.add(p2);
+                    systemEquationTerms.add(p2);
                 }
                 if (!networkContext.isPvBus(bus2.getId())) {
-                    equationTerms.add(q2);
+                    systemEquationTerms.add(q2);
                 }
                 variableUpdates.add(new OpenBranchSide1AcFlowUpdate(branch, p2, q2));
             }
@@ -86,10 +107,14 @@ public final class AcEquationSystem {
             if (bus != null && !networkContext.isPvBus(bus.getId())) {
                 ShuntCompensatorReactiveFlowEquationTerm q = new ShuntCompensatorReactiveFlowEquationTerm(sc, bus, networkContext, equationContext);
                 equationTerms.add(q);
+                systemEquationTerms.add(q);
                 variableUpdates.add(new ShuntCompensatorReactiveFlowUpdate(sc, q));
             }
         }
 
-        return new EquationSystem(equationTerms, variableUpdates, networkContext);
+        stopwatch.stop();
+        LOGGER.debug("AC equation system created in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
+
+        return new EquationSystem(equationTerms, systemEquationTerms, variableUpdates, networkContext);
     }
 }

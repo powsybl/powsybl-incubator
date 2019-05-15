@@ -22,27 +22,35 @@ public class OpenBranchSide2ReactiveFlowEquationTerm extends AbstractOpenBranchA
 
     private final Variable v1Var;
 
+    private double q1;
+
+    private double dq1dv1;
+
     public OpenBranchSide2ReactiveFlowEquationTerm(BranchCharacteristics bc, Bus bus1, EquationContext equationContext) {
         super(bc, EquationType.BUS_Q, VariableType.BUS_V, bus1, equationContext);
         v1Var = equationContext.getVariable(bus1.getId(), VariableType.BUS_V);
     }
 
     @Override
-    public double eval(double[] x) {
+    public void update(double[] x) {
         Objects.requireNonNull(x);
         double v1 = x[v1Var.getColumn()];
-        return -bc.r1() * bc.r1() * v1 * v1 * (bc.b1() + bc.y() * bc.y() * bc.b2() / bc.shunt()
+        q1 = -bc.r1() * bc.r1() * v1 * v1 * (bc.b1() + bc.y() * bc.y() * bc.b2() / bc.shunt()
+                - (bc.b2() * bc.b2() + bc.g2() * bc.g2()) * bc.y() * Math.cos(bc.ksi()) / bc.shunt());
+        dq1dv1 = -2 * v1 * bc.r1() * bc.r1() * (bc.b1() + bc.y() * bc.y() * bc.b2() / bc.shunt()
                 - (bc.b2() * bc.b2() + bc.g2() * bc.g2()) * bc.y() * Math.cos(bc.ksi()) / bc.shunt());
     }
 
     @Override
-    public double der(Variable variable, double[] x) {
+    public double eval() {
+        return q1;
+    }
+
+    @Override
+    public double der(Variable variable) {
         Objects.requireNonNull(variable);
-        Objects.requireNonNull(x);
         if (variable.equals(v1Var)) {
-            double v1 = x[v1Var.getColumn()];
-            return -2 * v1 * bc.r1() * bc.r1() * (bc.b1() + bc.y() * bc.y() * bc.b2() / bc.shunt()
-                    - (bc.b2() * bc.b2() + bc.g2() * bc.g2()) * bc.y() * Math.cos(bc.ksi()) / bc.shunt());
+            return dq1dv1;
         } else {
             throw new IllegalStateException("Unknown variable: " + variable);
         }

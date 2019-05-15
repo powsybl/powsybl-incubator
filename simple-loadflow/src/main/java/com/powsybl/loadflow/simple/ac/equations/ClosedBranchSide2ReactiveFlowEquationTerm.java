@@ -19,58 +19,55 @@ import java.util.Objects;
  */
 public class ClosedBranchSide2ReactiveFlowEquationTerm extends AbstractClosedBranchAcFlowEquationTerm {
 
+    private double q2;
+
+    private double dq2dv1;
+
+    private double dq2dv2;
+
+    private double dq2dph1;
+
+    private double dq2dph2;
+
     public ClosedBranchSide2ReactiveFlowEquationTerm(BranchCharacteristics bc, Bus bus1, Bus bus2, EquationContext equationContext) {
         super(bc, bus1, bus2, equationContext.getEquation(bus2.getId(), EquationType.BUS_Q), equationContext);
     }
 
     @Override
-    public double eval(double[] x) {
+    public void update(double[] x) {
         Objects.requireNonNull(x);
         double v1 = x[v1Var.getColumn()];
         double v2 = x[v2Var.getColumn()];
         double ph1 = x[ph1Var.getColumn()];
         double ph2 = x[ph2Var.getColumn()];
-        return bc.r2() * v2 * (-bc.b2() * bc.r2() * v2 - bc.y() * bc.r1() * v1 * Math.cos(bc.ksi() + bc.a1() - bc.a2() + ph1 - ph2) + bc.y() * bc.r2() * v2 * Math.cos(bc.ksi()));
-    }
-
-    private double dq2dv1(double v2, double ph1, double ph2, BranchCharacteristics bc) {
-        return -bc.y() * bc.r1() * bc.r2() * v2 * Math.cos(bc.ksi() + bc.a1() - bc.a2() + ph1 - ph2);
-    }
-
-    private double dq2dv2(double v1, double v2, double ph1, double ph2, BranchCharacteristics bc) {
-        return bc.r2() * (-2 * bc.b2() * bc.r2() * v2 - bc.y() * bc.r1() * v1 * Math.cos(bc.ksi() + bc.a1() - bc.a2() + ph1 - ph2) + 2 * bc.y() * bc.r2() * v2 * Math.cos(bc.ksi()));
-    }
-
-    private double dq2dph1(double v1, double v2, double ph1, double ph2, BranchCharacteristics bc) {
-        return bc.y() * bc.r1() * bc.r2() * v1 * v2 * Math.sin(bc.ksi() + bc.a1() - bc.a2() + ph1 - ph2);
-    }
-
-    private double dq2dph2(double v1, double v2, double ph1, double ph2, BranchCharacteristics bc) {
-        return -bc.y() * bc.r1() * bc.r2() * v1 * v2 * Math.sin(bc.ksi() + bc.a1() - bc.a2() + ph1 - ph2);
-    }
-
-    private double dq2(Variable variable, double v1, double v2, double ph1, double ph2) {
-        if (variable.equals(v1Var)) {
-            return dq2dv1(v2, ph1, ph2, bc);
-        } else if (variable.equals(v2Var)) {
-            return dq2dv2(v1, v2, ph1, ph2, bc);
-        } else if (variable.equals(ph1Var)) {
-            return dq2dph1(v1, v2, ph1, ph2, bc);
-        } else if (variable.equals(ph2Var)) {
-            return dq2dph2(v1, v2, ph1, ph2, bc);
-        } else {
-            throw new IllegalStateException("Unknown variable: " + variable);
-        }
+        double theta = ksi + a1 - a2 + ph1 - ph2;
+        double cosTheta = Math.cos(theta);
+        double sinTheta = Math.sin(theta);
+        q2 = r2 * v2 * (-b2 * r2 * v2 - y * r1 * v1 * cosTheta + y * r2 * v2 * cosKsi);
+        dq2dv1 = -y * r1 * r2 * v2 * cosTheta;
+        dq2dv2 = r2 * (-2 * b2 * r2 * v2 - y * r1 * v1 * cosTheta + 2 * y * r2 * v2 * cosKsi);
+        dq2dph1 = y * r1 * r2 * v1 * v2 * sinTheta;
+        dq2dph2 = -y * r1 * r2 * v1 * v2 * sinTheta;
     }
 
     @Override
-    public double der(Variable variable, double[] x) {
+    public double eval() {
+        return q2;
+    }
+
+    @Override
+    public double der(Variable variable) {
         Objects.requireNonNull(variable);
-        Objects.requireNonNull(x);
-        double v1 = x[v1Var.getColumn()];
-        double v2 = x[v2Var.getColumn()];
-        double ph1 = x[ph1Var.getColumn()];
-        double ph2 = x[ph2Var.getColumn()];
-        return dq2(variable, v1, v2, ph1, ph2);
+        if (variable.equals(v1Var)) {
+            return dq2dv1;
+        } else if (variable.equals(v2Var)) {
+            return dq2dv2;
+        } else if (variable.equals(ph1Var)) {
+            return dq2dph1;
+        } else if (variable.equals(ph2Var)) {
+            return dq2dph2;
+        } else {
+            throw new IllegalStateException("Unknown variable: " + variable);
+        }
     }
 }

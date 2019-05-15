@@ -33,6 +33,19 @@ public abstract class AbstractClosedBranchAcFlowEquationTerm implements Equation
 
     protected final List<Variable> variables;
 
+    protected final double r1;
+    protected final double r2;
+    protected final double g1;
+    protected final double g2;
+    protected final double b1;
+    protected final double b2;
+    protected final double y ;
+    protected final double ksi;
+    protected final double a1;
+    protected final double a2;
+    protected final double cosKsi;
+    protected final double sinKsi;
+
     protected AbstractClosedBranchAcFlowEquationTerm(BranchCharacteristics bc, Bus bus1, Bus bus2, Equation equation,
                                                      EquationContext equationContext) {
         this.bc = Objects.requireNonNull(bc);
@@ -44,6 +57,18 @@ public abstract class AbstractClosedBranchAcFlowEquationTerm implements Equation
         ph1Var = equationContext.getVariable(bus1.getId(), VariableType.BUS_PHI);
         ph2Var = equationContext.getVariable(bus2.getId(), VariableType.BUS_PHI);
         variables = ImmutableList.of(v1Var, v2Var, ph1Var, ph2Var);
+        r1 = bc.r1();
+        r2 = bc.r2();
+        b1 = bc.b1();
+        b2 = bc.b2();
+        g1 = bc.g1();
+        g2 = bc.g2();
+        y = bc.y();
+        ksi = bc.ksi();
+        a1 = bc.a1();
+        a2 = bc.a2();
+        cosKsi = Math.cos(ksi);
+        sinKsi = Math.sin(ksi);
     }
 
     @Override

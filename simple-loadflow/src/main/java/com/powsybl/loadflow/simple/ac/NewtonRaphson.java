@@ -6,6 +6,7 @@
  */
 package com.powsybl.loadflow.simple.ac;
 
+import com.google.common.base.Stopwatch;
 import com.powsybl.loadflow.simple.ac.equations.AcEquationSystem;
 import com.powsybl.loadflow.simple.equations.EquationContext;
 import com.powsybl.loadflow.simple.equations.EquationSystem;
@@ -18,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -43,6 +45,8 @@ public class NewtonRaphson {
     public NewtonRaphsonResult run(NewtonRaphsonParameters parameters) {
         Objects.requireNonNull(parameters);
 
+        Stopwatch stopwatch = Stopwatch.createStarted();
+
         EquationContext context = new EquationContext();
 
         EquationSystem system = AcEquationSystem.create(networkContext, context);
@@ -56,12 +60,13 @@ public class NewtonRaphson {
         int iteration = 0;
 
         NewtonRaphsonStatus status = NewtonRaphsonStatus.CONVERGED;
-        while (iteration < parameters.getMaxIteration()) {
+        while (iteration <= parameters.getMaxIteration()) {
 
             // evaluate equations
             observer.beforeEquationEvaluation(iteration);
 
-            system.evalEquations(x, fx);
+            system.updateEquationTerms(x);
+            system.evalEquations(fx);
 
             observer.afterEquationEvaluation(fx, system, iteration);
 
@@ -75,7 +80,7 @@ public class NewtonRaphson {
             // build jacobian
             observer.beforeJacobianBuild(iteration);
 
-            Matrix j = system.buildJacobian(matrixFactory, x);
+            Matrix j = system.buildJacobian(matrixFactory);
 
             observer.afterJacobianBuild(j, system, iteration);
 
@@ -108,11 +113,14 @@ public class NewtonRaphson {
 
         networkContext.resetState();
 
-        if (iteration < parameters.getMaxIteration()) {
+        if (iteration <= parameters.getMaxIteration()) {
             system.updateState(x);
         } else {
             status = NewtonRaphsonStatus.MAX_ITERATION_REACHED;
         }
+
+        stopwatch.stop();
+        LOGGER.debug("Newton Raphson done in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
 
         return new NewtonRaphsonResult(status, iteration);
     }

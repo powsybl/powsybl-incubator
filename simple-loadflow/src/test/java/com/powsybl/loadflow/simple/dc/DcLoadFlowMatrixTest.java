@@ -65,7 +65,9 @@ public class DcLoadFlowMatrixTest {
                     .print(ps, equationSystem.getColumnNames(), null);
         }
 
-        Matrix j = equationSystem.buildJacobian(matrixFactory, x);
+        equationSystem.updateEquationTerms(x);
+
+        Matrix j = equationSystem.buildJacobian(matrixFactory);
         try (PrintStream ps = LoggerFactory.getInfoPrintStream(LOGGER)) {
             ps.println("J=");
             j.print(ps, equationSystem.getRowNames(), equationSystem.getColumnNames());
@@ -120,7 +122,7 @@ public class DcLoadFlowMatrixTest {
 
         equationSystem = DcEquationSystem.create(networkContext, context);
 
-        j = equationSystem.buildJacobian(matrixFactory, x);
+        j = equationSystem.buildJacobian(matrixFactory);
 
         dx = Arrays.copyOf(targets, targets.length);
         try (LUDecomposition lu = j.decomposeLU()) {

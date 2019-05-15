@@ -97,7 +97,8 @@ public class SimpleDcLoadFlow implements LoadFlow {
 
         double[] targets = equationSystem.getTargets();
 
-        Matrix j = equationSystem.buildJacobian(matrixFactory, x);
+        equationSystem.updateEquationTerms(x);
+        Matrix j = equationSystem.buildJacobian(matrixFactory);
 
         double[] dx = Arrays.copyOf(targets, targets.length);
 
@@ -113,6 +114,7 @@ public class SimpleDcLoadFlow implements LoadFlow {
         }
 
         networkContext.resetState();
+        equationSystem.updateEquationTerms(dx);
         equationSystem.updateState(dx);
 
         stopwatch.stop();

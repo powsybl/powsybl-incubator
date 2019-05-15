@@ -19,23 +19,29 @@ import java.util.Objects;
  */
 public class ClosedBranchSide2DcFlowEquationTerm extends AbstractClosedBranchDcFlowEquationTerm {
 
+    private double p2;
+
     public ClosedBranchSide2DcFlowEquationTerm(BranchCharacteristics bc, Bus bus1, Bus bus2, EquationContext equationContext) {
         super(bc, bus1, bus2, equationContext.getEquation(bus2.getId(), EquationType.BUS_P), equationContext);
     }
 
     @Override
-    public double eval(double[] x) {
+    public void update(double[] x) {
         Objects.requireNonNull(x);
         double ph1 = x[ph1Var.getColumn()];
         double ph2 = x[ph2Var.getColumn()];
         double deltaPhase =  ph2 - ph1 + bc.a2() - bc.a1();
-        return bc.dcPower() * deltaPhase;
+        p2 = bc.dcPower() * deltaPhase;
     }
 
     @Override
-    public double der(Variable variable, double[] x) {
+    public double eval() {
+        return p2;
+    }
+
+    @Override
+    public double der(Variable variable) {
         Objects.requireNonNull(variable);
-        Objects.requireNonNull(x);
         if (variable.equals(ph1Var)) {
             return -bc.dcPower();
         } else if (variable.equals(ph2Var)) {

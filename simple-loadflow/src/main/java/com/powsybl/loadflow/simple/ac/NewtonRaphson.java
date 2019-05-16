@@ -49,11 +49,14 @@ public class NewtonRaphson {
 
         EquationContext context = new EquationContext();
 
+        observer.beforeEquationSystemCreation();
+
         EquationSystem system = AcEquationSystem.create(networkContext, context);
+
+        observer.afterEquationSystemCreation();
 
         // initialize state vector (flat start)
         double[] x = system.initState(parameters.getVoltageInitMode());
-        observer.afterStateUpdate(x, system, 0);
 
         double[] fx = new double[system.getEquations().size()];
 
@@ -105,6 +108,8 @@ public class NewtonRaphson {
             }
 
             observer.endIteration(iteration);
+
+            observer.beforeStateUpdate(iteration);
 
             // update x
             Vectors.minus(x, fx);

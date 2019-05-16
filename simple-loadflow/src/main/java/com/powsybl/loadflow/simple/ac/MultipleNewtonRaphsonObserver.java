@@ -24,6 +24,16 @@ public class MultipleNewtonRaphsonObserver implements NewtonRaphsonObserver {
     }
 
     @Override
+    public void beforeEquationSystemCreation() {
+        observers.forEach(NewtonRaphsonObserver::beforeEquationSystemCreation);
+    }
+
+    @Override
+    public void afterEquationSystemCreation() {
+        observers.forEach(NewtonRaphsonObserver::afterEquationSystemCreation);
+    }
+
+    @Override
     public void beginIteration(int iteration) {
         observers.forEach(o -> o.beginIteration(iteration));
     }
@@ -71,6 +81,11 @@ public class MultipleNewtonRaphsonObserver implements NewtonRaphsonObserver {
     @Override
     public void afterLuSolve(int iteration) {
         observers.forEach(o -> o.afterLuSolve(iteration));
+    }
+
+    @Override
+    public void beforeStateUpdate(int iteration) {
+        observers.forEach(o -> o.beforeStateUpdate(iteration));
     }
 
     @Override

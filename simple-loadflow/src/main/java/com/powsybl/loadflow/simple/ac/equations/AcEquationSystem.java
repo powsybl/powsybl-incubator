@@ -6,33 +6,25 @@
  */
 package com.powsybl.loadflow.simple.ac.equations;
 
-import com.google.common.base.Stopwatch;
 import com.powsybl.iidm.network.Branch;
 import com.powsybl.iidm.network.Bus;
 import com.powsybl.iidm.network.ShuntCompensator;
 import com.powsybl.loadflow.simple.equations.*;
 import com.powsybl.loadflow.simple.network.BranchCharacteristics;
 import com.powsybl.loadflow.simple.network.NetworkContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
 public final class AcEquationSystem {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AcEquationSystem.class);
-
     private AcEquationSystem() {
     }
 
     public static EquationSystem create(NetworkContext networkContext, EquationContext equationContext) {
-        Stopwatch stopwatch = Stopwatch.createStarted();
-
         List<EquationTerm> equationTerms = new ArrayList<>();
         List<EquationTerm> systemEquationTerms = new ArrayList<>();
         List<VariableUpdate> variableUpdates = new ArrayList<>();
@@ -111,9 +103,6 @@ public final class AcEquationSystem {
                 variableUpdates.add(new ShuntCompensatorReactiveFlowUpdate(sc, q));
             }
         }
-
-        stopwatch.stop();
-        LOGGER.debug("AC equation system created in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
 
         return new EquationSystem(equationTerms, systemEquationTerms, variableUpdates, networkContext);
     }

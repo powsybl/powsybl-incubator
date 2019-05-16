@@ -22,8 +22,8 @@ public class NewtonRaphsonLogger extends DefaultNewtonRaphsonObserver {
     private static final Logger LOGGER = LoggerFactory.getLogger(NewtonRaphsonLogger.class);
 
     @Override
-    public void beginIteration(int iteration, double fxNorm) {
-        LOGGER.info("BEGIN ITERATION {}: {}", iteration, fxNorm);
+    public void beginIteration(int iteration) {
+        LOGGER.info("BEGIN ITERATION {}", iteration);
     }
 
     @Override

@@ -85,10 +85,6 @@ public class EquationSystem {
         return variables.keySet();
     }
 
-    public NetworkContext getNetworkContext() {
-        return networkContext;
-    }
-
     public double[] getTargets() {
         return targets;
     }

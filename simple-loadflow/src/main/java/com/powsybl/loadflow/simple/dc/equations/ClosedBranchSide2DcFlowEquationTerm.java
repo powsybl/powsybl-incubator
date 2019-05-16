@@ -31,7 +31,7 @@ public class ClosedBranchSide2DcFlowEquationTerm extends AbstractClosedBranchDcF
         double ph1 = x[ph1Var.getColumn()];
         double ph2 = x[ph2Var.getColumn()];
         double deltaPhase =  ph2 - ph1 + bc.a2() - bc.a1();
-        p2 = bc.dcPower() * deltaPhase;
+        p2 = power * deltaPhase;
     }
 
     @Override
@@ -43,9 +43,9 @@ public class ClosedBranchSide2DcFlowEquationTerm extends AbstractClosedBranchDcF
     public double der(Variable variable) {
         Objects.requireNonNull(variable);
         if (variable.equals(ph1Var)) {
-            return -bc.dcPower();
+            return -power;
         } else if (variable.equals(ph2Var)) {
-            return bc.dcPower();
+            return power;
         } else {
             throw new IllegalStateException("Unknown variable: " + variable);
         }
@@ -55,7 +55,7 @@ public class ClosedBranchSide2DcFlowEquationTerm extends AbstractClosedBranchDcF
     public double rhs(Variable variable) {
         Objects.requireNonNull(variable);
         if (variable.equals(ph2Var)) {
-            return bc.dcPower() * (bc.a2() - bc.a1());
+            return power * (bc.a2() - bc.a1());
         }
         return 0;
     }

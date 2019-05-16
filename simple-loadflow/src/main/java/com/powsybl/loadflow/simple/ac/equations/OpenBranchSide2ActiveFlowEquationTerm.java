@@ -35,11 +35,8 @@ public class OpenBranchSide2ActiveFlowEquationTerm extends AbstractOpenBranchAcE
     public void update(double[] x) {
         Objects.requireNonNull(x);
         double v1 = x[v1Var.getColumn()];
-        p1 = bc.r1() * bc.r1() * v1 * v1 * (bc.g1() + bc.y() * bc.y() * bc.g2() / bc.shunt()
-                + (bc.b2() * bc.b2() + bc.g2() * bc.g2()) * bc.y() * Math.sin(bc.ksi()) / bc.shunt());
-        dp1dv1 = 2 * bc.r1() * bc.r1() * v1 * (bc.g1() + bc.y() * bc.y() * bc.g2() / bc.shunt()
-                + (bc.b2() * bc.b2() + bc.g2() * bc.g2()) * bc.y() * Math.sin(bc.ksi()) / bc.shunt());
-
+        p1 = r1 * r1 * v1 * v1 * (g1 + y * y * g2 / shunt + (b2 * b2 + g2 * g2) * y * sinKsi / shunt);
+        dp1dv1 = 2 * r1 * r1 * v1 * (g1 + y * y * g2 / shunt + (b2 * b2 + g2 * g2) * y * sinKsi / shunt);
     }
 
     @Override

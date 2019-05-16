@@ -39,7 +39,7 @@ public abstract class AbstractClosedBranchAcFlowEquationTerm implements Equation
     protected final double g2;
     protected final double b1;
     protected final double b2;
-    protected final double y ;
+    protected final double y;
     protected final double ksi;
     protected final double a1;
     protected final double a2;

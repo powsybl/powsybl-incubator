@@ -28,6 +28,8 @@ public class ShuntCompensatorReactiveFlowEquationTerm implements EquationTerm {
 
     private final List<Variable> variables;
 
+    private final double b;
+
     private double q;
 
     private double dqdv;
@@ -41,6 +43,7 @@ public class ShuntCompensatorReactiveFlowEquationTerm implements EquationTerm {
         equation = equationContext.getEquation(bus.getId(), EquationType.BUS_Q);
         vVar = equationContext.getVariable(bus.getId(), VariableType.BUS_V);
         variables = Collections.singletonList(vVar);
+        b = sc.getCurrentB();
     }
 
     @Override
@@ -57,8 +60,8 @@ public class ShuntCompensatorReactiveFlowEquationTerm implements EquationTerm {
     public void update(double[] x) {
         Objects.requireNonNull(x);
         double v = x[vVar.getColumn()];
-        q = -sc.getCurrentB() * v * v;
-        dqdv = -2 * sc.getCurrentB() * v;
+        q = -b * v * v;
+        dqdv = -2 * b * v;
     }
 
     @Override

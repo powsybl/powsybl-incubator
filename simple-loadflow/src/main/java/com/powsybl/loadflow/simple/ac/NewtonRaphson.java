@@ -62,6 +62,8 @@ public class NewtonRaphson {
         NewtonRaphsonStatus status = NewtonRaphsonStatus.CONVERGED;
         while (iteration <= parameters.getMaxIteration()) {
 
+            observer.beginIteration(iteration);
+
             // evaluate equations
             observer.beforeEquationEvaluation(iteration);
 
@@ -72,8 +74,9 @@ public class NewtonRaphson {
 
             // calculate norm L2 of equations
             double norm = Vectors.norm2(fx);
-            observer.beginIteration(iteration, norm);
+            observer.norm(norm);
             if (norm < EPS_CONV) { // perfect match!
+                observer.endIteration(iteration);
                 break;
             }
 
@@ -113,7 +116,7 @@ public class NewtonRaphson {
 
         networkContext.resetState();
 
-        if (iteration <= parameters.getMaxIteration()) {
+        if (iteration < parameters.getMaxIteration()) {
             system.updateState(x);
         } else {
             status = NewtonRaphsonStatus.MAX_ITERATION_REACHED;

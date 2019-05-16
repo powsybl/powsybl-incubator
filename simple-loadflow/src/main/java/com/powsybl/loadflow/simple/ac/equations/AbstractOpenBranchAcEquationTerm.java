@@ -25,6 +25,18 @@ abstract class AbstractOpenBranchAcEquationTerm implements EquationTerm {
 
     private final List<Variable> variables;
 
+    protected final double r1;
+    protected final double r2;
+    protected final double b1;
+    protected final double b2;
+    protected final double g1;
+    protected final double g2;
+    protected final double y;
+    protected final double shunt;
+    protected final double ksi;
+    protected final double sinKsi;
+    protected final double cosKsi;
+
     protected AbstractOpenBranchAcEquationTerm(BranchCharacteristics bc, EquationType equationType, VariableType variableType,
                                                Bus bus, EquationContext equationContext) {
         this.bc = Objects.requireNonNull(bc);
@@ -34,6 +46,17 @@ abstract class AbstractOpenBranchAcEquationTerm implements EquationTerm {
         Objects.requireNonNull(equationContext);
         equation = equationContext.getEquation(bus.getId(), equationType);
         variables = Collections.singletonList(equationContext.getVariable(bus.getId(), variableType));
+        r1 = bc.r1();
+        r2 = bc.r2();
+        b1 = bc.b1();
+        b2 = bc.b2();
+        g1 = bc.g1();
+        g2 = bc.g2();
+        y = bc.y();
+        ksi = bc.ksi();
+        sinKsi = Math.sin(ksi);
+        cosKsi = Math.cos(ksi);
+        shunt = (g1 + y * sinKsi) * (g1 + y * sinKsi) + (-b1 + y * cosKsi) * (-b1 + y * cosKsi);
     }
 
     @Override

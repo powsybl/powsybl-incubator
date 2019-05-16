@@ -26,7 +26,7 @@ public class NewtonRaphsonProfiler extends DefaultNewtonRaphsonObserver {
     private final Stopwatch stopwatch = Stopwatch.createUnstarted();
 
     @Override
-    public void beginIteration(int iteration, double fxNorm) {
+    public void beginIteration(int iteration) {
         restart(iterationStopwatch);
     }
 

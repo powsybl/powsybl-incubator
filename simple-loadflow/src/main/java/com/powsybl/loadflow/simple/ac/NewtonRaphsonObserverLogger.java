@@ -23,8 +23,13 @@ public class NewtonRaphsonObserverLogger extends DefaultNewtonRaphsonObserver {
     private static final Logger LOGGER = LoggerFactory.getLogger(NewtonRaphsonObserverLogger.class);
 
     @Override
-    public void beginIteration(int iteration, double fxNorm) {
-        LOGGER.debug("Iteration {}: |f(x)|={}", iteration, fxNorm);
+    public void beginIteration(int iteration) {
+        LOGGER.debug("Iteration {}", iteration);
+    }
+
+    @Override
+    public void norm(double norm) {
+        LOGGER.debug("|f(x)|={}", norm);
     }
 
     public void logLargestMismatches(double[] fx, EquationSystem equationSystem, int count) {

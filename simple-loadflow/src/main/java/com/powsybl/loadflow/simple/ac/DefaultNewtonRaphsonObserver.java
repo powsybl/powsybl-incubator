@@ -15,7 +15,12 @@ import com.powsybl.math.matrix.Matrix;
 public class DefaultNewtonRaphsonObserver implements NewtonRaphsonObserver {
 
     @Override
-    public void beginIteration(int iteration, double fxNorm) {
+    public void beginIteration(int iteration) {
+        // empty
+    }
+
+    @Override
+    public void norm(double norm) {
         // empty
     }
 

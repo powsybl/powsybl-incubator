@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  */
 public class NetworkContext {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(NetworkContext.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(NetworkContext.class);
 
     private final Network network;
 

@@ -24,8 +24,13 @@ public class MultipleNewtonRaphsonObserver implements NewtonRaphsonObserver {
     }
 
     @Override
-    public void beginIteration(int iteration, double fxNorm) {
-        observers.forEach(o -> o.beginIteration(iteration, fxNorm));
+    public void beginIteration(int iteration) {
+        observers.forEach(o -> o.beginIteration(iteration));
+    }
+
+    @Override
+    public void norm(double norm) {
+        observers.forEach(o -> o.norm(norm));
     }
 
     @Override

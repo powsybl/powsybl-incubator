@@ -222,6 +222,8 @@ public class InterpretationAlternative {
             case NETWORK_SIDE:
                 configuration.append("Xfmr3_ratedU0_network_side.");
                 break;
+            default:
+                break;
         }
         if (xfmr3RatioPhaseStarBusSide == Xfmr3RatioPhaseInterpretationAlternative.STAR_BUS_SIDE) {
             configuration.append("Xfmr3_ratio_star_bus_side.");
@@ -254,7 +256,7 @@ public class InterpretationAlternative {
     }
 
     LineShuntInterpretationAlternative lineBshunt = LineShuntInterpretationAlternative.SPLIT;
-    boolean lineRatio0 = true;
+    boolean lineRatio0 = false;
     Xfmr2RatioPhaseIntepretationAlternative xfmr2Ratio0 = Xfmr2RatioPhaseIntepretationAlternative.END2;
     Xfmr2RatioPhaseIntepretationAlternative xfmr2RatioPhase = Xfmr2RatioPhaseIntepretationAlternative.END1_END2;
     boolean xfmr2Ptc2Negate = false;

@@ -6,11 +6,11 @@
  */
 package com.powsybl.substationdiagram.model;
 
-import com.powsybl.iidm.network.Branch;
-import com.powsybl.iidm.network.Injection;
-import com.powsybl.iidm.network.ShuntCompensator;
-import com.powsybl.iidm.network.ThreeWindingsTransformer;
-import com.powsybl.iidm.network.TwoWindingsTransformer;
+import com.powsybl.iidm.api.Branch;
+import com.powsybl.iidm.api.Injection;
+import com.powsybl.iidm.api.ShuntCompensator;
+import com.powsybl.iidm.api.ThreeWindingsTransformer;
+import com.powsybl.iidm.api.TwoWindingsTransformer;
 import com.powsybl.substationdiagram.library.ComponentType;
 
 import java.util.Objects;

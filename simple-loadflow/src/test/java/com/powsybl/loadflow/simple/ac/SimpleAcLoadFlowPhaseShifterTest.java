@@ -7,8 +7,8 @@
 
 package com.powsybl.loadflow.simple.ac;
 
-import com.powsybl.iidm.network.*;
-import com.powsybl.iidm.network.test.PhaseShifterTestCaseFactory;
+import com.powsybl.iidm.api.*;
+import com.powsybl.iidm.api.test.PhaseShifterTestCaseFactory;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
 import com.powsybl.math.matrix.DenseMatrixFactory;

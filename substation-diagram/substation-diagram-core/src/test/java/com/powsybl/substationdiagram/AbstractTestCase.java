@@ -7,7 +7,7 @@
 package com.powsybl.substationdiagram;
 
 import com.google.common.io.ByteStreams;
-import com.powsybl.iidm.network.VoltageLevel;
+import com.powsybl.iidm.api.VoltageLevel;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
 import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
 import com.powsybl.substationdiagram.model.Graph;

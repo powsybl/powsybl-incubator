@@ -7,9 +7,9 @@
 package com.powsybl.loadflow.simple.network;
 
 import com.powsybl.commons.PowsyblException;
-import com.powsybl.iidm.network.Branch;
-import com.powsybl.iidm.network.Line;
-import com.powsybl.iidm.network.TwoWindingsTransformer;
+import com.powsybl.iidm.api.Branch;
+import com.powsybl.iidm.api.Line;
+import com.powsybl.iidm.api.TwoWindingsTransformer;
 
 import java.util.Objects;
 

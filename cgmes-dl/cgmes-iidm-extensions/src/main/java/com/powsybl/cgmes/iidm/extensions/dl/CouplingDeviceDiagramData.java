@@ -12,9 +12,9 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.powsybl.commons.extensions.AbstractExtension;
-import com.powsybl.iidm.network.Identifiable;
-import com.powsybl.iidm.network.Switch;
-import com.powsybl.iidm.network.TwoWindingsTransformer;
+import com.powsybl.iidm.api.Identifiable;
+import com.powsybl.iidm.api.Switch;
+import com.powsybl.iidm.api.TwoWindingsTransformer;
 
 /**
  *

@@ -9,9 +9,9 @@ package com.powsybl.cgmes.iidm.extensions.dl;
 import java.util.Objects;
 
 import com.powsybl.commons.extensions.AbstractExtension;
-import com.powsybl.iidm.network.Bus;
-import com.powsybl.iidm.network.BusbarSection;
-import com.powsybl.iidm.network.Identifiable;
+import com.powsybl.iidm.api.Bus;
+import com.powsybl.iidm.api.BusbarSection;
+import com.powsybl.iidm.api.Identifiable;
 
 /**
  *

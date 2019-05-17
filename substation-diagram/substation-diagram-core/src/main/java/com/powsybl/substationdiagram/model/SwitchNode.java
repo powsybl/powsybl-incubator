@@ -7,10 +7,10 @@
 package com.powsybl.substationdiagram.model;
 
 import com.powsybl.commons.PowsyblException;
-import com.powsybl.iidm.network.Bus;
-import com.powsybl.iidm.network.Switch;
-import com.powsybl.iidm.network.SwitchKind;
-import com.powsybl.iidm.network.Terminal;
+import com.powsybl.iidm.api.Bus;
+import com.powsybl.iidm.api.Switch;
+import com.powsybl.iidm.api.SwitchKind;
+import com.powsybl.iidm.api.Terminal;
 import com.powsybl.substationdiagram.library.ComponentType;
 
 import java.util.Objects;

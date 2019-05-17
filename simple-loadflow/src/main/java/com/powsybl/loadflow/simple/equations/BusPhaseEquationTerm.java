@@ -6,7 +6,7 @@
  */
 package com.powsybl.loadflow.simple.equations;
 
-import com.powsybl.iidm.network.Bus;
+import com.powsybl.iidm.api.Bus;
 
 import java.util.Objects;
 

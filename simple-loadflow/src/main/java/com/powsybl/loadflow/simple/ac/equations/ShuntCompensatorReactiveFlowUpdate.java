@@ -6,7 +6,7 @@
  */
 package com.powsybl.loadflow.simple.ac.equations;
 
-import com.powsybl.iidm.network.ShuntCompensator;
+import com.powsybl.iidm.api.ShuntCompensator;
 import com.powsybl.loadflow.simple.equations.VariableUpdate;
 
 import java.util.Objects;

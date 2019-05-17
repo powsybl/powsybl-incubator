@@ -13,9 +13,9 @@ import org.slf4j.LoggerFactory;
 
 import com.powsybl.cgmes.iidm.extensions.dl.DiagramPoint;
 import com.powsybl.cgmes.iidm.extensions.dl.LineDiagramData;
-import com.powsybl.iidm.network.DanglingLine;
-import com.powsybl.iidm.network.Line;
-import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.api.DanglingLine;
+import com.powsybl.iidm.api.Line;
+import com.powsybl.iidm.api.Network;
 import com.powsybl.triplestore.api.PropertyBag;
 
 /**

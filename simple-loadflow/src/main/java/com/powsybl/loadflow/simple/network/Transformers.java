@@ -6,7 +6,7 @@
  */
 package com.powsybl.loadflow.simple.network;
 
-import com.powsybl.iidm.network.TwoWindingsTransformer;
+import com.powsybl.iidm.api.TwoWindingsTransformer;
 
 /**
  * @author Sylvain Leclerc <sylvain.leclerc at rte-france.com>

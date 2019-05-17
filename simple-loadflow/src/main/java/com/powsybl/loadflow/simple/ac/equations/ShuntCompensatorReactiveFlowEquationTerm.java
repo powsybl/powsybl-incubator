@@ -6,8 +6,8 @@
  */
 package com.powsybl.loadflow.simple.ac.equations;
 
-import com.powsybl.iidm.network.Bus;
-import com.powsybl.iidm.network.ShuntCompensator;
+import com.powsybl.iidm.api.Bus;
+import com.powsybl.iidm.api.ShuntCompensator;
 import com.powsybl.loadflow.simple.equations.*;
 import com.powsybl.loadflow.simple.network.NetworkContext;
 

@@ -13,7 +13,7 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.powsybl.cgmes.conversion.Profiling;
+import com.powsybl.cgmes.converter.Profiling;
 import com.powsybl.cgmes.dl.conversion.importers.BusDiagramDataImporter;
 import com.powsybl.cgmes.dl.conversion.importers.BusbarDiagramDataImporter;
 import com.powsybl.cgmes.dl.conversion.importers.GeneratorDiagramDataImporter;
@@ -24,7 +24,7 @@ import com.powsybl.cgmes.dl.conversion.importers.ShuntDiagramDataImporter;
 import com.powsybl.cgmes.dl.conversion.importers.SvcDiagramDataImporter;
 import com.powsybl.cgmes.dl.conversion.importers.SwitchDiagramDataImporter;
 import com.powsybl.cgmes.dl.conversion.importers.TransformerDiagramDataImporter;
-import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.api.Network;
 import com.powsybl.triplestore.api.PropertyBags;
 
 /**

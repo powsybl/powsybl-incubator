@@ -9,8 +9,8 @@ package com.powsybl.cgmes.iidm.extensions.dl;
 import org.junit.Test;
 
 import com.powsybl.cgmes.iidm.Networks;
-import com.powsybl.iidm.network.Network;
-import com.powsybl.iidm.network.TwoWindingsTransformer;
+import com.powsybl.iidm.api.Network;
+import com.powsybl.iidm.api.TwoWindingsTransformer;
 
 /**
  *

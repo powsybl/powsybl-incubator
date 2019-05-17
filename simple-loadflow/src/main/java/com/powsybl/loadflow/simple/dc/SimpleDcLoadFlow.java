@@ -7,7 +7,7 @@
 package com.powsybl.loadflow.simple.dc;
 
 import com.google.common.base.Stopwatch;
-import com.powsybl.iidm.network.*;
+import com.powsybl.iidm.api.*;
 import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;

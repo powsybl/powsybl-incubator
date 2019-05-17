@@ -6,7 +6,7 @@
  */
 package com.powsybl.loadflow.simple.ac;
 
-import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.api.Network;
 import com.powsybl.math.matrix.MatrixFactory;
 import org.junit.Test;
 import org.mockito.Mockito;

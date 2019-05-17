@@ -6,7 +6,7 @@
  */
 package com.powsybl.loadflow.simple.network;
 
-import com.powsybl.iidm.network.*;
+import com.powsybl.iidm.api.*;
 
 import java.util.*;
 import java.util.stream.Collectors;

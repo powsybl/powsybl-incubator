@@ -6,7 +6,7 @@
  */
 package com.powsybl.substationdiagram.util;
 
-import com.powsybl.iidm.network.VoltageLevel;
+import com.powsybl.iidm.api.VoltageLevel;
 import com.powsybl.substationdiagram.model.Edge;
 import com.powsybl.substationdiagram.model.Graph;
 import com.powsybl.substationdiagram.model.Node;

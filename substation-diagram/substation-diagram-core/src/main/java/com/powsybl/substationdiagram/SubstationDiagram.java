@@ -6,7 +6,7 @@
  */
 package com.powsybl.substationdiagram;
 
-import com.powsybl.iidm.network.Substation;
+import com.powsybl.iidm.api.Substation;
 import com.powsybl.substationdiagram.layout.*;
 import com.powsybl.substationdiagram.library.ComponentLibrary;
 import com.powsybl.substationdiagram.model.SubstationGraph;

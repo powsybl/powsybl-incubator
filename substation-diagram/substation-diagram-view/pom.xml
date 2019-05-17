@@ -50,7 +50,7 @@
         </dependency>
         <dependency>
             <groupId>com.powsybl</groupId>
-            <artifactId>powsybl-cgmes-conversion</artifactId>
+            <artifactId>powsybl-cgmes-converter</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>

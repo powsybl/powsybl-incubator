@@ -8,15 +8,15 @@ package com.powsybl.cgmes.iidm;
 
 import org.joda.time.DateTime;
 
-import com.powsybl.iidm.network.Country;
-import com.powsybl.iidm.network.HvdcLine;
-import com.powsybl.iidm.network.Network;
-import com.powsybl.iidm.network.NetworkFactory;
-import com.powsybl.iidm.network.StaticVarCompensator;
-import com.powsybl.iidm.network.Substation;
-import com.powsybl.iidm.network.TopologyKind;
-import com.powsybl.iidm.network.VoltageLevel;
-import com.powsybl.iidm.network.VscConverterStation;
+import com.powsybl.iidm.api.Country;
+import com.powsybl.iidm.api.HvdcLine;
+import com.powsybl.iidm.api.Network;
+import com.powsybl.iidm.api.NetworkFactory;
+import com.powsybl.iidm.api.StaticVarCompensator;
+import com.powsybl.iidm.api.Substation;
+import com.powsybl.iidm.api.TopologyKind;
+import com.powsybl.iidm.api.VoltageLevel;
+import com.powsybl.iidm.api.VscConverterStation;
 
 /**
  *

@@ -6,11 +6,11 @@
  */
 package com.powsybl.substationdiagram;
 
-import com.powsybl.iidm.network.*;
+import com.powsybl.iidm.api.*;
 import com.powsybl.substationdiagram.layout.ImplicitCellDetector;
 import com.powsybl.substationdiagram.model.Graph;
-import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
-import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
+import com.rte_france.powsybl.iidm.extensions.cvg.BusbarSectionPosition;
+import com.rte_france.powsybl.iidm.extensions.cvg.ConnectablePosition;
 import org.junit.Before;
 
 import static org.junit.Assert.assertEquals;

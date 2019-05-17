@@ -6,12 +6,12 @@
  */
 package com.powsybl.loadflow.simple.dc;
 
-import com.powsybl.iidm.network.Line;
-import com.powsybl.iidm.network.Network;
-import com.powsybl.iidm.network.TwoWindingsTransformer;
-import com.powsybl.iidm.network.VariantManagerConstants;
-import com.powsybl.iidm.network.test.EurostagTutorialExample1Factory;
-import com.powsybl.iidm.network.test.PhaseShifterTestCaseFactory;
+import com.powsybl.iidm.api.Line;
+import com.powsybl.iidm.api.Network;
+import com.powsybl.iidm.api.TwoWindingsTransformer;
+import com.powsybl.iidm.api.VariantManagerConstants;
+import com.powsybl.iidm.api.test.EurostagTutorialExample1Factory;
+import com.powsybl.iidm.api.test.PhaseShifterTestCaseFactory;
 import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.simple.network.FourBusNetworkFactory;

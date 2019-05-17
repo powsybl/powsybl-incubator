@@ -6,9 +6,9 @@
  */
 package com.powsybl.loadflow.simple.network;
 
-import com.powsybl.iidm.network.Bus;
-import com.powsybl.iidm.network.Network;
-import com.powsybl.iidm.network.NetworkFactory;
+import com.powsybl.iidm.api.Bus;
+import com.powsybl.iidm.api.Network;
+import com.powsybl.iidm.api.NetworkFactory;
 
 /**
  * <p>4 bus test network:</p>

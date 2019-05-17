@@ -6,8 +6,8 @@
  */
 package com.powsybl.loadflow.simple.util;
 
-import com.powsybl.iidm.network.Bus;
-import com.powsybl.iidm.network.Terminal;
+import com.powsybl.iidm.api.Bus;
+import com.powsybl.iidm.api.Terminal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

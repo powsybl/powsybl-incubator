@@ -10,17 +10,17 @@ import com.powsybl.cgmes.iidm.extensions.dl.CouplingDeviceDiagramData;
 import com.powsybl.cgmes.iidm.extensions.dl.InjectionDiagramData;
 import com.powsybl.cgmes.iidm.extensions.dl.LineDiagramData;
 import com.powsybl.cgmes.iidm.extensions.dl.NodeDiagramData;
-import com.powsybl.iidm.network.Connectable;
-import com.powsybl.iidm.network.TopologyKind;
-import com.powsybl.iidm.network.VoltageLevel;
+import com.powsybl.iidm.api.Connectable;
+import com.powsybl.iidm.api.TopologyKind;
+import com.powsybl.iidm.api.VoltageLevel;
 import com.powsybl.substationdiagram.cgmes.CgmesVoltageLevelLayoutFactory;
 import com.powsybl.substationdiagram.layout.PositionFree;
 import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayoutFactory;
 import com.powsybl.substationdiagram.layout.VoltageLevelLayout;
 import com.powsybl.substationdiagram.layout.VoltageLevelLayoutFactory;
 import com.powsybl.substationdiagram.model.Graph;
-import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
-import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
+import com.rte_france.powsybl.iidm.extensions.cvg.BusbarSectionPosition;
+import com.rte_france.powsybl.iidm.extensions.cvg.ConnectablePosition;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>

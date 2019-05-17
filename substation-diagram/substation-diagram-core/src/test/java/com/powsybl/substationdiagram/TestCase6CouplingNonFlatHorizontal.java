@@ -6,13 +6,13 @@
  */
 package com.powsybl.substationdiagram;
 
-import com.powsybl.iidm.network.*;
+import com.powsybl.iidm.api.*;
 import com.powsybl.substationdiagram.layout.BlockOrganizer;
 import com.powsybl.substationdiagram.layout.ImplicitCellDetector;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
 import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayout;
 import com.powsybl.substationdiagram.model.*;
-import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
+import com.rte_france.powsybl.iidm.extensions.cvg.BusbarSectionPosition;
 import org.junit.Before;
 import org.junit.Test;
 

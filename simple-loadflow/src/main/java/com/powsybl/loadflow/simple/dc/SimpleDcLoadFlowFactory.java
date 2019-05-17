@@ -7,7 +7,7 @@
 package com.powsybl.loadflow.simple.dc;
 
 import com.powsybl.computation.ComputationManager;
-import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.api.Network;
 import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowFactory;
 import com.powsybl.math.matrix.DenseMatrixFactory;

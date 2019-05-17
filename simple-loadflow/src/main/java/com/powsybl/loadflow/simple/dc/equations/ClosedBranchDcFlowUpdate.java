@@ -6,7 +6,7 @@
  */
 package com.powsybl.loadflow.simple.dc.equations;
 
-import com.powsybl.iidm.network.Branch;
+import com.powsybl.iidm.api.Branch;
 import com.powsybl.loadflow.simple.equations.VariableUpdate;
 
 import java.util.Objects;

@@ -6,8 +6,8 @@
  */
 package com.powsybl.substationdiagram.model;
 
-import com.powsybl.iidm.network.Bus;
-import com.powsybl.iidm.network.BusbarSection;
+import com.powsybl.iidm.api.Bus;
+import com.powsybl.iidm.api.BusbarSection;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
 import com.powsybl.substationdiagram.library.ComponentType;
 

@@ -12,9 +12,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.auto.service.AutoService;
-import com.powsybl.cgmes.conversion.CgmesImportPostProcessor;
-import com.powsybl.cgmes.conversion.Profiling;
-import com.powsybl.iidm.network.Network;
+import com.powsybl.cgmes.converter.CgmesImportPostProcessor;
+import com.powsybl.cgmes.converter.Profiling;
+import com.powsybl.iidm.api.Network;
 import com.powsybl.triplestore.api.QueryCatalog;
 import com.powsybl.triplestore.api.TripleStore;
 

@@ -9,8 +9,8 @@ package com.powsybl.cgmes.iidm.extensions.dl;
 import org.junit.Test;
 
 import com.powsybl.cgmes.iidm.Networks;
-import com.powsybl.iidm.network.BusbarSection;
-import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.api.BusbarSection;
+import com.powsybl.iidm.api.Network;
 
 /**
  *

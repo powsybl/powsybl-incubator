@@ -12,11 +12,11 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.powsybl.commons.extensions.AbstractExtension;
-import com.powsybl.iidm.network.Generator;
-import com.powsybl.iidm.network.Injection;
-import com.powsybl.iidm.network.Load;
-import com.powsybl.iidm.network.ShuntCompensator;
-import com.powsybl.iidm.network.StaticVarCompensator;
+import com.powsybl.iidm.api.Generator;
+import com.powsybl.iidm.api.Injection;
+import com.powsybl.iidm.api.Load;
+import com.powsybl.iidm.api.ShuntCompensator;
+import com.powsybl.iidm.api.StaticVarCompensator;
 
 /**
  *

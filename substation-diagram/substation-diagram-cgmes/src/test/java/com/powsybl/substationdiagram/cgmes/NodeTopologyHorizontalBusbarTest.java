@@ -10,7 +10,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 import com.powsybl.cgmes.iidm.extensions.dl.DiagramPoint;
-import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.api.Network;
 import com.powsybl.substationdiagram.model.BusNode;
 import com.powsybl.substationdiagram.model.Graph;
 

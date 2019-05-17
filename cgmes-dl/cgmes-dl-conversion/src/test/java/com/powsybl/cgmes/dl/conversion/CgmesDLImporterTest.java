@@ -20,19 +20,19 @@ import com.powsybl.cgmes.iidm.extensions.dl.InjectionDiagramData;
 import com.powsybl.cgmes.iidm.extensions.dl.LineDiagramData;
 import com.powsybl.cgmes.iidm.extensions.dl.NodeDiagramData;
 import com.powsybl.cgmes.iidm.extensions.dl.ThreeWindingsTransformerDiagramData;
-import com.powsybl.iidm.network.Bus;
-import com.powsybl.iidm.network.BusbarSection;
-import com.powsybl.iidm.network.DanglingLine;
-import com.powsybl.iidm.network.Generator;
-import com.powsybl.iidm.network.HvdcLine;
-import com.powsybl.iidm.network.Line;
-import com.powsybl.iidm.network.Load;
-import com.powsybl.iidm.network.Network;
-import com.powsybl.iidm.network.ShuntCompensator;
-import com.powsybl.iidm.network.StaticVarCompensator;
-import com.powsybl.iidm.network.Switch;
-import com.powsybl.iidm.network.ThreeWindingsTransformer;
-import com.powsybl.iidm.network.TwoWindingsTransformer;
+import com.powsybl.iidm.api.Bus;
+import com.powsybl.iidm.api.BusbarSection;
+import com.powsybl.iidm.api.DanglingLine;
+import com.powsybl.iidm.api.Generator;
+import com.powsybl.iidm.api.HvdcLine;
+import com.powsybl.iidm.api.Line;
+import com.powsybl.iidm.api.Load;
+import com.powsybl.iidm.api.Network;
+import com.powsybl.iidm.api.ShuntCompensator;
+import com.powsybl.iidm.api.StaticVarCompensator;
+import com.powsybl.iidm.api.Switch;
+import com.powsybl.iidm.api.ThreeWindingsTransformer;
+import com.powsybl.iidm.api.TwoWindingsTransformer;
 
 /**
  *

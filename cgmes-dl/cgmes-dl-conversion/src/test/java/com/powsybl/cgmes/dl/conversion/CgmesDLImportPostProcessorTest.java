@@ -11,11 +11,11 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-import com.powsybl.cgmes.conversion.Profiling;
+import com.powsybl.cgmes.converter.Profiling;
 import com.powsybl.cgmes.iidm.Networks;
 import com.powsybl.cgmes.iidm.extensions.dl.NodeDiagramData;
-import com.powsybl.iidm.network.BusbarSection;
-import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.api.BusbarSection;
+import com.powsybl.iidm.api.Network;
 
 /**
  *

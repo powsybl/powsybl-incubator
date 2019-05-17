@@ -6,8 +6,8 @@
  */
 package com.powsybl.substationdiagram;
 
-import com.powsybl.iidm.network.*;
-import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
+import com.powsybl.iidm.api.*;
+import com.rte_france.powsybl.iidm.extensions.cvg.BusbarSectionPosition;
 
 /**
  * <pre>

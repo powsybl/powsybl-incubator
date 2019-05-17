@@ -71,11 +71,6 @@
             </dependency>
             <dependency>
                 <groupId>com.powsybl</groupId>
-                <artifactId>powsybl-iidm-converter-api</artifactId>
-                <version>${powsyblcore.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.powsybl</groupId>
                 <artifactId>powsybl-cgmes-iidm-extensions</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -95,7 +90,7 @@
             </dependency>
             <dependency>
                 <groupId>com.powsybl</groupId>
-                <artifactId>powsybl-cgmes-conversion</artifactId>
+                <artifactId>powsybl-cgmes-converter</artifactId>
                 <version>${powsyblcore.version}</version>
                 <scope>runtime</scope>
             </dependency>

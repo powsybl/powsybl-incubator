@@ -7,7 +7,7 @@
 package com.powsybl.loadflow.simple.ac.equations;
 
 import com.google.common.collect.ImmutableList;
-import com.powsybl.iidm.network.Bus;
+import com.powsybl.iidm.api.Bus;
 import com.powsybl.loadflow.simple.equations.*;
 import com.powsybl.loadflow.simple.network.BranchCharacteristics;
 

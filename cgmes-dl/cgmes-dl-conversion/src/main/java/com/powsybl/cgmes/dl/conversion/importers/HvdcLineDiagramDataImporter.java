@@ -13,8 +13,8 @@ import org.slf4j.LoggerFactory;
 
 import com.powsybl.cgmes.iidm.extensions.dl.DiagramPoint;
 import com.powsybl.cgmes.iidm.extensions.dl.LineDiagramData;
-import com.powsybl.iidm.network.HvdcLine;
-import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.api.HvdcLine;
+import com.powsybl.iidm.api.Network;
 import com.powsybl.triplestore.api.PropertyBag;
 
 /**

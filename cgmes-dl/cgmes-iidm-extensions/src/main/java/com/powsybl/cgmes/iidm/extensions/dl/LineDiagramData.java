@@ -15,10 +15,10 @@ import java.util.stream.Collectors;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
 import com.powsybl.commons.extensions.AbstractExtension;
-import com.powsybl.iidm.network.DanglingLine;
-import com.powsybl.iidm.network.HvdcLine;
-import com.powsybl.iidm.network.Identifiable;
-import com.powsybl.iidm.network.Line;
+import com.powsybl.iidm.api.DanglingLine;
+import com.powsybl.iidm.api.HvdcLine;
+import com.powsybl.iidm.api.Identifiable;
+import com.powsybl.iidm.api.Line;
 
 /**
  *

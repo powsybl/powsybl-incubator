@@ -12,7 +12,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.powsybl.commons.extensions.AbstractExtension;
-import com.powsybl.iidm.network.ThreeWindingsTransformer;
+import com.powsybl.iidm.api.ThreeWindingsTransformer;
 
 /**
  *

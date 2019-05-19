@@ -27,6 +27,10 @@ public interface EquationTerm {
      */
     List<Variable> getVariables();
 
+    /**
+     * Update equation term using {@code x} variable values.
+     * @param x variables values vector
+     */
     void update(double[] x);
 
     /**

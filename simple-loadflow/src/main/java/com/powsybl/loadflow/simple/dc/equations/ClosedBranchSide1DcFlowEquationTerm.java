@@ -7,6 +7,7 @@
 package com.powsybl.loadflow.simple.dc.equations;
 
 import com.powsybl.iidm.network.Bus;
+import com.powsybl.loadflow.simple.equations.Equation;
 import com.powsybl.loadflow.simple.equations.EquationContext;
 import com.powsybl.loadflow.simple.equations.EquationType;
 import com.powsybl.loadflow.simple.equations.Variable;
@@ -17,12 +18,22 @@ import java.util.Objects;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class ClosedBranchSide1DcFlowEquationTerm extends AbstractClosedBranchDcFlowEquationTerm {
+public final class ClosedBranchSide1DcFlowEquationTerm extends AbstractClosedBranchDcFlowEquationTerm {
 
     private double p1;
 
-    public ClosedBranchSide1DcFlowEquationTerm(BranchCharacteristics bc, Bus bus1, Bus bus2, EquationContext equationContext) {
-        super(bc, bus1, bus2, equationContext.getEquation(bus1.getId(), EquationType.BUS_P), equationContext);
+    private ClosedBranchSide1DcFlowEquationTerm(BranchCharacteristics bc, Bus bus1, Bus bus2,
+                                                Equation equation, EquationContext equationContext) {
+        super(bc, bus1, bus2, equation, equationContext);
+    }
+
+    public static ClosedBranchSide1DcFlowEquationTerm create(BranchCharacteristics bc, Bus bus1, Bus bus2, EquationContext equationContext) {
+        Objects.requireNonNull(bc);
+        Objects.requireNonNull(bus1);
+        Objects.requireNonNull(bus2);
+        Objects.requireNonNull(equationContext);
+        Equation equation = equationContext.getEquation(bus1.getId(), EquationType.BUS_P);
+        return new ClosedBranchSide1DcFlowEquationTerm(bc, bus1, bus2, equation, equationContext);
     }
 
     @Override

@@ -27,8 +27,6 @@ public class EquationSystem {
 
     private final List<EquationTerm> equationTerms;
 
-    private final List<EquationTerm> systemEquationTerms;
-
     private final NetworkContext networkContext;
 
     private final Map<Equation, List<EquationTerm>> equations = new TreeMap<>();
@@ -37,20 +35,22 @@ public class EquationSystem {
 
     private final double[] targets;
 
-    public EquationSystem(List<EquationTerm> equationTerms, List<EquationTerm> systemEquationTerms,
-                          List<VariableUpdate> variableUpdates, NetworkContext networkContext) {
+    public EquationSystem(List<EquationTerm> equationTerms, List<VariableUpdate> variableUpdates, NetworkContext networkContext) {
         this.equationTerms = Objects.requireNonNull(equationTerms);
-        this.systemEquationTerms = Objects.requireNonNull(systemEquationTerms);
         this.variableUpdates = Objects.requireNonNull(variableUpdates);
         this.networkContext = Objects.requireNonNull(networkContext);
 
         // index derivatives per variable then per equation
-        for (EquationTerm equationTerm : systemEquationTerms) {
-            equations.computeIfAbsent(equationTerm.getEquation(), k -> new ArrayList<>())
+        for (EquationTerm equationTerm : equationTerms) {
+            Equation equation = equationTerm.getEquation();
+            if (!equation.isPartOfSystem()) {
+                continue;
+            }
+            equations.computeIfAbsent(equation, k -> new ArrayList<>())
                     .add(equationTerm);
             for (Variable variable : equationTerm.getVariables()) {
                 variables.computeIfAbsent(variable, k -> new TreeMap<>())
-                        .computeIfAbsent(equationTerm.getEquation(), k -> new ArrayList<>())
+                        .computeIfAbsent(equation, k -> new ArrayList<>())
                         .add(equationTerm);
             }
         }
@@ -69,10 +69,10 @@ public class EquationSystem {
         for (Map.Entry<Equation, List<EquationTerm>> e : equations.entrySet()) {
             Equation eq  = e.getKey();
             eq.initTarget(networkContext, targets);
-        }
-        for (EquationTerm equationTerm : systemEquationTerms) {
-            for (Variable variable : equationTerm.getVariables()) {
-                targets[equationTerm.getEquation().getRow()] -= equationTerm.rhs(variable);
+            for (EquationTerm equationTerm : e.getValue()) {
+                for (Variable variable : equationTerm.getVariables()) {
+                    targets[equationTerm.getEquation().getRow()] -= equationTerm.rhs(variable);
+                }
             }
         }
     }

@@ -8,7 +8,6 @@ package com.powsybl.loadflow.simple.ac;
 
 import com.google.common.base.Stopwatch;
 import com.powsybl.loadflow.simple.ac.equations.AcEquationSystem;
-import com.powsybl.loadflow.simple.equations.EquationContext;
 import com.powsybl.loadflow.simple.equations.EquationSystem;
 import com.powsybl.loadflow.simple.equations.Vectors;
 import com.powsybl.loadflow.simple.network.NetworkContext;
@@ -47,11 +46,9 @@ public class NewtonRaphson {
 
         Stopwatch stopwatch = Stopwatch.createStarted();
 
-        EquationContext context = new EquationContext();
-
         observer.beforeEquationSystemCreation();
 
-        EquationSystem system = AcEquationSystem.create(networkContext, context);
+        EquationSystem system = AcEquationSystem.create(networkContext);
 
         observer.afterEquationSystemCreation();
 

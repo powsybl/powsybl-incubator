@@ -13,7 +13,6 @@ import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
 import com.powsybl.loadflow.LoadFlowResultImpl;
 import com.powsybl.loadflow.simple.dc.equations.DcEquationSystem;
-import com.powsybl.loadflow.simple.equations.EquationContext;
 import com.powsybl.loadflow.simple.equations.EquationSystem;
 import com.powsybl.loadflow.simple.network.NetworkContext;
 import com.powsybl.math.matrix.DenseMatrixFactory;
@@ -89,9 +88,7 @@ public class SimpleDcLoadFlow implements LoadFlow {
 
         balance(networkContext);
 
-        EquationContext equationContext = new EquationContext();
-
-        EquationSystem equationSystem = DcEquationSystem.create(networkContext, equationContext);
+        EquationSystem equationSystem = DcEquationSystem.create(networkContext);
 
         double[] x = equationSystem.initState(loadFlowParameters.getVoltageInitMode());
 

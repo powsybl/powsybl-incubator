@@ -12,50 +12,23 @@ import com.powsybl.loadflow.simple.network.BranchCharacteristics;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-abstract class AbstractOpenBranchAcEquationTerm implements EquationTerm {
+abstract class AbstractOpenBranchAcEquationTerm extends AbstractBranchAcEquationTerm {
 
-    protected final BranchCharacteristics bc;
+    protected final Equation equation;
 
-    private final Equation equation;
+    protected final List<Variable> variables;
 
-    private final List<Variable> variables;
-
-    protected final double r1;
-    protected final double r2;
-    protected final double b1;
-    protected final double b2;
-    protected final double g1;
-    protected final double g2;
-    protected final double y;
-    protected final double shunt;
-    protected final double ksi;
-    protected final double sinKsi;
-    protected final double cosKsi;
+    protected double shunt;
 
     protected AbstractOpenBranchAcEquationTerm(BranchCharacteristics bc, EquationType equationType, VariableType variableType,
                                                Bus bus, EquationContext equationContext) {
-        this.bc = Objects.requireNonNull(bc);
-        Objects.requireNonNull(equationType);
-        Objects.requireNonNull(variableType);
-        Objects.requireNonNull(bus);
-        Objects.requireNonNull(equationContext);
+        super(bc);
         equation = equationContext.getEquation(bus.getId(), equationType);
         variables = Collections.singletonList(equationContext.getVariable(bus.getId(), variableType));
-        r1 = bc.r1();
-        r2 = bc.r2();
-        b1 = bc.b1();
-        b2 = bc.b2();
-        g1 = bc.g1();
-        g2 = bc.g2();
-        y = bc.y();
-        ksi = bc.ksi();
-        sinKsi = Math.sin(ksi);
-        cosKsi = Math.cos(ksi);
         shunt = (g1 + y * sinKsi) * (g1 + y * sinKsi) + (-b1 + y * cosKsi) * (-b1 + y * cosKsi);
     }
 
@@ -67,10 +40,5 @@ abstract class AbstractOpenBranchAcEquationTerm implements EquationTerm {
     @Override
     public List<Variable> getVariables() {
         return variables;
-    }
-
-    @Override
-    public double rhs(Variable variable) {
-        return 0;
     }
 }

@@ -18,6 +18,8 @@ public abstract class AbstractTargetEquationTerm implements EquationTerm {
 
     private final List<Variable> variables;
 
+    private double target;
+
     protected AbstractTargetEquationTerm(String id, EquationType equationType, VariableType variableType, EquationContext context) {
         this.equation = context.getEquation(id, equationType);
         variables = Collections.singletonList(context.getVariable(id, variableType));
@@ -34,12 +36,17 @@ public abstract class AbstractTargetEquationTerm implements EquationTerm {
     }
 
     @Override
-    public double eval(double[] x) {
-        return x[variables.get(0).getColumn()];
+    public void update(double[] x) {
+        target = x[variables.get(0).getColumn()];
     }
 
     @Override
-    public double der(Variable variable, double[] x) {
+    public double eval() {
+        return target;
+    }
+
+    @Override
+    public double der(Variable variable) {
         return 1;
     }
 

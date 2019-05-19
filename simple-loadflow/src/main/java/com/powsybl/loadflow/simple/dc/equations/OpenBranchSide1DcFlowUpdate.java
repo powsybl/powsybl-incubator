@@ -23,7 +23,7 @@ public class OpenBranchSide1DcFlowUpdate implements VariableUpdate {
     }
 
     @Override
-    public void update(double[] x) {
+    public void update() {
         branch.getTerminal1().setP(Double.NaN);
         branch.getTerminal1().setQ(Double.NaN);
         branch.getTerminal2().setP(0);

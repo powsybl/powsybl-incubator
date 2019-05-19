@@ -20,7 +20,13 @@ public interface NewtonRaphsonObserver {
         return new MultipleNewtonRaphsonObserver(Arrays.asList(observers));
     }
 
-    void beginIteration(int iteration, double fxNorm);
+    void beforeEquationSystemCreation();
+
+    void afterEquationSystemCreation();
+
+    void beginIteration(int iteration);
+
+    void norm(double norm);
 
     void beforeEquationEvaluation(int iteration);
 
@@ -37,6 +43,8 @@ public interface NewtonRaphsonObserver {
     void beforeLuSolve(int iteration);
 
     void afterLuSolve(int iteration);
+
+    void beforeStateUpdate(int iteration);
 
     void afterStateUpdate(double[] x, EquationSystem equationSystem, int iteration);
 

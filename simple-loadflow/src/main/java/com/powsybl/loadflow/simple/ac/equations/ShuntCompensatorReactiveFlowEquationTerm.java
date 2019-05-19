@@ -28,6 +28,12 @@ public class ShuntCompensatorReactiveFlowEquationTerm implements EquationTerm {
 
     private final List<Variable> variables;
 
+    private final double b;
+
+    private double q;
+
+    private double dqdv;
+
     public ShuntCompensatorReactiveFlowEquationTerm(ShuntCompensator sc, Bus bus, NetworkContext networkContext,
                                                     EquationContext equationContext) {
         this.sc = Objects.requireNonNull(sc);
@@ -37,6 +43,7 @@ public class ShuntCompensatorReactiveFlowEquationTerm implements EquationTerm {
         equation = equationContext.getEquation(bus.getId(), EquationType.BUS_Q);
         vVar = equationContext.getVariable(bus.getId(), VariableType.BUS_V);
         variables = Collections.singletonList(vVar);
+        b = sc.getCurrentB();
     }
 
     @Override
@@ -50,19 +57,23 @@ public class ShuntCompensatorReactiveFlowEquationTerm implements EquationTerm {
     }
 
     @Override
-    public double eval(double[] x) {
+    public void update(double[] x) {
         Objects.requireNonNull(x);
         double v = x[vVar.getColumn()];
-        return -sc.getCurrentB() * v * v;
+        q = -b * v * v;
+        dqdv = -2 * b * v;
     }
 
     @Override
-    public double der(Variable variable, double[] x) {
+    public double eval() {
+        return q;
+    }
+
+    @Override
+    public double der(Variable variable) {
         Objects.requireNonNull(variable);
-        Objects.requireNonNull(x);
         if (variable.equals(vVar)) {
-            double v = x[variable.getColumn()];
-            return -2 * sc.getCurrentB() * v;
+            return dqdv;
         } else {
             throw new IllegalStateException("Unknown variable: " + variable);
         }

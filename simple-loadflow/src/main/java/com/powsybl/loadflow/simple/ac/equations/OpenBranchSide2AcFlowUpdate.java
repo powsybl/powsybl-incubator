@@ -29,9 +29,9 @@ public class OpenBranchSide2AcFlowUpdate implements VariableUpdate {
     }
 
     @Override
-    public void update(double[] x) {
-        branch.getTerminal1().setP(p1.eval(x));
-        branch.getTerminal1().setQ(q1.eval(x));
+    public void update() {
+        branch.getTerminal1().setP(p1.eval());
+        branch.getTerminal1().setQ(q1.eval());
         branch.getTerminal2().setP(Double.NaN);
         branch.getTerminal2().setQ(Double.NaN);
     }

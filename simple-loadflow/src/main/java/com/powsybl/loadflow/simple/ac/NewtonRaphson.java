@@ -6,8 +6,8 @@
  */
 package com.powsybl.loadflow.simple.ac;
 
+import com.google.common.base.Stopwatch;
 import com.powsybl.loadflow.simple.ac.equations.AcEquationSystem;
-import com.powsybl.loadflow.simple.equations.EquationContext;
 import com.powsybl.loadflow.simple.equations.EquationSystem;
 import com.powsybl.loadflow.simple.equations.Vectors;
 import com.powsybl.loadflow.simple.network.NetworkContext;
@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -43,39 +44,46 @@ public class NewtonRaphson {
     public NewtonRaphsonResult run(NewtonRaphsonParameters parameters) {
         Objects.requireNonNull(parameters);
 
-        EquationContext context = new EquationContext();
+        Stopwatch stopwatch = Stopwatch.createStarted();
 
-        EquationSystem system = AcEquationSystem.create(networkContext, context);
+        observer.beforeEquationSystemCreation();
+
+        EquationSystem system = AcEquationSystem.create(networkContext);
+
+        observer.afterEquationSystemCreation();
 
         // initialize state vector (flat start)
         double[] x = system.initState(parameters.getVoltageInitMode());
-        observer.afterStateUpdate(x, system, 0);
 
         double[] fx = new double[system.getEquations().size()];
 
         int iteration = 0;
 
         NewtonRaphsonStatus status = NewtonRaphsonStatus.CONVERGED;
-        while (iteration < parameters.getMaxIteration()) {
+        while (iteration <= parameters.getMaxIteration()) {
+
+            observer.beginIteration(iteration);
 
             // evaluate equations
             observer.beforeEquationEvaluation(iteration);
 
-            system.evalEquations(x, fx);
+            system.updateEquationTerms(x);
+            system.evalEquations(fx);
 
             observer.afterEquationEvaluation(fx, system, iteration);
 
             // calculate norm L2 of equations
             double norm = Vectors.norm2(fx);
-            observer.beginIteration(iteration, norm);
+            observer.norm(norm);
             if (norm < EPS_CONV) { // perfect match!
+                observer.endIteration(iteration);
                 break;
             }
 
             // build jacobian
             observer.beforeJacobianBuild(iteration);
 
-            Matrix j = system.buildJacobian(matrixFactory, x);
+            Matrix j = system.buildJacobian(matrixFactory);
 
             observer.afterJacobianBuild(j, system, iteration);
 
@@ -98,6 +106,8 @@ public class NewtonRaphson {
 
             observer.endIteration(iteration);
 
+            observer.beforeStateUpdate(iteration);
+
             // update x
             Vectors.minus(x, fx);
 
@@ -113,6 +123,9 @@ public class NewtonRaphson {
         } else {
             status = NewtonRaphsonStatus.MAX_ITERATION_REACHED;
         }
+
+        stopwatch.stop();
+        LOGGER.debug("Newton Raphson done in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
 
         return new NewtonRaphsonResult(status, iteration);
     }

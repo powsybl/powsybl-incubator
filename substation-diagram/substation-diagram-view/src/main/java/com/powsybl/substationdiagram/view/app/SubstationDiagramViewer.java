@@ -479,9 +479,9 @@ public class SubstationDiagramViewer extends Application {
         parametersPane.add(new Label("VoltageLevel Layout:"), 0, rowIndex++);
         parametersPane.add(voltageLevelLayoutComboBox, 0, rowIndex++);
 
-        addSpinner("Horizontal substation padding:", 0, 200, 5, rowIndex, LayoutParameters::getHorizontalSubstationPadding, LayoutParameters::setHorizontalSubstationPadding);
+        addSpinner("Horizontal substation padding:", 50, 300, 5, rowIndex, LayoutParameters::getHorizontalSubstationPadding, LayoutParameters::setHorizontalSubstationPadding);
         rowIndex += 2;
-        addSpinner("Vertical substation padding:", 0, 200, 5, rowIndex, LayoutParameters::getVerticalSubstationPadding, LayoutParameters::setVerticalSubstationPadding);
+        addSpinner("Vertical substation padding:", 50, 300, 5, rowIndex, LayoutParameters::getVerticalSubstationPadding, LayoutParameters::setVerticalSubstationPadding);
         rowIndex += 2;
         addSpinner("Initial busbar X:", 0, 100, 5, rowIndex, LayoutParameters::getInitialXBus, LayoutParameters::setInitialXBus);
         rowIndex += 2;

@@ -162,4 +162,13 @@ public class SubstationGraph {
         return substation;
     }
 
+    public boolean graphAdjacents(Graph g1, Graph g2) {
+        int nbNodes = nodes.size();
+        for (int i = 0; i < nbNodes; i++) {
+            if (nodes.get(i) == g1 && i < (nbNodes - 1) && nodes.get(i + 1) == g2) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

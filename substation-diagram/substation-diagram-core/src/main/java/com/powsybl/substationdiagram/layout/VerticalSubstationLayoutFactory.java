@@ -16,6 +16,5 @@ public class VerticalSubstationLayoutFactory implements SubstationLayoutFactory 
     @Override
     public SubstationLayout create(SubstationGraph graph) {
         return new VerticalSubstationLayout(graph);
-
     }
 }

@@ -25,19 +25,30 @@ public class NewtonRaphsonProfiler extends DefaultNewtonRaphsonObserver {
 
     private final Stopwatch stopwatch = Stopwatch.createUnstarted();
 
+    private static void restart(Stopwatch stopwatch) {
+        stopwatch.reset();
+        stopwatch.start();
+    }
+
     @Override
-    public void beginIteration(int iteration, double fxNorm) {
+    public void beforeEquationSystemCreation() {
+        restart(stopwatch);
+    }
+
+    @Override
+    public void afterEquationSystemCreation() {
+        stopwatch.stop();
+        LOGGER.debug("AC equation system created in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
+    }
+
+    @Override
+    public void beginIteration(int iteration) {
         restart(iterationStopwatch);
     }
 
     @Override
     public void beforeEquationEvaluation(int iteration) {
         restart(stopwatch);
-    }
-
-    private static void restart(Stopwatch stopwatch) {
-        stopwatch.reset();
-        stopwatch.start();
     }
 
     @Override
@@ -76,7 +87,18 @@ public class NewtonRaphsonProfiler extends DefaultNewtonRaphsonObserver {
     @Override
     public void afterLuSolve(int iteration) {
         stopwatch.stop();
-        LOGGER.debug("LU solved at iteration {} in {} ms", iteration, stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        LOGGER.debug("LU solved at iteration {} in {} us", iteration, stopwatch.elapsed(TimeUnit.MICROSECONDS));
+    }
+
+    @Override
+    public void beforeStateUpdate(int iteration) {
+        restart(stopwatch);
+    }
+
+    @Override
+    public void afterStateUpdate(double[] x, EquationSystem equationSystem, int iteration) {
+        stopwatch.stop();
+        LOGGER.debug("Network state updated at iteration {} in {} us", iteration, stopwatch.elapsed(TimeUnit.MICROSECONDS));
     }
 
     @Override

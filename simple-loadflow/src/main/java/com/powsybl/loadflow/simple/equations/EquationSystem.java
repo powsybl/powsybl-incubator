@@ -25,6 +25,8 @@ public class EquationSystem {
 
     private final List<VariableUpdate> variableUpdates;
 
+    private final List<EquationTerm> equationTerms;
+
     private final NetworkContext networkContext;
 
     private final Map<Equation, List<EquationTerm>> equations = new TreeMap<>();
@@ -34,17 +36,21 @@ public class EquationSystem {
     private final double[] targets;
 
     public EquationSystem(List<EquationTerm> equationTerms, List<VariableUpdate> variableUpdates, NetworkContext networkContext) {
-        Objects.requireNonNull(equationTerms);
+        this.equationTerms = Objects.requireNonNull(equationTerms);
         this.variableUpdates = Objects.requireNonNull(variableUpdates);
         this.networkContext = Objects.requireNonNull(networkContext);
 
         // index derivatives per variable then per equation
         for (EquationTerm equationTerm : equationTerms) {
-            equations.computeIfAbsent(equationTerm.getEquation(), k -> new ArrayList<>())
+            Equation equation = equationTerm.getEquation();
+            if (!equation.isPartOfSystem()) {
+                continue;
+            }
+            equations.computeIfAbsent(equation, k -> new ArrayList<>())
                     .add(equationTerm);
             for (Variable variable : equationTerm.getVariables()) {
                 variables.computeIfAbsent(variable, k -> new TreeMap<>())
-                        .computeIfAbsent(equationTerm.getEquation(), k -> new ArrayList<>())
+                        .computeIfAbsent(equation, k -> new ArrayList<>())
                         .add(equationTerm);
             }
         }
@@ -63,10 +69,10 @@ public class EquationSystem {
         for (Map.Entry<Equation, List<EquationTerm>> e : equations.entrySet()) {
             Equation eq  = e.getKey();
             eq.initTarget(networkContext, targets);
-        }
-        for (EquationTerm equationTerm : equationTerms) {
-            for (Variable variable : equationTerm.getVariables()) {
-                targets[equationTerm.getEquation().getRow()] -= equationTerm.rhs(variable);
+            for (EquationTerm equationTerm : e.getValue()) {
+                for (Variable variable : equationTerm.getVariables()) {
+                    targets[equationTerm.getEquation().getRow()] -= equationTerm.rhs(variable);
+                }
             }
         }
     }
@@ -77,10 +83,6 @@ public class EquationSystem {
 
     public Set<Variable> getVariables() {
         return variables.keySet();
-    }
-
-    public NetworkContext getNetworkContext() {
-        return networkContext;
     }
 
     public double[] getTargets() {
@@ -107,6 +109,12 @@ public class EquationSystem {
         return x;
     }
 
+    public void updateEquationTerms(double[] x) {
+        for (EquationTerm equationTerm : equationTerms) {
+            equationTerm.update(x);
+        }
+    }
+
     public void updateState(double[] x) {
         // update state variable
         for (Variable v : getVariables()) {
@@ -114,11 +122,11 @@ public class EquationSystem {
         }
         // then other variables
         for (VariableUpdate variableUpdate : variableUpdates) {
-            variableUpdate.update(x);
+            variableUpdate.update();
         }
     }
 
-    public void evalEquations(double[] x, double[] fx) {
+    public void evalEquations(double[] fx) {
         if (fx.length != equations.size()) {
             throw new IllegalArgumentException("Bad afterEquationEvaluation vector length: " + fx.length);
         }
@@ -126,7 +134,7 @@ public class EquationSystem {
         for (Map.Entry<Equation, List<EquationTerm>> e : equations.entrySet()) {
             Equation equation = e.getKey();
             for (EquationTerm equationTerm : e.getValue()) {
-                fx[equation.getRow()] += equationTerm.eval(x);
+                fx[equation.getRow()] += equationTerm.eval();
                 for (Variable variable : equationTerm.getVariables()) {
                     fx[equation.getRow()] -= equationTerm.rhs(variable);
                 }
@@ -135,9 +143,8 @@ public class EquationSystem {
         Vectors.minus(fx, targets);
     }
 
-    public Matrix buildJacobian(MatrixFactory matrixFactory, double[] x) {
+    public Matrix buildJacobian(MatrixFactory matrixFactory) {
         Objects.requireNonNull(matrixFactory);
-        Objects.requireNonNull(x);
 
         int rowCount = equations.size();
         int columnCount = variables.size();
@@ -151,7 +158,7 @@ public class EquationSystem {
                 Equation eq = e2.getKey();
                 int row = eq.getRow();
                 for (EquationTerm equationTerm : e2.getValue()) {
-                    double v = equationTerm.der(var, x);
+                    double v = equationTerm.der(var);
                     if (v != 0) {
                         j.add(row, column, v);
                     }

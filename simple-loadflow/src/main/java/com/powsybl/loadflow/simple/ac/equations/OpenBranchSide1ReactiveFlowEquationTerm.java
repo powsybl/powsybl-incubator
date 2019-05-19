@@ -18,7 +18,7 @@ import java.util.Objects;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class OpenBranchSide1ReactiveFlowEquationTerm extends AbstractOpenBranchAcEquationTerm {
+public class OpenBranchSide1ReactiveFlowEquationTerm extends AbstractOpenBranchAcFlowEquationTerm {
 
     private final Variable v2Var;
 

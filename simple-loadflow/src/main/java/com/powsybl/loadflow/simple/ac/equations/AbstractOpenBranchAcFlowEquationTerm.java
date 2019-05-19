@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-abstract class AbstractOpenBranchAcEquationTerm extends AbstractBranchAcEquationTerm {
+abstract class AbstractOpenBranchAcFlowEquationTerm extends AbstractBranchAcFlowEquationTerm {
 
     protected final Equation equation;
 
@@ -24,8 +24,8 @@ abstract class AbstractOpenBranchAcEquationTerm extends AbstractBranchAcEquation
 
     protected double shunt;
 
-    protected AbstractOpenBranchAcEquationTerm(BranchCharacteristics bc, EquationType equationType, VariableType variableType,
-                                               Bus bus, EquationContext equationContext) {
+    protected AbstractOpenBranchAcFlowEquationTerm(BranchCharacteristics bc, EquationType equationType, VariableType variableType,
+                                                   Bus bus, EquationContext equationContext) {
         super(bc);
         equation = equationContext.getEquation(bus.getId(), equationType);
         variables = Collections.singletonList(equationContext.getVariable(bus.getId(), variableType));

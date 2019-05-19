@@ -6,8 +6,8 @@
  */
 package com.powsybl.loadflow.simple.ac.equations;
 
-import com.powsybl.iidm.network.Bus;
-import com.powsybl.loadflow.simple.equations.*;
+import com.powsybl.loadflow.simple.equations.EquationTerm;
+import com.powsybl.loadflow.simple.equations.Variable;
 import com.powsybl.loadflow.simple.network.BranchCharacteristics;
 
 import java.util.Objects;
@@ -15,7 +15,7 @@ import java.util.Objects;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-abstract class AbstractBranchAcEquationTerm implements EquationTerm {
+abstract class AbstractBranchAcFlowEquationTerm implements EquationTerm {
 
     protected final BranchCharacteristics bc;
 
@@ -30,7 +30,7 @@ abstract class AbstractBranchAcEquationTerm implements EquationTerm {
     protected final double sinKsi;
     protected final double cosKsi;
 
-    protected AbstractBranchAcEquationTerm(BranchCharacteristics bc) {
+    protected AbstractBranchAcFlowEquationTerm(BranchCharacteristics bc) {
         this.bc = Objects.requireNonNull(bc);
         r1 = bc.r1();
         r2 = bc.r2();

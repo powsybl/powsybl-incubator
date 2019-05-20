@@ -71,10 +71,7 @@ public class SimpleAcLoadFlow implements LoadFlow {
             parametersExt = new SimpleAcLoadFlowParameters();
         }
 
-        NetworkContext networkContext = NetworkContext.of(network).get(0);
-        if (parametersExt.getSlackBusSelection() == SimpleAcLoadFlowParameters.SlackBusSelection.MOST_MESHED) {
-            networkContext.setMostMeshedBusAsSlack();
-        }
+        NetworkContext networkContext = NetworkContext.of(network, parametersExt.getSlackBusSelectionMode()).get(0);
 
         NewtonRaphsonParameters nrParameters = new NewtonRaphsonParameters()
                 .setVoltageInitMode(parameters.getVoltageInitMode());

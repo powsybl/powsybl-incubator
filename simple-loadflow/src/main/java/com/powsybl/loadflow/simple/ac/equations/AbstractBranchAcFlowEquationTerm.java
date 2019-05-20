@@ -8,7 +8,7 @@ package com.powsybl.loadflow.simple.ac.equations;
 
 import com.powsybl.loadflow.simple.equations.EquationTerm;
 import com.powsybl.loadflow.simple.equations.Variable;
-import com.powsybl.loadflow.simple.network.BranchCharacteristics;
+import com.powsybl.loadflow.simple.network.LfBranch;
 
 import java.util.Objects;
 
@@ -17,7 +17,7 @@ import java.util.Objects;
  */
 abstract class AbstractBranchAcFlowEquationTerm implements EquationTerm {
 
-    protected final BranchCharacteristics bc;
+    protected final LfBranch branch;
 
     protected final double r1;
     protected final double r2;
@@ -30,16 +30,16 @@ abstract class AbstractBranchAcFlowEquationTerm implements EquationTerm {
     protected final double sinKsi;
     protected final double cosKsi;
 
-    protected AbstractBranchAcFlowEquationTerm(BranchCharacteristics bc) {
-        this.bc = Objects.requireNonNull(bc);
-        r1 = bc.r1();
-        r2 = bc.r2();
-        b1 = bc.b1();
-        b2 = bc.b2();
-        g1 = bc.g1();
-        g2 = bc.g2();
-        y = bc.y();
-        ksi = bc.ksi();
+    protected AbstractBranchAcFlowEquationTerm(LfBranch branch) {
+        this.branch = Objects.requireNonNull(branch);
+        r1 = this.branch.r1();
+        r2 = this.branch.r2();
+        b1 = this.branch.b1();
+        b2 = this.branch.b2();
+        g1 = this.branch.g1();
+        g2 = this.branch.g2();
+        y = this.branch.y();
+        ksi = this.branch.ksi();
         sinKsi = Math.sin(ksi);
         cosKsi = Math.cos(ksi);
     }

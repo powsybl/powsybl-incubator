@@ -19,13 +19,13 @@ public class EquationTest {
     @Test
     public void testEquals() {
         new EqualsTester()
-                .addEqualityGroup(new Equation("a", EquationType.BUS_P), new Equation("a", EquationType.BUS_P))
-                .addEqualityGroup(new Equation("b", EquationType.BUS_Q), new Equation("b", EquationType.BUS_Q))
+                .addEqualityGroup(new Equation(0, EquationType.BUS_P), new Equation(0, EquationType.BUS_P))
+                .addEqualityGroup(new Equation(1, EquationType.BUS_Q), new Equation(1, EquationType.BUS_Q))
                 .testEquals();
     }
 
     @Test
     public void testToString() {
-        assertEquals("Equation(id=a, type=BUS_P, row=-1)", new Equation("a", EquationType.BUS_P).toString());
+        assertEquals("Equation(num=0, type=BUS_P, row=-1)", new Equation(0, EquationType.BUS_P).toString());
     }
 }

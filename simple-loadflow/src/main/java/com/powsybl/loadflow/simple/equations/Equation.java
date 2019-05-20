@@ -18,7 +18,7 @@ public class Equation implements Comparable<Equation> {
     /**
      * Bus or any other equipment id.
      */
-    private final String id;
+    private final int num;
 
     private final EquationType type;
 
@@ -29,13 +29,13 @@ public class Equation implements Comparable<Equation> {
      */
     private boolean partOfSystem = true;
 
-    Equation(String id, EquationType type) {
-        this.id = Objects.requireNonNull(id);
+    Equation(int num, EquationType type) {
+        this.num = num;
         this.type = Objects.requireNonNull(type);
     }
 
-    public String getId() {
-        return id;
+    public int getNum() {
+        return num;
     }
 
     public EquationType getType() {
@@ -61,15 +61,15 @@ public class Equation implements Comparable<Equation> {
     void initTarget(NetworkContext network, double[] targets) {
         switch (type) {
             case BUS_P:
-                targets[row] = network.getBusP(id);
+                targets[row] = network.getBus(num).getTargetP();
                 break;
 
             case BUS_Q:
-                targets[row] = network.getBusQ(id);
+                targets[row] = network.getBus(num).getTargetQ();
                 break;
 
             case BUS_V:
-                targets[row] = network.getBus(id).getGenerators().iterator().next().getTargetV();
+                targets[row] = network.getBus(num).getTargetV();
                 break;
 
             case BUS_PHI:
@@ -83,7 +83,7 @@ public class Equation implements Comparable<Equation> {
 
     @Override
     public int hashCode() {
-        return id.hashCode() + type.hashCode() + row;
+        return num + type.hashCode() + row;
     }
 
     @Override
@@ -104,7 +104,7 @@ public class Equation implements Comparable<Equation> {
         }
         int c = row - o.row;
         if (c == 0) {
-            c = id.compareTo(o.id);
+            c = num - o.num;
             if (c == 0) {
                 c = type.ordinal() - o.type.ordinal();
             }
@@ -114,6 +114,6 @@ public class Equation implements Comparable<Equation> {
 
     @Override
     public String toString() {
-        return "Equation(id=" + id + ", type=" + type + ", row=" + row + ")";
+        return "Equation(num=" + num + ", type=" + type + ", row=" + row + ")";
     }
 }

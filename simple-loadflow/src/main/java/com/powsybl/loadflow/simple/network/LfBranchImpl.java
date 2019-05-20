@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018, RTE (http://www.rte-france.com)
+ * Copyright (c) 2019, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -14,28 +14,34 @@ import com.powsybl.iidm.network.TwoWindingsTransformer;
 import java.util.Objects;
 
 /**
- * @author Sylvain Leclerc <sylvain.leclerc at rte-france.com>
+ * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class BranchCharacteristics {
+public class LfBranchImpl implements LfBranch {
 
-    protected final Branch branch;
+    private final Branch branch;
 
-    protected double r;
-    protected double x;
-    protected double z;
-    protected double y;
-    protected double ksi;
-    protected double g1;
-    protected double g2;
-    protected double b1;
-    protected double b2;
-    protected double r1;
-    protected double r2;
-    protected double a1;
-    protected double a2;
+    private final LfBus bus1;
 
-    public BranchCharacteristics(Branch branch) {
+    private final LfBus bus2;
+
+    private double r;
+    private double x;
+    private double z;
+    private double y;
+    private double ksi;
+    private double g1;
+    private double g2;
+    private double b1;
+    private double b2;
+    private double r1;
+    private double r2;
+    private double a1;
+    private double a2;
+
+    public LfBranchImpl(Branch branch, LfBus bus1, LfBus bus2) {
         this.branch = Objects.requireNonNull(branch);
+        this.bus1 = bus1;
+        this.bus2 = bus2;
         init();
     }
 
@@ -79,58 +85,102 @@ public class BranchCharacteristics {
         a1 = Transformers.getAngle(tf);
     }
 
-    public Branch getBranch() {
-        return branch;
+    @Override
+    public String getId() {
+        return branch.getId();
     }
 
+    @Override
+    public LfBus getBus1() {
+        return bus1;
+    }
+
+    @Override
+    public LfBus getBus2() {
+        return bus2;
+    }
+
+    @Override
+    public void setP1(double p1) {
+        branch.getTerminal1().setP(p1);
+    }
+
+    @Override
+    public void setP2(double p2) {
+        branch.getTerminal2().setP(p2);
+    }
+
+    @Override
+    public void setQ1(double q1) {
+        branch.getTerminal1().setQ(q1);
+    }
+
+    @Override
+    public void setQ2(double q2) {
+        branch.getTerminal2().setQ(q2);
+    }
+
+    @Override
     public double r() {
         return r;
     }
 
+    @Override
     public double x() {
         return x;
     }
 
+    @Override
     public double z() {
         return z;
     }
 
+    @Override
     public double y() {
         return y;
     }
 
+    @Override
     public double ksi() {
         return ksi;
     }
 
+    @Override
     public double g1() {
         return g1;
     }
 
+    @Override
     public double g2() {
         return g2;
     }
 
+    @Override
     public double b1() {
         return b1;
     }
 
+    @Override
     public double b2() {
         return b2;
     }
 
+    @Override
     public double r1() {
         return r1;
     }
 
+    @Override
     public double r2() {
         return r2;
     }
 
+    @Override
     public double a1() {
         return a1;
     }
 
+    @Override
     public double a2() {
         return a2;
     }

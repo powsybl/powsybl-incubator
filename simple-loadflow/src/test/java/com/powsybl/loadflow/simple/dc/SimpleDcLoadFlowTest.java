@@ -18,11 +18,11 @@ import com.powsybl.loadflow.simple.network.FourBusNetworkFactory;
 import com.powsybl.math.matrix.DenseMatrixFactory;
 import com.powsybl.math.matrix.MatrixFactory;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.usefultoys.slf4j.LoggerFactory;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author Sylvain Leclerc <sylvain.leclerc at rte-france.com>
@@ -32,6 +32,47 @@ public class SimpleDcLoadFlowTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleDcLoadFlowTest.class);
 
     private final MatrixFactory matrixFactory = new DenseMatrixFactory();
+
+
+    @Test
+    public void metaInfoTest() {
+        Network network = Mockito.mock(Network.class);
+        LoadFlow loadFlow = new SimpleDcLoadFlowFactory().create(network, null, 0);
+        assertTrue(loadFlow instanceof SimpleDcLoadFlow);
+        assertEquals("Simple DC loadflow", loadFlow.getName());
+        assertEquals("1.0", loadFlow.getVersion());
+    }
+
+    @Test
+    public void constructionMethodsTest() {
+        Network network = Mockito.mock(Network.class);
+        MatrixFactory matrixFactory = Mockito.mock(MatrixFactory.class);
+
+        // Factory
+        LoadFlow loadFlow1 = new SimpleDcLoadFlowFactory().create(network, null, 0);
+        assertNotNull(loadFlow1);
+        assertTrue(loadFlow1 instanceof SimpleDcLoadFlow);
+
+        // Factory with MatrixFactory
+        LoadFlow loadFlow2 = new SimpleDcLoadFlowFactory(matrixFactory).create(network, null, 0);
+        assertNotNull(loadFlow2);
+        assertTrue(loadFlow2 instanceof SimpleDcLoadFlow);
+
+        // Constructor with Network
+        LoadFlow loadFlow3 = new SimpleDcLoadFlow(network);
+        assertNotNull(loadFlow3);
+        assertTrue(loadFlow3 instanceof SimpleDcLoadFlow);
+
+        // Constructor with Network and MatrixFactory
+        LoadFlow loadFlow4 = new SimpleDcLoadFlow(network, matrixFactory);
+        assertNotNull(loadFlow4);
+        assertTrue(loadFlow4 instanceof SimpleDcLoadFlow);
+
+        // Static factory method
+        LoadFlow loadFlow5 = SimpleDcLoadFlow.create(network);
+        assertNotNull(loadFlow5);
+        assertTrue(loadFlow5 instanceof SimpleDcLoadFlow);
+    }
 
     /**
      * Check behaviour of the load flow for simple manipulations on eurostag example 1 network.

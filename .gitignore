@@ -2,7 +2,7 @@
 /cgmes-dl/target
 /cgmes-dl/cgmes-dl-conversion/target/
 /cgmes-dl/cgmes-iidm-extensions/target/
-/loadflow/simple-loadflow/target/
+/simple-loadflow/target/
 /substation-diagram/substation-diagram-core/target/
 /substation-diagram/substation-diagram-cgmes/target/
 /substation-diagram/substation-diagram-util/target/

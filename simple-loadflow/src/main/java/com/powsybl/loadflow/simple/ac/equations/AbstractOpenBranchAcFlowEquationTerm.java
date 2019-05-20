@@ -4,32 +4,32 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.powsybl.loadflow.simple.ac;
+package com.powsybl.loadflow.simple.ac.equations;
 
 import com.powsybl.iidm.network.Bus;
 import com.powsybl.loadflow.simple.equations.*;
+import com.powsybl.loadflow.simple.network.BranchCharacteristics;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-abstract class AbstractOpenBranchAcEquationTerm implements EquationTerm {
+abstract class AbstractOpenBranchAcFlowEquationTerm extends AbstractBranchAcFlowEquationTerm {
 
-    private final Equation equation;
+    protected final Equation equation;
 
-    private final List<Variable> variables;
+    protected final List<Variable> variables;
 
-    protected AbstractOpenBranchAcEquationTerm(EquationType equationType, VariableType variableType,
-                                               Bus bus, EquationContext equationContext) {
-        Objects.requireNonNull(equationType);
-        Objects.requireNonNull(variableType);
-        Objects.requireNonNull(bus);
-        Objects.requireNonNull(equationContext);
+    protected double shunt;
+
+    protected AbstractOpenBranchAcFlowEquationTerm(BranchCharacteristics bc, EquationType equationType, VariableType variableType,
+                                                   Bus bus, EquationContext equationContext) {
+        super(bc);
         equation = equationContext.getEquation(bus.getId(), equationType);
         variables = Collections.singletonList(equationContext.getVariable(bus.getId(), variableType));
+        shunt = (g1 + y * sinKsi) * (g1 + y * sinKsi) + (-b1 + y * cosKsi) * (-b1 + y * cosKsi);
     }
 
     @Override
@@ -40,10 +40,5 @@ abstract class AbstractOpenBranchAcEquationTerm implements EquationTerm {
     @Override
     public List<Variable> getVariables() {
         return variables;
-    }
-
-    @Override
-    public double rhs(Variable variable) {
-        return 0;
     }
 }

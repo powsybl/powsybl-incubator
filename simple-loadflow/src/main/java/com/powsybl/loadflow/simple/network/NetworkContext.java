@@ -6,15 +6,21 @@
  */
 package com.powsybl.loadflow.simple.network;
 
+import com.google.common.base.Stopwatch;
 import com.powsybl.iidm.network.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
 public class NetworkContext {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(NetworkContext.class);
 
     private final Network network;
 
@@ -197,6 +203,8 @@ public class NetworkContext {
     }
 
     public void resetState() {
+        Stopwatch stopwatch = Stopwatch.createStarted();
+
         for (Bus b : network.getBusView().getBuses()) {
             b.setV(Double.NaN);
             b.setAngle(Double.NaN);
@@ -210,6 +218,9 @@ public class NetworkContext {
             b.getTerminal2().setP(Double.NaN);
             b.getTerminal2().setQ(Double.NaN);
         }
+
+        stopwatch.stop();
+        LOGGER.debug("Network reset done in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
     }
 }
 

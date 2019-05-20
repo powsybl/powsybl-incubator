@@ -9,6 +9,7 @@ package com.powsybl.loadflow.simple.dc;
 import com.powsybl.iidm.network.Bus;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.test.EurostagTutorialExample1Factory;
+import com.powsybl.loadflow.simple.dc.equations.DcEquationSystem;
 import com.powsybl.loadflow.simple.equations.EquationSystem;
 import com.powsybl.loadflow.simple.equations.EquationContext;
 import com.powsybl.loadflow.simple.equations.EquationType;
@@ -55,8 +56,7 @@ public class DcLoadFlowMatrixTest {
             context.getVariable(b.getId(), VariableType.BUS_PHI);
         }
 
-        EquationSystem equationSystem = new DcEquationSystemMaker()
-                .make(networkContext, context);
+        EquationSystem equationSystem = DcEquationSystem.create(networkContext, context);
 
         double[] x = equationSystem.initState();
         try (PrintStream ps = LoggerFactory.getInfoPrintStream(LOGGER)) {
@@ -65,31 +65,33 @@ public class DcLoadFlowMatrixTest {
                     .print(ps, equationSystem.getColumnNames(), null);
         }
 
-        Matrix j = equationSystem.buildJacobian(matrixFactory, x);
+        equationSystem.updateEquationTerms(x);
+
+        Matrix j = equationSystem.buildJacobian(matrixFactory);
         try (PrintStream ps = LoggerFactory.getInfoPrintStream(LOGGER)) {
             ps.println("J=");
             j.print(ps, equationSystem.getRowNames(), equationSystem.getColumnNames());
         }
 
-        assertEquals(1d, j.toDense().getValue(0, 0), 0d);
-        assertEquals(0d, j.toDense().getValue(0, 1), 0d);
-        assertEquals(0d, j.toDense().getValue(0, 2), 0d);
-        assertEquals(0d, j.toDense().getValue(0, 3), 0d);
+        assertEquals(1d, j.toDense().get(0, 0), 0d);
+        assertEquals(0d, j.toDense().get(0, 1), 0d);
+        assertEquals(0d, j.toDense().get(0, 2), 0d);
+        assertEquals(0d, j.toDense().get(0, 3), 0d);
 
-        assertEquals(0d, j.toDense().getValue(1, 0), 0d);
-        assertEquals(22439.668433814884d, j.toDense().getValue(1, 1), 0d);
-        assertEquals(-8751.515151515152d, j.toDense().getValue(1, 2), 0d);
-        assertEquals(0d, j.toDense().getValue(1, 3), 0d);
+        assertEquals(-13688.153282299732, j.toDense().get(1, 0), 0d);
+        assertEquals(22439.668433814884d, j.toDense().get(1, 1), 0d);
+        assertEquals(-8751.515151515152d, j.toDense().get(1, 2), 0d);
+        assertEquals(0d, j.toDense().get(1, 3), 0d);
 
-        assertEquals(0d, j.toDense().getValue(2, 0), 0d);
-        assertEquals(-8751.515151515152d, j.toDense().getValue(2, 1), 0d);
-        assertEquals(14314.85921296912d, j.toDense().getValue(2, 2), 0d);
-        assertEquals(-5563.344061453969d, j.toDense().getValue(2, 3), 0d);
+        assertEquals(0d, j.toDense().get(2, 0), 0d);
+        assertEquals(-8751.515151515152d, j.toDense().get(2, 1), 0d);
+        assertEquals(14314.85921296912d, j.toDense().get(2, 2), 0d);
+        assertEquals(-5563.344061453969d, j.toDense().get(2, 3), 0d);
 
-        assertEquals(0d, j.toDense().getValue(3, 0), 0d);
-        assertEquals(0d, j.toDense().getValue(3, 1), 0d);
-        assertEquals(-5563.344061453969d, j.toDense().getValue(3, 2), 0d);
-        assertEquals(5563.344061453969d, j.toDense().getValue(3, 3), 0d);
+        assertEquals(0d, j.toDense().get(3, 0), 0d);
+        assertEquals(0d, j.toDense().get(3, 1), 0d);
+        assertEquals(-5563.344061453969d, j.toDense().get(3, 2), 0d);
+        assertEquals(5563.344061453969d, j.toDense().get(3, 3), 0d);
 
         double[] targets = equationSystem.getTargets();
         try (PrintStream ps = LoggerFactory.getInfoPrintStream(LOGGER)) {
@@ -118,10 +120,9 @@ public class DcLoadFlowMatrixTest {
 
         networkContext = NetworkContext.of(network).get(0);
 
-        equationSystem = new DcEquationSystemMaker()
-                .make(networkContext, context);
+        equationSystem = DcEquationSystem.create(networkContext, context);
 
-        j = equationSystem.buildJacobian(matrixFactory, x);
+        j = equationSystem.buildJacobian(matrixFactory);
 
         dx = Arrays.copyOf(targets, targets.length);
         try (LUDecomposition lu = j.decomposeLU()) {

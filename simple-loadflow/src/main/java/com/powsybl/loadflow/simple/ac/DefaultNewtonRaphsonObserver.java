@@ -15,27 +15,77 @@ import com.powsybl.math.matrix.Matrix;
 public class DefaultNewtonRaphsonObserver implements NewtonRaphsonObserver {
 
     @Override
+    public void beforeEquationSystemCreation() {
+        // empty
+    }
+
+    @Override
+    public void afterEquationSystemCreation() {
+        // empty
+    }
+
+    @Override
     public void beginIteration(int iteration) {
         // empty
     }
 
     @Override
-    public void endIteration(int iteration, double fxNorm) {
+    public void norm(double norm) {
         // empty
     }
 
     @Override
-    public void j(Matrix j, EquationSystem equationSystem, int iteration) {
+    public void beforeEquationEvaluation(int iteration) {
         // empty
     }
 
     @Override
-    public void x(double[] x, EquationSystem equationSystem, int iteration) {
+    public void afterEquationEvaluation(double[] fx, EquationSystem equationSystem, int iteration) {
         // empty
     }
 
     @Override
-    public void fx(double[] fx, EquationSystem equationSystem, int iteration) {
+    public void beforeJacobianBuild(int iteration) {
+        // empty
+    }
+
+    @Override
+    public void afterJacobianBuild(Matrix j, EquationSystem equationSystem, int iteration) {
+        // empty
+    }
+
+    @Override
+    public void beforeLuDecomposition(int iteration) {
+        // empty
+    }
+
+    @Override
+    public void afterLuDecomposition(int iteration) {
+        // empty
+    }
+
+    @Override
+    public void beforeLuSolve(int iteration) {
+        // empty
+    }
+
+    @Override
+    public void afterLuSolve(int iteration) {
+        // empty
+    }
+
+    @Override
+    public void beforeStateUpdate(int iteration) {
+        // empty
+    }
+
+    @Override
+    public void afterStateUpdate(double[] x, EquationSystem equationSystem, int iteration) {
+        // empty
+    }
+
+    @Override
+    public void endIteration(int iteration) {
         // empty
     }
 }

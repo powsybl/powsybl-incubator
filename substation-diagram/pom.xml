@@ -49,7 +49,12 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.xmlgraphics</groupId>
-                <artifactId>batik-dom</artifactId>
+                <artifactId>batik-anim</artifactId>
+                <version>${batik.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.xmlgraphics</groupId>
+                <artifactId>batik-bridge</artifactId>
                 <version>${batik.version}</version>
             </dependency>
             <dependency>

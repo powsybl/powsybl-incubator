@@ -23,8 +23,13 @@ public class NewtonRaphsonObserverLogger extends DefaultNewtonRaphsonObserver {
     private static final Logger LOGGER = LoggerFactory.getLogger(NewtonRaphsonObserverLogger.class);
 
     @Override
-    public void endIteration(int iteration, double fxNorm) {
-        LOGGER.debug("Iteration {}: {}", iteration, fxNorm);
+    public void beginIteration(int iteration) {
+        LOGGER.debug("Iteration {}", iteration);
+    }
+
+    @Override
+    public void norm(double norm) {
+        LOGGER.debug("|f(x)|={}", norm);
     }
 
     public void logLargestMismatches(double[] fx, EquationSystem equationSystem, int count) {
@@ -36,11 +41,11 @@ public class NewtonRaphsonObserverLogger extends DefaultNewtonRaphsonObserver {
                 .filter(e -> Math.abs(e.getValue()) > Math.pow(10, -7))
                 .sorted(Comparator.comparingDouble((Map.Entry<Equation, Double> e) -> Math.abs(e.getValue())).reversed())
                 .limit(count)
-                .forEach(e -> LOGGER.debug("Mismatch for {}: {}", e.getKey(), e.getValue()));
+                .forEach(e -> LOGGER.trace("Mismatch for {}: {}", e.getKey(), e.getValue()));
     }
 
     @Override
-    public void fx(double[] fx, EquationSystem equationSystem, int iteration) {
-        logLargestMismatches(fx, equationSystem, 5);
+    public void afterEquationEvaluation(double[] fx, EquationSystem equationSystem, int iteration) {
+     //   logLargestMismatches(fx, equationSystem, 5);
     }
 }

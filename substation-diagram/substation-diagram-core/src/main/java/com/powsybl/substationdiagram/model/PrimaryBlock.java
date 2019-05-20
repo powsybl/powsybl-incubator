@@ -6,10 +6,11 @@
  */
 package com.powsybl.substationdiagram.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.powsybl.commons.PowsyblException;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -23,7 +24,6 @@ public class PrimaryBlock extends AbstractBlock {
 
     private final List<Node> nodes = new ArrayList<>();
 
-    @JsonIgnore
     private final List<PrimaryBlock> stackableBlocks;
 
     /**
@@ -209,6 +209,16 @@ public class PrimaryBlock extends AbstractBlock {
             return 0;
         }
         return sign * getCoord().getYSpan() / (nodes.size() - 1);
+    }
+
+    @Override
+    protected void writeJsonContent(JsonGenerator generator) throws IOException {
+        generator.writeFieldName("nodes");
+        generator.writeStartArray();
+        for (Node node : nodes) {
+            node.writeJson(generator);
+        }
+        generator.writeEndArray();
     }
 
     @Override

@@ -61,14 +61,24 @@ public class SimpleAcLoadFlow implements LoadFlow {
 
         Stopwatch stopwatch = Stopwatch.createStarted();
 
-        NetworkContext networkContext = NetworkContext.of(network).get(0);
+        SimpleAcLoadFlowParameters parametersExt = parameters.getExtension(SimpleAcLoadFlowParameters.class);
+        if (parametersExt == null) {
+            parametersExt = new SimpleAcLoadFlowParameters();
+        }
 
-        NewtonRaphsonParameters nrParameters = new NewtonRaphsonParameters().setVoltageInitMode(parameters.getVoltageInitMode());
-        NewtonRaphsonResult result = new NewtonRaphson(networkContext, matrixFactory, new NewtonRaphsonObserverLogger())
+        NetworkContext networkContext = NetworkContext.of(network).get(0);
+        if (parametersExt.getSlackBusSelection() == SimpleAcLoadFlowParameters.SlackBusSelection.MOST_MESHED) {
+            networkContext.setMostMeshedBusAsSlack();
+        }
+
+        NewtonRaphsonParameters nrParameters = new NewtonRaphsonParameters()
+                .setVoltageInitMode(parameters.getVoltageInitMode());
+        NewtonRaphsonObserver observer = NewtonRaphsonObserver.of(new NewtonRaphsonObserverLogger(), new NewtonRaphsonProfiler());
+        NewtonRaphsonResult result = new NewtonRaphson(networkContext, matrixFactory, observer)
                 .run(nrParameters);
 
         stopwatch.stop();
-        LOGGER.info("Ac loadflow ran in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        LOGGER.info("Ac loadflow ran in {} ms (status={})", stopwatch.elapsed(TimeUnit.MILLISECONDS), result.getStatus());
 
         Map<String, String> metrics = ImmutableMap.of("iterations", Integer.toString(result.getIterations()),
                 "status", result.getStatus().name());

@@ -33,7 +33,6 @@ public class SimpleDcLoadFlowTest {
 
     private final MatrixFactory matrixFactory = new DenseMatrixFactory();
 
-
     @Test
     public void metaInfoTest() {
         Network network = Mockito.mock(Network.class);

@@ -14,7 +14,7 @@ addons:
 
 install:
 # Build powsybl-core
-- git clone https://github.com/powsybl/powsybl-core powsybl/powsybl-core --branch v2.5.0
+- git clone https://github.com/powsybl/powsybl-core powsybl/powsybl-core 
 - pushd powsybl/powsybl-core && mvn --batch-mode -DskipTests install && popd
 
 script:

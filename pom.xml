@@ -103,7 +103,7 @@
             **/generated/**/*
         </sonar.exclusions>
 
-        <powsyblcore.version>2.5.0-SNAPSHOT</powsyblcore.version>
+        <powsyblcore.version>3.0.0-SNAPSHOT</powsyblcore.version>
         <powsybl-iidm-cvg-extensions.version>2.5.0</powsybl-iidm-cvg-extensions.version>
     </properties>
 

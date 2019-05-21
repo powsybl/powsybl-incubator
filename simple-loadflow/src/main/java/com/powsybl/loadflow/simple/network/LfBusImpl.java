@@ -17,19 +17,21 @@ import java.util.Objects;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class LfBusImpl implements LfBus {
+public class LfBusImpl extends AbstractLfBus {
 
     private final Bus bus;
 
     private final int num;
 
-    private boolean slack = false;
-
     private boolean voltageControl = false;
 
-    private double targetP = 0;
+    private double loadTargetP = 0;
 
-    private double targetQ = 0;
+    private double loadTargetQ = 0;
+
+    private double generationTargetP = 0;
+
+    private double generationTargetQ = 0;
 
     private double targetV = Double.NaN;
 
@@ -53,16 +55,6 @@ public class LfBusImpl implements LfBus {
     }
 
     @Override
-    public boolean isSlack() {
-        return slack;
-    }
-
-    @Override
-    public void setSlack(boolean slack) {
-        this.slack = slack;
-    }
-
-    @Override
     public boolean hasVoltageControl() {
         return voltageControl;
     }
@@ -71,22 +63,40 @@ public class LfBusImpl implements LfBus {
         this.voltageControl = voltageControl;
     }
 
-    void addTargetP(double targetP) {
-        this.targetP += targetP;
+    void addLoadTargetP(double loadTargetP) {
+        this.loadTargetP += loadTargetP;
+    }
+
+    void addGenerationTargetP(double generationTargetP) {
+        this.generationTargetP += generationTargetP;
+    }
+
+    void addLoadTargetQ(double loadTargetQ) {
+        this.loadTargetQ += loadTargetQ;
+    }
+
+    void addGenerationTargetQ(double generationTargetQ) {
+        this.generationTargetQ += generationTargetQ;
     }
 
     @Override
-    public double getTargetP() {
-        return targetP;
-    }
-
-    void addTargetQ(double targetQ) {
-        this.targetQ += targetQ;
+    public double getGenerationTargetP() {
+        return generationTargetP;
     }
 
     @Override
-    public double getTargetQ() {
-        return targetQ;
+    public double getGenerationTargetQ() {
+        return generationTargetQ;
+    }
+
+    @Override
+    public double getLoadTargetP() {
+        return loadTargetP;
+    }
+
+    @Override
+    public double getLoadTargetQ() {
+        return loadTargetQ;
     }
 
     @Override

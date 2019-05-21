@@ -16,7 +16,7 @@ import java.util.Objects;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class LfDanglingLineBus implements LfBus {
+public class LfDanglingLineBus extends AbstractLfBus {
 
     private final DanglingLine danglingLine;
 
@@ -25,8 +25,6 @@ public class LfDanglingLineBus implements LfBus {
     private double v = Double.NaN;
 
     private double angle = Double.NaN;
-
-    private boolean slack = false;
 
     public LfDanglingLineBus(DanglingLine danglingLine, int num) {
         this.danglingLine = Objects.requireNonNull(danglingLine);
@@ -44,28 +42,28 @@ public class LfDanglingLineBus implements LfBus {
     }
 
     @Override
-    public boolean isSlack() {
-        return slack;
-    }
-
-    @Override
-    public void setSlack(boolean slack) {
-        this.slack = slack;
-    }
-
-    @Override
     public boolean hasVoltageControl() {
         return false;
     }
 
     @Override
-    public double getTargetP() {
-        return -danglingLine.getP0();
+    public double getLoadTargetP() {
+        return danglingLine.getP0();
     }
 
     @Override
-    public double getTargetQ() {
-        return -danglingLine.getQ0();
+    public double getLoadTargetQ() {
+        return danglingLine.getQ0();
+    }
+
+    @Override
+    public double getGenerationTargetP() {
+        return 0;
+    }
+
+    @Override
+    public double getGenerationTargetQ() {
+        return 0;
     }
 
     @Override

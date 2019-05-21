@@ -29,6 +29,14 @@ public interface LfBus {
 
     double getTargetQ();
 
+    double getLoadTargetP();
+
+    double getLoadTargetQ();
+
+    double getGenerationTargetP();
+
+    double getGenerationTargetQ();
+
     double getTargetV();
 
     double getV();

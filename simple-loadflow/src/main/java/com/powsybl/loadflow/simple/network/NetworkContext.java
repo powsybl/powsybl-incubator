@@ -72,20 +72,20 @@ public class NetworkContext {
 
                 @Override
                 public void visitGenerator(Generator generator) {
-                    lfBus.addTargetP(generator.getTargetP());
+                    lfBus.addGenerationTargetP(generator.getTargetP());
                     if (generator.isVoltageRegulatorOn()) {
                         lfBus.setTargetV(generator.getTargetV());
                         lfBus.setVoltageControl(true);
                     } else {
-                        lfBus.addTargetQ(generator.getTargetQ());
+                        lfBus.addGenerationTargetQ(generator.getTargetQ());
                     }
                     generatorCount[0]++;
                 }
 
                 @Override
                 public void visitLoad(Load load) {
-                    lfBus.addTargetP(-load.getP0());
-                    lfBus.addTargetQ(-load.getQ0());
+                    lfBus.addLoadTargetP(load.getP0());
+                    lfBus.addLoadTargetQ(load.getQ0());
                 }
 
                 @Override
@@ -114,7 +114,7 @@ public class NetworkContext {
                     double p = line.getConverterStation1() == converterStation && line.getConvertersMode() == HvdcLine.ConvertersMode.SIDE_1_RECTIFIER_SIDE_2_INVERTER
                             ? line.getActivePowerSetpoint()
                             : -line.getActivePowerSetpoint();
-                    lfBus.addTargetP(-p);
+                    lfBus.addGenerationTargetP(-p);
                 }
             });
         }

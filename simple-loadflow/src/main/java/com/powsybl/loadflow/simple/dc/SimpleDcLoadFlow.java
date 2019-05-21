@@ -14,6 +14,7 @@ import com.powsybl.loadflow.LoadFlowResult;
 import com.powsybl.loadflow.LoadFlowResultImpl;
 import com.powsybl.loadflow.simple.dc.equations.DcEquationSystem;
 import com.powsybl.loadflow.simple.equations.EquationSystem;
+import com.powsybl.loadflow.simple.network.LfBus;
 import com.powsybl.loadflow.simple.network.NetworkContext;
 import com.powsybl.loadflow.simple.network.SlackBusSelectionMode;
 import com.powsybl.math.matrix.LUDecomposition;
@@ -65,21 +66,14 @@ public class SimpleDcLoadFlow implements LoadFlow {
     }
 
     private static void balance(NetworkContext networkContext) {
-//        double activeGeneration = 0;
-//        double activeLoad = 0;
-//        for (LfBus b : networkContext.getBuses()) {
-//            for (Generator g : b.getGenerators()) {
-//                activeGeneration += g.getTargetP();
-//            }
-//            for (Load l : b.getLoads()) {
-//                activeLoad += l.getP0();
-//            }
-//            for (DanglingLine dl : b.getDanglingLines()) {
-//                activeLoad += dl.getP0();
-//            }
-//        }
-//
-//        LOGGER.info("Active generation={} Mw, active load={} Mw", Math.round(activeGeneration), Math.round(activeLoad));
+        double activeGeneration = 0;
+        double activeLoad = 0;
+        for (LfBus b : networkContext.getBuses()) {
+            activeGeneration += b.getGenerationTargetP();
+            activeLoad += b.getLoadTargetP();
+        }
+
+        LOGGER.info("Active generation={} Mw, active load={} Mw", Math.round(activeGeneration), Math.round(activeLoad));
     }
 
     @Override

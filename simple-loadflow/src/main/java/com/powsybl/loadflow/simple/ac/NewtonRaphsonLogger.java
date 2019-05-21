@@ -46,6 +46,5 @@ public class NewtonRaphsonLogger extends DefaultNewtonRaphsonObserver {
 
     @Override
     public void afterEquationEvaluation(double[] fx, EquationSystem equationSystem, int iteration) {
-     //   logLargestMismatches(fx, equationSystem, 5);
     }
 }

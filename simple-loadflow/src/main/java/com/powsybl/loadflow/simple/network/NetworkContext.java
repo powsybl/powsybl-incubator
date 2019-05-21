@@ -38,15 +38,24 @@ public class NetworkContext {
         }
         Objects.requireNonNull(slackBusSelectionMode);
         Objects.requireNonNull(hvdcLines);
-        this.buses = new ArrayList<>(buses.size());
 
         Set<Branch> branchSet = new HashSet<>();
         List<DanglingLine> danglingLines = new ArrayList<>();
         Map<String, Integer> busIdToNum = new HashMap<>();
+
+        this.buses = createBuses(buses, hvdcLines, branchSet, danglingLines, busIdToNum);
+        branches = createBranches(branchSet, danglingLines, this.buses, busIdToNum);
+
+        selectSlackBus(slackBusSelectionMode);
+    }
+
+    private static List<LfBus> createBuses(List<Bus> buses, Map<HvdcConverterStation, HvdcLine> hvdcLines, Set<Branch> branchSet,
+                                    List<DanglingLine> danglingLines, Map<String, Integer> busIdToNum) {
+        List<LfBus> lfBuses = new ArrayList<>(buses.size());
         int[] generatorCount = new int[1];
 
         for (Bus bus : buses) {
-            LfBusImpl lfBus = addLfBus(bus, busIdToNum);
+            LfBusImpl lfBus = addLfBus(bus, lfBuses, busIdToNum);
 
             bus.visitConnectedEquipments(new DefaultTopologyVisitor() {
 
@@ -100,7 +109,7 @@ public class NetworkContext {
 
                 @Override
                 public void visitStaticVarCompensator(StaticVarCompensator staticVarCompensator) {
-                    //throw new UnsupportedOperationException("TODO: static var compensator");
+                    throw new UnsupportedOperationException("TODO: static var compensator");
                 }
 
                 @Override
@@ -123,30 +132,39 @@ public class NetworkContext {
             throw new PowsyblException("Connected component without any regulating generator");
         }
 
-        branches = branchSet.stream().map(branch -> {
+        return lfBuses;
+    }
+
+    private static List<LfBranch> createBranches(Set<Branch> branchSet, List<DanglingLine> danglingLines, List<LfBus> lfBuses,
+                                                 Map<String, Integer> busIdToNum) {
+        List<LfBranch> lfBranches = branchSet.stream().map(branch -> {
             Bus bus1 = branch.getTerminal1().getBusView().getBus();
             Bus bus2 = branch.getTerminal2().getBusView().getBus();
             LfBus lfBus1 = null;
             if (bus1 != null) {
                 int num1 = busIdToNum.get(bus1.getId());
-                lfBus1 = NetworkContext.this.buses.get(num1);
+                lfBus1 = lfBuses.get(num1);
             }
             LfBus lfBus2 = null;
             if (bus2 != null) {
                 int num2 = busIdToNum.get(bus2.getId());
-                lfBus2 = NetworkContext.this.buses.get(num2);
+                lfBus2 = lfBuses.get(num2);
             }
             return new LfBranchImpl(branch, lfBus1, lfBus2);
         }).collect(Collectors.toList());
 
         for (DanglingLine danglingLine : danglingLines) {
-            LfDanglingLineBus lfBus2 = addLfBus(danglingLine, busIdToNum);
+            LfDanglingLineBus lfBus2 = addLfBus(danglingLine, lfBuses, busIdToNum);
             Bus bus1 = danglingLine.getTerminal().getBusView().getBus();
             int num1 = busIdToNum.get(bus1.getId());
-            LfBus lfBus1 = NetworkContext.this.buses.get(num1);
-            branches.add(new LfDanglingLineBranch(danglingLine, lfBus1, lfBus2));
+            LfBus lfBus1 = lfBuses.get(num1);
+            lfBranches.add(new LfDanglingLineBranch(danglingLine, lfBus1, lfBus2));
         }
 
+        return lfBranches;
+    }
+
+    private void selectSlackBus(SlackBusSelectionMode slackBusSelectionMode) {
         switch (slackBusSelectionMode) {
             case FIRST:
                 this.buses.get(0).setSlack(true);
@@ -162,19 +180,19 @@ public class NetworkContext {
         }
     }
 
-    private LfBusImpl addLfBus(Bus bus, Map<String, Integer> busIdToNum) {
-        int busNum = buses.size();
+    private static LfBusImpl addLfBus(Bus bus, List<LfBus> lfBuses, Map<String, Integer> busIdToNum) {
+        int busNum = lfBuses.size();
         LfBusImpl lfBus = new LfBusImpl(bus, busNum);
         busIdToNum.put(bus.getId(), busNum);
-        buses.add(lfBus);
+        lfBuses.add(lfBus);
         return lfBus;
     }
 
-    private LfDanglingLineBus addLfBus(DanglingLine danglingLine, Map<String, Integer> busIdToNum) {
-        int busNum = buses.size();
+    private static LfDanglingLineBus addLfBus(DanglingLine danglingLine, List<LfBus> lfBuses, Map<String, Integer> busIdToNum) {
+        int busNum = lfBuses.size();
         LfDanglingLineBus lfBus = new LfDanglingLineBus(danglingLine, busNum);
         busIdToNum.put(lfBus.getId(), busNum);
-        buses.add(lfBus);
+        lfBuses.add(lfBus);
         return lfBus;
     }
 

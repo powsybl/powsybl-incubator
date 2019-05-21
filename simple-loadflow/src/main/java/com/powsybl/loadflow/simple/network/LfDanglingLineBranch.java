@@ -13,28 +13,13 @@ import java.util.Objects;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class LfDanglingLineBranch implements LfBranch {
+public class LfDanglingLineBranch extends AbstractLfBranch {
 
     private final DanglingLine danglingLine;
 
-    private final LfBus bus1;
-
-    private final LfBus bus2;
-
-    private final double r;
-    private final double x;
-    private final double z;
-    private final double y;
-    private final double ksi;
-    private final double g1;
-    private final double b1;
-    private final double g2;
-    private final double b2;
-
     public LfDanglingLineBranch(DanglingLine danglingLine, LfBus bus1, LfBus bus2) {
+        super(Objects.requireNonNull(bus1), Objects.requireNonNull(bus2));
         this.danglingLine = Objects.requireNonNull(danglingLine);
-        this.bus1 = Objects.requireNonNull(bus1);
-        this.bus2 = Objects.requireNonNull(bus2);
         r = danglingLine.getR();
         x = danglingLine.getX();
         z = Math.hypot(r, x);
@@ -49,16 +34,6 @@ public class LfDanglingLineBranch implements LfBranch {
     @Override
     public String getId() {
         return danglingLine.getId() + "_BRANCH";
-    }
-
-    @Override
-    public LfBus getBus1() {
-        return bus1;
-    }
-
-    @Override
-    public LfBus getBus2() {
-        return bus2;
     }
 
     @Override

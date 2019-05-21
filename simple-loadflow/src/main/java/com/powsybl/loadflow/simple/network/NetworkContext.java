@@ -7,6 +7,7 @@
 package com.powsybl.loadflow.simple.network;
 
 import com.google.common.base.Stopwatch;
+import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,13 +41,12 @@ public class NetworkContext {
         this.buses = new ArrayList<>(buses.size());
 
         Set<Branch> branchSet = new HashSet<>();
+        List<DanglingLine> danglingLines = new ArrayList<>();
         Map<String, Integer> busIdToNum = new HashMap<>();
+        int[] generatorCount = new int[1];
 
         for (Bus bus : buses) {
-            int busNum = this.buses.size();
-            LfBusImpl lfBus = new LfBusImpl(bus, busNum);
-            busIdToNum.put(bus.getId(), busNum);
-            this.buses.add(lfBus);
+            LfBusImpl lfBus = addLfBus(bus, busIdToNum);
 
             bus.visitConnectedEquipments(new DefaultTopologyVisitor() {
 
@@ -79,6 +79,7 @@ public class NetworkContext {
                     } else {
                         lfBus.addTargetQ(generator.getTargetQ());
                     }
+                    generatorCount[0]++;
                 }
 
                 @Override
@@ -94,7 +95,7 @@ public class NetworkContext {
 
                 @Override
                 public void visitDanglingLine(DanglingLine danglingLine) {
-                    throw new UnsupportedOperationException("TODO: dangling lines");
+                    danglingLines.add(danglingLine);
                 }
 
                 @Override
@@ -118,6 +119,10 @@ public class NetworkContext {
             });
         }
 
+        if (generatorCount[0] == 0) {
+            throw new PowsyblException("Connected component without any regulating generator");
+        }
+
         branches = branchSet.stream().map(branch -> {
             Bus bus1 = branch.getTerminal1().getBusView().getBus();
             Bus bus2 = branch.getTerminal2().getBusView().getBus();
@@ -134,19 +139,43 @@ public class NetworkContext {
             return new LfBranchImpl(branch, lfBus1, lfBus2);
         }).collect(Collectors.toList());
 
+        for (DanglingLine danglingLine : danglingLines) {
+            LfDanglingLineBus lfBus2 = addLfBus(danglingLine, busIdToNum);
+            Bus bus1 = danglingLine.getTerminal().getBusView().getBus();
+            int num1 = busIdToNum.get(bus1.getId());
+            LfBus lfBus1 = NetworkContext.this.buses.get(num1);
+            branches.add(new LfDanglingLineBranch(danglingLine, lfBus1, lfBus2));
+        }
+
         switch (slackBusSelectionMode) {
             case FIRST:
-                ((LfBusImpl) this.buses.get(0)).setSlack(true);
+                this.buses.get(0).setSlack(true);
                 break;
             case MOST_MESHED:
-                this.buses.stream().map(bus -> (LfBusImpl) bus)
-                        .max(Comparator.comparingInt(LfBusImpl::getNeighbors))
+                this.buses.stream()
+                        .max(Comparator.comparingInt(LfBus::getNeighbors))
                         .orElseThrow(AssertionError::new)
                         .setSlack(true);
                 break;
             default:
                 throw new IllegalStateException("Slack bus selection mode unknown:" + slackBusSelectionMode);
         }
+    }
+
+    private LfBusImpl addLfBus(Bus bus, Map<String, Integer> busIdToNum) {
+        int busNum = buses.size();
+        LfBusImpl lfBus = new LfBusImpl(bus, busNum);
+        busIdToNum.put(bus.getId(), busNum);
+        buses.add(lfBus);
+        return lfBus;
+    }
+
+    private LfDanglingLineBus addLfBus(DanglingLine danglingLine, Map<String, Integer> busIdToNum) {
+        int busNum = buses.size();
+        LfDanglingLineBus lfBus = new LfDanglingLineBus(danglingLine, busNum);
+        busIdToNum.put(lfBus.getId(), busNum);
+        buses.add(lfBus);
+        return lfBus;
     }
 
     public static List<NetworkContext> of(Network network, SlackBusSelectionMode slackBusSelectionMode) {

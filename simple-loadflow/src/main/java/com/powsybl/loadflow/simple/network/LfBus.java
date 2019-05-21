@@ -21,6 +21,8 @@ public interface LfBus {
 
     boolean isSlack();
 
+    void setSlack(boolean slack);
+
     boolean hasVoltageControl();
 
     double getTargetP();
@@ -40,4 +42,6 @@ public interface LfBus {
     double getNominalV();
 
     List<ShuntCompensator> getShuntCompensators();
+
+    int getNeighbors();
 }

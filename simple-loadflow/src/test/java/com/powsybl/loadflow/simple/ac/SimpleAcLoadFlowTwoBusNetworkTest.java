@@ -38,8 +38,8 @@ public class SimpleAcLoadFlowTwoBusNetworkTest {
     @Before
     public void setUp() {
         network = TwoBusNetworkFactory.create();
-        bus1 = network.getBusBreakerView().getBusStream().filter(b -> b.getId().equals("b1")).findFirst().orElseThrow(AssertionError::new);
-        bus2 = network.getBusBreakerView().getBusStream().filter(b -> b.getId().equals("b2")).findFirst().orElseThrow(AssertionError::new);
+        bus1 = network.getBusBreakerView().getBus("b1");
+        bus2 = network.getBusBreakerView().getBus("b2");
         line1 = network.getLine("l12");
 
         loadFlow = new SimpleAcLoadFlow(network, new DenseMatrixFactory());

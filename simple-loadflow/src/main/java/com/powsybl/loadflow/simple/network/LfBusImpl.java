@@ -57,6 +57,7 @@ public class LfBusImpl implements LfBus {
         return slack;
     }
 
+    @Override
     public void setSlack(boolean slack) {
         this.slack = slack;
     }
@@ -104,7 +105,8 @@ public class LfBusImpl implements LfBus {
         neighbors++;
     }
 
-    int getNeighbors() {
+    @Override
+    public int getNeighbors() {
         return neighbors;
     }
 

@@ -38,9 +38,9 @@ public class SimpleAcLoadFlowPhaseShifterTest {
     @Before
     public void setUp() {
         network = PhaseShifterTestCaseFactory.create();
-        bus1 = network.getBusBreakerView().getBusStream().filter(b -> b.getId().equals("B1")).findFirst().orElseThrow(AssertionError::new);
-        bus2 = network.getBusBreakerView().getBusStream().filter(b -> b.getId().equals("B2")).findFirst().orElseThrow(AssertionError::new);
-        bus3 = network.getBusBreakerView().getBusStream().filter(b -> b.getId().equals("B3")).findFirst().orElseThrow(AssertionError::new);
+        bus1 = network.getBusBreakerView().getBus("B1");
+        bus2 = network.getBusBreakerView().getBus("B2");
+        bus3 = network.getBusBreakerView().getBus("B3");
 
         line1 = network.getLine("L1");
         line2 = network.getLine("L2");

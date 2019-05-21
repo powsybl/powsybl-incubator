@@ -6,7 +6,7 @@
  */
 package com.powsybl.loadflow.simple.equations;
 
-import com.powsybl.iidm.network.Bus;
+import com.powsybl.loadflow.simple.network.LfBus;
 
 import java.util.Objects;
 
@@ -15,7 +15,7 @@ import java.util.Objects;
  */
 public class BusPhaseEquationTerm extends AbstractTargetEquationTerm {
 
-    public BusPhaseEquationTerm(Bus bus, EquationContext equationContext) {
-        super(Objects.requireNonNull(bus).getId(), EquationType.BUS_PHI, VariableType.BUS_PHI, equationContext);
+    public BusPhaseEquationTerm(LfBus bus, EquationContext equationContext) {
+        super(Objects.requireNonNull(bus).getNum(), EquationType.BUS_PHI, VariableType.BUS_PHI, equationContext);
     }
 }

@@ -6,8 +6,8 @@
  */
 package com.powsybl.loadflow.simple.dc.equations;
 
-import com.powsybl.iidm.network.Branch;
 import com.powsybl.loadflow.simple.equations.VariableUpdate;
+import com.powsybl.loadflow.simple.network.LfBranch;
 
 import java.util.Objects;
 
@@ -16,17 +16,17 @@ import java.util.Objects;
  */
 public class OpenBranchSide1DcFlowUpdate implements VariableUpdate {
 
-    private final Branch branch;
+    private final LfBranch branch;
 
-    public OpenBranchSide1DcFlowUpdate(Branch branch) {
+    public OpenBranchSide1DcFlowUpdate(LfBranch branch) {
         this.branch = Objects.requireNonNull(branch);
     }
 
     @Override
     public void update() {
-        branch.getTerminal1().setP(Double.NaN);
-        branch.getTerminal1().setQ(Double.NaN);
-        branch.getTerminal2().setP(0);
-        branch.getTerminal2().setQ(Double.NaN);
+        branch.setP1(Double.NaN);
+        branch.setQ1(Double.NaN);
+        branch.setP2(0);
+        branch.setQ2(Double.NaN);
     }
 }

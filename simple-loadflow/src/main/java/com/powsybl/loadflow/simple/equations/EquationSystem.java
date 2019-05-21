@@ -90,11 +90,11 @@ public class EquationSystem {
     }
 
     public List<String> getRowNames() {
-        return getEquations().stream().sorted().map(eq -> eq.getId() + "/" + eq.getType()).collect(Collectors.toList());
+        return getEquations().stream().sorted().map(eq -> networkContext.getBus(eq.getNum()).getId() + "/" + eq.getType()).collect(Collectors.toList());
     }
 
     public List<String> getColumnNames() {
-        return getVariables().stream().sorted().map(v -> v.getId() + "/" + v.getType()).collect(Collectors.toList());
+        return getVariables().stream().sorted().map(v -> networkContext.getBus(v.getNum()).getId() + "/" + v.getType()).collect(Collectors.toList());
     }
 
     public double[] initState() {

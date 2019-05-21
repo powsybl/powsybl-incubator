@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018, RTE (http://www.rte-france.com)
+ * Copyright (c) 2019, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -14,33 +14,24 @@ import com.powsybl.iidm.network.TwoWindingsTransformer;
 import java.util.Objects;
 
 /**
- * @author Sylvain Leclerc <sylvain.leclerc at rte-france.com>
+ * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class BranchCharacteristics {
+public class LfBranchImpl extends AbstractLfBranch {
 
-    protected final Branch branch;
+    private final Branch branch;
 
-    protected double r;
-    protected double x;
-    protected double z;
-    protected double y;
-    protected double ksi;
-    protected double g1;
-    protected double g2;
-    protected double b1;
-    protected double b2;
-    protected double r1;
-    protected double r2;
-    protected double a1;
-    protected double a2;
+    private double r1;
+    private double r2;
+    private double a1;
+    private double a2;
 
-    public BranchCharacteristics(Branch branch) {
+    public LfBranchImpl(Branch branch, LfBus bus1, LfBus bus2) {
+        super(bus1, bus2);
         this.branch = Objects.requireNonNull(branch);
         init();
     }
 
     private void init() {
-
         r2 = 1d;
         a2 = 0d;
 
@@ -79,58 +70,47 @@ public class BranchCharacteristics {
         a1 = Transformers.getAngle(tf);
     }
 
-    public Branch getBranch() {
-        return branch;
+    @Override
+    public String getId() {
+        return branch.getId();
     }
 
-    public double r() {
-        return r;
+    @Override
+    public void setP1(double p1) {
+        branch.getTerminal1().setP(p1);
     }
 
-    public double x() {
-        return x;
+    @Override
+    public void setP2(double p2) {
+        branch.getTerminal2().setP(p2);
     }
 
-    public double z() {
-        return z;
+    @Override
+    public void setQ1(double q1) {
+        branch.getTerminal1().setQ(q1);
     }
 
-    public double y() {
-        return y;
+    @Override
+    public void setQ2(double q2) {
+        branch.getTerminal2().setQ(q2);
     }
 
-    public double ksi() {
-        return ksi;
-    }
-
-    public double g1() {
-        return g1;
-    }
-
-    public double g2() {
-        return g2;
-    }
-
-    public double b1() {
-        return b1;
-    }
-
-    public double b2() {
-        return b2;
-    }
-
+    @Override
     public double r1() {
         return r1;
     }
 
+    @Override
     public double r2() {
         return r2;
     }
 
+    @Override
     public double a1() {
         return a1;
     }
 
+    @Override
     public double a2() {
         return a2;
     }

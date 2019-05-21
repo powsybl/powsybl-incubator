@@ -6,10 +6,9 @@
  */
 package com.powsybl.loadflow.simple.dc.equations;
 
-import com.powsybl.iidm.network.Branch;
-import com.powsybl.iidm.network.Bus;
 import com.powsybl.loadflow.simple.equations.*;
-import com.powsybl.loadflow.simple.network.BranchCharacteristics;
+import com.powsybl.loadflow.simple.network.LfBranch;
+import com.powsybl.loadflow.simple.network.LfBus;
 import com.powsybl.loadflow.simple.network.NetworkContext;
 
 import java.util.ArrayList;
@@ -31,20 +30,19 @@ public final class DcEquationSystem {
         List<EquationTerm> equationTerms = new ArrayList<>();
         List<VariableUpdate> variableUpdates = new ArrayList<>();
 
-        for (Bus bus : networkContext.getBuses()) {
-            if (networkContext.isSlackBus(bus.getId())) {
-                equationTerms.add(new BusPhaseEquationTerm(networkContext.getSlackBus(), equationContext));
-                equationContext.getEquation(bus.getId(), EquationType.BUS_P).setPartOfSystem(false);
+        for (LfBus bus : networkContext.getBuses()) {
+            if (bus.isSlack()) {
+                equationTerms.add(new BusPhaseEquationTerm(bus, equationContext));
+                equationContext.getEquation(bus.getNum(), EquationType.BUS_P).setPartOfSystem(false);
             }
         }
 
-        for (Branch branch : networkContext.getBranches()) {
-            Bus bus1 = branch.getTerminal1().getBusView().getBus();
-            Bus bus2 = branch.getTerminal2().getBusView().getBus();
+        for (LfBranch branch : networkContext.getBranches()) {
+            LfBus bus1 = branch.getBus1();
+            LfBus bus2 = branch.getBus2();
             if (bus1 != null && bus2 != null) {
-                BranchCharacteristics bc = new BranchCharacteristics(branch);
-                ClosedBranchSide1DcFlowEquationTerm p1 = ClosedBranchSide1DcFlowEquationTerm.create(bc, bus1, bus2, equationContext);
-                ClosedBranchSide2DcFlowEquationTerm p2 = ClosedBranchSide2DcFlowEquationTerm.create(bc, bus1, bus2, equationContext);
+                ClosedBranchSide1DcFlowEquationTerm p1 = ClosedBranchSide1DcFlowEquationTerm.create(branch, bus1, bus2, equationContext);
+                ClosedBranchSide2DcFlowEquationTerm p2 = ClosedBranchSide2DcFlowEquationTerm.create(branch, bus1, bus2, equationContext);
                 equationTerms.add(p1);
                 equationTerms.add(p2);
                 variableUpdates.add(new ClosedBranchDcFlowUpdate(branch, p1, p2));

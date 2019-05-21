@@ -7,6 +7,7 @@
 package com.powsybl.loadflow.simple.network;
 
 import com.google.common.base.Stopwatch;
+import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,38 +25,43 @@ public class NetworkContext {
 
     private final Network network;
 
-    private final List<Bus> buses;
+    private final List<LfBus> buses;
 
-    private final List<Branch> branches;
+    private final List<LfBranch> branches;
 
-    private final List<ShuntCompensator> shuntCompensators = new ArrayList<>();
-
-    private final Map<String, Bus> busesById;
-
-    private final String mostMeshedBusId;
-
-    private String slackBusId;
-
-    private final Set<String> pvBusIds = new HashSet<>();
-
-    private final Map<String, Double> busP = new HashMap<>();
-    private final Map<String, Double> busQ = new HashMap<>();
-
-    public NetworkContext(Network network, List<Bus> buses, Map<HvdcConverterStation, HvdcLine> hvdcLines) {
+    public NetworkContext(Network network, List<Bus> buses, SlackBusSelectionMode slackBusSelectionMode,
+                          Map<HvdcConverterStation, HvdcLine> hvdcLines) {
         this.network = Objects.requireNonNull(network);
-        this.buses = Objects.requireNonNull(buses);
+        Objects.requireNonNull(buses);
+        if (buses.isEmpty()) {
+            throw new IllegalArgumentException("Empty bus list");
+        }
+        Objects.requireNonNull(slackBusSelectionMode);
         Objects.requireNonNull(hvdcLines);
 
-        busesById = buses.stream().collect(Collectors.toMap(Identifiable::getId, b -> b));
-
         Set<Branch> branchSet = new HashSet<>();
-        Map<String, Integer> neighbors = new HashMap<>();
+        List<DanglingLine> danglingLines = new ArrayList<>();
+        Map<String, Integer> busIdToNum = new HashMap<>();
+
+        this.buses = createBuses(buses, hvdcLines, branchSet, danglingLines, busIdToNum);
+        branches = createBranches(branchSet, danglingLines, this.buses, busIdToNum);
+
+        selectSlackBus(slackBusSelectionMode);
+    }
+
+    private static List<LfBus> createBuses(List<Bus> buses, Map<HvdcConverterStation, HvdcLine> hvdcLines, Set<Branch> branchSet,
+                                    List<DanglingLine> danglingLines, Map<String, Integer> busIdToNum) {
+        List<LfBus> lfBuses = new ArrayList<>(buses.size());
+        int[] generatorCount = new int[1];
+
         for (Bus bus : buses) {
+            LfBusImpl lfBus = addLfBus(bus, lfBuses, busIdToNum);
+
             bus.visitConnectedEquipments(new DefaultTopologyVisitor() {
 
                 private void visitBranch(Branch branch) {
                     branchSet.add(branch);
-                    neighbors.merge(bus.getId(), 1, Integer::sum);
+                    lfBus.addNeighbor();
                 }
 
                 @Override
@@ -75,34 +81,35 @@ public class NetworkContext {
 
                 @Override
                 public void visitGenerator(Generator generator) {
-                    busP.compute(bus.getId(), (id, value) -> value == null ? generator.getTargetP() : value + generator.getTargetP());
-                    if (!generator.isVoltageRegulatorOn()) {
-                        busQ.compute(bus.getId(), (id, value) -> value == null ? generator.getTargetQ() : value + generator.getTargetQ());
-                    }
+                    lfBus.addGenerationTargetP(generator.getTargetP());
                     if (generator.isVoltageRegulatorOn()) {
-                        pvBusIds.add(bus.getId());
+                        lfBus.setTargetV(generator.getTargetV());
+                        lfBus.setVoltageControl(true);
+                    } else {
+                        lfBus.addGenerationTargetQ(generator.getTargetQ());
                     }
+                    generatorCount[0]++;
                 }
 
                 @Override
                 public void visitLoad(Load load) {
-                    busP.compute(bus.getId(), (id, value) -> value == null ? -load.getP0() : value - load.getP0());
-                    busQ.compute(bus.getId(), (id, value) -> value == null ? -load.getQ0() : value - load.getQ0());
+                    lfBus.addLoadTargetP(load.getP0());
+                    lfBus.addLoadTargetQ(load.getQ0());
                 }
 
                 @Override
                 public void visitShuntCompensator(ShuntCompensator sc) {
-                    shuntCompensators.add(sc);
+                    lfBus.addShuntCompensator(sc);
                 }
 
                 @Override
                 public void visitDanglingLine(DanglingLine danglingLine) {
-                    throw new UnsupportedOperationException("TODO: dangling lines");
+                    danglingLines.add(danglingLine);
                 }
 
                 @Override
                 public void visitStaticVarCompensator(StaticVarCompensator staticVarCompensator) {
-                    //throw new UnsupportedOperationException("TODO: static var compensator");
+                    throw new UnsupportedOperationException("TODO: static var compensator");
                 }
 
                 @Override
@@ -116,19 +123,80 @@ public class NetworkContext {
                     double p = line.getConverterStation1() == converterStation && line.getConvertersMode() == HvdcLine.ConvertersMode.SIDE_1_RECTIFIER_SIDE_2_INVERTER
                             ? line.getActivePowerSetpoint()
                             : -line.getActivePowerSetpoint();
-                    busP.compute(bus.getId(), (id, value) -> value == null ? -p : value - p);
+                    lfBus.addGenerationTargetP(-p);
                 }
             });
         }
-        branches = new ArrayList<>(branchSet);
 
-        mostMeshedBusId = neighbors.entrySet().stream().max(Comparator.comparingInt(Map.Entry::getValue))
-                .orElseThrow(AssertionError::new).getKey();
+        if (generatorCount[0] == 0) {
+            throw new PowsyblException("Connected component without any regulating generator");
+        }
 
-        slackBusId = buses.get(0).getId();
+        return lfBuses;
     }
 
-    public static List<NetworkContext> of(Network network) {
+    private static List<LfBranch> createBranches(Set<Branch> branchSet, List<DanglingLine> danglingLines, List<LfBus> lfBuses,
+                                                 Map<String, Integer> busIdToNum) {
+        List<LfBranch> lfBranches = branchSet.stream().map(branch -> {
+            Bus bus1 = branch.getTerminal1().getBusView().getBus();
+            Bus bus2 = branch.getTerminal2().getBusView().getBus();
+            LfBus lfBus1 = null;
+            if (bus1 != null) {
+                int num1 = busIdToNum.get(bus1.getId());
+                lfBus1 = lfBuses.get(num1);
+            }
+            LfBus lfBus2 = null;
+            if (bus2 != null) {
+                int num2 = busIdToNum.get(bus2.getId());
+                lfBus2 = lfBuses.get(num2);
+            }
+            return new LfBranchImpl(branch, lfBus1, lfBus2);
+        }).collect(Collectors.toList());
+
+        for (DanglingLine danglingLine : danglingLines) {
+            LfDanglingLineBus lfBus2 = addLfBus(danglingLine, lfBuses, busIdToNum);
+            Bus bus1 = danglingLine.getTerminal().getBusView().getBus();
+            int num1 = busIdToNum.get(bus1.getId());
+            LfBus lfBus1 = lfBuses.get(num1);
+            lfBranches.add(new LfDanglingLineBranch(danglingLine, lfBus1, lfBus2));
+        }
+
+        return lfBranches;
+    }
+
+    private void selectSlackBus(SlackBusSelectionMode slackBusSelectionMode) {
+        switch (slackBusSelectionMode) {
+            case FIRST:
+                this.buses.get(0).setSlack(true);
+                break;
+            case MOST_MESHED:
+                this.buses.stream()
+                        .max(Comparator.comparingInt(LfBus::getNeighbors))
+                        .orElseThrow(AssertionError::new)
+                        .setSlack(true);
+                break;
+            default:
+                throw new IllegalStateException("Slack bus selection mode unknown:" + slackBusSelectionMode);
+        }
+    }
+
+    private static LfBusImpl addLfBus(Bus bus, List<LfBus> lfBuses, Map<String, Integer> busIdToNum) {
+        int busNum = lfBuses.size();
+        LfBusImpl lfBus = new LfBusImpl(bus, busNum);
+        busIdToNum.put(bus.getId(), busNum);
+        lfBuses.add(lfBus);
+        return lfBus;
+    }
+
+    private static LfDanglingLineBus addLfBus(DanglingLine danglingLine, List<LfBus> lfBuses, Map<String, Integer> busIdToNum) {
+        int busNum = lfBuses.size();
+        LfDanglingLineBus lfBus = new LfDanglingLineBus(danglingLine, busNum);
+        busIdToNum.put(lfBus.getId(), busNum);
+        lfBuses.add(lfBus);
+        return lfBus;
+    }
+
+    public static List<NetworkContext> of(Network network, SlackBusSelectionMode slackBusSelectionMode) {
         Objects.requireNonNull(network);
         Map<Integer, List<Bus>> buseByCc = new TreeMap<>();
         for (Bus bus : network.getBusView().getBuses()) {
@@ -147,7 +215,7 @@ public class NetworkContext {
 
         return buseByCc.entrySet().stream()
                 .filter(e -> e.getKey() == ComponentConstants.MAIN_NUM)
-                .map(e -> new NetworkContext(network, e.getValue(), hvdcLines))
+                .map(e -> new NetworkContext(network, e.getValue(), slackBusSelectionMode, hvdcLines))
                 .collect(Collectors.toList());
     }
 
@@ -155,51 +223,16 @@ public class NetworkContext {
         return network;
     }
 
-    public List<Branch> getBranches() {
+    public List<LfBranch> getBranches() {
         return branches;
     }
 
-    public List<ShuntCompensator> getShuntCompensators() {
-        return shuntCompensators;
-    }
-
-    public List<Bus> getBuses() {
+    public List<LfBus> getBuses() {
         return buses;
     }
 
-    public Bus getBus(String id) {
-        Objects.requireNonNull(id);
-        Bus bus = busesById.get(id);
-        if (bus == null) {
-            throw new IllegalStateException("Bus '" + id + "' not found");
-        }
-        return bus;
-    }
-
-    public double getBusP(String id) {
-        return busP.getOrDefault(id, 0d);
-    }
-
-    public double getBusQ(String id) {
-        return busQ.getOrDefault(id, 0d);
-    }
-
-    public boolean isPvBus(String id) {
-        Objects.requireNonNull(id);
-        return pvBusIds.contains(id);
-    }
-
-    public boolean isSlackBus(String id) {
-        Objects.requireNonNull(id);
-        return id.equals(slackBusId);
-    }
-
-    public Bus getSlackBus() {
-        return busesById.get(slackBusId);
-    }
-
-    public void setMostMeshedBusAsSlack() {
-        slackBusId = mostMeshedBusId;
+    public LfBus getBus(int num) {
+        return buses.get(num);
     }
 
     public void resetState() {

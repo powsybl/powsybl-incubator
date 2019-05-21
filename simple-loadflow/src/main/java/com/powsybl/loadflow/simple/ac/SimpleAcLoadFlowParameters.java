@@ -8,6 +8,7 @@ package com.powsybl.loadflow.simple.ac;
 
 import com.powsybl.commons.extensions.AbstractExtension;
 import com.powsybl.loadflow.LoadFlowParameters;
+import com.powsybl.loadflow.simple.network.SlackBusSelectionMode;
 
 import java.util.Objects;
 
@@ -16,24 +17,19 @@ import java.util.Objects;
  */
 public class SimpleAcLoadFlowParameters extends AbstractExtension<LoadFlowParameters> {
 
-    enum SlackBusSelection {
-        FIRST,
-        MOST_MESHED
-    }
-
-    private SlackBusSelection slackBusSelection = SlackBusSelection.MOST_MESHED;
+    private SlackBusSelectionMode slackBusSelectionMode = SlackBusSelectionMode.MOST_MESHED;
 
     @Override
     public String getName() {
         return "SimpleLoadFlowParameters";
     }
 
-    public SlackBusSelection getSlackBusSelection() {
-        return slackBusSelection;
+    public SlackBusSelectionMode getSlackBusSelectionMode() {
+        return slackBusSelectionMode;
     }
 
-    public SimpleAcLoadFlowParameters setSlackBusSelection(SlackBusSelection slackBusSelection) {
-        this.slackBusSelection = Objects.requireNonNull(slackBusSelection);
+    public SimpleAcLoadFlowParameters setSlackBusSelectionMode(SlackBusSelectionMode slackBusSelectionMode) {
+        this.slackBusSelectionMode = Objects.requireNonNull(slackBusSelectionMode);
         return this;
     }
 }

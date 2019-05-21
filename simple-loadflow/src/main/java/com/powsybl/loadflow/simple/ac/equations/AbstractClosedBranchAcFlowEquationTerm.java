@@ -7,12 +7,12 @@
 package com.powsybl.loadflow.simple.ac.equations;
 
 import com.google.common.collect.ImmutableList;
-import com.powsybl.iidm.network.Bus;
 import com.powsybl.loadflow.simple.equations.Equation;
 import com.powsybl.loadflow.simple.equations.EquationContext;
 import com.powsybl.loadflow.simple.equations.Variable;
 import com.powsybl.loadflow.simple.equations.VariableType;
-import com.powsybl.loadflow.simple.network.BranchCharacteristics;
+import com.powsybl.loadflow.simple.network.LfBranch;
+import com.powsybl.loadflow.simple.network.LfBus;
 
 import java.util.List;
 import java.util.Objects;
@@ -38,19 +38,19 @@ public abstract class AbstractClosedBranchAcFlowEquationTerm extends AbstractBra
 
     protected final double a2;
 
-    protected AbstractClosedBranchAcFlowEquationTerm(BranchCharacteristics bc, Bus bus1, Bus bus2, Equation equation,
+    protected AbstractClosedBranchAcFlowEquationTerm(LfBranch branch, LfBus bus1, LfBus bus2, Equation equation,
                                                      EquationContext equationContext) {
-        super(bc);
+        super(branch);
         Objects.requireNonNull(bus1);
         Objects.requireNonNull(bus2);
         this.equation = Objects.requireNonNull(equation);
-        v1Var = equationContext.getVariable(bus1.getId(), VariableType.BUS_V);
-        v2Var = equationContext.getVariable(bus2.getId(), VariableType.BUS_V);
-        ph1Var = equationContext.getVariable(bus1.getId(), VariableType.BUS_PHI);
-        ph2Var = equationContext.getVariable(bus2.getId(), VariableType.BUS_PHI);
+        v1Var = equationContext.getVariable(bus1.getNum(), VariableType.BUS_V);
+        v2Var = equationContext.getVariable(bus2.getNum(), VariableType.BUS_V);
+        ph1Var = equationContext.getVariable(bus1.getNum(), VariableType.BUS_PHI);
+        ph2Var = equationContext.getVariable(bus2.getNum(), VariableType.BUS_PHI);
         variables = ImmutableList.of(v1Var, v2Var, ph1Var, ph2Var);
-        a1 = bc.a1();
-        a2 = bc.a2();
+        a1 = this.branch.a1();
+        a2 = this.branch.a2();
     }
 
     @Override

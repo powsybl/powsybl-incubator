@@ -7,14 +7,16 @@
 package com.powsybl.loadflow.simple.dc;
 
 import com.google.common.base.Stopwatch;
-import com.powsybl.iidm.network.*;
+import com.powsybl.iidm.network.Network;
 import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
 import com.powsybl.loadflow.LoadFlowResultImpl;
 import com.powsybl.loadflow.simple.dc.equations.DcEquationSystem;
 import com.powsybl.loadflow.simple.equations.EquationSystem;
+import com.powsybl.loadflow.simple.network.LfBus;
 import com.powsybl.loadflow.simple.network.NetworkContext;
+import com.powsybl.loadflow.simple.network.SlackBusSelectionMode;
 import com.powsybl.math.matrix.LUDecomposition;
 import com.powsybl.math.matrix.Matrix;
 import com.powsybl.math.matrix.MatrixFactory;
@@ -66,16 +68,9 @@ public class SimpleDcLoadFlow implements LoadFlow {
     private static void balance(NetworkContext networkContext) {
         double activeGeneration = 0;
         double activeLoad = 0;
-        for (Bus b : networkContext.getBuses()) {
-            for (Generator g : b.getGenerators()) {
-                activeGeneration += g.getTargetP();
-            }
-            for (Load l : b.getLoads()) {
-                activeLoad += l.getP0();
-            }
-            for (DanglingLine dl : b.getDanglingLines()) {
-                activeLoad += dl.getP0();
-            }
+        for (LfBus b : networkContext.getBuses()) {
+            activeGeneration += b.getGenerationTargetP();
+            activeLoad += b.getLoadTargetP();
         }
 
         LOGGER.info("Active generation={} Mw, active load={} Mw", Math.round(activeGeneration), Math.round(activeLoad));
@@ -88,7 +83,7 @@ public class SimpleDcLoadFlow implements LoadFlow {
 
         network.getVariantManager().setWorkingVariant(state);
 
-        NetworkContext networkContext = NetworkContext.of(network).get(0);
+        NetworkContext networkContext = NetworkContext.of(network, SlackBusSelectionMode.FIRST).get(0);
 
         balance(networkContext);
 

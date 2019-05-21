@@ -17,9 +17,9 @@ import java.io.PrintStream;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class NewtonRaphsonLogger extends DefaultNewtonRaphsonObserver {
+public class NewtonRaphsonDebugger extends DefaultNewtonRaphsonObserver {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(NewtonRaphsonLogger.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(NewtonRaphsonDebugger.class);
 
     @Override
     public void beginIteration(int iteration) {

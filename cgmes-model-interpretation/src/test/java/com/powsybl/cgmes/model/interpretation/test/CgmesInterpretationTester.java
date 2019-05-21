@@ -10,14 +10,14 @@ import com.powsybl.cgmes.interpretation.model.interpreted.InterpretationAlternat
 
 public class CgmesInterpretationTester {
 
-    public CgmesInterpretationTester (CgmesModelForInterpretation model) {
+    public CgmesInterpretationTester(CgmesModelForInterpretation model) {
         this.model = model;
     }
-    
+
     public InterpretationResults test() {
         List<InterpretationAlternative> alternatives = InterpretationAlternatives.configured();
         return new Interpretation(model).interpret(alternatives);
     }
-    
+
     private final CgmesModelForInterpretation model;
 }

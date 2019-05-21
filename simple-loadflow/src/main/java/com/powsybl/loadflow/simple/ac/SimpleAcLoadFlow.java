@@ -19,6 +19,8 @@ import com.powsybl.math.matrix.SparseMatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -35,6 +37,8 @@ public class SimpleAcLoadFlow implements LoadFlow {
 
     private final MatrixFactory matrixFactory;
 
+    private final List<NewtonRaphsonObserver> additionalObservers = new ArrayList<>();
+
     public SimpleAcLoadFlow(Network network) {
         this.network = Objects.requireNonNull(network);
         this.matrixFactory = new SparseMatrixFactory();
@@ -47,6 +51,10 @@ public class SimpleAcLoadFlow implements LoadFlow {
 
     public static SimpleAcLoadFlow create(Network network) {
         return new SimpleAcLoadFlow(network);
+    }
+
+    public List<NewtonRaphsonObserver> getAdditionalObservers() {
+        return additionalObservers;
     }
 
     @Override
@@ -75,7 +83,11 @@ public class SimpleAcLoadFlow implements LoadFlow {
 
         NewtonRaphsonParameters nrParameters = new NewtonRaphsonParameters()
                 .setVoltageInitMode(parameters.getVoltageInitMode());
-        NewtonRaphsonObserver observer = NewtonRaphsonObserver.of(new NewtonRaphsonObserverLogger(), new NewtonRaphsonProfiler());
+        List<NewtonRaphsonObserver> observers = new ArrayList<>(additionalObservers.size() + 2);
+        observers.add(new NewtonRaphsonLogger());
+        observers.add(new NewtonRaphsonProfiler());
+        observers.addAll(additionalObservers);
+        NewtonRaphsonObserver observer = NewtonRaphsonObserver.of(observers);
         NewtonRaphsonResult result = new NewtonRaphson(networkContext, matrixFactory, observer)
                 .run(nrParameters);
 

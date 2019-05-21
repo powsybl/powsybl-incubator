@@ -23,7 +23,9 @@ public class LfBusImpl implements LfBus {
 
     private final int num;
 
-    private LfBusType type = LfBusType.PQ;
+    private boolean slack = false;
+
+    private boolean voltageControl = false;
 
     private double targetP = 0;
 
@@ -51,12 +53,21 @@ public class LfBusImpl implements LfBus {
     }
 
     @Override
-    public LfBusType getType() {
-        return type;
+    public boolean isSlack() {
+        return slack;
     }
 
-    public void setType(LfBusType type) {
-        this.type = Objects.requireNonNull(type);
+    public void setSlack(boolean slack) {
+        this.slack = slack;
+    }
+
+    @Override
+    public boolean hasVoltageControl() {
+        return voltageControl;
+    }
+
+    public void setVoltageControl(boolean voltageControl) {
+        this.voltageControl = voltageControl;
     }
 
     void addTargetP(double targetP) {

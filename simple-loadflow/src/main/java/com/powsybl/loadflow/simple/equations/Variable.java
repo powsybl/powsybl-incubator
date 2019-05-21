@@ -101,7 +101,7 @@ public class Variable implements Comparable<Variable> {
 
     @Override
     public int hashCode() {
-        return num + type.hashCode() + column;
+        return num + type.hashCode();
     }
 
     @Override
@@ -120,12 +120,9 @@ public class Variable implements Comparable<Variable> {
         if (o == this) {
             return 0;
         }
-        int c = column - o.column;
+        int c = num - o.num;
         if (c == 0) {
-            c = num - o.num;
-            if (c == 0) {
-                c = type.ordinal() - o.type.ordinal();
-            }
+            c = type.ordinal() - o.type.ordinal();
         }
         return c;
     }

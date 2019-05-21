@@ -9,7 +9,6 @@ package com.powsybl.loadflow.simple.dc.equations;
 import com.powsybl.loadflow.simple.equations.*;
 import com.powsybl.loadflow.simple.network.LfBranch;
 import com.powsybl.loadflow.simple.network.LfBus;
-import com.powsybl.loadflow.simple.network.LfBusType;
 import com.powsybl.loadflow.simple.network.NetworkContext;
 
 import java.util.ArrayList;
@@ -32,7 +31,7 @@ public final class DcEquationSystem {
         List<VariableUpdate> variableUpdates = new ArrayList<>();
 
         for (LfBus bus : networkContext.getBuses()) {
-            if (bus.getType() == LfBusType.SLACK) {
+            if (bus.isSlack()) {
                 equationTerms.add(new BusPhaseEquationTerm(bus, equationContext));
                 equationContext.getEquation(bus.getNum(), EquationType.BUS_P).setPartOfSystem(false);
             }

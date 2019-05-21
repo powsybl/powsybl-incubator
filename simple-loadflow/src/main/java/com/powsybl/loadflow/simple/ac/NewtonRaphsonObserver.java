@@ -10,6 +10,7 @@ import com.powsybl.loadflow.simple.equations.EquationSystem;
 import com.powsybl.math.matrix.Matrix;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -17,7 +18,11 @@ import java.util.Arrays;
 public interface NewtonRaphsonObserver {
 
     static NewtonRaphsonObserver of(NewtonRaphsonObserver... observers) {
-        return new MultipleNewtonRaphsonObserver(Arrays.asList(observers));
+        return of(Arrays.asList(observers));
+    }
+
+    static NewtonRaphsonObserver of(List<NewtonRaphsonObserver> observers) {
+        return new MultipleNewtonRaphsonObserver(observers);
     }
 
     void beforeEquationSystemCreation();

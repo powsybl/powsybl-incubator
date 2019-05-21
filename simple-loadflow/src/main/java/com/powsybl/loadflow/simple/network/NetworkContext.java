@@ -75,7 +75,7 @@ public class NetworkContext {
                     lfBus.addTargetP(generator.getTargetP());
                     if (generator.isVoltageRegulatorOn()) {
                         lfBus.setTargetV(generator.getTargetV());
-                        lfBus.setType(LfBusType.PV);
+                        lfBus.setVoltageControl(true);
                     } else {
                         lfBus.addTargetQ(generator.getTargetQ());
                     }
@@ -136,13 +136,13 @@ public class NetworkContext {
 
         switch (slackBusSelectionMode) {
             case FIRST:
-                ((LfBusImpl) this.buses.get(0)).setType(LfBusType.SLACK);
+                ((LfBusImpl) this.buses.get(0)).setSlack(true);
                 break;
             case MOST_MESHED:
                 this.buses.stream().map(bus -> (LfBusImpl) bus)
                         .max(Comparator.comparingInt(LfBusImpl::getNeighbors))
                         .orElseThrow(AssertionError::new)
-                        .setType(LfBusType.SLACK);
+                        .setSlack(true);
                 break;
             default:
                 throw new IllegalStateException("Slack bus selection mode unknown:" + slackBusSelectionMode);

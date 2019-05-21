@@ -10,7 +10,6 @@ import com.powsybl.iidm.network.ShuntCompensator;
 import com.powsybl.loadflow.simple.equations.*;
 import com.powsybl.loadflow.simple.network.LfBranch;
 import com.powsybl.loadflow.simple.network.LfBus;
-import com.powsybl.loadflow.simple.network.LfBusType;
 import com.powsybl.loadflow.simple.network.NetworkContext;
 
 import java.util.ArrayList;
@@ -31,11 +30,11 @@ public final class AcEquationSystem {
         EquationContext equationContext = new EquationContext();
 
         for (LfBus bus : networkContext.getBuses()) {
-            if (bus.getType() == LfBusType.SLACK) {
+            if (bus.isSlack()) {
                 equationTerms.add(new BusPhaseEquationTerm(bus, equationContext));
                 equationContext.getEquation(bus.getNum(), EquationType.BUS_P).setPartOfSystem(false);
             }
-            if (bus.getType() == LfBusType.PV) {
+            if (bus.hasVoltageControl()) {
                 equationTerms.add(new BusVoltageEquationTerm(bus, equationContext));
                 equationContext.getEquation(bus.getNum(), EquationType.BUS_Q).setPartOfSystem(false);
             }

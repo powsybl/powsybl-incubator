@@ -19,7 +19,9 @@ public interface LfBus {
 
     int getNum();
 
-    LfBusType getType();
+    boolean isSlack();
+
+    boolean hasVoltageControl();
 
     double getTargetP();
 

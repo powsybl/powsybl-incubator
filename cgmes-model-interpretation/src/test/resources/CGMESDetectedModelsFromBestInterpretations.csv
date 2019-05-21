@@ -1,0 +1,5 @@
+code,total,calculated,ok,evaluationCode
+NN,15,14,14,ok
+__NN__,6,6,6,ok
+__NNn_,2,2,2,__NNn(C)_
+n_NN__.__NN__.__NN__,6,6,6,n(C)_NN__.__NN__.__NN__

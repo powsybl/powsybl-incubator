@@ -32,12 +32,6 @@ public class InterpretedTransformer2 {
         TransformerParameters transformerParameters = new TransformerParameters();
         InterpretedBranch.TapChangers tcs = interpretTapChangerStatus(transformer, end1, end2, alternative,
             transformerParameters);
-        /*if (transformer.id().equals("_475ae609-3691-4af0-a4af-2d34029312df")) {
-            LOG.info("g1 {}", end1.g);
-            LOG.info("b1 {}", end1.b);
-            LOG.info("g2 {}", end2.g);
-            LOG.info("b2 {}", end2.b);
-        }*/
         InterpretedBranch.ShuntAdmittances ysh = interpretAsShuntAdmittances(transformerParameters, alternative);
         InterpretedBranch.PhaseAngleClocks pacs = interpretPhaseAngleClock(transformer, alternative);
         tcs.addPhaseAngleClocks(pacs);
@@ -53,16 +47,6 @@ public class InterpretedTransformer2 {
             transformerParameters.r, transformerParameters.x,
             ratios.a1, tcs.ptc1.angle, ysh.ysh1,
             ratios.a2, tcs.ptc2.angle, ysh.ysh2);
-        /*if (transformer.id().equals("_f9aec7ee-396b-4401-aebf-31644eb4b06d")) {
-            LOG.info("a1 {} angle1 {}", ratios.a1, Math.toRadians(tcs.ptc1.angle));
-            LOG.info("a2 {} angle2 {}", ratios.a2, Math.toRadians(tcs.ptc2.angle));
-            LOG.info("rateU1 {} rateU2 {}", transformer.end1().ratedU(), transformer.end2().ratedU());
-            LOG.info("struct a1 {} a2 {}", structuralRatios.a1, structuralRatios.a2);
-            LOG.info("y11 {}", admittanceMatrix.y11());
-            LOG.info("y12 {}", admittanceMatrix.y12());
-            LOG.info("y21 {}", admittanceMatrix.y21());
-            LOG.info("y22 {}", admittanceMatrix.y22());
-        }*/
     }
 
     private InterpretedBranch.TapChangers interpretTapChangerStatus(CgmesTransformer transformer,

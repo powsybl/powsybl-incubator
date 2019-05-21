@@ -35,13 +35,18 @@ public class SimpleAcLoadFlow implements LoadFlow {
 
     private final MatrixFactory matrixFactory;
 
+    public SimpleAcLoadFlow(Network network) {
+        this.network = Objects.requireNonNull(network);
+        this.matrixFactory = new SparseMatrixFactory();
+    }
+
     public SimpleAcLoadFlow(Network network, MatrixFactory matrixFactory) {
         this.network = Objects.requireNonNull(network);
         this.matrixFactory = Objects.requireNonNull(matrixFactory);
     }
 
     public static SimpleAcLoadFlow create(Network network) {
-        return new SimpleAcLoadFlow(network, new SparseMatrixFactory());
+        return new SimpleAcLoadFlow(network);
     }
 
     @Override

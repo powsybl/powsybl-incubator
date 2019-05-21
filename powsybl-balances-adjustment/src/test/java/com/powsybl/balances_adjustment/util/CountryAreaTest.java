@@ -46,13 +46,13 @@ public class CountryAreaTest {
 
     @Test
     public void testGetAreaVoltageLevels() {
-        List<VoltageLevel> voltageLevels = testNetwork1.getVoltageLevelStream().filter(v -> v.getSubstation().getCountry().equals(countryAreaFR.getCountry()))
+        List<VoltageLevel> voltageLevels = testNetwork1.getVoltageLevelStream().filter(v -> v.getSubstation().getCountry().get().equals(countryAreaFR.getCountry()))
                 .collect(Collectors.toList());
 
         List<VoltageLevel> voltageLevelsFR = countryAreaFR.getAreaVoltageLevels(testNetwork1);
         assertTrue(checkSameList(voltageLevels, voltageLevelsFR));
 
-        voltageLevels = testNetwork1.getVoltageLevelStream().filter(v -> v.getSubstation().getCountry().equals(countryAreaBE.getCountry()))
+        voltageLevels = testNetwork1.getVoltageLevelStream().filter(v -> v.getSubstation().getCountry().get().equals(countryAreaBE.getCountry()))
                 .collect(Collectors.toList());
         List<VoltageLevel> voltageLevelsBE = countryAreaBE.getAreaVoltageLevels(testNetwork1);
         assertTrue(checkSameList(voltageLevels, voltageLevelsBE));
@@ -92,7 +92,7 @@ public class CountryAreaTest {
 
     private double getSumFlowCountry(Network network, Country country) {
         double sumFlow = 0;
-        List<Injection> injections = getInjectionStream(network).filter(i -> country.equals(i.getTerminal().getVoltageLevel().getSubstation().getCountry()))
+        List<Injection> injections = getInjectionStream(network).filter(i -> country.equals(i.getTerminal().getVoltageLevel().getSubstation().getCountry().get()))
                 .collect(Collectors.toList());
         for (Injection injection : injections) {
             sumFlow += injection.getTerminal().getBusBreakerView().getBus().isInMainConnectedComponent() ? injection.getTerminal().getP() : 0;

@@ -102,7 +102,7 @@ public class BalanceComputationImpl implements BalanceComputation {
         List<NetworkArea> unbalancedNetworkAreas;
 
         while (iterationCounter < parameters.getMaxNumberIterations()
-                && BalanceComputationResult.Status.FAILED.equals(result.getStatus())) {
+                && result.getStatus() == BalanceComputationResult.Status.FAILED) {
 
             // Step 2 : compute Loadflow
             LoadFlowResult loadFlowResult = runLoadFlow(loadFlow, workingVariantCopyId);
@@ -136,7 +136,7 @@ public class BalanceComputationImpl implements BalanceComputation {
             }
         }
 
-        if (BalanceComputationResult.Status.SUCCESS.equals(result.getStatus())) {
+        if (result.getStatus() == BalanceComputationResult.Status.SUCCESS) {
             List<String> networkAreasName = networkAreaNetPositionTargetMap.keySet().stream()
                     .map(networkArea -> networkArea.getName()).collect(Collectors.toList());
             LOGGER.info(" Network areas : {} are balanced after {} iterations", networkAreasName, result.getIterationCount());
@@ -146,7 +146,7 @@ public class BalanceComputationImpl implements BalanceComputation {
             network.getVariantManager().removeVariant(workingVariantCopyId);
             network.getVariantManager().cloneVariant(workingStateId, workingVariantCopyId);
             network.getVariantManager().setWorkingVariant(workingVariantCopyId);
-            LOGGER.error(" Network areas are unbalanced after 5 iterations");
+            LOGGER.error(" Network areas are unbalanced after {} iterations", iterationCounter);
         }
 
         network.getVariantManager().removeVariant(workingVariantCopyId);

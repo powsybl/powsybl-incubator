@@ -16,6 +16,7 @@ import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.*;
 import com.powsybl.loadflow.*;
 import com.powsybl.loadflow.simple.dc.SimpleDcLoadFlowFactory;
+import com.powsybl.math.matrix.DenseMatrixFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -35,7 +36,7 @@ import static org.mockito.Mockito.*;
 /**
  * @author Ameni Walha <ameni.walha at rte-france.com>
  */
-public class BalanceComputationSimpleTest {
+public class BalanceComputationSimpleDcTest {
     private Network simpleNetwork;
     private Map<NetworkArea, Double> networkAreaNetPositionTargetMap;
     private Map<NetworkArea, Scalable> networkAreasScalableMap;
@@ -65,7 +66,7 @@ public class BalanceComputationSimpleTest {
         parameters = new BalanceComputationParameters();
         balanceComputationFactory = new BalanceComputationFactoryImpl();
 
-        loadFlowFactory = new SimpleDcLoadFlowFactory();
+        loadFlowFactory = new SimpleDcLoadFlowFactory(new DenseMatrixFactory());
 
         networkAreasScalableMap = new HashMap<>();
         Scalable scalableFR = Scalable.proportional(Arrays.asList(60f, 40f),

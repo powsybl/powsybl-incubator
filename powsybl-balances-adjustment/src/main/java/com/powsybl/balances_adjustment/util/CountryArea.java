@@ -31,7 +31,9 @@ public class CountryArea extends AbstractNetworkArea {
 
     @Override
     public List<VoltageLevel> getAreaVoltageLevels(Network network) {
-        return network.getVoltageLevelStream().filter(voltageLevel -> voltageLevel.getSubstation().getCountry().equals(country))
+        return network.getVoltageLevelStream()
+                .filter(voltageLevel -> voltageLevel.getSubstation().getCountry().isPresent())
+                .filter(voltageLevel -> voltageLevel.getSubstation().getCountry().get().equals(country))
                 .collect(Collectors.toList());
     }
 

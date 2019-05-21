@@ -67,6 +67,7 @@
         <guava.version>27.0.1-jre</guava.version>
         <ojalgo.version>46.3.0</ojalgo.version>
         <slf4j.version>1.7.22</slf4j.version>
+		<jimfs.version>1.1</jimfs.version>
 
         <maven.antrun.version>1.8</maven.antrun.version>
         <maven.assembly.version>3.1.0</maven.assembly.version>
@@ -459,6 +460,11 @@
                 <artifactId>powsybl-iidm-cvg-extensions</artifactId>
                 <version>${powsybl-iidm-cvg-extensions.version}</version>
             </dependency>
+ 			<dependency>
+				<groupId>com.google.jimfs</groupId>
+				<artifactId>jimfs</artifactId>
+				<version>${jimfs.version}</version>
+			</dependency>
 
             <!-- Runtime dependencies -->
 

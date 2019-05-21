@@ -6,7 +6,6 @@
  */
 package com.powsybl.substationdiagram.layout;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.powsybl.substationdiagram.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,8 +23,8 @@ import java.util.stream.Collectors;
 
 public class PositionFree implements PositionFinder {
 
-    @JsonIgnore
     private static final Logger LOGGER = LoggerFactory.getLogger(PositionFree.class);
+
     private static final Cell.Direction DEFAULTDIRECTION = Cell.Direction.TOP;
 
     private class Context {

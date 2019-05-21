@@ -38,39 +38,12 @@ public class LayoutParameters {
     private double horizontalSubstationPadding = 50;
     private double verticalSubstationPadding = 50;
 
-    public LayoutParameters() {
-    }
+    private boolean drawStraightWires = false;
 
-    public LayoutParameters(double translateX,
-                            double translateY,
-                            double initialXBus,
-                            double initialYBus,
-                            double verticalSpaceBus,
-                            double horizontalBusPadding,
-                            double cellWidth,
-                            double externCellHeight,
-                            double internCellHeight,
-                            double stackHeight,
-                            boolean showGrid,
-                            boolean showInternalNodes,
-                            double scaleFactor,
-                            double horizontalSubstationPadding,
-                            double verticalSubstationPadding) {
-        this.translateX = translateX;
-        this.translateY = translateY;
-        this.initialXBus = initialXBus;
-        this.initialYBus = initialYBus;
-        this.verticalSpaceBus = verticalSpaceBus;
-        this.horizontalBusPadding = horizontalBusPadding;
-        this.cellWidth = cellWidth;
-        this.externCellHeight = externCellHeight;
-        this.internCellHeight = internCellHeight;
-        this.stackHeight = stackHeight;
-        this.showGrid = showGrid;
-        this.showInternalNodes = showInternalNodes;
-        this.scaleFactor = scaleFactor;
-        this.horizontalSubstationPadding = horizontalSubstationPadding;
-        this.verticalSubstationPadding = verticalSubstationPadding;
+    private double horizontalSnakeLinePadding = 20;
+    private double verticalSnakeLinePadding = 20;
+
+    public LayoutParameters() {
     }
 
     public LayoutParameters(LayoutParameters other) {
@@ -90,6 +63,9 @@ public class LayoutParameters {
         scaleFactor = other.scaleFactor;
         horizontalSubstationPadding = other.horizontalSubstationPadding;
         verticalSubstationPadding = other.verticalSubstationPadding;
+        drawStraightWires = other.drawStraightWires;
+        horizontalSnakeLinePadding = other.horizontalSnakeLinePadding;
+        verticalSnakeLinePadding = other.verticalSnakeLinePadding;
     }
 
     public double getTranslateX() {
@@ -224,6 +200,33 @@ public class LayoutParameters {
 
     public LayoutParameters setVerticalSubstationPadding(double padding) {
         this.verticalSubstationPadding = padding;
+        return this;
+    }
+
+    public boolean isDrawStraightWires() {
+        return drawStraightWires;
+    }
+
+    public LayoutParameters setDrawStraightWires(boolean drawStraightWires) {
+        this.drawStraightWires = drawStraightWires;
+        return this;
+    }
+
+    public double getHorizontalSnakeLinePadding() {
+        return horizontalSnakeLinePadding;
+    }
+
+    public LayoutParameters setHorizontalSnakeLinePadding(double horizontalSnakeLinePadding) {
+        this.horizontalSnakeLinePadding = horizontalSnakeLinePadding;
+        return this;
+    }
+
+    public double getVerticalSnakeLinePadding() {
+        return verticalSnakeLinePadding;
+    }
+
+    public LayoutParameters setVerticalSnakeLinePadding(double verticalSnakeLinePadding) {
+        this.verticalSnakeLinePadding = verticalSnakeLinePadding;
         return this;
     }
 }

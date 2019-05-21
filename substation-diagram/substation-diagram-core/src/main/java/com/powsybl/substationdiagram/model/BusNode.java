@@ -6,7 +6,6 @@
  */
 package com.powsybl.substationdiagram.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.powsybl.iidm.network.Bus;
 import com.powsybl.iidm.network.BusbarSection;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
@@ -21,9 +20,10 @@ import java.util.Objects;
  */
 public class BusNode extends Node {
 
-    @JsonIgnore
     private double pxWidth = 1;
+
     private Position structuralPosition;
+
     private Position position = new Position(-1, -1);
 
     protected BusNode(String id, String name, boolean fictitious, Graph graph) {

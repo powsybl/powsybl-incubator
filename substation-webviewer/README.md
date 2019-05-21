@@ -1,3 +1,9 @@
+## Maven Integration
+
+This project uses maven on top of the regular create-react-app to allow packaging and development. By default, maven in the package phase will download node and npm binaries to the ./node/ folder, run `npm install` to populate the ./node_modules folder and run `npm run build` to package a deployable app in the ./build folder. For development, either run `mvn package` and then use ./node/npm, or use your own npm to run the CRA commands, such as `npm start`.
+
+## Create React App
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts

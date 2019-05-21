@@ -27,13 +27,16 @@ public class WireHandler {
 
     private final NodeHandler nodeHandler2;
 
+    private final boolean straight;
+
     private final GraphMetadata metadata;
 
     public WireHandler(Polyline node, NodeHandler nodeHandler1, NodeHandler nodeHandler2,
-                       GraphMetadata metadata) {
+                       boolean straight, GraphMetadata metadata) {
         this.node = Objects.requireNonNull(node);
         this.nodeHandler1 = Objects.requireNonNull(nodeHandler1);
         this.nodeHandler2 = Objects.requireNonNull(nodeHandler2);
+        this.straight = straight;
         this.metadata = Objects.requireNonNull(metadata);
     }
 
@@ -58,7 +61,7 @@ public class WireHandler {
         double x2 = nodeHandler2.getX() + wireConnection.getAnchorPoint2().getX();
         double y2 = nodeHandler2.getY() + wireConnection.getAnchorPoint2().getY();
 
-        if (x1 == x2 || y1 == y2) {
+        if (straight || (x1 == x2 || y1 == y2)) {
             node.getPoints().setAll(x1, y1, x2, y2);
         } else {
             switch (wireConnection.getAnchorPoint1().getOrientation()) {

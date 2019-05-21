@@ -75,5 +75,10 @@ public class Coord {
         }
         return false;
     }
+
+    @Override
+    public String toString() {
+        return "Coord(x=" + x + ", y=" + y + ", xSpan=" + xSpan + ", ySpan=" + ySpan + ")";
+    }
 }
 

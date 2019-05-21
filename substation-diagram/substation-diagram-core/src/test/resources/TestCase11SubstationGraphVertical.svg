@@ -1,0 +1,703 @@
+<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg">
+    <style><![CDATA[.substation-diagram {fill:rgb(255,255,255);stroke-width:1;fill-opacity:0;}.wire_vl1 {stroke:rgb(200,0,0);stroke-width:1;}.grid {stroke:rgb(0,55,0);stroke-width:1;stroke-dasharray:1,10;}.bus_vl1 {stroke:rgb(0,0,0);stroke-width:3;}.component-label {fill:black;color:black;stroke:none;fill-opacity:1;}.substation-diagram {fill:rgb(255,255,255);stroke-width:1;fill-opacity:0;}.wire_vl2 {stroke:rgb(200,0,0);stroke-width:1;}.grid {stroke:rgb(0,55,0);stroke-width:1;stroke-dasharray:1,10;}.bus_vl2 {stroke:rgb(0,0,0);stroke-width:3;}.component-label {fill:black;color:black;stroke:none;fill-opacity:1;}.substation-diagram {fill:rgb(255,255,255);stroke-width:1;fill-opacity:0;}.wire_vl3 {stroke:rgb(200,0,0);stroke-width:1;}.grid {stroke:rgb(0,55,0);stroke-width:1;stroke-dasharray:1,10;}.bus_vl3 {stroke:rgb(0,0,0);stroke-width:3;}.component-label {fill:black;color:black;stroke:none;fill-opacity:1;}.BUSBAR_SECTION{stroke:rgb(0,0,255);}
+
+.BREAKER {
+	stroke:rgb(0,0,255);
+    stroke-width:2;
+    fill-opacity:1;
+}
+
+.DISCONNECTOR {
+    stroke:rgb(0,0,0);
+    stroke-width:3
+}
+.GENERATOR{stroke:rgb(0,0,255);}
+.LINE{stroke:rgb(0,0,255);}
+.LOAD{stroke:rgb(0,0,255);}
+.LOAD_BREAK_SWITCH{stroke:rgb(0,0,255);}
+.NODE {stroke:rgb(0,0,0);fill:rgb(0,0,0);fill-opacity:1;}
+.CAPACITOR{stroke:rgb(0,0,255);}
+.INDUCTOR{stroke:rgb(0,0,255);}
+.STATIC_VAR_COMPENSATOR{stroke:rgb(0,0,255);}
+#path5227 { stroke-width:0.4; stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:1.4;}
+#path5229 {stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;}
+#path5231 {stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;}
+.TWO_WINDINGS_TRANSFORMER{stroke:rgb(0,0,255);}
+.THREE_WINDINGS_TRANSFORMER{stroke:rgb(0,0,255);}
+.VSC_CONVERTER_STATION {stroke:rgb(0,0,255);font-size:7.4314661px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;stroke-miterlimit:4;}
+.DANGLING_LINE {stroke:rgb(0,0,0);stroke-width:2;}
+.PHASE_SHIFT_TRANSFORMER {stroke:rgb(0,0,255);stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;}
+.dsect11 .open { visibility: hidden;}.dsect11 .closed { visibility: visible;}.dtrct11 .open { visibility: hidden;}.dtrct11 .closed { visibility: visible;}.dsect12 .open { visibility: hidden;}.dsect12 .closed { visibility: visible;}.dsect21 .open { visibility: hidden;}.dsect21 .closed { visibility: visible;}.dtrct21 .open { visibility: hidden;}.dtrct21 .closed { visibility: visible;}.dsect22 .open { visibility: hidden;}.dsect22 .closed { visibility: visible;}.dload1 .open { visibility: hidden;}.dload1 .closed { visibility: visible;}.bload1 .open { visibility: hidden;}.bload1 .closed { visibility: visible;}.dgen1 .open { visibility: hidden;}.dgen1 .closed { visibility: visible;}.bgen1 .open { visibility: hidden;}.bgen1 .closed { visibility: visible;}.dload2 .open { visibility: hidden;}.dload2 .closed { visibility: visible;}.bload2 .open { visibility: hidden;}.bload2 .closed { visibility: visible;}.dgen2 .open { visibility: hidden;}.dgen2 .closed { visibility: visible;}.bgen2 .open { visibility: hidden;}.bgen2 .closed { visibility: visible;}.dtrf11 .open { visibility: hidden;}.dtrf11 .closed { visibility: visible;}.btrf11 .open { visibility: hidden;}.btrf11 .closed { visibility: visible;}.dtrf12 .open { visibility: hidden;}.dtrf12 .closed { visibility: visible;}.btrf12 .open { visibility: hidden;}.btrf12 .closed { visibility: visible;}.dtrf13 .open { visibility: hidden;}.dtrf13 .closed { visibility: visible;}.btrf13 .open { visibility: hidden;}.btrf13 .closed { visibility: visible;}.dtrf14 .open { visibility: hidden;}.dtrf14 .closed { visibility: visible;}.btrf14 .open { visibility: hidden;}.btrf14 .closed { visibility: visible;}.dtrf15 .open { visibility: hidden;}.dtrf15 .closed { visibility: visible;}.btrf15 .open { visibility: hidden;}.btrf15 .closed { visibility: visible;}.dscpl1 .open { visibility: hidden;}.dscpl1 .closed { visibility: visible;}.ddcpl1 .open { visibility: hidden;}.ddcpl1 .closed { visibility: visible;}.dscpl2 .open { visibility: hidden;}.dscpl2 .closed { visibility: visible;}.dload3 .open { visibility: hidden;}.dload3 .closed { visibility: visible;}.bload3 .open { visibility: hidden;}.bload3 .closed { visibility: visible;}.dgen4 .open { visibility: hidden;}.dgen4 .closed { visibility: visible;}.bgen4 .open { visibility: hidden;}.bgen4 .closed { visibility: visible;}.dtrf21 .open { visibility: hidden;}.dtrf21 .closed { visibility: visible;}.btrf21 .open { visibility: hidden;}.btrf21 .closed { visibility: visible;}.dtrf22 .open { visibility: hidden;}.dtrf22 .closed { visibility: visible;}.btrf22 .open { visibility: hidden;}.btrf22 .closed { visibility: visible;}.dtrf23 .open { visibility: hidden;}.dtrf23 .closed { visibility: visible;}.btrf23 .open { visibility: hidden;}.btrf23 .closed { visibility: visible;}.dtrf24 .open { visibility: hidden;}.dtrf24 .closed { visibility: visible;}.btrf24 .open { visibility: hidden;}.btrf24 .closed { visibility: visible;}.dload4 .open { visibility: hidden;}.dload4 .closed { visibility: visible;}.bload4 .open { visibility: hidden;}.bload4 .closed { visibility: visible;}.dtrf25 .open { visibility: hidden;}.dtrf25 .closed { visibility: visible;}.btrf25 .open { visibility: hidden;}.btrf25 .closed { visibility: visible;}]]></style>
+    <g class="substation-diagram">
+        <g>
+            <line y2="640.0" x1="50.0" class="grid" x2="50.0" transform="translate(20.0,50.0)" y1="30.0"/>
+            <line y2="640.0" x1="100.0" class="grid" x2="100.0" transform="translate(20.0,50.0)" y1="30.0"/>
+            <line y2="640.0" x1="150.0" class="grid" x2="150.0" transform="translate(20.0,50.0)" y1="30.0"/>
+            <line y2="640.0" x1="200.0" class="grid" x2="200.0" transform="translate(20.0,50.0)" y1="30.0"/>
+            <line y2="640.0" x1="250.0" class="grid" x2="250.0" transform="translate(20.0,50.0)" y1="30.0"/>
+            <line y2="640.0" x1="300.0" class="grid" x2="300.0" transform="translate(20.0,50.0)" y1="30.0"/>
+            <line y2="640.0" x1="350.0" class="grid" x2="350.0" transform="translate(20.0,50.0)" y1="30.0"/>
+            <line y2="640.0" x1="400.0" class="grid" x2="400.0" transform="translate(20.0,50.0)" y1="30.0"/>
+            <line y2="640.0" x1="450.0" class="grid" x2="450.0" transform="translate(20.0,50.0)" y1="30.0"/>
+            <line y2="640.0" x1="500.0" class="grid" x2="500.0" transform="translate(20.0,50.0)" y1="30.0"/>
+            <line y2="640.0" x1="550.0" class="grid" x2="550.0" transform="translate(20.0,50.0)" y1="30.0"/>
+        </g>
+        <g>
+            <line y2="1330.0" x1="50.0" class="grid" x2="50.0" transform="translate(20.0,50.0)" y1="720.0"/>
+            <line y2="1330.0" x1="100.0" class="grid" x2="100.0" transform="translate(20.0,50.0)" y1="720.0"/>
+            <line y2="1330.0" x1="150.0" class="grid" x2="150.0" transform="translate(20.0,50.0)" y1="720.0"/>
+            <line y2="1330.0" x1="200.0" class="grid" x2="200.0" transform="translate(20.0,50.0)" y1="720.0"/>
+            <line y2="1330.0" x1="250.0" class="grid" x2="250.0" transform="translate(20.0,50.0)" y1="720.0"/>
+            <line y2="1330.0" x1="300.0" class="grid" x2="300.0" transform="translate(20.0,50.0)" y1="720.0"/>
+            <line y2="1330.0" x1="350.0" class="grid" x2="350.0" transform="translate(20.0,50.0)" y1="720.0"/>
+            <line y2="1330.0" x1="400.0" class="grid" x2="400.0" transform="translate(20.0,50.0)" y1="720.0"/>
+            <line y2="1330.0" x1="450.0" class="grid" x2="450.0" transform="translate(20.0,50.0)" y1="720.0"/>
+        </g>
+        <g>
+            <line y2="1995.0" x1="50.0" class="grid" x2="50.0" transform="translate(20.0,50.0)" y1="1410.0"/>
+            <line y2="1995.0" x1="100.0" class="grid" x2="100.0" transform="translate(20.0,50.0)" y1="1410.0"/>
+            <line y2="1995.0" x1="150.0" class="grid" x2="150.0" transform="translate(20.0,50.0)" y1="1410.0"/>
+        </g>
+        <g class="substation-diagram BUSBAR_SECTION bbs1" id="bbs1" transform="translate(80.0,360.0)">
+            <line y2="0" x1="0" class="bus_vl1" x2="230.0" y1="0"/>
+            <text x="-5" font-size="8" y="-5" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs1</text>
+        </g>
+        <g class="substation-diagram BUSBAR_SECTION bbs2" id="bbs2" transform="translate(380.0,360.0)">
+            <line y2="0" x1="0" class="bus_vl1" x2="180.0" y1="0"/>
+            <text x="-5" font-size="8" y="-5" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs2</text>
+        </g>
+        <g class="substation-diagram BUSBAR_SECTION bbs3" id="bbs3" transform="translate(80.0,385.0)">
+            <line y2="0" x1="0" class="bus_vl1" x2="230.0" y1="0"/>
+            <text x="-5" font-size="8" y="-5" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs3</text>
+        </g>
+        <g class="substation-diagram BUSBAR_SECTION bbs4" id="bbs4" transform="translate(380.0,385.0)">
+            <line y2="0" x1="0" class="bus_vl1" x2="180.0" y1="0"/>
+            <text x="-5" font-size="8" y="-5" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs4</text>
+        </g>
+        <g class="substation-diagram LOAD load1" id="load1" transform="translate(87.0,75.5)">
+    <rect height="9" width="16"/>
+    <line y2="9" x1="0" x2="16" y1="0"/>
+    <line y2="9" x1="16" x2="0" y1="0"/>
+<text x="-5" font-size="8" y="-5" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">load1</text>
+        </g>
+        <g class="substation-diagram GENERATOR gen1" id="gen1" transform="translate(189.0,659.0)">
+    <circle r="6" cx="6" cy="6"/>
+    <path d="M6,6 A 6 20 0 0 0 0,6"/>
+    <path d="M6,6 A 6 20 0 0 0 12,6"/>
+<text x="-5" font-size="8" y="25" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">gen1</text>
+        </g>
+        <g class="substation-diagram LOAD load2" id="load2" transform="translate(387.0,75.5)">
+    <rect height="9" width="16"/>
+    <line y2="9" x1="0" x2="16" y1="0"/>
+    <line y2="9" x1="16" x2="0" y1="0"/>
+<text x="-5" font-size="8" y="-5" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">load2</text>
+        </g>
+        <g class="substation-diagram GENERATOR gen2" id="gen2" transform="translate(539.0,659.0)">
+    <circle r="6" cx="6" cy="6"/>
+    <path d="M6,6 A 6 20 0 0 0 0,6"/>
+    <path d="M6,6 A 6 20 0 0 0 12,6"/>
+<text x="-5" font-size="8" y="25" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">gen2</text>
+        </g>
+        <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf1_ONE" id="trf1_ONE" transform="translate(138.5,76.0)">
+    <circle r="4" cx="4" cy="4"/>
+    <circle r="4" cx="9" cy="4"/>
+<text x="-5" font-size="8" y="-5" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf1</text>
+        </g>
+        <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf2_ONE" id="trf2_ONE" transform="translate(488.5,76.0)">
+    <circle r="4" cx="4" cy="4"/>
+    <circle r="4" cx="9" cy="4"/>
+<text x="-5" font-size="8" y="-5" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf2</text>
+        </g>
+        <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf3_ONE" id="trf3_ONE" transform="translate(238.5,661.0)">
+    <circle r="4" cx="4" cy="4"/>
+    <circle r="4" cx="9" cy="4"/>
+<text x="-5" font-size="8" y="21" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf3</text>
+        </g>
+        <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf4_ONE" id="trf4_ONE" transform="translate(438.5,661.0)">
+    <circle r="4" cx="4" cy="4"/>
+    <circle r="4" cx="9" cy="4"/>
+<text x="-5" font-size="8" y="21" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf4</text>
+        </g>
+        <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf5_ONE" id="trf5_ONE" transform="translate(288.5,76.0)">
+    <circle r="4" cx="4" cy="4"/>
+    <circle r="4" cx="9" cy="4"/>
+<text x="-5" font-size="8" y="-5" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf5</text>
+        </g>
+        <g class="substation-diagram DISCONNECTOR dsect11" id="dsect11" transform="translate(316.0,356.0)">
+    <g id="closed">
+        <line y2="8" x1="0" x2="8" y1="0"/>
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+    <g id="open">
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+</g>
+        <g class="substation-diagram BREAKER dtrct11" id="dtrct11" transform="matrix(0.0,1.0,-1.0,0.0,355.0,350.0)">
+    <g class="closed" id="closed">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="15" x1="10" x2="10" y1="5"/>
+    </g>
+    <g class="open" id="open">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="10" x1="5" x2="15" y1="10"/>
+    </g>
+</g>
+        <g class="substation-diagram DISCONNECTOR dsect12" id="dsect12" transform="translate(366.0,356.0)">
+    <g id="closed">
+        <line y2="8" x1="0" x2="8" y1="0"/>
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+    <g id="open">
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+</g>
+        <g class="substation-diagram DISCONNECTOR dsect21" id="dsect21" transform="translate(316.0,381.0)">
+    <g id="closed">
+        <line y2="8" x1="0" x2="8" y1="0"/>
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+    <g id="open">
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+</g>
+        <g class="substation-diagram BREAKER dtrct21" id="dtrct21" transform="matrix(0.0,1.0,-1.0,0.0,355.0,375.0)">
+    <g class="closed" id="closed">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="15" x1="10" x2="10" y1="5"/>
+    </g>
+    <g class="open" id="open">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="10" x1="5" x2="15" y1="10"/>
+    </g>
+</g>
+        <g class="substation-diagram DISCONNECTOR dsect22" id="dsect22" transform="translate(366.0,381.0)">
+    <g id="closed">
+        <line y2="8" x1="0" x2="8" y1="0"/>
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+    <g id="open">
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+</g>
+        <g class="substation-diagram DISCONNECTOR dload1" id="dload1" transform="translate(91.0,356.0)">
+    <g id="closed">
+        <line y2="8" x1="0" x2="8" y1="0"/>
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+    <g id="open">
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+</g>
+        <g class="substation-diagram BREAKER bload1" id="bload1" transform="translate(85.0,195.0)">
+    <g class="closed" id="closed">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="15" x1="10" x2="10" y1="5"/>
+    </g>
+    <g class="open" id="open">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="10" x1="5" x2="15" y1="10"/>
+    </g>
+</g>
+        <g class="substation-diagram DISCONNECTOR dgen1" id="dgen1" transform="translate(191.0,381.0)">
+    <g id="closed">
+        <line y2="8" x1="0" x2="8" y1="0"/>
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+    <g id="open">
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+</g>
+        <g class="substation-diagram BREAKER bgen1" id="bgen1" transform="translate(185.0,530.0)">
+    <g class="closed" id="closed">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="15" x1="10" x2="10" y1="5"/>
+    </g>
+    <g class="open" id="open">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="10" x1="5" x2="15" y1="10"/>
+    </g>
+</g>
+        <g class="substation-diagram DISCONNECTOR dload2" id="dload2" transform="translate(391.0,356.0)">
+    <g id="closed">
+        <line y2="8" x1="0" x2="8" y1="0"/>
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+    <g id="open">
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+</g>
+        <g class="substation-diagram BREAKER bload2" id="bload2" transform="translate(385.0,195.0)">
+    <g class="closed" id="closed">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="15" x1="10" x2="10" y1="5"/>
+    </g>
+    <g class="open" id="open">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="10" x1="5" x2="15" y1="10"/>
+    </g>
+</g>
+        <g class="substation-diagram DISCONNECTOR dgen2" id="dgen2" transform="translate(541.0,381.0)">
+    <g id="closed">
+        <line y2="8" x1="0" x2="8" y1="0"/>
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+    <g id="open">
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+</g>
+        <g class="substation-diagram BREAKER bgen2" id="bgen2" transform="translate(535.0,530.0)">
+    <g class="closed" id="closed">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="15" x1="10" x2="10" y1="5"/>
+    </g>
+    <g class="open" id="open">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="10" x1="5" x2="15" y1="10"/>
+    </g>
+</g>
+        <g class="substation-diagram DISCONNECTOR dtrf11" id="dtrf11" transform="translate(141.0,356.0)">
+    <g id="closed">
+        <line y2="8" x1="0" x2="8" y1="0"/>
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+    <g id="open">
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+</g>
+        <g class="substation-diagram BREAKER btrf11" id="btrf11" transform="translate(135.0,195.0)">
+    <g class="closed" id="closed">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="15" x1="10" x2="10" y1="5"/>
+    </g>
+    <g class="open" id="open">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="10" x1="5" x2="15" y1="10"/>
+    </g>
+</g>
+        <g class="substation-diagram DISCONNECTOR dtrf12" id="dtrf12" transform="translate(491.0,356.0)">
+    <g id="closed">
+        <line y2="8" x1="0" x2="8" y1="0"/>
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+    <g id="open">
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+</g>
+        <g class="substation-diagram BREAKER btrf12" id="btrf12" transform="translate(485.0,195.0)">
+    <g class="closed" id="closed">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="15" x1="10" x2="10" y1="5"/>
+    </g>
+    <g class="open" id="open">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="10" x1="5" x2="15" y1="10"/>
+    </g>
+</g>
+        <g class="substation-diagram DISCONNECTOR dtrf13" id="dtrf13" transform="translate(241.0,381.0)">
+    <g id="closed">
+        <line y2="8" x1="0" x2="8" y1="0"/>
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+    <g id="open">
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+</g>
+        <g class="substation-diagram BREAKER btrf13" id="btrf13" transform="translate(235.0,530.0)">
+    <g class="closed" id="closed">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="15" x1="10" x2="10" y1="5"/>
+    </g>
+    <g class="open" id="open">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="10" x1="5" x2="15" y1="10"/>
+    </g>
+</g>
+        <g class="substation-diagram DISCONNECTOR dtrf14" id="dtrf14" transform="translate(441.0,381.0)">
+    <g id="closed">
+        <line y2="8" x1="0" x2="8" y1="0"/>
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+    <g id="open">
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+</g>
+        <g class="substation-diagram BREAKER btrf14" id="btrf14" transform="translate(435.0,530.0)">
+    <g class="closed" id="closed">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="15" x1="10" x2="10" y1="5"/>
+    </g>
+    <g class="open" id="open">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="10" x1="5" x2="15" y1="10"/>
+    </g>
+</g>
+        <g class="substation-diagram DISCONNECTOR dtrf15" id="dtrf15" transform="translate(291.0,356.0)">
+    <g id="closed">
+        <line y2="8" x1="0" x2="8" y1="0"/>
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+    <g id="open">
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+</g>
+        <g class="substation-diagram BREAKER btrf15" id="btrf15" transform="translate(285.0,195.0)">
+    <g class="closed" id="closed">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="15" x1="10" x2="10" y1="5"/>
+    </g>
+    <g class="open" id="open">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="10" x1="5" x2="15" y1="10"/>
+    </g>
+</g>
+        <g class="substation-diagram NODE FICT_vl1_dsect11Fictif" id="FICT_vl1_dsect11Fictif" transform="matrix(0.0,1.0,-1.0,0.0,324.0,356.0)"/>
+        <g class="substation-diagram NODE FICT_vl1_dload1Fictif" id="FICT_vl1_dload1Fictif" transform="translate(91.0,326.0)"/>
+        <g class="substation-diagram NODE FICT_vl1_dtrf11Fictif" id="FICT_vl1_dtrf11Fictif" transform="translate(141.0,326.0)"/>
+        <g class="substation-diagram NODE FICT_vl1_dtrf15Fictif" id="FICT_vl1_dtrf15Fictif" transform="translate(291.0,326.0)"/>
+        <g class="substation-diagram NODE FICT_vl1_dsect12Fictif" id="FICT_vl1_dsect12Fictif" transform="matrix(0.0,1.0,-1.0,0.0,374.0,356.0)"/>
+        <g class="substation-diagram NODE FICT_vl1_dload2Fictif" id="FICT_vl1_dload2Fictif" transform="translate(391.0,326.0)"/>
+        <g class="substation-diagram NODE FICT_vl1_dtrf12Fictif" id="FICT_vl1_dtrf12Fictif" transform="translate(491.0,326.0)"/>
+        <g class="substation-diagram NODE FICT_vl1_dsect21Fictif" id="FICT_vl1_dsect21Fictif" transform="matrix(0.0,1.0,-1.0,0.0,324.0,381.0)"/>
+        <g class="substation-diagram NODE FICT_vl1_dgen1Fictif" id="FICT_vl1_dgen1Fictif" transform="translate(191.0,411.0)"/>
+        <g class="substation-diagram NODE FICT_vl1_dtrf13Fictif" id="FICT_vl1_dtrf13Fictif" transform="translate(241.0,411.0)"/>
+        <g class="substation-diagram NODE FICT_vl1_dsect22Fictif" id="FICT_vl1_dsect22Fictif" transform="matrix(0.0,1.0,-1.0,0.0,374.0,381.0)"/>
+        <g class="substation-diagram NODE FICT_vl1_dgen2Fictif" id="FICT_vl1_dgen2Fictif" transform="translate(541.0,411.0)"/>
+        <g class="substation-diagram NODE FICT_vl1_dtrf14Fictif" id="FICT_vl1_dtrf14Fictif" transform="translate(441.0,411.0)"/>
+        <polyline class="wire_vl1" points="310.0,360.0 320.0,360.0" id="vl1_Wire0"/>
+        <polyline class="wire_vl1" points="370.0,360.0 380.0,360.0" id="vl1_Wire1"/>
+        <polyline class="wire_vl1" points="310.0,385.0 320.0,385.0" id="vl1_Wire2"/>
+        <polyline class="wire_vl1" points="370.0,385.0 380.0,385.0" id="vl1_Wire3"/>
+        <polyline class="wire_vl1" points="95.0,360.0 95.0,360.0" id="vl1_Wire4"/>
+        <polyline class="wire_vl1" points="95.0,84.0 95.0,195.0" id="vl1_Wire5"/>
+        <polyline class="wire_vl1" points="195.0,385.0 195.0,385.0" id="vl1_Wire6"/>
+        <polyline class="wire_vl1" points="195.0,659.0 195.0,550.0" id="vl1_Wire7"/>
+        <polyline class="wire_vl1" points="395.0,360.0 395.0,360.0" id="vl1_Wire8"/>
+        <polyline class="wire_vl1" points="395.0,84.0 395.0,195.0" id="vl1_Wire9"/>
+        <polyline class="wire_vl1" points="545.0,385.0 545.0,385.0" id="vl1_Wire10"/>
+        <polyline class="wire_vl1" points="545.0,659.0 545.0,550.0" id="vl1_Wire11"/>
+        <polyline class="wire_vl1" points="145.0,360.0 145.0,360.0" id="vl1_Wire12"/>
+        <polyline class="wire_vl1" points="145.0,195.0 145.0,84.0" id="vl1_Wire13"/>
+        <polyline class="wire_vl1" points="495.0,360.0 495.0,360.0" id="vl1_Wire14"/>
+        <polyline class="wire_vl1" points="495.0,195.0 495.0,84.0" id="vl1_Wire15"/>
+        <polyline class="wire_vl1" points="245.0,385.0 245.0,385.0" id="vl1_Wire16"/>
+        <polyline class="wire_vl1" points="245.0,550.0 245.0,661.0" id="vl1_Wire17"/>
+        <polyline class="wire_vl1" points="445.0,385.0 445.0,385.0" id="vl1_Wire18"/>
+        <polyline class="wire_vl1" points="445.0,550.0 445.0,661.0" id="vl1_Wire19"/>
+        <polyline class="wire_vl1" points="295.0,360.0 295.0,360.0" id="vl1_Wire20"/>
+        <polyline class="wire_vl1" points="295.0,195.0 295.0,84.0" id="vl1_Wire21"/>
+        <polyline class="wire_vl1" points="335.0,360.0 320.0,360.0" id="vl1_Wire22"/>
+        <polyline class="wire_vl1" points="320.0,360.0 320.0,360.0" id="vl1_Wire23"/>
+        <polyline class="wire_vl1" points="95.0,215.0 95.0,330.0" id="vl1_Wire24"/>
+        <polyline class="wire_vl1" points="95.0,360.0 95.0,330.0" id="vl1_Wire25"/>
+        <polyline class="wire_vl1" points="145.0,215.0 145.0,330.0" id="vl1_Wire26"/>
+        <polyline class="wire_vl1" points="145.0,360.0 145.0,330.0" id="vl1_Wire27"/>
+        <polyline class="wire_vl1" points="295.0,215.0 295.0,330.0" id="vl1_Wire28"/>
+        <polyline class="wire_vl1" points="295.0,360.0 295.0,330.0" id="vl1_Wire29"/>
+        <polyline class="wire_vl1" points="355.0,360.0 370.0,360.0" id="vl1_Wire30"/>
+        <polyline class="wire_vl1" points="370.0,360.0 370.0,360.0" id="vl1_Wire31"/>
+        <polyline class="wire_vl1" points="395.0,215.0 395.0,330.0" id="vl1_Wire32"/>
+        <polyline class="wire_vl1" points="395.0,360.0 395.0,330.0" id="vl1_Wire33"/>
+        <polyline class="wire_vl1" points="495.0,215.0 495.0,330.0" id="vl1_Wire34"/>
+        <polyline class="wire_vl1" points="495.0,360.0 495.0,330.0" id="vl1_Wire35"/>
+        <polyline class="wire_vl1" points="335.0,385.0 320.0,385.0" id="vl1_Wire36"/>
+        <polyline class="wire_vl1" points="320.0,385.0 320.0,385.0" id="vl1_Wire37"/>
+        <polyline class="wire_vl1" points="195.0,530.0 195.0,415.0" id="vl1_Wire38"/>
+        <polyline class="wire_vl1" points="195.0,385.0 195.0,415.0" id="vl1_Wire39"/>
+        <polyline class="wire_vl1" points="245.0,530.0 245.0,415.0" id="vl1_Wire40"/>
+        <polyline class="wire_vl1" points="245.0,385.0 245.0,415.0" id="vl1_Wire41"/>
+        <polyline class="wire_vl1" points="355.0,385.0 370.0,385.0" id="vl1_Wire42"/>
+        <polyline class="wire_vl1" points="370.0,385.0 370.0,385.0" id="vl1_Wire43"/>
+        <polyline class="wire_vl1" points="545.0,530.0 545.0,415.0" id="vl1_Wire44"/>
+        <polyline class="wire_vl1" points="545.0,385.0 545.0,415.0" id="vl1_Wire45"/>
+        <polyline class="wire_vl1" points="445.0,530.0 445.0,415.0" id="vl1_Wire46"/>
+        <polyline class="wire_vl1" points="445.0,385.0 445.0,415.0" id="vl1_Wire47"/>
+        <g class="substation-diagram BUSBAR_SECTION bbs5" id="bbs5" transform="translate(80.0,1050.0)">
+            <line y2="0" x1="0" class="bus_vl2" x2="380.0" y1="0"/>
+            <text x="-5" font-size="8" y="-5" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs5</text>
+        </g>
+        <g class="substation-diagram BUSBAR_SECTION bbs6" id="bbs6" transform="translate(80.0,1075.0)">
+            <line y2="0" x1="0" class="bus_vl2" x2="380.0" y1="0"/>
+            <text x="-5" font-size="8" y="-5" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs6</text>
+        </g>
+        <g class="substation-diagram LOAD load3" id="load3" transform="translate(187.0,765.5)">
+    <rect height="9" width="16"/>
+    <line y2="9" x1="0" x2="16" y1="0"/>
+    <line y2="9" x1="16" x2="0" y1="0"/>
+<text x="-5" font-size="8" y="-5" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">load3</text>
+        </g>
+        <g class="substation-diagram GENERATOR gen4" id="gen4" transform="translate(289.0,1349.0)">
+    <circle r="6" cx="6" cy="6"/>
+    <path d="M6,6 A 6 20 0 0 0 0,6"/>
+    <path d="M6,6 A 6 20 0 0 0 12,6"/>
+<text x="-5" font-size="8" y="25" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">gen4</text>
+        </g>
+        <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf1_TWO" id="trf1_TWO" transform="translate(238.5,766.0)">
+    <circle r="4" cx="4" cy="4"/>
+    <circle r="4" cx="9" cy="4"/>
+<text x="-5" font-size="8" y="-5" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf1</text>
+        </g>
+        <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf2_TWO" id="trf2_TWO" transform="translate(388.5,1351.0)">
+    <circle r="4" cx="4" cy="4"/>
+    <circle r="4" cx="9" cy="4"/>
+<text x="-5" font-size="8" y="21" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf2</text>
+        </g>
+        <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf3_TWO" id="trf3_TWO" transform="translate(438.5,1351.0)">
+    <circle r="4" cx="4" cy="4"/>
+    <circle r="4" cx="9" cy="4"/>
+<text x="-5" font-size="8" y="21" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf3</text>
+        </g>
+        <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf4_TWO" id="trf4_TWO" transform="translate(338.5,766.0)">
+    <circle r="4" cx="4" cy="4"/>
+    <circle r="4" cx="9" cy="4"/>
+<text x="-5" font-size="8" y="-5" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf4</text>
+        </g>
+        <g class="substation-diagram DISCONNECTOR dscpl1" id="dscpl1" transform="translate(141.0,1046.0)">
+    <g id="closed">
+        <line y2="8" x1="0" x2="8" y1="0"/>
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+    <g id="open">
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+</g>
+        <g class="substation-diagram BREAKER ddcpl1" id="ddcpl1" transform="matrix(0.0,1.0,-1.0,0.0,130.0,1000.0)">
+    <g class="closed" id="closed">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="15" x1="10" x2="10" y1="5"/>
+    </g>
+    <g class="open" id="open">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="10" x1="5" x2="15" y1="10"/>
+    </g>
+</g>
+        <g class="substation-diagram DISCONNECTOR dscpl2" id="dscpl2" transform="translate(91.0,1071.0)">
+    <g id="closed">
+        <line y2="8" x1="0" x2="8" y1="0"/>
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+    <g id="open">
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+</g>
+        <g class="substation-diagram DISCONNECTOR dload3" id="dload3" transform="translate(191.0,1046.0)">
+    <g id="closed">
+        <line y2="8" x1="0" x2="8" y1="0"/>
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+    <g id="open">
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+</g>
+        <g class="substation-diagram BREAKER bload3" id="bload3" transform="translate(185.0,885.0)">
+    <g class="closed" id="closed">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="15" x1="10" x2="10" y1="5"/>
+    </g>
+    <g class="open" id="open">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="10" x1="5" x2="15" y1="10"/>
+    </g>
+</g>
+        <g class="substation-diagram DISCONNECTOR dgen4" id="dgen4" transform="translate(291.0,1071.0)">
+    <g id="closed">
+        <line y2="8" x1="0" x2="8" y1="0"/>
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+    <g id="open">
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+</g>
+        <g class="substation-diagram BREAKER bgen4" id="bgen4" transform="translate(285.0,1220.0)">
+    <g class="closed" id="closed">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="15" x1="10" x2="10" y1="5"/>
+    </g>
+    <g class="open" id="open">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="10" x1="5" x2="15" y1="10"/>
+    </g>
+</g>
+        <g class="substation-diagram DISCONNECTOR dtrf21" id="dtrf21" transform="translate(241.0,1046.0)">
+    <g id="closed">
+        <line y2="8" x1="0" x2="8" y1="0"/>
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+    <g id="open">
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+</g>
+        <g class="substation-diagram BREAKER btrf21" id="btrf21" transform="translate(235.0,885.0)">
+    <g class="closed" id="closed">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="15" x1="10" x2="10" y1="5"/>
+    </g>
+    <g class="open" id="open">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="10" x1="5" x2="15" y1="10"/>
+    </g>
+</g>
+        <g class="substation-diagram DISCONNECTOR dtrf22" id="dtrf22" transform="translate(391.0,1071.0)">
+    <g id="closed">
+        <line y2="8" x1="0" x2="8" y1="0"/>
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+    <g id="open">
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+</g>
+        <g class="substation-diagram BREAKER btrf22" id="btrf22" transform="translate(385.0,1220.0)">
+    <g class="closed" id="closed">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="15" x1="10" x2="10" y1="5"/>
+    </g>
+    <g class="open" id="open">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="10" x1="5" x2="15" y1="10"/>
+    </g>
+</g>
+        <g class="substation-diagram DISCONNECTOR dtrf23" id="dtrf23" transform="translate(441.0,1071.0)">
+    <g id="closed">
+        <line y2="8" x1="0" x2="8" y1="0"/>
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+    <g id="open">
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+</g>
+        <g class="substation-diagram BREAKER btrf23" id="btrf23" transform="translate(435.0,1220.0)">
+    <g class="closed" id="closed">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="15" x1="10" x2="10" y1="5"/>
+    </g>
+    <g class="open" id="open">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="10" x1="5" x2="15" y1="10"/>
+    </g>
+</g>
+        <g class="substation-diagram DISCONNECTOR dtrf24" id="dtrf24" transform="translate(341.0,1046.0)">
+    <g id="closed">
+        <line y2="8" x1="0" x2="8" y1="0"/>
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+    <g id="open">
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+</g>
+        <g class="substation-diagram BREAKER btrf24" id="btrf24" transform="translate(335.0,885.0)">
+    <g class="closed" id="closed">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="15" x1="10" x2="10" y1="5"/>
+    </g>
+    <g class="open" id="open">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="10" x1="5" x2="15" y1="10"/>
+    </g>
+</g>
+        <g class="substation-diagram NODE FICT_vl2_dscpl1Fictif" id="FICT_vl2_dscpl1Fictif" transform="matrix(0.0,1.0,-1.0,0.0,149.0,1006.0)"/>
+        <g class="substation-diagram NODE FICT_vl2_dload3Fictif" id="FICT_vl2_dload3Fictif" transform="translate(191.0,1016.0)"/>
+        <g class="substation-diagram NODE FICT_vl2_dtrf21Fictif" id="FICT_vl2_dtrf21Fictif" transform="translate(241.0,1016.0)"/>
+        <g class="substation-diagram NODE FICT_vl2_dtrf24Fictif" id="FICT_vl2_dtrf24Fictif" transform="translate(341.0,1016.0)"/>
+        <g class="substation-diagram NODE FICT_vl2_dscpl2Fictif" id="FICT_vl2_dscpl2Fictif" transform="matrix(0.0,1.0,-1.0,0.0,99.0,1006.0)"/>
+        <g class="substation-diagram NODE FICT_vl2_dgen4Fictif" id="FICT_vl2_dgen4Fictif" transform="translate(291.0,1101.0)"/>
+        <g class="substation-diagram NODE FICT_vl2_dtrf22Fictif" id="FICT_vl2_dtrf22Fictif" transform="translate(391.0,1101.0)"/>
+        <g class="substation-diagram NODE FICT_vl2_dtrf23Fictif" id="FICT_vl2_dtrf23Fictif" transform="translate(441.0,1101.0)"/>
+        <polyline class="wire_vl2" points="145.0,1050.0 145.0,1050.0" id="vl2_Wire0"/>
+        <polyline class="wire_vl2" points="95.0,1075.0 95.0,1075.0" id="vl2_Wire1"/>
+        <polyline class="wire_vl2" points="195.0,1050.0 195.0,1050.0" id="vl2_Wire2"/>
+        <polyline class="wire_vl2" points="195.0,774.0 195.0,885.0" id="vl2_Wire3"/>
+        <polyline class="wire_vl2" points="295.0,1075.0 295.0,1075.0" id="vl2_Wire4"/>
+        <polyline class="wire_vl2" points="295.0,1349.0 295.0,1240.0" id="vl2_Wire5"/>
+        <polyline class="wire_vl2" points="245.0,1050.0 245.0,1050.0" id="vl2_Wire6"/>
+        <polyline class="wire_vl2" points="245.0,885.0 245.0,774.0" id="vl2_Wire7"/>
+        <polyline class="wire_vl2" points="395.0,1075.0 395.0,1075.0" id="vl2_Wire8"/>
+        <polyline class="wire_vl2" points="395.0,1240.0 395.0,1351.0" id="vl2_Wire9"/>
+        <polyline class="wire_vl2" points="445.0,1075.0 445.0,1075.0" id="vl2_Wire10"/>
+        <polyline class="wire_vl2" points="445.0,1240.0 445.0,1351.0" id="vl2_Wire11"/>
+        <polyline class="wire_vl2" points="345.0,1050.0 345.0,1050.0" id="vl2_Wire12"/>
+        <polyline class="wire_vl2" points="345.0,885.0 345.0,774.0" id="vl2_Wire13"/>
+        <polyline class="wire_vl2" points="130.0,1010.0 145.0,1010.0" id="vl2_Wire14"/>
+        <polyline class="wire_vl2" points="145.0,1050.0 145.0,1010.0" id="vl2_Wire15"/>
+        <polyline class="wire_vl2" points="195.0,905.0 195.0,1020.0" id="vl2_Wire16"/>
+        <polyline class="wire_vl2" points="195.0,1050.0 195.0,1020.0" id="vl2_Wire17"/>
+        <polyline class="wire_vl2" points="245.0,905.0 245.0,1020.0" id="vl2_Wire18"/>
+        <polyline class="wire_vl2" points="245.0,1050.0 245.0,1020.0" id="vl2_Wire19"/>
+        <polyline class="wire_vl2" points="345.0,905.0 345.0,1020.0" id="vl2_Wire20"/>
+        <polyline class="wire_vl2" points="345.0,1050.0 345.0,1020.0" id="vl2_Wire21"/>
+        <polyline class="wire_vl2" points="110.0,1010.0 95.0,1010.0" id="vl2_Wire22"/>
+        <polyline class="wire_vl2" points="95.0,1075.0 95.0,1010.0" id="vl2_Wire23"/>
+        <polyline class="wire_vl2" points="295.0,1220.0 295.0,1105.0" id="vl2_Wire24"/>
+        <polyline class="wire_vl2" points="295.0,1075.0 295.0,1105.0" id="vl2_Wire25"/>
+        <polyline class="wire_vl2" points="395.0,1220.0 395.0,1105.0" id="vl2_Wire26"/>
+        <polyline class="wire_vl2" points="395.0,1075.0 395.0,1105.0" id="vl2_Wire27"/>
+        <polyline class="wire_vl2" points="445.0,1220.0 445.0,1105.0" id="vl2_Wire28"/>
+        <polyline class="wire_vl2" points="445.0,1075.0 445.0,1105.0" id="vl2_Wire29"/>
+        <g class="substation-diagram BUSBAR_SECTION bbs7" id="bbs7" transform="translate(80.0,1740.0)">
+            <line y2="0" x1="0" class="bus_vl3" x2="80.0" y1="0"/>
+            <text x="-5" font-size="8" y="-5" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs7</text>
+        </g>
+        <g class="substation-diagram LOAD load4" id="load4" transform="translate(87.0,1455.5)">
+    <rect height="9" width="16"/>
+    <line y2="9" x1="0" x2="16" y1="0"/>
+    <line y2="9" x1="16" x2="0" y1="0"/>
+<text x="-5" font-size="8" y="-5" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">load4</text>
+        </g>
+        <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf5_TWO" id="trf5_TWO" transform="translate(138.5,2016.0)">
+    <circle r="4" cx="4" cy="4"/>
+    <circle r="4" cx="9" cy="4"/>
+<text x="-5" font-size="8" y="21" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf5</text>
+        </g>
+        <g class="substation-diagram DISCONNECTOR dload4" id="dload4" transform="translate(91.0,1736.0)">
+    <g id="closed">
+        <line y2="8" x1="0" x2="8" y1="0"/>
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+    <g id="open">
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+</g>
+        <g class="substation-diagram BREAKER bload4" id="bload4" transform="translate(85.0,1575.0)">
+    <g class="closed" id="closed">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="15" x1="10" x2="10" y1="5"/>
+    </g>
+    <g class="open" id="open">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="10" x1="5" x2="15" y1="10"/>
+    </g>
+</g>
+        <g class="substation-diagram DISCONNECTOR dtrf25" id="dtrf25" transform="translate(141.0,1736.0)">
+    <g id="closed">
+        <line y2="8" x1="0" x2="8" y1="0"/>
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+    <g id="open">
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+</g>
+        <g class="substation-diagram BREAKER btrf25" id="btrf25" transform="translate(135.0,1885.0)">
+    <g class="closed" id="closed">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="15" x1="10" x2="10" y1="5"/>
+    </g>
+    <g class="open" id="open">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="10" x1="5" x2="15" y1="10"/>
+    </g>
+</g>
+        <g class="substation-diagram NODE FICT_vl3_dload4Fictif" id="FICT_vl3_dload4Fictif" transform="translate(91.0,1706.0)"/>
+        <g class="substation-diagram NODE FICT_vl3_dtrf25Fictif" id="FICT_vl3_dtrf25Fictif" transform="translate(141.0,1766.0)"/>
+        <polyline class="wire_vl3" points="95.0,1740.0 95.0,1740.0" id="vl3_Wire0"/>
+        <polyline class="wire_vl3" points="95.0,1575.0 95.0,1464.0" id="vl3_Wire1"/>
+        <polyline class="wire_vl3" points="145.0,1740.0 145.0,1740.0" id="vl3_Wire2"/>
+        <polyline class="wire_vl3" points="145.0,1905.0 145.0,2016.0" id="vl3_Wire3"/>
+        <polyline class="wire_vl3" points="95.0,1595.0 95.0,1710.0" id="vl3_Wire4"/>
+        <polyline class="wire_vl3" points="95.0,1740.0 95.0,1710.0" id="vl3_Wire5"/>
+        <polyline class="wire_vl3" points="145.0,1885.0 145.0,1770.0" id="vl3_Wire6"/>
+        <polyline class="wire_vl3" points="145.0,1740.0 145.0,1770.0" id="vl3_Wire7"/>
+        <polyline class="wire_vl1" points="145.0,80.0 145.0,50.0 40.0,50.0 40.0,740.0 245.0,740.0 245.0,770.0" id="vl1_vl2_Wire0"/>
+        <polyline class="wire_vl1" points="495.0,80.0 495.0,20.0 10.0,20.0 10.0,1385.0 395.0,1385.0 395.0,1355.0" id="vl1_vl2_Wire1"/>
+        <polyline class="wire_vl1" points="245.0,665.0 245.0,695.0 630.0,695.0 630.0,1415.0 445.0,1415.0 445.0,1355.0" id="vl1_vl2_Wire2"/>
+        <polyline class="wire_vl1" points="445.0,665.0 445.0,725.0 345.0,725.0 345.0,770.0" id="vl1_vl2_Wire3"/>
+        <polyline class="wire_vl1" points="295.0,80.0 295.0,-10.0 -20.0,-10.0 -20.0,2050.0 145.0,2050.0 145.0,2020.0" id="vl1_vl3_Wire4"/>
+    </g>
+</svg>

@@ -75,9 +75,8 @@ public final class VoltageLevelDiagram {
         }
 
         try (Writer svgWriter = Files.newBufferedWriter(svgFile, StandardCharsets.UTF_8);
-             Writer metadataWriter = Files.newBufferedWriter(dir.resolve(svgFileName.replace(".svg", "_metadata.json")), StandardCharsets.UTF_8);
-             Writer graphWriter = debug ? Files.newBufferedWriter(dir.resolve(svgFileName.replace(".svg", "_graph.json")), StandardCharsets.UTF_8) : null) {
-            writeSvg(componentLibrary, layoutParameters, styleProvider, svgWriter, metadataWriter, graphWriter);
+             Writer metadataWriter = Files.newBufferedWriter(dir.resolve(svgFileName.replace(".svg", "_metadata.json")), StandardCharsets.UTF_8)) {
+            writeSvg(componentLibrary, layoutParameters, styleProvider, svgWriter, metadataWriter);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -86,7 +85,7 @@ public final class VoltageLevelDiagram {
     public void writeSvg(ComponentLibrary componentLibrary, LayoutParameters layoutParameters,
                          SubstationDiagramStyleProvider styleProvider,
                          Writer svgWriter,
-                         Writer metadataWriter, Writer graphWriter) {
+                         Writer metadataWriter) {
         Objects.requireNonNull(componentLibrary);
         Objects.requireNonNull(layoutParameters);
         Objects.requireNonNull(svgWriter);
@@ -94,11 +93,6 @@ public final class VoltageLevelDiagram {
 
         // calculate coordinate
         layout.run(layoutParameters);
-
-        // write graph debug file
-        if (graphWriter != null) {
-            graph.whenSerializingUsingJsonAnyGetterThenCorrect(graphWriter);
-        }
 
         // write SVG file
         LOGGER.info("Writing SVG and JSON metadata files...");

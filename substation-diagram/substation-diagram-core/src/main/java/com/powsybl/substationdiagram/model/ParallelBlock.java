@@ -6,9 +6,10 @@
  */
 package com.powsybl.substationdiagram.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -19,7 +20,7 @@ import java.util.List;
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
 public class ParallelBlock extends AbstractBlock {
-    @JsonManagedReference
+
     private final List<Block> subBlocks = new ArrayList<>();
 
     public ParallelBlock(List<Block> subBlocks, Cell cell, boolean allowMerge) {
@@ -34,7 +35,10 @@ public class ParallelBlock extends AbstractBlock {
     }
 
     public ParallelBlock(List<Block> subBlocks, boolean allowMerge) {
-        type = Type.PARALLEL;
+        super(Type.PARALLEL);
+        if (subBlocks.isEmpty()) {
+            throw new IllegalArgumentException("Empty block list");
+        }
         subBlocks.forEach(child -> {
             if (child.getType() == Type.PARALLEL && allowMerge) {
                 this.subBlocks.addAll(((ParallelBlock) child).getSubBlocks());
@@ -56,8 +60,13 @@ public class ParallelBlock extends AbstractBlock {
         setCardinalityEnd(this.subBlocks.size());
     }
 
+    @Override
+    public Graph getGraph() {
+        return subBlocks.get(0).getGraph();
+    }
+
     public List<Block> getSubBlocks() {
-        return new ArrayList<>(subBlocks);
+        return subBlocks;
     }
 
     @Override
@@ -192,5 +201,20 @@ public class ParallelBlock extends AbstractBlock {
             sub.setYSpan(getCoord().getYSpan());
             sub.calculateCoord(layoutParam);
         });
+    }
+
+    @Override
+    protected void writeJsonContent(JsonGenerator generator) throws IOException {
+        generator.writeFieldName("nodes");
+        generator.writeStartArray();
+        for (Block subBlock : subBlocks) {
+            subBlock.writeJson(generator);
+        }
+        generator.writeEndArray();
+    }
+
+    @Override
+    public String toString() {
+        return "ParallelBlock(subBlocks=" + subBlocks + ")";
     }
 }

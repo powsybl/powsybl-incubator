@@ -6,9 +6,11 @@
  */
 package com.powsybl.substationdiagram.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.powsybl.commons.PowsyblException;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -19,9 +21,9 @@ import java.util.List;
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
 public class PrimaryBlock extends AbstractBlock {
-    private List<Node> nodes = new ArrayList<>();
 
-    @JsonIgnore
+    private final List<Node> nodes = new ArrayList<>();
+
     private final List<PrimaryBlock> stackableBlocks;
 
     /**
@@ -36,7 +38,10 @@ public class PrimaryBlock extends AbstractBlock {
      */
 
     public PrimaryBlock(List<Node> nodes) {
-        type = Type.PRIMARY;
+        super(Type.PRIMARY);
+        if (nodes.isEmpty()) {
+            throw new PowsyblException("Empty node list");
+        }
         this.stackableBlocks = new ArrayList<>();
         this.nodes.addAll(nodes);
         //convention of orientation, to be respected
@@ -51,6 +56,11 @@ public class PrimaryBlock extends AbstractBlock {
     public PrimaryBlock(List<Node> nodes, Cell cell) {
         this(nodes);
         setCell(cell);
+    }
+
+    @Override
+    public Graph getGraph() {
+        return nodes.get(0).getGraph();
     }
 
     @Override
@@ -199,5 +209,20 @@ public class PrimaryBlock extends AbstractBlock {
             return 0;
         }
         return sign * getCoord().getYSpan() / (nodes.size() - 1);
+    }
+
+    @Override
+    protected void writeJsonContent(JsonGenerator generator) throws IOException {
+        generator.writeFieldName("nodes");
+        generator.writeStartArray();
+        for (Node node : nodes) {
+            node.writeJson(generator);
+        }
+        generator.writeEndArray();
+    }
+
+    @Override
+    public String toString() {
+        return "PrimaryBlock(nodes=" + nodes  + ")";
     }
 }

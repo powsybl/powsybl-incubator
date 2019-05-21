@@ -43,8 +43,4 @@ public class NewtonRaphsonLogger extends DefaultNewtonRaphsonObserver {
                 .limit(count)
                 .forEach(e -> LOGGER.trace("Mismatch for {}: {}", e.getKey(), e.getValue()));
     }
-
-    @Override
-    public void afterEquationEvaluation(double[] fx, EquationSystem equationSystem, int iteration) {
-    }
 }

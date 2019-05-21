@@ -57,51 +57,6 @@ public class LfDanglingLineBranch extends AbstractLfBranch {
     }
 
     @Override
-    public double r() {
-        return r;
-    }
-
-    @Override
-    public double x() {
-        return x;
-    }
-
-    @Override
-    public double z() {
-        return z;
-    }
-
-    @Override
-    public double y() {
-        return y;
-    }
-
-    @Override
-    public double ksi() {
-        return ksi;
-    }
-
-    @Override
-    public double g1() {
-        return g1;
-    }
-
-    @Override
-    public double g2() {
-        return g2;
-    }
-
-    @Override
-    public double b1() {
-        return b1;
-    }
-
-    @Override
-    public double b2() {
-        return b2;
-    }
-
-    @Override
     public double r1() {
         return 1;
     }

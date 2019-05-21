@@ -30,6 +30,7 @@ import com.powsybl.substationdiagram.model.Edge;
 import com.powsybl.substationdiagram.model.FeederNode;
 import com.powsybl.substationdiagram.model.Graph;
 import com.powsybl.substationdiagram.model.Node;
+import com.powsybl.substationdiagram.model.Side;
 import com.powsybl.substationdiagram.model.SubstationGraph;
 import org.apache.batik.anim.dom.SVGOMDocument;
 import org.apache.batik.dom.GenericDOMImplementation;
@@ -58,9 +59,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
@@ -282,7 +287,7 @@ public class SVGWriter {
             vLayout.run(layoutParameters);
 
             // Calculate the coordinate of the voltageLevel graph inside the substation graph
-            Coord posVLGraph = sLayout.run(layoutParameters, vlGraph);
+            Coord posVLGraph = sLayout.calculateCoordVoltageLevel(layoutParameters, vlGraph);
 
             graphX += posVLGraph.getX() + (sLayout instanceof HorizontalSubstationLayout ? layoutParameters.getHorizontalSubstationPadding() : 0);
             graphY += posVLGraph.getY() + (sLayout instanceof VerticalSubstationLayout ? layoutParameters.getVerticalSubstationPadding() : 0);
@@ -317,11 +322,7 @@ public class SVGWriter {
             drawEdges(root, vlGraph, metadata, anchorPointProvider);
         }
 
-        // Drawing the lines between the voltageLevels
-        AnchorPointProvider anchorPointProvider = (type, id) ->
-            componentLibrary.getAnchorPoints(type);
-
-        drawEdges(root, graph, metadata, anchorPointProvider);
+        drawSnakeLines(root, graph, metadata, sLayout);
 
         document.adoptNode(root);
         document.getDocumentElement().appendChild(root);
@@ -362,7 +363,7 @@ public class SVGWriter {
     }
 
     /*
-     * Drawing the graph nodes
+     * Drawing the voltageLevel graph nodes
      */
     private void drawNodes(Element root, Graph graph, GraphMetadata metadata, AnchorPointProvider anchorPointProvider) {
         graph.getNodes().forEach(node -> {
@@ -414,6 +415,9 @@ public class SVGWriter {
         });
     }
 
+    /*
+     * Drawing the voltageLevel graph busbar sections
+     */
     private void drawBus(BusNode node, Element g) {
         Element line = g.getOwnerDocument().createElement("line");
         line.setAttribute("x1", "0");
@@ -433,6 +437,9 @@ public class SVGWriter {
                 + (layoutParameters.getTranslateY() + node.getY()) + ")");
     }
 
+    /*
+     * Drawing the voltageLevel graph busbar section names and feeder names
+     */
     private void drawLabel(String str, boolean rotated, int xShift, int yShift, Element g) {
         Element label = g.getOwnerDocument().createElement("text");
         label.setAttribute("x", Integer.toString(xShift));
@@ -503,7 +510,7 @@ public class SVGWriter {
     }
 
     /*
-     * Drawing the graph edges
+     * Drawing the voltageLevel graph edges
      */
     private void drawEdges(Element root, Graph graph, GraphMetadata metadata, AnchorPointProvider anchorPointProvider) {
         String vId = graph.getVoltageLevel().getId();
@@ -554,63 +561,8 @@ public class SVGWriter {
     }
 
     /*
-     * Drawing the substation graph edges
+     * Calculating the polyline points for the voltageLevel graph edge
      */
-    private void drawEdges(Element root, SubstationGraph graph, GraphMetadata metadata, AnchorPointProvider anchorPointProvider) {
-        for (Edge edge : graph.getEdges()) {
-            String vId1 = edge.getNode1().getGraph().getVoltageLevel().getId();
-            String vId2 = edge.getNode2().getGraph().getVoltageLevel().getId();
-
-            String wireId = vId1 + "_" + vId2 + "_" + "Wire" + graph.getEdges().indexOf(edge);
-            Element g = root.getOwnerDocument().createElement("polyline");
-            g.setAttribute("id", wireId);
-
-            WireConnection anchorPoints = WireConnection.searchBetterAnchorPoints(anchorPointProvider, edge.getNode1(), edge.getNode2());
-
-            // Determine points of the polyline
-            List<Double> pol = calculatePolylinePoints(edge, anchorPoints.getAnchorPoint1(),
-                    anchorPoints.getAnchorPoint2());
-
-            StringBuilder polPoints = new StringBuilder();
-            for (int i = 0; i < pol.size(); i++) {
-                if (i != 0) {
-                    if (i % 2 == 0) {
-                        polPoints.append(" ");
-                    } else {
-                        polPoints.append(",");
-                    }
-                }
-                if (i % 2 == 0) {
-                    double x = pol.get(i) + layoutParameters.getTranslateX();
-                    polPoints.append(x);
-                } else {
-                    double y = pol.get(i) + layoutParameters.getTranslateY();
-                    polPoints.append(y);
-                }
-            }
-
-            g.setAttribute("points", polPoints.toString());
-            String vId;
-            if (edge.getNode1().getGraph().getVoltageLevel().getNominalV() > edge.getNode2().getGraph().getVoltageLevel().getNominalV()) {
-                vId = vId1;
-            } else {
-                vId = vId2;
-            }
-
-            g.setAttribute(CLASS, SubstationDiagramStyles.WIRE_STYLE_CLASS + "_" + SubstationDiagramStyles.escapeClassName(vId));
-            root.appendChild(g);
-
-            try {
-                metadata.addWireMetadata(new GraphMetadata.WireMetadata(wireId,
-                        URLEncoder.encode(edge.getNode1().getId(), StandardCharsets.UTF_8.name()),
-                        URLEncoder.encode(edge.getNode2().getId(), StandardCharsets.UTF_8.name()),
-                        layoutParameters.isDrawStraightWires()));
-            } catch (UnsupportedEncodingException e) {
-                throw new UncheckedIOException(e);
-            }
-        }
-    }
-
     private List<Double> calculatePolylinePoints(Edge edge, AnchorPoint anchorPoint1, AnchorPoint anchorPoint2) {
         double x1 = edge.getNode1().getX() + anchorPoint1.getX();
         double y1 = edge.getNode1().getY() + anchorPoint1.getY();
@@ -650,5 +602,75 @@ public class SVGWriter {
                 break;
         }
         return pol;
+    }
+
+    /*
+     * Drawing the substation graph edges (snakelines between voltageLevel diagram)
+     */
+    private void drawSnakeLines(Element root, SubstationGraph graph, GraphMetadata metadata,
+                                SubstationLayout sLayout) {
+
+        Map<Cell.Direction, Integer> nbSnakeLinesTopBottom = EnumSet.allOf(Cell.Direction.class).stream().collect(Collectors.toMap(Function.identity(), v -> 0));
+        Map<String, Integer> nbSnakeLinesBetween = graph.getNodes().stream().collect(Collectors.toMap(g -> g.getVoltageLevel().getId(), v -> 0));
+
+        Map<Side, Integer> nbSnakeLinesLeftRight = EnumSet.allOf(Side.class).stream().collect(Collectors.toMap(Function.identity(), v -> 0));
+        Map<String, Integer> nbSnakeLinesBottomVL = graph.getNodes().stream().collect(Collectors.toMap(g -> g.getVoltageLevel().getId(), v -> 0));
+        Map<String, Integer> nbSnakeLinesTopVL = graph.getNodes().stream().collect(Collectors.toMap(g -> g.getVoltageLevel().getId(), v -> 0));
+
+        for (Edge edge : graph.getEdges()) {
+            String vId1 = edge.getNode1().getGraph().getVoltageLevel().getId();
+            String vId2 = edge.getNode2().getGraph().getVoltageLevel().getId();
+
+            String wireId = vId1 + "_" + vId2 + "_" + "Wire" + graph.getEdges().indexOf(edge);
+            Element g = root.getOwnerDocument().createElement("polyline");
+            g.setAttribute("id", wireId);
+
+            // Determine points of the snakeLine
+            List<Double> pol = sLayout.calculatePolylineSnakeLine(layoutParameters,
+                                                                  edge,
+                                                                  nbSnakeLinesTopBottom,
+                                                                  nbSnakeLinesLeftRight,
+                                                                  nbSnakeLinesBetween,
+                                                                  nbSnakeLinesBottomVL,
+                                                                  nbSnakeLinesTopVL);
+
+            StringBuilder polPoints = new StringBuilder();
+            for (int i = 0; i < pol.size(); i++) {
+                if (i != 0) {
+                    if (i % 2 == 0) {
+                        polPoints.append(" ");
+                    } else {
+                        polPoints.append(",");
+                    }
+                }
+                if (i % 2 == 0) {
+                    double x = pol.get(i) + layoutParameters.getTranslateX();
+                    polPoints.append(x);
+                } else {
+                    double y = pol.get(i) + layoutParameters.getTranslateY();
+                    polPoints.append(y);
+                }
+            }
+
+            g.setAttribute("points", polPoints.toString());
+            String vId;
+            if (edge.getNode1().getGraph().getVoltageLevel().getNominalV() > edge.getNode2().getGraph().getVoltageLevel().getNominalV()) {
+                vId = vId1;
+            } else {
+                vId = vId2;
+            }
+
+            g.setAttribute(CLASS, SubstationDiagramStyles.WIRE_STYLE_CLASS + "_" + SubstationDiagramStyles.escapeClassName(vId));
+            root.appendChild(g);
+
+            try {
+                metadata.addWireMetadata(new GraphMetadata.WireMetadata(wireId,
+                        URLEncoder.encode(edge.getNode1().getId(), StandardCharsets.UTF_8.name()),
+                        URLEncoder.encode(edge.getNode2().getId(), StandardCharsets.UTF_8.name()),
+                        layoutParameters.isDrawStraightWires()));
+            } catch (UnsupportedEncodingException e) {
+                throw new UncheckedIOException(e);
+            }
+        }
     }
 }

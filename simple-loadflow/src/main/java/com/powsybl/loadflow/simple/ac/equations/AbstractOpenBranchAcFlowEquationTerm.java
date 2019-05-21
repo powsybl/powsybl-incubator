@@ -12,28 +12,24 @@ import com.powsybl.loadflow.simple.network.BranchCharacteristics;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-abstract class AbstractOpenBranchAcEquationTerm implements EquationTerm {
+abstract class AbstractOpenBranchAcFlowEquationTerm extends AbstractBranchAcFlowEquationTerm {
 
-    protected final BranchCharacteristics bc;
+    protected final Equation equation;
 
-    private final Equation equation;
+    protected final List<Variable> variables;
 
-    private final List<Variable> variables;
+    protected double shunt;
 
-    protected AbstractOpenBranchAcEquationTerm(BranchCharacteristics bc, EquationType equationType, VariableType variableType,
-                                               Bus bus, EquationContext equationContext) {
-        this.bc = Objects.requireNonNull(bc);
-        Objects.requireNonNull(equationType);
-        Objects.requireNonNull(variableType);
-        Objects.requireNonNull(bus);
-        Objects.requireNonNull(equationContext);
+    protected AbstractOpenBranchAcFlowEquationTerm(BranchCharacteristics bc, EquationType equationType, VariableType variableType,
+                                                   Bus bus, EquationContext equationContext) {
+        super(bc);
         equation = equationContext.getEquation(bus.getId(), equationType);
         variables = Collections.singletonList(equationContext.getVariable(bus.getId(), variableType));
+        shunt = (g1 + y * sinKsi) * (g1 + y * sinKsi) + (-b1 + y * cosKsi) * (-b1 + y * cosKsi);
     }
 
     @Override
@@ -44,10 +40,5 @@ abstract class AbstractOpenBranchAcEquationTerm implements EquationTerm {
     @Override
     public List<Variable> getVariables() {
         return variables;
-    }
-
-    @Override
-    public double rhs(Variable variable) {
-        return 0;
     }
 }

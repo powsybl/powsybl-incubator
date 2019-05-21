@@ -26,7 +26,7 @@ public class ShuntCompensatorReactiveFlowUpdate implements VariableUpdate {
     }
 
     @Override
-    public void update(double[] x) {
-        sc.getTerminal().setQ(q.eval(x));
+    public void update() {
+        sc.getTerminal().setQ(q.eval());
     }
 }

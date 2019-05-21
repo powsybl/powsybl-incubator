@@ -40,6 +40,9 @@ public class LayoutParameters {
 
     private boolean drawStraightWires = false;
 
+    private double horizontalSnakeLinePadding = 20;
+    private double verticalSnakeLinePadding = 20;
+
     public LayoutParameters() {
     }
 
@@ -61,6 +64,8 @@ public class LayoutParameters {
         horizontalSubstationPadding = other.horizontalSubstationPadding;
         verticalSubstationPadding = other.verticalSubstationPadding;
         drawStraightWires = other.drawStraightWires;
+        horizontalSnakeLinePadding = other.horizontalSnakeLinePadding;
+        verticalSnakeLinePadding = other.verticalSnakeLinePadding;
     }
 
     public double getTranslateX() {
@@ -204,6 +209,24 @@ public class LayoutParameters {
 
     public LayoutParameters setDrawStraightWires(boolean drawStraightWires) {
         this.drawStraightWires = drawStraightWires;
+        return this;
+    }
+
+    public double getHorizontalSnakeLinePadding() {
+        return horizontalSnakeLinePadding;
+    }
+
+    public LayoutParameters setHorizontalSnakeLinePadding(double horizontalSnakeLinePadding) {
+        this.horizontalSnakeLinePadding = horizontalSnakeLinePadding;
+        return this;
+    }
+
+    public double getVerticalSnakeLinePadding() {
+        return verticalSnakeLinePadding;
+    }
+
+    public LayoutParameters setVerticalSnakeLinePadding(double verticalSnakeLinePadding) {
+        this.verticalSnakeLinePadding = verticalSnakeLinePadding;
         return this;
     }
 }

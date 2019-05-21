@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.powsybl.loadflow.simple.dc;
+package com.powsybl.loadflow.simple.ac;
 
 import com.powsybl.computation.ComputationManager;
 import com.powsybl.iidm.network.Network;
@@ -18,20 +18,20 @@ import java.util.Objects;
 /**
  * @author Sylvain Leclerc <sylvain.leclerc at rte-france.com>
  */
-public class SimpleDcLoadFlowFactory implements LoadFlowFactory {
+public class SimpleAcLoadFlowFactory implements LoadFlowFactory {
 
     private final MatrixFactory matrixFactory;
 
-    public SimpleDcLoadFlowFactory() {
+    public SimpleAcLoadFlowFactory() {
         this(new SparseMatrixFactory());
     }
 
-    public SimpleDcLoadFlowFactory(MatrixFactory matrixFactory) {
+    public SimpleAcLoadFlowFactory(MatrixFactory matrixFactory) {
         this.matrixFactory = Objects.requireNonNull(matrixFactory);
     }
 
     @Override
     public LoadFlow create(Network network, ComputationManager computationManager, int i) {
-        return new SimpleDcLoadFlow(network, matrixFactory);
+        return new SimpleAcLoadFlow(network, matrixFactory);
     }
 }

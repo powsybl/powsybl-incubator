@@ -28,20 +28,24 @@ public interface EquationTerm {
     List<Variable> getVariables();
 
     /**
+     * Update equation term using {@code x} variable values.
+     * @param x variables values vector
+     */
+    void update(double[] x);
+
+    /**
      * Evaluate equation term.
-     * @param x the state vector
      * @return value of the equation term
      */
-    double eval(double[] x);
+    double eval();
 
     /**
      * Get partial derivative.
      *
      * @param variable the variable the partial derivative is with respect to
-     * @param x the state vector
      * @return value of the partial derivative
      */
-    double der(Variable variable, double[] x);
+    double der(Variable variable);
 
     /**
      * Get part of the partial derivative that has to be moved to right hand side.

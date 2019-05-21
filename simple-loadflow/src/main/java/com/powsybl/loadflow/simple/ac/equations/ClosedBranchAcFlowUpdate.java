@@ -37,10 +37,10 @@ public class ClosedBranchAcFlowUpdate implements VariableUpdate {
     }
 
     @Override
-    public void update(double[] x) {
-        branch.getTerminal1().setP(p1.eval(x));
-        branch.getTerminal1().setQ(q1.eval(x));
-        branch.getTerminal2().setP(p2.eval(x));
-        branch.getTerminal2().setQ(q2.eval(x));
+    public void update() {
+        branch.getTerminal1().setP(p1.eval());
+        branch.getTerminal1().setQ(q1.eval());
+        branch.getTerminal2().setP(p2.eval());
+        branch.getTerminal2().setQ(q2.eval());
     }
 }

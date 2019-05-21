@@ -34,10 +34,6 @@ public class BranchCharacteristics {
     protected double a1;
     protected double a2;
 
-    protected double dcPower;
-
-    protected double shunt;
-
     public BranchCharacteristics(Branch branch) {
         this.branch = Objects.requireNonNull(branch);
         init();
@@ -59,9 +55,6 @@ public class BranchCharacteristics {
         z = Math.hypot(r, x);
         y = 1 / z;
         ksi = Math.atan2(r, x);
-
-        dcPower =  1 / x * branch.getTerminal1().getVoltageLevel().getNominalV() * r1 * branch.getTerminal2().getVoltageLevel().getNominalV() * r2;
-        shunt = (g1 + y * Math.sin(ksi)) * (g1 + y * Math.sin(ksi)) + (-b1 + y * Math.cos(ksi)) * (-b1 + y * Math.cos(ksi));
     }
 
     private void initLine(Line line) {
@@ -140,13 +133,5 @@ public class BranchCharacteristics {
 
     public double a2() {
         return a2;
-    }
-
-    public double dcPower() {
-        return dcPower;
-    }
-
-    public double shunt() {
-        return shunt;
     }
 }

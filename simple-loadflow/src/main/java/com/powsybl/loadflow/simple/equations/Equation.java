@@ -24,6 +24,11 @@ public class Equation implements Comparable<Equation> {
 
     private int row = -1;
 
+    /**
+     * true if this equation term is par of an equation that is part of a system to solve, false otherwise
+     */
+    private boolean partOfSystem = true;
+
     Equation(String id, EquationType type) {
         this.id = Objects.requireNonNull(id);
         this.type = Objects.requireNonNull(type);
@@ -43,6 +48,14 @@ public class Equation implements Comparable<Equation> {
 
     public void setRow(int row) {
         this.row = row;
+    }
+
+    public boolean isPartOfSystem() {
+        return partOfSystem;
+    }
+
+    public void setPartOfSystem(boolean partOfSystem) {
+        this.partOfSystem = partOfSystem;
     }
 
     void initTarget(NetworkContext network, double[] targets) {

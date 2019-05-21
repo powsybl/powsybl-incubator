@@ -29,6 +29,8 @@ public abstract class AbstractClosedBranchDcFlowEquationTerm implements Equation
 
     protected final Equation equation;
 
+    protected final double power;
+
     protected AbstractClosedBranchDcFlowEquationTerm(BranchCharacteristics bc, Bus bus1, Bus bus2,
                                                      Equation equation, EquationContext equationContext) {
         this.bc = Objects.requireNonNull(bc);
@@ -36,6 +38,7 @@ public abstract class AbstractClosedBranchDcFlowEquationTerm implements Equation
         ph1Var = equationContext.getVariable(bus1.getId(), VariableType.BUS_PHI);
         ph2Var = equationContext.getVariable(bus2.getId(), VariableType.BUS_PHI);
         variables = ImmutableList.of(ph1Var, ph2Var);
+        power =  1 / bc.x() * bc.getBranch().getTerminal1().getVoltageLevel().getNominalV() * bc.r1() * bc.getBranch().getTerminal2().getVoltageLevel().getNominalV() * bc.r2();
     }
 
     @Override

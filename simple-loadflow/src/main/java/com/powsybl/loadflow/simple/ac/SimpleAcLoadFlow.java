@@ -35,13 +35,18 @@ public class SimpleAcLoadFlow implements LoadFlow {
 
     private final MatrixFactory matrixFactory;
 
+    public SimpleAcLoadFlow(Network network) {
+        this.network = Objects.requireNonNull(network);
+        this.matrixFactory = new SparseMatrixFactory();
+    }
+
     public SimpleAcLoadFlow(Network network, MatrixFactory matrixFactory) {
         this.network = Objects.requireNonNull(network);
         this.matrixFactory = Objects.requireNonNull(matrixFactory);
     }
 
     public static SimpleAcLoadFlow create(Network network) {
-        return new SimpleAcLoadFlow(network, new SparseMatrixFactory());
+        return new SimpleAcLoadFlow(network);
     }
 
     @Override
@@ -78,7 +83,7 @@ public class SimpleAcLoadFlow implements LoadFlow {
                 .run(nrParameters);
 
         stopwatch.stop();
-        LOGGER.info("Ac loadflow ran in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        LOGGER.info("Ac loadflow ran in {} ms (status={})", stopwatch.elapsed(TimeUnit.MILLISECONDS), result.getStatus());
 
         Map<String, String> metrics = ImmutableMap.of("iterations", Integer.toString(result.getIterations()),
                 "status", result.getStatus().name());

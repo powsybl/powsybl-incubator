@@ -13,13 +13,12 @@ import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
 import com.powsybl.loadflow.LoadFlowResultImpl;
 import com.powsybl.loadflow.simple.dc.equations.DcEquationSystem;
-import com.powsybl.loadflow.simple.equations.EquationContext;
 import com.powsybl.loadflow.simple.equations.EquationSystem;
 import com.powsybl.loadflow.simple.network.NetworkContext;
-import com.powsybl.math.matrix.DenseMatrixFactory;
 import com.powsybl.math.matrix.LUDecomposition;
 import com.powsybl.math.matrix.Matrix;
 import com.powsybl.math.matrix.MatrixFactory;
+import com.powsybl.math.matrix.SparseMatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,12 +51,16 @@ public class SimpleDcLoadFlow implements LoadFlow {
     private final MatrixFactory matrixFactory;
 
     public SimpleDcLoadFlow(Network network) {
-        this(network, new DenseMatrixFactory());
+        this(network, new SparseMatrixFactory());
     }
 
     public SimpleDcLoadFlow(Network network, MatrixFactory matrixFactory) {
         this.network = Objects.requireNonNull(network);
         this.matrixFactory = Objects.requireNonNull(matrixFactory);
+    }
+
+    public static SimpleDcLoadFlow create(Network network) {
+        return new SimpleDcLoadFlow(network);
     }
 
     private static void balance(NetworkContext networkContext) {
@@ -89,15 +92,14 @@ public class SimpleDcLoadFlow implements LoadFlow {
 
         balance(networkContext);
 
-        EquationContext equationContext = new EquationContext();
-
-        EquationSystem equationSystem = DcEquationSystem.create(networkContext, equationContext);
+        EquationSystem equationSystem = DcEquationSystem.create(networkContext);
 
         double[] x = equationSystem.initState(loadFlowParameters.getVoltageInitMode());
 
         double[] targets = equationSystem.getTargets();
 
-        Matrix j = equationSystem.buildJacobian(matrixFactory, x);
+        equationSystem.updateEquationTerms(x);
+        Matrix j = equationSystem.buildJacobian(matrixFactory);
 
         double[] dx = Arrays.copyOf(targets, targets.length);
 
@@ -113,6 +115,7 @@ public class SimpleDcLoadFlow implements LoadFlow {
         }
 
         networkContext.resetState();
+        equationSystem.updateEquationTerms(dx);
         equationSystem.updateState(dx);
 
         stopwatch.stop();
@@ -123,7 +126,7 @@ public class SimpleDcLoadFlow implements LoadFlow {
 
     @Override
     public String getName() {
-        return "simple-dc-loadflow";
+        return "Simple DC loadflow";
     }
 
     @Override

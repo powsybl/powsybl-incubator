@@ -1,0 +1,9 @@
+----> MODEL test 
+----> config Default.
+FLOW
+total branch ends,non-calculated,ko,ok
+1,0,1,0
+BRANCH END
+id,type,pCgmes,qCgmes,pIidm,qIidm
+test,LINE-1.test,-10.0000,-10.0000,10.0000,10.0000
+

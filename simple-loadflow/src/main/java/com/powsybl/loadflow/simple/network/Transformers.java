@@ -58,9 +58,9 @@ public final class Transformers {
     }
 
     public static double getG1(TwoWindingsTransformer twt, boolean specificCompatibility) {
-        return getValue(specificCompatibility ? twt.getG1() / 2 : twt.getG1(),
-                twt.getRatioTapChanger() != null ? twt.getRatioTapChanger().getCurrentStep().getG1() : 0,
-                twt.getPhaseTapChanger() != null ? twt.getPhaseTapChanger().getCurrentStep().getG1() : 0);
+        return getValue(specificCompatibility ? twt.getG() / 2 : twt.getG(),
+                twt.getRatioTapChanger() != null ? twt.getRatioTapChanger().getCurrentStep().getG() : 0,
+                twt.getPhaseTapChanger() != null ? twt.getPhaseTapChanger().getCurrentStep().getG() : 0);
     }
 
     public static double getB1(TwoWindingsTransformer twt) {
@@ -68,9 +68,9 @@ public final class Transformers {
     }
 
     public static double getB1(TwoWindingsTransformer twt, boolean specificCompatibility) {
-        return getValue(specificCompatibility ? twt.getB1() / 2 : twt.getB1(),
-                twt.getRatioTapChanger() != null ? twt.getRatioTapChanger().getCurrentStep().getB1() : 0,
-                twt.getPhaseTapChanger() != null ? twt.getPhaseTapChanger().getCurrentStep().getB1() : 0);
+        return getValue(specificCompatibility ? twt.getB() / 2 : twt.getB(),
+                twt.getRatioTapChanger() != null ? twt.getRatioTapChanger().getCurrentStep().getB() : 0,
+                twt.getPhaseTapChanger() != null ? twt.getPhaseTapChanger().getCurrentStep().getB() : 0);
     }
 
 }

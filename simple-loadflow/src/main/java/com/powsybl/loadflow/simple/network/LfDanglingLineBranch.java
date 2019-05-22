@@ -32,11 +32,6 @@ public class LfDanglingLineBranch extends AbstractLfBranch {
     }
 
     @Override
-    public String getId() {
-        return danglingLine.getId() + "_BRANCH";
-    }
-
-    @Override
     public void setP1(double p1) {
         danglingLine.getTerminal().setP(p1);
     }

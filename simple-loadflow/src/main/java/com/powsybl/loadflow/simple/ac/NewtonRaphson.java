@@ -102,6 +102,7 @@ public class NewtonRaphson {
             } catch (Exception e) {
                 LOGGER.error(e.toString(), e);
                 status = NewtonRaphsonStatus.SOLVER_FAILED;
+                break;
             }
 
             observer.endIteration(iteration);

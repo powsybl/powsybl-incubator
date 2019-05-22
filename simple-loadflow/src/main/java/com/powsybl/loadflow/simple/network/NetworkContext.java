@@ -109,7 +109,12 @@ public class NetworkContext {
 
                 @Override
                 public void visitStaticVarCompensator(StaticVarCompensator staticVarCompensator) {
-                    throw new UnsupportedOperationException("TODO: static var compensator");
+                    if (staticVarCompensator.getRegulationMode() == StaticVarCompensator.RegulationMode.VOLTAGE) {
+                        lfBus.setTargetV(staticVarCompensator.getVoltageSetPoint());
+                        lfBus.setVoltageControl(true);
+                    } else if (staticVarCompensator.getRegulationMode() == StaticVarCompensator.RegulationMode.REACTIVE_POWER) {
+                        throw new UnsupportedOperationException("SVC with reactive power regulation not supported");
+                    }
                 }
 
                 @Override
@@ -217,10 +222,6 @@ public class NetworkContext {
                 .filter(e -> e.getKey() == ComponentConstants.MAIN_NUM)
                 .map(e -> new NetworkContext(network, e.getValue(), slackBusSelectionMode, hvdcLines))
                 .collect(Collectors.toList());
-    }
-
-    public Network getNetwork() {
-        return network;
     }
 
     public List<LfBranch> getBranches() {

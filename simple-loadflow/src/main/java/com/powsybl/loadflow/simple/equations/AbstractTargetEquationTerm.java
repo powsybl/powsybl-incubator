@@ -20,9 +20,9 @@ public abstract class AbstractTargetEquationTerm implements EquationTerm {
 
     private double target;
 
-    protected AbstractTargetEquationTerm(String id, EquationType equationType, VariableType variableType, EquationContext context) {
-        this.equation = context.getEquation(id, equationType);
-        variables = Collections.singletonList(context.getVariable(id, variableType));
+    protected AbstractTargetEquationTerm(int num, EquationType equationType, VariableType variableType, EquationContext context) {
+        this.equation = context.getEquation(num, equationType);
+        variables = Collections.singletonList(context.getVariable(num, variableType));
     }
 
     @Override

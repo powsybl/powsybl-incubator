@@ -6,8 +6,8 @@
  */
 package com.powsybl.loadflow.simple.ac.equations;
 
-import com.powsybl.iidm.network.Branch;
 import com.powsybl.loadflow.simple.equations.VariableUpdate;
+import com.powsybl.loadflow.simple.network.LfBranch;
 
 import java.util.Objects;
 
@@ -16,7 +16,7 @@ import java.util.Objects;
  */
 public class ClosedBranchAcFlowUpdate implements VariableUpdate {
 
-    private final Branch branch;
+    private final LfBranch branch;
 
     private final ClosedBranchSide1ActiveFlowEquationTerm p1;
 
@@ -26,7 +26,7 @@ public class ClosedBranchAcFlowUpdate implements VariableUpdate {
 
     private final ClosedBranchSide2ReactiveFlowEquationTerm q2;
 
-    public ClosedBranchAcFlowUpdate(Branch branch,
+    public ClosedBranchAcFlowUpdate(LfBranch branch,
                                     ClosedBranchSide1ActiveFlowEquationTerm p1, ClosedBranchSide1ReactiveFlowEquationTerm q1,
                                     ClosedBranchSide2ActiveFlowEquationTerm p2, ClosedBranchSide2ReactiveFlowEquationTerm q2) {
         this.branch = Objects.requireNonNull(branch);
@@ -38,9 +38,9 @@ public class ClosedBranchAcFlowUpdate implements VariableUpdate {
 
     @Override
     public void update() {
-        branch.getTerminal1().setP(p1.eval());
-        branch.getTerminal1().setQ(q1.eval());
-        branch.getTerminal2().setP(p2.eval());
-        branch.getTerminal2().setQ(q2.eval());
+        branch.setP1(p1.eval());
+        branch.setQ1(q1.eval());
+        branch.setP2(p2.eval());
+        branch.setQ2(q2.eval());
     }
 }

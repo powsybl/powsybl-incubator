@@ -6,16 +6,20 @@
  */
 package com.powsybl.loadflow.simple.dc;
 
-import com.powsybl.iidm.network.Bus;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.test.EurostagTutorialExample1Factory;
 import com.powsybl.loadflow.simple.dc.equations.DcEquationSystem;
-import com.powsybl.loadflow.simple.equations.EquationSystem;
 import com.powsybl.loadflow.simple.equations.EquationContext;
+import com.powsybl.loadflow.simple.equations.EquationSystem;
 import com.powsybl.loadflow.simple.equations.EquationType;
 import com.powsybl.loadflow.simple.equations.VariableType;
+import com.powsybl.loadflow.simple.network.LfBus;
 import com.powsybl.loadflow.simple.network.NetworkContext;
-import com.powsybl.math.matrix.*;
+import com.powsybl.loadflow.simple.network.SlackBusSelectionMode;
+import com.powsybl.math.matrix.DenseMatrixFactory;
+import com.powsybl.math.matrix.LUDecomposition;
+import com.powsybl.math.matrix.Matrix;
+import com.powsybl.math.matrix.MatrixFactory;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.usefultoys.slf4j.LoggerFactory;
@@ -48,12 +52,12 @@ public class DcLoadFlowMatrixTest {
 
         logNetwork(network);
 
-        NetworkContext networkContext = NetworkContext.of(network).get(0);
+        NetworkContext networkContext = NetworkContext.of(network, SlackBusSelectionMode.FIRST).get(0);
 
         EquationContext context = new EquationContext();
-        for (Bus b : networkContext.getBuses()) {
-            context.getEquation(b.getId(), EquationType.BUS_P);
-            context.getVariable(b.getId(), VariableType.BUS_PHI);
+        for (LfBus b : networkContext.getBuses()) {
+            context.getEquation(b.getNum(), EquationType.BUS_P);
+            context.getVariable(b.getNum(), VariableType.BUS_PHI);
         }
 
         EquationSystem equationSystem = DcEquationSystem.create(networkContext, context);
@@ -118,7 +122,7 @@ public class DcLoadFlowMatrixTest {
         network.getLine("NHV1_NHV2_1").getTerminal1().disconnect();
         network.getLine("NHV1_NHV2_1").getTerminal2().disconnect();
 
-        networkContext = NetworkContext.of(network).get(0);
+        networkContext = NetworkContext.of(network, SlackBusSelectionMode.FIRST).get(0);
 
         equationSystem = DcEquationSystem.create(networkContext, context);
 

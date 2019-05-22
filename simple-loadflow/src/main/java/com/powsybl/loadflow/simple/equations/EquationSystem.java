@@ -10,8 +10,6 @@ import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.simple.network.NetworkContext;
 import com.powsybl.math.matrix.Matrix;
 import com.powsybl.math.matrix.MatrixFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -20,8 +18,6 @@ import java.util.stream.Collectors;
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
 public class EquationSystem {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(EquationSystem.class);
 
     private final List<VariableUpdate> variableUpdates;
 

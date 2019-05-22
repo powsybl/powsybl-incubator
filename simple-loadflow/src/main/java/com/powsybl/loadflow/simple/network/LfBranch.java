@@ -11,8 +11,6 @@ package com.powsybl.loadflow.simple.network;
  */
 public interface LfBranch {
 
-    String getId();
-
     LfBus getBus1();
 
     LfBus getBus2();
@@ -25,11 +23,7 @@ public interface LfBranch {
 
     void setQ2(double q2);
 
-    double r();
-
     double x();
-
-    double z();
 
     double y();
 

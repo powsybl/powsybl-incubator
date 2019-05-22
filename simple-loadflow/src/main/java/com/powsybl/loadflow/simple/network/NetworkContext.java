@@ -109,7 +109,12 @@ public class NetworkContext {
 
                 @Override
                 public void visitStaticVarCompensator(StaticVarCompensator staticVarCompensator) {
-                    throw new UnsupportedOperationException("TODO: static var compensator");
+                    if (staticVarCompensator.getRegulationMode() == StaticVarCompensator.RegulationMode.VOLTAGE) {
+                        lfBus.setTargetV(staticVarCompensator.getVoltageSetPoint());
+                        lfBus.setVoltageControl(true);
+                    } else if (staticVarCompensator.getRegulationMode() == StaticVarCompensator.RegulationMode.REACTIVE_POWER) {
+                        throw new UnsupportedOperationException("SVC with reactive power regulation not supported");
+                    }
                 }
 
                 @Override
@@ -165,19 +170,21 @@ public class NetworkContext {
     }
 
     private void selectSlackBus(SlackBusSelectionMode slackBusSelectionMode) {
+        LfBus slackBus;
         switch (slackBusSelectionMode) {
             case FIRST:
-                this.buses.get(0).setSlack(true);
+                slackBus = this.buses.get(0);
                 break;
             case MOST_MESHED:
-                this.buses.stream()
+                slackBus = this.buses.stream()
                         .max(Comparator.comparingInt(LfBus::getNeighbors))
-                        .orElseThrow(AssertionError::new)
-                        .setSlack(true);
+                        .orElseThrow(AssertionError::new);
                 break;
             default:
                 throw new IllegalStateException("Slack bus selection mode unknown:" + slackBusSelectionMode);
         }
+        slackBus.setSlack(true);
+        LOGGER.debug("Selected slack bus (mode={}): {}", slackBusSelectionMode, slackBus.getId());
     }
 
     private static LfBusImpl addLfBus(Bus bus, List<LfBus> lfBuses, Map<String, Integer> busIdToNum) {
@@ -206,7 +213,7 @@ public class NetworkContext {
             }
         }
 
-        // FIXME hack because there is no way to get HVDC line from converter station
+        // hack because there is no way to get HVDC line from converter station
         Map<HvdcConverterStation, HvdcLine> hvdcLines = new HashMap<>();
         for (HvdcLine line : network.getHvdcLines()) {
             hvdcLines.put(line.getConverterStation1(), line);
@@ -217,10 +224,6 @@ public class NetworkContext {
                 .filter(e -> e.getKey() == ComponentConstants.MAIN_NUM)
                 .map(e -> new NetworkContext(network, e.getValue(), slackBusSelectionMode, hvdcLines))
                 .collect(Collectors.toList());
-    }
-
-    public Network getNetwork() {
-        return network;
     }
 
     public List<LfBranch> getBranches() {

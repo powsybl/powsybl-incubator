@@ -7,12 +7,14 @@
 package com.powsybl.loadflow.simple.ac;
 
 import com.powsybl.loadflow.simple.equations.EquationSystem;
-import com.powsybl.loadflow.simple.equations.Vectors;
+import com.powsybl.math.matrix.DenseMatrixFactory;
 import com.powsybl.math.matrix.Matrix;
 import org.slf4j.Logger;
 import org.usefultoys.slf4j.LoggerFactory;
 
 import java.io.PrintStream;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -31,9 +33,20 @@ public class NewtonRaphsonDebugger extends DefaultNewtonRaphsonObserver {
         LOGGER.info("END ITERATION {}", iteration);
     }
 
+    public static void log(double[] vector, List<String> names, Logger logger, String name) {
+        Objects.requireNonNull(vector);
+        Objects.requireNonNull(logger);
+        try (PrintStream ps = LoggerFactory.getInfoPrintStream(logger)) {
+            ps.print(name);
+            ps.println("=");
+            Matrix.createFromColumn(vector, new DenseMatrixFactory())
+                    .print(ps, names, null);
+        }
+    }
+
     @Override
     public void afterStateUpdate(double[] x, EquationSystem equationSystem, int iteration) {
-        Vectors.log(x, equationSystem.getColumnNames(), LOGGER, "X" + iteration);
+        log(x, equationSystem.getColumnNames(), LOGGER, "X" + iteration);
     }
 
     @Override
@@ -46,6 +59,6 @@ public class NewtonRaphsonDebugger extends DefaultNewtonRaphsonObserver {
 
     @Override
     public void afterEquationEvaluation(double[] fx, EquationSystem equationSystem, int iteration) {
-        Vectors.log(fx, equationSystem.getRowNames(), LOGGER, "F(X" + iteration + ")");
+        log(fx, equationSystem.getRowNames(), LOGGER, "F(X" + iteration + ")");
     }
 }

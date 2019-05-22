@@ -41,18 +41,8 @@ public abstract class AbstractLfBranch implements LfBranch {
     }
 
     @Override
-    public double r() {
-        return r;
-    }
-
-    @Override
     public double x() {
         return x;
-    }
-
-    @Override
-    public double z() {
-        return z;
     }
 
     @Override

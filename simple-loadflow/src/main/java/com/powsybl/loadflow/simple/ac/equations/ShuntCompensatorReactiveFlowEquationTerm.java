@@ -20,8 +20,6 @@ import java.util.Objects;
  */
 public class ShuntCompensatorReactiveFlowEquationTerm implements EquationTerm {
 
-    private final ShuntCompensator sc;
-
     private final Variable vVar;
 
     private final Equation equation;
@@ -36,7 +34,7 @@ public class ShuntCompensatorReactiveFlowEquationTerm implements EquationTerm {
 
     public ShuntCompensatorReactiveFlowEquationTerm(ShuntCompensator sc, LfBus bus, NetworkContext networkContext,
                                                     EquationContext equationContext) {
-        this.sc = Objects.requireNonNull(sc);
+        Objects.requireNonNull(sc);
         Objects.requireNonNull(bus);
         Objects.requireNonNull(networkContext);
         Objects.requireNonNull(equationContext);

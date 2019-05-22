@@ -56,6 +56,7 @@ A preliminary step consists in calling some cleaning and tuning operations of th
 
 The algorithm will be explained based on the following graph that would result in the figure displayed to illustrate the cellTypes enum:
 
+.raw graph
 image::images/rawGraph.svg[align="center"]
 
 * step 1 calls twice the `genericDetectCell` method to identify:
@@ -90,6 +91,7 @@ The `FEEDER` and `BUS` node types constitute borders of cells or consistent subg
 
 `InternCell` cells are easy to determine as being exclusively bordered by `BUS` nodes.
 
+.step 1 and InternCell
 image::images/rawGraphIntern.svg[align="center"]
 
 ==== Step 2: identifies `ExternCell` cells

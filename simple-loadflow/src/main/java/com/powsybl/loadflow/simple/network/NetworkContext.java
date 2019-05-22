@@ -170,19 +170,21 @@ public class NetworkContext {
     }
 
     private void selectSlackBus(SlackBusSelectionMode slackBusSelectionMode) {
+        LfBus slackBus;
         switch (slackBusSelectionMode) {
             case FIRST:
-                this.buses.get(0).setSlack(true);
+                slackBus = this.buses.get(0);
                 break;
             case MOST_MESHED:
-                this.buses.stream()
+                slackBus = this.buses.stream()
                         .max(Comparator.comparingInt(LfBus::getNeighbors))
-                        .orElseThrow(AssertionError::new)
-                        .setSlack(true);
+                        .orElseThrow(AssertionError::new);
                 break;
             default:
                 throw new IllegalStateException("Slack bus selection mode unknown:" + slackBusSelectionMode);
         }
+        slackBus.setSlack(true);
+        LOGGER.debug("Selected slack bus (mode={}): {}", slackBusSelectionMode, slackBus.getId());
     }
 
     private static LfBusImpl addLfBus(Bus bus, List<LfBus> lfBuses, Map<String, Integer> busIdToNum) {

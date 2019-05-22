@@ -41,6 +41,61 @@ public class NewtonRaphson {
         this.observer = Objects.requireNonNull(observer);
     }
 
+    private NewtonRaphsonStatus runIteration(int iteration, EquationSystem system, double[] x, double[] fx) {
+        observer.beginIteration(iteration);
+
+        // evaluate equations
+        observer.beforeEquationEvaluation(iteration);
+
+        system.updateEquationTerms(x);
+        system.evalEquations(fx);
+
+        observer.afterEquationEvaluation(fx, system, iteration);
+
+        // calculate norm L2 of equations
+        double norm = Vectors.norm2(fx);
+        observer.norm(norm);
+        if (norm < EPS_CONV) { // perfect match!
+            observer.endIteration(iteration);
+            return NewtonRaphsonStatus.CONVERGED;
+        }
+
+        // build jacobian
+        observer.beforeJacobianBuild(iteration);
+
+        Matrix j = system.buildJacobian(matrixFactory);
+
+        observer.afterJacobianBuild(j, system, iteration);
+
+        // solve f(x) = j * dx
+
+        observer.beforeLuDecomposition(iteration);
+
+        try (LUDecomposition lu = j.decomposeLU()) {
+            observer.afterLuDecomposition(iteration);
+
+            observer.beforeLuSolve(iteration);
+
+            lu.solve(fx);
+
+            observer.afterLuSolve(iteration);
+        } catch (Exception e) {
+            LOGGER.error(e.toString(), e);
+            return NewtonRaphsonStatus.SOLVER_FAILED;
+        }
+
+        observer.endIteration(iteration);
+
+        observer.beforeStateUpdate(iteration);
+
+        // update x
+        Vectors.minus(x, fx);
+
+        observer.afterStateUpdate(x, system, iteration);
+
+        return null;
+    }
+
     public NewtonRaphsonResult run(NewtonRaphsonParameters parameters) {
         Objects.requireNonNull(parameters);
 
@@ -59,62 +114,14 @@ public class NewtonRaphson {
 
         int iteration = 0;
 
-        NewtonRaphsonStatus status = NewtonRaphsonStatus.CONVERGED;
+        NewtonRaphsonStatus status = NewtonRaphsonStatus.NO_CALCULATION;
         while (iteration <= parameters.getMaxIteration()) {
-
-            observer.beginIteration(iteration);
-
-            // evaluate equations
-            observer.beforeEquationEvaluation(iteration);
-
-            system.updateEquationTerms(x);
-            system.evalEquations(fx);
-
-            observer.afterEquationEvaluation(fx, system, iteration);
-
-            // calculate norm L2 of equations
-            double norm = Vectors.norm2(fx);
-            observer.norm(norm);
-            if (norm < EPS_CONV) { // perfect match!
-                observer.endIteration(iteration);
+            NewtonRaphsonStatus newStatus = runIteration(iteration, system, x, fx);
+            if (newStatus != null) {
+                status = newStatus;
                 break;
             }
-
-            // build jacobian
-            observer.beforeJacobianBuild(iteration);
-
-            Matrix j = system.buildJacobian(matrixFactory);
-
-            observer.afterJacobianBuild(j, system, iteration);
-
-            // solve f(x) = j * dx
-
-            observer.beforeLuDecomposition(iteration);
-
-            try (LUDecomposition lu = j.decomposeLU()) {
-                observer.afterLuDecomposition(iteration);
-
-                observer.beforeLuSolve(iteration);
-
-                lu.solve(fx);
-
-                observer.afterLuSolve(iteration);
-            } catch (Exception e) {
-                LOGGER.error(e.toString(), e);
-                status = NewtonRaphsonStatus.SOLVER_FAILED;
-                break;
-            }
-
-            observer.endIteration(iteration);
-
-            observer.beforeStateUpdate(iteration);
-
-            // update x
-            Vectors.minus(x, fx);
-
             iteration++;
-
-            observer.afterStateUpdate(x, system, iteration);
         }
 
         networkContext.resetState();

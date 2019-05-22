@@ -6,27 +6,27 @@
  */
 package com.powsybl.substationdiagram.view;
 
-import afester.javafx.svg.SvgLoader;
-import com.powsybl.commons.PowsyblException;
-import com.powsybl.substationdiagram.library.ComponentType;
-import com.powsybl.substationdiagram.svg.GraphMetadata;
-import javafx.scene.Group;
-import javafx.scene.Node;
-import javafx.scene.input.MouseButton;
-import javafx.scene.shape.Polyline;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.powsybl.commons.PowsyblException;
+import com.powsybl.substationdiagram.library.ComponentType;
+import com.powsybl.substationdiagram.svg.GraphMetadata;
+
+import afester.javafx.svg.SvgLoader;
+import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.input.MouseButton;
+import javafx.scene.shape.Polyline;
 
 /**
  * @author Franck Lecuyer <fracck.lecuyer at rte-france.com>
@@ -70,21 +70,22 @@ public final class SubstationDiagramView extends AbstractContainerDiagramView {
     }
 
     private static void installHandlers(Node node, GraphMetadata metadata) {
-        List<WireHandler> wireHandlers = new ArrayList<>();
+        Map<String, WireHandler> wireHandlers = new HashMap<>();
         Map<String, NodeHandler> nodeHandlers = new HashMap<>();
 
         installHandlers(node, metadata, wireHandlers, nodeHandlers);
 
         // resolve links
-        for (WireHandler wireHandler : wireHandlers) {
+        for (WireHandler wireHandler : wireHandlers.values()) {
             wireHandler.getNodeHandler1().addWire(wireHandler);
             wireHandler.getNodeHandler2().addWire(wireHandler);
         }
     }
 
-    private static void installHandlers(Node node, GraphMetadata metadata, List<WireHandler> wireHandlers,
+    private static void installHandlers(Node node, GraphMetadata metadata, Map<String, WireHandler> wireHandlers,
                                         Map<String, NodeHandler> nodeHandlers) {
         if ((node.getId() != null) && !node.getId().isEmpty()) {
+
             GraphMetadata.NodeMetadata nodeMetadata = metadata.getNodeMetadata(node.getId());
             if (nodeMetadata != null) {
                 if (node instanceof Group && (nodeMetadata.getComponentType().equals(ComponentType.BREAKER) || nodeMetadata.getComponentType().equals(ComponentType.DISCONNECTOR) || nodeMetadata.getComponentType().equals(ComponentType.LOAD_BREAK_SWITCH))) {
@@ -111,7 +112,15 @@ public final class SubstationDiagramView extends AbstractContainerDiagramView {
                     }
                     WireHandler wireHandler = new WireHandler((Polyline) node, nodeHandler1, nodeHandler2, metadata);
                     LOGGER.trace(" Added handler to wire between {} and {}", wireMetadata.getNodeId1(), wireMetadata.getNodeId2());
-                    wireHandlers.add(wireHandler);
+                    wireHandlers.put(node.getId(), wireHandler);
+                }  else {
+                    GraphMetadata.ArrowMetadata arrowMetadata = metadata.getArrowMetadata(node.getId());
+                    if (arrowMetadata != null) {
+                        WireHandler wireHandler = wireHandlers.get(arrowMetadata.getWireId());
+                        wireHandler.addArrow((Group) node);
+                    } else {
+                        LOGGER.warn("Missing handler " + node.getId());
+                    }
                 }
             }
         }

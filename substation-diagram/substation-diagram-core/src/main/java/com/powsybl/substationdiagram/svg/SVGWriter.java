@@ -63,6 +63,7 @@ import com.powsybl.substationdiagram.model.FeederNode;
 import com.powsybl.substationdiagram.model.Graph;
 import com.powsybl.substationdiagram.model.Node;
 import com.powsybl.substationdiagram.model.SubstationGraph;
+import com.powsybl.substationdiagram.svg.GraphMetadata.ArrowMetadata;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
@@ -527,8 +528,10 @@ public class SVGWriter {
         double cdx = componentSize.getWidth() / 2;
         double cdy = componentSize.getHeight() / 2;
 
-        double x = shift * sinRo + (points.get(0) + points.get(2)) / 2;
-        double y = shift * cosRo + (points.get(1) + points.get(3)) / 2;
+        double dist = this.layoutParameters.getArrowDistance();
+
+        double x = points.get(0) + sinRo * (points.get(0) > points.get(2) ? (dist + shift) : (dist + shift));
+        double y = points.get(1) + cosRo * (points.get(1) > points.get(3) ? -(dist + shift) : (dist + shift));
 
         double e1 = layoutParameters.getTranslateX() - cdx * cosRo + cdy * sinRo + x;
         double f1 = layoutParameters.getTranslateY() - cdx * sinRo - cdy * cosRo + y;
@@ -551,7 +554,8 @@ public class SVGWriter {
         Element g1 = root.getOwnerDocument().createElement("g");
         g1.setAttribute("id", wireId + "_ARROW1");
         SVGOMDocument arr = componentLibrary.getSvgDocument(ComponentType.ARROW);
-        transformArrow(points, cd.getSize(), -cd.getSize().getHeight(), g1);
+        //transformArrow(points, cd.getSize(), -cd.getSize().getHeight(), g1);
+        transformArrow(points, cd.getSize(), 0, g1);
         insertComponentSVGIntoDocumentSVG(arr, g1);
         if (init.getLabel1().isPresent()) {
             drawLabel(init.getLabel1().get(), false, shX, shY, g1);
@@ -564,10 +568,11 @@ public class SVGWriter {
             }
         }
         root.appendChild(g1);
+        metadata.addArrowMetadata(new ArrowMetadata(wireId + "_ARROW1", wireId, layoutParameters.getArrowDistance()));
 
         Element g2 = root.getOwnerDocument().createElement("g");
         g2.setAttribute("id", wireId + "_ARROW2");
-        transformArrow(points, cd.getSize(), cd.getSize().getHeight(), g2);
+        transformArrow(points, cd.getSize(), 2 * cd.getSize().getHeight(), g2);
         insertComponentSVGIntoDocumentSVG(arr, g2);
         if (init.getLabel2().isPresent()) {
             drawLabel(init.getLabel2().get(), false, shX, shY, g2);
@@ -587,6 +592,7 @@ public class SVGWriter {
         }
 
         root.appendChild(g2);
+        metadata.addArrowMetadata(new ArrowMetadata(wireId + "_ARROW2", wireId, layoutParameters.getArrowDistance()));
     }
 
     /*

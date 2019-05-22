@@ -6,15 +6,16 @@
  */
 package com.powsybl.substationdiagram.view;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import com.powsybl.substationdiagram.library.ComponentSize;
 import com.powsybl.substationdiagram.library.ComponentType;
 import com.powsybl.substationdiagram.model.BaseNode;
 import com.powsybl.substationdiagram.svg.GraphMetadata;
-import javafx.scene.Node;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import javafx.scene.Node;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>

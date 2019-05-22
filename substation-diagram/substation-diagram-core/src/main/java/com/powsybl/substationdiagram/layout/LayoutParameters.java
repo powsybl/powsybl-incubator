@@ -38,6 +38,8 @@ public class LayoutParameters {
     private double horizontalSubstationPadding = 50;
     private double verticalSubstationPadding = 50;
 
+    private double arrowDistance = 20;
+
     public LayoutParameters() {
     }
 
@@ -55,7 +57,8 @@ public class LayoutParameters {
                             boolean showInternalNodes,
                             double scaleFactor,
                             double horizontalSubstationPadding,
-                            double verticalSubstationPadding) {
+                            double verticalSubstationPadding,
+                            double arrowDistance) {
         this.translateX = translateX;
         this.translateY = translateY;
         this.initialXBus = initialXBus;
@@ -71,6 +74,7 @@ public class LayoutParameters {
         this.scaleFactor = scaleFactor;
         this.horizontalSubstationPadding = horizontalSubstationPadding;
         this.verticalSubstationPadding = verticalSubstationPadding;
+        this.arrowDistance = arrowDistance;
     }
 
     public LayoutParameters(LayoutParameters other) {
@@ -90,6 +94,7 @@ public class LayoutParameters {
         scaleFactor = other.scaleFactor;
         horizontalSubstationPadding = other.horizontalSubstationPadding;
         verticalSubstationPadding = other.verticalSubstationPadding;
+        arrowDistance = other.arrowDistance;
     }
 
     public double getTranslateX() {
@@ -224,6 +229,15 @@ public class LayoutParameters {
 
     public LayoutParameters setVerticalSubstationPadding(double padding) {
         this.verticalSubstationPadding = padding;
+        return this;
+    }
+
+    public double getArrowDistance() {
+        return arrowDistance;
+    }
+
+    public LayoutParameters setArrowDistance(double arrowDistance) {
+        this.arrowDistance = arrowDistance;
         return this;
     }
 }

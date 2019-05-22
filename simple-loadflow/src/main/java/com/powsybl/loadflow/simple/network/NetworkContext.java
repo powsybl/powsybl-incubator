@@ -213,7 +213,7 @@ public class NetworkContext {
             }
         }
 
-        // FIXME hack because there is no way to get HVDC line from converter station
+        // hack because there is no way to get HVDC line from converter station
         Map<HvdcConverterStation, HvdcLine> hvdcLines = new HashMap<>();
         for (HvdcLine line : network.getHvdcLines()) {
             hvdcLines.put(line.getConverterStation1(), line);

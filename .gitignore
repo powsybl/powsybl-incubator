@@ -6,8 +6,9 @@ substation-diagram/substation-diagram-cgmes
 substation-diagram/substation-diagram-core
 substation-diagram/substation-diagram-force-layout
 substation-diagram/substation-diagram-util
-substation-diagram/substation-diagram-vie
+substation-diagram/substation-diagram-view
 substation-webviewer
+balances-adjustment/target
 target
 
 # IntelliJ

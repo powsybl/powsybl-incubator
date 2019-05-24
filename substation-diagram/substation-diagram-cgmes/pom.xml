@@ -24,6 +24,10 @@
     <dependencies>
         <dependency>
             <groupId>com.powsybl</groupId>
+            <artifactId>powsybl-cgmes-dl-conversion</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.powsybl</groupId>
             <artifactId>powsybl-cgmes-iidm-extensions</artifactId>
         </dependency>
         <dependency>

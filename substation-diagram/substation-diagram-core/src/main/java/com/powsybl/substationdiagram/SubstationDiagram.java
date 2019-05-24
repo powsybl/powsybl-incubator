@@ -111,4 +111,8 @@ public final class SubstationDiagram {
         // write metadata file
         metadata.writeJson(metadataWriter);
     }
+
+    public SubstationGraph getGraph() {
+        return graph;
+    }
 }

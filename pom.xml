@@ -50,7 +50,7 @@
     </developers>
 
     <modules>
-        <module>powsybl-balances-adjustment</module>
+        <module>balances-adjustment</module>
         <module>simple-loadflow</module>
         <module>substation-diagram</module>
         <module>cgmes-dl</module>

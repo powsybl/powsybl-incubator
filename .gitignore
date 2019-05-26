@@ -1,12 +1,12 @@
 # Maven projects
 cgmes-dl/cgmes-dl-conversion/target
 cgmes-dl/cgmes-iidm-extensions/target
-simple-loadflow/
-substation-diagram/substation-diagram-cgmes
-substation-diagram/substation-diagram-core
-substation-diagram/substation-diagram-force-layout
-substation-diagram/substation-diagram-util
-substation-diagram/substation-diagram-view
+simple-loadflow/target
+substation-diagram/substation-diagram-cgmes/target
+substation-diagram/substation-diagram-core/target
+substation-diagram/substation-diagram-force-layout/target
+substation-diagram/substation-diagram-util/target
+substation-diagram/substation-diagram-view/target
 substation-webviewer
 balances-adjustment/target
 target

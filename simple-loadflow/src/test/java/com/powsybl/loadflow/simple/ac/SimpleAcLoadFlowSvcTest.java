@@ -18,6 +18,14 @@ import static com.powsybl.loadflow.simple.util.LoadFlowAssert.*;
 import static org.junit.Assert.assertTrue;
 
 /**
+ * SVC test case.
+ *
+ * g1        ld1
+ * |          |
+ * b1---------b2
+ *      l1    |
+ *           svc1
+ *
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
 public class SimpleAcLoadFlowSvcTest {
@@ -33,7 +41,7 @@ public class SimpleAcLoadFlowSvcTest {
     private LoadFlowParameters parameters;
 
     private Network createNetwork() {
-        Network network = NetworkFactory.create("dl", "test");
+        Network network = NetworkFactory.create("svc", "test");
         Substation s1 = network.newSubstation()
                 .setId("S1")
                 .add();

@@ -128,7 +128,7 @@ public class PositionFree implements PositionFinder {
     private List<InternCell> identifyStructuringCells(Context context) {
         List<InternCell> structuringInternCells
                 = context.graph.getCells().stream()
-                .filter(cell -> cell.getType() == Cell.CellType.INTERN || cell.getType() == Cell.CellType.INTERNBOUND)
+                .filter(cell -> cell.getType() == Cell.CellType.INTERN)
                 .map(InternCell.class::cast)
                 .collect(Collectors.toList());
 

@@ -52,8 +52,7 @@ public class BlockOrganizer {
         LOGGER.info("Organizing graph cells into blocks");
         graph.getCells().stream()
                 .filter(cell -> cell.getType().equals(Cell.CellType.EXTERN)
-                        || cell.getType().equals(Cell.CellType.INTERN)
-                        || cell.getType().equals(Cell.CellType.INTERNBOUND))
+                        || cell.getType().equals(Cell.CellType.INTERN))
                 .forEach(cell -> {
                     new CellBlockDecomposer().determineBlocks(cell);
                     if (cell.getType() == Cell.CellType.INTERN) {
@@ -70,7 +69,7 @@ public class BlockOrganizer {
         positionFinder.buildLayout(graph);
 
         graph.getCells().stream()
-                .filter(c -> c.getType() == Cell.CellType.INTERN || c.getType() == Cell.CellType.INTERNBOUND)
+                .filter(c -> c.getType() == Cell.CellType.INTERN)
                 .forEach(c -> ((InternCell) c).postPositioningSettings());
 
         SubSections subSections = new SubSections(graph);
@@ -79,8 +78,7 @@ public class BlockOrganizer {
 
         graph.getCells().stream()
                 .filter(cell -> cell.getType().equals(Cell.CellType.EXTERN)
-                        || cell.getType().equals(Cell.CellType.INTERN)
-                        || cell.getType().equals(Cell.CellType.INTERNBOUND))
+                        || cell.getType().equals(Cell.CellType.INTERN))
                 .forEach(cell -> cell.getRootBlock().calculateDimensionAndInternPos());
         determineBlockPositions(graph, subSections);
 

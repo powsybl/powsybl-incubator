@@ -104,8 +104,7 @@ public class PrimaryBlock extends AbstractBlock {
     @Override
     public void calculateDimensionAndInternPos() {
 
-        if (getCell().getType() == Cell.CellType.INTERNBOUND
-                || isEmbedingNodeType(Node.NodeType.BUS)
+        if (isEmbedingNodeType(Node.NodeType.BUS)
                 && (getCell().getDirection() == Cell.Direction.FLAT || !getStackableBlocks().isEmpty())) {
             getPosition().setHSpan(0);
             getPosition().setVSpan(0);
@@ -159,12 +158,6 @@ public class PrimaryBlock extends AbstractBlock {
 
     @Override
     public void coordHorizontalCase(LayoutParameters layoutParam) {
-        if (getCell().getType() == Cell.CellType.INTERNBOUND) {
-            nodes.get(1).setX(getCoord().getX());
-            nodes.get(1).setY(nodes.get(0).getY(), false, false);
-            nodes.get(1).setRotated(true);
-            return;
-        }
         if (isEmbedingNodeType(Node.NodeType.BUS)) {
             Node nodeBus = getBusNode();
             Node nodeMiddle = nodes.get(1);
@@ -223,6 +216,6 @@ public class PrimaryBlock extends AbstractBlock {
 
     @Override
     public String toString() {
-        return "PrimaryBlock(nodes=" + nodes  + ")";
+        return "PrimaryBlock(nodes=" + nodes + ")";
     }
 }

@@ -301,7 +301,7 @@ class SubSections {
                 .forEach(cell -> allocateCellToSubsection(cell, cell.getBusNodes(), Side.UNDEFINED));
 
         Set<InternCell> internCells = graph.getCells().stream()
-                .filter(cell -> cell.getType() == Cell.CellType.INTERN || cell.getType() == Cell.CellType.INTERNBOUND)
+                .filter(cell -> cell.getType() == Cell.CellType.INTERN)
                 .map(cell -> (InternCell) cell).collect(Collectors.toSet());
 
         Set<InternCell> verticalInternCells = internCells.stream().filter(this::verticalInternCell)
@@ -311,7 +311,7 @@ class SubSections {
         internCells.removeAll(verticalInternCells);
 
         internCells.stream()
-                .filter(cell -> cell.getType() == Cell.CellType.INTERN || cell.getType() == Cell.CellType.INTERNBOUND)
+                .filter(cell -> cell.getType() == Cell.CellType.INTERN)
                 .forEach(cell -> {
                     allocateCellToSubsection(cell, cell.getSideBusNodes(Side.LEFT), Side.LEFT);
                     allocateCellToSubsection(cell, cell.getSideBusNodes(Side.RIGHT), Side.RIGHT);

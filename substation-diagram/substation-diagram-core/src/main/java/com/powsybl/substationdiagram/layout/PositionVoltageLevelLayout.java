@@ -6,7 +6,7 @@
  */
 package com.powsybl.substationdiagram.layout;
 
-import com.powsybl.substationdiagram.model.Cell;
+import com.powsybl.substationdiagram.model.AbstractCell;
 import com.powsybl.substationdiagram.model.Graph;
 import com.powsybl.substationdiagram.model.Node;
 import org.slf4j.Logger;
@@ -48,12 +48,12 @@ public class PositionVoltageLevelLayout implements VoltageLevelLayout {
 
     private void calculateCellCoord(Graph graph, LayoutParameters layoutParam) {
         graph.getCells().stream()
-                .filter(cell -> cell.getType() == Cell.CellType.EXTERN
-                        || cell.getType() == Cell.CellType.INTERN)
+                .filter(cell -> cell.getType() == AbstractCell.CellType.EXTERN
+                        || cell.getType() == AbstractCell.CellType.INTERN)
                 .forEach(cell ->
                         cell.getRootBlock().calculateCoord(layoutParam));
         graph.getCells().stream()
-                .filter(cell -> cell.getType() == Cell.CellType.SHUNT)
+                .filter(cell -> cell.getType() == AbstractCell.CellType.SHUNT)
                 .forEach(cell ->
                         cell.getRootBlock().calculateCoord(layoutParam));
     }

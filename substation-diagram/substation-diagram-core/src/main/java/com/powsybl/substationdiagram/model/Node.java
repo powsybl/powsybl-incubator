@@ -53,7 +53,7 @@ public class Node implements BaseNode {
     private boolean xPriority = false;
     private boolean yPriority = false;
 
-    private Cell cell;
+    private AbstractCell cell;
 
     private boolean rotated = false;
 
@@ -81,11 +81,11 @@ public class Node implements BaseNode {
         }
     }
 
-    public Cell getCell() {
+    public AbstractCell getCell() {
         return cell;
     }
 
-    public void setCell(Cell cell) {
+    public void setCell(AbstractCell cell) {
         this.cell = cell;
     }
 
@@ -145,7 +145,7 @@ public class Node implements BaseNode {
         adjacentEdges.remove(e);
     }
 
-    public Stream<Node> getListNodeAdjInCell(Cell cell) {
+    public Stream<Node> getListNodeAdjInCell(AbstractCell cell) {
         return getAdjacentNodes().stream().filter(n -> cell.getNodes().contains(n));
     }
 

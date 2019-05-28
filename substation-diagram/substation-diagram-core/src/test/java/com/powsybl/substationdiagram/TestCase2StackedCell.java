@@ -111,21 +111,21 @@ public class TestCase2StackedCell extends AbstractTestCase {
 
         // assert cells
         assertEquals(1, g.getCells().size());
-        Cell cell = g.getCells().iterator().next();
-        assertEquals(Cell.CellType.EXTERN, cell.getType());
-        assertEquals(-1, cell.getOrder());
-        assertEquals(7, cell.getNodes().size());
-        assertEquals(2, cell.getBusNodes().size());
-        assertEquals("EXTERN[FICT_vl_2, b, bbs1, bbs2, d1, d2, l]", cell.getFullId());
+        AbstractCell abstractCell = g.getCells().iterator().next();
+        assertEquals(AbstractCell.CellType.EXTERN, abstractCell.getType());
+        assertEquals(-1, ((ExternCell) abstractCell).getOrder());
+        assertEquals(7, abstractCell.getNodes().size());
+        assertEquals(2, ((AbstractBusCell) abstractCell).getBusNodes().size());
+        assertEquals("EXTERN[FICT_vl_2, b, bbs1, bbs2, d1, d2, l]", abstractCell.getFullId());
 
         // build blocks
         assertTrue(new BlockOrganizer().organize(g));
 
         // assert blocks and nodes rotation
-        assertEquals(2, cell.getPrimaryBlocksConnectedToBus().size());
-        assertNotNull(cell.getRootBlock());
-        assertTrue(cell.getRootBlock() instanceof SerialBlock);
-        SerialBlock bc = (SerialBlock) cell.getRootBlock();
+        assertEquals(2, ((AbstractBusCell) abstractCell).getPrimaryBlocksConnectedToBus().size());
+        assertNotNull(abstractCell.getRootBlock());
+        assertTrue(abstractCell.getRootBlock() instanceof SerialBlock);
+        SerialBlock bc = (SerialBlock) abstractCell.getRootBlock();
         assertEquals(new Coord(-1, -1), bc.getCoord());
         assertEquals(new Position(0, 0, 1, 2, false, Orientation.VERTICAL), bc.getPosition());
         assertEquals("bbs1", bc.getStartingNode().getId());

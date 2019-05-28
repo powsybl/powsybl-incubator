@@ -6,6 +6,7 @@
  */
 package com.powsybl.substationdiagram.model;
 
+import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.Bus;
 import com.powsybl.iidm.network.BusbarSection;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
@@ -48,11 +49,19 @@ public class BusNode extends Node {
 
     public void calculateCoord(LayoutParameters layoutParameters) {
         setY(layoutParameters.getInitialYBus() +
-                     (position.getV() - 1) * layoutParameters.getVerticalSpaceBus());
+                (position.getV() - 1) * layoutParameters.getVerticalSpaceBus());
         setX(layoutParameters.getInitialXBus()
-                     + position.getH() * layoutParameters.getCellWidth()
-                     + layoutParameters.getHorizontalBusPadding() / 2);
+                + position.getH() * layoutParameters.getCellWidth()
+                + layoutParameters.getHorizontalBusPadding() / 2);
         setPxWidth(position.getHSpan() * layoutParameters.getCellWidth() - layoutParameters.getHorizontalBusPadding());
+    }
+
+    @Override
+    public void setCell(AbstractCell cell) {
+        if (!(cell instanceof AbstractBusCell)) {
+            throw new PowsyblException("The Cell of a feeder node shall be a AbstractBusCell");
+        }
+        super.setCell(cell);
     }
 
     public double getPxWidth() {

@@ -23,7 +23,7 @@ public class ParallelBlock extends AbstractBlock {
 
     private final List<Block> subBlocks = new ArrayList<>();
 
-    public ParallelBlock(List<Block> subBlocks, Cell cell, boolean allowMerge) {
+    public ParallelBlock(List<Block> subBlocks, AbstractCell cell, boolean allowMerge) {
         this(subBlocks, allowMerge);
         if (cell != null) {
             setCell(cell);

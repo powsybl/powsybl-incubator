@@ -15,7 +15,7 @@ include::PositionFinder.adoc[]
 
 include::Subsections.adoc[]
 
-== Horizontal positioning of the cells and horizontal Bus dimension calculation
+== Horizontal positioning of the abstractCells and horizontal Bus dimension calculation
 
 == Build Layout into _coordinates_
 

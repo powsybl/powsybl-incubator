@@ -49,8 +49,8 @@ public class Graph {
 
     private final List<Edge> edges = new ArrayList<>();
 
-    private final SortedSet<Cell> cells = new TreeSet<>(
-            Comparator.comparingInt(Cell::getNumber)); // cells sorted to avoid randomness
+    private final SortedSet<AbstractCell> cells = new TreeSet<>(
+            Comparator.comparingInt(AbstractCell::getNumber)); // cells sorted to avoid randomness
 
     private final Map<Node.NodeType, List<Node>> nodesByType = new EnumMap<>(Node.NodeType.class);
 
@@ -202,7 +202,7 @@ public class Graph {
             if (feeder != null) {
                 node.setOrder(feeder.getOrder());
                 node.setLabel(feeder.getName());
-                node.setDirection(Cell.Direction.valueOf(feeder.getDirection().toString()));
+                node.setDirection(AbstractBusCell.Direction.valueOf(feeder.getDirection().toString()));
             }
             nodesByNumber.put(terminal.getNodeBreakerView().getNode(), node);
             addNode(node);
@@ -233,7 +233,7 @@ public class Graph {
 
         protected void addFeeder(FeederNode node, Terminal terminal) {
             node.setOrder(order++);
-            node.setDirection(order % 2 == 0 ? Cell.Direction.TOP : Cell.Direction.BOTTOM);
+            node.setDirection(order % 2 == 0 ? AbstractBusCell.Direction.TOP : AbstractBusCell.Direction.BOTTOM);
             addNode(node);
             SwitchNode nodeSwitch = SwitchNode.create(Graph.this, terminal);
             addNode(nodeSwitch);
@@ -356,8 +356,8 @@ public class Graph {
 
     private boolean isFictitiousSwitchNode(Node node) {
         Switch sw = TopologyKind.NODE_BREAKER.equals(voltageLevel.getTopologyKind()) ?
-                    voltageLevel.getNodeBreakerView().getSwitch(node.getId()) :
-                    voltageLevel.getBusBreakerView().getSwitch(node.getId());
+                voltageLevel.getNodeBreakerView().getSwitch(node.getId()) :
+                voltageLevel.getBusBreakerView().getSwitch(node.getId());
         return sw == null || sw.isFictitious();
     }
 
@@ -370,9 +370,9 @@ public class Graph {
     }
 
     public void logCellDetectionStatus() {
-        Set<Cell> cellsLog = new HashSet<>();
-        Map<Cell.CellType, Integer> cellCountByType = new EnumMap<>(Cell.CellType.class);
-        for (Cell.CellType cellType : Cell.CellType.values()) {
+        Set<AbstractCell> cellsLog = new HashSet<>();
+        Map<AbstractCell.CellType, Integer> cellCountByType = new EnumMap<>(AbstractCell.CellType.class);
+        for (AbstractCell.CellType cellType : AbstractCell.CellType.values()) {
             cellCountByType.put(cellType, 0);
         }
         int remainingNodeCount = 0;
@@ -381,7 +381,7 @@ public class Graph {
             remainingNodeCountByType.put(nodeType, 0);
         }
         for (Node node : nodes) {
-            Cell cell = node.getCell();
+            AbstractCell cell = node.getCell();
             if (cell != null) {
                 if (cellsLog.add(cell)) {
                     cellCountByType.put(cell.getType(), cellCountByType.get(cell.getType()) + 1);
@@ -437,8 +437,8 @@ public class Graph {
         FictitiousNode biggestFn = nodes.stream()
                 .filter(node -> node.getType() == Node.NodeType.FICTITIOUS)
                 .sorted(Comparator.<Node>comparingInt(node -> node.getAdjacentEdges().size())
-                                  .reversed()
-                                  .thenComparing(Node::getId)) // for stable fictitious node selection, also sort on id
+                        .reversed()
+                        .thenComparing(Node::getId)) // for stable fictitious node selection, also sort on id
                 .map(FictitiousNode.class::cast)
                 .findFirst()
                 .orElseThrow(() -> new PowsyblException("Empty node set"));
@@ -533,7 +533,7 @@ public class Graph {
     }
 
     public List<String> signatureSortedCellsContent() {
-        return cells.stream().map(Cell::getFullId).sorted().collect(Collectors.toList());
+        return cells.stream().map(AbstractCell::getFullId).sorted().collect(Collectors.toList());
     }
 
     public boolean compareCellDetection(Graph graph) {
@@ -558,8 +558,10 @@ public class Graph {
         maxBusStructuralPosition.setV(Collections.max(v));
     }
 
-    public Stream<Cell> getBusCells() {
-        return cells.stream().filter(cell -> !cell.getPrimaryBlocksConnectedToBus().isEmpty());
+    public Stream<AbstractBusCell> getBusCells() {
+        return cells.stream()
+                .filter(cell -> cell instanceof AbstractBusCell && !((AbstractBusCell) cell).getPrimaryBlocksConnectedToBus().isEmpty())
+                .map(AbstractBusCell.class::cast);
     }
 
     private void buildVPosToHposToNodeBus() {
@@ -599,14 +601,14 @@ public class Graph {
                 .filter(node -> node.getType() == Node.NodeType.SWITCH)
                 .forEach(nodeSwitch ->
                         nodeSwitch.getAdjacentNodes().stream()
-                            .filter(node -> node.getType() == Node.NodeType.SWITCH)
-                            .forEach(node -> {
-                                removeEdge(node, nodeSwitch);
-                                FictitiousNode newNode = new FictitiousNode(Graph.this, nodeSwitch.getId() + "Fictif");
-                                addNode(newNode);
-                                addEdge(node, newNode);
-                                addEdge(nodeSwitch, newNode);
-                            }));
+                                .filter(node -> node.getType() == Node.NodeType.SWITCH)
+                                .forEach(node -> {
+                                    removeEdge(node, nodeSwitch);
+                                    FictitiousNode newNode = new FictitiousNode(Graph.this, nodeSwitch.getId() + "Fictif");
+                                    addNode(newNode);
+                                    addEdge(node, newNode);
+                                    addEdge(nodeSwitch, newNode);
+                                }));
     }
 
     //the first element shouldn't be a Breaker
@@ -692,11 +694,11 @@ public class Graph {
         return vPosToHPosToNodeBus.get(v).get(h);
     }
 
-    public void addCell(Cell c) {
+    public void addCell(AbstractCell c) {
         cells.add(c);
     }
 
-    public void removeCell(Cell c) {
+    public void removeCell(AbstractCell c) {
         cells.remove(c);
     }
 
@@ -715,7 +717,7 @@ public class Graph {
         return new ArrayList<>(edges);
     }
 
-    public Set<Cell> getCells() {
+    public Set<AbstractCell> getCells() {
         return new TreeSet<>(cells);
     }
 
@@ -753,7 +755,7 @@ public class Graph {
                 .createGenerator(writer)
                 .useDefaultPrettyPrinter()) {
             generator.writeStartArray();
-            for (Cell cell : cells) {
+            for (AbstractCell cell : cells) {
                 cell.writeJson(generator);
             }
             generator.writeEndArray();

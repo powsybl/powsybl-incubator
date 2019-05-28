@@ -7,10 +7,7 @@
 package com.powsybl.substationdiagram;
 
 import com.powsybl.iidm.network.*;
-import com.powsybl.substationdiagram.layout.BlockOrganizer;
-import com.powsybl.substationdiagram.layout.ImplicitCellDetector;
-import com.powsybl.substationdiagram.layout.LayoutParameters;
-import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayout;
+import com.powsybl.substationdiagram.layout.*;
 import com.powsybl.substationdiagram.model.*;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
@@ -177,26 +174,26 @@ public class TestCase4NotParallelel extends AbstractTestCase {
 
         // assert cells
         assertEquals(4, g.getCells().size());
-        Iterator<Cell> it = g.getCells().iterator();
-        Cell cell = it.next();
-        assertEquals(Cell.CellType.INTERN, cell.getType());
-        assertEquals(3, cell.getNodes().size());
-        assertEquals(2, cell.getBusNodes().size());
-        assertEquals("INTERNBOUND[bbs1.1, bbs1.2, ss1]", cell.getFullId());
+        Iterator<AbstractCell> it = g.getCells().iterator();
+        AbstractCell abstractCell = it.next();
+        assertEquals(AbstractCell.CellType.INTERN, abstractCell.getType());
+        assertEquals(3, abstractCell.getNodes().size());
+        assertEquals(2, ((AbstractBusCell) abstractCell).getBusNodes().size());
+        assertEquals("INTERNBOUND[bbs1.1, bbs1.2, ss1]", abstractCell.getFullId());
 
         // build blocks
         assertTrue(new BlockOrganizer().organize(g));
 
         // assert blocks and nodes rotation
-        assertEquals(1, cell.getPrimaryBlocksConnectedToBus().size());
-        assertNotNull(cell.getRootBlock());
-        assertTrue(cell.getRootBlock() instanceof PrimaryBlock);
-        assertEquals(new Position(1, 1, 0, 0, false, Orientation.HORIZONTAL), cell.getRootBlock().getPosition());
+        assertEquals(1, ((AbstractBusCell) abstractCell).getPrimaryBlocksConnectedToBus().size());
+        assertNotNull(abstractCell.getRootBlock());
+        assertTrue(abstractCell.getRootBlock() instanceof PrimaryBlock);
+        assertEquals(new Position(1, 1, 0, 0, false, Orientation.HORIZONTAL), abstractCell.getRootBlock().getPosition());
 
-        cell = it.next();
-        assertTrue(cell.getRootBlock() instanceof SerialBlock);
-        assertEquals(Cell.Direction.TOP, cell.getDirection());
-        SerialBlock bc = (SerialBlock) cell.getRootBlock();
+        abstractCell = it.next();
+        assertTrue(abstractCell.getRootBlock() instanceof SerialBlock);
+        assertEquals(AbstractBusCell.Direction.TOP, ((AbstractBusCell) abstractCell).getDirection());
+        SerialBlock bc = (SerialBlock) abstractCell.getRootBlock();
         assertEquals(new Position(0, 0, 1, 2, false, Orientation.VERTICAL), bc.getPosition());
 
         PrimaryBlock byu = (PrimaryBlock) bc.getUpperBlock();
@@ -205,10 +202,10 @@ public class TestCase4NotParallelel extends AbstractTestCase {
         ParallelBlock bpl = (ParallelBlock) bc.getLowerBlock();
         assertEquals(new Position(0, 0, 1, 0, false, Orientation.VERTICAL), bpl.getPosition());
 
-        cell = it.next();
-        assertTrue(cell.getRootBlock() instanceof SerialBlock);
-        assertEquals(Cell.Direction.BOTTOM, cell.getDirection());
-        bc = (SerialBlock) cell.getRootBlock();
+        abstractCell = it.next();
+        assertTrue(abstractCell.getRootBlock() instanceof SerialBlock);
+        assertEquals(AbstractBusCell.Direction.BOTTOM, ((AbstractBusCell) abstractCell).getDirection());
+        bc = (SerialBlock) abstractCell.getRootBlock();
         assertEquals(new Position(1, 0, 1, 2, false, Orientation.VERTICAL), bc.getPosition());
 
         byu = (PrimaryBlock) bc.getUpperBlock();
@@ -217,10 +214,10 @@ public class TestCase4NotParallelel extends AbstractTestCase {
         bpl = (ParallelBlock) bc.getLowerBlock();
         assertEquals(new Position(0, 0, 1, 0, false, Orientation.VERTICAL), bpl.getPosition());
 
-        cell = it.next();
-        assertTrue(cell.getRootBlock() instanceof SerialBlock);
-        assertEquals(Cell.Direction.TOP, cell.getDirection());
-        SerialBlock bc3 = (SerialBlock) cell.getRootBlock();
+        abstractCell = it.next();
+        assertTrue(abstractCell.getRootBlock() instanceof SerialBlock);
+        assertEquals(AbstractBusCell.Direction.TOP, ((AbstractBusCell) abstractCell).getDirection());
+        SerialBlock bc3 = (SerialBlock) abstractCell.getRootBlock();
         assertEquals(new Position(2, 0, 1, 2, false, Orientation.VERTICAL), bc3.getPosition());
 
         // calculate coordinates

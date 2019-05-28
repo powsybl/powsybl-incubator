@@ -95,20 +95,20 @@ public class TestCase3Coupling extends AbstractTestCase {
 
         // assert cells
         assertEquals(1, g.getCells().size());
-        Cell cell = g.getCells().iterator().next();
-        assertEquals(Cell.CellType.INTERN, cell.getType());
-        assertEquals(7, cell.getNodes().size());
-        assertEquals(2, cell.getBusNodes().size());
-        assertEquals("INTERN[FICT_vl_d1Fictif, FICT_vl_d2Fictif, b, bbs1, bbs2, d1, d2]", cell.getFullId());
+        AbstractCell abstractCell = g.getCells().iterator().next();
+        assertEquals(AbstractCell.CellType.INTERN, abstractCell.getType());
+        assertEquals(7, abstractCell.getNodes().size());
+        assertEquals(2, ((AbstractBusCell)abstractCell).getBusNodes().size());
+        assertEquals("INTERN[FICT_vl_d1Fictif, FICT_vl_d2Fictif, b, bbs1, bbs2, d1, d2]", abstractCell.getFullId());
 
         // build blocks
         assertTrue(new BlockOrganizer().organize(g));
 
         // assert blocks and nodes rotation
-        assertEquals(2, cell.getPrimaryBlocksConnectedToBus().size());
-        assertNotNull(cell.getRootBlock());
-        assertTrue(cell.getRootBlock() instanceof ParallelBlock);
-        ParallelBlock bp = (ParallelBlock) cell.getRootBlock();
+        assertEquals(2, ((AbstractBusCell) abstractCell).getPrimaryBlocksConnectedToBus().size());
+        assertNotNull(abstractCell.getRootBlock());
+        assertTrue(abstractCell.getRootBlock() instanceof ParallelBlock);
+        ParallelBlock bp = (ParallelBlock) abstractCell.getRootBlock();
         assertEquals(new Position(0, 1, 2, 1, false, Orientation.VERTICAL), bp.getPosition());
         assertEquals("bbs2", bp.getStartingNode().getId());
         assertEquals("FICT_vl_d1Fictif", bp.getEndingNode().getId());

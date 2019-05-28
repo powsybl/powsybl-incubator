@@ -23,15 +23,7 @@ import com.powsybl.substationdiagram.library.ComponentLibrary;
 import com.powsybl.substationdiagram.library.ComponentMetadata;
 import com.powsybl.substationdiagram.library.ComponentSize;
 import com.powsybl.substationdiagram.library.ComponentType;
-import com.powsybl.substationdiagram.model.BusNode;
-import com.powsybl.substationdiagram.model.Cell;
-import com.powsybl.substationdiagram.model.Coord;
-import com.powsybl.substationdiagram.model.Edge;
-import com.powsybl.substationdiagram.model.FeederNode;
-import com.powsybl.substationdiagram.model.Graph;
-import com.powsybl.substationdiagram.model.Node;
-import com.powsybl.substationdiagram.model.Side;
-import com.powsybl.substationdiagram.model.SubstationGraph;
+import com.powsybl.substationdiagram.model.*;
 import org.apache.batik.anim.dom.SVGOMDocument;
 import org.apache.batik.dom.GenericDOMImplementation;
 import org.apache.commons.math3.util.Precision;
@@ -95,7 +87,7 @@ public class SVGWriter {
     /**
      * Create the SVGDocument corresponding to the graph
      *
-     * @param graph  graph
+     * @param graph   graph
      * @param svgFile file
      */
     public GraphMetadata write(Graph graph, SubstationDiagramStyleProvider styleProvider, Path svgFile) {
@@ -195,7 +187,7 @@ public class SVGWriter {
     /**
      * Create the SVGDocument corresponding to the substation graph
      *
-     * @param graph  substation graph
+     * @param graph   substation graph
      * @param svgFile file
      */
     public GraphMetadata write(SubstationGraph graph, SubstationDiagramStyleProvider styleProvider,
@@ -344,19 +336,19 @@ public class SVGWriter {
         for (int i = 0; i < maxH + 1; i++) {
             Element line = document.createElement("line");
             line.setAttribute("x1",
-                              Double.toString(layoutParameters.getInitialXBus() + i * layoutParameters.getCellWidth() + graph.getX()));
+                    Double.toString(layoutParameters.getInitialXBus() + i * layoutParameters.getCellWidth() + graph.getX()));
             line.setAttribute("x2",
-                              Double.toString(layoutParameters.getInitialXBus() + i * layoutParameters.getCellWidth() + graph.getX()));
+                    Double.toString(layoutParameters.getInitialXBus() + i * layoutParameters.getCellWidth() + graph.getX()));
             line.setAttribute("y1",
-                              Double.toString(layoutParameters.getInitialYBus() - layoutParameters.getStackHeight()
-                                                      - layoutParameters.getExternCellHeight() + graph.getY()));
+                    Double.toString(layoutParameters.getInitialYBus() - layoutParameters.getStackHeight()
+                            - layoutParameters.getExternCellHeight() + graph.getY()));
             line.setAttribute("y2", Double.toString(
                     layoutParameters.getInitialYBus() + layoutParameters.getStackHeight() + layoutParameters.getExternCellHeight()
                             + layoutParameters.getVerticalSpaceBus() * maxV + graph.getY()));
             line.setAttribute(CLASS, SubstationDiagramStyles.GRID_STYLE_CLASS);
 
             line.setAttribute(TRANSFORM,
-                              TRANSLATE + "(" + layoutParameters.getTranslateX() + "," + layoutParameters.getTranslateY() + ")");
+                    TRANSLATE + "(" + layoutParameters.getTranslateX() + "," + layoutParameters.getTranslateY() + ")");
             gridRoot.appendChild(line);
         }
         return gridRoot;
@@ -383,7 +375,7 @@ public class SVGWriter {
                     if (node instanceof FeederNode) {
                         int yShift = -LABEL_OFFSET;
                         if (node.getCell() != null) {
-                            yShift = node.getCell().getDirection() == Cell.Direction.TOP
+                            yShift = ((ExternCell) node.getCell()).getDirection() == AbstractBusCell.Direction.TOP
                                     ? -LABEL_OFFSET
                                     : ((int) (componentLibrary.getSize(node.getComponentType()).getHeight()) + FONT_SIZE + LABEL_OFFSET);
                         }
@@ -398,15 +390,15 @@ public class SVGWriter {
                         new GraphMetadata.NodeMetadata(nodeId, node.getComponentType(), node.isRotated(), node.isOpen()));
                 if (node.getType() == Node.NodeType.BUS) {
                     metadata.addComponentMetadata(new ComponentMetadata(ComponentType.BUSBAR_SECTION,
-                                                                        nodeId,
-                                                                        anchorPointProvider.getAnchorPoints(ComponentType.BUSBAR_SECTION, node.getId()),
-                                                                        new ComponentSize(0, 0)));
+                            nodeId,
+                            anchorPointProvider.getAnchorPoints(ComponentType.BUSBAR_SECTION, node.getId()),
+                            new ComponentSize(0, 0)));
                 } else {
                     if (metadata.getComponentMetadata(node.getComponentType()) == null) {
                         metadata.addComponentMetadata(new ComponentMetadata(node.getComponentType(),
-                                                                            null,
-                                                                            componentLibrary.getAnchorPoints(node.getComponentType()),
-                                                                            componentLibrary.getSize(node.getComponentType())));
+                                null,
+                                componentLibrary.getAnchorPoints(node.getComponentType()),
+                                componentLibrary.getSize(node.getComponentType())));
                     }
                 }
             } catch (UnsupportedEncodingException e) {
@@ -482,8 +474,8 @@ public class SVGWriter {
 
         if (!node.isRotated()) {
             g.setAttribute(TRANSFORM,
-                           TRANSLATE + "(" + (layoutParameters.getTranslateX() + node.getX() - componentSize.getWidth() / 2) + ","
-                                   + (layoutParameters.getTranslateY() + node.getY() - componentSize.getHeight() / 2) + ")");
+                    TRANSLATE + "(" + (layoutParameters.getTranslateX() + node.getX() - componentSize.getWidth() / 2) + ","
+                            + (layoutParameters.getTranslateY() + node.getY() - componentSize.getHeight() / 2) + ")");
             return;
         }
 
@@ -503,10 +495,10 @@ public class SVGWriter {
         double f1 = layoutParameters.getTranslateY() - cdx * sinRo - cdy * cosRo + node.getY();
 
         g.setAttribute(TRANSFORM,
-                       "matrix(" + Precision.round(cosRo, precision) + "," + Precision.round(sinRo, precision)
-                               + "," + Precision.round(-sinRo, precision) + "," + Precision.round(cosRo,
-                                                                                                  precision) + ","
-                               + Precision.round(e1, precision) + "," + Precision.round(f1, precision) + ")");
+                "matrix(" + Precision.round(cosRo, precision) + "," + Precision.round(sinRo, precision)
+                        + "," + Precision.round(-sinRo, precision) + "," + Precision.round(cosRo,
+                        precision) + ","
+                        + Precision.round(e1, precision) + "," + Precision.round(f1, precision) + ")");
     }
 
     /*
@@ -521,11 +513,11 @@ public class SVGWriter {
             g.setAttribute("id", wireId);
 
             WireConnection anchorPoints = WireConnection.searchBetterAnchorPoints(anchorPointProvider, edge.getNode1(),
-                                                                                  edge.getNode2());
+                    edge.getNode2());
 
             // Determine points of the polyline
             List<Double> pol = calculatePolylinePoints(edge, anchorPoints.getAnchorPoint1(),
-                                                       anchorPoints.getAnchorPoint2());
+                    anchorPoints.getAnchorPoint2());
 
             StringBuilder polPoints = new StringBuilder();
             for (int i = 0; i < pol.size(); i++) {
@@ -610,7 +602,7 @@ public class SVGWriter {
     private void drawSnakeLines(Element root, SubstationGraph graph, GraphMetadata metadata,
                                 SubstationLayout sLayout) {
 
-        Map<Cell.Direction, Integer> nbSnakeLinesTopBottom = EnumSet.allOf(Cell.Direction.class).stream().collect(Collectors.toMap(Function.identity(), v -> 0));
+        Map<AbstractBusCell.Direction, Integer> nbSnakeLinesTopBottom = EnumSet.allOf(AbstractBusCell.Direction.class).stream().collect(Collectors.toMap(Function.identity(), v -> 0));
         Map<String, Integer> nbSnakeLinesBetween = graph.getNodes().stream().collect(Collectors.toMap(g -> g.getVoltageLevel().getId(), v -> 0));
 
         Map<Side, Integer> nbSnakeLinesLeftRight = EnumSet.allOf(Side.class).stream().collect(Collectors.toMap(Function.identity(), v -> 0));
@@ -627,12 +619,12 @@ public class SVGWriter {
 
             // Determine points of the snakeLine
             List<Double> pol = sLayout.calculatePolylineSnakeLine(layoutParameters,
-                                                                  edge,
-                                                                  nbSnakeLinesTopBottom,
-                                                                  nbSnakeLinesLeftRight,
-                                                                  nbSnakeLinesBetween,
-                                                                  nbSnakeLinesBottomVL,
-                                                                  nbSnakeLinesTopVL);
+                    edge,
+                    nbSnakeLinesTopBottom,
+                    nbSnakeLinesLeftRight,
+                    nbSnakeLinesBetween,
+                    nbSnakeLinesBottomVL,
+                    nbSnakeLinesTopVL);
 
             StringBuilder polPoints = new StringBuilder();
             for (int i = 0; i < pol.size(); i++) {

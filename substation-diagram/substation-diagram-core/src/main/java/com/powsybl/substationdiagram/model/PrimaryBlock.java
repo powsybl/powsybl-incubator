@@ -53,7 +53,7 @@ public class PrimaryBlock extends AbstractBlock {
         setCardinalityEnd(1);
     }
 
-    public PrimaryBlock(List<Node> nodes, Cell cell) {
+    public PrimaryBlock(List<Node> nodes, AbstractCell cell) {
         this(nodes);
         setCell(cell);
     }
@@ -103,9 +103,8 @@ public class PrimaryBlock extends AbstractBlock {
 
     @Override
     public void calculateDimensionAndInternPos() {
-
         if (isEmbedingNodeType(Node.NodeType.BUS)
-                && (getCell().getDirection() == Cell.Direction.FLAT || !getStackableBlocks().isEmpty())) {
+                && (((AbstractBusCell) getCell()).getDirection() == AbstractBusCell.Direction.FLAT || !getStackableBlocks().isEmpty())) {
             getPosition().setHSpan(0);
             getPosition().setVSpan(0);
             return;
@@ -138,12 +137,12 @@ public class PrimaryBlock extends AbstractBlock {
             if (nodes.size() == 3) {
                 Node nodeSide = nodeBus == nodes.get(0) ? nodes.get(2) : nodes.get(0);
                 nodeSide.setX(getCoord().getX(), true);
-                if (getCell().getType() == Cell.CellType.INTERN && ((InternCell) getCell()).getCentralBlock() == null) {
+                if (getCell().getType() == AbstractCell.CellType.INTERN && ((InternCell) getCell()).getCentralBlock() == null) {
                     nodeSide.setY(layoutParam.getInitialYBus() - layoutParam.getInternCellHeight());
                 }
             }
         } else {
-            int sign = getCell().getDirection() == Cell.Direction.TOP ? 1 : -1;
+            int sign = ((AbstractBusCell) getCell()).getDirection() == AbstractBusCell.Direction.TOP ? 1 : -1;
             double y0 = getCoord().getY() + sign * getCoord().getYSpan() / 2;
             double yPxStep = calcYPxStep(sign);
             int v = 0;

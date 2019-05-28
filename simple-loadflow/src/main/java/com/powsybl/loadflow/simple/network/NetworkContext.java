@@ -128,7 +128,26 @@ public class NetworkContext {
                     double p = line.getConverterStation1() == converterStation && line.getConvertersMode() == HvdcLine.ConvertersMode.SIDE_1_RECTIFIER_SIDE_2_INVERTER
                             ? line.getActivePowerSetpoint()
                             : -line.getActivePowerSetpoint();
-                    lfBus.addGenerationTargetP(-p);
+                    lfBus.addGenerationTargetP(p);
+                    switch (converterStation.getHvdcType()) {
+                        case VSC:
+                            visitVscConverterStation((VscConverterStation) converterStation);
+                            break;
+                        case LCC:
+                            throw new UnsupportedOperationException("TODO: LCC");
+                        default:
+                            throw new IllegalStateException("Unknown HVDC converter station type: " + converterStation.getHvdcType());
+                    }
+                }
+
+                private void visitVscConverterStation(VscConverterStation converterStation) {
+                    VscConverterStation vscCs = converterStation;
+                    if (vscCs.isVoltageRegulatorOn()) {
+                        lfBus.setTargetV(vscCs.getVoltageSetpoint());
+                        lfBus.setVoltageControl(true);
+                    } else {
+                        lfBus.addGenerationTargetQ(vscCs.getReactivePowerSetpoint());
+                    }
                 }
             });
         }

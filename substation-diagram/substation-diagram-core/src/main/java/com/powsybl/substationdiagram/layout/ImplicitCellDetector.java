@@ -106,12 +106,10 @@ public class ImplicitCellDetector implements CellDetector {
                                    boolean isCellIntern,
                                    List<Node> allocatedNodes) {
         graph.getNodeBuses().forEach(bus -> {
-            List<BusNode> visitedBus = new ArrayList<>();
-            visitedBus.add(bus);
             bus.getAdjacentNodes().forEach(adj -> {
                 List<Node> cellNodes = new ArrayList<>();
                 List<Node> visitedNodes = new ArrayList<>(allocatedNodes);
-                visitedNodes.addAll(visitedBus);
+                visitedNodes.add(bus);
                 boolean searchOK = rDelimitedExploration(adj, typeStops, exclusionTypes, cellNodes, visitedNodes);
                 if (searchOK && !cellNodes.isEmpty()) {
                     cellNodes.add(adj);

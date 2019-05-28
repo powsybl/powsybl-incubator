@@ -10,10 +10,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -28,7 +25,7 @@ public class Cell implements Comparable<Cell> {
     }
 
     public enum CellType {
-        INTERN, INTERNBOUND, EXTERN, SHUNT, UNDEFINED
+        INTERN, EXTERN, SHUNT, UNDEFINED
     }
 
     final Graph graph;
@@ -60,9 +57,13 @@ public class Cell implements Comparable<Cell> {
         graph.addCell(this);
     }
 
-    void addNode(Node node) {
+    public void addNode(Node node) {
         nodes.add(node);
         node.setCell(this);
+    }
+
+    public void addNodes(Collection<Node> nodesToAdd) {
+        nodes.addAll(nodesToAdd);
     }
 
     public List<Node> getNodes() {
@@ -208,5 +209,9 @@ public class Cell implements Comparable<Cell> {
     @Override
     public String toString() {
         return "Cell(type=" + type + ", order=" + order + ", direction=" + direction + ", nodes=" + nodes + ")";
+    }
+
+    public Graph getGraph() {
+        return graph;
     }
 }

@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Contain function to dispose components of cells based on Hierarchical Layout
@@ -31,7 +32,17 @@ public class CellBlockDecomposer {
      * @param cell cell we are working on
      */
     public void determineBlocks(Cell cell) {
-        if (cell.getType() == Cell.CellType.INTERNBOUND || cell.getType() == Cell.CellType.SHUNT) {
+        if (cell.getType() == Cell.CellType.INTERN && cell.getNodes().size() == 3) {
+            SwitchNode switchNode = (SwitchNode) cell.getNodes().get(1);
+            cell.getGraph().extendSwitchBetweenBus(switchNode);
+            List<Node> adj = switchNode.getAdjacentNodes();
+            cell.addNodes(adj);
+            cell.addNodes(adj.stream()
+                    .flatMap(node -> node.getAdjacentNodes().stream())
+                    .filter(node -> node != switchNode)
+                    .collect(Collectors.toList()));
+        }
+        if (cell.getType() == Cell.CellType.SHUNT) {
             determineSingularCell(cell);
         } else {
             determineComplexCell(cell);
@@ -42,9 +53,6 @@ public class CellBlockDecomposer {
         List<PrimaryBlock> blocksConnectedToBusbar = new ArrayList<>();
         PrimaryBlock bpy = new PrimaryBlock(cell.getNodes());
         bpy.setCell(cell);
-        if (cell.getType() == Cell.CellType.INTERNBOUND) {
-            blocksConnectedToBusbar.add(bpy);
-        }
         cell.blocksSetting(bpy, blocksConnectedToBusbar);
     }
 

@@ -182,16 +182,16 @@ public class TestCase4NotParallelel extends AbstractTestCase {
         assertEquals(Cell.CellType.INTERN, cell.getType());
         assertEquals(3, cell.getNodes().size());
         assertEquals(2, cell.getBusNodes().size());
-        assertEquals("INTERNBOUND[bbs1.1, bbs1.2, ss1]", cell.getFullId());
+        assertEquals("INTERN[bbs1.1, bbs1.2, ss1]", cell.getFullId());
 
         // build blocks
         assertTrue(new BlockOrganizer().organize(g));
 
         // assert blocks and nodes rotation
-        assertEquals(1, cell.getPrimaryBlocksConnectedToBus().size());
+        assertEquals(2, cell.getPrimaryBlocksConnectedToBus().size());
         assertNotNull(cell.getRootBlock());
-        assertTrue(cell.getRootBlock() instanceof PrimaryBlock);
-        assertEquals(new Position(1, 1, 0, 0, false, Orientation.HORIZONTAL), cell.getRootBlock().getPosition());
+        assertTrue(cell.getRootBlock() instanceof ParallelBlock);
+        assertEquals(new Position(1, 1, 1, 1, false, Orientation.HORIZONTAL), cell.getRootBlock().getPosition());
 
         cell = it.next();
         assertTrue(cell.getRootBlock() instanceof SerialBlock);
@@ -209,7 +209,7 @@ public class TestCase4NotParallelel extends AbstractTestCase {
         assertTrue(cell.getRootBlock() instanceof SerialBlock);
         assertEquals(Cell.Direction.BOTTOM, cell.getDirection());
         bc = (SerialBlock) cell.getRootBlock();
-        assertEquals(new Position(1, 0, 1, 2, false, Orientation.VERTICAL), bc.getPosition());
+        assertEquals(new Position(2, 0, 1, 2, false, Orientation.VERTICAL), bc.getPosition());
 
         byu = (PrimaryBlock) bc.getUpperBlock();
         assertEquals(new Position(0, 0, 1, 2, false, Orientation.VERTICAL), byu.getPosition());
@@ -221,7 +221,7 @@ public class TestCase4NotParallelel extends AbstractTestCase {
         assertTrue(cell.getRootBlock() instanceof SerialBlock);
         assertEquals(Cell.Direction.TOP, cell.getDirection());
         SerialBlock bc3 = (SerialBlock) cell.getRootBlock();
-        assertEquals(new Position(2, 0, 1, 2, false, Orientation.VERTICAL), bc3.getPosition());
+        assertEquals(new Position(3, 0, 1, 2, false, Orientation.VERTICAL), bc3.getPosition());
 
         // calculate coordinates
         LayoutParameters layoutParameters = new LayoutParameters()

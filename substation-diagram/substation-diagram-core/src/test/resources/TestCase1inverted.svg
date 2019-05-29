@@ -29,7 +29,7 @@
 .PHASE_SHIFT_TRANSFORMER {stroke:rgb(0,0,255);stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;}
 ._d .open { visibility: hidden;}._d .closed { visibility: visible;}._b .open { visibility: hidden;}._b .closed { visibility: visible;}]]></style>
     <g class="substation-diagram">
-        <g>
+        <g id="GRID_vl">
             <line y2="565.0" x1="0.0" class="grid" x2="0.0" transform="translate(20.0,50.0)" y1="-20.0"/>
             <line y2="565.0" x1="50.0" class="grid" x2="50.0" transform="translate(20.0,50.0)" y1="-20.0"/>
         </g>
@@ -37,11 +37,11 @@
     <rect height="9" width="16"/>
     <line y2="9" x1="0" x2="16" y1="0"/>
     <line y2="9" x1="16" x2="0" y1="0"/>
-<text x="-5" font-size="8" y="-5" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">l</text>
+<text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">l</text>
         </g>
         <g class="substation-diagram BUSBAR_SECTION bbs" id="bbs" transform="translate(30.0,310.0)">
             <line y2="0" x1="0" class="bus_vl" x2="30.0" y1="0"/>
-            <text x="-5" font-size="8" y="-5" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs</text>
+            <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs</text>
         </g>
         <g class="substation-diagram DISCONNECTOR _d" id="d" transform="translate(41.0,306.0)">
     <g id="closed">
@@ -69,5 +69,8 @@
         <polyline class="wire_vl" points="45.0,145.0 45.0,34.0" id="vl_Wire1"/>
         <polyline class="wire_vl" points="45.0,165.0 45.0,280.0" id="vl_Wire2"/>
         <polyline class="wire_vl" points="45.0,310.0 45.0,280.0" id="vl_Wire3"/>
+        <g id="LABEL_VL_vl">
+            <text x="0.0" font-size="12" y="0.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">vl</text>
+        </g>
     </g>
 </svg>

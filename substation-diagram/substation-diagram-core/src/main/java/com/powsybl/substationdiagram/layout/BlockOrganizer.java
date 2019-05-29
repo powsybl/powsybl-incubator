@@ -51,16 +51,16 @@ public class BlockOrganizer {
     public boolean organize(Graph graph) {
         LOGGER.info("Organizing graph cells into blocks");
         graph.getCells().stream()
-                .filter(cell -> cell.getType().equals(AbstractCell.CellType.EXTERN)
-                        || cell.getType().equals(AbstractCell.CellType.INTERN))
+                .filter(cell -> cell.getType().equals(Cell.CellType.EXTERN)
+                        || cell.getType().equals(Cell.CellType.INTERN))
                 .forEach(cell -> {
                     new CellBlockDecomposer().determineBlocks(cell);
-                    if (cell.getType() == AbstractCell.CellType.INTERN) {
+                    if (cell.getType() == Cell.CellType.INTERN) {
                         ((InternCell) cell).rationalizeOrganization();
                     }
                 });
         graph.getCells().stream()
-                .filter(cell -> cell.getType() == AbstractCell.CellType.SHUNT)
+                .filter(cell -> cell.getType() == Cell.CellType.SHUNT)
                 .forEach(cell -> new CellBlockDecomposer().determineBlocks(cell));
 
         if (stack) {
@@ -69,7 +69,7 @@ public class BlockOrganizer {
         positionFinder.buildLayout(graph);
 
         graph.getCells().stream()
-                .filter(c -> c.getType() == AbstractCell.CellType.INTERN)
+                .filter(c -> c.getType() == Cell.CellType.INTERN)
                 .forEach(c -> ((InternCell) c).postPositioningSettings());
 
         SubSections subSections = new SubSections(graph);
@@ -77,7 +77,7 @@ public class BlockOrganizer {
         LOGGER.debug("Subsections {}", subSections);
 
         graph.getCells().stream()
-                .filter(cell -> cell instanceof AbstractBusCell)
+                .filter(cell -> cell instanceof BusCell)
                 .forEach(cell -> cell.getRootBlock().calculateDimensionAndInternPos());
         determineBlockPositions(graph, subSections);
 
@@ -165,7 +165,7 @@ public class BlockOrganizer {
 
     private int placeExternCell(int hPos, Set<ExternCell> externCells) {
         int hPos2 = hPos;
-        for (AbstractCell cell : externCells) {
+        for (Cell cell : externCells) {
             Position rootPosition = cell.getRootBlock().getPosition();
             rootPosition.setHV(hPos2, 0);
             hPos2 += rootPosition.getHSpan();
@@ -194,7 +194,7 @@ public class BlockOrganizer {
         int hPosRes = hPos;
         Set<InternCell> cells = hSs.getSideInternCells(side);
         List<InternCell> nonFlatCells = cells.stream()
-                .filter(cellIntern -> cellIntern.getDirection() != AbstractBusCell.Direction.FLAT).distinct()
+                .filter(cellIntern -> cellIntern.getDirection() != BusCell.Direction.FLAT).distinct()
                 .sorted(Comparator.comparingInt(c -> -nonFlatCellsToClose.indexOf(c)))
                 .collect(Collectors.toList());
         if (side == Side.RIGHT) {
@@ -255,9 +255,9 @@ public class BlockOrganizer {
 
     private void manageInternCellOverlaps(Graph graph) {
         List<InternCell> cellsToHandle = graph.getCells().stream()
-                .filter(cell -> cell.getType() == AbstractCell.CellType.INTERN)
+                .filter(cell -> cell.getType() == Cell.CellType.INTERN)
                 .map(InternCell.class::cast)
-                .filter(internCell -> internCell.getDirection() != AbstractBusCell.Direction.FLAT
+                .filter(internCell -> internCell.getDirection() != BusCell.Direction.FLAT
                         && internCell.getCentralBlock() != null)
                 .collect(Collectors.toList());
         Lane lane = new Lane(cellsToHandle);
@@ -349,7 +349,7 @@ public class BlockOrganizer {
                 final int newV = 1 + i / 2;
                 lane.incompatibilities.keySet()
                         .forEach(c -> {
-                            c.setDirection(j == 0 ? AbstractBusCell.Direction.TOP : AbstractBusCell.Direction.BOTTOM);
+                            c.setDirection(j == 0 ? BusCell.Direction.TOP : BusCell.Direction.BOTTOM);
                             c.getRootPosition().setV(newV);
                         });
                 i++;

@@ -94,27 +94,27 @@ public class TestCase1inverted extends AbstractTestCase {
 
         // assert cells
         assertEquals(1, g.getCells().size());
-        AbstractCell abstractCell = g.getCells().iterator().next();
-        assertEquals(AbstractCell.CellType.EXTERN, abstractCell.getType());
-        assertEquals(5, abstractCell.getNodes().size());
-        assertTrue(((AbstractBusCell) abstractCell).getPrimaryBlocksConnectedToBus().isEmpty());
-        assertEquals(1, ((AbstractBusCell)abstractCell).getBusNodes().size());
-        assertEquals("bbs", ((AbstractBusCell)abstractCell).getBusNodes().get(0).getId());
-        assertNull(abstractCell.getRootBlock());
-        assertEquals("EXTERN[FICT_vl_dFictif, b, bbs, d, l]", abstractCell.getFullId());
-        assertEquals(new Position(0, 0), ((AbstractBusCell)abstractCell).getMaxBusPosition());
+        Cell cell = g.getCells().iterator().next();
+        assertEquals(Cell.CellType.EXTERN, cell.getType());
+        assertEquals(5, cell.getNodes().size());
+        assertTrue(((BusCell) cell).getPrimaryBlocksConnectedToBus().isEmpty());
+        assertEquals(1, ((BusCell) cell).getBusNodes().size());
+        assertEquals("bbs", ((BusCell) cell).getBusNodes().get(0).getId());
+        assertNull(cell.getRootBlock());
+        assertEquals("EXTERN[FICT_vl_dFictif, b, bbs, d, l]", cell.getFullId());
+        assertEquals(new Position(0, 0), ((BusCell) cell).getMaxBusPosition());
 
         // build blocks
         assertTrue(new BlockOrganizer().organize(g));
 
         // assert blocks and nodes rotation
-        assertNotNull(abstractCell.getRootBlock());
-        assertTrue(abstractCell.getRootBlock() instanceof SerialBlock);
-        SerialBlock bc = (SerialBlock) abstractCell.getRootBlock();
+        assertNotNull(cell.getRootBlock());
+        assertTrue(cell.getRootBlock() instanceof SerialBlock);
+        SerialBlock bc = (SerialBlock) cell.getRootBlock();
         assertEquals(new Position(0, 0, 1, 2, false, Orientation.VERTICAL), bc.getPosition());
         assertEquals("bbs", bc.getStartingNode().getId());
         assertEquals("l", bc.getEndingNode().getId());
-        assertEquals(1, (((AbstractBusCell) abstractCell).getPrimaryBlocksConnectedToBus().size()));
+        assertEquals(1, (((BusCell) cell).getPrimaryBlocksConnectedToBus().size()));
 
         assertTrue(bc.getUpperBlock() instanceof PrimaryBlock);
         PrimaryBlock ub = (PrimaryBlock) bc.getUpperBlock();

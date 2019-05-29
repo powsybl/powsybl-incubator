@@ -76,7 +76,7 @@ public class ImplicitCellDetector implements CellDetector {
                 detectAndTypeShunt(graph, cell);
             }
         }
-        graph.getCells().forEach(AbstractCell::getFullId);
+        graph.getCells().forEach(Cell::getFullId);
 
         graph.logCellDetectionStatus();
     }
@@ -115,8 +115,8 @@ public class ImplicitCellDetector implements CellDetector {
                 if (searchOK && !cellNodes.isEmpty()) {
                     cellNodes.add(adj);
                     cellNodes.add(bus);
-                    AbstractCell abstractCell = isCellIntern ? new InternCell(graph) : new ExternCell(graph);
-                    abstractCell.setNodes(cellNodes);
+                    Cell cell = isCellIntern ? new InternCell(graph) : new ExternCell(graph);
+                    cell.setNodes(cellNodes);
                     allocatedNodes.addAll(cellNodes);
                     // remove the BusNodes from allocatedNode for a BusNode can be part of many cells
                     allocatedNodes.removeAll(
@@ -222,7 +222,7 @@ public class ImplicitCellDetector implements CellDetector {
     /**
      * @param cell the nodes of a cell that is suppected to be a shunt
      **/
-    private void detectAndTypeShunt(Graph graph, AbstractCell cell) {
+    private void detectAndTypeShunt(Graph graph, Cell cell) {
 
         List<Node> externalNodes = graph.getNodes()
                 .stream()

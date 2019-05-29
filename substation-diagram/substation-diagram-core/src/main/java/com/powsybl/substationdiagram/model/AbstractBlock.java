@@ -29,7 +29,7 @@ public abstract class AbstractBlock implements Block {
 
     private BusNode busNode;
 
-    private AbstractCell cell;
+    private Cell cell;
 
     private Position position;
 
@@ -109,14 +109,14 @@ public abstract class AbstractBlock implements Block {
         }
     }
 
-    public AbstractCell getCell() {
+    public Cell getCell() {
         return cell;
     }
 
     @Override
-    public void setCell(AbstractCell cell) {
+    public void setCell(Cell cell) {
         this.cell = cell;
-        if (cell.getType() == AbstractCell.CellType.SHUNT) {
+        if (cell.getType() == Cell.CellType.SHUNT) {
             setOrientation(Orientation.HORIZONTAL);
         } else {
             setOrientation(Orientation.VERTICAL);
@@ -160,7 +160,7 @@ public abstract class AbstractBlock implements Block {
 
     @Override
     public void calculateCoord(LayoutParameters layoutParam) {
-        if (cell.getType() == AbstractCell.CellType.SHUNT) {
+        if (cell.getType() == Cell.CellType.SHUNT) {
             ((PrimaryBlock) this).coordShuntCase();
         } else {
             if (getParentBlock() == null || getPosition().isAbsolute()) {
@@ -177,9 +177,9 @@ public abstract class AbstractBlock implements Block {
     private void calculateRootCoord(LayoutParameters layoutParam) {
         double dyToBus = 0;
         coord.setXSpan((double) position.getHSpan() * layoutParam.getCellWidth());
-        if (cell.getType() == AbstractCell.CellType.INTERN) {
+        if (cell.getType() == Cell.CellType.INTERN) {
             coord.setYSpan(0);
-            if (((InternCell) cell).getDirection() != AbstractBusCell.Direction.FLAT) {
+            if (((InternCell) cell).getDirection() != BusCell.Direction.FLAT) {
                 dyToBus = layoutParam.getInternCellHeight() * position.getV();
             }
         } else {
@@ -191,10 +191,10 @@ public abstract class AbstractBlock implements Block {
                 + layoutParam.getCellWidth() * position.getH()
                 + coord.getXSpan() / 2);
 
-        switch (((AbstractBusCell) cell).getDirection()) {
+        switch (((BusCell) cell).getDirection()) {
             case BOTTOM:
                 coord.setY(layoutParam.getInitialYBus()
-                        + (((AbstractBusCell) cell).getMaxBusPosition().getV() - 1) * layoutParam.getVerticalSpaceBus()
+                        + (((BusCell) cell).getMaxBusPosition().getV() - 1) * layoutParam.getVerticalSpaceBus()
                         + dyToBus);
                 break;
             case TOP:

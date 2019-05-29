@@ -50,7 +50,7 @@ class SubSections {
     }
 
     class HorizontalSubSection {
-        private Set<AbstractCell> cells;
+        private Set<Cell> cells;
         private Set<ExternCell> externCells;
         private Set<InternCell> internCells;
         private Set<BusNode> busNodes;
@@ -67,9 +67,9 @@ class SubSections {
             order = -1;
         }
 
-        void add(AbstractBusCell busCell) {
+        void add(BusCell busCell) {
             cells.add(busCell);
-            if (busCell.getType() == AbstractCell.CellType.EXTERN) {
+            if (busCell.getType() == Cell.CellType.EXTERN) {
                 externCells.add((ExternCell) busCell);
                 if (order == -1) {
                     order = ((ExternCell) busCell).getOrder();
@@ -141,7 +141,7 @@ class SubSections {
             return externCellsCopy;
         }
 
-        Set<AbstractCell> getCells() {
+        Set<Cell> getCells() {
             return new HashSet<>(cells);
         }
 
@@ -309,12 +309,12 @@ class SubSections {
     }
 
     private void buildSubSections() {
-        graph.getCells().stream().filter(cell -> cell.getType() == AbstractCell.CellType.EXTERN)
+        graph.getCells().stream().filter(cell -> cell.getType() == Cell.CellType.EXTERN)
                 .map(ExternCell.class::cast)
                 .forEach(cell -> allocateCellToSubsection(cell, cell.getBusNodes(), Side.UNDEFINED));
 
         Set<InternCell> internCells = graph.getCells().stream()
-                .filter(cell -> cell.getType() == AbstractCell.CellType.INTERN)
+                .filter(cell -> cell.getType() == Cell.CellType.INTERN)
                 .map(InternCell.class::cast)
                 .collect(Collectors.toSet());
 
@@ -326,7 +326,7 @@ class SubSections {
         internCells.removeAll(verticalInternCells);
 
         internCells.stream()
-                .filter(cell -> cell.getType() == AbstractCell.CellType.INTERN)
+                .filter(cell -> cell.getType() == Cell.CellType.INTERN)
                 .forEach(internCell -> {
                     allocateCellToSubsection(internCell, internCell.getSideBusNodes(Side.LEFT), Side.LEFT);
                     allocateCellToSubsection(internCell, internCell.getSideBusNodes(Side.RIGHT), Side.RIGHT);
@@ -361,7 +361,7 @@ class SubSections {
         }
     }
 
-    private void allocateCellToSubsection(AbstractBusCell busCell, List<BusNode> busNodes, Side side) {
+    private void allocateCellToSubsection(BusCell busCell, List<BusNode> busNodes, Side side) {
         SubSectionIndexes indexes = new SubSectionIndexes(graph.getMaxBusStructuralPosition().getV());
         busNodes.stream().map(BusNode::getStructuralPosition).collect(Collectors.toList())
                 .forEach(position -> indexes.setIndexI(position.getV() - 1, position.getH()));
@@ -372,7 +372,7 @@ class SubSections {
                 subsectionMap.get(indexes).add((InternCell) busCell, side);
             } else {
                 subsectionMap.get(indexes).add(busCell);
-                if (busCell.getType() == AbstractCell.CellType.EXTERN) {
+                if (busCell.getType() == Cell.CellType.EXTERN) {
                     indexes.updateOrder(((ExternCell) busCell).getOrder());
                 }
             }

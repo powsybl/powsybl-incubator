@@ -25,7 +25,7 @@ public class PositionFree implements PositionFinder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PositionFree.class);
 
-    private static final AbstractBusCell.Direction DEFAULTDIRECTION = AbstractBusCell.Direction.TOP;
+    private static final BusCell.Direction DEFAULTDIRECTION = BusCell.Direction.TOP;
 
     private class Context {
         private final Graph graph;
@@ -79,14 +79,14 @@ public class PositionFree implements PositionFinder {
             }
         }
         context.graph.getCells().stream()
-                .filter(cell -> cell.getType() == AbstractCell.CellType.EXTERN)
+                .filter(cell -> cell.getType() == Cell.CellType.EXTERN)
                 .map(ExternCell.class::cast)
                 .forEach(ExternCell::orderFromFeederOrders);
     }
 
     private void initVbpcToCell(Context context) {
         context.graph.getCells().stream()
-                .filter(cell -> cell.getType() == AbstractCell.CellType.EXTERN)
+                .filter(cell -> cell.getType() == Cell.CellType.EXTERN)
                 .map(ExternCell.class::cast)
                 .forEach(cell -> addBusNodeSet(cell.getBusNodes(), cell, context));
     }
@@ -132,7 +132,7 @@ public class PositionFree implements PositionFinder {
     private List<InternCell> identifyStructuringCells(Context context) {
         List<InternCell> structuringInternCells
                 = context.graph.getCells().stream()
-                .filter(cell -> cell.getType() == AbstractCell.CellType.INTERN)
+                .filter(cell -> cell.getType() == Cell.CellType.INTERN)
                 .map(InternCell.class::cast)
                 .collect(Collectors.toList());
 
@@ -549,7 +549,7 @@ public class PositionFree implements PositionFinder {
             int cellPos = 0;
             for (VerticalBusConnectionPattern vbcp : vbcps) {
                 for (ExternCell cell : context.vbcpToCells.get(vbcp)) {
-                    cell.setDirection(cellPos % 2 == 0 ? AbstractBusCell.Direction.TOP : AbstractBusCell.Direction.BOTTOM);
+                    cell.setDirection(cellPos % 2 == 0 ? BusCell.Direction.TOP : BusCell.Direction.BOTTOM);
                     cell.setOrder(cellPos);
                     cellPos++;
                     for (FeederNode feederNode : cell.getNodes().stream()

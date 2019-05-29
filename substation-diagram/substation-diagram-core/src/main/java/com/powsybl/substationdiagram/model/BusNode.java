@@ -57,9 +57,9 @@ public class BusNode extends Node {
     }
 
     @Override
-    public void setCell(AbstractCell cell) {
-        if (!(cell instanceof AbstractBusCell)) {
-            throw new PowsyblException("The Cell of a feeder node shall be a AbstractBusCell");
+    public void setCell(Cell cell) {
+        if (!(cell instanceof BusCell)) {
+            throw new PowsyblException("The Cell of a feeder node shall be a BusCell");
         }
         super.setCell(cell);
     }

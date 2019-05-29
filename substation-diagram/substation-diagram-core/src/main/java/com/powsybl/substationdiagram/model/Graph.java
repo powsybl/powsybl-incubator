@@ -49,8 +49,8 @@ public class Graph {
 
     private final List<Edge> edges = new ArrayList<>();
 
-    private final SortedSet<AbstractCell> cells = new TreeSet<>(
-            Comparator.comparingInt(AbstractCell::getNumber)); // cells sorted to avoid randomness
+    private final SortedSet<Cell> cells = new TreeSet<>(
+            Comparator.comparingInt(Cell::getNumber)); // cells sorted to avoid randomness
 
     private final Map<Node.NodeType, List<Node>> nodesByType = new EnumMap<>(Node.NodeType.class);
 
@@ -202,7 +202,7 @@ public class Graph {
             if (feeder != null) {
                 node.setOrder(feeder.getOrder());
                 node.setLabel(feeder.getName());
-                node.setDirection(AbstractBusCell.Direction.valueOf(feeder.getDirection().toString()));
+                node.setDirection(BusCell.Direction.valueOf(feeder.getDirection().toString()));
             }
             nodesByNumber.put(terminal.getNodeBreakerView().getNode(), node);
             addNode(node);
@@ -233,7 +233,7 @@ public class Graph {
 
         protected void addFeeder(FeederNode node, Terminal terminal) {
             node.setOrder(order++);
-            node.setDirection(order % 2 == 0 ? AbstractBusCell.Direction.TOP : AbstractBusCell.Direction.BOTTOM);
+            node.setDirection(order % 2 == 0 ? BusCell.Direction.TOP : BusCell.Direction.BOTTOM);
             addNode(node);
             SwitchNode nodeSwitch = SwitchNode.create(Graph.this, terminal);
             addNode(nodeSwitch);
@@ -370,9 +370,9 @@ public class Graph {
     }
 
     public void logCellDetectionStatus() {
-        Set<AbstractCell> cellsLog = new HashSet<>();
-        Map<AbstractCell.CellType, Integer> cellCountByType = new EnumMap<>(AbstractCell.CellType.class);
-        for (AbstractCell.CellType cellType : AbstractCell.CellType.values()) {
+        Set<Cell> cellsLog = new HashSet<>();
+        Map<Cell.CellType, Integer> cellCountByType = new EnumMap<>(Cell.CellType.class);
+        for (Cell.CellType cellType : Cell.CellType.values()) {
             cellCountByType.put(cellType, 0);
         }
         int remainingNodeCount = 0;
@@ -381,7 +381,7 @@ public class Graph {
             remainingNodeCountByType.put(nodeType, 0);
         }
         for (Node node : nodes) {
-            AbstractCell cell = node.getCell();
+            Cell cell = node.getCell();
             if (cell != null) {
                 if (cellsLog.add(cell)) {
                     cellCountByType.put(cell.getType(), cellCountByType.get(cell.getType()) + 1);
@@ -533,7 +533,7 @@ public class Graph {
     }
 
     public List<String> signatureSortedCellsContent() {
-        return cells.stream().map(AbstractCell::getFullId).sorted().collect(Collectors.toList());
+        return cells.stream().map(Cell::getFullId).sorted().collect(Collectors.toList());
     }
 
     public boolean compareCellDetection(Graph graph) {
@@ -558,10 +558,10 @@ public class Graph {
         maxBusStructuralPosition.setV(Collections.max(v));
     }
 
-    public Stream<AbstractBusCell> getBusCells() {
+    public Stream<BusCell> getBusCells() {
         return cells.stream()
-                .filter(cell -> cell instanceof AbstractBusCell && !((AbstractBusCell) cell).getPrimaryBlocksConnectedToBus().isEmpty())
-                .map(AbstractBusCell.class::cast);
+                .filter(cell -> cell instanceof BusCell && !((BusCell) cell).getPrimaryBlocksConnectedToBus().isEmpty())
+                .map(BusCell.class::cast);
     }
 
     private void buildVPosToHposToNodeBus() {
@@ -694,11 +694,11 @@ public class Graph {
         return vPosToHPosToNodeBus.get(v).get(h);
     }
 
-    public void addCell(AbstractCell c) {
+    public void addCell(Cell c) {
         cells.add(c);
     }
 
-    public void removeCell(AbstractCell c) {
+    public void removeCell(Cell c) {
         cells.remove(c);
     }
 
@@ -717,7 +717,7 @@ public class Graph {
         return new ArrayList<>(edges);
     }
 
-    public Set<AbstractCell> getCells() {
+    public Set<Cell> getCells() {
         return new TreeSet<>(cells);
     }
 
@@ -755,7 +755,7 @@ public class Graph {
                 .createGenerator(writer)
                 .useDefaultPrettyPrinter()) {
             generator.writeStartArray();
-            for (AbstractCell cell : cells) {
+            for (Cell cell : cells) {
                 cell.writeJson(generator);
             }
             generator.writeEndArray();

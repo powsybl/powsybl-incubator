@@ -43,7 +43,7 @@ public class SerialBlock extends AbstractBlock {
     public SerialBlock(Block block1,
                        Block block2,
                        Node commonNode,
-                       AbstractCell cell) {
+                       Cell cell) {
         this(block1, block2, commonNode);
         if (cell != null) {
             setCell(cell);
@@ -159,7 +159,7 @@ public class SerialBlock extends AbstractBlock {
     public void coordVerticalCase(LayoutParameters layoutParam) {
         double y0;
         double yPxStep;
-        int sign = ((AbstractBusCell) getCell()).getDirection() == AbstractBusCell.Direction.TOP ? 1 : -1;
+        int sign = ((BusCell) getCell()).getDirection() == BusCell.Direction.TOP ? 1 : -1;
         y0 = getCoord().getY() + sign * getCoord().getYSpan() / 2;
         yPxStep = -sign * getCoord().getYSpan() / getPosition().getVSpan();
 

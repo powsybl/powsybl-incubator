@@ -375,7 +375,7 @@ public class SVGWriter {
                     if (node instanceof FeederNode) {
                         int yShift = -LABEL_OFFSET;
                         if (node.getCell() != null) {
-                            yShift = ((ExternCell) node.getCell()).getDirection() == AbstractBusCell.Direction.TOP
+                            yShift = ((ExternCell) node.getCell()).getDirection() == BusCell.Direction.TOP
                                     ? -LABEL_OFFSET
                                     : ((int) (componentLibrary.getSize(node.getComponentType()).getHeight()) + FONT_SIZE + LABEL_OFFSET);
                         }
@@ -602,7 +602,7 @@ public class SVGWriter {
     private void drawSnakeLines(Element root, SubstationGraph graph, GraphMetadata metadata,
                                 SubstationLayout sLayout) {
 
-        Map<AbstractBusCell.Direction, Integer> nbSnakeLinesTopBottom = EnumSet.allOf(AbstractBusCell.Direction.class).stream().collect(Collectors.toMap(Function.identity(), v -> 0));
+        Map<BusCell.Direction, Integer> nbSnakeLinesTopBottom = EnumSet.allOf(BusCell.Direction.class).stream().collect(Collectors.toMap(Function.identity(), v -> 0));
         Map<String, Integer> nbSnakeLinesBetween = graph.getNodes().stream().collect(Collectors.toMap(g -> g.getVoltageLevel().getId(), v -> 0));
 
         Map<Side, Integer> nbSnakeLinesLeftRight = EnumSet.allOf(Side.class).stream().collect(Collectors.toMap(Function.identity(), v -> 0));

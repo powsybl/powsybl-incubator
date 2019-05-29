@@ -22,7 +22,7 @@ public class PositionFromExtension implements PositionFinder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PositionFromExtension.class);
 
-    private static final AbstractBusCell.Direction DEFAULTDIRECTION = AbstractBusCell.Direction.TOP;
+    private static final BusCell.Direction DEFAULTDIRECTION = BusCell.Direction.TOP;
 
     /**
      * Builds the layout of the bus nodes, and organises cells (order and directions)
@@ -31,7 +31,7 @@ public class PositionFromExtension implements PositionFinder {
     public void buildLayout(Graph graph) {
         gatherLayoutExtensionInformation(graph);
         List<ExternCell> problematicCells = graph.getCells().stream()
-                .filter(cell -> cell.getType().equals(AbstractCell.CellType.EXTERN))
+                .filter(cell -> cell.getType().equals(Cell.CellType.EXTERN))
                 .map(ExternCell.class::cast)
                 .filter(cell -> cell.getOrder() == -1).collect(Collectors.toList());
         if (!problematicCells.isEmpty()) {
@@ -54,16 +54,16 @@ public class PositionFromExtension implements PositionFinder {
                 .forEach(feederNode -> {
                     ExternCell cell = (ExternCell) feederNode.getCell();
                     cell.setDirection(
-                            feederNode.getDirection() == AbstractBusCell.Direction.UNDEFINED ? DEFAULTDIRECTION : feederNode.getDirection());
+                            feederNode.getDirection() == BusCell.Direction.UNDEFINED ? DEFAULTDIRECTION : feederNode.getDirection());
                     cell.setOrder(feederNode.getOrder());
                 });
-        graph.getCells().stream().filter(cell -> cell.getType() == AbstractCell.CellType.EXTERN).map(ExternCell.class::cast)
+        graph.getCells().stream().filter(cell -> cell.getType() == Cell.CellType.EXTERN).map(ExternCell.class::cast)
                 .forEach(ExternCell::orderFromFeederOrders);
     }
 
     private void forceSameOrientationForShuntedCell(Graph graph) {
-        for (AbstractCell cell : graph.getCells().stream()
-                .filter(c -> c.getType() == AbstractCell.CellType.SHUNT).collect(Collectors.toList())) {
+        for (Cell cell : graph.getCells().stream()
+                .filter(c -> c.getType() == Cell.CellType.SHUNT).collect(Collectors.toList())) {
             List<Node> shNodes = cell.getNodes().stream()
                     .filter(node -> node.getType() == Node.NodeType.SHUNT).collect(Collectors.toList());
             ((ExternCell) shNodes.get(1).getCell()).setDirection(

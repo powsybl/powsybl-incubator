@@ -124,19 +124,19 @@ public class TestCase5ShuntHorizontal extends AbstractTestCase {
 
         // assert cells
         assertEquals(3, g.getCells().size());
-        Iterator<AbstractCell> it = g.getCells().iterator();
-        AbstractCell cellb = it.next();
-        assertEquals(AbstractCell.CellType.EXTERN, cellb.getType());
+        Iterator<Cell> it = g.getCells().iterator();
+        Cell cellb = it.next();
+        assertEquals(Cell.CellType.EXTERN, cellb.getType());
         assertEquals(6, cellb.getNodes().size());
         assertEquals("EXTERN[FICT_vl_dbFictif, FICT_vl_lbFictif, bb, bbs, db, lb]", cellb.getFullId());
 
-        AbstractCell abstractCellShunt = it.next();
-        assertEquals(AbstractCell.CellType.SHUNT, abstractCellShunt.getType());
-        assertEquals(3, abstractCellShunt.getNodes().size());
-        assertEquals("SHUNT[FICT_vl_laFictif, FICT_vl_lbFictif, bs]", abstractCellShunt.getFullId());
+        Cell cellShunt = it.next();
+        assertEquals(Cell.CellType.SHUNT, cellShunt.getType());
+        assertEquals(3, cellShunt.getNodes().size());
+        assertEquals("SHUNT[FICT_vl_laFictif, FICT_vl_lbFictif, bs]", cellShunt.getFullId());
 
-        AbstractCell cella = it.next();
-        assertEquals(AbstractCell.CellType.EXTERN, cella.getType());
+        Cell cella = it.next();
+        assertEquals(Cell.CellType.EXTERN, cella.getType());
         assertEquals(6, cella.getNodes().size());
         assertEquals("EXTERN[FICT_vl_daFictif, FICT_vl_laFictif, ba, bbs, da, la]", cella.getFullId());
 
@@ -144,19 +144,19 @@ public class TestCase5ShuntHorizontal extends AbstractTestCase {
         assertTrue(new BlockOrganizer().organize(g));
 
         // assert blocks and nodes rotation
-        assertEquals(1, ((AbstractBusCell) cella).getPrimaryBlocksConnectedToBus().size());
+        assertEquals(1, ((BusCell) cella).getPrimaryBlocksConnectedToBus().size());
         assertNotNull(cella.getRootBlock());
         assertTrue(cella.getRootBlock() instanceof SerialBlock);
         assertEquals(new Position(0, 0, 1, 3, false, Orientation.VERTICAL), cella.getRootBlock().getPosition());
 
-        assertEquals(1, ((AbstractBusCell) cellb).getPrimaryBlocksConnectedToBus().size());
+        assertEquals(1, ((BusCell) cellb).getPrimaryBlocksConnectedToBus().size());
         assertNotNull(cellb.getRootBlock());
         assertTrue(cellb.getRootBlock() instanceof SerialBlock);
         assertEquals(new Position(1, 0, 1, 3, false, Orientation.VERTICAL), cellb.getRootBlock().getPosition());
 
-        assertNotNull(abstractCellShunt.getRootBlock());
-        assertTrue(abstractCellShunt.getRootBlock() instanceof PrimaryBlock);
-        assertEquals(new Position(-1, -1, 0, 0, false, Orientation.HORIZONTAL), abstractCellShunt.getRootBlock().getPosition());
+        assertNotNull(cellShunt.getRootBlock());
+        assertTrue(cellShunt.getRootBlock() instanceof PrimaryBlock);
+        assertEquals(new Position(-1, -1, 0, 0, false, Orientation.HORIZONTAL), cellShunt.getRootBlock().getPosition());
 
         // calculate coordinates
         LayoutParameters layoutParameters = new LayoutParameters()

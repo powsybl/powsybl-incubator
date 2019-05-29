@@ -27,18 +27,18 @@ public interface SubstationLayout {
      */
     List<Double> calculatePolylineSnakeLine(LayoutParameters layoutParam,
                                             Edge edge,
-                                            Map<AbstractBusCell.Direction, Integer> nbSnakeLinesTopBottom,
+                                            Map<BusCell.Direction, Integer> nbSnakeLinesTopBottom,
                                             Map<Side, Integer> nbSnakeLinesLeftRight,
                                             Map<String, Integer> nbSnakeLinesBetween,
                                             Map<String, Integer> nbSnakeLinesBottomVL,
                                             Map<String, Integer> nbSnakeLinesTopVL);
 
-    default AbstractBusCell.Direction getNodeDirection(Node node, int nb) {
+    default BusCell.Direction getNodeDirection(Node node, int nb) {
         if (node.getType() != Node.NodeType.FEEDER) {
             throw new PowsyblException("Node " + nb + " is not a feeder node");
         }
-        AbstractBusCell.Direction dNode = node.getCell() != null ? ((ExternCell) node.getCell()).getDirection() : AbstractBusCell.Direction.TOP;
-        if (dNode != AbstractBusCell.Direction.TOP && dNode != AbstractBusCell.Direction.BOTTOM) {
+        BusCell.Direction dNode = node.getCell() != null ? ((ExternCell) node.getCell()).getDirection() : BusCell.Direction.TOP;
+        if (dNode != BusCell.Direction.TOP && dNode != BusCell.Direction.BOTTOM) {
             throw new PowsyblException("Node " + nb + " cell direction not TOP or BOTTOM");
         }
         return dNode;

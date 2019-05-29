@@ -40,7 +40,7 @@ public class HorizontalSubstationLayout implements SubstationLayout {
      */
     public List<Double> calculatePolylineSnakeLine(LayoutParameters layoutParam,
                                                    Edge edge,
-                                                   Map<AbstractBusCell.Direction, Integer> nbSnakeLinesTopBottom,
+                                                   Map<BusCell.Direction, Integer> nbSnakeLinesTopBottom,
                                                    Map<Side, Integer> nbSnakeLinesLeftRight,
                                                    Map<String, Integer> nbSnakeLinesBetween,
                                                    Map<String, Integer> nbSnakeLinesBottomVL,
@@ -48,8 +48,8 @@ public class HorizontalSubstationLayout implements SubstationLayout {
         Node node1 = edge.getNode1();
         Node node2 = edge.getNode2();
 
-        AbstractBusCell.Direction dNode1 = getNodeDirection(node1, 1);
-        AbstractBusCell.Direction dNode2 = getNodeDirection(node2, 2);
+        BusCell.Direction dNode1 = getNodeDirection(node1, 1);
+        BusCell.Direction dNode2 = getNodeDirection(node2, 2);
 
         double xMaxGraph;
         String idMaxGraph;
@@ -70,7 +70,7 @@ public class HorizontalSubstationLayout implements SubstationLayout {
         List<Double> pol = new ArrayList<>();
         switch (dNode1) {
             case BOTTOM:
-                if (dNode2 == AbstractBusCell.Direction.BOTTOM) {  // BOTTOM to BOTTOM
+                if (dNode2 == BusCell.Direction.BOTTOM) {  // BOTTOM to BOTTOM
                     nbSnakeLinesTopBottom.compute(dNode1, (k, v) -> v + 1);
                     double decalV = nbSnakeLinesTopBottom.get(dNode1) * layoutParam.getVerticalSnakeLinePadding();
                     double yDecal = Math.max(y1 + decalV, y2 + decalV);
@@ -98,7 +98,7 @@ public class HorizontalSubstationLayout implements SubstationLayout {
                 break;
 
             case TOP:
-                if (dNode2 == AbstractBusCell.Direction.TOP) {  // TOP to TOP
+                if (dNode2 == BusCell.Direction.TOP) {  // TOP to TOP
                     nbSnakeLinesTopBottom.compute(dNode1, (k, v) -> v + 1);
                     double decalV = nbSnakeLinesTopBottom.get(dNode1) * layoutParam.getVerticalSnakeLinePadding();
                     double yDecal = Math.min(y1 - decalV, y2 - decalV);

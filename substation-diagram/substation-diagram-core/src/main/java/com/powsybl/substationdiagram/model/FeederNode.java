@@ -26,7 +26,7 @@ public class FeederNode extends Node {
 
     private int order = -1;
 
-    private AbstractBusCell.Direction direction = AbstractBusCell.Direction.UNDEFINED;
+    private BusCell.Direction direction = BusCell.Direction.UNDEFINED;
 
     protected FeederNode(String id, String name, ComponentType componentType, boolean fictitious, Graph graph) {
         super(NodeType.FEEDER, id, name, componentType, fictitious, graph);
@@ -98,7 +98,7 @@ public class FeederNode extends Node {
     }
 
     @Override
-    public void setCell(AbstractCell cell) {
+    public void setCell(Cell cell) {
         if (!(cell instanceof ExternCell)) {
             throw new PowsyblException("The Cell of a feeder node shall be an ExternCell");
         }
@@ -113,11 +113,11 @@ public class FeederNode extends Node {
         this.order = order;
     }
 
-    public AbstractBusCell.Direction getDirection() {
+    public BusCell.Direction getDirection() {
         return direction;
     }
 
-    public void setDirection(AbstractBusCell.Direction direction) {
+    public void setDirection(BusCell.Direction direction) {
         this.direction = direction;
     }
 }

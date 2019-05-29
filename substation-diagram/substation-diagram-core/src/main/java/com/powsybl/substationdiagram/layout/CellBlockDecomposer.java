@@ -31,16 +31,16 @@ public class CellBlockDecomposer {
      *
      * @param cell Cell we are working on
      */
-    public void determineBlocks(AbstractCell cell) {
-        if (cell.getType() == AbstractCell.CellType.SHUNT) {
+    public void determineBlocks(Cell cell) {
+        if (cell.getType() == Cell.CellType.SHUNT) {
             determineShuntCellBlocks((ShuntCell) cell);
         } else {
-            determineBusCellBlocks((AbstractBusCell) cell);
+            determineBusCellBlocks((BusCell) cell);
         }
     }
 
-    public void determineBusCellBlocks(AbstractBusCell busCell) {
-        if (busCell.getType() == AbstractCell.CellType.INTERN && busCell.getNodes().size() == 3) {
+    public void determineBusCellBlocks(BusCell busCell) {
+        if (busCell.getType() == Cell.CellType.INTERN && busCell.getNodes().size() == 3) {
             SwitchNode switchNode = (SwitchNode) busCell.getNodes().get(1);
             busCell.getGraph().extendSwitchBetweenBus(switchNode);
             List<Node> adj = switchNode.getAdjacentNodes();
@@ -59,7 +59,7 @@ public class CellBlockDecomposer {
         shuntCell.setRootBlock(bpy);
     }
 
-    private void determineComplexCell(AbstractBusCell busCell) {
+    private void determineComplexCell(BusCell busCell) {
         List<PrimaryBlock> blocksConnectedToBusbar = new ArrayList<>();
         List<Node> alreadyTreated = new ArrayList<>();
         List<Block> blocks = new ArrayList<>();
@@ -117,7 +117,7 @@ public class CellBlockDecomposer {
      * @param blocks       list of blocks we can merge
      * @param cell current Cell
      */
-    private boolean searchChainMerge(List<Block> blocks, AbstractCell cell) {
+    private boolean searchChainMerge(List<Block> blocks, Cell cell) {
         boolean chainEnded = false;
         int i = 0;
         while (i < blocks.size() && !chainEnded) {
@@ -152,7 +152,7 @@ public class CellBlockDecomposer {
      * @param blocks       list of blocks we can merge
      * @param cell current Cell
      */
-    private boolean searchParallelMerge(List<Block> blocks, AbstractCell cell) {
+    private boolean searchParallelMerge(List<Block> blocks, Cell cell) {
         List<List<Block>> blocksBundlesToMerge = new ArrayList<>();
         Node commonNode;
         int i = 0;
@@ -240,7 +240,7 @@ public class CellBlockDecomposer {
      * @param blockNodes     blockNodes
      * @param blocks         blocks
      */
-    private void rElaboratePrimaryBlocks(AbstractCell cell, Node currentNode, Node parentNode,
+    private void rElaboratePrimaryBlocks(Cell cell, Node currentNode, Node parentNode,
                                          List<Node> alreadyTreated,
                                          List<Node> blockNodes,
                                          List<Block> blocks) {

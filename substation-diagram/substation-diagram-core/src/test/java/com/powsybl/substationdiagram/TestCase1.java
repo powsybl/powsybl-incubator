@@ -149,7 +149,7 @@ public class TestCase1 extends AbstractTestCase {
         // assert cells
         assertEquals(1, g.getCells().size());
         ExternCell externCell = (ExternCell) g.getCells().iterator().next();
-        assertEquals(AbstractCell.CellType.EXTERN, externCell.getType());
+        assertEquals(Cell.CellType.EXTERN, externCell.getType());
         assertEquals(-1, externCell.getOrder());
         assertEquals(5, externCell.getNodes().size());
         assertTrue(externCell.getPrimaryBlocksConnectedToBus().isEmpty());

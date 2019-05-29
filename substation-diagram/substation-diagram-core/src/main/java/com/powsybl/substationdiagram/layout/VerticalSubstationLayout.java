@@ -45,7 +45,7 @@ public class VerticalSubstationLayout implements SubstationLayout {
      */
     public List<Double> calculatePolylineSnakeLine(LayoutParameters layoutParam,
                                                    Edge edge,
-                                                   Map<AbstractBusCell.Direction, Integer> nbSnakeLinesTopBottom,
+                                                   Map<BusCell.Direction, Integer> nbSnakeLinesTopBottom,
                                                    Map<Side, Integer> nbSnakeLinesLeftRight,
                                                    Map<String, Integer> nbSnakeLinesBetween,
                                                    Map<String, Integer> nbSnakeLinesBottomVL,
@@ -53,8 +53,8 @@ public class VerticalSubstationLayout implements SubstationLayout {
         Node node1 = edge.getNode1();
         Node node2 = edge.getNode2();
 
-        AbstractBusCell.Direction dNode1 = getNodeDirection(node1, 1);
-        AbstractBusCell.Direction dNode2 = getNodeDirection(node2, 2);
+        BusCell.Direction dNode1 = getNodeDirection(node1, 1);
+        BusCell.Direction dNode2 = getNodeDirection(node2, 2);
 
         double xMinGraph;
 
@@ -83,7 +83,7 @@ public class VerticalSubstationLayout implements SubstationLayout {
         List<Double> pol = new ArrayList<>();
         switch (dNode1) {
             case BOTTOM:
-                if (dNode2 == AbstractBusCell.Direction.BOTTOM) {  // BOTTOM to BOTTOM
+                if (dNode2 == BusCell.Direction.BOTTOM) {  // BOTTOM to BOTTOM
                     nbSnakeLinesBottomVL.compute(node1.getGraph().getVoltageLevel().getId(), (k, v) -> v + 1);
                     nbSnakeLinesBottomVL.compute(node2.getGraph().getVoltageLevel().getId(), (k, v) -> v + 1);
                     nbSnakeLinesLeftRight.compute(Side.RIGHT, (k, v) -> v + 1);
@@ -128,7 +128,7 @@ public class VerticalSubstationLayout implements SubstationLayout {
                 break;
 
             case TOP:
-                if (dNode2 == AbstractBusCell.Direction.TOP) {  // TOP to TOP
+                if (dNode2 == BusCell.Direction.TOP) {  // TOP to TOP
                     nbSnakeLinesTopVL.compute(node1.getGraph().getVoltageLevel().getId(), (k, v) -> v + 1);
                     nbSnakeLinesTopVL.compute(node2.getGraph().getVoltageLevel().getId(), (k, v) -> v + 1);
                     nbSnakeLinesLeftRight.compute(Side.LEFT, (k, v) -> v + 1);

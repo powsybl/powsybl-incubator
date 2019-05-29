@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class InternCell extends AbstractBusCell {
+public class InternCell extends BusCell {
 
     private Block centralBlock;
 

@@ -75,7 +75,7 @@ public interface Block {
 
     void defineExtremity(Node node, AbstractBlock.Extremity ext);
 
-    void setCell(AbstractCell cell);
+    void setCell(Cell cell);
 
     BusNode getBusNode();
 

@@ -90,32 +90,54 @@ public class WireHandler {
 
         if (x1 == x2 || y1 == y2) {
             node.getPoints().setAll(x1, y1, x2, y2);
-            translateArrows(x1 - x01, y1 - y01, 0, arrowSize / 2, arrowSize / 2, false);
+            if (transponed0) {
+                translateArrow(0, x1 - x01, (y1 - y01) / 2, 0, arrowSize / 2, arrowSize / 2, false);
+            } else {
+                translateArrow(0, x1 - x01, y1 - y01, 0, arrowSize / 2, arrowSize / 2, false);
+            }
+            if (transponed1) {
+                translateArrow(1, x1 - x01, (y1 - y01) / 2, 0, arrowSize / 2, arrowSize / 2, false);
+            } else {
+                translateArrow(1, x1 - x01, y1 - y01, 0, arrowSize / 2, arrowSize / 2, false);
+            }
         } else {
             switch (wireConnection.getAnchorPoint1().getOrientation()) {
                 case VERTICAL:
                     if (wireConnection.getAnchorPoint2().getOrientation().equals(AnchorOrientation.VERTICAL)) {
                         node.getPoints().setAll(x1, y1, x1, (y1 + y2) / 2, x2, (y1 + y2) / 2, x2, y2);
-
                         if (Math.abs(y2 - (y1 + y2) / 2) < 30) {
                             if (Math.abs(x2 - x1) < 30) {
                                 //arrows.forEach(a -> a.setVisible(false));
                             } else {
                                 if (Math.abs(y02 - (y01 + y02) / 2) >= 30 && !transponed0) {
-                                    translateArrow(0, Math.signum(x1 - x2) * (-dist0 - (x01 - x1)), (y2 + y1) / 2  - y01 - dist0, Math.signum(x1 - x2) * 90, arrowSize / 2, arrowSize / 2, true);
+                                    if (y2 >= y1) {
+                                        translateArrow(0, Math.signum(x1 - x2) * (-dist0 - (x01 - x1)), (y2 + y1) / 2  - y01 - dist0, Math.signum(x1 - x2) * 90, arrowSize / 2, arrowSize / 2, true);
+                                    } else {
+                                        translateArrow(0, Math.signum(x1 - x2) * (-dist0 - (x01 - x1)), (y2 + y1) / 2  - y01 + dist0, Math.signum(x1 - x2) * Math.signum(y2 - y1) * 90, arrowSize / 2, arrowSize / 2, true);
+                                    }
                                     transponed0 = true;
                                     done0 = true;
                                 }
                             }
                         } else if (Math.abs(y2 -  (y1 + y2) / 2) < 50) {
 
-                            if (Math.abs(y02 -  (y01 + y02) / 2) >= 50 && !transponed0) {
-                                translateArrow(1, Math.signum(x1 - x2) * (-dist1 - (x01 - x1)),   (y2 + y1) / 2  - y01 - dist1, Math.signum(x1 - x2) * 90, arrowSize / 2, arrowSize / 2, true);
+                            if (Math.abs(y02 -  (y01 + y02) / 2) >= 50 && !transponed1) {
+                                if (y2 >= y1) {
+                                    translateArrow(1, Math.signum(x1 - x2) * (-dist1 - (x01 - x1)),   (y2 + y1) / 2  - y01 - dist1, Math.signum(x1 - x2) * 90, arrowSize / 2, arrowSize / 2, true);
+                                } else {
+                                    translateArrow(1, Math.signum(x1 - x2) * (-dist1 - (x01 - x1)),   (y2 + y1) / 2  - y01 + dist1, Math.signum(x1 - x2) * Math.signum(y2 - y1) * 90, arrowSize / 2, arrowSize / 2, true);
+
+                                }
                                 transponed1 = true;
                                 done1 = true;
                             }
                             if (Math.abs(y2 - (y1 + y2) / 2) >= 30 && transponed0) {
-                                translateArrow(0, Math.signum(x1 - x2) * (dist0 - (x01 - x1)), -((y2 + y01) / 2  - y1)  + dist0, Math.signum(x1 - x2) * -90, arrowSize / 2, arrowSize / 2, true);
+                                if (y2 >= y1) {
+                                    translateArrow(0, Math.signum(x1 - x2) * (dist0 - (x01 - x1)), -((y2 + y01) / 2  - y1)  + dist0, Math.signum(x1 - x2) * Math.signum(y1 - y2) * 90, arrowSize / 2, arrowSize / 2, true);
+                                } else {
+                                    translateArrow(0, Math.signum(x1 - x2) * (dist0 - (x01 - x1)), -((y2 + y01) / 2  - y1)  - dist0, Math.signum(x1 - x2) * Math.signum(y1 - y2) * 90, arrowSize / 2, arrowSize / 2, true);
+
+                                }
                                 transponed0 = false;
                                 done0 = true;
                             }
@@ -123,9 +145,9 @@ public class WireHandler {
 
                             if (Math.abs(y2 - (y1 + y2) / 2) >= 50 && transponed1) {
                                 if (y2 >= y1) {
-                                    translateArrow(1, Math.signum(x1 - x2) * (dist1 - (x01 - x1)), -((y2 + y01) / 2  - y1)  + dist1, Math.signum(x1 - x2) * -90, arrowSize / 2, arrowSize / 2, true);
+                                    translateArrow(1, Math.signum(x1 - x2) * (dist1 - (x01 - x1)), -((y2 + y01) / 2  - y1)  + dist1, Math.signum(x1 - x2) * Math.signum(y1 - y2) * 90, arrowSize / 2, arrowSize / 2, true);
                                 } else {
-                                    translateArrow(1, Math.signum(x1 - x2) * (dist1 - (x01 - x1)), -((y2 + y01) / 2  - y1)  - dist1, Math.signum(x1 - x2) * -90, arrowSize / 2, arrowSize / 2, true);
+                                    translateArrow(1, Math.signum(x1 - x2) * (dist1 - (x01 - x1)), -((y2 + y01) / 2  - y1)  - dist1, Math.signum(x1 - x2) * Math.signum(y1 - y2) * 90, arrowSize / 2, arrowSize / 2, true);
                                 }
                                 transponed1 = false;
                                 done1 = true;
@@ -133,14 +155,14 @@ public class WireHandler {
                         }
                         if (!done0) {
                             if (transponed0) {
-                                translateArrow(0, x1 - x01, (y1 - y01) / 2, 0, arrowSize / 2, arrowSize / 2, false);
+                                translateArrow(0, x1 - x01, (y1 - y01 + y2 - y02) / 2, 0, arrowSize / 2, arrowSize / 2, false);
                             } else {
                                 translateArrow(0, x1 - x01, y1 - y01, 0, arrowSize / 2, arrowSize / 2, false);
                             }
                         }
                         if (!done1) {
                             if (transponed1) {
-                                translateArrow(1, x1 - x01, (y1 - y01) / 2, 0, arrowSize / 2, arrowSize / 2, false);
+                                translateArrow(1, x1 - x01, (y1 - y01 + y2 - y02) / 2, 0, arrowSize / 2, arrowSize / 2, false);
                             } else {
                                 translateArrow(1, x1 - x01, y1 - y01, 0, arrowSize / 2, arrowSize / 2, false);
                             }

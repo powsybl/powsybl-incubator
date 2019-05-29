@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public abstract class AbstractCell {
+public class Cell {
     public enum CellType {
         INTERN, EXTERN, SHUNT
     }
@@ -29,7 +29,7 @@ public abstract class AbstractCell {
 
     private Block rootBlock;
 
-    public AbstractCell(Graph graph, CellType type) {
+    protected Cell(Graph graph, CellType type) {
         this.graph = Objects.requireNonNull(graph);
         this.type = Objects.requireNonNull(type);
         number = graph.getNextCellIndex();

@@ -11,7 +11,7 @@ package com.powsybl.substationdiagram.model;
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class ShuntCell extends AbstractCell {
+public class ShuntCell extends Cell {
     public ShuntCell(Graph graph) {
         super(graph, CellType.SHUNT);
     }

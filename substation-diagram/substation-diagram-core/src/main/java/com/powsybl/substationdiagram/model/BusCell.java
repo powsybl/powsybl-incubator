@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public abstract class AbstractBusCell extends AbstractCell {
+public class BusCell extends Cell {
 
     public enum Direction {
         TOP, BOTTOM, FLAT, UNDEFINED
@@ -24,7 +24,7 @@ public abstract class AbstractBusCell extends AbstractCell {
 
     private List<PrimaryBlock> primaryBlocksConnectedToBus = new ArrayList<>();
 
-    public AbstractBusCell(Graph graph, CellType type) {
+    protected BusCell(Graph graph, CellType type) {
         super(graph, type);
     }
 

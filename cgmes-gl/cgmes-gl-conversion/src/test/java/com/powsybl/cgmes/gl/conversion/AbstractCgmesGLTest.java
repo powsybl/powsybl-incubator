@@ -26,17 +26,17 @@ public abstract class AbstractCgmesGLTest {
 
     @Before
     public void setUp() {
-        substationsPropertyBags = new PropertyBags(Arrays.asList(createSubstationPropertyBag(namespace + "Substation1", "Substation1", GLTestUtils.COORDINATE_SYSTEM_NAME,
-                                                                                             GLTestUtils.COORDINATE_SYSTEM_URN, GLTestUtils.SUBSTATION_1_X, GLTestUtils.SUBSTATION_1_Y),
-                                                                 createSubstationPropertyBag(namespace + "Substation2", "Substation2", GLTestUtils.COORDINATE_SYSTEM_NAME,
-                                                                                             GLTestUtils.COORDINATE_SYSTEM_URN, GLTestUtils.SUBSTATION_2_X, GLTestUtils.SUBSTATION_2_Y)));
-        linesPropertyBags = new PropertyBags(Arrays.asList(createLinePropertyBag(namespace + "Line", "Line", GLTestUtils.COORDINATE_SYSTEM_NAME, GLTestUtils.COORDINATE_SYSTEM_URN,
+        substationsPropertyBags = new PropertyBags(Arrays.asList(createSubstationPropertyBag(namespace + "Substation1", "Substation1", CgmesGLUtils.COORDINATE_SYSTEM_NAME,
+                                                                                             CgmesGLUtils.COORDINATE_SYSTEM_URN, GLTestUtils.SUBSTATION_1_X, GLTestUtils.SUBSTATION_1_Y),
+                                                                 createSubstationPropertyBag(namespace + "Substation2", "Substation2", CgmesGLUtils.COORDINATE_SYSTEM_NAME,
+                                                                                             CgmesGLUtils.COORDINATE_SYSTEM_URN, GLTestUtils.SUBSTATION_2_X, GLTestUtils.SUBSTATION_2_Y)));
+        linesPropertyBags = new PropertyBags(Arrays.asList(createLinePropertyBag(namespace + "Line", "Line", CgmesGLUtils.COORDINATE_SYSTEM_NAME, CgmesGLUtils.COORDINATE_SYSTEM_URN,
                                                                                  GLTestUtils.SUBSTATION_1_X, GLTestUtils.SUBSTATION_1_Y, 1),
-                                                           createLinePropertyBag(namespace + "Line", "Line", GLTestUtils.COORDINATE_SYSTEM_NAME, GLTestUtils.COORDINATE_SYSTEM_URN,
+                                                           createLinePropertyBag(namespace + "Line", "Line", CgmesGLUtils.COORDINATE_SYSTEM_NAME, CgmesGLUtils.COORDINATE_SYSTEM_URN,
                                                                                  GLTestUtils.LINE_1_X, GLTestUtils.LINE_1_Y, 2),
-                                                           createLinePropertyBag(namespace + "Line", "Line", GLTestUtils.COORDINATE_SYSTEM_NAME, GLTestUtils.COORDINATE_SYSTEM_URN,
+                                                           createLinePropertyBag(namespace + "Line", "Line", CgmesGLUtils.COORDINATE_SYSTEM_NAME, CgmesGLUtils.COORDINATE_SYSTEM_URN,
                                                                                  GLTestUtils.LINE_2_X, GLTestUtils.LINE_2_Y, 3),
-                                                           createLinePropertyBag(namespace + "Line", "Line", GLTestUtils.COORDINATE_SYSTEM_NAME, GLTestUtils.COORDINATE_SYSTEM_URN,
+                                                           createLinePropertyBag(namespace + "Line", "Line", CgmesGLUtils.COORDINATE_SYSTEM_NAME, CgmesGLUtils.COORDINATE_SYSTEM_URN,
                                                                                  GLTestUtils.SUBSTATION_2_X, GLTestUtils.SUBSTATION_2_Y, 4)));
     }
 

@@ -11,9 +11,9 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.powsybl.cgmes.iidm.extensions.gl.CoordinateSystem;
 import com.powsybl.cgmes.iidm.extensions.gl.LinePosition;
 import com.powsybl.cgmes.iidm.extensions.gl.PositionPoint;
+import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.DanglingLine;
 import com.powsybl.iidm.network.Line;
 import com.powsybl.iidm.network.Network;
@@ -35,12 +35,15 @@ public class LinePositionImporter {
 
     public void importPosition(PropertyBag linePositionData) {
         Objects.requireNonNull(linePositionData);
+        if (!CgmesGLUtils.checkCoordinateSystem(linePositionData.getId("crsName"), linePositionData.getId("crsUrn"))) {
+            throw new PowsyblException("Unsupported coodinates system: " + linePositionData.getId("crsName"));
+        }
         String lineId = linePositionData.getId("powerSystemResource");
         Line line = network.getLine(lineId);
         if (line != null) {
             LinePosition<Line> linePosition = line.getExtension(LinePosition.class);
             if (linePosition == null) {
-                linePosition = new LinePosition<>(line, new CoordinateSystem(linePositionData.getId("crsName"), linePositionData.getId("crsUrn")));
+                linePosition = new LinePosition<>(line);
             }
             linePosition.addPoint(new PositionPoint(linePositionData.asDouble("x"), linePositionData.asDouble("y"), linePositionData.asInt("seq")));
             line.addExtension(LinePosition.class, linePosition);
@@ -49,7 +52,7 @@ public class LinePositionImporter {
             if (danglingLine != null) {
                 LinePosition<DanglingLine> danglingLinePosition = danglingLine.getExtension(LinePosition.class);
                 if (danglingLinePosition == null) {
-                    danglingLinePosition = new LinePosition<>(danglingLine, new CoordinateSystem(linePositionData.getId("crsName"), linePositionData.getId("crsUrn")));
+                    danglingLinePosition = new LinePosition<>(danglingLine);
                 }
                 danglingLinePosition.addPoint(new PositionPoint(linePositionData.asDouble("x"), linePositionData.asDouble("y"), linePositionData.asInt("seq")));
                 danglingLine.addExtension(LinePosition.class, danglingLinePosition);

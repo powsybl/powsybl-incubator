@@ -23,18 +23,16 @@ public class PositionTest {
         Network network = GLTestUtils.getNetwork();
         Substation substation1 = network.getSubstation("Substation1");
         SubstationPosition<Substation> substationPosition1 = new SubstationPosition<Substation>(substation1,
-                                                                                                new PositionPoint(GLTestUtils.SUBSTATION_1_X, GLTestUtils.SUBSTATION_1_Y, 0),
-                                                                                                GLTestUtils.getCoordinateSystem());
+                                                                                                new PositionPoint(GLTestUtils.SUBSTATION_1_X, GLTestUtils.SUBSTATION_1_Y, 0));
         substation1.addExtension(SubstationPosition.class, substationPosition1);
 
         Substation substation2 = network.getSubstation("Substation2");
         SubstationPosition<Substation> substationPosition2 = new SubstationPosition<Substation>(substation2,
-                                                                                                new PositionPoint(GLTestUtils.SUBSTATION_2_X, GLTestUtils.SUBSTATION_2_Y, 0),
-                                                                                                GLTestUtils.getCoordinateSystem());
+                                                                                                new PositionPoint(GLTestUtils.SUBSTATION_2_X, GLTestUtils.SUBSTATION_2_Y, 0));
         substation2.addExtension(SubstationPosition.class, substationPosition2);
 
         Line line = network.getLine("Line");
-        LinePosition<Line> linePosition = new LinePosition<>(line, GLTestUtils.getCoordinateSystem());
+        LinePosition<Line> linePosition = new LinePosition<>(line);
         linePosition.addPoint(new PositionPoint(GLTestUtils.SUBSTATION_1_X, GLTestUtils.SUBSTATION_1_Y, 1));
         linePosition.addPoint(new PositionPoint(GLTestUtils.SUBSTATION_2_X, GLTestUtils.SUBSTATION_2_Y, 4));
         linePosition.addPoint(new PositionPoint(GLTestUtils.LINE_1_X, GLTestUtils.LINE_1_Y, 2));

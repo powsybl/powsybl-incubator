@@ -25,19 +25,17 @@ public class LinePosition<T extends Identifiable<T>> extends AbstractExtension<T
     static final String NAME = "line-position";
 
     private List<PositionPoint> points = new ArrayList<>();
-    private final CoordinateSystem coordinateSystem;
 
-    private LinePosition(T line, CoordinateSystem coordinateSystem) {
+    private LinePosition(T line) {
         super(line);
-        this.coordinateSystem = Objects.requireNonNull(coordinateSystem);
     }
 
-    public LinePosition(Line line, CoordinateSystem coordinateSystem) {
-        this((T) line, coordinateSystem);
+    public LinePosition(Line line) {
+        this((T) line);
     }
 
-    public LinePosition(DanglingLine danglingLine, CoordinateSystem coordinateSystem) {
-        this((T) danglingLine, coordinateSystem);
+    public LinePosition(DanglingLine danglingLine) {
+        this((T) danglingLine);
     }
 
     @Override
@@ -52,10 +50,6 @@ public class LinePosition<T extends Identifiable<T>> extends AbstractExtension<T
 
     public List<PositionPoint> getPoints() {
         return points.stream().sorted().collect(Collectors.toList());
-    }
-
-    public CoordinateSystem getCoordinateSystem() {
-        return coordinateSystem;
     }
 
 }

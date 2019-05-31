@@ -11,9 +11,9 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.powsybl.cgmes.iidm.extensions.gl.CoordinateSystem;
 import com.powsybl.cgmes.iidm.extensions.gl.PositionPoint;
 import com.powsybl.cgmes.iidm.extensions.gl.SubstationPosition;
+import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.Substation;
 import com.powsybl.triplestore.api.PropertyBag;
@@ -34,12 +34,14 @@ public class SubstationPositionImporter {
 
     public void importPosition(PropertyBag substationPositionData) {
         Objects.requireNonNull(substationPositionData);
+        if (!CgmesGLUtils.checkCoordinateSystem(substationPositionData.getId("crsName"), substationPositionData.getId("crsUrn"))) {
+            throw new PowsyblException("Unsupported coodinates system: " + substationPositionData.getId("crsName"));
+        }
         String substationId = substationPositionData.getId("powerSystemResource");
         Substation substation = network.getSubstation(substationId);
         if (substation != null) {
             SubstationPosition<Substation> substationPosition = new SubstationPosition<Substation>(substation,
-                    new PositionPoint(substationPositionData.asDouble("x"), substationPositionData.asDouble("y"), 0),
-                    new CoordinateSystem(substationPositionData.get("crsName"), substationPositionData.get("crsUrn")));
+                    new PositionPoint(substationPositionData.asDouble("x"), substationPositionData.asDouble("y"), 0));
             substation.addExtension(SubstationPosition.class, substationPosition);
         } else {
             LOG.warn("Cannot find substation {}, name {} in network {}: skipping substation position", substationId, substationPositionData.get("name"), network.getId());

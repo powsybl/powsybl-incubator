@@ -20,12 +20,10 @@ public class SubstationPosition<T extends Substation> extends AbstractExtension<
     static final String NAME = "substation-position";
 
     private final PositionPoint point;
-    private final CoordinateSystem coordinateSystem;
 
-    public SubstationPosition(T substation, PositionPoint point, CoordinateSystem coordinateSystem) {
+    public SubstationPosition(T substation, PositionPoint point) {
         super(substation);
         this.point = Objects.requireNonNull(point);
-        this.coordinateSystem = Objects.requireNonNull(coordinateSystem);
     }
 
     @Override
@@ -35,10 +33,6 @@ public class SubstationPosition<T extends Substation> extends AbstractExtension<
 
     public PositionPoint getPoint() {
         return point;
-    }
-
-    public CoordinateSystem getCoordinateSystem() {
-        return coordinateSystem;
     }
 
 }

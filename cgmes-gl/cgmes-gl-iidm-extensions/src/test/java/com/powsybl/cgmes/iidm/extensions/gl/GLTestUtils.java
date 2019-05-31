@@ -22,8 +22,6 @@ public final class GLTestUtils {
     public static final double LINE_1_Y = 51.529258728027344;
     public static final double LINE_2_X = 0.4120868146419525;
     public static final double LINE_2_Y = 51.944923400878906;
-    public static final String COORDINATE_SYSTEM_NAME = "WGS84";
-    public static final String COORDINATE_SYSTEM_URN = "urn:ogc:def:crs:EPSG::4326";
 
     private GLTestUtils() {
     }
@@ -73,33 +71,21 @@ public final class GLTestUtils {
         return network;
     }
 
-    public static CoordinateSystem getCoordinateSystem() {
-        return new CoordinateSystem(COORDINATE_SYSTEM_NAME, COORDINATE_SYSTEM_URN);
-    }
-
     public static void checkNetwork(Network network) {
         Substation networkSubstation1 = network.getSubstation("Substation1");
         SubstationPosition<Substation> networkSubstationPosition1 = networkSubstation1.getExtension(SubstationPosition.class);
-        checkCoordinateSystem(networkSubstationPosition1.getCoordinateSystem(), COORDINATE_SYSTEM_NAME, COORDINATE_SYSTEM_URN);
         checkPoint(networkSubstationPosition1.getPoint(), SUBSTATION_1_X, SUBSTATION_1_Y, 0);
 
         Substation networkSubstation2 = network.getSubstation("Substation2");
         SubstationPosition<Substation> networkSubstationPosition2 = networkSubstation2.getExtension(SubstationPosition.class);
-        checkCoordinateSystem(networkSubstationPosition2.getCoordinateSystem(), COORDINATE_SYSTEM_NAME, COORDINATE_SYSTEM_URN);
         checkPoint(networkSubstationPosition2.getPoint(), SUBSTATION_2_X, SUBSTATION_2_Y, 0);
 
         Line networkLine = network.getLine("Line");
         LinePosition<Line> networkLinePosition = networkLine.getExtension(LinePosition.class);
-        checkCoordinateSystem(networkLinePosition.getCoordinateSystem(), COORDINATE_SYSTEM_NAME, COORDINATE_SYSTEM_URN);
         checkPoint(networkLinePosition.getPoints().get(0), SUBSTATION_1_X, SUBSTATION_1_Y, 1);
         checkPoint(networkLinePosition.getPoints().get(1), LINE_1_X, LINE_1_Y, 2);
         checkPoint(networkLinePosition.getPoints().get(2), LINE_2_X, LINE_2_Y, 3);
         checkPoint(networkLinePosition.getPoints().get(3), SUBSTATION_2_X, SUBSTATION_2_Y, 4);
-    }
-
-    private static void checkCoordinateSystem(CoordinateSystem crs, String crsName, String crsUrn) {
-        assertEquals(crsName, crs.getName());
-        assertEquals(crsUrn, crs.getUrn());
     }
 
     private static void checkPoint(PositionPoint point, double x, double y, int seq) {

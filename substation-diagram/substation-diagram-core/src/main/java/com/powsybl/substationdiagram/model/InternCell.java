@@ -39,28 +39,19 @@ public class InternCell extends Cell {
 
     public void postPositioningSettings() {
         identifyIfFlat();
-        if (getType() == CellType.INTERNBOUND) {
-            if (getDirection() == Direction.FLAT) {
-                centralBlock = getRootBlock();
-            } else {
-                handleNonFlatInterbound();
-            }
-        } else {
-            if (centralBlock != null) {
-                refactorBlocks();
-            }
+        if (centralBlock != null) {
+            refactorBlocks();
         }
     }
 
     private void identifyIfFlat() {
         List<BusNode> buses = getBusNodes();
-        if (buses.size() < 2) {
+        if (buses.size() != 2) {
             return;
         }
         Position pos1 = buses.get(0).getStructuralPosition();
         Position pos2 = buses.get(1).getStructuralPosition();
-        if (buses.size() == 2 && Math.abs(pos2.getH() - pos1.getH()) == 1
-                && pos2.getV() == pos1.getV()) {
+        if (Math.abs(pos2.getH() - pos1.getH()) == 1 && pos2.getV() == pos1.getV()) {
             setDirection(Direction.FLAT);
             getRootBlock().setOrientation(Orientation.HORIZONTAL);
         }
@@ -74,15 +65,6 @@ public class InternCell extends Cell {
         Block block0 = createAdjacentPrimaryBlock(ns, 0);
         Block block1 = createAdjacentPrimaryBlock(ns, 1);
         fillInSideToBlock(block0, block1);
-///*
-//        if (block0.getBusNode().getStructuralPosition().getH() < block1.getBusNode().getStructuralPosition().getH()) {
-//            sideToBlock.put(Side.LEFT, block0);
-//            sideToBlock.put(Side.RIGHT, block1);
-//        } else {
-//            sideToBlock.put(Side.LEFT, block1);
-//            sideToBlock.put(Side.RIGHT, block0);
-//        }
-//*/
         centralBlock = new PrimaryBlock(Arrays.asList(block0.getEndingNode(), ns, block1.getEndingNode()), this);
         setType(CellType.INTERN);
         refactorBlocks();
@@ -92,7 +74,7 @@ public class InternCell extends Cell {
         FictitiousNode nf = (FictitiousNode) ns.getAdjacentNodes().get(id);
         Node fictSwitch = otherNodeFromAdj(nf, ns);
         BusNode bus = (BusNode) otherNodeFromAdj(fictSwitch, nf);
-        PrimaryBlock bpy = new PrimaryBlock(Arrays.asList(new Node[]{bus, fictSwitch, nf}), this);
+        PrimaryBlock bpy = new PrimaryBlock(Arrays.asList(bus, fictSwitch, nf), this);
         bpy.setBusNode(bus);
         getPrimaryBlocksConnectedToBus().add(bpy);
         return bpy;
@@ -203,19 +185,18 @@ public class InternCell extends Cell {
     }
 
     public void reverseCell() {
-        if (getType() != CellType.INTERNBOUND) {
-            Block swap = sideToBlock.get(Side.LEFT);
-            sideToBlock.put(Side.LEFT, sideToBlock.get(Side.RIGHT));
-            sideToBlock.put(Side.RIGHT, swap);
-            refactorBlocks();
-        }
+        Block swap = sideToBlock.get(Side.LEFT);
+        sideToBlock.put(Side.LEFT, sideToBlock.get(Side.RIGHT));
+        sideToBlock.put(Side.RIGHT, swap);
+        refactorBlocks();
     }
 
     @Override
     public void setNodes(List<Node> nodes) {
         super.setNodes(nodes);
         if (getNodes().size() == 3) {
-            setType(CellType.INTERNBOUND);
+//            graph.extendSwitchBetweenBus((SwitchNode) getNodes().get(1));
+//            setType(CellType.INTERNBOUND);
         }
     }
 
@@ -239,22 +220,6 @@ public class InternCell extends Cell {
     }
 
     public List<BusNode> getSideBusNodes(Side side) {
-        if (getType() == CellType.INTERNBOUND) {
-            Position pos0 = getBusNodes().get(0).getStructuralPosition();
-            Position pos1 = getBusNodes().get(1).getStructuralPosition();
-            if (pos0 == null || pos1 == null || pos0.getH() < pos1.getH()) {
-                if (side == Side.LEFT) {
-                    return new ArrayList<>(Collections.singletonList(getBusNodes().get(0)));
-                } else {
-                    return new ArrayList<>(Collections.singletonList(getBusNodes().get(1)));
-                }
-            }
-            if (side == Side.LEFT) {
-                return new ArrayList<>(Collections.singletonList(getBusNodes().get(1)));
-            } else {
-                return new ArrayList<>(Collections.singletonList(getBusNodes().get(0)));
-            }
-        }
         return sideToConnectedBlocks.get(side).stream()
                 .map(PrimaryBlock::getBusNode)
                 .collect(Collectors.toList());

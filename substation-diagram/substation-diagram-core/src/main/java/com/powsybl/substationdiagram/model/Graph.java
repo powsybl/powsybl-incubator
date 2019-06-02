@@ -202,7 +202,7 @@ public class Graph {
             if (feeder != null) {
                 node.setOrder(feeder.getOrder());
                 node.setLabel(feeder.getName());
-                node.setDirection(Cell.Direction.valueOf(feeder.getDirection().toString()));
+                node.setDirection(BusCell.Direction.valueOf(feeder.getDirection().toString()));
             }
             nodesByNumber.put(terminal.getNodeBreakerView().getNode(), node);
             addNode(node);
@@ -233,7 +233,7 @@ public class Graph {
 
         protected void addFeeder(FeederNode node, Terminal terminal) {
             node.setOrder(order++);
-            node.setDirection(order % 2 == 0 ? Cell.Direction.TOP : Cell.Direction.BOTTOM);
+            node.setDirection(order % 2 == 0 ? BusCell.Direction.TOP : BusCell.Direction.BOTTOM);
             addNode(node);
             SwitchNode nodeSwitch = SwitchNode.create(Graph.this, terminal);
             addNode(nodeSwitch);
@@ -356,8 +356,8 @@ public class Graph {
 
     private boolean isFictitiousSwitchNode(Node node) {
         Switch sw = TopologyKind.NODE_BREAKER.equals(voltageLevel.getTopologyKind()) ?
-                    voltageLevel.getNodeBreakerView().getSwitch(node.getId()) :
-                    voltageLevel.getBusBreakerView().getSwitch(node.getId());
+                voltageLevel.getNodeBreakerView().getSwitch(node.getId()) :
+                voltageLevel.getBusBreakerView().getSwitch(node.getId());
         return sw == null || sw.isFictitious();
     }
 
@@ -437,8 +437,8 @@ public class Graph {
         FictitiousNode biggestFn = nodes.stream()
                 .filter(node -> node.getType() == Node.NodeType.FICTITIOUS)
                 .sorted(Comparator.<Node>comparingInt(node -> node.getAdjacentEdges().size())
-                                  .reversed()
-                                  .thenComparing(Node::getId)) // for stable fictitious node selection, also sort on id
+                        .reversed()
+                        .thenComparing(Node::getId)) // for stable fictitious node selection, also sort on id
                 .map(FictitiousNode.class::cast)
                 .findFirst()
                 .orElseThrow(() -> new PowsyblException("Empty node set"));
@@ -558,8 +558,10 @@ public class Graph {
         maxBusStructuralPosition.setV(Collections.max(v));
     }
 
-    public Stream<Cell> getBusCells() {
-        return cells.stream().filter(cell -> !cell.getPrimaryBlocksConnectedToBus().isEmpty());
+    public Stream<BusCell> getBusCells() {
+        return cells.stream()
+                .filter(cell -> cell instanceof BusCell && !((BusCell) cell).getPrimaryBlocksConnectedToBus().isEmpty())
+                .map(BusCell.class::cast);
     }
 
     private void buildVPosToHposToNodeBus() {
@@ -599,14 +601,14 @@ public class Graph {
                 .filter(node -> node.getType() == Node.NodeType.SWITCH)
                 .forEach(nodeSwitch ->
                         nodeSwitch.getAdjacentNodes().stream()
-                            .filter(node -> node.getType() == Node.NodeType.SWITCH)
-                            .forEach(node -> {
-                                removeEdge(node, nodeSwitch);
-                                FictitiousNode newNode = new FictitiousNode(Graph.this, nodeSwitch.getId() + "Fictif");
-                                addNode(newNode);
-                                addEdge(node, newNode);
-                                addEdge(nodeSwitch, newNode);
-                            }));
+                                .filter(node -> node.getType() == Node.NodeType.SWITCH)
+                                .forEach(node -> {
+                                    removeEdge(node, nodeSwitch);
+                                    FictitiousNode newNode = new FictitiousNode(Graph.this, nodeSwitch.getId() + "Fictif");
+                                    addNode(newNode);
+                                    addEdge(node, newNode);
+                                    addEdge(nodeSwitch, newNode);
+                                }));
     }
 
     //the first element shouldn't be a Breaker

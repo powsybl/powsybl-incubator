@@ -24,7 +24,7 @@ public class LinePosition<T extends Identifiable<T>> extends AbstractExtension<T
 
     static final String NAME = "line-position";
 
-    private List<PositionPoint> points = new ArrayList<>();
+    private final List<PositionPoint> points = new ArrayList<>();
 
     private LinePosition(T line) {
         super(line);

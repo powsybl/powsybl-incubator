@@ -22,13 +22,13 @@ public class PositionTest {
     public void test() {
         Network network = GLTestUtils.getNetwork();
         Substation substation1 = network.getSubstation("Substation1");
-        SubstationPosition<Substation> substationPosition1 = new SubstationPosition<Substation>(substation1,
-                                                                                                new PositionPoint(GLTestUtils.SUBSTATION_1_X, GLTestUtils.SUBSTATION_1_Y, 0));
+        SubstationPosition<Substation> substationPosition1 = new SubstationPosition<>(substation1,
+                                                                                      new PositionPoint(GLTestUtils.SUBSTATION_1_X, GLTestUtils.SUBSTATION_1_Y, 0));
         substation1.addExtension(SubstationPosition.class, substationPosition1);
 
         Substation substation2 = network.getSubstation("Substation2");
-        SubstationPosition<Substation> substationPosition2 = new SubstationPosition<Substation>(substation2,
-                                                                                                new PositionPoint(GLTestUtils.SUBSTATION_2_X, GLTestUtils.SUBSTATION_2_Y, 0));
+        SubstationPosition<Substation> substationPosition2 = new SubstationPosition<>(substation2,
+                                                                                      new PositionPoint(GLTestUtils.SUBSTATION_2_X, GLTestUtils.SUBSTATION_2_Y, 0));
         substation2.addExtension(SubstationPosition.class, substationPosition2);
 
         Line line = network.getLine("Line");

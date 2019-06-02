@@ -65,6 +65,7 @@ public class ImplicitCellDetector implements CellDetector {
         stopTypes.add(Node.NodeType.FEEDER);
         genericDetectCell(graph, stopTypes, new ArrayList<>(), false, allocatedNodes);
         for (ExternCell cell : graph.getCells().stream()
+
                 .filter(cell -> cell instanceof ExternCell)
                 .map(ExternCell.class::cast)
                 .collect(Collectors.toList())) {

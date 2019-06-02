@@ -19,7 +19,7 @@ import com.powsybl.iidm.network.Network;
 public class CgmesGLImportPostProcessorTest extends CgmesGLModelTest  {
 
     @Test
-    public void process() throws Exception {
+    public void process() {
         Network network = GLTestUtils.getNetwork();
         new CgmesGLImportPostProcessor(queryCatalog).process(network, tripleStore, new Profiling());
         GLTestUtils.checkNetwork(network);

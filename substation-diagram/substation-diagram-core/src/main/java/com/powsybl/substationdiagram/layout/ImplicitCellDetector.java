@@ -246,12 +246,12 @@ public class ImplicitCellDetector implements CellDetector {
 
                 //create the shunt cell
 
-                ShuntCell shuntAbstractCell = createShuntCell(graph, n, cellNodesExtern1);
+                ShuntCell shuntCell = createShuntCell(graph, n, cellNodesExtern1);
 
                 // create the 2nd external cell
                 List<Node> cellNodesExtern2 = cell.getNodes().stream()
                         .filter(node -> (!cellNodesExtern1.contains(node) || node.getType() == Node.NodeType.BUS)
-                                && (!shuntAbstractCell.getNodes().contains(node) || node.getType() == Node.NodeType.SHUNT))
+                                && (!shuntCell.getNodes().contains(node) || node.getType() == Node.NodeType.SHUNT))
                         .collect(Collectors.toList());
 
                 cellNodesExtern2.removeAll(cellNodesExtern2.stream()
@@ -264,7 +264,7 @@ public class ImplicitCellDetector implements CellDetector {
                 newExternCell2.setNodes(cellNodesExtern2);
 
                 graph.removeCell(cell);
-// TODO                shuntAbstractCell.setBridgingCellsFromShuntNodes();
+// TODO                shuntCell.setBridgingCellsFromShuntNodes();
                 break;
             }
         }

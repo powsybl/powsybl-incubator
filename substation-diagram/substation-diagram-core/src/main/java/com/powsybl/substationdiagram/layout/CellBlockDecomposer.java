@@ -114,8 +114,8 @@ public class CellBlockDecomposer {
     /**
      * Search possibility to merge two blocks into a chain layout.block and do the merging
      *
-     * @param blocks       list of blocks we can merge
-     * @param cell current Cell
+     * @param blocks list of blocks we can merge
+     * @param cell current cell
      */
     private boolean searchChainMerge(List<Block> blocks, Cell cell) {
         boolean chainEnded = false;
@@ -149,8 +149,8 @@ public class CellBlockDecomposer {
     /**
      * Search possibility to merge some blocks into a parallel layout.block and do the merging
      *
-     * @param blocks       list of blocks we can merge
-     * @param cell current Cell
+     * @param blocks list of blocks we can merge
+     * @param cell current cell
      */
     private boolean searchParallelMerge(List<Block> blocks, Cell cell) {
         List<List<Block>> blocksBundlesToMerge = new ArrayList<>();
@@ -234,7 +234,7 @@ public class CellBlockDecomposer {
      * a primary layout.block shall have the following pattern :
      * BUS|FICTICIOUS|FEEDER|SHUNT - n * SWITCH - BUS|FICTICIOUS|FEEDER|SHUNT
      *
-     * @param cell   Cell
+     * @param cell   cell
      * @param currentNode    currentnode
      * @param alreadyTreated alreadyTreated
      * @param blockNodes     blockNodes

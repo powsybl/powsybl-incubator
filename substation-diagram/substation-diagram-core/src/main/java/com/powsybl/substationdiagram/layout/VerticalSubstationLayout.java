@@ -6,13 +6,7 @@
  */
 package com.powsybl.substationdiagram.layout;
 
-import com.powsybl.substationdiagram.model.Cell;
-import com.powsybl.substationdiagram.model.Coord;
-import com.powsybl.substationdiagram.model.Edge;
-import com.powsybl.substationdiagram.model.Graph;
-import com.powsybl.substationdiagram.model.Node;
-import com.powsybl.substationdiagram.model.Side;
-import com.powsybl.substationdiagram.model.SubstationGraph;
+import com.powsybl.substationdiagram.model.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,7 +45,7 @@ public class VerticalSubstationLayout implements SubstationLayout {
      */
     public List<Double> calculatePolylineSnakeLine(LayoutParameters layoutParam,
                                                    Edge edge,
-                                                   Map<Cell.Direction, Integer> nbSnakeLinesTopBottom,
+                                                   Map<BusCell.Direction, Integer> nbSnakeLinesTopBottom,
                                                    Map<Side, Integer> nbSnakeLinesLeftRight,
                                                    Map<String, Integer> nbSnakeLinesBetween,
                                                    Map<String, Integer> nbSnakeLinesBottomVL,
@@ -59,10 +53,8 @@ public class VerticalSubstationLayout implements SubstationLayout {
         Node node1 = edge.getNode1();
         Node node2 = edge.getNode2();
 
-        checkNodes(node1, node2);
-
-        Cell.Direction dNode1 = node1.getCell() != null ? node1.getCell().getDirection() : Cell.Direction.TOP;
-        Cell.Direction dNode2 = node2.getCell() != null ? node2.getCell().getDirection() : Cell.Direction.TOP;
+        BusCell.Direction dNode1 = getNodeDirection(node1, 1);
+        BusCell.Direction dNode2 = getNodeDirection(node2, 2);
 
         double xMinGraph;
 
@@ -84,14 +76,14 @@ public class VerticalSubstationLayout implements SubstationLayout {
                 .mapToInt(nodeBus -> nodeBus.getPosition().getH() + nodeBus.getPosition().getHSpan())
                 .max().orElse(0);
         double maxH = layoutParam.getTranslateX() +
-                      nbSnakeLinesLeftRight.get(Side.LEFT) * layoutParam.getHorizontalSnakeLinePadding() +
-                      layoutParam.getInitialXBus() +
-                      (Math.max(maxH1, maxH2)) * layoutParam.getCellWidth();
+                nbSnakeLinesLeftRight.get(Side.LEFT) * layoutParam.getHorizontalSnakeLinePadding() +
+                layoutParam.getInitialXBus() +
+                (Math.max(maxH1, maxH2)) * layoutParam.getCellWidth();
 
         List<Double> pol = new ArrayList<>();
         switch (dNode1) {
             case BOTTOM:
-                if (dNode2 == Cell.Direction.BOTTOM) {  // BOTTOM to BOTTOM
+                if (dNode2 == BusCell.Direction.BOTTOM) {  // BOTTOM to BOTTOM
                     nbSnakeLinesBottomVL.compute(node1.getGraph().getVoltageLevel().getId(), (k, v) -> v + 1);
                     nbSnakeLinesBottomVL.compute(node2.getGraph().getVoltageLevel().getId(), (k, v) -> v + 1);
                     nbSnakeLinesLeftRight.compute(Side.RIGHT, (k, v) -> v + 1);
@@ -136,7 +128,7 @@ public class VerticalSubstationLayout implements SubstationLayout {
                 break;
 
             case TOP:
-                if (dNode2 == Cell.Direction.TOP) {  // TOP to TOP
+                if (dNode2 == BusCell.Direction.TOP) {  // TOP to TOP
                     nbSnakeLinesTopVL.compute(node1.getGraph().getVoltageLevel().getId(), (k, v) -> v + 1);
                     nbSnakeLinesTopVL.compute(node2.getGraph().getVoltageLevel().getId(), (k, v) -> v + 1);
                     nbSnakeLinesLeftRight.compute(Side.LEFT, (k, v) -> v + 1);

@@ -8,7 +8,6 @@ package com.powsybl.substationdiagram.model;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -18,39 +17,19 @@ import java.util.stream.Collectors;
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class Cell implements Comparable<Cell> {
-
-    public enum Direction {
-        TOP, BOTTOM, FLAT, UNDEFINED
-    }
-
+public class Cell {
     public enum CellType {
-        INTERN, EXTERN, SHUNT, UNDEFINED
+        INTERN, EXTERN, SHUNT
     }
 
     final Graph graph;
-
-    private int number;
-
-    private final List<Node> nodes = new ArrayList<>();
-
     private CellType type;
-
-    private int order = -1;
-
-    private Direction direction = Direction.UNDEFINED;
+    private int number;
+    protected final List<Node> nodes = new ArrayList<>();
 
     private Block rootBlock;
 
-    private List<PrimaryBlock> primaryBlocksConnectedToBus = new ArrayList<>();
-
-    private final List<Cell> cellBridgingWith = new ArrayList<>();
-
-    public Cell(Graph graph) {
-        this(graph, CellType.UNDEFINED);
-    }
-
-    public Cell(Graph graph, CellType type) {
+    protected Cell(Graph graph, CellType type) {
         this.graph = Objects.requireNonNull(graph);
         this.type = Objects.requireNonNull(type);
         number = graph.getNextCellIndex();
@@ -85,17 +64,6 @@ public class Cell implements Comparable<Cell> {
         }
     }
 
-    public void setBridgingCellsFromShuntNodes() {
-        if (type == CellType.SHUNT) {
-            List<Node> shuntNodes = nodes.stream().filter(n -> n.getType() == Node.NodeType.SHUNT).collect(
-                    Collectors.toList());
-            Cell cell0 = shuntNodes.get(0).getCell();
-            Cell cell1 = shuntNodes.get(1).getCell();
-            cell0.addCellBridgingWith(cell1);
-            cell1.addCellBridgingWith(cell0);
-        }
-    }
-
     public void setType(CellType type) {
         this.type = type;
     }
@@ -104,74 +72,16 @@ public class Cell implements Comparable<Cell> {
         return this.type;
     }
 
-    public List<BusNode> getBusNodes() {
-        return nodes.stream()
-                .filter(n -> n.getType() == Node.NodeType.BUS)
-                .map(n -> (BusNode) n)
-                .collect(Collectors.toList());
-    }
-
-    public void orderFromFeederOrders() {
-        int sumOrder = 0;
-        int nbFeeder = 0;
-        for (FeederNode node : getNodes().stream()
-                .filter(node -> node.getType() == Node.NodeType.FEEDER)
-                .map(node -> (FeederNode) node).collect(Collectors.toList())) {
-            sumOrder += node.getOrder();
-            nbFeeder++;
-        }
-        if (nbFeeder != 0) {
-            setOrder(sumOrder / nbFeeder);
-        }
-    }
-
-    public void blocksSetting(Block rootBlock, List<PrimaryBlock> primaryBlocksConnectedToBus) {
-        this.rootBlock = rootBlock;
-        this.primaryBlocksConnectedToBus = new ArrayList<>(primaryBlocksConnectedToBus);
-    }
-
     public Block getRootBlock() {
         return rootBlock;
     }
 
-    public List<PrimaryBlock> getPrimaryBlocksConnectedToBus() {
-        return new ArrayList<>(primaryBlocksConnectedToBus);
-    }
-
-    public int getOrder() {
-        return order;
-    }
-
-    public void setOrder(int order) {
-        this.order = order;
-    }
-
-    public Direction getDirection() {
-        return direction;
-    }
-
-    public void setDirection(Direction direction) {
-        this.direction = direction;
-    }
-
-    public List<Cell> getCellBridgingWith() {
-        return new ArrayList<>(cellBridgingWith);
-    }
-
-    private void addCellBridgingWith(Cell cell) {
-        cellBridgingWith.add(cell);
+    public void setRootBlock(Block rootBlock) {
+        this.rootBlock = rootBlock;
     }
 
     public int getNumber() {
         return number;
-    }
-
-    public Position getMaxBusPosition() {
-        return graph.getMaxBusStructuralPosition();
-    }
-
-    public Position getRootPosition() {
-        return getRootBlock().getPosition();
     }
 
     public void writeJson(JsonGenerator generator) throws IOException {
@@ -184,31 +94,13 @@ public class Cell implements Comparable<Cell> {
         generator.writeEndObject();
     }
 
-    @Override
-    public int compareTo(@Nonnull Cell o) {
-        if (order == o.order && !this.equals(o)) {
-            return number - o.number;
-        }
-        return Comparator.comparingInt(Cell::getOrder).compare(this, o);
-    }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return super.equals(obj);
-    }
-
     public String getFullId() {
         return type + nodes.stream().map(Node::getId).sorted().collect(Collectors.toList()).toString();
     }
 
     @Override
     public String toString() {
-        return "Cell(type=" + type + ", order=" + order + ", direction=" + direction + ", nodes=" + nodes + ")";
+        return "Cell(type=" + type + ", nodes=" + nodes + ")";
     }
 
     public Graph getGraph() {

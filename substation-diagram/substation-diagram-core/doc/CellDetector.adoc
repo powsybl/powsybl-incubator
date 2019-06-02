@@ -1,4 +1,4 @@
-== Detect cells
+== Detect the cells
 
 === Definitions and goal
 An object of `Cell` class represents a connected subgraph of nodes that participate to a common purpose. The goal of the cell detection is to create these subgraphs that will then:

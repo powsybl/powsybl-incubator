@@ -167,7 +167,6 @@ public class TestCase5ShuntVertical extends AbstractTestCase {
         assertTrue(cellb.getRootBlock() instanceof SerialBlock);
         assertEquals(new Position(1, 0, 1, 2, false, Orientation.VERTICAL), cellb.getRootBlock().getPosition());
 
-        assertEquals(0, ((BusCell) cellShunt).getPrimaryBlocksConnectedToBus().size());
         assertNotNull(cellShunt.getRootBlock());
         assertTrue(cellShunt.getRootBlock() instanceof PrimaryBlock);
         assertEquals(new Position(-1, -1, 0, 0, false, Orientation.HORIZONTAL), cellShunt.getRootBlock().getPosition());

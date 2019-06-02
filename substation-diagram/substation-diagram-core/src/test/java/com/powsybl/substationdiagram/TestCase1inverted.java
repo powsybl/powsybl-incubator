@@ -114,7 +114,7 @@ public class TestCase1inverted extends AbstractTestCase {
         assertEquals(new Position(0, 0, 1, 2, false, Orientation.VERTICAL), bc.getPosition());
         assertEquals("bbs", bc.getStartingNode().getId());
         assertEquals("l", bc.getEndingNode().getId());
-        assertEquals(1, (((BusCell) cell).getPrimaryBlocksConnectedToBus().size()));
+        assertEquals(1, ((BusCell) cell).getPrimaryBlocksConnectedToBus().size());
 
         assertTrue(bc.getUpperBlock() instanceof PrimaryBlock);
         PrimaryBlock ub = (PrimaryBlock) bc.getUpperBlock();

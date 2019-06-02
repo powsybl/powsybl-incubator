@@ -6,10 +6,7 @@
  */
 package com.powsybl.substationdiagram.layout;
 
-import com.powsybl.substationdiagram.model.Cell;
-import com.powsybl.substationdiagram.model.FeederNode;
-import com.powsybl.substationdiagram.model.Graph;
-import com.powsybl.substationdiagram.model.Node;
+import com.powsybl.substationdiagram.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +22,7 @@ public class PositionFromExtension implements PositionFinder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PositionFromExtension.class);
 
-    private static final Cell.Direction DEFAULTDIRECTION = Cell.Direction.TOP;
+    private static final BusCell.Direction DEFAULTDIRECTION = BusCell.Direction.TOP;
 
     /**
      * Builds the layout of the bus nodes, and organises cells (order and directions)
@@ -33,16 +30,17 @@ public class PositionFromExtension implements PositionFinder {
     @Override
     public void buildLayout(Graph graph) {
         gatherLayoutExtensionInformation(graph);
-        List<Cell> problematicCells = graph.getCells().stream()
+        List<ExternCell> problematicCells = graph.getCells().stream()
                 .filter(cell -> cell.getType().equals(Cell.CellType.EXTERN))
+                .map(ExternCell.class::cast)
                 .filter(cell -> cell.getOrder() == -1).collect(Collectors.toList());
         if (!problematicCells.isEmpty()) {
             LOGGER.info("Unable to build the layout only with Extension\nproblematic cells :");
             problematicCells.forEach(cell -> LOGGER
                     .info("Cell Nb : {}, Order : {}, Type : {}",
-                          cell.getNumber(),
-                          cell.getOrder(),
-                          cell.getType()));
+                            cell.getNumber(),
+                            cell.getOrder(),
+                            cell.getType()));
             return;
         }
         graph.setMaxBusPosition();
@@ -53,12 +51,14 @@ public class PositionFromExtension implements PositionFinder {
         graph.getNodes().stream()
                 .filter(node -> node.getType() == Node.NodeType.FEEDER)
                 .map(FeederNode.class::cast)
-                .forEach(nodeEQ -> {
-                    nodeEQ.getCell().setDirection(
-                            nodeEQ.getDirection() == Cell.Direction.UNDEFINED ? DEFAULTDIRECTION : nodeEQ.getDirection());
-                    nodeEQ.getCell().setOrder(nodeEQ.getOrder());
+                .forEach(feederNode -> {
+                    ExternCell cell = (ExternCell) feederNode.getCell();
+                    cell.setDirection(
+                            feederNode.getDirection() == BusCell.Direction.UNDEFINED ? DEFAULTDIRECTION : feederNode.getDirection());
+                    cell.setOrder(feederNode.getOrder());
                 });
-        graph.getCells().forEach(Cell::orderFromFeederOrders);
+        graph.getCells().stream().filter(cell -> cell.getType() == Cell.CellType.EXTERN).map(ExternCell.class::cast)
+                .forEach(ExternCell::orderFromFeederOrders);
     }
 
     private void forceSameOrientationForShuntedCell(Graph graph) {
@@ -66,7 +66,8 @@ public class PositionFromExtension implements PositionFinder {
                 .filter(c -> c.getType() == Cell.CellType.SHUNT).collect(Collectors.toList())) {
             List<Node> shNodes = cell.getNodes().stream()
                     .filter(node -> node.getType() == Node.NodeType.SHUNT).collect(Collectors.toList());
-            shNodes.get(1).getCell().setDirection(shNodes.get(0).getCell().getDirection());
+            ((ExternCell) shNodes.get(1).getCell()).setDirection(
+                    ((ExternCell) shNodes.get(0).getCell()).getDirection());
         }
     }
 }

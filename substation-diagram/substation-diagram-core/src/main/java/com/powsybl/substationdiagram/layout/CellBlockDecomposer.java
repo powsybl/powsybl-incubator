@@ -29,52 +29,54 @@ public class CellBlockDecomposer {
      * Search layout.block and build layout.block hierarchy by merging blocks together; also
      * list blocks connected to busbar
      *
-     * @param cell cell we are working on
+     * @param cell Cell we are working on
      */
     public void determineBlocks(Cell cell) {
-        if (cell.getType() == Cell.CellType.INTERN && cell.getNodes().size() == 3) {
-            SwitchNode switchNode = (SwitchNode) cell.getNodes().get(1);
-            cell.getGraph().extendSwitchBetweenBus(switchNode);
+        if (cell.getType() == Cell.CellType.SHUNT) {
+            determineShuntCellBlocks((ShuntCell) cell);
+        } else {
+            determineBusCellBlocks((BusCell) cell);
+        }
+    }
+
+    public void determineBusCellBlocks(BusCell busCell) {
+        if (busCell.getType() == Cell.CellType.INTERN && busCell.getNodes().size() == 3) {
+            SwitchNode switchNode = (SwitchNode) busCell.getNodes().get(1);
+            busCell.getGraph().extendSwitchBetweenBus(switchNode);
             List<Node> adj = switchNode.getAdjacentNodes();
-            cell.addNodes(adj);
-            cell.addNodes(adj.stream()
+            busCell.addNodes(adj);
+            busCell.addNodes(adj.stream()
                     .flatMap(node -> node.getAdjacentNodes().stream())
                     .filter(node -> node != switchNode)
                     .collect(Collectors.toList()));
         }
-        if (cell.getType() == Cell.CellType.SHUNT) {
-            determineSingularCell(cell);
-        } else {
-            determineComplexCell(cell);
-        }
+        determineComplexCell(busCell);
     }
 
-    private void determineSingularCell(Cell cell) {
-        List<PrimaryBlock> blocksConnectedToBusbar = new ArrayList<>();
-        PrimaryBlock bpy = new PrimaryBlock(cell.getNodes());
-        bpy.setCell(cell);
-        cell.blocksSetting(bpy, blocksConnectedToBusbar);
+    public void determineShuntCellBlocks(ShuntCell shuntCell) {
+        PrimaryBlock bpy = new PrimaryBlock(shuntCell.getNodes());
+        bpy.setCell(shuntCell);
+        shuntCell.setRootBlock(bpy);
     }
 
-    private void determineComplexCell(Cell cell) {
-
+    private void determineComplexCell(BusCell busCell) {
         List<PrimaryBlock> blocksConnectedToBusbar = new ArrayList<>();
         List<Node> alreadyTreated = new ArrayList<>();
         List<Block> blocks = new ArrayList<>();
-        Node currentNode = cell.getBusNodes().get(0);
+        Node currentNode = busCell.getBusNodes().get(0);
 
         // Search all primary blocks
-        currentNode.getListNodeAdjInCell(cell).forEach(n -> {
+        currentNode.getListNodeAdjInCell(busCell).forEach(n -> {
             if (!alreadyTreated.contains(n)) {
                 List<Node> blockNodes = new ArrayList<>();
                 blockNodes.add(currentNode);
-                rElaboratePrimaryBlocks(cell, n, currentNode, alreadyTreated, blockNodes, blocks);
+                rElaboratePrimaryBlocks(busCell, n, currentNode, alreadyTreated, blockNodes, blocks);
             }
         });
 
         // Search all blocks connected to a busbar inside the primary blocks list
         for (Block b : blocks) {
-            b.setCell(cell);
+            b.setCell(busCell);
             if (b.getStartingNode().getType() == Node.NodeType.BUS) {
                 b.setBusNode((BusNode) b.getStartingNode());
                 blocksConnectedToBusbar.add((PrimaryBlock) b);
@@ -87,18 +89,18 @@ public class CellBlockDecomposer {
 
         // Merge blocks to obtain a hierarchy of blocks
         while (organisedBlocks.size() != 1) {
-            boolean merged = searchParallelMerge(organisedBlocks, cell);
-            merged |= searchChainMerge(organisedBlocks, cell);
+            boolean merged = searchParallelMerge(organisedBlocks, busCell);
+            merged |= searchChainMerge(organisedBlocks, busCell);
             if (!merged) {
-                LOGGER.warn("{} cell, cannot merge any additional blocks, {} blocks remains", cell.getType(), organisedBlocks.size());
+                LOGGER.warn("{} busCell, cannot merge any additional blocks, {} blocks remains", busCell.getType(), organisedBlocks.size());
                 Block undefinedBlock = new UndefinedBlock(new ArrayList<>(organisedBlocks));
-                undefinedBlock.setCell(cell);
+                undefinedBlock.setCell(busCell);
                 organisedBlocks.clear();
                 organisedBlocks.add(undefinedBlock);
                 break;
             }
         }
-        cell.blocksSetting(organisedBlocks.get(0), blocksConnectedToBusbar);
+        busCell.blocksSetting(organisedBlocks.get(0), blocksConnectedToBusbar);
     }
 
     private void addBlockOrganised(List<Block> blocks, Block b) {
@@ -113,7 +115,7 @@ public class CellBlockDecomposer {
      * Search possibility to merge two blocks into a chain layout.block and do the merging
      *
      * @param blocks list of blocks we can merge
-     * @param cell   current cell
+     * @param cell current cell
      */
     private boolean searchChainMerge(List<Block> blocks, Cell cell) {
         boolean chainEnded = false;
@@ -148,7 +150,7 @@ public class CellBlockDecomposer {
      * Search possibility to merge some blocks into a parallel layout.block and do the merging
      *
      * @param blocks list of blocks we can merge
-     * @param cell   current cell
+     * @param cell current cell
      */
     private boolean searchParallelMerge(List<Block> blocks, Cell cell) {
         List<List<Block>> blocksBundlesToMerge = new ArrayList<>();
@@ -232,7 +234,7 @@ public class CellBlockDecomposer {
      * a primary layout.block shall have the following pattern :
      * BUS|FICTICIOUS|FEEDER|SHUNT - n * SWITCH - BUS|FICTICIOUS|FEEDER|SHUNT
      *
-     * @param cell           cell
+     * @param cell   cell
      * @param currentNode    currentnode
      * @param alreadyTreated alreadyTreated
      * @param blockNodes     blockNodes

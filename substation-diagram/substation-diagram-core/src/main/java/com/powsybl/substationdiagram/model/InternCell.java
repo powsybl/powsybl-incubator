@@ -6,9 +6,6 @@
  */
 package com.powsybl.substationdiagram.model;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -17,9 +14,7 @@ import java.util.stream.Collectors;
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class InternCell extends Cell {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(InternCell.class);
+public class InternCell extends BusCell {
 
     private Block centralBlock;
 
@@ -55,34 +50,6 @@ public class InternCell extends Cell {
             setDirection(Direction.FLAT);
             getRootBlock().setOrientation(Orientation.HORIZONTAL);
         }
-    }
-
-    private void handleNonFlatInterbound() {
-        PrimaryBlock initialRootBlock = (PrimaryBlock) getRootBlock();
-        SwitchNode ns = (SwitchNode) (initialRootBlock.getNodes().get(1));
-        graph.extendSwitchBetweenBus(ns);
-        getPrimaryBlocksConnectedToBus().clear();
-        Block block0 = createAdjacentPrimaryBlock(ns, 0);
-        Block block1 = createAdjacentPrimaryBlock(ns, 1);
-        fillInSideToBlock(block0, block1);
-        centralBlock = new PrimaryBlock(Arrays.asList(block0.getEndingNode(), ns, block1.getEndingNode()), this);
-        setType(CellType.INTERN);
-        refactorBlocks();
-    }
-
-    private Block createAdjacentPrimaryBlock(SwitchNode ns, int id) {
-        FictitiousNode nf = (FictitiousNode) ns.getAdjacentNodes().get(id);
-        Node fictSwitch = otherNodeFromAdj(nf, ns);
-        BusNode bus = (BusNode) otherNodeFromAdj(fictSwitch, nf);
-        PrimaryBlock bpy = new PrimaryBlock(Arrays.asList(bus, fictSwitch, nf), this);
-        bpy.setBusNode(bus);
-        getPrimaryBlocksConnectedToBus().add(bpy);
-        return bpy;
-    }
-
-    private Node otherNodeFromAdj(Node nodeOrigin, Node toBeOther) {
-        List<Node> adj = nodeOrigin.getAdjacentNodes();
-        return adj.get(0) == toBeOther ? adj.get(1) : adj.get(0);
     }
 
     /**
@@ -191,15 +158,6 @@ public class InternCell extends Cell {
         refactorBlocks();
     }
 
-    @Override
-    public void setNodes(List<Node> nodes) {
-        super.setNodes(nodes);
-        if (getNodes().size() == 3) {
-//            graph.extendSwitchBetweenBus((SwitchNode) getNodes().get(1));
-//            setType(CellType.INTERNBOUND);
-        }
-    }
-
     public int getSideHPos(Side side) {
         if (side == Side.LEFT) {
             return getRootBlock().getPosition().getH();
@@ -209,10 +167,6 @@ public class InternCell extends Cell {
             return rightBlockPos.getH();
         }
         return getRootBlock().getPosition().getH() + rightBlockPos.getH();
-    }
-
-    public List<PrimaryBlock> getSideConnectedBlocks(Side side) {
-        return sideToConnectedBlocks.get(side);
     }
 
     public Block getSideToBlock(Side side) {

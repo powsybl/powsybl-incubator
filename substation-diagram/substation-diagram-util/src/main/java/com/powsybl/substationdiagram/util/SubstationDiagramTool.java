@@ -10,9 +10,13 @@ import com.google.auto.service.AutoService;
 import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.network.Substation;
 import com.powsybl.iidm.network.VoltageLevel;
+import com.powsybl.substationdiagram.SubstationDiagram;
 import com.powsybl.substationdiagram.VoltageLevelDiagram;
+import com.powsybl.substationdiagram.layout.HorizontalSubstationLayoutFactory;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
+import com.powsybl.substationdiagram.layout.SubstationLayoutFactory;
 import com.powsybl.substationdiagram.layout.VoltageLevelLayoutFactory;
 import com.powsybl.substationdiagram.library.ComponentLibrary;
 import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
@@ -40,6 +44,8 @@ public class SubstationDiagramTool implements Tool {
     private static final String INPUT_FILE = "input-file";
     private static final String OUTPUT_DIR = "output-dir";
     private static final String IDS = "ids";
+    private static final String ALL_VOLTAGE_LEVELS = "all-voltage-levels";
+    private static final String ALL_SUBSTATIONS = "all-substations";
 
     @Override
     public Command getCommand() {
@@ -76,10 +82,17 @@ public class SubstationDiagramTool implements Tool {
                         .required()
                         .build());
                 options.addOption(Option.builder().longOpt(IDS)
-                        .desc("voltage level id list")
+                        .desc("voltage level/substation id list")
                         .hasArg()
                         .argName("ID_LIST")
                         .build());
+                options.addOption(Option.builder().longOpt(ALL_VOLTAGE_LEVELS)
+                        .desc("all voltage levels")
+                        .build());
+                options.addOption(Option.builder().longOpt(ALL_SUBSTATIONS)
+                        .desc("all substations")
+                        .build());
+
                 return options;
             }
 
@@ -102,6 +115,20 @@ public class SubstationDiagramTool implements Tool {
         }
     }
 
+    private void generateSvg(ToolRunningContext context, Path outputDir, ComponentLibrary componentLibrary,
+                             LayoutParameters parameters, VoltageLevelLayoutFactory voltageLevelLayoutFactory,
+                             SubstationLayoutFactory substationLayoutFactory,
+                             Substation s) throws UnsupportedEncodingException {
+        Path svgFile = outputDir.resolve(URLEncoder.encode(s.getId(), StandardCharsets.UTF_8.name()) + ".svg");
+        context.getOutputStream().println("Generating '" + svgFile + "'");
+        try {
+            SubstationDiagram.build(s, substationLayoutFactory, voltageLevelLayoutFactory, true)
+                    .writeSvg(componentLibrary, parameters, svgFile);
+        } catch (Exception e) {
+            e.printStackTrace(context.getErrorStream());
+        }
+    }
+
     @Override
     public void run(CommandLine line, ToolRunningContext context) throws UnsupportedEncodingException {
         ToolOptions toolOptions = new ToolOptions(line, context);
@@ -116,18 +143,44 @@ public class SubstationDiagramTool implements Tool {
         ComponentLibrary componentLibrary = new ResourcesComponentLibrary("/ConvergenceLibrary");
         LayoutParameters parameters = new LayoutParameters();
         VoltageLevelLayoutFactory voltageLevelLayoutFactory = new SmartVoltageLevelLayoutFactory();
+        SubstationLayoutFactory substationLayoutFactory = new HorizontalSubstationLayoutFactory();
         if (ids.isPresent()) {
             for (String id : ids.get()) {
                 VoltageLevel vl = network.getVoltageLevel(id);
                 if (vl == null) {
-                    throw new PowsyblException("Voltage level '" + id + "'");
+                    Substation s = network.getSubstation(id);
+                    if (s == null) {
+                        throw new PowsyblException("No voltage level or substation with id : '" + id + "'");
+                    } else {  // id is a substation id
+                        generateSvg(context, outputDir, componentLibrary, parameters,
+                                    voltageLevelLayoutFactory, substationLayoutFactory, s);
+                    }
+                } else {  // id is a voltage level id
+                    generateSvg(context, outputDir, componentLibrary, parameters, voltageLevelLayoutFactory, vl);
                 }
-                generateSvg(context, outputDir, componentLibrary, parameters, voltageLevelLayoutFactory, vl);
             }
         } else {
-            // export all voltage levels
-            for (VoltageLevel vl : network.getVoltageLevels()) {
-                generateSvg(context, outputDir, componentLibrary, parameters, voltageLevelLayoutFactory, vl);
+            boolean allVoltageLevels = toolOptions.hasOption(ALL_VOLTAGE_LEVELS);
+            boolean allSubstations = toolOptions.hasOption(ALL_SUBSTATIONS);
+
+            // by default, export all voltage levels if no id given and no
+            // additional option (all-voltage-levels or all-substations) given
+            if (!allVoltageLevels && !allSubstations) {
+                allVoltageLevels = true;
+            }
+
+            if (allVoltageLevels) {
+                // export all voltage levels
+                for (VoltageLevel vl : network.getVoltageLevels()) {
+                    generateSvg(context, outputDir, componentLibrary, parameters, voltageLevelLayoutFactory, vl);
+                }
+            }
+            if (allSubstations) {
+                // export all substations
+                for (Substation s : network.getSubstations()) {
+                    generateSvg(context, outputDir, componentLibrary, parameters,
+                                voltageLevelLayoutFactory, substationLayoutFactory, s);
+                }
             }
         }
     }

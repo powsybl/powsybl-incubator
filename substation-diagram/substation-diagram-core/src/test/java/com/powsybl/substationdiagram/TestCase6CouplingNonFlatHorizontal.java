@@ -134,7 +134,7 @@ public class TestCase6CouplingNonFlatHorizontal extends AbstractTestCase {
         assertTrue(new BlockOrganizer().organize(g));
 
         // assert blocks and nodes rotation
-        assertEquals(2, cellB.getPrimaryBlocksConnectedToBus().size());
+        assertEquals(2, ((BusCell) cellB).getPrimaryBlocksConnectedToBus().size());
         assertNotNull(cellB.getRootBlock());
         assertTrue(cellB.getRootBlock() instanceof ParallelBlock);
         ParallelBlock bp = (ParallelBlock) cellB.getRootBlock();

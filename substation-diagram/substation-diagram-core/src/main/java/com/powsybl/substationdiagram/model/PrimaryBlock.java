@@ -103,9 +103,8 @@ public class PrimaryBlock extends AbstractBlock {
 
     @Override
     public void calculateDimensionAndInternPos() {
-
         if (isEmbedingNodeType(Node.NodeType.BUS)
-                && (getCell().getDirection() == Cell.Direction.FLAT || !getStackableBlocks().isEmpty())) {
+                && (((BusCell) getCell()).getDirection() == BusCell.Direction.FLAT || !getStackableBlocks().isEmpty())) {
             getPosition().setHSpan(0);
             getPosition().setVSpan(0);
             return;
@@ -143,7 +142,7 @@ public class PrimaryBlock extends AbstractBlock {
                 }
             }
         } else {
-            int sign = getCell().getDirection() == Cell.Direction.TOP ? 1 : -1;
+            int sign = ((BusCell) getCell()).getDirection() == BusCell.Direction.TOP ? 1 : -1;
             double y0 = getCoord().getY() + sign * getCoord().getYSpan() / 2;
             double yPxStep = calcYPxStep(sign);
             int v = 0;

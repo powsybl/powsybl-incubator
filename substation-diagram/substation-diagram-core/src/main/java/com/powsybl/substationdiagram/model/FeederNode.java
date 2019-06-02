@@ -6,6 +6,7 @@
  */
 package com.powsybl.substationdiagram.model;
 
+import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.Branch;
 import com.powsybl.iidm.network.Injection;
 import com.powsybl.iidm.network.ShuntCompensator;
@@ -25,7 +26,7 @@ public class FeederNode extends Node {
 
     private int order = -1;
 
-    private Cell.Direction direction = Cell.Direction.UNDEFINED;
+    private BusCell.Direction direction = BusCell.Direction.UNDEFINED;
 
     protected FeederNode(String id, String name, ComponentType componentType, boolean fictitious, Graph graph) {
         super(NodeType.FEEDER, id, name, componentType, fictitious, graph);
@@ -96,6 +97,14 @@ public class FeederNode extends Node {
         return new FeederNode(id, id, ComponentType.NODE, true, graph);
     }
 
+    @Override
+    public void setCell(Cell cell) {
+        if (!(cell instanceof ExternCell)) {
+            throw new PowsyblException("The Cell of a feeder node shall be an ExternCell");
+        }
+        super.setCell(cell);
+    }
+
     public int getOrder() {
         return order;
     }
@@ -104,11 +113,11 @@ public class FeederNode extends Node {
         this.order = order;
     }
 
-    public Cell.Direction getDirection() {
+    public BusCell.Direction getDirection() {
         return direction;
     }
 
-    public void setDirection(Cell.Direction direction) {
+    public void setDirection(BusCell.Direction direction) {
         this.direction = direction;
     }
 }

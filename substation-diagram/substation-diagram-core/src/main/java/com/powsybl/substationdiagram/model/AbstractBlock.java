@@ -179,7 +179,7 @@ public abstract class AbstractBlock implements Block {
         coord.setXSpan((double) position.getHSpan() * layoutParam.getCellWidth());
         if (cell.getType() == Cell.CellType.INTERN) {
             coord.setYSpan(0);
-            if (cell.getDirection() != Cell.Direction.FLAT) {
+            if (((InternCell) cell).getDirection() != BusCell.Direction.FLAT) {
                 dyToBus = layoutParam.getInternCellHeight() * position.getV();
             }
         } else {
@@ -191,10 +191,10 @@ public abstract class AbstractBlock implements Block {
                 + layoutParam.getCellWidth() * position.getH()
                 + coord.getXSpan() / 2);
 
-        switch (cell.getDirection()) {
+        switch (((BusCell) cell).getDirection()) {
             case BOTTOM:
                 coord.setY(layoutParam.getInitialYBus()
-                        + (cell.getMaxBusPosition().getV() - 1) * layoutParam.getVerticalSpaceBus()
+                        + (((BusCell) cell).getMaxBusPosition().getV() - 1) * layoutParam.getVerticalSpaceBus()
                         + dyToBus);
                 break;
             case TOP:

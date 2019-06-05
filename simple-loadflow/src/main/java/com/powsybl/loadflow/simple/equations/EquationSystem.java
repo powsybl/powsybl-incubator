@@ -31,10 +31,40 @@ public class EquationSystem {
 
     private final double[] targets;
 
+    private static final class PartialDerivative {
+
+        private final EquationTerm equationTerm;
+
+        private final Matrix.Element matrixElement;
+
+        private final Variable variable;
+
+        private PartialDerivative(EquationTerm equationTerm, Matrix.Element matrixElement, Variable variable) {
+            this.equationTerm = Objects.requireNonNull(equationTerm);
+            this.matrixElement = Objects.requireNonNull(matrixElement);
+            this.variable = Objects.requireNonNull(variable);
+        }
+
+        public EquationTerm getEquationTerm() {
+            return equationTerm;
+        }
+
+        public Matrix.Element getMatrixElement() {
+            return matrixElement;
+        }
+
+        public Variable getVariable() {
+            return variable;
+        }
+    }
+
+    private final List<PartialDerivative> partialDerivatives;
+
     public EquationSystem(List<EquationTerm> equationTerms, List<VariableUpdate> variableUpdates, NetworkContext networkContext) {
         this.equationTerms = Objects.requireNonNull(equationTerms);
         this.variableUpdates = Objects.requireNonNull(variableUpdates);
         this.networkContext = Objects.requireNonNull(networkContext);
+        partialDerivatives = new ArrayList<>(equationTerms.size());
 
         // index derivatives per variable then per equation
         for (EquationTerm equationTerm : equationTerms) {
@@ -154,14 +184,25 @@ public class EquationSystem {
                 Equation eq = e2.getKey();
                 int row = eq.getRow();
                 for (EquationTerm equationTerm : e2.getValue()) {
-                    double v = equationTerm.der(var);
-                    if (v != 0) {
-                        j.add(row, column, v);
-                    }
+                    double value = equationTerm.der(var);
+                    Matrix.Element element = j.addAndGetElement(row, column, value);
+                    partialDerivatives.add(new PartialDerivative(equationTerm, element, var));
                 }
             }
         }
 
         return j;
+    }
+
+    public void updateJacobian(Matrix j) {
+        Objects.requireNonNull(j);
+        j.reset();
+        for (PartialDerivative partialDerivative : partialDerivatives) {
+            EquationTerm equationTerm = partialDerivative.getEquationTerm();
+            Matrix.Element element = partialDerivative.getMatrixElement();
+            Variable var = partialDerivative.getVariable();
+            double value = equationTerm.der(var);
+            element.add(value);
+        }
     }
 }

@@ -35,13 +35,19 @@ public class NewtonRaphson {
 
     private final NewtonRaphsonObserver observer;
 
+    static class NewtonRaphsonContext {
+        Matrix j;
+        LUDecomposition lu;
+    }
+
     public NewtonRaphson(NetworkContext networkContext, MatrixFactory matrixFactory, NewtonRaphsonObserver observer) {
         this.networkContext = Objects.requireNonNull(networkContext);
         this.matrixFactory = Objects.requireNonNull(matrixFactory);
         this.observer = Objects.requireNonNull(observer);
     }
 
-    private NewtonRaphsonStatus runIteration(int iteration, EquationSystem system, double[] x, double[] fx) {
+    private NewtonRaphsonStatus runIteration(int iteration, EquationSystem system, double[] x, double[] fx,
+                                             NewtonRaphsonContext context) {
         observer.beginIteration(iteration);
 
         // evaluate equations
@@ -63,20 +69,30 @@ public class NewtonRaphson {
         // build jacobian
         observer.beforeJacobianBuild(iteration);
 
-        Matrix j = system.buildJacobian(matrixFactory);
+        if (context.j == null) {
+            context.j = system.buildJacobian(matrixFactory);
+        } else {
+            system.updateJacobian(context.j);
+        }
 
-        observer.afterJacobianBuild(j, system, iteration);
+        observer.afterJacobianBuild(context.j, system, iteration);
 
         // solve f(x) = j * dx
 
         observer.beforeLuDecomposition(iteration);
 
-        try (LUDecomposition lu = j.decomposeLU()) {
-            observer.afterLuDecomposition(iteration);
+        if (context.lu == null) {
+            context.lu = context.j.decomposeLU();
+        } else {
+            context.lu.update();
+        }
 
+        observer.afterLuDecomposition(iteration);
+
+        try {
             observer.beforeLuSolve(iteration);
 
-            lu.solve(fx);
+            context.lu.solve(fx);
 
             observer.afterLuSolve(iteration);
         } catch (Exception e) {
@@ -114,14 +130,20 @@ public class NewtonRaphson {
 
         int iteration = 0;
 
+        NewtonRaphsonContext context = new NewtonRaphsonContext();
+
         NewtonRaphsonStatus status = NewtonRaphsonStatus.NO_CALCULATION;
         while (iteration <= parameters.getMaxIteration()) {
-            NewtonRaphsonStatus newStatus = runIteration(iteration, system, x, fx);
+            NewtonRaphsonStatus newStatus = runIteration(iteration, system, x, fx, context);
             if (newStatus != null) {
                 status = newStatus;
                 break;
             }
             iteration++;
+        }
+
+        if (context.lu != null) {
+            context.lu.close();
         }
 
         networkContext.resetState();

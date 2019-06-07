@@ -6,48 +6,45 @@
  */
 package com.powsybl.loadflow.simple.network;
 
-import com.powsybl.iidm.network.DanglingLine;
+import com.powsybl.iidm.network.ThreeWindingsTransformer;
 
 import java.util.Objects;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class LfDanglingLineBranch extends AbstractLfBranch {
+public class LfLeg2or3Branch extends AbstractLfBranch {
 
-    private final DanglingLine danglingLine;
+    private final ThreeWindingsTransformer.Leg2or3 leg2or3;
 
-    public LfDanglingLineBranch(DanglingLine danglingLine, LfBus bus1, LfBus bus2) {
-        super(Objects.requireNonNull(bus1), Objects.requireNonNull(bus2));
-        this.danglingLine = Objects.requireNonNull(danglingLine);
-        r = danglingLine.getR();
-        x = danglingLine.getX();
+    public LfLeg2or3Branch(LfBus bus2or3, LfBus bus0, ThreeWindingsTransformer t3wt, ThreeWindingsTransformer.Leg2or3 leg2or3) {
+        super(bus2or3, bus0);
+        this.leg2or3 = Objects.requireNonNull(leg2or3);
+        r = leg2or3.getR();
+        x = leg2or3.getX();
         double z = Math.hypot(r, x);
         y = 1 / z;
         ksi = Math.atan2(r, x);
-        g1 = danglingLine.getG() / 2;
-        b1 = danglingLine.getB() / 2;
-        g2 = danglingLine.getG() / 2;
-        b2 = danglingLine.getB() / 2;
+        r1 = Transformers.getRatio2or3(t3wt, leg2or3);
     }
 
     @Override
     public void setP1(double p1) {
-        danglingLine.getTerminal().setP(p1);
+        leg2or3.getTerminal().setP(p1);
     }
 
     @Override
     public void setP2(double p2) {
-        // nothing to do
+        // nothing to update on star side
     }
 
     @Override
     public void setQ1(double q1) {
-        danglingLine.getTerminal().setQ(q1);
+        leg2or3.getTerminal().setQ(q1);
     }
 
     @Override
     public void setQ2(double q2) {
-        // nothing to do
+        // nothing to update on star side
     }
 }

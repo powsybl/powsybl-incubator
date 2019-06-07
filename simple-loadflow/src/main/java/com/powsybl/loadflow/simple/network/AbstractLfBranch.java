@@ -17,13 +17,16 @@ public abstract class AbstractLfBranch implements LfBranch {
 
     protected double r;
     protected double x;
-    protected double z;
     protected double y;
     protected double ksi;
-    protected double g1;
-    protected double b1;
-    protected double g2;
-    protected double b2;
+    protected double g1 = 0;
+    protected double b1 = 0;
+    protected double g2 = 0;
+    protected double b2 = 0;
+    protected double r1 = 1;
+    protected double r2 = 1;
+    protected double a1 = 0;
+    protected double a2 = 0;
 
     protected AbstractLfBranch(LfBus bus1, LfBus bus2) {
         this.bus1 = bus1;
@@ -73,5 +76,25 @@ public abstract class AbstractLfBranch implements LfBranch {
     @Override
     public double b2() {
         return b2;
+    }
+
+    @Override
+    public double r1() {
+        return r1;
+    }
+
+    @Override
+    public double r2() {
+        return r2;
+    }
+
+    @Override
+    public double a1() {
+        return a1;
+    }
+
+    @Override
+    public double a2() {
+        return a2;
     }
 }

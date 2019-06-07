@@ -20,11 +20,6 @@ public class LfBranchImpl extends AbstractLfBranch {
 
     private final Branch branch;
 
-    private double r1;
-    private double r2;
-    private double a1;
-    private double a2;
-
     public LfBranchImpl(Branch branch, LfBus bus1, LfBus bus2) {
         super(bus1, bus2);
         this.branch = Objects.requireNonNull(branch);
@@ -32,9 +27,6 @@ public class LfBranchImpl extends AbstractLfBranch {
     }
 
     private void init() {
-        r2 = 1d;
-        a2 = 0d;
-
         if (branch instanceof Line) {
             initLine((Line) branch);
         } else if (branch instanceof TwoWindingsTransformer) {
@@ -43,7 +35,7 @@ public class LfBranchImpl extends AbstractLfBranch {
             throw new PowsyblException("Unsupported type of branch for flow equations for branch: " + branch.getId());
         }
 
-        z = Math.hypot(r, x);
+        double z = Math.hypot(r, x);
         y = 1 / z;
         ksi = Math.atan2(r, x);
     }
@@ -55,17 +47,13 @@ public class LfBranchImpl extends AbstractLfBranch {
         g2 = line.getG2();
         b1 = line.getB1();
         b2 = line.getB2();
-        r1 = 1d;
-        a1 = 0d;
     }
 
     private void initTransformer(TwoWindingsTransformer tf) {
         r = Transformers.getR(tf);
         x = Transformers.getX(tf);
         g1 = Transformers.getG1(tf);
-        g2 = 0d;
         b1 = Transformers.getB1(tf);
-        b2 = 0d;
         r1 = Transformers.getRatio(tf);
         a1 = Transformers.getAngle(tf);
     }
@@ -88,25 +76,5 @@ public class LfBranchImpl extends AbstractLfBranch {
     @Override
     public void setQ2(double q2) {
         branch.getTerminal2().setQ(q2);
-    }
-
-    @Override
-    public double r1() {
-        return r1;
-    }
-
-    @Override
-    public double r2() {
-        return r2;
-    }
-
-    @Override
-    public double a1() {
-        return a1;
-    }
-
-    @Override
-    public double a2() {
-        return a2;
     }
 }

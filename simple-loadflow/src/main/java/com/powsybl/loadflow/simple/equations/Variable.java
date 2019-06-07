@@ -6,7 +6,7 @@
  */
 package com.powsybl.loadflow.simple.equations;
 
-import com.powsybl.loadflow.LoadFlowParameters;
+import com.powsybl.loadflow.LoadFlowParameters.VoltageInitMode;
 import com.powsybl.loadflow.simple.network.NetworkContext;
 
 import java.util.Objects;
@@ -46,39 +46,20 @@ public class Variable implements Comparable<Variable> {
         this.column = column;
     }
 
-    void initState(LoadFlowParameters.VoltageInitMode mode, NetworkContext networkContext, double[] x) {
+    void initState(VoltageInitMode mode, NetworkContext networkContext, double[] x) {
         Objects.requireNonNull(mode);
         Objects.requireNonNull(networkContext);
         Objects.requireNonNull(x);
-        switch (type) {
-            case BUS_V:
-                switch (mode) {
-                    case UNIFORM_VALUES:
-                        x[column] = networkContext.getBus(num).getNominalV();
-                        break;
-                    case PREVIOUS_VALUES:
-                        x[column] = networkContext.getBus(num).getV();
-                        break;
-                    default:
-                        throw new UnsupportedOperationException("Unsupported voltage init mode: " + mode);
-                }
-                break;
-
-            case BUS_PHI:
-                switch (mode) {
-                    case UNIFORM_VALUES:
-                        x[column] = 0;
-                        break;
-                    case PREVIOUS_VALUES:
-                        x[column] = Math.toRadians(networkContext.getBus(num).getAngle());
-                        break;
-                    default:
-                        throw new UnsupportedOperationException("Unsupported voltage init mode: " + mode);
-                }
-                break;
-
-            default:
-                throw new IllegalStateException("Unknown variable type "  + type);
+        if (type == VariableType.BUS_V && mode == VoltageInitMode.UNIFORM_VALUES) {
+            x[column] = networkContext.getBus(num).getNominalV();
+        } else if (type == VariableType.BUS_V && mode == VoltageInitMode.PREVIOUS_VALUES) {
+            x[column] = networkContext.getBus(num).getV();
+        } else if (type == VariableType.BUS_PHI && mode == VoltageInitMode.UNIFORM_VALUES) {
+            x[column] = 0;
+        } else if (type == VariableType.BUS_PHI && mode == VoltageInitMode.PREVIOUS_VALUES) {
+            x[column] = Math.toRadians(networkContext.getBus(num).getAngle());
+        } else {
+            throw new UnsupportedOperationException("Incorrect state variable initialization: type=" + type + " and mode=" + mode);
         }
     }
 

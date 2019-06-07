@@ -41,7 +41,7 @@ public class SimpleAcLoadFlowSvcTest {
     private LoadFlowParameters parameters;
 
     private Network createNetwork() {
-        Network network = NetworkFactory.create("svc", "test");
+        Network network = Network.create("svc", "test");
         Substation s1 = network.newSubstation()
                 .setId("S1")
                 .add();

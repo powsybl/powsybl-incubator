@@ -27,10 +27,6 @@
         <module>cgmes-gl-iidm-extensions</module>
     </modules>
 
-    <properties>
-        <mockito.version>1.10.19</mockito.version>
-    </properties>
-
     <dependencyManagement>
         <dependencies>
             <dependency>

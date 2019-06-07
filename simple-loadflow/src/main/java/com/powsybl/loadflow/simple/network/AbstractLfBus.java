@@ -11,9 +11,17 @@ package com.powsybl.loadflow.simple.network;
  */
 public abstract class AbstractLfBus implements LfBus {
 
+    private final int num;
+
     private boolean slack = false;
 
-    protected AbstractLfBus() {
+    protected AbstractLfBus(int num) {
+        this.num = num;
+    }
+
+    @Override
+    public int getNum() {
+        return num;
     }
 
     @Override

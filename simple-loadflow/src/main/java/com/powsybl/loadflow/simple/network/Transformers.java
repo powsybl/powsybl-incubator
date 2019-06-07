@@ -6,6 +6,7 @@
  */
 package com.powsybl.loadflow.simple.network;
 
+import com.powsybl.iidm.network.ThreeWindingsTransformer;
 import com.powsybl.iidm.network.TwoWindingsTransformer;
 
 /**
@@ -26,6 +27,17 @@ public final class Transformers {
         }
         if (twt.getPhaseTapChanger() != null) {
             rho *= twt.getPhaseTapChanger().getCurrentStep().getRho();
+        }
+        return rho;
+    }
+
+    /**
+     * Get ratio on leg 2 ou 3.
+     */
+    public static double getRatio2or3(ThreeWindingsTransformer twt, ThreeWindingsTransformer.Leg2or3 leg2or3) {
+        double rho = twt.getLeg1().getRatedU() / leg2or3.getRatedU();
+        if (leg2or3.getRatioTapChanger() != null) {
+            rho *= leg2or3.getRatioTapChanger().getCurrentStep().getRho();
         }
         return rho;
     }

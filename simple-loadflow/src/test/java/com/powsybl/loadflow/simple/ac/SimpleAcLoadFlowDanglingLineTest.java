@@ -33,7 +33,7 @@ public class SimpleAcLoadFlowDanglingLineTest {
     private LoadFlowParameters parameters;
 
     private Network createNetwork() {
-        Network network = NetworkFactory.create("dl", "test");
+        Network network = Network.create("dl", "test");
         Substation s1 = network.newSubstation()
                 .setId("S1")
                 .add();

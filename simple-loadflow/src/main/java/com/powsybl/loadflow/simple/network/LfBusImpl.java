@@ -21,8 +21,6 @@ public class LfBusImpl extends AbstractLfBus {
 
     private final Bus bus;
 
-    private final int num;
-
     private boolean voltageControl = false;
 
     private double loadTargetP = 0;
@@ -40,18 +38,13 @@ public class LfBusImpl extends AbstractLfBus {
     private final List<ShuntCompensator> shuntCompensators = new ArrayList<>();
 
     public LfBusImpl(Bus bus, int num) {
+        super(num);
         this.bus = Objects.requireNonNull(bus);
-        this.num = num;
     }
 
     @Override
     public String getId() {
         return bus.getId();
-    }
-
-    @Override
-    public int getNum() {
-        return num;
     }
 
     @Override

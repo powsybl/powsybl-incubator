@@ -142,8 +142,7 @@ public class NetworkContext {
                     }
                 }
 
-                private void visitVscConverterStation(VscConverterStation converterStation) {
-                    VscConverterStation vscCs = converterStation;
+                private void visitVscConverterStation(VscConverterStation vscCs) {
                     if (vscCs.isVoltageRegulatorOn()) {
                         lfBus.setTargetV(vscCs.getVoltageSetpoint());
                         lfBus.setVoltageControl(true);

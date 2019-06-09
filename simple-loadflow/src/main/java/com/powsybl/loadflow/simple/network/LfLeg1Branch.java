@@ -17,16 +17,16 @@ public class LfLeg1Branch extends AbstractLfBranch {
 
     private final ThreeWindingsTransformer.Leg1 leg1;
 
-    public LfLeg1Branch(LfBus bus1, LfBus bus0, ThreeWindingsTransformer.Leg1 leg1) {
-        super(bus1, bus0);
-        this.leg1 = Objects.requireNonNull(leg1);
-        r = leg1.getR();
-        x = leg1.getX();
-        double z = Math.hypot(r, x);
-        y = 1 / z;
-        ksi = Math.atan2(r, x);
-        g2 = leg1.getG();
-        b2 = leg1.getB();
+    protected LfLeg1Branch(LfBus bus1, LfBus bus0, ThreeWindingsTransformer.Leg1 leg1) {
+        super(bus1, bus0, leg1.getR(), leg1.getX(), 0, leg1.getG(), 0, leg1.getB(), 1, 1, 0, 0);
+        this.leg1 = leg1;
+    }
+
+    public static LfLeg1Branch create(LfBus bus1, LfBus bus0, ThreeWindingsTransformer.Leg1 leg1) {
+        Objects.requireNonNull(bus1);
+        Objects.requireNonNull(bus0);
+        Objects.requireNonNull(leg1);
+        return new LfLeg1Branch(bus1, bus0, leg1);
     }
 
     @Override

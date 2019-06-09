@@ -17,15 +17,17 @@ public class LfLeg2or3Branch extends AbstractLfBranch {
 
     private final ThreeWindingsTransformer.Leg2or3 leg2or3;
 
-    public LfLeg2or3Branch(LfBus bus2or3, LfBus bus0, ThreeWindingsTransformer t3wt, ThreeWindingsTransformer.Leg2or3 leg2or3) {
-        super(bus2or3, bus0);
-        this.leg2or3 = Objects.requireNonNull(leg2or3);
-        r = leg2or3.getR();
-        x = leg2or3.getX();
-        double z = Math.hypot(r, x);
-        y = 1 / z;
-        ksi = Math.atan2(r, x);
-        r1 = Transformers.getRatio2or3(t3wt, leg2or3);
+    protected LfLeg2or3Branch(LfBus bus2or3, LfBus bus0, ThreeWindingsTransformer t3wt, ThreeWindingsTransformer.Leg2or3 leg2or3) {
+        super(bus2or3, bus0, leg2or3.getR(), leg2or3.getX(), 0, 0, 0, 0, Transformers.getRatio2or3(t3wt, leg2or3), 1, 0, 0);
+        this.leg2or3 = leg2or3;
+    }
+
+    public static LfLeg2or3Branch create(LfBus bus2or3, LfBus bus0, ThreeWindingsTransformer t3wt, ThreeWindingsTransformer.Leg2or3 leg2or3) {
+        Objects.requireNonNull(bus2or3);
+        Objects.requireNonNull(bus0);
+        Objects.requireNonNull(t3wt);
+        Objects.requireNonNull(leg2or3);
+        return new LfLeg2or3Branch(bus2or3, bus0, t3wt, leg2or3);
     }
 
     @Override

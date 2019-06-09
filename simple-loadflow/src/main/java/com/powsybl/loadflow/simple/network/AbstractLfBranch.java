@@ -15,22 +15,38 @@ public abstract class AbstractLfBranch implements LfBranch {
 
     private final LfBus bus2;
 
-    protected double r;
-    protected double x;
-    protected double y;
-    protected double ksi;
-    protected double g1 = 0;
-    protected double b1 = 0;
-    protected double g2 = 0;
-    protected double b2 = 0;
-    protected double r1 = 1;
-    protected double r2 = 1;
-    protected double a1 = 0;
-    protected double a2 = 0;
+    protected final double r;
+    protected final double x;
+    protected final double g1;
+    protected final double b1;
+    protected final double g2;
+    protected final double b2;
+    protected final double r1;
+    protected final double r2;
+    protected final double a1;
+    protected final double a2;
 
-    protected AbstractLfBranch(LfBus bus1, LfBus bus2) {
+    protected final double y;
+    protected final double ksi;
+
+    protected AbstractLfBranch(LfBus bus1, LfBus bus2, double r, double x, double g1, double g2, double b1, double b2,
+                               double r1, double r2, double a1, double a2) {
         this.bus1 = bus1;
         this.bus2 = bus2;
+        this.r = r;
+        this.x = x;
+        this.g1 = g1;
+        this.g2 = g2;
+        this.b1 = b1;
+        this.b2 = b2;
+        this.r1 = r1;
+        this.r2 = r2;
+        this.a1 = a1;
+        this.a2 = a2;
+
+        double z = Math.hypot(r, x);
+        y = 1 / z;
+        ksi = Math.atan2(r, x);
     }
 
     @Override

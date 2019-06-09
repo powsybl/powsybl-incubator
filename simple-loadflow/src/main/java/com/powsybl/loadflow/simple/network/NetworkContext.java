@@ -169,13 +169,13 @@ public class NetworkContext {
         for (Branch branch : branchSet) {
             LfBus lfBus1 = getLfBus(branch.getTerminal1(), lfBuses, busIdToNum);
             LfBus lfBus2 = getLfBus(branch.getTerminal2(), lfBuses, busIdToNum);
-            lfBranches.add(new LfBranchImpl(branch, lfBus1, lfBus2));
+            lfBranches.add(LfBranchImpl.create(branch, lfBus1, lfBus2));
         }
 
         for (DanglingLine danglingLine : danglingLines) {
             LfDanglingLineBus lfBus2 = addLfBus(danglingLine, lfBuses, busIdToNum);
             LfBus lfBus1 = getLfBus(danglingLine.getTerminal(), lfBuses, busIdToNum);
-            lfBranches.add(new LfDanglingLineBranch(danglingLine, lfBus1, lfBus2));
+            lfBranches.add(LfDanglingLineBranch.create(danglingLine, lfBus1, lfBus2));
         }
 
         for (ThreeWindingsTransformer t3wt : t3wtSet) {
@@ -183,9 +183,9 @@ public class NetworkContext {
             LfBus lfBus1 = getLfBus(t3wt.getLeg1().getTerminal(), lfBuses, busIdToNum);
             LfBus lfBus2 = getLfBus(t3wt.getLeg2().getTerminal(), lfBuses, busIdToNum);
             LfBus lfBus3 = getLfBus(t3wt.getLeg3().getTerminal(), lfBuses, busIdToNum);
-            lfBranches.add(new LfLeg1Branch(lfBus1, lfBus0, t3wt.getLeg1()));
-            lfBranches.add(new LfLeg2or3Branch(lfBus2, lfBus0, t3wt, t3wt.getLeg2()));
-            lfBranches.add(new LfLeg2or3Branch(lfBus3, lfBus0, t3wt, t3wt.getLeg3()));
+            lfBranches.add(LfLeg1Branch.create(lfBus1, lfBus0, t3wt.getLeg1()));
+            lfBranches.add(LfLeg2or3Branch.create(lfBus2, lfBus0, t3wt, t3wt.getLeg2()));
+            lfBranches.add(LfLeg2or3Branch.create(lfBus3, lfBus0, t3wt, t3wt.getLeg3()));
         }
 
         return lfBranches;

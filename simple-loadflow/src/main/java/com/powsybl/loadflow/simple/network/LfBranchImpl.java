@@ -20,42 +20,25 @@ public class LfBranchImpl extends AbstractLfBranch {
 
     private final Branch branch;
 
-    public LfBranchImpl(Branch branch, LfBus bus1, LfBus bus2) {
-        super(bus1, bus2);
-        this.branch = Objects.requireNonNull(branch);
-        init();
+    protected LfBranchImpl(LfBus bus1, LfBus bus2, double r, double x, double g1, double g2, double b1, double b2,
+                         double r1, double r2, double a1, double a2, Branch branch) {
+        super(bus1, bus2, r, x, g1, g2, b1, b2, r1, r2, a1, a2);
+        this.branch = branch;
     }
 
-    private void init() {
+    public static LfBranchImpl create(Branch branch, LfBus bus1, LfBus bus2) {
+        Objects.requireNonNull(branch);
         if (branch instanceof Line) {
-            initLine((Line) branch);
+            Line line = (Line) branch;
+            return new LfBranchImpl(bus1, bus2, line.getR(), line.getX(), line.getG1(), line.getG2(),
+                    line.getB1(), line.getB2(), 1, 1, 0, 0, line);
         } else if (branch instanceof TwoWindingsTransformer) {
-            initTransformer((TwoWindingsTransformer) branch);
+            TwoWindingsTransformer twt = (TwoWindingsTransformer) branch;
+            return new LfBranchImpl(bus1, bus2, Transformers.getR(twt), Transformers.getX(twt), Transformers.getG1(twt),
+                    0, Transformers.getB1(twt), 0, Transformers.getRatio(twt), 1, Transformers.getAngle(twt), 0, twt);
         } else {
             throw new PowsyblException("Unsupported type of branch for flow equations for branch: " + branch.getId());
         }
-
-        double z = Math.hypot(r, x);
-        y = 1 / z;
-        ksi = Math.atan2(r, x);
-    }
-
-    private void initLine(Line line) {
-        r = line.getR();
-        x = line.getX();
-        g1 = line.getG1();
-        g2 = line.getG2();
-        b1 = line.getB1();
-        b2 = line.getB2();
-    }
-
-    private void initTransformer(TwoWindingsTransformer tf) {
-        r = Transformers.getR(tf);
-        x = Transformers.getX(tf);
-        g1 = Transformers.getG1(tf);
-        b1 = Transformers.getB1(tf);
-        r1 = Transformers.getRatio(tf);
-        a1 = Transformers.getAngle(tf);
     }
 
     @Override

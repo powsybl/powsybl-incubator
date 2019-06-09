@@ -6,6 +6,8 @@
  */
 package com.powsybl.loadflow.simple.network;
 
+import java.util.Objects;
+
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
@@ -15,38 +17,19 @@ public abstract class AbstractLfBranch implements LfBranch {
 
     private final LfBus bus2;
 
-    protected final double r;
-    protected final double x;
-    protected final double g1;
-    protected final double b1;
-    protected final double g2;
-    protected final double b2;
-    protected final double r1;
-    protected final double r2;
-    protected final double a1;
-    protected final double a2;
+    protected final PiModel piModel;
 
     protected final double y;
     protected final double ksi;
 
-    protected AbstractLfBranch(LfBus bus1, LfBus bus2, double r, double x, double g1, double g2, double b1, double b2,
-                               double r1, double r2, double a1, double a2) {
+    protected AbstractLfBranch(LfBus bus1, LfBus bus2, PiModel piModel) {
         this.bus1 = bus1;
         this.bus2 = bus2;
-        this.r = r;
-        this.x = x;
-        this.g1 = g1;
-        this.g2 = g2;
-        this.b1 = b1;
-        this.b2 = b2;
-        this.r1 = r1;
-        this.r2 = r2;
-        this.a1 = a1;
-        this.a2 = a2;
+        this.piModel = Objects.requireNonNull(piModel);
 
-        double z = Math.hypot(r, x);
+        double z = Math.hypot(piModel.getR(), piModel.getX());
         y = 1 / z;
-        ksi = Math.atan2(r, x);
+        ksi = Math.atan2(piModel.getR(), piModel.getX());
     }
 
     @Override
@@ -61,7 +44,7 @@ public abstract class AbstractLfBranch implements LfBranch {
 
     @Override
     public double x() {
-        return x;
+        return piModel.getX();
     }
 
     @Override
@@ -76,41 +59,41 @@ public abstract class AbstractLfBranch implements LfBranch {
 
     @Override
     public double g1() {
-        return g1;
+        return piModel.getG1();
     }
 
     @Override
     public double g2() {
-        return g2;
+        return piModel.getG2();
     }
 
     @Override
     public double b1() {
-        return b1;
+        return piModel.getB1();
     }
 
     @Override
     public double b2() {
-        return b2;
+        return piModel.getB2();
     }
 
     @Override
     public double r1() {
-        return r1;
+        return piModel.getR1();
     }
 
     @Override
     public double r2() {
-        return r2;
+        return piModel.getR2();
     }
 
     @Override
     public double a1() {
-        return a1;
+        return piModel.getA1();
     }
 
     @Override
     public double a2() {
-        return a2;
+        return piModel.getA2();
     }
 }

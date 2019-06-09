@@ -20,25 +20,32 @@ public class LfBranchImpl extends AbstractLfBranch {
 
     private final Branch branch;
 
-    protected LfBranchImpl(LfBus bus1, LfBus bus2, double r, double x, double g1, double g2, double b1, double b2,
-                         double r1, double r2, double a1, double a2, Branch branch) {
-        super(bus1, bus2, r, x, g1, g2, b1, b2, r1, r2, a1, a2);
+    protected LfBranchImpl(LfBus bus1, LfBus bus2, PiModel piModel, Branch branch) {
+        super(bus1, bus2, piModel);
         this.branch = branch;
     }
 
     public static LfBranchImpl create(Branch branch, LfBus bus1, LfBus bus2) {
         Objects.requireNonNull(branch);
+        PiModel piModel;
         if (branch instanceof Line) {
             Line line = (Line) branch;
-            return new LfBranchImpl(bus1, bus2, line.getR(), line.getX(), line.getG1(), line.getG2(),
-                    line.getB1(), line.getB2(), 1, 1, 0, 0, line);
+            piModel = new PiModel(line.getR(), line.getX())
+                    .setG1(line.getG1())
+                    .setG2(line.getG2())
+                    .setB1(line.getB1())
+                    .setB2(line.getB2());
         } else if (branch instanceof TwoWindingsTransformer) {
             TwoWindingsTransformer twt = (TwoWindingsTransformer) branch;
-            return new LfBranchImpl(bus1, bus2, Transformers.getR(twt), Transformers.getX(twt), Transformers.getG1(twt),
-                    0, Transformers.getB1(twt), 0, Transformers.getRatio(twt), 1, Transformers.getAngle(twt), 0, twt);
+            piModel = new PiModel(Transformers.getR(twt), Transformers.getX(twt))
+                    .setG1(Transformers.getG1(twt))
+                    .setB1(Transformers.getB1(twt))
+                    .setR1(Transformers.getRatio(twt))
+                    .setA1(Transformers.getAngle(twt));
         } else {
             throw new PowsyblException("Unsupported type of branch for flow equations for branch: " + branch.getId());
         }
+        return new LfBranchImpl(bus1, bus2, piModel, branch);
     }
 
     @Override

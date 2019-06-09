@@ -18,7 +18,8 @@ public class LfLeg2or3Branch extends AbstractLfBranch {
     private final ThreeWindingsTransformer.Leg2or3 leg2or3;
 
     protected LfLeg2or3Branch(LfBus bus2or3, LfBus bus0, ThreeWindingsTransformer t3wt, ThreeWindingsTransformer.Leg2or3 leg2or3) {
-        super(bus2or3, bus0, leg2or3.getR(), leg2or3.getX(), 0, 0, 0, 0, Transformers.getRatio2or3(t3wt, leg2or3), 1, 0, 0);
+        super(bus2or3, bus0, new PiModel(leg2or3.getR(), leg2or3.getX())
+                                .setR1(Transformers.getRatio2or3(t3wt, leg2or3)));
         this.leg2or3 = leg2or3;
     }
 

@@ -20,42 +20,32 @@ public class LfBranchImpl extends AbstractLfBranch {
 
     private final Branch branch;
 
-    public LfBranchImpl(Branch branch, LfBus bus1, LfBus bus2) {
-        super(bus1, bus2);
-        this.branch = Objects.requireNonNull(branch);
-        init();
+    protected LfBranchImpl(LfBus bus1, LfBus bus2, PiModel piModel, Branch branch) {
+        super(bus1, bus2, piModel);
+        this.branch = branch;
     }
 
-    private void init() {
+    public static LfBranchImpl create(Branch branch, LfBus bus1, LfBus bus2) {
+        Objects.requireNonNull(branch);
+        PiModel piModel;
         if (branch instanceof Line) {
-            initLine((Line) branch);
+            Line line = (Line) branch;
+            piModel = new PiModel(line.getR(), line.getX())
+                    .setG1(line.getG1())
+                    .setG2(line.getG2())
+                    .setB1(line.getB1())
+                    .setB2(line.getB2());
         } else if (branch instanceof TwoWindingsTransformer) {
-            initTransformer((TwoWindingsTransformer) branch);
+            TwoWindingsTransformer twt = (TwoWindingsTransformer) branch;
+            piModel = new PiModel(Transformers.getR(twt), Transformers.getX(twt))
+                    .setG1(Transformers.getG1(twt))
+                    .setB1(Transformers.getB1(twt))
+                    .setR1(Transformers.getRatio(twt))
+                    .setA1(Transformers.getAngle(twt));
         } else {
             throw new PowsyblException("Unsupported type of branch for flow equations for branch: " + branch.getId());
         }
-
-        double z = Math.hypot(r, x);
-        y = 1 / z;
-        ksi = Math.atan2(r, x);
-    }
-
-    private void initLine(Line line) {
-        r = line.getR();
-        x = line.getX();
-        g1 = line.getG1();
-        g2 = line.getG2();
-        b1 = line.getB1();
-        b2 = line.getB2();
-    }
-
-    private void initTransformer(TwoWindingsTransformer tf) {
-        r = Transformers.getR(tf);
-        x = Transformers.getX(tf);
-        g1 = Transformers.getG1(tf);
-        b1 = Transformers.getB1(tf);
-        r1 = Transformers.getRatio(tf);
-        a1 = Transformers.getAngle(tf);
+        return new LfBranchImpl(bus1, bus2, piModel, branch);
     }
 
     @Override

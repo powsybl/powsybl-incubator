@@ -17,18 +17,20 @@ public class LfDanglingLineBranch extends AbstractLfBranch {
 
     private final DanglingLine danglingLine;
 
-    public LfDanglingLineBranch(DanglingLine danglingLine, LfBus bus1, LfBus bus2) {
-        super(Objects.requireNonNull(bus1), Objects.requireNonNull(bus2));
-        this.danglingLine = Objects.requireNonNull(danglingLine);
-        r = danglingLine.getR();
-        x = danglingLine.getX();
-        double z = Math.hypot(r, x);
-        y = 1 / z;
-        ksi = Math.atan2(r, x);
-        g1 = danglingLine.getG() / 2;
-        b1 = danglingLine.getB() / 2;
-        g2 = danglingLine.getG() / 2;
-        b2 = danglingLine.getB() / 2;
+    protected LfDanglingLineBranch(DanglingLine danglingLine, LfBus bus1, LfBus bus2) {
+        super(bus1, bus2, new PiModel(danglingLine.getR(), danglingLine.getX())
+                            .setG1(danglingLine.getG() / 2)
+                            .setG2(danglingLine.getG() / 2)
+                            .setB1(danglingLine.getB() / 2)
+                            .setB2(danglingLine.getB() / 2));
+        this.danglingLine = danglingLine;
+    }
+
+    public static LfDanglingLineBranch create(DanglingLine danglingLine, LfBus bus1, LfBus bus2) {
+        Objects.requireNonNull(danglingLine);
+        Objects.requireNonNull(bus1);
+        Objects.requireNonNull(bus2);
+        return new LfDanglingLineBranch(danglingLine, bus1, bus2);
     }
 
     @Override

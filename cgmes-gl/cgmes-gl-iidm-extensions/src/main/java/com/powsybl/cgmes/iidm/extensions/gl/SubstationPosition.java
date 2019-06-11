@@ -15,15 +15,15 @@ import com.powsybl.iidm.network.Substation;
  *
  * @author Massimo Ferraro <massimo.ferraro@techrain.eu>
  */
-public class SubstationPosition<T extends Substation> extends AbstractExtension<T> {
+public class SubstationPosition extends AbstractExtension<Substation> {
 
     static final String NAME = "substation-position";
 
-    private final PositionPoint point;
+    private final Coordinate coordinate;
 
-    public SubstationPosition(T substation, PositionPoint point) {
+    public SubstationPosition(Substation substation, Coordinate coordinate) {
         super(substation);
-        this.point = Objects.requireNonNull(point);
+        this.coordinate = Objects.requireNonNull(coordinate);
     }
 
     @Override
@@ -31,8 +31,8 @@ public class SubstationPosition<T extends Substation> extends AbstractExtension<
         return NAME;
     }
 
-    public PositionPoint getPoint() {
-        return point;
+    public Coordinate getCoordinate() {
+        return coordinate;
     }
 
 }

@@ -14,6 +14,8 @@ import com.powsybl.cgmes.iidm.extensions.gl.GLTestUtils;
 import com.powsybl.triplestore.api.PropertyBag;
 import com.powsybl.triplestore.api.PropertyBags;
 
+import static com.powsybl.cgmes.iidm.extensions.gl.GLTestUtils.SUBSTATION_1;
+
 /**
  *
  * @author Massimo Ferraro <massimo.ferraro@techrain.eu>
@@ -27,17 +29,17 @@ public abstract class AbstractCgmesGLTest {
     @Before
     public void setUp() {
         substationsPropertyBags = new PropertyBags(Arrays.asList(createSubstationPropertyBag(namespace + "Substation1", "Substation1", CgmesGLUtils.COORDINATE_SYSTEM_NAME,
-                                                                                             CgmesGLUtils.COORDINATE_SYSTEM_URN, GLTestUtils.SUBSTATION_1_X, GLTestUtils.SUBSTATION_1_Y),
+                                                                                             CgmesGLUtils.COORDINATE_SYSTEM_URN, SUBSTATION_1.getLng(), SUBSTATION_1.getLat()),
                                                                  createSubstationPropertyBag(namespace + "Substation2", "Substation2", CgmesGLUtils.COORDINATE_SYSTEM_NAME,
-                                                                                             CgmesGLUtils.COORDINATE_SYSTEM_URN, GLTestUtils.SUBSTATION_2_X, GLTestUtils.SUBSTATION_2_Y)));
+                                                                                             CgmesGLUtils.COORDINATE_SYSTEM_URN, GLTestUtils.SUBSTATION_2.getLng(), GLTestUtils.SUBSTATION_2.getLat())));
         linesPropertyBags = new PropertyBags(Arrays.asList(createLinePropertyBag(namespace + "Line", "Line", CgmesGLUtils.COORDINATE_SYSTEM_NAME, CgmesGLUtils.COORDINATE_SYSTEM_URN,
-                                                                                 GLTestUtils.SUBSTATION_1_X, GLTestUtils.SUBSTATION_1_Y, 1),
+                                                                                 GLTestUtils.SUBSTATION_1.getLng(), GLTestUtils.SUBSTATION_1.getLat(), 1),
                                                            createLinePropertyBag(namespace + "Line", "Line", CgmesGLUtils.COORDINATE_SYSTEM_NAME, CgmesGLUtils.COORDINATE_SYSTEM_URN,
-                                                                                 GLTestUtils.LINE_1_X, GLTestUtils.LINE_1_Y, 2),
+                                                                                 GLTestUtils.LINE_1.getLng(), GLTestUtils.LINE_1.getLat(), 2),
                                                            createLinePropertyBag(namespace + "Line", "Line", CgmesGLUtils.COORDINATE_SYSTEM_NAME, CgmesGLUtils.COORDINATE_SYSTEM_URN,
-                                                                                 GLTestUtils.LINE_2_X, GLTestUtils.LINE_2_Y, 3),
+                                                                                 GLTestUtils.LINE_2.getLng(), GLTestUtils.LINE_2.getLat(), 3),
                                                            createLinePropertyBag(namespace + "Line", "Line", CgmesGLUtils.COORDINATE_SYSTEM_NAME, CgmesGLUtils.COORDINATE_SYSTEM_URN,
-                                                                                 GLTestUtils.SUBSTATION_2_X, GLTestUtils.SUBSTATION_2_Y, 4)));
+                                                                                 GLTestUtils.SUBSTATION_2.getLng(), GLTestUtils.SUBSTATION_2.getLat(), 4)));
     }
 
     protected PropertyBag createSubstationPropertyBag(String powerSystemResource, String name, String crsName, String crsUrn, double x, double y) {

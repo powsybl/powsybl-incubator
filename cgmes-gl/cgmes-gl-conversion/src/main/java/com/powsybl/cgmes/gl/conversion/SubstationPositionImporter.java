@@ -11,7 +11,7 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.powsybl.cgmes.iidm.extensions.gl.PositionPoint;
+import com.powsybl.cgmes.iidm.extensions.gl.Coordinate;
 import com.powsybl.cgmes.iidm.extensions.gl.SubstationPosition;
 import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.Network;
@@ -40,8 +40,8 @@ public class SubstationPositionImporter {
         String substationId = substationPositionData.getId("powerSystemResource");
         Substation substation = network.getSubstation(substationId);
         if (substation != null) {
-            SubstationPosition<Substation> substationPosition = new SubstationPosition<Substation>(substation,
-                    new PositionPoint(substationPositionData.asDouble("x"), substationPositionData.asDouble("y"), 0));
+            SubstationPosition substationPosition = new SubstationPosition(substation,
+                    new Coordinate(substationPositionData.asDouble("x"), substationPositionData.asDouble("y")));
             substation.addExtension(SubstationPosition.class, substationPosition);
         } else {
             LOG.warn("Cannot find substation {}, name {} in network {}: skipping substation position", substationId, substationPositionData.get("name"), network.getId());

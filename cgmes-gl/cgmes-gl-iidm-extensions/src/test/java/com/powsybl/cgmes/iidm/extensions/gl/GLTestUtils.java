@@ -6,17 +6,10 @@
  */
 package com.powsybl.cgmes.iidm.extensions.gl;
 
-import static org.junit.Assert.assertEquals;
-
+import com.powsybl.iidm.network.*;
 import org.joda.time.DateTime;
 
-import com.powsybl.iidm.network.Country;
-import com.powsybl.iidm.network.Line;
-import com.powsybl.iidm.network.Network;
-import com.powsybl.iidm.network.NetworkFactory;
-import com.powsybl.iidm.network.Substation;
-import com.powsybl.iidm.network.TopologyKind;
-import com.powsybl.iidm.network.VoltageLevel;
+import static org.junit.Assert.assertEquals;
 
 /**
  *
@@ -24,14 +17,10 @@ import com.powsybl.iidm.network.VoltageLevel;
  */
 public final class GLTestUtils {
 
-    public static final double SUBSTATION_1_X = 0.5492960214614868;
-    public static final double SUBSTATION_1_Y = 51.380348205566406;
-    public static final double SUBSTATION_2_X = 0.30759671330451965;
-    public static final double SUBSTATION_2_Y = 52.00010299682617;
-    public static final double LINE_1_X = 0.5132722854614258;
-    public static final double LINE_1_Y = 51.529258728027344;
-    public static final double LINE_2_X = 0.4120868146419525;
-    public static final double LINE_2_Y = 51.944923400878906;
+    public static final Coordinate SUBSTATION_1 =  new Coordinate(0.5492960214614868, 51.380348205566406);
+    public static final Coordinate SUBSTATION_2 = new Coordinate(0.30759671330451965, 52.00010299682617);
+    public static final Coordinate LINE_1 = new Coordinate(0.5132722854614258, 51.529258728027344);
+    public static final Coordinate LINE_2 = new Coordinate(0.4120868146419525, 51.944923400878906);
 
     private GLTestUtils() {
     }
@@ -82,26 +71,19 @@ public final class GLTestUtils {
     }
 
     public static void checkNetwork(Network network) {
-        Substation networkSubstation1 = network.getSubstation("Substation1");
-        SubstationPosition<Substation> networkSubstationPosition1 = networkSubstation1.getExtension(SubstationPosition.class);
-        checkPoint(networkSubstationPosition1.getPoint(), SUBSTATION_1_X, SUBSTATION_1_Y, 0);
+        Substation substation1 = network.getSubstation("Substation1");
+        SubstationPosition substation1Position = substation1.getExtension(SubstationPosition.class);
+        assertEquals(SUBSTATION_1, substation1Position.getCoordinate());
 
-        Substation networkSubstation2 = network.getSubstation("Substation2");
-        SubstationPosition<Substation> networkSubstationPosition2 = networkSubstation2.getExtension(SubstationPosition.class);
-        checkPoint(networkSubstationPosition2.getPoint(), SUBSTATION_2_X, SUBSTATION_2_Y, 0);
+        Substation substation2 = network.getSubstation("Substation2");
+        SubstationPosition substation2Position = substation2.getExtension(SubstationPosition.class);
+        assertEquals(SUBSTATION_2, substation2Position.getCoordinate());
 
-        Line networkLine = network.getLine("Line");
-        LinePosition<Line> networkLinePosition = networkLine.getExtension(LinePosition.class);
-        checkPoint(networkLinePosition.getPoints().get(0), SUBSTATION_1_X, SUBSTATION_1_Y, 1);
-        checkPoint(networkLinePosition.getPoints().get(1), LINE_1_X, LINE_1_Y, 2);
-        checkPoint(networkLinePosition.getPoints().get(2), LINE_2_X, LINE_2_Y, 3);
-        checkPoint(networkLinePosition.getPoints().get(3), SUBSTATION_2_X, SUBSTATION_2_Y, 4);
+        Line line = network.getLine("Line");
+        LinePosition<Line> linePosition = line.getExtension(LinePosition.class);
+        assertEquals(SUBSTATION_1, linePosition.getCoordinates().get(0));
+        assertEquals(LINE_1, linePosition.getCoordinates().get(1));
+        assertEquals(LINE_2, linePosition.getCoordinates().get(2));
+        assertEquals(SUBSTATION_2, linePosition.getCoordinates().get(3));
     }
-
-    private static void checkPoint(PositionPoint point, double x, double y, int seq) {
-        assertEquals(x, point.getX(), 0);
-        assertEquals(y, point.getY(), 0);
-        assertEquals(seq, point.getSeq(), 0);
-    }
-
 }

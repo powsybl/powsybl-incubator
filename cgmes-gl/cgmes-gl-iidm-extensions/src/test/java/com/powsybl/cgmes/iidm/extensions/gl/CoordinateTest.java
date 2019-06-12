@@ -19,8 +19,8 @@ public class CoordinateTest {
     @Test
     public void test() {
         Coordinate coordinate = new Coordinate(1.033, 48.567);
-        assertEquals(1.033, coordinate.getLng(), 0);
-        assertEquals(48.567, coordinate.getLat(), 0);
+        assertEquals(1.033, coordinate.getLongitude(), 0);
+        assertEquals(48.567, coordinate.getLatitude(), 0);
         assertEquals("(48.567, 1.033)", coordinate.toString());
 
         new EqualsTester()

@@ -13,25 +13,25 @@ package com.powsybl.cgmes.iidm.extensions.gl;
  */
 public class Coordinate {
 
-    private final double lng;
-    private final double lat;
+    private final double longitude;
+    private final double latitude;
 
-    public Coordinate(double lng, double lat) {
-        this.lng = lng;
-        this.lat = lat;
+    public Coordinate(double longitude, double latitude) {
+        this.longitude = longitude;
+        this.latitude = latitude;
     }
 
-    public double getLng() {
-        return lng;
+    public double getLongitude() {
+        return longitude;
     }
 
-    public double getLat() {
-        return lat;
+    public double getLatitude() {
+        return latitude;
     }
 
     @Override
     public int hashCode() {
-        return Double.hashCode(lng) + Double.hashCode(lat);
+        return Double.hashCode(longitude) + Double.hashCode(latitude);
     }
 
     @Override
@@ -41,14 +41,14 @@ public class Coordinate {
         }
         if (obj instanceof Coordinate) {
             Coordinate c = (Coordinate) obj;
-            return lng == c.lng && lat == c.lat;
+            return longitude == c.longitude && latitude == c.latitude;
         }
         return false;
     }
 
     @Override
     public String toString() {
-        return "(" + lat + ", " + lng + ")";
+        return "(" + latitude + ", " + longitude + ")";
     }
 
 }

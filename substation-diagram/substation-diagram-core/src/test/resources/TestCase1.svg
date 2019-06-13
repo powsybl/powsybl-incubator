@@ -62,13 +62,13 @@
         <line y2="10" x1="5" x2="15" y1="10"/>
     </g>
 </g>
-        <g class="substation-diagram NODE FICT_vl_dFictif" id="FICT_vl_dFictif" transform="translate(41.0,276.0)">
+        <g class="substation-diagram NODE FICT_vl_dFictif" id="FICT_vl_dFictif" transform="translate(41.0,213.5)">
     <circle r="4" cx="4" cy="4"/>
 </g>
         <polyline class="wire_vl" points="45.0,310.0 45.0,310.0" id="vl_Wire0"/>
         <polyline class="wire_vl" points="45.0,145.0 45.0,34.0" id="vl_Wire1"/>
-        <polyline class="wire_vl" points="45.0,165.0 45.0,280.0" id="vl_Wire2"/>
-        <polyline class="wire_vl" points="45.0,310.0 45.0,280.0" id="vl_Wire3"/>
+        <polyline class="wire_vl" points="45.0,165.0 45.0,217.5" id="vl_Wire2"/>
+        <polyline class="wire_vl" points="45.0,310.0 45.0,217.5" id="vl_Wire3"/>
         <g id="LABEL_VL_vl">
             <text x="0.0" font-size="12" y="0.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">vl</text>
         </g>

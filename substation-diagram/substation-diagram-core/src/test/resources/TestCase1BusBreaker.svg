@@ -41,7 +41,7 @@
             <line y2="0" x1="0" class="bus_vl" x2="-20.0" y1="0"/>
             <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">b2</text>
         </g>
-        <g class="substation-diagram LOAD _l" id="l" transform="translate(37.0,45.5)">
+        <g class="substation-diagram LOAD _l" id="l" transform="translate(37.0,150.5)">
     <rect height="9" width="16"/>
     <line y2="9" x1="0" x2="16" y1="0"/>
     <line y2="9" x1="16" x2="0" y1="0"/>
@@ -57,7 +57,7 @@
     </g>
 </g>
         <polyline class="wire_vl" points="45.0,310.0 45.0,310.0" id="vl_Wire0"/>
-        <polyline class="wire_vl" points="45.0,310.0 45.0,54.0" id="vl_Wire1"/>
+        <polyline class="wire_vl" points="45.0,310.0 45.0,159.0" id="vl_Wire1"/>
         <g id="LABEL_VL_vl">
             <text x="0.0" font-size="12" y="0.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">vl</text>
         </g>

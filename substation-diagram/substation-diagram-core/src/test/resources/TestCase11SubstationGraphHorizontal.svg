@@ -351,18 +351,18 @@
     </g>
 </g>
         <g class="substation-diagram NODE FICT_vl1_dsect11Fictif" id="FICT_vl1_dsect11Fictif" transform="matrix(0.0,1.0,-1.0,0.0,324.0,356.0)"/>
-        <g class="substation-diagram NODE FICT_vl1_dload1Fictif" id="FICT_vl1_dload1Fictif" transform="translate(91.0,326.0)"/>
-        <g class="substation-diagram NODE FICT_vl1_dtrf11Fictif" id="FICT_vl1_dtrf11Fictif" transform="translate(141.0,326.0)"/>
-        <g class="substation-diagram NODE FICT_vl1_dtrf15Fictif" id="FICT_vl1_dtrf15Fictif" transform="translate(291.0,326.0)"/>
+        <g class="substation-diagram NODE FICT_vl1_dload1Fictif" id="FICT_vl1_dload1Fictif" transform="translate(91.0,263.5)"/>
+        <g class="substation-diagram NODE FICT_vl1_dtrf11Fictif" id="FICT_vl1_dtrf11Fictif" transform="translate(141.0,263.5)"/>
+        <g class="substation-diagram NODE FICT_vl1_dtrf15Fictif" id="FICT_vl1_dtrf15Fictif" transform="translate(291.0,263.5)"/>
         <g class="substation-diagram NODE FICT_vl1_dsect12Fictif" id="FICT_vl1_dsect12Fictif" transform="matrix(0.0,1.0,-1.0,0.0,374.0,356.0)"/>
-        <g class="substation-diagram NODE FICT_vl1_dload2Fictif" id="FICT_vl1_dload2Fictif" transform="translate(391.0,326.0)"/>
-        <g class="substation-diagram NODE FICT_vl1_dtrf12Fictif" id="FICT_vl1_dtrf12Fictif" transform="translate(491.0,326.0)"/>
+        <g class="substation-diagram NODE FICT_vl1_dload2Fictif" id="FICT_vl1_dload2Fictif" transform="translate(391.0,263.5)"/>
+        <g class="substation-diagram NODE FICT_vl1_dtrf12Fictif" id="FICT_vl1_dtrf12Fictif" transform="translate(491.0,263.5)"/>
         <g class="substation-diagram NODE FICT_vl1_dsect21Fictif" id="FICT_vl1_dsect21Fictif" transform="matrix(0.0,1.0,-1.0,0.0,324.0,381.0)"/>
-        <g class="substation-diagram NODE FICT_vl1_dgen1Fictif" id="FICT_vl1_dgen1Fictif" transform="translate(191.0,411.0)"/>
-        <g class="substation-diagram NODE FICT_vl1_dtrf13Fictif" id="FICT_vl1_dtrf13Fictif" transform="translate(241.0,411.0)"/>
+        <g class="substation-diagram NODE FICT_vl1_dgen1Fictif" id="FICT_vl1_dgen1Fictif" transform="translate(191.0,473.5)"/>
+        <g class="substation-diagram NODE FICT_vl1_dtrf13Fictif" id="FICT_vl1_dtrf13Fictif" transform="translate(241.0,473.5)"/>
         <g class="substation-diagram NODE FICT_vl1_dsect22Fictif" id="FICT_vl1_dsect22Fictif" transform="matrix(0.0,1.0,-1.0,0.0,374.0,381.0)"/>
-        <g class="substation-diagram NODE FICT_vl1_dgen2Fictif" id="FICT_vl1_dgen2Fictif" transform="translate(541.0,411.0)"/>
-        <g class="substation-diagram NODE FICT_vl1_dtrf14Fictif" id="FICT_vl1_dtrf14Fictif" transform="translate(441.0,411.0)"/>
+        <g class="substation-diagram NODE FICT_vl1_dgen2Fictif" id="FICT_vl1_dgen2Fictif" transform="translate(541.0,473.5)"/>
+        <g class="substation-diagram NODE FICT_vl1_dtrf14Fictif" id="FICT_vl1_dtrf14Fictif" transform="translate(441.0,473.5)"/>
         <polyline class="wire_vl1" points="310.0,360.0 320.0,360.0" id="vl1_Wire0"/>
         <polyline class="wire_vl1" points="370.0,360.0 380.0,360.0" id="vl1_Wire1"/>
         <polyline class="wire_vl1" points="310.0,385.0 320.0,385.0" id="vl1_Wire2"/>
@@ -387,30 +387,30 @@
         <polyline class="wire_vl1" points="295.0,195.0 295.0,84.0" id="vl1_Wire21"/>
         <polyline class="wire_vl1" points="335.0,360.0 320.0,360.0" id="vl1_Wire22"/>
         <polyline class="wire_vl1" points="320.0,360.0 320.0,360.0" id="vl1_Wire23"/>
-        <polyline class="wire_vl1" points="95.0,215.0 95.0,330.0" id="vl1_Wire24"/>
-        <polyline class="wire_vl1" points="95.0,360.0 95.0,330.0" id="vl1_Wire25"/>
-        <polyline class="wire_vl1" points="145.0,215.0 145.0,330.0" id="vl1_Wire26"/>
-        <polyline class="wire_vl1" points="145.0,360.0 145.0,330.0" id="vl1_Wire27"/>
-        <polyline class="wire_vl1" points="295.0,215.0 295.0,330.0" id="vl1_Wire28"/>
-        <polyline class="wire_vl1" points="295.0,360.0 295.0,330.0" id="vl1_Wire29"/>
+        <polyline class="wire_vl1" points="95.0,215.0 95.0,267.5" id="vl1_Wire24"/>
+        <polyline class="wire_vl1" points="95.0,360.0 95.0,267.5" id="vl1_Wire25"/>
+        <polyline class="wire_vl1" points="145.0,215.0 145.0,267.5" id="vl1_Wire26"/>
+        <polyline class="wire_vl1" points="145.0,360.0 145.0,267.5" id="vl1_Wire27"/>
+        <polyline class="wire_vl1" points="295.0,215.0 295.0,267.5" id="vl1_Wire28"/>
+        <polyline class="wire_vl1" points="295.0,360.0 295.0,267.5" id="vl1_Wire29"/>
         <polyline class="wire_vl1" points="355.0,360.0 370.0,360.0" id="vl1_Wire30"/>
         <polyline class="wire_vl1" points="370.0,360.0 370.0,360.0" id="vl1_Wire31"/>
-        <polyline class="wire_vl1" points="395.0,215.0 395.0,330.0" id="vl1_Wire32"/>
-        <polyline class="wire_vl1" points="395.0,360.0 395.0,330.0" id="vl1_Wire33"/>
-        <polyline class="wire_vl1" points="495.0,215.0 495.0,330.0" id="vl1_Wire34"/>
-        <polyline class="wire_vl1" points="495.0,360.0 495.0,330.0" id="vl1_Wire35"/>
+        <polyline class="wire_vl1" points="395.0,215.0 395.0,267.5" id="vl1_Wire32"/>
+        <polyline class="wire_vl1" points="395.0,360.0 395.0,267.5" id="vl1_Wire33"/>
+        <polyline class="wire_vl1" points="495.0,215.0 495.0,267.5" id="vl1_Wire34"/>
+        <polyline class="wire_vl1" points="495.0,360.0 495.0,267.5" id="vl1_Wire35"/>
         <polyline class="wire_vl1" points="335.0,385.0 320.0,385.0" id="vl1_Wire36"/>
         <polyline class="wire_vl1" points="320.0,385.0 320.0,385.0" id="vl1_Wire37"/>
-        <polyline class="wire_vl1" points="195.0,530.0 195.0,415.0" id="vl1_Wire38"/>
-        <polyline class="wire_vl1" points="195.0,385.0 195.0,415.0" id="vl1_Wire39"/>
-        <polyline class="wire_vl1" points="245.0,530.0 245.0,415.0" id="vl1_Wire40"/>
-        <polyline class="wire_vl1" points="245.0,385.0 245.0,415.0" id="vl1_Wire41"/>
+        <polyline class="wire_vl1" points="195.0,530.0 195.0,477.5" id="vl1_Wire38"/>
+        <polyline class="wire_vl1" points="195.0,385.0 195.0,477.5" id="vl1_Wire39"/>
+        <polyline class="wire_vl1" points="245.0,530.0 245.0,477.5" id="vl1_Wire40"/>
+        <polyline class="wire_vl1" points="245.0,385.0 245.0,477.5" id="vl1_Wire41"/>
         <polyline class="wire_vl1" points="355.0,385.0 370.0,385.0" id="vl1_Wire42"/>
         <polyline class="wire_vl1" points="370.0,385.0 370.0,385.0" id="vl1_Wire43"/>
-        <polyline class="wire_vl1" points="545.0,530.0 545.0,415.0" id="vl1_Wire44"/>
-        <polyline class="wire_vl1" points="545.0,385.0 545.0,415.0" id="vl1_Wire45"/>
-        <polyline class="wire_vl1" points="445.0,530.0 445.0,415.0" id="vl1_Wire46"/>
-        <polyline class="wire_vl1" points="445.0,385.0 445.0,415.0" id="vl1_Wire47"/>
+        <polyline class="wire_vl1" points="545.0,530.0 545.0,477.5" id="vl1_Wire44"/>
+        <polyline class="wire_vl1" points="545.0,385.0 545.0,477.5" id="vl1_Wire45"/>
+        <polyline class="wire_vl1" points="445.0,530.0 445.0,477.5" id="vl1_Wire46"/>
+        <polyline class="wire_vl1" points="445.0,385.0 445.0,477.5" id="vl1_Wire47"/>
         <g class="substation-diagram BUSBAR_SECTION bbs5" id="bbs5" transform="translate(730.0,360.0)">
             <line y2="0" x1="0" class="bus_vl2" x2="380.0" y1="0"/>
             <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs5</text>
@@ -594,13 +594,13 @@
     </g>
 </g>
         <g class="substation-diagram NODE FICT_vl2_dscpl1Fictif" id="FICT_vl2_dscpl1Fictif" transform="matrix(0.0,1.0,-1.0,0.0,799.0,316.0)"/>
-        <g class="substation-diagram NODE FICT_vl2_dload3Fictif" id="FICT_vl2_dload3Fictif" transform="translate(841.0,326.0)"/>
-        <g class="substation-diagram NODE FICT_vl2_dtrf21Fictif" id="FICT_vl2_dtrf21Fictif" transform="translate(891.0,326.0)"/>
-        <g class="substation-diagram NODE FICT_vl2_dtrf24Fictif" id="FICT_vl2_dtrf24Fictif" transform="translate(991.0,326.0)"/>
+        <g class="substation-diagram NODE FICT_vl2_dload3Fictif" id="FICT_vl2_dload3Fictif" transform="translate(841.0,263.5)"/>
+        <g class="substation-diagram NODE FICT_vl2_dtrf21Fictif" id="FICT_vl2_dtrf21Fictif" transform="translate(891.0,263.5)"/>
+        <g class="substation-diagram NODE FICT_vl2_dtrf24Fictif" id="FICT_vl2_dtrf24Fictif" transform="translate(991.0,263.5)"/>
         <g class="substation-diagram NODE FICT_vl2_dscpl2Fictif" id="FICT_vl2_dscpl2Fictif" transform="matrix(0.0,1.0,-1.0,0.0,749.0,316.0)"/>
-        <g class="substation-diagram NODE FICT_vl2_dgen4Fictif" id="FICT_vl2_dgen4Fictif" transform="translate(941.0,411.0)"/>
-        <g class="substation-diagram NODE FICT_vl2_dtrf22Fictif" id="FICT_vl2_dtrf22Fictif" transform="translate(1041.0,411.0)"/>
-        <g class="substation-diagram NODE FICT_vl2_dtrf23Fictif" id="FICT_vl2_dtrf23Fictif" transform="translate(1091.0,411.0)"/>
+        <g class="substation-diagram NODE FICT_vl2_dgen4Fictif" id="FICT_vl2_dgen4Fictif" transform="translate(941.0,473.5)"/>
+        <g class="substation-diagram NODE FICT_vl2_dtrf22Fictif" id="FICT_vl2_dtrf22Fictif" transform="translate(1041.0,473.5)"/>
+        <g class="substation-diagram NODE FICT_vl2_dtrf23Fictif" id="FICT_vl2_dtrf23Fictif" transform="translate(1091.0,473.5)"/>
         <polyline class="wire_vl2" points="795.0,360.0 795.0,360.0" id="vl2_Wire0"/>
         <polyline class="wire_vl2" points="745.0,385.0 745.0,385.0" id="vl2_Wire1"/>
         <polyline class="wire_vl2" points="845.0,360.0 845.0,360.0" id="vl2_Wire2"/>
@@ -617,20 +617,20 @@
         <polyline class="wire_vl2" points="995.0,195.0 995.0,84.0" id="vl2_Wire13"/>
         <polyline class="wire_vl2" points="780.0,320.0 795.0,320.0" id="vl2_Wire14"/>
         <polyline class="wire_vl2" points="795.0,360.0 795.0,320.0" id="vl2_Wire15"/>
-        <polyline class="wire_vl2" points="845.0,215.0 845.0,330.0" id="vl2_Wire16"/>
-        <polyline class="wire_vl2" points="845.0,360.0 845.0,330.0" id="vl2_Wire17"/>
-        <polyline class="wire_vl2" points="895.0,215.0 895.0,330.0" id="vl2_Wire18"/>
-        <polyline class="wire_vl2" points="895.0,360.0 895.0,330.0" id="vl2_Wire19"/>
-        <polyline class="wire_vl2" points="995.0,215.0 995.0,330.0" id="vl2_Wire20"/>
-        <polyline class="wire_vl2" points="995.0,360.0 995.0,330.0" id="vl2_Wire21"/>
+        <polyline class="wire_vl2" points="845.0,215.0 845.0,267.5" id="vl2_Wire16"/>
+        <polyline class="wire_vl2" points="845.0,360.0 845.0,267.5" id="vl2_Wire17"/>
+        <polyline class="wire_vl2" points="895.0,215.0 895.0,267.5" id="vl2_Wire18"/>
+        <polyline class="wire_vl2" points="895.0,360.0 895.0,267.5" id="vl2_Wire19"/>
+        <polyline class="wire_vl2" points="995.0,215.0 995.0,267.5" id="vl2_Wire20"/>
+        <polyline class="wire_vl2" points="995.0,360.0 995.0,267.5" id="vl2_Wire21"/>
         <polyline class="wire_vl2" points="760.0,320.0 745.0,320.0" id="vl2_Wire22"/>
         <polyline class="wire_vl2" points="745.0,385.0 745.0,320.0" id="vl2_Wire23"/>
-        <polyline class="wire_vl2" points="945.0,530.0 945.0,415.0" id="vl2_Wire24"/>
-        <polyline class="wire_vl2" points="945.0,385.0 945.0,415.0" id="vl2_Wire25"/>
-        <polyline class="wire_vl2" points="1045.0,530.0 1045.0,415.0" id="vl2_Wire26"/>
-        <polyline class="wire_vl2" points="1045.0,385.0 1045.0,415.0" id="vl2_Wire27"/>
-        <polyline class="wire_vl2" points="1095.0,530.0 1095.0,415.0" id="vl2_Wire28"/>
-        <polyline class="wire_vl2" points="1095.0,385.0 1095.0,415.0" id="vl2_Wire29"/>
+        <polyline class="wire_vl2" points="945.0,530.0 945.0,477.5" id="vl2_Wire24"/>
+        <polyline class="wire_vl2" points="945.0,385.0 945.0,477.5" id="vl2_Wire25"/>
+        <polyline class="wire_vl2" points="1045.0,530.0 1045.0,477.5" id="vl2_Wire26"/>
+        <polyline class="wire_vl2" points="1045.0,385.0 1045.0,477.5" id="vl2_Wire27"/>
+        <polyline class="wire_vl2" points="1095.0,530.0 1095.0,477.5" id="vl2_Wire28"/>
+        <polyline class="wire_vl2" points="1095.0,385.0 1095.0,477.5" id="vl2_Wire29"/>
         <g class="substation-diagram BUSBAR_SECTION bbs7" id="bbs7" transform="translate(1280.0,360.0)">
             <line y2="0" x1="0" class="bus_vl3" x2="80.0" y1="0"/>
             <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs7</text>
@@ -684,16 +684,16 @@
         <line y2="10" x1="5" x2="15" y1="10"/>
     </g>
 </g>
-        <g class="substation-diagram NODE FICT_vl3_dload4Fictif" id="FICT_vl3_dload4Fictif" transform="translate(1291.0,326.0)"/>
-        <g class="substation-diagram NODE FICT_vl3_dtrf25Fictif" id="FICT_vl3_dtrf25Fictif" transform="translate(1341.0,386.0)"/>
+        <g class="substation-diagram NODE FICT_vl3_dload4Fictif" id="FICT_vl3_dload4Fictif" transform="translate(1291.0,263.5)"/>
+        <g class="substation-diagram NODE FICT_vl3_dtrf25Fictif" id="FICT_vl3_dtrf25Fictif" transform="translate(1341.0,448.5)"/>
         <polyline class="wire_vl3" points="1295.0,360.0 1295.0,360.0" id="vl3_Wire0"/>
         <polyline class="wire_vl3" points="1295.0,195.0 1295.0,84.0" id="vl3_Wire1"/>
         <polyline class="wire_vl3" points="1345.0,360.0 1345.0,360.0" id="vl3_Wire2"/>
         <polyline class="wire_vl3" points="1345.0,525.0 1345.0,636.0" id="vl3_Wire3"/>
-        <polyline class="wire_vl3" points="1295.0,215.0 1295.0,330.0" id="vl3_Wire4"/>
-        <polyline class="wire_vl3" points="1295.0,360.0 1295.0,330.0" id="vl3_Wire5"/>
-        <polyline class="wire_vl3" points="1345.0,505.0 1345.0,390.0" id="vl3_Wire6"/>
-        <polyline class="wire_vl3" points="1345.0,360.0 1345.0,390.0" id="vl3_Wire7"/>
+        <polyline class="wire_vl3" points="1295.0,215.0 1295.0,267.5" id="vl3_Wire4"/>
+        <polyline class="wire_vl3" points="1295.0,360.0 1295.0,267.5" id="vl3_Wire5"/>
+        <polyline class="wire_vl3" points="1345.0,505.0 1345.0,452.5" id="vl3_Wire6"/>
+        <polyline class="wire_vl3" points="1345.0,360.0 1345.0,452.5" id="vl3_Wire7"/>
         <polyline class="wire_vl1" points="145.0,80.0 145.0,50.0 895.0,50.0 895.0,80.0" id="vl1_vl2_Wire0"/>
         <polyline class="wire_vl1" points="495.0,80.0 495.0,20.0 690.0,20.0 690.0,695.0 1045.0,695.0 1045.0,665.0" id="vl1_vl2_Wire1"/>
         <polyline class="wire_vl1" points="245.0,665.0 245.0,725.0 1095.0,725.0 1095.0,665.0" id="vl1_vl2_Wire2"/>

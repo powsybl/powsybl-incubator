@@ -160,7 +160,7 @@ public class TestCase1inverted extends AbstractTestCase {
         assertEquals(25, g.getNodes().get(3).getX(), 0);
         assertEquals(105, g.getNodes().get(3).getY(), 0);
         assertEquals(25, g.getNodes().get(4).getX(), 0);
-        assertEquals(230, g.getNodes().get(4).getY(), 0);
+        assertEquals(167.5, g.getNodes().get(4).getY(), 0);
 
         // write SVG and compare to reference
         compareSvg(g, layoutParameters, "/TestCase1inverted.svg");

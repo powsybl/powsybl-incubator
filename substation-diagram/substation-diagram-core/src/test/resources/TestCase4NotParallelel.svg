@@ -66,7 +66,7 @@
     <path d="M6,6 A 6 20 0 0 0 12,6"/>
 <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">gc</text>
         </g>
-        <g class="substation-diagram NODE FICT_vl_4" id="FICT_vl_4" transform="translate(41.0,276.0)">
+        <g class="substation-diagram NODE FICT_vl_4" id="FICT_vl_4" transform="translate(41.0,213.5)">
     <circle r="4" cx="4" cy="4"/>
 </g>
         <g class="substation-diagram BREAKER ba" id="ba" transform="translate(35.0,145.0)">
@@ -97,7 +97,7 @@
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
-        <g class="substation-diagram NODE FICT_vl_6" id="FICT_vl_6" transform="translate(141.0,361.0)">
+        <g class="substation-diagram NODE FICT_vl_6" id="FICT_vl_6" transform="translate(141.0,423.5)">
     <circle r="4" cx="4" cy="4"/>
 </g>
         <g class="substation-diagram BREAKER bb" id="bb" transform="translate(135.0,480.0)">
@@ -156,7 +156,7 @@
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
-        <g class="substation-diagram NODE FICT_vl_dc1Fictif" id="FICT_vl_dc1Fictif" transform="translate(191.0,276.0)">
+        <g class="substation-diagram NODE FICT_vl_dc1Fictif" id="FICT_vl_dc1Fictif" transform="translate(191.0,213.5)">
     <circle r="4" cx="4" cy="4"/>
 </g>
         <g class="substation-diagram NODE ss1fSwitch0" id="ss1fSwitch0" transform="translate(116.0,306.0)">
@@ -172,21 +172,21 @@
     <circle r="4" cx="4" cy="4"/>
 </g>
         <polyline class="wire_vl" points="45.0,34.0 45.0,145.0" id="vl_Wire0"/>
-        <polyline class="wire_vl" points="45.0,165.0 45.0,280.0" id="vl_Wire1"/>
-        <polyline class="wire_vl" points="45.0,280.0 45.0,310.0" id="vl_Wire2"/>
+        <polyline class="wire_vl" points="45.0,165.0 45.0,217.5" id="vl_Wire1"/>
+        <polyline class="wire_vl" points="45.0,217.5 45.0,310.0" id="vl_Wire2"/>
         <polyline class="wire_vl" points="45.0,310.0 45.0,310.0" id="vl_Wire3"/>
-        <polyline class="wire_vl" points="45.0,280.0 45.0,335.0" id="vl_Wire4"/>
+        <polyline class="wire_vl" points="45.0,217.5 45.0,335.0" id="vl_Wire4"/>
         <polyline class="wire_vl" points="45.0,335.0 45.0,335.0" id="vl_Wire5"/>
         <polyline class="wire_vl" points="145.0,611.0 145.0,500.0" id="vl_Wire6"/>
-        <polyline class="wire_vl" points="145.0,480.0 145.0,365.0" id="vl_Wire7"/>
-        <polyline class="wire_vl" points="145.0,365.0 145.0,310.0" id="vl_Wire8"/>
+        <polyline class="wire_vl" points="145.0,480.0 145.0,427.5" id="vl_Wire7"/>
+        <polyline class="wire_vl" points="145.0,427.5 145.0,310.0" id="vl_Wire8"/>
         <polyline class="wire_vl" points="145.0,310.0 145.0,310.0" id="vl_Wire9"/>
-        <polyline class="wire_vl" points="145.0,365.0 145.0,335.0" id="vl_Wire10"/>
+        <polyline class="wire_vl" points="145.0,427.5 145.0,335.0" id="vl_Wire10"/>
         <polyline class="wire_vl" points="145.0,335.0 145.0,335.0" id="vl_Wire11"/>
         <polyline class="wire_vl" points="195.0,36.0 195.0,145.0" id="vl_Wire12"/>
         <polyline class="wire_vl" points="195.0,310.0 195.0,310.0" id="vl_Wire13"/>
-        <polyline class="wire_vl" points="195.0,165.0 195.0,280.0" id="vl_Wire14"/>
-        <polyline class="wire_vl" points="195.0,310.0 195.0,280.0" id="vl_Wire15"/>
+        <polyline class="wire_vl" points="195.0,165.0 195.0,217.5" id="vl_Wire14"/>
+        <polyline class="wire_vl" points="195.0,310.0 195.0,217.5" id="vl_Wire15"/>
         <polyline class="wire_vl" points="130.0,310.0 120.0,310.0" id="vl_Wire16"/>
         <polyline class="wire_vl" points="120.0,310.0 120.0,310.0" id="vl_Wire17"/>
         <polyline class="wire_vl" points="120.0,310.0 95.0,310.0" id="vl_Wire18"/>

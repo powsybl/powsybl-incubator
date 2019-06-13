@@ -6,6 +6,8 @@
  */
 package com.powsybl.loadflow.simple.network;
 
+import java.util.Objects;
+
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
@@ -15,19 +17,19 @@ public abstract class AbstractLfBranch implements LfBranch {
 
     private final LfBus bus2;
 
-    protected double r;
-    protected double x;
-    protected double z;
-    protected double y;
-    protected double ksi;
-    protected double g1;
-    protected double b1;
-    protected double g2;
-    protected double b2;
+    protected final PiModel piModel;
 
-    protected AbstractLfBranch(LfBus bus1, LfBus bus2) {
+    protected final double y;
+    protected final double ksi;
+
+    protected AbstractLfBranch(LfBus bus1, LfBus bus2, PiModel piModel) {
         this.bus1 = bus1;
         this.bus2 = bus2;
+        this.piModel = Objects.requireNonNull(piModel);
+
+        double z = Math.hypot(piModel.getR(), piModel.getX());
+        y = 1 / z;
+        ksi = Math.atan2(piModel.getR(), piModel.getX());
     }
 
     @Override
@@ -42,7 +44,7 @@ public abstract class AbstractLfBranch implements LfBranch {
 
     @Override
     public double x() {
-        return x;
+        return piModel.getX();
     }
 
     @Override
@@ -57,21 +59,41 @@ public abstract class AbstractLfBranch implements LfBranch {
 
     @Override
     public double g1() {
-        return g1;
+        return piModel.getG1();
     }
 
     @Override
     public double g2() {
-        return g2;
+        return piModel.getG2();
     }
 
     @Override
     public double b1() {
-        return b1;
+        return piModel.getB1();
     }
 
     @Override
     public double b2() {
-        return b2;
+        return piModel.getB2();
+    }
+
+    @Override
+    public double r1() {
+        return piModel.getR1();
+    }
+
+    @Override
+    public double r2() {
+        return piModel.getR2();
+    }
+
+    @Override
+    public double a1() {
+        return piModel.getA1();
+    }
+
+    @Override
+    public double a2() {
+        return piModel.getA2();
     }
 }

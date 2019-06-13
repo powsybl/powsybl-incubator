@@ -41,16 +41,18 @@ public class NetworkContext {
 
         Set<Branch> branchSet = new HashSet<>();
         List<DanglingLine> danglingLines = new ArrayList<>();
+        Set<ThreeWindingsTransformer> t3wtSet = new HashSet<>();
         Map<String, Integer> busIdToNum = new HashMap<>();
 
-        this.buses = createBuses(buses, hvdcLines, branchSet, danglingLines, busIdToNum);
-        branches = createBranches(branchSet, danglingLines, this.buses, busIdToNum);
+        this.buses = createBuses(buses, hvdcLines, branchSet, danglingLines, t3wtSet, busIdToNum);
+        branches = createBranches(branchSet, danglingLines, t3wtSet, this.buses, busIdToNum);
 
         selectSlackBus(slackBusSelectionMode);
     }
 
     private static List<LfBus> createBuses(List<Bus> buses, Map<HvdcConverterStation, HvdcLine> hvdcLines, Set<Branch> branchSet,
-                                    List<DanglingLine> danglingLines, Map<String, Integer> busIdToNum) {
+                                           List<DanglingLine> danglingLines, Set<ThreeWindingsTransformer> t3wtSet,
+                                           Map<String, Integer> busIdToNum) {
         List<LfBus> lfBuses = new ArrayList<>(buses.size());
         int[] generatorCount = new int[1];
 
@@ -76,7 +78,7 @@ public class NetworkContext {
 
                 @Override
                 public void visitThreeWindingsTransformer(ThreeWindingsTransformer transformer, ThreeWindingsTransformer.Side side) {
-                    throw new UnsupportedOperationException("TODO: 3 windings transformers");
+                    t3wtSet.add(transformer);
                 }
 
                 @Override
@@ -140,8 +142,7 @@ public class NetworkContext {
                     }
                 }
 
-                private void visitVscConverterStation(VscConverterStation converterStation) {
-                    VscConverterStation vscCs = converterStation;
+                private void visitVscConverterStation(VscConverterStation vscCs) {
                     if (vscCs.isVoltageRegulatorOn()) {
                         lfBus.setTargetV(vscCs.getVoltageSetpoint());
                         lfBus.setVoltageControl(true);
@@ -159,30 +160,31 @@ public class NetworkContext {
         return lfBuses;
     }
 
-    private static List<LfBranch> createBranches(Set<Branch> branchSet, List<DanglingLine> danglingLines, List<LfBus> lfBuses,
+    private static List<LfBranch> createBranches(Set<Branch> branchSet, List<DanglingLine> danglingLines,
+                                                 Set<ThreeWindingsTransformer> t3wtSet, List<LfBus> lfBuses,
                                                  Map<String, Integer> busIdToNum) {
-        List<LfBranch> lfBranches = branchSet.stream().map(branch -> {
-            Bus bus1 = branch.getTerminal1().getBusView().getBus();
-            Bus bus2 = branch.getTerminal2().getBusView().getBus();
-            LfBus lfBus1 = null;
-            if (bus1 != null) {
-                int num1 = busIdToNum.get(bus1.getId());
-                lfBus1 = lfBuses.get(num1);
-            }
-            LfBus lfBus2 = null;
-            if (bus2 != null) {
-                int num2 = busIdToNum.get(bus2.getId());
-                lfBus2 = lfBuses.get(num2);
-            }
-            return new LfBranchImpl(branch, lfBus1, lfBus2);
-        }).collect(Collectors.toList());
+        List<LfBranch> lfBranches = new ArrayList<>();
+
+        for (Branch branch : branchSet) {
+            LfBus lfBus1 = getLfBus(branch.getTerminal1(), lfBuses, busIdToNum);
+            LfBus lfBus2 = getLfBus(branch.getTerminal2(), lfBuses, busIdToNum);
+            lfBranches.add(LfBranchImpl.create(branch, lfBus1, lfBus2));
+        }
 
         for (DanglingLine danglingLine : danglingLines) {
             LfDanglingLineBus lfBus2 = addLfBus(danglingLine, lfBuses, busIdToNum);
-            Bus bus1 = danglingLine.getTerminal().getBusView().getBus();
-            int num1 = busIdToNum.get(bus1.getId());
-            LfBus lfBus1 = lfBuses.get(num1);
-            lfBranches.add(new LfDanglingLineBranch(danglingLine, lfBus1, lfBus2));
+            LfBus lfBus1 = getLfBus(danglingLine.getTerminal(), lfBuses, busIdToNum);
+            lfBranches.add(LfDanglingLineBranch.create(danglingLine, lfBus1, lfBus2));
+        }
+
+        for (ThreeWindingsTransformer t3wt : t3wtSet) {
+            LfStarBus lfBus0 = addLfBus(t3wt, lfBuses, busIdToNum);
+            LfBus lfBus1 = getLfBus(t3wt.getLeg1().getTerminal(), lfBuses, busIdToNum);
+            LfBus lfBus2 = getLfBus(t3wt.getLeg2().getTerminal(), lfBuses, busIdToNum);
+            LfBus lfBus3 = getLfBus(t3wt.getLeg3().getTerminal(), lfBuses, busIdToNum);
+            lfBranches.add(LfLeg1Branch.create(lfBus1, lfBus0, t3wt.getLeg1()));
+            lfBranches.add(LfLeg2or3Branch.create(lfBus2, lfBus0, t3wt, t3wt.getLeg2()));
+            lfBranches.add(LfLeg2or3Branch.create(lfBus3, lfBus0, t3wt, t3wt.getLeg3()));
         }
 
         return lfBranches;
@@ -206,6 +208,15 @@ public class NetworkContext {
         LOGGER.debug("Selected slack bus (mode={}): {}", slackBusSelectionMode, slackBus.getId());
     }
 
+    private static LfBus getLfBus(Terminal terminal, List<LfBus> lfBuses, Map<String, Integer> busIdToNum) {
+        Bus bus = terminal.getBusView().getBus();
+        if (bus != null) {
+            int num = busIdToNum.get(bus.getId());
+            return lfBuses.get(num);
+        }
+        return null;
+    }
+
     private static LfBusImpl addLfBus(Bus bus, List<LfBus> lfBuses, Map<String, Integer> busIdToNum) {
         int busNum = lfBuses.size();
         LfBusImpl lfBus = new LfBusImpl(bus, busNum);
@@ -217,6 +228,14 @@ public class NetworkContext {
     private static LfDanglingLineBus addLfBus(DanglingLine danglingLine, List<LfBus> lfBuses, Map<String, Integer> busIdToNum) {
         int busNum = lfBuses.size();
         LfDanglingLineBus lfBus = new LfDanglingLineBus(danglingLine, busNum);
+        busIdToNum.put(lfBus.getId(), busNum);
+        lfBuses.add(lfBus);
+        return lfBus;
+    }
+
+    private static LfStarBus addLfBus(ThreeWindingsTransformer t3wt, List<LfBus> lfBuses, Map<String, Integer> busIdToNum) {
+        int busNum = lfBuses.size();
+        LfStarBus lfBus = new LfStarBus(t3wt, busNum);
         busIdToNum.put(lfBus.getId(), busNum);
         lfBuses.add(lfBus);
         return lfBus;

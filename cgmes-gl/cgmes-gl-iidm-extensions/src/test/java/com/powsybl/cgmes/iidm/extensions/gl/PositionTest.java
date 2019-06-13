@@ -6,11 +6,13 @@
  */
 package com.powsybl.cgmes.iidm.extensions.gl;
 
-import org.junit.Test;
-
+import com.google.common.collect.ImmutableList;
 import com.powsybl.iidm.network.Line;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.Substation;
+import org.junit.Test;
+
+import static com.powsybl.cgmes.iidm.extensions.gl.GLTestUtils.*;
 
 /**
  *
@@ -22,22 +24,15 @@ public class PositionTest {
     public void test() {
         Network network = GLTestUtils.getNetwork();
         Substation substation1 = network.getSubstation("Substation1");
-        SubstationPosition<Substation> substationPosition1 = new SubstationPosition<>(substation1,
-                                                                                      new PositionPoint(GLTestUtils.SUBSTATION_1_X, GLTestUtils.SUBSTATION_1_Y, 0));
+        SubstationPosition substationPosition1 = new SubstationPosition(substation1, SUBSTATION_1);
         substation1.addExtension(SubstationPosition.class, substationPosition1);
 
         Substation substation2 = network.getSubstation("Substation2");
-        SubstationPosition<Substation> substationPosition2 = new SubstationPosition<>(substation2,
-                                                                                      new PositionPoint(GLTestUtils.SUBSTATION_2_X, GLTestUtils.SUBSTATION_2_Y, 0));
+        SubstationPosition substationPosition2 = new SubstationPosition(substation2, SUBSTATION_2);
         substation2.addExtension(SubstationPosition.class, substationPosition2);
 
         Line line = network.getLine("Line");
-        LinePosition<Line> linePosition = new LinePosition<>(line);
-        linePosition.addPoint(new PositionPoint(GLTestUtils.SUBSTATION_1_X, GLTestUtils.SUBSTATION_1_Y, 1));
-        linePosition.addPoint(new PositionPoint(GLTestUtils.SUBSTATION_2_X, GLTestUtils.SUBSTATION_2_Y, 4));
-        linePosition.addPoint(new PositionPoint(GLTestUtils.LINE_1_X, GLTestUtils.LINE_1_Y, 2));
-        linePosition.addPoint(new PositionPoint(GLTestUtils.LINE_2_X, GLTestUtils.LINE_2_Y, 3));
-        line.addExtension(LinePosition.class, linePosition);
+        line.addExtension(LinePosition.class, new LinePosition<>(line, ImmutableList.of(SUBSTATION_1, LINE_1, LINE_2, SUBSTATION_2)));
 
         GLTestUtils.checkNetwork(network);
     }

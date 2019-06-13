@@ -6,13 +6,12 @@
  */
 package com.powsybl.cgmes.gl.conversion;
 
-import java.util.Objects;
-
+import com.powsybl.cgmes.conversion.Profiling;
+import com.powsybl.iidm.network.Network;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.powsybl.cgmes.conversion.Profiling;
-import com.powsybl.iidm.network.Network;
+import java.util.Objects;
 
 /**
  *
@@ -57,8 +56,7 @@ public class CgmesGLImporter {
     private void importLinesPosition() {
         LOG.info("Importing lines position");
         profiling.start();
-        LinePositionImporter positionImporter = new LinePositionImporter(network);
-        cgmesGLModel.getLinesPositions().forEach(positionImporter::importPosition);
+        new LinePositionImporter(network, cgmesGLModel).importPosition();
         profiling.end("LinesPostion");
     }
 

@@ -6,15 +6,13 @@
  */
 package com.powsybl.cgmes.iidm.extensions.gl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 import com.powsybl.commons.extensions.AbstractExtension;
 import com.powsybl.iidm.network.DanglingLine;
 import com.powsybl.iidm.network.Identifiable;
 import com.powsybl.iidm.network.Line;
+
+import java.util.List;
+import java.util.Objects;
 
 /**
  *
@@ -24,18 +22,19 @@ public class LinePosition<T extends Identifiable<T>> extends AbstractExtension<T
 
     static final String NAME = "line-position";
 
-    private final List<PositionPoint> points = new ArrayList<>();
+    private final List<Coordinate> coordinates;
 
-    private LinePosition(T line) {
+    private LinePosition(T line, List<Coordinate> coordinates) {
         super(line);
+        this.coordinates = Objects.requireNonNull(coordinates);
     }
 
-    public LinePosition(Line line) {
-        this((T) line);
+    public LinePosition(Line line, List<Coordinate> coordinates) {
+        this((T) line, coordinates);
     }
 
-    public LinePosition(DanglingLine danglingLine) {
-        this((T) danglingLine);
+    public LinePosition(DanglingLine danglingLine, List<Coordinate> coordinates) {
+        this((T) danglingLine, coordinates);
     }
 
     @Override
@@ -43,13 +42,8 @@ public class LinePosition<T extends Identifiable<T>> extends AbstractExtension<T
         return NAME;
     }
 
-    public void addPoint(PositionPoint point) {
-        Objects.requireNonNull(point);
-        points.add(point);
-    }
-
-    public List<PositionPoint> getPoints() {
-        return points.stream().sorted().collect(Collectors.toList());
+    public List<Coordinate> getCoordinates() {
+        return coordinates;
     }
 
 }

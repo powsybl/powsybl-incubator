@@ -6,10 +6,13 @@
  */
 package com.powsybl.substationdiagram.svg;
 
+import com.powsybl.substationdiagram.library.AnchorOrientation;
 import com.powsybl.substationdiagram.library.AnchorPoint;
 import com.powsybl.substationdiagram.library.AnchorPointProvider;
 import com.powsybl.substationdiagram.model.BaseNode;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -90,5 +93,49 @@ public class WireConnection {
 
     public AnchorPoint getAnchorPoint2() {
         return anchorPoint2;
+    }
+
+    /*
+     * Calculating the polyline points for the voltageLevel graph edge
+     */
+    public List<Double> calculatePolylinePoints(BaseNode node1, BaseNode node2, boolean straight) {
+        double x1 = node1.getX() + getAnchorPoint1().getX();
+        double y1 = node1.getY() + getAnchorPoint1().getY();
+        double x2 = node2.getX() + getAnchorPoint2().getX();
+        double y2 = node2.getY() + getAnchorPoint2().getY();
+
+        if (straight || (x1 == x2 || y1 == y2)) {
+            return Arrays.asList(x1, y1, x2, y2);
+        }
+        List<Double> pol = new ArrayList<>();
+        switch (anchorPoint1.getOrientation()) {
+            case VERTICAL:
+                if (anchorPoint2.getOrientation() == AnchorOrientation.VERTICAL) {
+                    double mid = (y1 + y2) / 2;
+                    pol.addAll(Arrays.asList(x1, y1, x1, mid, x2, mid, x2, y2));
+                } else {
+                    pol.addAll(Arrays.asList(x1, y1, x1, y2, x2, y2));
+                }
+                break;
+            case HORIZONTAL:
+                if (anchorPoint2.getOrientation() == AnchorOrientation.HORIZONTAL) {
+                    double mid = (x1 + x2) / 2;
+                    pol.addAll(Arrays.asList(x1, y1, mid, y1, mid, y2, x2, y2));
+                } else {
+                    pol.addAll(Arrays.asList(x2, y2, x2, y1, x1, y1));
+                }
+                break;
+            case NONE:
+                // Case none-none is not handled, it never happens (even if it happen it will execute another case)
+                if (anchorPoint2.getOrientation() == AnchorOrientation.HORIZONTAL) {
+                    pol.addAll(Arrays.asList(x1, y1, x1, y2, x2, y2));
+                } else {
+                    pol.addAll(Arrays.asList(x2, y2, x2, y1, x1, y1));
+                }
+                break;
+            default:
+                break;
+        }
+        return pol;
     }
 }

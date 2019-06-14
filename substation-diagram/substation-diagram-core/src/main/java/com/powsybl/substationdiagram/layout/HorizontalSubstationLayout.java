@@ -67,7 +67,37 @@ public class HorizontalSubstationLayout implements SubstationLayout {
         double x2 = node2.getX();
         double y2 = node2.getY();
 
+        InfoCalcPoints info = new InfoCalcPoints();
+        info.setLayoutParam(layoutParam);
+        info.setdNode1(dNode1);
+        info.setdNode2(dNode2);
+        info.setNbSnakeLinesTopBottom(nbSnakeLinesTopBottom);
+        info.setNbSnakeLinesBetween(nbSnakeLinesBetween);
+        info.setX1(x1);
+        info.setX2(x2);
+        info.setY1(y1);
+        info.setY2(y2);
+        info.setxMaxGraph(xMaxGraph);
+        info.setIdMaxGraph(idMaxGraph);
+
+        return calculatePolylinePoints(info);
+    }
+
+    public static List<Double> calculatePolylinePoints(InfoCalcPoints info) {
         List<Double> pol = new ArrayList<>();
+
+        LayoutParameters layoutParam = info.getLayoutParam();
+        BusCell.Direction dNode1 = info.getdNode1();
+        BusCell.Direction dNode2 = info.getdNode2();
+        Map<BusCell.Direction, Integer> nbSnakeLinesTopBottom = info.getNbSnakeLinesTopBottom();
+        Map<String, Integer> nbSnakeLinesBetween = info.getNbSnakeLinesBetween();
+        double x1 = info.getX1();
+        double x2 = info.getX2();
+        double y1 = info.getY1();
+        double y2 = info.getY2();
+        double xMaxGraph = info.getxMaxGraph();
+        String idMaxGraph = info.getIdMaxGraph();
+
         switch (dNode1) {
             case BOTTOM:
                 if (dNode2 == BusCell.Direction.BOTTOM) {  // BOTTOM to BOTTOM

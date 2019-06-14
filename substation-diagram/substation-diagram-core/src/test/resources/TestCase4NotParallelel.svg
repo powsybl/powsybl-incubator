@@ -29,7 +29,7 @@
 .PHASE_SHIFT_TRANSFORMER {stroke:rgb(0,0,255);stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;}
 .ba .open { visibility: hidden;}.ba .closed { visibility: visible;}.da1 .open { visibility: hidden;}.da1 .closed { visibility: visible;}.da2 .open { visibility: hidden;}.da2 .closed { visibility: visible;}.bb .open { visibility: hidden;}.bb .closed { visibility: visible;}.db1 .open { visibility: hidden;}.db1 .closed { visibility: visible;}.db2 .open { visibility: hidden;}.db2 .closed { visibility: visible;}.ss1 .open { visibility: hidden;}.ss1 .closed { visibility: visible;}.bc .open { visibility: hidden;}.bc .closed { visibility: visible;}.dc1 .open { visibility: hidden;}.dc1 .closed { visibility: visible;}.ss1fSwitch0 .open { visibility: hidden;}.ss1fSwitch0 .closed { visibility: visible;}.ss1fSwitch1 .open { visibility: hidden;}.ss1fSwitch1 .closed { visibility: visible;}]]></style>
     <g class="substation-diagram">
-        <g>
+        <g id="GRID_vl">
             <line y2="590.0" x1="0.0" class="grid" x2="0.0" transform="translate(20.0,50.0)" y1="-20.0"/>
             <line y2="590.0" x1="50.0" class="grid" x2="50.0" transform="translate(20.0,50.0)" y1="-20.0"/>
             <line y2="590.0" x1="100.0" class="grid" x2="100.0" transform="translate(20.0,50.0)" y1="-20.0"/>
@@ -38,33 +38,33 @@
         </g>
         <g class="substation-diagram BUSBAR_SECTION bbs1_1" id="bbs1.1" transform="translate(30.0,310.0)">
             <line y2="0" x1="0" class="bus_vl" x2="30.0" y1="0"/>
-            <text x="-5" font-size="8" y="-5" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs1.1</text>
+            <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs1.1</text>
         </g>
         <g class="substation-diagram BUSBAR_SECTION bbs1_2" id="bbs1.2" transform="translate(130.0,310.0)">
             <line y2="0" x1="0" class="bus_vl" x2="80.0" y1="0"/>
-            <text x="-5" font-size="8" y="-5" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs1.2</text>
+            <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs1.2</text>
         </g>
         <g class="substation-diagram BUSBAR_SECTION bbs2_1" id="bbs2.1" transform="translate(30.0,335.0)">
             <line y2="0" x1="0" class="bus_vl" x2="180.0" y1="0"/>
-            <text x="-5" font-size="8" y="-5" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs2.1</text>
+            <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs2.1</text>
         </g>
         <g class="substation-diagram LOAD la" id="la" transform="translate(37.0,25.5)">
     <rect height="9" width="16"/>
     <line y2="9" x1="0" x2="16" y1="0"/>
     <line y2="9" x1="16" x2="0" y1="0"/>
-<text x="-5" font-size="8" y="-5" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">la</text>
+<text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">la</text>
         </g>
         <g class="substation-diagram LOAD lb" id="lb" transform="translate(137.0,610.5)">
     <rect height="9" width="16"/>
     <line y2="9" x1="0" x2="16" y1="0"/>
     <line y2="9" x1="16" x2="0" y1="0"/>
-<text x="-5" font-size="8" y="22" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">lb</text>
+<text x="-5.0" font-size="8" y="22.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">lb</text>
         </g>
         <g class="substation-diagram GENERATOR gc" id="gc" transform="translate(189.0,24.0)">
     <circle r="6" cx="6" cy="6"/>
     <path d="M6,6 A 6 20 0 0 0 0,6"/>
     <path d="M6,6 A 6 20 0 0 0 12,6"/>
-<text x="-5" font-size="8" y="-5" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">gc</text>
+<text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">gc</text>
         </g>
         <g class="substation-diagram NODE FICT_vl_4" id="FICT_vl_4" transform="translate(41.0,276.0)">
     <circle r="4" cx="4" cy="4"/>
@@ -193,5 +193,8 @@
         <polyline class="wire_vl" points="60.0,310.0 70.0,310.0" id="vl_Wire19"/>
         <polyline class="wire_vl" points="70.0,310.0 70.0,310.0" id="vl_Wire20"/>
         <polyline class="wire_vl" points="70.0,310.0 95.0,310.0" id="vl_Wire21"/>
+        <g id="LABEL_VL_vl">
+            <text x="0.0" font-size="12" y="0.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">vl</text>
+        </g>
     </g>
 </svg>

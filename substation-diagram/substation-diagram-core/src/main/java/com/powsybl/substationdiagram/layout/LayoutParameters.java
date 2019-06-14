@@ -6,6 +6,9 @@
  */
 package com.powsybl.substationdiagram.layout;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Objects;
 
 /**
@@ -41,9 +44,49 @@ public class LayoutParameters {
     private boolean drawStraightWires = false;
 
     private double horizontalSnakeLinePadding = 20;
-    private double verticalSnakeLinePadding = 20;
+    private double verticalSnakeLinePadding = 25;
 
+    @JsonCreator
     public LayoutParameters() {
+    }
+
+    @JsonCreator
+    public LayoutParameters(@JsonProperty("translateX") double translateX,
+                            @JsonProperty("translateY") double translateY,
+                            @JsonProperty("initialXBus") double initialXBus,
+                            @JsonProperty("initialYBus") double initialYBus,
+                            @JsonProperty("verticalSpaceBus") double verticalSpaceBus,
+                            @JsonProperty("horizontalBusPadding") double horizontalBusPadding,
+                            @JsonProperty("cellWidth") double cellWidth,
+                            @JsonProperty("externCellHeight") double externCellHeight,
+                            @JsonProperty("internCellHeight") double internCellHeight,
+                            @JsonProperty("stackHeight") double stackHeight,
+                            @JsonProperty("showGrid") boolean showGrid,
+                            @JsonProperty("showInternalNodes") boolean showInternalNodes,
+                            @JsonProperty("scaleFactor") double scaleFactor,
+                            @JsonProperty("horizontalSubstationPadding") double horizontalSubstationPadding,
+                            @JsonProperty("verticalSubstationPadding") double verticalSubstationPadding,
+                            @JsonProperty("drawStraightWires") boolean drawStraightWires,
+                            @JsonProperty("horizontalSnakeLinePadding") double horizontalSnakeLinePadding,
+                            @JsonProperty("verticalSnakeLinePadding") double verticalSnakeLinePadding) {
+        this.translateX = translateX;
+        this.translateY = translateY;
+        this.initialXBus = initialXBus;
+        this.initialYBus = initialYBus;
+        this.verticalSpaceBus = verticalSpaceBus;
+        this.horizontalBusPadding = horizontalBusPadding;
+        this.cellWidth = cellWidth;
+        this.externCellHeight = externCellHeight;
+        this.internCellHeight = internCellHeight;
+        this.stackHeight = stackHeight;
+        this.showGrid = showGrid;
+        this.showInternalNodes = showInternalNodes;
+        this.scaleFactor = scaleFactor;
+        this.horizontalSubstationPadding = horizontalSubstationPadding;
+        this.verticalSubstationPadding = verticalSubstationPadding;
+        this.drawStraightWires = drawStraightWires;
+        this.horizontalSnakeLinePadding = horizontalSnakeLinePadding;
+        this.verticalSnakeLinePadding = verticalSnakeLinePadding;
     }
 
     public LayoutParameters(LayoutParameters other) {

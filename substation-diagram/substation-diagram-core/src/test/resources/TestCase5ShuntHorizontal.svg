@@ -104,10 +104,10 @@
         <g class="substation-diagram NODE FICT_vl_lbFictif" id="FICT_vl_lbFictif" transform="translate(91.0,109.33333333333334)">
     <circle r="4" cx="4" cy="4"/>
 </g>
-        <g class="substation-diagram NODE FICT_vl_daFictif" id="FICT_vl_daFictif" transform="translate(41.0,213.5)">
+        <g class="substation-diagram NODE FICT_vl_daFictif" id="FICT_vl_daFictif" transform="translate(41.0,276.0)">
     <circle r="4" cx="4" cy="4"/>
 </g>
-        <g class="substation-diagram NODE FICT_vl_dbFictif" id="FICT_vl_dbFictif" transform="translate(91.0,213.5)">
+        <g class="substation-diagram NODE FICT_vl_dbFictif" id="FICT_vl_dbFictif" transform="translate(91.0,276.0)">
     <circle r="4" cx="4" cy="4"/>
 </g>
         <polyline class="wire_vl" points="45.0,310.0 45.0,310.0" id="vl_Wire0"/>
@@ -118,10 +118,10 @@
         <polyline class="wire_vl" points="95.0,113.33333333333334 95.0,186.66666666666669" id="vl_Wire5"/>
         <polyline class="wire_vl" points="95.0,113.33333333333334 95.0,113.33333333333334 80.0,113.33333333333334" id="vl_Wire6"/>
         <polyline class="wire_vl" points="95.0,34.00000000000002 95.0,113.33333333333334" id="vl_Wire7"/>
-        <polyline class="wire_vl" points="45.0,206.66666666666669 45.0,217.5" id="vl_Wire8"/>
-        <polyline class="wire_vl" points="45.0,310.0 45.0,217.5" id="vl_Wire9"/>
-        <polyline class="wire_vl" points="95.0,206.66666666666669 95.0,217.5" id="vl_Wire10"/>
-        <polyline class="wire_vl" points="95.0,310.0 95.0,217.5" id="vl_Wire11"/>
+        <polyline class="wire_vl" points="45.0,206.66666666666669 45.0,280.0" id="vl_Wire8"/>
+        <polyline class="wire_vl" points="45.0,310.0 45.0,280.0" id="vl_Wire9"/>
+        <polyline class="wire_vl" points="95.0,206.66666666666669 95.0,280.0" id="vl_Wire10"/>
+        <polyline class="wire_vl" points="95.0,310.0 95.0,280.0" id="vl_Wire11"/>
         <g id="LABEL_VL_vl">
             <text x="0.0" font-size="12" y="0.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">vl</text>
         </g>

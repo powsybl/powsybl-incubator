@@ -193,7 +193,7 @@ public class TestCase2StackedCell extends AbstractTestCase {
         assertEquals(25, g.getNodes().get(2).getX(), 0);
         assertEquals(-20, g.getNodes().get(2).getY(), 0);
         assertEquals(25, g.getNodes().get(3).getX(), 0);
-        assertEquals(167.5, g.getNodes().get(3).getY(), 0);
+        assertEquals(230, g.getNodes().get(3).getY(), 0);
         assertEquals(25, g.getNodes().get(4).getX(), 0);
         assertEquals(260, g.getNodes().get(4).getY(), 0);
         assertEquals(25, g.getNodes().get(5).getX(), 0);

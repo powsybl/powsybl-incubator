@@ -139,22 +139,6 @@ public class PrimaryBlock extends AbstractBlock {
                 nodeSide.setX(getCoord().getX(), true);
                 if (getCell().getType() == Cell.CellType.INTERN && ((InternCell) getCell()).getCentralBlock() == null) {
                     nodeSide.setY(layoutParam.getInitialYBus() - layoutParam.getInternCellHeight());
-                } else if (getCell().getType() == Cell.CellType.EXTERN && nodeSide.getY() == -1) {
-                    double dyToBus = layoutParam.getExternCellHeight() / 2 + layoutParam.getStackHeight();
-                    switch (((BusCell) getCell()).getDirection()) {
-                        case BOTTOM:
-                            nodeSide.setY(layoutParam.getInitialYBus()
-                                    + (((BusCell) getCell()).getMaxBusPosition().getV() - 1) * layoutParam.getVerticalSpaceBus()
-                                    + dyToBus);
-                            break;
-                        case TOP:
-                            nodeSide.setY(layoutParam.getInitialYBus() - dyToBus);
-                            break;
-                        case FLAT:
-                            nodeSide.setY(layoutParam.getInitialYBus() + (getPosition().getV() - 1) * layoutParam.getVerticalSpaceBus());
-                            break;
-                        default:
-                    }
                 }
             }
         } else {

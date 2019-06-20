@@ -594,14 +594,16 @@ public class Graph {
         nodes.addAll(nodesToAdd);
     }
 
-    //add a fictitious node between 2 switches when one is connected to a bus
+    //add a fictitious node between 2 switches or between a switch and a feeder
+    //when one switch is connected to a bus
     public void extendFirstOutsideNode() {
         getNodeBuses().stream()
                 .flatMap(node -> node.getAdjacentNodes().stream())
                 .filter(node -> node.getType() == Node.NodeType.SWITCH)
                 .forEach(nodeSwitch ->
                         nodeSwitch.getAdjacentNodes().stream()
-                                .filter(node -> node.getType() == Node.NodeType.SWITCH)
+                                .filter(node -> node.getType() == Node.NodeType.SWITCH ||
+                                        node.getType() == Node.NodeType.FEEDER)
                                 .forEach(node -> {
                                     removeEdge(node, nodeSwitch);
                                     FictitiousNode newNode = new FictitiousNode(Graph.this, nodeSwitch.getId() + "Fictif");

@@ -6,19 +6,22 @@
  */
 package com.powsybl.substationdiagram.model;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.powsybl.commons.PowsyblException;
-import com.powsybl.iidm.network.*;
+import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.network.Substation;
+import com.powsybl.iidm.network.Terminal;
+import com.powsybl.iidm.network.ThreeWindingsTransformer;
+import com.powsybl.iidm.network.TwoWindingsTransformer;
+import com.powsybl.iidm.network.VoltageLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.io.Writer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * This class builds the connectivity among the voltageLevels of a substation
@@ -29,6 +32,10 @@ import java.util.*;
 public class SubstationGraph {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubstationGraph.class);
+
+    private static final String MESSAGE_GRAPH_FOR_VOLTAGE_LEVEL = "Graph for voltageLevel ";
+    private static final String MESSAGE_NOT_FOUND = " not found";
+    private static final String MESSAGE_NODE = "Node ";
 
     private Substation substation;
 
@@ -86,7 +93,8 @@ public class SubstationGraph {
 
         LOGGER.info("Number of node : {} ", nodes.size());
 
-        // Creation des SnakeLine reliant les nodes dans les voltageLevels
+        // Creation of snake lines for transformers between the voltage levels
+        // in the substation diagram
         addSnakeLines();
     }
 
@@ -97,41 +105,78 @@ public class SubstationGraph {
             Terminal t1 = transfo.getTerminal1();
             Terminal t2 = transfo.getTerminal2();
 
+            String id1 = transfo.getId() + "_" + transfo.getSide(t1).name();
+            String id2 = transfo.getId() + "_" + transfo.getSide(t2).name();
+
             VoltageLevel v1 = t1.getVoltageLevel();
             VoltageLevel v2 = t2.getVoltageLevel();
 
             Graph g1 = getNode(v1.getId());
             Graph g2 = getNode(v2.getId());
             if (g1 == null) {
-                throw new PowsyblException("Graph for voltageLevel " + v1.getId() + " not found");
+                throw new PowsyblException(MESSAGE_GRAPH_FOR_VOLTAGE_LEVEL + v1.getId() + MESSAGE_NOT_FOUND);
             }
             if (g2 == null) {
-                throw new PowsyblException("Graph for voltageLevel " + v2.getId() + " not found");
+                throw new PowsyblException(MESSAGE_GRAPH_FOR_VOLTAGE_LEVEL + v2.getId() + MESSAGE_NOT_FOUND);
             }
 
-            String id1 = transfo.getId() + "_" + transfo.getSide(t1).name();
-            String id2 = transfo.getId() + "_" + transfo.getSide(t2).name();
             Node n1 = g1.getNode(id1);
             Node n2 = g2.getNode(id2);
             if (n1 == null) {
-                throw new PowsyblException("Node " + id1 + " not found");
+                throw new PowsyblException(MESSAGE_NODE + id1 + MESSAGE_NOT_FOUND);
             }
             if (n2 == null) {
-                throw new PowsyblException("Node " + id2 + " not found");
+                throw new PowsyblException(MESSAGE_NODE + id2 + MESSAGE_NOT_FOUND);
             }
 
             addEdge(n1, n2);
         }
-    }
 
-    public void whenSerializingUsingJsonAnyGetterThenCorrect(Writer writer) {
-        ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
-        mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
-        mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-        try {
-            mapper.writeValue(writer, this);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
+        // Three windings transformer
+        //
+        for (ThreeWindingsTransformer transfo : substation.getThreeWindingsTransformers()) {
+            Terminal t1 = transfo.getLeg1().getTerminal();
+            Terminal t2 = transfo.getLeg2().getTerminal();
+            Terminal t3 = transfo.getLeg3().getTerminal();
+
+            String id12 = transfo.getId() + "_" + transfo.getSide(t1).name() + "_" + transfo.getSide(t2).name();
+            String id13 = transfo.getId() + "_" + transfo.getSide(t1).name() + "_" + transfo.getSide(t3).name();
+
+            String id21 = transfo.getId() + "_" + transfo.getSide(t2).name() + "_" + transfo.getSide(t1).name();
+            String id23 = transfo.getId() + "_" + transfo.getSide(t2).name() + "_" + transfo.getSide(t3).name();
+
+            String id31 = transfo.getId() + "_" + transfo.getSide(t3).name() + "_" + transfo.getSide(t1).name();
+            String id32 = transfo.getId() + "_" + transfo.getSide(t3).name() + "_" + transfo.getSide(t2).name();
+
+            VoltageLevel v1 = t1.getVoltageLevel();
+            VoltageLevel v2 = t2.getVoltageLevel();
+            VoltageLevel v3 = t3.getVoltageLevel();
+
+            Graph g1 = getNode(v1.getId());
+            Graph g2 = getNode(v2.getId());
+            Graph g3 = getNode(v3.getId());
+            if (g1 == null) {
+                throw new PowsyblException(MESSAGE_GRAPH_FOR_VOLTAGE_LEVEL + v1.getId() + MESSAGE_NOT_FOUND);
+            }
+            if (g2 == null) {
+                throw new PowsyblException(MESSAGE_GRAPH_FOR_VOLTAGE_LEVEL + v2.getId() + MESSAGE_NOT_FOUND);
+            }
+            if (g3 == null) {
+                throw new PowsyblException(MESSAGE_GRAPH_FOR_VOLTAGE_LEVEL + v3.getId() + MESSAGE_NOT_FOUND);
+            }
+
+            Node n12 = g1.getNode(id12);
+            Node n13 = g1.getNode(id13);
+
+            Node n21 = g2.getNode(id21);
+            Node n23 = g2.getNode(id23);
+
+            Node n31 = g3.getNode(id31);
+            Node n32 = g3.getNode(id32);
+
+            addEdge(n12, n21);
+            addEdge(n13, n31);
+            addEdge(n23, n32);
         }
     }
 

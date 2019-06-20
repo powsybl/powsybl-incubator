@@ -9,7 +9,28 @@ package com.powsybl.substationdiagram.model;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.powsybl.commons.PowsyblException;
-import com.powsybl.iidm.network.*;
+import com.powsybl.iidm.network.Branch;
+import com.powsybl.iidm.network.Bus;
+import com.powsybl.iidm.network.BusbarSection;
+import com.powsybl.iidm.network.Connectable;
+import com.powsybl.iidm.network.DanglingLine;
+import com.powsybl.iidm.network.DefaultTopologyVisitor;
+import com.powsybl.iidm.network.Generator;
+import com.powsybl.iidm.network.HvdcConverterStation;
+import com.powsybl.iidm.network.Injection;
+import com.powsybl.iidm.network.Line;
+import com.powsybl.iidm.network.Load;
+import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.network.ShuntCompensator;
+import com.powsybl.iidm.network.StaticVarCompensator;
+import com.powsybl.iidm.network.Switch;
+import com.powsybl.iidm.network.SwitchKind;
+import com.powsybl.iidm.network.Terminal;
+import com.powsybl.iidm.network.ThreeWindingsTransformer;
+import com.powsybl.iidm.network.TopologyKind;
+import com.powsybl.iidm.network.TwoWindingsTransformer;
+import com.powsybl.iidm.network.VoltageLevel;
+import com.powsybl.substationdiagram.library.ComponentType;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
 import org.jgrapht.UndirectedGraph;
@@ -24,7 +45,18 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -152,7 +184,7 @@ public class Graph {
         @Override
         public void visitThreeWindingsTransformer(ThreeWindingsTransformer transformer,
                                                   ThreeWindingsTransformer.Side side) {
-            addFeeder(FeederNode.create(Graph.this, transformer, side), transformer.getTerminal(side));
+            addFeeder(Feeder3WTNode.create(Graph.this, transformer, side), transformer.getTerminal(side));
         }
     }
 
@@ -306,6 +338,8 @@ public class Graph {
         }
 
         LOGGER.info("{} nodes, {} edges", nodes.size(), edges.size());
+
+        constructCellForThreeWindingsTransformer();
 
         handleConnectedComponents();
     }
@@ -765,4 +799,41 @@ public class Graph {
             throw new UncheckedIOException(e);
         }
     }
+
+    public void constructCellForThreeWindingsTransformer() {
+        getNodes().stream()
+                .filter(n -> n instanceof Feeder3WTNode)
+                .forEach(n -> {
+                    // We represent a 3 windings transformer like a double feeder cell with
+                    // the windings to the 2 other voltage levels
+                    Feeder3WTNode n3WT = (Feeder3WTNode) n;
+
+                    // Add a fictitious node
+                    FictitiousNode nf = new FictitiousNode(this, n3WT.getLabel() + "_fictif", ComponentType.THREE_WINDINGS_TRANSFORMER);
+                    addNode(nf);
+
+                    // Add a node for the feeder to the first voltage level
+                    String idFeeder1 = n3WT.getId() + "_" + n3WT.getId2();
+                    String nameFeeder1 = n3WT.getName() + "_" + n3WT.getName2();
+                    FeederNode nfeeder1 = FeederNode.create(Graph.this, idFeeder1, nameFeeder1, ComponentType.TWO_WINDINGS_TRANSFORMER);
+                    nfeeder1.setOrder(n3WT.getOrder());
+                    nfeeder1.setDirection(n3WT.getDirection());
+                    addNode(nfeeder1);
+
+                    // Add a node for the feeder to the second voltage level
+                    String idFeeder2 = n3WT.getId() + "_" + n3WT.getId3();
+                    String nameFeeder2 = n3WT.getName() + "_" + n3WT.getName3();
+                    FeederNode nfeeder2 = FeederNode.create(Graph.this, idFeeder2, nameFeeder2, ComponentType.TWO_WINDINGS_TRANSFORMER);
+                    nfeeder2.setOrder(n3WT.getOrder() + 1);
+                    nfeeder2.setDirection(n3WT.getDirection());
+                    addNode(nfeeder2);
+
+                    substitueNode(n3WT, nf);
+
+                    // Add edges between the fictitious node and the feeder nodes
+                    addEdge(nf, nfeeder1);
+                    addEdge(nf, nfeeder2);
+                });
+    }
+
 }

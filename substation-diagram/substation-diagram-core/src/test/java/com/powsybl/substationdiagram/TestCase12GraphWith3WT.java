@@ -18,21 +18,26 @@ import com.powsybl.iidm.network.ThreeWindingsTransformer;
 import com.powsybl.iidm.network.TopologyKind;
 import com.powsybl.iidm.network.TwoWindingsTransformer;
 import com.powsybl.iidm.network.VoltageLevel;
-import com.powsybl.substationdiagram.layout.HorizontalSubstationLayoutFactory;
+import com.powsybl.substationdiagram.layout.BlockOrganizer;
+import com.powsybl.substationdiagram.layout.ImplicitCellDetector;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
-import com.powsybl.substationdiagram.layout.VerticalSubstationLayoutFactory;
-import com.powsybl.substationdiagram.model.SubstationGraph;
+import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayout;
+import com.powsybl.substationdiagram.model.Graph;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static junit.framework.TestCase.assertTrue;
 
 /**
  * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
  */
-public class TestCase11SubstationGraph extends AbstractTestCase {
+public class TestCase12GraphWith3WT extends AbstractTestCase {
+
+    private VoltageLevel vl1;
+    private VoltageLevel vl2;
+    private VoltageLevel vl3;
 
     @Before
     public void setUp() {
@@ -42,7 +47,7 @@ public class TestCase11SubstationGraph extends AbstractTestCase {
 
         // first voltage level
         //
-        VoltageLevel vl1 = createVoltageLevel(substation, "vl1", "vl1", TopologyKind.NODE_BREAKER, 400, 50);
+        vl1 = createVoltageLevel(substation, "vl1", "vl1", TopologyKind.NODE_BREAKER, 400, 50);
 
         createBusBarSection(vl1, "bbs1", "bbs1", 0, 1, 1);
         createBusBarSection(vl1, "bbs2", "bbs2", 1, 1, 2);
@@ -75,7 +80,7 @@ public class TestCase11SubstationGraph extends AbstractTestCase {
 
         // second voltage level
         //
-        VoltageLevel vl2 = createVoltageLevel(substation, "vl2", "vl2", TopologyKind.NODE_BREAKER, 225, 30);
+        vl2 = createVoltageLevel(substation, "vl2", "vl2", TopologyKind.NODE_BREAKER, 225, 50);
 
         createBusBarSection(vl2, "bbs5", "bbs5", 0, 1, 1);
         createBusBarSection(vl2, "bbs6", "bbs6", 1, 2, 1);
@@ -94,7 +99,7 @@ public class TestCase11SubstationGraph extends AbstractTestCase {
 
         // third voltage level
         //
-        VoltageLevel vl3 = createVoltageLevel(substation, "vl3", "vl3", TopologyKind.NODE_BREAKER, 225, 20);
+        vl3 = createVoltageLevel(substation, "vl3", "vl3", TopologyKind.NODE_BREAKER, 225, 50);
 
         createBusBarSection(vl3, "bbs7", "bbs7", 0, 1, 1);
 
@@ -370,19 +375,24 @@ public class TestCase11SubstationGraph extends AbstractTestCase {
                 .setVerticalSnakeLinePadding(30);
 
         // build substation graph
-        SubstationGraph g = SubstationGraph.create(substation);
+        Graph g1 = Graph.create(vl1);
+        new ImplicitCellDetector().detectCells(g1);
+        assertTrue(new BlockOrganizer().organize(g1));
+        new PositionVoltageLevelLayout(g1).run(layoutParameters);
 
-        // assert substation graph structure
-        assertEquals(3, g.getNodes().size());
-        assertEquals(14, g.getEdges().size());
+        Graph g2 = Graph.create(vl2);
+        new ImplicitCellDetector().detectCells(g2);
+        assertTrue(new BlockOrganizer().organize(g2));
+        new PositionVoltageLevelLayout(g2).run(layoutParameters);
+
+        Graph g3 = Graph.create(vl3);
+        new ImplicitCellDetector().detectCells(g3);
+        assertTrue(new BlockOrganizer().organize(g3));
+        new PositionVoltageLevelLayout(g3).run(layoutParameters);
 
         // write SVG and compare to reference (horizontal layout)
-        compareSvg(g, layoutParameters, "/TestCase11SubstationGraphHorizontal.svg", new HorizontalSubstationLayoutFactory());
-
-        // rebuild substation graph
-        g = SubstationGraph.create(substation);
-
-        // write SVG and compare to reference (vertical layout)
-        compareSvg(g, layoutParameters, "/TestCase11SubstationGraphVertical.svg", new VerticalSubstationLayoutFactory());
+        compareSvg(g1, layoutParameters, "/TestCase12GraphVL1.svg");
+        compareSvg(g2, layoutParameters, "/TestCase12GraphVL2.svg");
+        compareSvg(g3, layoutParameters, "/TestCase12GraphVL3.svg");
     }
 }

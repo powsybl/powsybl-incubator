@@ -45,7 +45,7 @@
         </metadata>
     </component>
     <component>
-        <fileName>2-windings-transformer.svg</fileName>
+        <fileName>3-windings-transformer.svg</fileName>
         <metadata type="THREE_WINDINGS_TRANSFORMER">
             <size width="13" height="8"/>
             <anchorPoint x="0" y="-4" orientation="VERTICAL"/>

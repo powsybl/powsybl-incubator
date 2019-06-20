@@ -19,6 +19,10 @@ public class FictitiousNode extends Node {
         super(NodeType.FICTITIOUS, id, id, ComponentType.NODE, true, graph);
     }
 
+    public FictitiousNode(Graph graph, String id, ComponentType componentType) {
+        super(NodeType.FICTITIOUS, id, id, componentType, true, graph);
+    }
+
     public int getCardinality() {
         return this.getAdjacentNodes().size() - (getType() == NodeType.SHUNT ? 1 : 0);
     }

@@ -74,6 +74,8 @@ public class SVGWriter {
     private static final String FONT_FAMILY = "Verdana";
     private static final int LABEL_OFFSET = 5;
     private static final int FONT_VOLTAGE_LEVEL_LABEL_SIZE = 12;
+    private static final String POLYLINE = "polyline";
+    private static final String POINTS = "points";
 
     private final ComponentLibrary componentLibrary;
 
@@ -177,6 +179,7 @@ public class SVGWriter {
 
         drawNodes(root, graph, metadata, anchorPointProvider);
         drawEdges(root, graph, metadata, anchorPointProvider);
+
         // the drawing of the voltageLevel graph label is done at the end in order to
         // facilitate the move of a voltageLevel in the diagram
         drawGraphLabel(root, graph, metadata);
@@ -341,6 +344,7 @@ public class SVGWriter {
         int maxV = graph.getNodeBuses().stream()
                 .mapToInt(nodeBus -> nodeBus.getPosition().getV())
                 .max().orElse(0);
+
         Element gridRoot = document.createElement("g");
         String gridId = "GRID_" + graph.getVoltageLevel().getId();
         gridRoot.setAttribute("id", gridId);
@@ -494,7 +498,8 @@ public class SVGWriter {
 
     private boolean canInsertComponentSVG(Node node) {
         return layoutParameters.isShowInternalNodes() ||
-                (!node.isFictitious() && node.getType() != Node.NodeType.SHUNT);
+                ((!node.isFictitious() && node.getType() != Node.NodeType.SHUNT) ||
+                        (node.isFictitious() && node.getComponentType() == ComponentType.THREE_WINDINGS_TRANSFORMER));
     }
 
     private void incorporateComponents(Node node, Element g) {
@@ -556,7 +561,7 @@ public class SVGWriter {
         for (Edge edge : graph.getEdges()) {
             // for unicity purpose (in substation diagram), we prefix the id of the WireMetadata with the voltageLevel id and "_"
             String wireId = vId + "_Wire" + graph.getEdges().indexOf(edge);
-            Element g = root.getOwnerDocument().createElement("polyline");
+            Element g = root.getOwnerDocument().createElement(POLYLINE);
             g.setAttribute("id", wireId);
 
             WireConnection anchorPoints = WireConnection.searchBetterAnchorPoints(anchorPointProvider, edge.getNode1(), edge.getNode2());
@@ -583,7 +588,7 @@ public class SVGWriter {
                 }
             }
 
-            g.setAttribute("points", polPoints.toString());
+            g.setAttribute(POINTS, polPoints.toString());
             g.setAttribute(CLASS, SubstationDiagramStyles.WIRE_STYLE_CLASS + "_" + SubstationDiagramStyles.escapeClassName(vId));
             root.appendChild(g);
 
@@ -617,7 +622,7 @@ public class SVGWriter {
             String vId2 = edge.getNode2().getGraph().getVoltageLevel().getId();
 
             String wireId = vId1 + "_" + vId2 + "_" + "Wire" + graph.getEdges().indexOf(edge);
-            Element g = root.getOwnerDocument().createElement("polyline");
+            Element g = root.getOwnerDocument().createElement(POLYLINE);
             g.setAttribute("id", wireId);
 
             // Determine points of the snakeLine
@@ -647,7 +652,7 @@ public class SVGWriter {
                 }
             }
 
-            g.setAttribute("points", polPoints.toString());
+            g.setAttribute(POINTS, polPoints.toString());
             String vId;
             if (edge.getNode1().getGraph().getVoltageLevel().getNominalV() > edge.getNode2().getGraph().getVoltageLevel().getNominalV()) {
                 vId = vId1;

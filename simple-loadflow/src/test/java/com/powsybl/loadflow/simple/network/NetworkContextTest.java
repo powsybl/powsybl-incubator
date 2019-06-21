@@ -6,40 +6,23 @@
  */
 package com.powsybl.loadflow.simple.network;
 
-import com.google.common.jimfs.Configuration;
-import com.google.common.jimfs.Jimfs;
+import com.powsybl.commons.AbstractConverterTest;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.test.EurostagTutorialExample1Factory;
-import org.bouncycastle.util.io.Streams;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.FileSystem;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class NetworkContextTest {
-
-    private FileSystem fileSystem;
-
-    @Before
-    public void setUp() {
-        fileSystem = Jimfs.newFileSystem(Configuration.unix());
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        fileSystem.close();
-    }
+public class NetworkContextTest extends AbstractConverterTest {
 
     @Test
     public void test() throws IOException {
@@ -57,8 +40,8 @@ public class NetworkContextTest {
         assertEquals(1, networkContexts.size());
         Path file = fileSystem.getPath("/work/n.json");
         networkContexts.get(0).writeJson(file);
-        String json = new String(Files.readAllBytes(file), StandardCharsets.UTF_8);
-        String jsonRef = new String(Streams.readAll(getClass().getResourceAsStream("/n.json")), StandardCharsets.UTF_8);
-        assertEquals(jsonRef, json);
+        try (InputStream is = Files.newInputStream(file)) {
+            compareTxt(getClass().getResourceAsStream("/n.json"), is);
+        }
     }
 }

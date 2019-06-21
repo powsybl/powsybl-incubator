@@ -17,17 +17,34 @@ public abstract class AbstractLfBranch implements LfBranch {
 
     private final LfBus bus2;
 
-    protected final PiModel piModel;
+    private final double zb;
 
-    protected final double y;
-    protected final double ksi;
+    private final double x;
+    private final double g1;
+    private final double g2;
+    private final double b1;
+    private final double b2;
+    private final double r1;
+    private final double a1;
 
-    protected AbstractLfBranch(LfBus bus1, LfBus bus2, PiModel piModel) {
+    private final double y;
+    private final double ksi;
+
+    protected AbstractLfBranch(LfBus bus1, LfBus bus2, PiModel piModel, double nominalV1, double nominalV2) {
         this.bus1 = bus1;
         this.bus2 = bus2;
-        this.piModel = Objects.requireNonNull(piModel);
+        Objects.requireNonNull(piModel);
 
-        double z = Math.hypot(piModel.getR(), piModel.getX());
+        zb = nominalV2 * nominalV2 / PerUnit.SB;
+        x = piModel.getX() / zb;
+        g1 = piModel.getG1() * zb;
+        g2 = piModel.getG2() * zb;
+        b1 = piModel.getB1() * zb;
+        b2 = piModel.getB2() * zb;
+        r1 = piModel.getR1() / nominalV2 * nominalV1;
+        a1 = piModel.getA1();
+
+        double z = Math.hypot(piModel.getR(), piModel.getX()) / zb;
         y = 1 / z;
         ksi = Math.atan2(piModel.getR(), piModel.getX());
     }
@@ -44,7 +61,7 @@ public abstract class AbstractLfBranch implements LfBranch {
 
     @Override
     public double x() {
-        return piModel.getX();
+        return x;
     }
 
     @Override
@@ -59,41 +76,41 @@ public abstract class AbstractLfBranch implements LfBranch {
 
     @Override
     public double g1() {
-        return piModel.getG1();
+        return g1;
     }
 
     @Override
     public double g2() {
-        return piModel.getG2();
+        return g2;
     }
 
     @Override
     public double b1() {
-        return piModel.getB1();
+        return b1;
     }
 
     @Override
     public double b2() {
-        return piModel.getB2();
+        return b2;
     }
 
     @Override
     public double r1() {
-        return piModel.getR1();
+        return r1;
     }
 
     @Override
     public double r2() {
-        return piModel.getR2();
+        return 1;
     }
 
     @Override
     public double a1() {
-        return piModel.getA1();
+        return a1;
     }
 
     @Override
     public double a2() {
-        return piModel.getA2();
+        return 0;
     }
 }

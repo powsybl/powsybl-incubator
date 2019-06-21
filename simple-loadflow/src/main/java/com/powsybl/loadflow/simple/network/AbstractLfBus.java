@@ -44,4 +44,8 @@ public abstract class AbstractLfBus implements LfBus {
         return getGenerationTargetQ() - getLoadTargetQ();
     }
 
+    @Override
+    public double getNominalV() {
+        return 1;
+    }
 }

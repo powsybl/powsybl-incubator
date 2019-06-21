@@ -22,7 +22,9 @@ public class LfDanglingLineBranch extends AbstractLfBranch {
                             .setG1(danglingLine.getG() / 2)
                             .setG2(danglingLine.getG() / 2)
                             .setB1(danglingLine.getB() / 2)
-                            .setB2(danglingLine.getB() / 2));
+                            .setB2(danglingLine.getB() / 2),
+                danglingLine.getTerminal().getVoltageLevel().getNominalV(),
+                danglingLine.getTerminal().getVoltageLevel().getNominalV());
         this.danglingLine = danglingLine;
     }
 
@@ -35,7 +37,7 @@ public class LfDanglingLineBranch extends AbstractLfBranch {
 
     @Override
     public void setP1(double p1) {
-        danglingLine.getTerminal().setP(p1);
+        danglingLine.getTerminal().setP(p1 * PerUnit.SB);
     }
 
     @Override
@@ -45,7 +47,7 @@ public class LfDanglingLineBranch extends AbstractLfBranch {
 
     @Override
     public void setQ1(double q1) {
-        danglingLine.getTerminal().setQ(q1);
+        danglingLine.getTerminal().setQ(q1 * PerUnit.SB);
     }
 
     @Override

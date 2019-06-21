@@ -20,6 +20,8 @@ public class LfBusImpl extends AbstractLfBus {
 
     private final Bus bus;
 
+    private final double nominalV;
+
     private boolean voltageControl = false;
 
     private double loadTargetP = 0;
@@ -39,6 +41,7 @@ public class LfBusImpl extends AbstractLfBus {
     public LfBusImpl(Bus bus, int num) {
         super(num);
         this.bus = Objects.requireNonNull(bus);
+        nominalV = bus.getVoltageLevel().getNominalV();
     }
 
     @Override
@@ -108,27 +111,27 @@ public class LfBusImpl extends AbstractLfBus {
 
     @Override
     public double getGenerationTargetP() {
-        return generationTargetP;
+        return generationTargetP / PerUnit.SB;
     }
 
     @Override
     public double getGenerationTargetQ() {
-        return generationTargetQ;
+        return generationTargetQ / PerUnit.SB;
     }
 
     @Override
     public double getLoadTargetP() {
-        return loadTargetP;
+        return loadTargetP / PerUnit.SB;
     }
 
     @Override
     public double getLoadTargetQ() {
-        return loadTargetQ;
+        return loadTargetQ / PerUnit.SB;
     }
 
     @Override
     public double getTargetV() {
-        return targetV;
+        return targetV / nominalV;
     }
 
     void addNeighbor() {
@@ -142,12 +145,12 @@ public class LfBusImpl extends AbstractLfBus {
 
     @Override
     public double getV() {
-        return bus.getV();
+        return bus.getV() / nominalV;
     }
 
     @Override
     public void setV(double v) {
-        bus.setV(v);
+        bus.setV(v * nominalV);
     }
 
     @Override
@@ -158,11 +161,6 @@ public class LfBusImpl extends AbstractLfBus {
     @Override
     public void setAngle(double angle) {
         bus.setAngle(angle);
-    }
-
-    @Override
-    public double getNominalV() {
-        return bus.getVoltageLevel().getNominalV();
     }
 
     @Override

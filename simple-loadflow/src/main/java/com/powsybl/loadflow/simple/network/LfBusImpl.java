@@ -7,8 +7,7 @@
 package com.powsybl.loadflow.simple.network;
 
 import com.powsybl.commons.PowsyblException;
-import com.powsybl.iidm.network.Bus;
-import com.powsybl.iidm.network.ShuntCompensator;
+import com.powsybl.iidm.network.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +34,7 @@ public class LfBusImpl extends AbstractLfBus {
 
     private int neighbors = 0;
 
-    private final List<ShuntCompensator> shuntCompensators = new ArrayList<>();
+    private final List<LfShunt> shunts = new ArrayList<>();
 
     public LfBusImpl(Bus bus, int num) {
         super(num);
@@ -52,24 +51,59 @@ public class LfBusImpl extends AbstractLfBus {
         return voltageControl;
     }
 
-    public void setVoltageControl(boolean voltageControl) {
-        this.voltageControl = voltageControl;
+    private void checkTargetV(double targetV) {
+        if (!Double.isNaN(this.targetV) && this.targetV != targetV) {
+            throw new PowsyblException("Multiple generators connected to same bus with different target voltage");
+        }
     }
 
-    void addLoadTargetP(double loadTargetP) {
-        this.loadTargetP += loadTargetP;
+    void addLoad(Load load) {
+        this.loadTargetP += load.getP0();
+        this.loadTargetQ += load.getQ0();
     }
 
-    void addGenerationTargetP(double generationTargetP) {
-        this.generationTargetP += generationTargetP;
+    void addBattery(Battery battery) {
+        this.loadTargetP += battery.getP0();
+        this.loadTargetQ += battery.getQ0();
     }
 
-    void addLoadTargetQ(double loadTargetQ) {
-        this.loadTargetQ += loadTargetQ;
+    void addGenerator(Generator generator) {
+        this.generationTargetP += generator.getTargetP();
+        if (generator.isVoltageRegulatorOn()) {
+            checkTargetV(generator.getTargetV());
+            targetV = generator.getTargetV();
+            voltageControl = true;
+        } else {
+            this.generationTargetQ += generator.getTargetQ();
+        }
     }
 
-    void addGenerationTargetQ(double generationTargetQ) {
-        this.generationTargetQ += generationTargetQ;
+    void addStaticVarCompensator(StaticVarCompensator staticVarCompensator) {
+        if (staticVarCompensator.getRegulationMode() == StaticVarCompensator.RegulationMode.VOLTAGE) {
+            checkTargetV(staticVarCompensator.getVoltageSetPoint());
+            targetV = staticVarCompensator.getVoltageSetPoint();
+            voltageControl = true;
+        } else if (staticVarCompensator.getRegulationMode() == StaticVarCompensator.RegulationMode.REACTIVE_POWER) {
+            throw new UnsupportedOperationException("SVC with reactive power regulation not supported");
+        }
+    }
+
+    void addVscConverterStattion(VscConverterStation vscCs, HvdcLine line) {
+        double targetP = line.getConverterStation1() == vscCs && line.getConvertersMode() == HvdcLine.ConvertersMode.SIDE_1_RECTIFIER_SIDE_2_INVERTER
+                ? line.getActivePowerSetpoint()
+                : -line.getActivePowerSetpoint();
+        generationTargetP += targetP;
+        if (vscCs.isVoltageRegulatorOn()) {
+            checkTargetV(vscCs.getVoltageSetpoint());
+            targetV = vscCs.getVoltageSetpoint();
+            voltageControl = true;
+        } else {
+            generationTargetQ += vscCs.getReactivePowerSetpoint();
+        }
+    }
+
+    void addShuntCompensator(ShuntCompensator sc) {
+        shunts.add(new LfShuntImpl(sc));
     }
 
     @Override
@@ -95,13 +129,6 @@ public class LfBusImpl extends AbstractLfBus {
     @Override
     public double getTargetV() {
         return targetV;
-    }
-
-    public void setTargetV(double targetV) {
-        if (!Double.isNaN(this.targetV) && this.targetV != targetV) {
-            throw new PowsyblException("Multiple generators connected to same bus with different target voltage");
-        }
-        this.targetV = targetV;
     }
 
     void addNeighbor() {
@@ -139,11 +166,7 @@ public class LfBusImpl extends AbstractLfBus {
     }
 
     @Override
-    public List<ShuntCompensator> getShuntCompensators() {
-        return shuntCompensators;
-    }
-
-    void addShuntCompensator(ShuntCompensator sc) {
-        shuntCompensators.add(sc);
+    public List<LfShunt> getShunts() {
+        return shunts;
     }
 }

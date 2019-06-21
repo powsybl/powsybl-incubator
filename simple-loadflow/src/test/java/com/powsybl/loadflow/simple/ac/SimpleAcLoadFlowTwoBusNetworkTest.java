@@ -73,4 +73,26 @@ public class SimpleAcLoadFlowTwoBusNetworkTest {
         assertTrue(result.isOk());
         assertEquals("0", result.getMetrics().get("iterations"));
     }
+
+    @Test
+    public void withAnAdditionalBattery() {
+        bus2.getVoltageLevel().newBattery()
+                .setId("bt2")
+                .setBus("b2")
+                .setP0(1)
+                .setQ0(0.1)
+                .setMinP(0)
+                .setMaxP(1)
+                .add();
+        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
+        assertTrue(result.isOk());
+        assertVoltageEquals(1, bus1);
+        assertAngleEquals(0, bus1);
+        assertVoltageEquals(0.783, bus2);
+        assertAngleEquals(-22.518194, bus2);
+        assertActivePowerEquals(3, line1.getTerminal1());
+        assertReactivePowerEquals(2.764, line1.getTerminal1());
+        assertActivePowerEquals(-3, line1.getTerminal2());
+        assertReactivePowerEquals(-1.1, line1.getTerminal2());
+    }
 }

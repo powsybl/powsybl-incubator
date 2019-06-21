@@ -31,7 +31,7 @@ public class TwoBusNetworkFactory extends AbstractLoadFlowNetworkFactory {
         Network network = Network.create("2-bus", "code");
         Bus b1 = createBus(network, "b1");
         Bus b2 = createBus(network, "b2");
-        createGenerator(b1, "g1", 0, 1);
+        createGenerator(b1, "g1", 2, 1);
         createLoad(b2, "l1", 2, 1);
         createLine(network, b1, b2, "l12", 0.1f);
         return network;

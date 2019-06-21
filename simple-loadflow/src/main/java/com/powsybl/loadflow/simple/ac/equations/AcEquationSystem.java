@@ -6,10 +6,10 @@
  */
 package com.powsybl.loadflow.simple.ac.equations;
 
-import com.powsybl.iidm.network.ShuntCompensator;
 import com.powsybl.loadflow.simple.equations.*;
 import com.powsybl.loadflow.simple.network.LfBranch;
 import com.powsybl.loadflow.simple.network.LfBus;
+import com.powsybl.loadflow.simple.network.LfShunt;
 import com.powsybl.loadflow.simple.network.NetworkContext;
 
 import java.util.ArrayList;
@@ -38,10 +38,10 @@ public final class AcEquationSystem {
                 equationTerms.add(new BusVoltageEquationTerm(bus, equationContext));
                 equationContext.getEquation(bus.getNum(), EquationType.BUS_Q).setPartOfSystem(false);
             }
-            for (ShuntCompensator sc : bus.getShuntCompensators()) {
-                ShuntCompensatorReactiveFlowEquationTerm q = new ShuntCompensatorReactiveFlowEquationTerm(sc, bus, networkContext, equationContext);
+            for (LfShunt shunt : bus.getShunts()) {
+                ShuntCompensatorReactiveFlowEquationTerm q = new ShuntCompensatorReactiveFlowEquationTerm(shunt, bus, networkContext, equationContext);
                 equationTerms.add(q);
-                variableUpdates.add(new ShuntCompensatorReactiveFlowUpdate(sc, q));
+                variableUpdates.add(new ShuntCompensatorReactiveFlowUpdate(shunt, q));
             }
         }
 

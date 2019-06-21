@@ -83,20 +83,13 @@ public class NetworkContext {
 
                 @Override
                 public void visitGenerator(Generator generator) {
-                    lfBus.addGenerationTargetP(generator.getTargetP());
-                    if (generator.isVoltageRegulatorOn()) {
-                        lfBus.setTargetV(generator.getTargetV());
-                        lfBus.setVoltageControl(true);
-                    } else {
-                        lfBus.addGenerationTargetQ(generator.getTargetQ());
-                    }
+                    lfBus.addGenerator(generator);
                     generatorCount[0]++;
                 }
 
                 @Override
                 public void visitLoad(Load load) {
-                    lfBus.addLoadTargetP(load.getP0());
-                    lfBus.addLoadTargetQ(load.getQ0());
+                    lfBus.addLoad(load);
                 }
 
                 @Override
@@ -111,26 +104,16 @@ public class NetworkContext {
 
                 @Override
                 public void visitStaticVarCompensator(StaticVarCompensator staticVarCompensator) {
-                    if (staticVarCompensator.getRegulationMode() == StaticVarCompensator.RegulationMode.VOLTAGE) {
-                        lfBus.setTargetV(staticVarCompensator.getVoltageSetPoint());
-                        lfBus.setVoltageControl(true);
-                    } else if (staticVarCompensator.getRegulationMode() == StaticVarCompensator.RegulationMode.REACTIVE_POWER) {
-                        throw new UnsupportedOperationException("SVC with reactive power regulation not supported");
-                    }
+                    lfBus.addStaticVarCompensator(staticVarCompensator);
                 }
 
                 @Override
                 public void visitBattery(Battery battery) {
-                    throw new UnsupportedOperationException("TODO: battery");
+                    lfBus.addBattery(battery);
                 }
 
                 @Override
                 public void visitHvdcConverterStation(HvdcConverterStation<?> converterStation) {
-                    HvdcLine line = hvdcLines.get(converterStation);
-                    double p = line.getConverterStation1() == converterStation && line.getConvertersMode() == HvdcLine.ConvertersMode.SIDE_1_RECTIFIER_SIDE_2_INVERTER
-                            ? line.getActivePowerSetpoint()
-                            : -line.getActivePowerSetpoint();
-                    lfBus.addGenerationTargetP(p);
                     switch (converterStation.getHvdcType()) {
                         case VSC:
                             visitVscConverterStation((VscConverterStation) converterStation);
@@ -143,12 +126,8 @@ public class NetworkContext {
                 }
 
                 private void visitVscConverterStation(VscConverterStation vscCs) {
-                    if (vscCs.isVoltageRegulatorOn()) {
-                        lfBus.setTargetV(vscCs.getVoltageSetpoint());
-                        lfBus.setVoltageControl(true);
-                    } else {
-                        lfBus.addGenerationTargetQ(vscCs.getReactivePowerSetpoint());
-                    }
+                    HvdcLine line = hvdcLines.get(vscCs);
+                    lfBus.addVscConverterStattion(vscCs, line);
                 }
             });
         }

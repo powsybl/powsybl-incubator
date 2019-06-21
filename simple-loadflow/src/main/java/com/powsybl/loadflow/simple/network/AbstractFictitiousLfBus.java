@@ -6,8 +6,6 @@
  */
 package com.powsybl.loadflow.simple.network;
 
-import com.powsybl.iidm.network.ShuntCompensator;
-
 import java.util.Collections;
 import java.util.List;
 
@@ -75,7 +73,7 @@ public abstract class AbstractFictitiousLfBus extends AbstractLfBus {
     }
 
     @Override
-    public List<ShuntCompensator> getShuntCompensators() {
+    public List<LfShunt> getShunts() {
         return Collections.emptyList();
     }
 }

@@ -6,8 +6,6 @@
  */
 package com.powsybl.loadflow.simple.network;
 
-import com.powsybl.iidm.network.ShuntCompensator;
-
 import java.util.List;
 
 /**
@@ -49,7 +47,7 @@ public interface LfBus {
 
     double getNominalV();
 
-    List<ShuntCompensator> getShuntCompensators();
+    List<LfShunt> getShunts();
 
     int getNeighbors();
 }

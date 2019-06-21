@@ -20,7 +20,9 @@ public class LfLeg1Branch extends AbstractLfBranch {
     protected LfLeg1Branch(LfBus bus1, LfBus bus0, ThreeWindingsTransformer.Leg1 leg1) {
         super(bus1, bus0, new PiModel(leg1.getR(), leg1.getX())
                             .setG2(leg1.getG())
-                            .setB2(leg1.getB()));
+                            .setB2(leg1.getB()),
+                leg1.getTerminal().getVoltageLevel().getNominalV(),
+                leg1.getTerminal().getVoltageLevel().getNominalV());
         this.leg1 = leg1;
     }
 
@@ -33,7 +35,7 @@ public class LfLeg1Branch extends AbstractLfBranch {
 
     @Override
     public void setP1(double p1) {
-        leg1.getTerminal().setP(p1);
+        leg1.getTerminal().setP(p1 * PerUnit.SB);
     }
 
     @Override
@@ -43,7 +45,7 @@ public class LfLeg1Branch extends AbstractLfBranch {
 
     @Override
     public void setQ1(double q1) {
-        leg1.getTerminal().setQ(q1);
+        leg1.getTerminal().setQ(q1 * PerUnit.SB);
     }
 
     @Override

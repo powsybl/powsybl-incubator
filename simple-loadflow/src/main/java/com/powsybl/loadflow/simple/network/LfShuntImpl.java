@@ -17,17 +17,22 @@ public class LfShuntImpl implements LfShunt {
 
     private final ShuntCompensator shuntCompensator;
 
+    private final double b;
+
     public LfShuntImpl(ShuntCompensator shuntCompensator) {
         this.shuntCompensator = Objects.requireNonNull(shuntCompensator);
+        double nominalV = shuntCompensator.getTerminal().getVoltageLevel().getNominalV();
+        double zb = nominalV * nominalV / PerUnit.SB;
+        b = shuntCompensator.getCurrentB() * zb;
     }
 
     @Override
     public double getB() {
-        return shuntCompensator.getCurrentB();
+        return b;
     }
 
     @Override
     public void setQ(double q) {
-        shuntCompensator.getTerminal().setQ(q);
+        shuntCompensator.getTerminal().setQ(q * PerUnit.SB);
     }
 }

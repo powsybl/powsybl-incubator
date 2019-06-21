@@ -55,7 +55,7 @@ public class SimpleAcLoadFlowTwoBusNetworkTest {
         assertVoltageEquals(1, bus1);
         assertAngleEquals(0, bus1);
         assertVoltageEquals(0.855, bus2);
-        assertAngleEquals(-13.521852, bus2);
+        assertAngleEquals(-13.520904, bus2);
         assertActivePowerEquals(2, line1.getTerminal1());
         assertReactivePowerEquals(1.683, line1.getTerminal1());
         assertActivePowerEquals(-2, line1.getTerminal2());
@@ -66,7 +66,7 @@ public class SimpleAcLoadFlowTwoBusNetworkTest {
     public void voltageInitModeTest() {
         LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
         assertTrue(result.isOk());
-        assertEquals("4", result.getMetrics().get("iterations"));
+        assertEquals("3", result.getMetrics().get("iterations"));
         // restart loadflow from previous calculated state, it should convergence in zero iteration
         result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters.setVoltageInitMode(LoadFlowParameters.VoltageInitMode.PREVIOUS_VALUES))
                 .join();
@@ -88,11 +88,11 @@ public class SimpleAcLoadFlowTwoBusNetworkTest {
         assertTrue(result.isOk());
         assertVoltageEquals(1, bus1);
         assertAngleEquals(0, bus1);
-        assertVoltageEquals(0.783, bus2);
-        assertAngleEquals(-22.518194, bus2);
-        assertActivePowerEquals(3, line1.getTerminal1());
-        assertReactivePowerEquals(2.764, line1.getTerminal1());
-        assertActivePowerEquals(-3, line1.getTerminal2());
-        assertReactivePowerEquals(-1.1, line1.getTerminal2());
+        assertVoltageEquals(0.784, bus2);
+        assertAngleEquals(-22.455747, bus2);
+        assertActivePowerEquals(2.996, line1.getTerminal1());
+        assertReactivePowerEquals(2.750, line1.getTerminal1());
+        assertActivePowerEquals(-2.996, line1.getTerminal2());
+        assertReactivePowerEquals(-1.096, line1.getTerminal2());
     }
 }

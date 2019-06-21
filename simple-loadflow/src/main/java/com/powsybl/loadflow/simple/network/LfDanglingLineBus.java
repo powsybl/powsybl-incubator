@@ -29,17 +29,12 @@ public class LfDanglingLineBus extends AbstractFictitiousLfBus {
 
     @Override
     public double getLoadTargetP() {
-        return danglingLine.getP0();
+        return danglingLine.getP0() / PerUnit.SB;
     }
 
     @Override
     public double getLoadTargetQ() {
-        return danglingLine.getQ0();
-    }
-
-    @Override
-    public double getNominalV() {
-        return danglingLine.getTerminal().getVoltageLevel().getNominalV();
+        return danglingLine.getQ0() / PerUnit.SB;
     }
 
     @Override

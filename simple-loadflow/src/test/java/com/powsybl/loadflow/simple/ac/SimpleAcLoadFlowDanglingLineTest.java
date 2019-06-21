@@ -111,6 +111,6 @@ public class SimpleAcLoadFlowDanglingLineTest {
         assertVoltageEquals(388.582864, bus2);
         assertAngleEquals(-0.058277, bus2);
         assertActivePowerEquals(101.302, dl1.getTerminal());
-        assertReactivePowerEquals(149.765, dl1.getTerminal());
+        assertReactivePowerEquals(149.763, dl1.getTerminal());
     }
 }

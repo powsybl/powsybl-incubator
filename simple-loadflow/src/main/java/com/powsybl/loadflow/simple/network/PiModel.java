@@ -18,9 +18,7 @@ public class PiModel {
     private double g2 = 0;
     private double b2 = 0;
     private double r1 = 1;
-    private double r2 = 1;
     private double a1 = 0;
-    private double a2 = 0;
 
     public PiModel(double r, double x) {
         this.r = r;
@@ -80,30 +78,12 @@ public class PiModel {
         return this;
     }
 
-    public double getR2() {
-        return r2;
-    }
-
-    public PiModel setR2(double r2) {
-        this.r2 = r2;
-        return this;
-    }
-
     public double getA1() {
         return a1;
     }
 
     public PiModel setA1(double a1) {
         this.a1 = a1;
-        return this;
-    }
-
-    public double getA2() {
-        return a2;
-    }
-
-    public PiModel setA2(double a2) {
-        this.a2 = a2;
         return this;
     }
 }

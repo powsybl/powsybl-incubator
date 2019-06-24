@@ -38,6 +38,11 @@ public class LfDanglingLineBus extends AbstractFictitiousLfBus {
     }
 
     @Override
+    public double getNominalV() {
+        return danglingLine.getTerminal().getVoltageLevel().getNominalV();
+    }
+
+    @Override
     public int getNeighbors() {
         return 1;
     }

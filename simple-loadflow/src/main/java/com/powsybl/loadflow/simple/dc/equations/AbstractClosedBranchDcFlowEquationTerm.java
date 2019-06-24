@@ -38,7 +38,7 @@ public abstract class AbstractClosedBranchDcFlowEquationTerm implements Equation
         ph1Var = equationContext.getVariable(bus1.getNum(), VariableType.BUS_PHI);
         ph2Var = equationContext.getVariable(bus2.getNum(), VariableType.BUS_PHI);
         variables = ImmutableList.of(ph1Var, ph2Var);
-        power =  1 / this.branch.x() * bus1.getNominalV() * this.branch.r1() * bus2.getNominalV() * this.branch.r2();
+        power =  1 / this.branch.x() * this.branch.r1() * this.branch.r2();
     }
 
     @Override

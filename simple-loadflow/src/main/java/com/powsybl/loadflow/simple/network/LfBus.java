@@ -45,6 +45,10 @@ public interface LfBus {
 
     void setAngle(double angle);
 
+    /**
+     * Get nominal voltage in Kv.
+     * @return nominal voltage in Kv
+     */
     double getNominalV();
 
     List<LfShunt> getShunts();

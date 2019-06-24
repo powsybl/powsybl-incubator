@@ -51,7 +51,7 @@ public class Variable implements Comparable<Variable> {
         Objects.requireNonNull(networkContext);
         Objects.requireNonNull(x);
         if (type == VariableType.BUS_V && mode == VoltageInitMode.UNIFORM_VALUES) {
-            x[column] = networkContext.getBus(num).getNominalV();
+            x[column] = 1;
         } else if (type == VariableType.BUS_V && mode == VoltageInitMode.PREVIOUS_VALUES) {
             x[column] = networkContext.getBus(num).getV();
         } else if (type == VariableType.BUS_PHI && mode == VoltageInitMode.UNIFORM_VALUES) {

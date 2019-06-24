@@ -164,6 +164,11 @@ public class LfBusImpl extends AbstractLfBus {
     }
 
     @Override
+    public double getNominalV() {
+        return nominalV;
+    }
+
+    @Override
     public List<LfShunt> getShunts() {
         return shunts;
     }

@@ -37,6 +37,19 @@ public class NetworkContext {
 
     private final List<LfBranch> branches;
 
+    private static class CreationContext {
+
+        private final Set<Branch> branchSet = new LinkedHashSet<>();
+
+        private final List<DanglingLine> danglingLines = new ArrayList<>();
+
+        private final Set<ThreeWindingsTransformer> t3wtSet = new LinkedHashSet<>();
+
+        private final Map<String, Integer> busIdToNum = new HashMap<>();
+
+        private double maxNominalV = Double.MIN_VALUE;
+    }
+
     public NetworkContext(Network network, List<Bus> buses, SlackBusSelectionMode slackBusSelectionMode,
                           Map<HvdcConverterStation, HvdcLine> hvdcLines) {
         this.network = Objects.requireNonNull(network);
@@ -47,31 +60,32 @@ public class NetworkContext {
         Objects.requireNonNull(slackBusSelectionMode);
         Objects.requireNonNull(hvdcLines);
 
-        Set<Branch> branchSet = new LinkedHashSet<>();
-        List<DanglingLine> danglingLines = new ArrayList<>();
-        Set<ThreeWindingsTransformer> t3wtSet = new LinkedHashSet<>();
-        Map<String, Integer> busIdToNum = new HashMap<>();
+        CreationContext creationContext = new CreationContext();
+        this.buses = createBuses(buses, hvdcLines, creationContext);
+        branches = createBranches(this.buses, creationContext);
 
-        this.buses = createBuses(buses, hvdcLines, branchSet, danglingLines, t3wtSet, busIdToNum);
-        branches = createBranches(branchSet, danglingLines, t3wtSet, this.buses, busIdToNum);
-
-        selectSlackBus(slackBusSelectionMode);
+        selectSlackBus(slackBusSelectionMode, creationContext.maxNominalV);
     }
 
-    private static List<LfBus> createBuses(List<Bus> buses, Map<HvdcConverterStation, HvdcLine> hvdcLines, Set<Branch> branchSet,
-                                           List<DanglingLine> danglingLines, Set<ThreeWindingsTransformer> t3wtSet,
-                                           Map<String, Integer> busIdToNum) {
+    private static List<LfBus> createBuses(List<Bus> buses, Map<HvdcConverterStation, HvdcLine> hvdcLines, CreationContext creationContext) {
         List<LfBus> lfBuses = new ArrayList<>(buses.size());
         int[] generatorCount = new int[1];
 
         for (Bus bus : buses) {
-            LfBusImpl lfBus = addLfBus(bus, lfBuses, busIdToNum);
+            LfBusImpl lfBus = addLfBus(bus, lfBuses, creationContext.busIdToNum);
+
+            creationContext.maxNominalV = Math.max(creationContext.maxNominalV, lfBus.getNominalV());
 
             bus.visitConnectedEquipments(new DefaultTopologyVisitor() {
 
                 private void visitBranch(Branch branch) {
-                    branchSet.add(branch);
-                    lfBus.addNeighbor();
+                    creationContext.branchSet.add(branch);
+                    // add to neighbors if connected at both sides
+                    Bus bus1 = branch.getTerminal1().getBusView().getBus();
+                    Bus bus2 = branch.getTerminal2().getBusView().getBus();
+                    if (bus1 != null && bus2 != null) {
+                        lfBus.addNeighbor();
+                    }
                 }
 
                 @Override
@@ -86,7 +100,7 @@ public class NetworkContext {
 
                 @Override
                 public void visitThreeWindingsTransformer(ThreeWindingsTransformer transformer, ThreeWindingsTransformer.Side side) {
-                    t3wtSet.add(transformer);
+                    creationContext.t3wtSet.add(transformer);
                 }
 
                 @Override
@@ -107,7 +121,7 @@ public class NetworkContext {
 
                 @Override
                 public void visitDanglingLine(DanglingLine danglingLine) {
-                    danglingLines.add(danglingLine);
+                    creationContext.danglingLines.add(danglingLine);
                 }
 
                 @Override
@@ -147,28 +161,26 @@ public class NetworkContext {
         return lfBuses;
     }
 
-    private static List<LfBranch> createBranches(Set<Branch> branchSet, List<DanglingLine> danglingLines,
-                                                 Set<ThreeWindingsTransformer> t3wtSet, List<LfBus> lfBuses,
-                                                 Map<String, Integer> busIdToNum) {
+    private static List<LfBranch> createBranches(List<LfBus> lfBuses, CreationContext creationContext) {
         List<LfBranch> lfBranches = new ArrayList<>();
 
-        for (Branch branch : branchSet) {
-            LfBus lfBus1 = getLfBus(branch.getTerminal1(), lfBuses, busIdToNum);
-            LfBus lfBus2 = getLfBus(branch.getTerminal2(), lfBuses, busIdToNum);
+        for (Branch branch : creationContext.branchSet) {
+            LfBus lfBus1 = getLfBus(branch.getTerminal1(), lfBuses, creationContext.busIdToNum);
+            LfBus lfBus2 = getLfBus(branch.getTerminal2(), lfBuses, creationContext.busIdToNum);
             lfBranches.add(LfBranchImpl.create(branch, lfBus1, lfBus2));
         }
 
-        for (DanglingLine danglingLine : danglingLines) {
-            LfDanglingLineBus lfBus2 = addLfBus(danglingLine, lfBuses, busIdToNum);
-            LfBus lfBus1 = getLfBus(danglingLine.getTerminal(), lfBuses, busIdToNum);
+        for (DanglingLine danglingLine : creationContext.danglingLines) {
+            LfDanglingLineBus lfBus2 = addLfBus(danglingLine, lfBuses, creationContext.busIdToNum);
+            LfBus lfBus1 = getLfBus(danglingLine.getTerminal(), lfBuses, creationContext.busIdToNum);
             lfBranches.add(LfDanglingLineBranch.create(danglingLine, lfBus1, lfBus2));
         }
 
-        for (ThreeWindingsTransformer t3wt : t3wtSet) {
-            LfStarBus lfBus0 = addLfBus(t3wt, lfBuses, busIdToNum);
-            LfBus lfBus1 = getLfBus(t3wt.getLeg1().getTerminal(), lfBuses, busIdToNum);
-            LfBus lfBus2 = getLfBus(t3wt.getLeg2().getTerminal(), lfBuses, busIdToNum);
-            LfBus lfBus3 = getLfBus(t3wt.getLeg3().getTerminal(), lfBuses, busIdToNum);
+        for (ThreeWindingsTransformer t3wt : creationContext.t3wtSet) {
+            LfStarBus lfBus0 = addLfBus(t3wt, lfBuses, creationContext.busIdToNum);
+            LfBus lfBus1 = getLfBus(t3wt.getLeg1().getTerminal(), lfBuses, creationContext.busIdToNum);
+            LfBus lfBus2 = getLfBus(t3wt.getLeg2().getTerminal(), lfBuses, creationContext.busIdToNum);
+            LfBus lfBus3 = getLfBus(t3wt.getLeg3().getTerminal(), lfBuses, creationContext.busIdToNum);
             lfBranches.add(LfLeg1Branch.create(lfBus1, lfBus0, t3wt.getLeg1()));
             lfBranches.add(LfLeg2or3Branch.create(lfBus2, lfBus0, t3wt, t3wt.getLeg2()));
             lfBranches.add(LfLeg2or3Branch.create(lfBus3, lfBus0, t3wt, t3wt.getLeg3()));
@@ -177,14 +189,16 @@ public class NetworkContext {
         return lfBranches;
     }
 
-    private void selectSlackBus(SlackBusSelectionMode slackBusSelectionMode) {
+    private void selectSlackBus(SlackBusSelectionMode slackBusSelectionMode, double maxNominalV) {
         LfBus slackBus;
         switch (slackBusSelectionMode) {
             case FIRST:
                 slackBus = this.buses.get(0);
                 break;
             case MOST_MESHED:
+                // select most meshed bus among buses with highest nominal voltage
                 slackBus = this.buses.stream()
+                        .filter(bus -> bus.getNominalV() == maxNominalV)
                         .max(Comparator.comparingInt(LfBus::getNeighbors))
                         .orElseThrow(AssertionError::new);
                 break;

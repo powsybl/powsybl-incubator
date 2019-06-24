@@ -10,17 +10,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import com.google.common.collect.ImmutableList;
 import com.powsybl.substationdiagram.library.AnchorOrientation;
+import com.powsybl.substationdiagram.library.ComponentSize;
 import com.powsybl.substationdiagram.library.ComponentType;
 import com.powsybl.substationdiagram.svg.GraphMetadata;
 import com.powsybl.substationdiagram.svg.WireConnection;
 
+import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.shape.Polyline;
-import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static com.google.common.base.Preconditions.*;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
@@ -29,33 +35,25 @@ import javafx.scene.transform.Translate;
  */
 public class WireHandler {
 
-    private final Polyline node;
+    private final Polyline polyline;
 
-    private final List<Group> arrows = new ArrayList();
+    private final List<Group> arrows = new ArrayList<>();
 
     private final NodeHandler nodeHandler1;
 
     private final NodeHandler nodeHandler2;
 
     private final GraphMetadata metadata;
-    private static final int UP = 1;
-    private static final int DOWN = 2;
-    private static final int HV = 1;
-    private static final int VH = 2;
-    private int lastEvent;
-    private int lastOrientation;
-    private boolean transponed0;
-    private boolean transponed1;
 
-    public WireHandler(Polyline node, NodeHandler nodeHandler1, NodeHandler nodeHandler2, GraphMetadata metadata) {
-        this.node = Objects.requireNonNull(node);
+    public WireHandler(Polyline polyline, NodeHandler nodeHandler1, NodeHandler nodeHandler2, GraphMetadata metadata) {
+        this.polyline = Objects.requireNonNull(polyline);
         this.nodeHandler1 = Objects.requireNonNull(nodeHandler1);
         this.nodeHandler2 = Objects.requireNonNull(nodeHandler2);
         this.metadata = Objects.requireNonNull(metadata);
     }
 
-    public Node getNode() {
-        return this.node;
+    public Node getPolyline() {
+        return this.polyline;
     }
 
     public NodeHandler getNodeHandler1() {
@@ -66,21 +64,13 @@ public class WireHandler {
         return nodeHandler2;
     }
 
-    public void refresh() {
-        boolean done0 = false;
-        boolean done1 = false;
-        double dist = arrows.size() > 0 ? metadata.getArrowMetadata(arrows.get(0).getId()).getDistance() : 20;
+    public void addArrow(Group g) {
+        arrows.add(g);
+    }
 
-        double arrowSize = metadata.getComponentMetadata(ComponentType.ARROW).getSize().getHeight();
-        double dist0 = dist;
-        double dist1 = dist + 2 * arrowSize;
+    public void refresh() {
 
         WireConnection wireConnection = WireConnection.searchBetterAnchorPoints(metadata, nodeHandler1, nodeHandler2);
-
-        double x01 = node.getPoints().get(0);
-        double y01 = node.getPoints().get(1);
-        double x02 = node.getPoints().get(node.getPoints().size() - 2);
-        double y02 = node.getPoints().get(node.getPoints().size() - 1);
 
         // update polyline
         double x1 = nodeHandler1.getX() + wireConnection.getAnchorPoint1().getX();
@@ -89,186 +79,144 @@ public class WireHandler {
         double y2 = nodeHandler2.getY() + wireConnection.getAnchorPoint2().getY();
 
         if (x1 == x2 || y1 == y2) {
-            node.getPoints().setAll(x1, y1, x2, y2);
-            if (transponed0) {
-                translateArrow(0, x1 - x01, (y1 - y01) / 2, 0, arrowSize / 2, arrowSize / 2, false);
-            } else {
-                translateArrow(0, x1 - x01, y1 - y01, 0, arrowSize / 2, arrowSize / 2, false);
-            }
-            if (transponed1) {
-                translateArrow(1, x1 - x01, (y1 - y01) / 2, 0, arrowSize / 2, arrowSize / 2, false);
-            } else {
-                translateArrow(1, x1 - x01, y1 - y01, 0, arrowSize / 2, arrowSize / 2, false);
-            }
+            polyline.getPoints().setAll(x1, y1, x2, y2);
         } else {
             switch (wireConnection.getAnchorPoint1().getOrientation()) {
                 case VERTICAL:
                     if (wireConnection.getAnchorPoint2().getOrientation().equals(AnchorOrientation.VERTICAL)) {
-                        node.getPoints().setAll(x1, y1, x1, (y1 + y2) / 2, x2, (y1 + y2) / 2, x2, y2);
-                        if (Math.abs(y2 - (y1 + y2) / 2) < 30) {
-                            if (Math.abs(x2 - x1) < 30) {
-                                //arrows.forEach(a -> a.setVisible(false));
-                            } else {
-                                if (Math.abs(y02 - (y01 + y02) / 2) >= 30 && !transponed0) {
-                                    if (y2 >= y1) {
-                                        translateArrow(0, Math.signum(x1 - x2) * (-dist0 - (x01 - x1)), (y2 + y1) / 2  - y01 - dist0, Math.signum(x1 - x2) * 90, arrowSize / 2, arrowSize / 2, true);
-                                    } else {
-                                        translateArrow(0, Math.signum(x1 - x2) * (-dist0 - (x01 - x1)), (y2 + y1) / 2  - y01 + dist0, Math.signum(x1 - x2) * Math.signum(y2 - y1) * 90, arrowSize / 2, arrowSize / 2, true);
-                                    }
-                                    transponed0 = true;
-                                    done0 = true;
-                                }
-                            }
-                        } else if (Math.abs(y2 -  (y1 + y2) / 2) < 50) {
-
-                            if (Math.abs(y02 -  (y01 + y02) / 2) >= 50 && !transponed1) {
-                                if (y2 >= y1) {
-                                    translateArrow(1, Math.signum(x1 - x2) * (-dist1 - (x01 - x1)),   (y2 + y1) / 2  - y01 - dist1, Math.signum(x1 - x2) * 90, arrowSize / 2, arrowSize / 2, true);
-                                } else {
-                                    translateArrow(1, Math.signum(x1 - x2) * (-dist1 - (x01 - x1)),   (y2 + y1) / 2  - y01 + dist1, Math.signum(x1 - x2) * Math.signum(y2 - y1) * 90, arrowSize / 2, arrowSize / 2, true);
-
-                                }
-                                transponed1 = true;
-                                done1 = true;
-                            }
-                            if (Math.abs(y2 - (y1 + y2) / 2) >= 30 && transponed0) {
-                                if (y2 >= y1) {
-                                    translateArrow(0, Math.signum(x1 - x2) * (dist0 - (x01 - x1)), -((y2 + y01) / 2  - y1)  + dist0, Math.signum(x1 - x2) * Math.signum(y1 - y2) * 90, arrowSize / 2, arrowSize / 2, true);
-                                } else {
-                                    translateArrow(0, Math.signum(x1 - x2) * (dist0 - (x01 - x1)), -((y2 + y01) / 2  - y1)  - dist0, Math.signum(x1 - x2) * Math.signum(y1 - y2) * 90, arrowSize / 2, arrowSize / 2, true);
-
-                                }
-                                transponed0 = false;
-                                done0 = true;
-                            }
-                        } else {
-
-                            if (Math.abs(y2 - (y1 + y2) / 2) >= 50 && transponed1) {
-                                if (y2 >= y1) {
-                                    translateArrow(1, Math.signum(x1 - x2) * (dist1 - (x01 - x1)), -((y2 + y01) / 2  - y1)  + dist1, Math.signum(x1 - x2) * Math.signum(y1 - y2) * 90, arrowSize / 2, arrowSize / 2, true);
-                                } else {
-                                    translateArrow(1, Math.signum(x1 - x2) * (dist1 - (x01 - x1)), -((y2 + y01) / 2  - y1)  - dist1, Math.signum(x1 - x2) * Math.signum(y1 - y2) * 90, arrowSize / 2, arrowSize / 2, true);
-                                }
-                                transponed1 = false;
-                                done1 = true;
-                            }
-                        }
-                        if (!done0) {
-                            if (transponed0) {
-                                translateArrow(0, x1 - x01, (y1 - y01 + y2 - y02) / 2, 0, arrowSize / 2, arrowSize / 2, false);
-                            } else {
-                                translateArrow(0, x1 - x01, y1 - y01, 0, arrowSize / 2, arrowSize / 2, false);
-                            }
-                        }
-                        if (!done1) {
-                            if (transponed1) {
-                                translateArrow(1, x1 - x01, (y1 - y01 + y2 - y02) / 2, 0, arrowSize / 2, arrowSize / 2, false);
-                            } else {
-                                translateArrow(1, x1 - x01, y1 - y01, 0, arrowSize / 2, arrowSize / 2, false);
-                            }
-                        }
+                        polyline.getPoints().setAll(x1, y1, x1, (y1 + y2) / 2, x2, (y1 + y2) / 2, x2, y2);
                     } else {
-                        node.getPoints().setAll(x1, y1, x1, y2, x2, y2);
-
-                        if (lastOrientation == HV) {
-                            translateArrow(0, dist0 + x1 - x01, dist0 + y1 - y01, -90, arrowSize / 2, arrowSize / 2, true);
-                            translateArrow(1, dist1 + x1 - x01, dist1 + y1 - y01, -90, arrowSize / 2, arrowSize / 2, true);
-
-                        } else {
-                            translateArrows(x1 - x01, y1 - y01, 0, arrowSize / 2, arrowSize / 2, true);
-                        }
-
-                        lastOrientation = VH;
+                        polyline.getPoints().setAll(x1, y1, x1, y2, x2, y2);
                     }
                     break;
                 case HORIZONTAL:
 
                     if (wireConnection.getAnchorPoint2().getOrientation().equals(AnchorOrientation.HORIZONTAL)) {
-                        node.getPoints().setAll(x1, y1, (x1 + x2) / 2, y1, (x1 + x2) / 2, y2, x2, y2);
-                        if (y02 <= y01 && y2 > y01) {
-                            if (lastEvent != DOWN) {
-                                translateArrows(x1 - x01, y1 - y01 - 60, 180, arrowSize / 2, arrowSize / 2, false);
-                                lastEvent = DOWN;
-                            }
-                        } else if (y02 > y01 && y2 <= y01) {
-                            if (lastEvent != UP) {
-                                translateArrows(x1 - x01, y1 - y01 + 60, 180, arrowSize / 2, arrowSize / 2, false);
-                                lastEvent = UP;
-                            }
-                        } else {
-                            translateArrows(x1 - x01, y1 - y01, 0, arrowSize / 2, arrowSize / 2, false);
-                        }
+                        polyline.getPoints().setAll(x1, y1, (x1 + x2) / 2, y1, (x1 + x2) / 2, y2, x2, y2);
                     } else {
-                        node.getPoints().setAll(x1, y1, x2, y1, x2, y2);
-                        if (lastOrientation == VH) {
-                            translateArrow(0, -dist0 - (x01 - x1), -dist0 - (y01 - y1), 90, arrowSize / 2, arrowSize / 2, true);
-                            translateArrow(1, -dist1 - (x01 - x1), -dist1 - (y01 - y1), 90, arrowSize / 2, arrowSize / 2, true);
-                        } else {
-                            translateArrows(x1 - x01, y1 - y01, 0, arrowSize / 2, arrowSize / 2, false);
-                        }
-                        lastOrientation = HV;
+                        polyline.getPoints().setAll(x1, y1, x2, y1, x2, y2);
                     }
                     break;
                 case NONE:
                     // Case none-none is not handled, it never happens atm
                     if (wireConnection.getAnchorPoint2().getOrientation().equals(AnchorOrientation.HORIZONTAL)) {
-                        node.getPoints().setAll(x1, y1, x1, y2, x2, y2);
+                        polyline.getPoints().setAll(x1, y1, x1, y2, x2, y2);
                     } else {
-                        node.getPoints().setAll(x1, y1, x1, (y1 + y2) / 2, x2, (y1 + y2) / 2, x2, y2);
-                        if (y02 <= y01 && y2 > y01) {
-                            if (lastEvent != DOWN) {
-                                translateArrows(x1 - x01, y1 - y01 - 60, 180, arrowSize / 2, arrowSize / 2, false);
-                                lastEvent = DOWN;
-                            }
-                        } else if (y02 > y01 && y2 <= y01) {
-                            if (lastEvent != UP) {
-                                translateArrows(x1 - x01, y1 - y01 + 60, 180, arrowSize / 2, arrowSize / 2, false);
-                                lastEvent = UP;
-                            }
-                        } else {
-                            translateArrows(x1 - x01, y1 - y01, 0, arrowSize / 2, arrowSize / 2, false);
-                        }
+                        polyline.getPoints().setAll(x1, y1, x1, (y1 + y2) / 2, x2, (y1 + y2) / 2, x2, y2);
                     }
                     break;
                 default:
                     break;
             }
         }
+
+        relocateArrows();
     }
 
-    public void addArrow(Group g) {
-        arrows.add(g);
-    }
-
-    private void translateArrows(double dx, double dy, double angle, double pivotX, double pivotY, boolean rotateText) {
-        translateArrow(0, dx, dy, angle, pivotX, pivotY, rotateText);
-        translateArrow(1, dx, dy, angle, pivotX, pivotY, rotateText);
-    }
-
-    private void translateArrow(int index, double dx, double dy, double angle, double pivotX, double pivotY, boolean rotateText) {
-        if (arrows.size() > index) {
-            Group a = arrows.get(index);
-            if (angle != 0) {
-                Rotate rotate = new Rotate();
-                rotate.setAngle(angle);
-                rotate.setPivotX(pivotX);
-                rotate.setPivotY(pivotY);
-
-                a.getChildren().forEach(c -> {
-                    if (c instanceof Group) {
-                        c.getTransforms().add(rotate);
-                    } else if (rotateText && c instanceof Text) {
-                        c.getTransforms().add(rotate);
-                    }
-                });
-            }
-
-            Translate translate = new Translate();
-            translate.setX(dx);
-            translate.setY(dy);
-            translate.setZ(0);
-            a.getTransforms().addAll(translate);
+    private void relocateArrows() {
+        for (int i = 0; i < arrows.size(); i++) {
+            relocateArrow(polyline, arrows.get(i), i);
         }
+    }
+
+    private void relocateArrow(Polyline polyline, Group arrow, int arrowNum) {
+        ComponentSize arrowSize = metadata.getComponentMetadata(ComponentType.ARROW).getSize();
+        Point2D center = new Point2D(arrowSize.getWidth() / 2, arrowSize.getHeight() / 2);
+        double distance = metadata.getArrowMetadata(arrow.getId()).getDistance() + arrowNum * arrowSize.getHeight() * 2;
+        relocateArrow(polyline, arrow, center, distance);
+    }
+
+
+    /**
+     * A position in the 2D plane together with an orientation
+     */
+    static class OrientedPosition {
+
+        private final Point2D point;
+        private final double orientation;
+
+        public Point2D getPoint() {
+            return point;
+        }
+
+        public double getOrientation() {
+            return orientation;
+        }
+
+        public OrientedPosition(Point2D point, double orientation) {
+            this.point = point;
+            this.orientation = orientation;
+        }
+    }
+
+    private static void relocateArrow(Polyline polyline, Group arrow, Point2D center, double distance) {
+        OrientedPosition newCenterPosition = positionAtDistance(getPoints(polyline), distance);
+        Point2D newCenterPoint = newCenterPosition.getPoint().subtract(center);
+
+        arrow.getTransforms().clear();
+        arrow.getTransforms().add(new Translate(newCenterPoint.getX(), newCenterPoint.getY()));
+        arrow.getTransforms().add(new Rotate(newCenterPosition.getOrientation(), center.getX(), center.getY()));
+    }
+
+    private static boolean isEven(int number) {
+        return (number & 1) == 0;
+    }
+
+    private static List<Point2D> getPoints(Polyline line) {
+        List<Point2D> points = new ArrayList<>();
+        List<Double> coordinates = line.getPoints();
+        checkArgument(isEven(coordinates.size()), "Number of coordinates of polyline points should be even.");
+
+        for (int i = 0; i < coordinates.size(); i = i + 2) {
+            points.add(new Point2D(coordinates.get(i), coordinates.get(i+1)));
+        }
+        return ImmutableList.copyOf(points);
+    }
+
+    /**
+     * Computes the position at the specified distance on the line represented by a list of points,
+     * from the starting point to the end point.
+     */
+    static OrientedPosition positionAtDistance(List<Point2D> points, double distance) {
+        double residual = distance;
+
+        if (points.size() < 2) {
+            throw new IllegalArgumentException("Line must contain at least one segment");
+        }
+
+        Point2D start = null;
+        Point2D end = null;
+        for (int i = 0; i < points.size() - 1; i++) {
+            start = points.get(i);
+            end = points.get(i + 1);
+
+            double segmentLength = start.distance(end);
+            if (segmentLength < residual) {
+                residual -= segmentLength;
+            } else {
+                return positionAtRatio(start, end, residual/segmentLength);
+            }
+        }
+
+        return positionAtRatio(start, end, 1f);
+    }
+
+    /**
+     * Computes the position at the specified ratio from the starting point to the end point.
+     */
+    private static OrientedPosition positionAtRatio(Point2D start, Point2D end, double ratio) {
+        Point2D segment = end.subtract(start);
+        Point2D point = start.add(end.subtract(start).multiply(ratio));
+        double angle = orientedAngle(new Point2D(0, 1), segment);
+        return new OrientedPosition(point, angle);
+    }
+
+    /**
+     * Computes the oriented angle between 2 segments, in degrees.
+     */
+    private static double orientedAngle(Point2D segment1, Point2D segment2) {
+        double normalizedCrossProduct = segment1.crossProduct(segment2).dotProduct(0, 0, 1) / (segment1.magnitude() * segment2.magnitude());
+        return Math.toDegrees(Math.asin(normalizedCrossProduct));
     }
 
 }

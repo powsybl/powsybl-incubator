@@ -6,6 +6,7 @@
  */
 package com.powsybl.loadflow.simple.equations;
 
+import com.powsybl.commons.PowsyblException;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.simple.network.NetworkContext;
 import com.powsybl.math.matrix.Matrix;
@@ -25,11 +26,9 @@ public class EquationSystem {
 
     private final NetworkContext networkContext;
 
-    private final Map<Equation, List<EquationTerm>> equations = new TreeMap<>();
+    private final NavigableMap<Equation, List<EquationTerm>> equations = new TreeMap<>();
 
-    private final Map<Variable, Map<Equation, List<EquationTerm>>> variables = new TreeMap<>();
-
-    private final double[] targets;
+    private final NavigableMap<Variable, Map<Equation, List<EquationTerm>>> variables = new TreeMap<>();
 
     private static final class PartialDerivative {
 
@@ -90,37 +89,31 @@ public class EquationSystem {
         for (Variable variable : variables.keySet()) {
             variable.setColumn(columnCount++);
         }
+    }
 
-        targets = new double[equations.size()];
-        for (Map.Entry<Equation, List<EquationTerm>> e : equations.entrySet()) {
-            Equation eq  = e.getKey();
-            eq.initTarget(networkContext, targets);
-            for (EquationTerm equationTerm : e.getValue()) {
-                for (Variable variable : equationTerm.getVariables()) {
-                    targets[equationTerm.getEquation().getRow()] -= equationTerm.rhs(variable);
-                }
-            }
+    public SortedSet<Equation> getEquations() {
+        return equations.navigableKeySet();
+    }
+
+    public List<EquationTerm> getEquationTerms(Equation equation) {
+        Objects.requireNonNull(equation);
+        List<EquationTerm> equationTerms = equations.get(equation);
+        if (equationTerms == null) {
+            throw new PowsyblException("Equation " + equation + " not found");
         }
+        return equationTerms;
     }
 
-    public Set<Equation> getEquations() {
-        return equations.keySet();
-    }
-
-    public Set<Variable> getVariables() {
-        return variables.keySet();
-    }
-
-    public double[] getTargets() {
-        return targets;
+    public SortedSet<Variable> getVariables() {
+        return variables.navigableKeySet();
     }
 
     public List<String> getRowNames() {
-        return getEquations().stream().sorted().map(eq -> networkContext.getBus(eq.getNum()).getId() + "/" + eq.getType()).collect(Collectors.toList());
+        return getEquations().stream().map(eq -> networkContext.getBus(eq.getNum()).getId() + "/" + eq.getType()).collect(Collectors.toList());
     }
 
     public List<String> getColumnNames() {
-        return getVariables().stream().sorted().map(v -> networkContext.getBus(v.getNum()).getId() + "/" + v.getType()).collect(Collectors.toList());
+        return getVariables().stream().map(v -> networkContext.getBus(v.getNum()).getId() + "/" + v.getType()).collect(Collectors.toList());
     }
 
     public double[] initState() {
@@ -133,6 +126,20 @@ public class EquationSystem {
             v.initState(mode, networkContext, x);
         }
         return x;
+    }
+
+    public double[] initTargets() {
+        double[] targets = new double[equations.size()];
+        for (Map.Entry<Equation, List<EquationTerm>> e : equations.entrySet()) {
+            Equation eq  = e.getKey();
+            eq.initTarget(networkContext, targets);
+            for (EquationTerm equationTerm : e.getValue()) {
+                for (Variable variable : equationTerm.getVariables()) {
+                    targets[equationTerm.getEquation().getRow()] -= equationTerm.rhs(variable);
+                }
+            }
+        }
+        return targets;
     }
 
     public void updateEquationTerms(double[] x) {
@@ -166,7 +173,6 @@ public class EquationSystem {
                 }
             }
         }
-        Vectors.minus(fx, targets);
     }
 
     public Matrix buildJacobian(MatrixFactory matrixFactory) {

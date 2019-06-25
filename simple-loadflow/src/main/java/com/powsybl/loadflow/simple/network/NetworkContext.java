@@ -37,6 +37,8 @@ public class NetworkContext {
 
     private final List<LfBranch> branches;
 
+    private final LfBus slackBus;
+
     private static class CreationContext {
 
         private final Set<Branch> branchSet = new LinkedHashSet<>();
@@ -64,7 +66,7 @@ public class NetworkContext {
         this.buses = createBuses(buses, hvdcLines, creationContext);
         branches = createBranches(this.buses, creationContext);
 
-        selectSlackBus(slackBusSelectionMode, creationContext.maxNominalV);
+        slackBus = selectSlackBus(slackBusSelectionMode, creationContext.maxNominalV);
     }
 
     private static List<LfBus> createBuses(List<Bus> buses, Map<HvdcConverterStation, HvdcLine> hvdcLines, CreationContext creationContext) {
@@ -189,7 +191,7 @@ public class NetworkContext {
         return lfBranches;
     }
 
-    private void selectSlackBus(SlackBusSelectionMode slackBusSelectionMode, double maxNominalV) {
+    private LfBus selectSlackBus(SlackBusSelectionMode slackBusSelectionMode, double maxNominalV) {
         LfBus slackBus;
         switch (slackBusSelectionMode) {
             case FIRST:
@@ -207,6 +209,7 @@ public class NetworkContext {
         }
         slackBus.setSlack(true);
         LOGGER.debug("Selected slack bus (mode={}): {}", slackBusSelectionMode, slackBus.getId());
+        return slackBus;
     }
 
     private static LfBus getLfBus(Terminal terminal, List<LfBus> lfBuses, Map<String, Integer> busIdToNum) {
@@ -275,6 +278,10 @@ public class NetworkContext {
 
     public LfBus getBus(int num) {
         return buses.get(num);
+    }
+
+    public LfBus getSlackBus() {
+        return slackBus;
     }
 
     public void resetState() {

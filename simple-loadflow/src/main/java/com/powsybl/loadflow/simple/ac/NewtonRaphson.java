@@ -8,8 +8,8 @@ package com.powsybl.loadflow.simple.ac;
 
 import com.google.common.base.Stopwatch;
 import com.powsybl.loadflow.simple.ac.equations.AcEquationSystem;
-import com.powsybl.loadflow.simple.equations.EquationSystem;
-import com.powsybl.loadflow.simple.equations.Vectors;
+import com.powsybl.loadflow.simple.equations.*;
+import com.powsybl.loadflow.simple.network.LfBus;
 import com.powsybl.loadflow.simple.network.NetworkContext;
 import com.powsybl.math.matrix.LUDecomposition;
 import com.powsybl.math.matrix.Matrix;
@@ -17,6 +17,7 @@ import com.powsybl.math.matrix.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -36,7 +37,17 @@ public class NewtonRaphson {
     private final NewtonRaphsonObserver observer;
 
     static class NewtonRaphsonContext {
+
+        double[] x;
+
+        double[] targets;
+
+        double[] fx;
+
+        List<EquationTerm> slackBusActivePowerEquationTerms;
+
         Matrix j;
+
         LUDecomposition lu;
     }
 
@@ -46,20 +57,20 @@ public class NewtonRaphson {
         this.observer = Objects.requireNonNull(observer);
     }
 
-    private NewtonRaphsonStatus runIteration(int iteration, EquationSystem system, double[] x, double[] fx,
-                                             NewtonRaphsonContext context) {
+    private NewtonRaphsonStatus runIteration(int iteration, EquationSystem system, NewtonRaphsonContext context) {
         observer.beginIteration(iteration);
 
         // evaluate equations
         observer.beforeEquationEvaluation(iteration);
 
-        system.updateEquationTerms(x);
-        system.evalEquations(fx);
+        system.updateEquationTerms(context.x);
+        system.evalEquations(context.fx);
+        Vectors.minus(context.fx, context.targets);
 
-        observer.afterEquationEvaluation(fx, system, iteration);
+        observer.afterEquationEvaluation(context.fx, system, iteration);
 
         // calculate norm L2 of equations
-        double norm = Vectors.norm2(fx);
+        double norm = Vectors.norm2(context.fx);
         observer.norm(norm);
         if (norm < EPS_CONV) { // perfect match!
             observer.endIteration(iteration);
@@ -92,7 +103,7 @@ public class NewtonRaphson {
         try {
             observer.beforeLuSolve(iteration);
 
-            context.lu.solve(fx);
+            context.lu.solve(context.fx);
 
             observer.afterLuSolve(iteration);
         } catch (Exception e) {
@@ -105,9 +116,9 @@ public class NewtonRaphson {
         observer.beforeStateUpdate(iteration);
 
         // update x
-        Vectors.minus(x, fx);
+        Vectors.minus(context.x, context.fx);
 
-        observer.afterStateUpdate(x, system, iteration);
+        observer.afterStateUpdate(context.x, system, iteration);
 
         return null;
     }
@@ -119,22 +130,32 @@ public class NewtonRaphson {
 
         observer.beforeEquationSystemCreation();
 
-        EquationSystem system = AcEquationSystem.create(networkContext);
+        EquationContext equationContext = new EquationContext();
+        EquationSystem system = AcEquationSystem.create(networkContext, equationContext);
 
         observer.afterEquationSystemCreation();
 
-        // initialize state vector (flat start)
-        double[] x = system.initState(parameters.getVoltageInitMode());
+        NewtonRaphsonContext context = new NewtonRaphsonContext();
 
-        double[] fx = new double[system.getEquations().size()];
+        // initialize state vector (flat start)
+        context.x = system.initState(parameters.getVoltageInitMode());
+
+        // initialize target vector
+        context.targets = system.initTargets();
+
+        // initialize mismatch vector (difference between equation values and targets)
+        context.fx = new double[system.getEquations().size()];
+
+        // find equation terms need to calculate slack bus active power injection
+        LfBus slackBus = networkContext.getSlackBus();
+        Equation slackBusActivePowerEquation = equationContext.getEquation(slackBus.getNum(), EquationType.BUS_P);
+        context.slackBusActivePowerEquationTerms = system.getEquationTerms(slackBusActivePowerEquation);
 
         int iteration = 0;
 
-        NewtonRaphsonContext context = new NewtonRaphsonContext();
-
         NewtonRaphsonStatus status = NewtonRaphsonStatus.NO_CALCULATION;
         while (iteration <= parameters.getMaxIteration()) {
-            NewtonRaphsonStatus newStatus = runIteration(iteration, system, x, fx, context);
+            NewtonRaphsonStatus newStatus = runIteration(iteration, system, context);
             if (newStatus != null) {
                 status = newStatus;
                 break;
@@ -149,7 +170,7 @@ public class NewtonRaphson {
         networkContext.resetState();
 
         if (iteration < parameters.getMaxIteration()) {
-            system.updateState(x);
+            system.updateState(context.x);
         } else {
             status = NewtonRaphsonStatus.MAX_ITERATION_REACHED;
         }

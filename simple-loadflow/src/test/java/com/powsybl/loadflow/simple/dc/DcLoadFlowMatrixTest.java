@@ -97,7 +97,7 @@ public class DcLoadFlowMatrixTest {
         assertEquals(-55.63344061453968d, j.toDense().get(3, 2), 0d);
         assertEquals(55.63344061453968d, j.toDense().get(3, 3), 0d);
 
-        double[] targets = equationSystem.getTargets();
+        double[] targets = equationSystem.initTargets();
         try (PrintStream ps = LoggerFactory.getInfoPrintStream(LOGGER)) {
             ps.println("TGT=");
             Matrix.createFromColumn(targets, matrixFactory)

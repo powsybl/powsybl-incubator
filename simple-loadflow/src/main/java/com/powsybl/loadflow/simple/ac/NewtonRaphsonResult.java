@@ -17,15 +17,15 @@ public class NewtonRaphsonResult {
 
     private NewtonRaphsonStatus status;
 
-    private double slackBusActivePower;
+    private double slackBusActivePowerMismatch;
 
-    public NewtonRaphsonResult(NewtonRaphsonStatus status, int iterations, double slackBusActivePower) {
+    public NewtonRaphsonResult(NewtonRaphsonStatus status, int iterations, double slackBusActivePowerMismatch) {
         if (iterations < 0) {
             throw new IllegalArgumentException("Invalid iteration count: " + iterations);
         }
         this.status = Objects.requireNonNull(status);
         this.iterations = iterations;
-        this.slackBusActivePower = slackBusActivePower;
+        this.slackBusActivePowerMismatch = slackBusActivePowerMismatch;
     }
 
     public NewtonRaphsonStatus getStatus() {
@@ -36,7 +36,7 @@ public class NewtonRaphsonResult {
         return iterations;
     }
 
-    public double getSlackBusActivePower() {
-        return slackBusActivePower;
+    public double getSlackBusActivePowerMismatch() {
+        return slackBusActivePowerMismatch;
     }
 }

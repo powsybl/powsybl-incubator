@@ -93,8 +93,8 @@ public class SimpleAcLoadFlow implements LoadFlow {
                 .run(nrParameters);
 
         stopwatch.stop();
-        LOGGER.info("Ac loadflow ran in {} ms (status={}, iteration={}, slackBusP={})", stopwatch.elapsed(TimeUnit.MILLISECONDS),
-                result.getStatus(), result.getIterations(), result.getSlackBusActivePower() * PerUnit.SB);
+        LOGGER.info("Ac loadflow ran in {} ms (status={}, iteration={}, slackBusActivePowerMismatch={})", stopwatch.elapsed(TimeUnit.MILLISECONDS),
+                result.getStatus(), result.getIterations(), result.getSlackBusActivePowerMismatch() * PerUnit.SB);
 
         Map<String, String> metrics = ImmutableMap.of("iterations", Integer.toString(result.getIterations()),
                 "status", result.getStatus().name());

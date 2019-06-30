@@ -37,6 +37,8 @@ public class NetworkContext {
 
     private final List<LfBranch> branches;
 
+    private final LfBus slackBus;
+
     private static class CreationContext {
 
         private final Set<Branch> branchSet = new LinkedHashSet<>();
@@ -64,7 +66,7 @@ public class NetworkContext {
         this.buses = createBuses(buses, hvdcLines, creationContext);
         branches = createBranches(this.buses, creationContext);
 
-        selectSlackBus(slackBusSelectionMode, creationContext.maxNominalV);
+        slackBus = selectSlackBus(slackBusSelectionMode, creationContext.maxNominalV);
     }
 
     private static List<LfBus> createBuses(List<Bus> buses, Map<HvdcConverterStation, HvdcLine> hvdcLines, CreationContext creationContext) {
@@ -189,15 +191,15 @@ public class NetworkContext {
         return lfBranches;
     }
 
-    private void selectSlackBus(SlackBusSelectionMode slackBusSelectionMode, double maxNominalV) {
-        LfBus slackBus;
+    private LfBus selectSlackBus(SlackBusSelectionMode slackBusSelectionMode, double maxNominalV) {
+        LfBus selectedSlackBus;
         switch (slackBusSelectionMode) {
             case FIRST:
-                slackBus = this.buses.get(0);
+                selectedSlackBus = this.buses.get(0);
                 break;
             case MOST_MESHED:
                 // select most meshed bus among buses with highest nominal voltage
-                slackBus = this.buses.stream()
+                selectedSlackBus = this.buses.stream()
                         .filter(bus -> bus.getNominalV() == maxNominalV)
                         .max(Comparator.comparingInt(LfBus::getNeighbors))
                         .orElseThrow(AssertionError::new);
@@ -205,8 +207,9 @@ public class NetworkContext {
             default:
                 throw new IllegalStateException("Slack bus selection mode unknown:" + slackBusSelectionMode);
         }
-        slackBus.setSlack(true);
-        LOGGER.debug("Selected slack bus (mode={}): {}", slackBusSelectionMode, slackBus.getId());
+        selectedSlackBus.setSlack(true);
+        LOGGER.debug("Selected slack bus (mode={}): {}", slackBusSelectionMode, selectedSlackBus.getId());
+        return selectedSlackBus;
     }
 
     private static LfBus getLfBus(Terminal terminal, List<LfBus> lfBuses, Map<String, Integer> busIdToNum) {
@@ -275,6 +278,10 @@ public class NetworkContext {
 
     public LfBus getBus(int num) {
         return buses.get(num);
+    }
+
+    public LfBus getSlackBus() {
+        return slackBus;
     }
 
     public void resetState() {

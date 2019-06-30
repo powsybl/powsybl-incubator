@@ -14,6 +14,7 @@ import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
 import com.powsybl.loadflow.LoadFlowResultImpl;
 import com.powsybl.loadflow.simple.network.NetworkContext;
+import com.powsybl.loadflow.simple.network.PerUnit;
 import com.powsybl.math.matrix.MatrixFactory;
 import com.powsybl.math.matrix.SparseMatrixFactory;
 import org.slf4j.Logger;
@@ -92,7 +93,8 @@ public class SimpleAcLoadFlow implements LoadFlow {
                 .run(nrParameters);
 
         stopwatch.stop();
-        LOGGER.info("Ac loadflow ran in {} ms (status={})", stopwatch.elapsed(TimeUnit.MILLISECONDS), result.getStatus());
+        LOGGER.info("Ac loadflow ran in {} ms (status={}, iteration={}, slackBusP={})", stopwatch.elapsed(TimeUnit.MILLISECONDS),
+                result.getStatus(), result.getIterations(), result.getSlackBusActivePower() * PerUnit.SB);
 
         Map<String, String> metrics = ImmutableMap.of("iterations", Integer.toString(result.getIterations()),
                 "status", result.getStatus().name());

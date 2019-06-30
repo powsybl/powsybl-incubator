@@ -91,7 +91,7 @@ public class SimpleDcLoadFlow implements LoadFlow {
 
         double[] x = equationSystem.initState(loadFlowParameters.getVoltageInitMode());
 
-        double[] targets = equationSystem.getTargets();
+        double[] targets = equationSystem.initTargets();
 
         equationSystem.updateEquationTerms(x);
         Matrix j = equationSystem.buildJacobian(matrixFactory);

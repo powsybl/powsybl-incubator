@@ -6,6 +6,7 @@
  */
 package com.powsybl.loadflow.simple.equations;
 
+import com.powsybl.commons.PowsyblException;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.simple.network.NetworkContext;
 import com.powsybl.math.matrix.Matrix;
@@ -25,11 +26,11 @@ public class EquationSystem {
 
     private final NetworkContext networkContext;
 
-    private final Map<Equation, List<EquationTerm>> equations = new TreeMap<>();
+    private final NavigableMap<Equation, List<EquationTerm>> sortedEquationsToSolve = new TreeMap<>();
 
-    private final Map<Variable, Map<Equation, List<EquationTerm>>> variables = new TreeMap<>();
+    private final Map<Equation, List<EquationTerm>> equationNotToSolve = new HashMap<>();
 
-    private final double[] targets;
+    private final NavigableMap<Variable, NavigableMap<Equation, List<EquationTerm>>> sortedVariablesToFind = new TreeMap<>();
 
     private static final class PartialDerivative {
 
@@ -69,30 +70,74 @@ public class EquationSystem {
         // index derivatives per variable then per equation
         for (EquationTerm equationTerm : equationTerms) {
             Equation equation = equationTerm.getEquation();
-            if (!equation.isPartOfSystem()) {
-                continue;
-            }
-            equations.computeIfAbsent(equation, k -> new ArrayList<>())
-                    .add(equationTerm);
-            for (Variable variable : equationTerm.getVariables()) {
-                variables.computeIfAbsent(variable, k -> new TreeMap<>())
-                        .computeIfAbsent(equation, k -> new ArrayList<>())
+            if (equation.isToSolve()) {
+                sortedEquationsToSolve.computeIfAbsent(equation, k -> new ArrayList<>())
+                        .add(equationTerm);
+                for (Variable variable : equationTerm.getVariables()) {
+                    sortedVariablesToFind.computeIfAbsent(variable, k -> new TreeMap<>())
+                            .computeIfAbsent(equation, k -> new ArrayList<>())
+                            .add(equationTerm);
+                }
+            } else {
+                equationNotToSolve.computeIfAbsent(equation, k -> new ArrayList<>())
                         .add(equationTerm);
             }
         }
 
         int rowCount = 0;
-        for (Equation equation : equations.keySet()) {
+        for (Equation equation : sortedEquationsToSolve.keySet()) {
             equation.setRow(rowCount++);
         }
 
         int columnCount = 0;
-        for (Variable variable : variables.keySet()) {
+        for (Variable variable : sortedVariablesToFind.keySet()) {
             variable.setColumn(columnCount++);
         }
+    }
 
-        targets = new double[equations.size()];
-        for (Map.Entry<Equation, List<EquationTerm>> e : equations.entrySet()) {
+    public SortedSet<Equation> getEquationsToSolve() {
+        return sortedEquationsToSolve.navigableKeySet();
+    }
+
+    public List<EquationTerm> getEquationTerms(Equation equation) {
+        Objects.requireNonNull(equation);
+        List<EquationTerm> terms = sortedEquationsToSolve.get(equation);
+        if (terms == null) {
+            terms = equationNotToSolve.get(equation);
+            if (terms == null) {
+                throw new PowsyblException("Equation " + equation + " not found");
+            }
+        }
+        return terms;
+    }
+
+    public SortedSet<Variable> getVariablesToFind() {
+        return sortedVariablesToFind.navigableKeySet();
+    }
+
+    public List<String> getRowNames() {
+        return getEquationsToSolve().stream().map(eq -> networkContext.getBus(eq.getNum()).getId() + "/" + eq.getType()).collect(Collectors.toList());
+    }
+
+    public List<String> getColumnNames() {
+        return getVariablesToFind().stream().map(v -> networkContext.getBus(v.getNum()).getId() + "/" + v.getType()).collect(Collectors.toList());
+    }
+
+    public double[] initState() {
+        return initState(LoadFlowParameters.VoltageInitMode.UNIFORM_VALUES);
+    }
+
+    public double[] initState(LoadFlowParameters.VoltageInitMode mode) {
+        double[] x = new double[getVariablesToFind().size()];
+        for (Variable v : getVariablesToFind()) {
+            v.initState(mode, networkContext, x);
+        }
+        return x;
+    }
+
+    public double[] initTargets() {
+        double[] targets = new double[sortedEquationsToSolve.size()];
+        for (Map.Entry<Equation, List<EquationTerm>> e : sortedEquationsToSolve.entrySet()) {
             Equation eq  = e.getKey();
             eq.initTarget(networkContext, targets);
             for (EquationTerm equationTerm : e.getValue()) {
@@ -101,38 +146,7 @@ public class EquationSystem {
                 }
             }
         }
-    }
-
-    public Set<Equation> getEquations() {
-        return equations.keySet();
-    }
-
-    public Set<Variable> getVariables() {
-        return variables.keySet();
-    }
-
-    public double[] getTargets() {
         return targets;
-    }
-
-    public List<String> getRowNames() {
-        return getEquations().stream().sorted().map(eq -> networkContext.getBus(eq.getNum()).getId() + "/" + eq.getType()).collect(Collectors.toList());
-    }
-
-    public List<String> getColumnNames() {
-        return getVariables().stream().sorted().map(v -> networkContext.getBus(v.getNum()).getId() + "/" + v.getType()).collect(Collectors.toList());
-    }
-
-    public double[] initState() {
-        return initState(LoadFlowParameters.VoltageInitMode.UNIFORM_VALUES);
-    }
-
-    public double[] initState(LoadFlowParameters.VoltageInitMode mode) {
-        double[] x = new double[getVariables().size()];
-        for (Variable v : getVariables()) {
-            v.initState(mode, networkContext, x);
-        }
-        return x;
     }
 
     public void updateEquationTerms(double[] x) {
@@ -143,7 +157,7 @@ public class EquationSystem {
 
     public void updateState(double[] x) {
         // update state variable
-        for (Variable v : getVariables()) {
+        for (Variable v : getVariablesToFind()) {
             v.updateState(networkContext, x);
         }
         // then other variables
@@ -153,11 +167,11 @@ public class EquationSystem {
     }
 
     public void evalEquations(double[] fx) {
-        if (fx.length != equations.size()) {
+        if (fx.length != sortedEquationsToSolve.size()) {
             throw new IllegalArgumentException("Bad afterEquationEvaluation vector length: " + fx.length);
         }
         Arrays.fill(fx, 0);
-        for (Map.Entry<Equation, List<EquationTerm>> e : equations.entrySet()) {
+        for (Map.Entry<Equation, List<EquationTerm>> e : sortedEquationsToSolve.entrySet()) {
             Equation equation = e.getKey();
             for (EquationTerm equationTerm : e.getValue()) {
                 fx[equation.getRow()] += equationTerm.eval();
@@ -166,18 +180,17 @@ public class EquationSystem {
                 }
             }
         }
-        Vectors.minus(fx, targets);
     }
 
     public Matrix buildJacobian(MatrixFactory matrixFactory) {
         Objects.requireNonNull(matrixFactory);
 
-        int rowCount = equations.size();
-        int columnCount = variables.size();
+        int rowCount = sortedEquationsToSolve.size();
+        int columnCount = sortedVariablesToFind.size();
 
         Matrix j = matrixFactory.create(rowCount, columnCount, rowCount * 3);
 
-        for (Map.Entry<Variable, Map<Equation, List<EquationTerm>>> e : variables.entrySet()) {
+        for (Map.Entry<Variable, NavigableMap<Equation, List<EquationTerm>>> e : sortedVariablesToFind.entrySet()) {
             Variable var = e.getKey();
             int column = var.getColumn();
             for (Map.Entry<Equation, List<EquationTerm>> e2 : e.getValue().entrySet()) {

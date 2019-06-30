@@ -14,6 +14,7 @@ import com.powsybl.loadflow.simple.network.NetworkContext;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -23,20 +24,21 @@ public final class AcEquationSystem {
     private AcEquationSystem() {
     }
 
-    public static EquationSystem create(NetworkContext networkContext) {
+    public static EquationSystem create(NetworkContext networkContext, EquationContext equationContext) {
+        Objects.requireNonNull(networkContext);
+        Objects.requireNonNull(equationContext);
+
         List<EquationTerm> equationTerms = new ArrayList<>();
         List<VariableUpdate> variableUpdates = new ArrayList<>();
-
-        EquationContext equationContext = new EquationContext();
 
         for (LfBus bus : networkContext.getBuses()) {
             if (bus.isSlack()) {
                 equationTerms.add(new BusPhaseEquationTerm(bus, equationContext));
-                equationContext.getEquation(bus.getNum(), EquationType.BUS_P).setPartOfSystem(false);
+                equationContext.getEquation(bus.getNum(), EquationType.BUS_P).setToSolve(false);
             }
             if (bus.hasVoltageControl()) {
                 equationTerms.add(new BusVoltageEquationTerm(bus, equationContext));
-                equationContext.getEquation(bus.getNum(), EquationType.BUS_Q).setPartOfSystem(false);
+                equationContext.getEquation(bus.getNum(), EquationType.BUS_Q).setToSolve(false);
             }
             for (LfShunt shunt : bus.getShunts()) {
                 ShuntCompensatorReactiveFlowEquationTerm q = new ShuntCompensatorReactiveFlowEquationTerm(shunt, bus, networkContext, equationContext);

@@ -27,7 +27,7 @@ public class Equation implements Comparable<Equation> {
     /**
      * true if this equation term is par of an equation that is part of a system to solve, false otherwise
      */
-    private boolean partOfSystem = true;
+    private boolean toSolve = true;
 
     Equation(int num, EquationType type) {
         this.num = num;
@@ -50,12 +50,12 @@ public class Equation implements Comparable<Equation> {
         this.row = row;
     }
 
-    public boolean isPartOfSystem() {
-        return partOfSystem;
+    public boolean isToSolve() {
+        return toSolve;
     }
 
-    public void setPartOfSystem(boolean partOfSystem) {
-        this.partOfSystem = partOfSystem;
+    public void setToSolve(boolean toSolve) {
+        this.toSolve = toSolve;
     }
 
     void initTarget(NetworkContext network, double[] targets) {

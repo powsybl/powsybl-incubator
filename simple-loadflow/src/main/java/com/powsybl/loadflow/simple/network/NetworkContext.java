@@ -192,14 +192,14 @@ public class NetworkContext {
     }
 
     private LfBus selectSlackBus(SlackBusSelectionMode slackBusSelectionMode, double maxNominalV) {
-        LfBus slackBus;
+        LfBus selectedSlackBus;
         switch (slackBusSelectionMode) {
             case FIRST:
-                slackBus = this.buses.get(0);
+                selectedSlackBus = this.buses.get(0);
                 break;
             case MOST_MESHED:
                 // select most meshed bus among buses with highest nominal voltage
-                slackBus = this.buses.stream()
+                selectedSlackBus = this.buses.stream()
                         .filter(bus -> bus.getNominalV() == maxNominalV)
                         .max(Comparator.comparingInt(LfBus::getNeighbors))
                         .orElseThrow(AssertionError::new);
@@ -207,9 +207,9 @@ public class NetworkContext {
             default:
                 throw new IllegalStateException("Slack bus selection mode unknown:" + slackBusSelectionMode);
         }
-        slackBus.setSlack(true);
-        LOGGER.debug("Selected slack bus (mode={}): {}", slackBusSelectionMode, slackBus.getId());
-        return slackBus;
+        selectedSlackBus.setSlack(true);
+        LOGGER.debug("Selected slack bus (mode={}): {}", slackBusSelectionMode, selectedSlackBus.getId());
+        return selectedSlackBus;
     }
 
     private static LfBus getLfBus(Terminal terminal, List<LfBus> lfBuses, Map<String, Integer> busIdToNum) {

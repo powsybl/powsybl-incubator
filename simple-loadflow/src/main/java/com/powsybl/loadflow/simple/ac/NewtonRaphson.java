@@ -121,7 +121,7 @@ public class NewtonRaphson {
         return null;
     }
 
-    private double computeSlackBusActivePower(EquationContext equationContext, EquationSystem equationSystem) {
+    private double computeSlackBusActivePowerMismatch(EquationContext equationContext, EquationSystem equationSystem) {
         // find equation terms need to calculate slack bus active power injection
         LfBus slackBus = networkContext.getSlackBus();
         Equation slackBusActivePowerEquation = equationContext.getEquation(slackBus.getNum(), EquationType.BUS_P);
@@ -131,6 +131,9 @@ public class NewtonRaphson {
         for (EquationTerm equationTerm : slackBusActivePowerEquationTerms) {
             p += equationTerm.eval();
         }
+
+        // slack bus can also have real injection connected
+        p -= slackBus.getTargetP();
 
         return p;
     }
@@ -182,11 +185,11 @@ public class NewtonRaphson {
             status = NewtonRaphsonStatus.MAX_ITERATION_REACHED;
         }
 
-        double slackBusActivePower = computeSlackBusActivePower(equationContext, equationSystem);
+        double slackBusActivePowerMismatch = computeSlackBusActivePowerMismatch(equationContext, equationSystem);
 
         stopwatch.stop();
         LOGGER.debug("Newton Raphson done in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
 
-        return new NewtonRaphsonResult(status, iteration, slackBusActivePower);
+        return new NewtonRaphsonResult(status, iteration, slackBusActivePowerMismatch);
     }
 }

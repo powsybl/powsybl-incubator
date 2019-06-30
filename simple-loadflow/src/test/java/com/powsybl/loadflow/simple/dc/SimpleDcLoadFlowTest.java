@@ -17,6 +17,7 @@ import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.simple.network.FourBusNetworkFactory;
 import com.powsybl.math.matrix.DenseMatrixFactory;
 import com.powsybl.math.matrix.MatrixFactory;
+import com.powsybl.tools.PowsyblCoreVersion;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
@@ -39,7 +40,7 @@ public class SimpleDcLoadFlowTest {
         LoadFlow loadFlow = new SimpleDcLoadFlowFactory().create(network, null, 0);
         assertTrue(loadFlow instanceof SimpleDcLoadFlow);
         assertEquals("Simple DC loadflow", loadFlow.getName());
-        assertEquals("1.0", loadFlow.getVersion());
+        assertEquals(new PowsyblCoreVersion().getMavenProjectVersion(), loadFlow.getVersion());
     }
 
     @Test
@@ -60,17 +61,14 @@ public class SimpleDcLoadFlowTest {
         // Constructor with Network
         LoadFlow loadFlow3 = new SimpleDcLoadFlow(network);
         assertNotNull(loadFlow3);
-        assertTrue(loadFlow3 instanceof SimpleDcLoadFlow);
 
         // Constructor with Network and MatrixFactory
         LoadFlow loadFlow4 = new SimpleDcLoadFlow(network, matrixFactory);
         assertNotNull(loadFlow4);
-        assertTrue(loadFlow4 instanceof SimpleDcLoadFlow);
 
         // Static factory method
         LoadFlow loadFlow5 = SimpleDcLoadFlow.create(network);
         assertNotNull(loadFlow5);
-        assertTrue(loadFlow5 instanceof SimpleDcLoadFlow);
     }
 
     /**
@@ -91,7 +89,7 @@ public class SimpleDcLoadFlowTest {
 
         LoadFlowParameters parameters = new LoadFlowParameters();
         LoadFlow lf = new SimpleDcLoadFlowFactory(matrixFactory).create(network, null, 0);
-        lf.run(network.getVariantManager().getWorkingVariantId(), parameters);
+        lf.run(network.getVariantManager().getWorkingVariantId(), parameters).join();
 
         assertEquals(300, line1.getTerminal1().getP(), 0.01);
         assertEquals(-300, line1.getTerminal2().getP(), 0.01);
@@ -100,7 +98,7 @@ public class SimpleDcLoadFlowTest {
 
         network.getLine("NHV1_NHV2_1").getTerminal1().disconnect();
 
-        lf.run(network.getVariantManager().getWorkingVariantId(), parameters);
+        lf.run(network.getVariantManager().getWorkingVariantId(), parameters).join();
 
         assertTrue(Double.isNaN(line1.getTerminal1().getP()));
         assertEquals(0, line1.getTerminal2().getP(), 0);
@@ -110,7 +108,7 @@ public class SimpleDcLoadFlowTest {
         network.getLine("NHV1_NHV2_1").getTerminal1().connect();
         network.getLine("NHV1_NHV2_1").getTerminal2().disconnect();
 
-        lf.run(network.getVariantManager().getWorkingVariantId(), parameters);
+        lf.run(network.getVariantManager().getWorkingVariantId(), parameters).join();
 
         assertEquals(0, line1.getTerminal1().getP(), 0);
         assertTrue(Double.isNaN(line1.getTerminal2().getP()));
@@ -120,7 +118,7 @@ public class SimpleDcLoadFlowTest {
         network.getLine("NHV1_NHV2_1").getTerminal1().disconnect();
         network.getLoad("LOAD").setP0(450);
 
-        lf.run(network.getVariantManager().getWorkingVariantId(), parameters);
+        lf.run(network.getVariantManager().getWorkingVariantId(), parameters).join();
 
         assertTrue(Double.isNaN(line1.getTerminal1().getP()));
         assertTrue(Double.isNaN(line1.getTerminal2().getP()));
@@ -133,7 +131,7 @@ public class SimpleDcLoadFlowTest {
         Network network = FourBusNetworkFactory.create();
 
         LoadFlow lf = new SimpleDcLoadFlowFactory(matrixFactory).create(network, null, 0);
-        lf.run(VariantManagerConstants.INITIAL_VARIANT_ID, new LoadFlowParameters());
+        lf.run(VariantManagerConstants.INITIAL_VARIANT_ID, new LoadFlowParameters()).join();
 
         Line l14 = network.getLine("l14");
         Line l12 = network.getLine("l12");
@@ -164,7 +162,7 @@ public class SimpleDcLoadFlowTest {
 
         LoadFlowParameters parameters = new LoadFlowParameters();
         LoadFlow lf = new SimpleDcLoadFlowFactory(matrixFactory).create(network, null, 0);
-        lf.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters);
+        lf.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
 
         assertEquals(50, l1.getTerminal1().getP(), 0.01);
         assertEquals(-50, l1.getTerminal2().getP(), 0.01);
@@ -175,7 +173,7 @@ public class SimpleDcLoadFlowTest {
 
         ps1.getPhaseTapChanger().setTapPosition(2);
 
-        lf.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters);
+        lf.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
 
         assertEquals(18.5, l1.getTerminal1().getP(), 0.01);
         assertEquals(-18.5, l1.getTerminal2().getP(), 0.01);

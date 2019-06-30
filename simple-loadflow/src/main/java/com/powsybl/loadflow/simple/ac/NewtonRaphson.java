@@ -44,8 +44,6 @@ public class NewtonRaphson {
 
         double[] fx;
 
-        List<EquationTerm> slackBusActivePowerEquationTerms;
-
         Matrix j;
 
         LUDecomposition lu;
@@ -123,6 +121,20 @@ public class NewtonRaphson {
         return null;
     }
 
+    private double computeSlackBusActivePower(EquationContext equationContext, EquationSystem equationSystem) {
+        // find equation terms need to calculate slack bus active power injection
+        LfBus slackBus = networkContext.getSlackBus();
+        Equation slackBusActivePowerEquation = equationContext.getEquation(slackBus.getNum(), EquationType.BUS_P);
+        List<EquationTerm> slackBusActivePowerEquationTerms = equationSystem.getEquationTerms(slackBusActivePowerEquation);
+
+        double p = 0;
+        for (EquationTerm equationTerm : slackBusActivePowerEquationTerms) {
+            p += equationTerm.eval();
+        }
+
+        return p;
+    }
+
     public NewtonRaphsonResult run(NewtonRaphsonParameters parameters) {
         Objects.requireNonNull(parameters);
 
@@ -131,31 +143,26 @@ public class NewtonRaphson {
         observer.beforeEquationSystemCreation();
 
         EquationContext equationContext = new EquationContext();
-        EquationSystem system = AcEquationSystem.create(networkContext, equationContext);
+        EquationSystem equationSystem = AcEquationSystem.create(networkContext, equationContext);
 
         observer.afterEquationSystemCreation();
 
         NewtonRaphsonContext context = new NewtonRaphsonContext();
 
         // initialize state vector (flat start)
-        context.x = system.initState(parameters.getVoltageInitMode());
+        context.x = equationSystem.initState(parameters.getVoltageInitMode());
 
         // initialize target vector
-        context.targets = system.initTargets();
+        context.targets = equationSystem.initTargets();
 
         // initialize mismatch vector (difference between equation values and targets)
-        context.fx = new double[system.getEquations().size()];
-
-        // find equation terms need to calculate slack bus active power injection
-        LfBus slackBus = networkContext.getSlackBus();
-        Equation slackBusActivePowerEquation = equationContext.getEquation(slackBus.getNum(), EquationType.BUS_P);
-        context.slackBusActivePowerEquationTerms = system.getEquationTerms(slackBusActivePowerEquation);
+        context.fx = new double[equationSystem.getEquationsToSolve().size()];
 
         int iteration = 0;
 
         NewtonRaphsonStatus status = NewtonRaphsonStatus.NO_CALCULATION;
         while (iteration <= parameters.getMaxIteration()) {
-            NewtonRaphsonStatus newStatus = runIteration(iteration, system, context);
+            NewtonRaphsonStatus newStatus = runIteration(iteration, equationSystem, context);
             if (newStatus != null) {
                 status = newStatus;
                 break;
@@ -170,14 +177,16 @@ public class NewtonRaphson {
         networkContext.resetState();
 
         if (iteration < parameters.getMaxIteration()) {
-            system.updateState(context.x);
+            equationSystem.updateState(context.x);
         } else {
             status = NewtonRaphsonStatus.MAX_ITERATION_REACHED;
         }
 
+        double slackBusActivePower = computeSlackBusActivePower(equationContext, equationSystem);
+
         stopwatch.stop();
         LOGGER.debug("Newton Raphson done in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
 
-        return new NewtonRaphsonResult(status, iteration);
+        return new NewtonRaphsonResult(status, iteration, slackBusActivePower);
     }
 }

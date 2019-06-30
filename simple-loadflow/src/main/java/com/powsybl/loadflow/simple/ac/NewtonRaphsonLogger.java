@@ -33,8 +33,8 @@ public class NewtonRaphsonLogger extends DefaultNewtonRaphsonObserver {
     }
 
     public void logLargestMismatches(double[] fx, EquationSystem equationSystem, int count) {
-        Map<Equation, Double> mismatches = new HashMap<>(equationSystem.getEquations().size());
-        for (Equation equation : equationSystem.getEquations()) {
+        Map<Equation, Double> mismatches = new HashMap<>(equationSystem.getEquationsToSolve().size());
+        for (Equation equation : equationSystem.getEquationsToSolve()) {
             mismatches.put(equation, fx[equation.getRow()]);
         }
         mismatches.entrySet().stream()

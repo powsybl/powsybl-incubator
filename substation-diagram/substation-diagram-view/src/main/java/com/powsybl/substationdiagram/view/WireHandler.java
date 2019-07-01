@@ -215,8 +215,9 @@ public class WireHandler {
      * Computes the oriented angle between 2 segments, in degrees.
      */
     private static double orientedAngle(Point2D segment1, Point2D segment2) {
-        double normalizedCrossProduct = segment1.crossProduct(segment2).dotProduct(0, 0, 1) / (segment1.magnitude() * segment2.magnitude());
-        return Math.toDegrees(Math.asin(normalizedCrossProduct));
+        double x = segment1.dotProduct(segment2);
+        double y = segment1.crossProduct(segment2).dotProduct(0, 0, 1);
+        return Math.toDegrees(Math.atan2(y, x));
     }
 
 }

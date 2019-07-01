@@ -40,4 +40,22 @@ public class WireHandlerTest {
         assertEquals(90, middle4.getOrientation(), 0);
     }
 
+    @Test
+    public void computeAngle() {
+        List<Point2D> points1 = ImmutableList.of(new Point2D(0, 0), new Point2D(1, 1));
+        OrientedPosition position1 = WireHandler.positionAtDistance(points1, 0.5);
+        assertEquals(-45, position1.getOrientation(), 1e-5);
+
+        List<Point2D> points2 = ImmutableList.of(new Point2D(0, 0), new Point2D(-1, 1));
+        OrientedPosition position2 = WireHandler.positionAtDistance(points2, 0.5);
+        assertEquals(45, position2.getOrientation(), 1e-5);
+
+        List<Point2D> points3 = ImmutableList.of(new Point2D(0, 0), new Point2D(-1, -1));
+        OrientedPosition position3 = WireHandler.positionAtDistance(points3, 0.5);
+        assertEquals(135, position3.getOrientation(), 1e-5);
+
+        List<Point2D> points4 = ImmutableList.of(new Point2D(0, 0), new Point2D(1, -1));
+        OrientedPosition position4 = WireHandler.positionAtDistance(points4, 0.5);
+        assertEquals(-135, position4.getOrientation(), 1e-5);
+    }
 }

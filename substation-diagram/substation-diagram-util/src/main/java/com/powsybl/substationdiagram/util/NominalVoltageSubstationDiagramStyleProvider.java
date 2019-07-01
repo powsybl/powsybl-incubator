@@ -6,8 +6,10 @@
  */
 package com.powsybl.substationdiagram.util;
 
+import com.powsybl.iidm.network.ThreeWindingsTransformer;
 import com.powsybl.iidm.network.VoltageLevel;
 import com.powsybl.substationdiagram.model.Edge;
+import com.powsybl.substationdiagram.model.Fictitious3WTNode;
 import com.powsybl.substationdiagram.model.Graph;
 import com.powsybl.substationdiagram.model.Node;
 import com.powsybl.substationdiagram.svg.SubstationDiagramStyleProvider;
@@ -78,5 +80,10 @@ public class NominalVoltageSubstationDiagramStyleProvider implements SubstationD
     @Override
     public Optional<String> getWireStyle(Edge edge) {
         return Optional.empty();
+    }
+
+    @Override
+    public Optional<String> getNode3WTStyle(Fictitious3WTNode node, ThreeWindingsTransformer.Side side) {
+        return Optional.of(getColor(node.getTransformer().getTerminal(side).getVoltageLevel()));
     }
 }

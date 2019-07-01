@@ -8,7 +8,9 @@ package com.powsybl.substationdiagram.svg;
 
 import java.util.Optional;
 
+import com.powsybl.iidm.network.ThreeWindingsTransformer;
 import com.powsybl.substationdiagram.model.Edge;
+import com.powsybl.substationdiagram.model.Fictitious3WTNode;
 import com.powsybl.substationdiagram.model.Graph;
 import com.powsybl.substationdiagram.model.Node;
 
@@ -22,4 +24,6 @@ public interface SubstationDiagramStyleProvider {
     Optional<String> getNodeStyle(Node node);
 
     Optional<String> getWireStyle(Edge edge);
+
+    Optional<String> getNode3WTStyle(Fictitious3WTNode node, ThreeWindingsTransformer.Side side);
 }

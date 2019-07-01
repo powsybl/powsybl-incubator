@@ -7,6 +7,7 @@
 package com.powsybl.substationdiagram.model;
 
 import com.powsybl.iidm.network.ThreeWindingsTransformer;
+import com.powsybl.iidm.network.VoltageLevel;
 import com.powsybl.substationdiagram.library.ComponentType;
 
 import java.util.Objects;
@@ -16,13 +17,16 @@ import java.util.Objects;
  */
 public class Feeder3WTNode extends FeederNode {
 
-    private String id2;
-    private String name2;
-    private String id3;
-    private String name3;
+    private ThreeWindingsTransformer transformer;
+    private ThreeWindingsTransformer.Side side;
 
-    protected Feeder3WTNode(String id, String name, ComponentType componentType, boolean fictitious, Graph graph) {
+    protected Feeder3WTNode(String id, String name, ComponentType componentType,
+                            boolean fictitious, Graph graph,
+                            ThreeWindingsTransformer transformer,
+                            ThreeWindingsTransformer.Side side) {
         super(id, name, componentType, fictitious, graph);
+        this.transformer = transformer;
+        this.side = side;
     }
 
     public static Feeder3WTNode create(Graph graph, ThreeWindingsTransformer twt, ThreeWindingsTransformer.Side side) {
@@ -31,57 +35,63 @@ public class Feeder3WTNode extends FeederNode {
         Objects.requireNonNull(side);
         String id = twt.getId() + "_" + side.name();
         String name = twt.getName() + "_" + side.name();
-        Feeder3WTNode f = new Feeder3WTNode(id, name, ComponentType.THREE_WINDINGS_TRANSFORMER, false, graph);
-        switch (side) {
-            case ONE: f.setId2(ThreeWindingsTransformer.Side.TWO.name());
-                      f.setName2(ThreeWindingsTransformer.Side.TWO.name());
-                      f.setId3(ThreeWindingsTransformer.Side.THREE.name());
-                      f.setName3(ThreeWindingsTransformer.Side.THREE.name());
-                      break;
-            case TWO: f.setId2(ThreeWindingsTransformer.Side.ONE.name());
-                      f.setName2(ThreeWindingsTransformer.Side.ONE.name());
-                      f.setId3(ThreeWindingsTransformer.Side.THREE.name());
-                      f.setName3(ThreeWindingsTransformer.Side.THREE.name());
-                      break;
-            case THREE: f.setId2(ThreeWindingsTransformer.Side.ONE.name());
-                        f.setName2(ThreeWindingsTransformer.Side.ONE.name());
-                        f.setId3(ThreeWindingsTransformer.Side.TWO.name());
-                        f.setName3(ThreeWindingsTransformer.Side.TWO.name());
-                        break;
-            default: break;
-        }
-        return f;
+        return new Feeder3WTNode(id, name, ComponentType.THREE_WINDINGS_TRANSFORMER,
+                                            false, graph, twt, side);
     }
 
     public String getId2() {
-        return id2;
-    }
-
-    private void setId2(String id2) {
-        this.id2 = id2;
-    }
-
-    public String getId3() {
-        return id3;
-    }
-
-    private void setId3(String id3) {
-        this.id3 = id3;
+        String ret = null;
+        switch (side) {
+            case ONE: ret = ThreeWindingsTransformer.Side.TWO.name(); break;
+            case TWO: ret = ThreeWindingsTransformer.Side.ONE.name(); break;
+            case THREE: ret = ThreeWindingsTransformer.Side.ONE.name(); break;
+        }
+        return ret;
     }
 
     public String getName2() {
-        return name2;
+        return getId2();
     }
 
-    private void setName2(String name2) {
-        this.name2 = name2;
+    public VoltageLevel getVL2() {
+        VoltageLevel ret = null;
+        switch (side) {
+            case ONE: ret = transformer.getTerminal(ThreeWindingsTransformer.Side.TWO).getVoltageLevel(); break;
+            case TWO: ret = transformer.getTerminal(ThreeWindingsTransformer.Side.ONE).getVoltageLevel(); break;
+            case THREE: ret = transformer.getTerminal(ThreeWindingsTransformer.Side.ONE).getVoltageLevel(); break;
+        }
+        return ret;
+    }
+
+    public String getId3() {
+        String ret = null;
+        switch (side) {
+            case ONE: ret = ThreeWindingsTransformer.Side.THREE.name(); break;
+            case TWO: ret = ThreeWindingsTransformer.Side.THREE.name(); break;
+            case THREE: ret = ThreeWindingsTransformer.Side.TWO.name(); break;
+        }
+        return ret;
     }
 
     public String getName3() {
-        return name3;
+        return getId3();
     }
 
-    private void setName3(String name3) {
-        this.name3 = name3;
+    public VoltageLevel getVL3() {
+        VoltageLevel ret = null;
+        switch (side) {
+            case ONE: ret = transformer.getTerminal(ThreeWindingsTransformer.Side.THREE).getVoltageLevel(); break;
+            case TWO: ret = transformer.getTerminal(ThreeWindingsTransformer.Side.THREE).getVoltageLevel(); break;
+            case THREE: ret = transformer.getTerminal(ThreeWindingsTransformer.Side.TWO).getVoltageLevel(); break;
+        }
+        return ret;
+    }
+
+    public ThreeWindingsTransformer getTransformer() {
+        return transformer;
+    }
+
+    public ThreeWindingsTransformer.Side getSide() {
+        return side;
     }
 }

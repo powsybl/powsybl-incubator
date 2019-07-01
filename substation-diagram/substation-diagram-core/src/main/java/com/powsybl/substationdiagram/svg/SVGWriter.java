@@ -7,6 +7,7 @@
 package com.powsybl.substationdiagram.svg;
 
 import com.powsybl.commons.exceptions.UncheckedTransformerException;
+import com.powsybl.iidm.network.ThreeWindingsTransformer;
 import com.powsybl.substationdiagram.layout.HorizontalSubstationLayout;
 import com.powsybl.substationdiagram.layout.HorizontalSubstationLayoutFactory;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
@@ -34,6 +35,7 @@ import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
+import org.w3c.dom.svg.SVGCircleElement;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -131,7 +133,7 @@ public class SVGWriter {
         document.adoptNode(style);
         document.getDocumentElement().appendChild(style);
 
-        GraphMetadata metadata = writegraph(graph, document);
+        GraphMetadata metadata = writegraph(graph, document, styleProvider);
 
         try {
             DOMSource source = new DOMSource(document);
@@ -151,7 +153,7 @@ public class SVGWriter {
     /**
      * Create the SVGDocument corresponding to the graph
      */
-    private GraphMetadata writegraph(Graph graph, Document document) {
+    private GraphMetadata writegraph(Graph graph, Document document, SubstationDiagramStyleProvider styleProvider) {
         GraphMetadata metadata = new GraphMetadata();
 
         Element root = document.createElement("g");
@@ -177,7 +179,7 @@ public class SVGWriter {
             return componentLibrary.getAnchorPoints(type);
         };
 
-        drawNodes(root, graph, metadata, anchorPointProvider);
+        drawNodes(root, graph, metadata, anchorPointProvider, styleProvider);
         drawEdges(root, graph, metadata, anchorPointProvider);
 
         // the drawing of the voltageLevel graph label is done at the end in order to
@@ -243,7 +245,7 @@ public class SVGWriter {
         document.adoptNode(style);
         document.getDocumentElement().appendChild(style);
 
-        GraphMetadata metadata = writegraph(graph, document, sLayoutFactory, vLayoutFactory);
+        GraphMetadata metadata = writegraph(graph, document, sLayoutFactory, vLayoutFactory, styleProvider);
 
         try {
             DOMSource source = new DOMSource(document);
@@ -265,7 +267,8 @@ public class SVGWriter {
      */
     private GraphMetadata writegraph(SubstationGraph graph,
                                      Document document, SubstationLayoutFactory sLayoutFactory,
-                                     VoltageLevelLayoutFactory vLayoutFactory) {
+                                     VoltageLevelLayoutFactory vLayoutFactory,
+                                     SubstationDiagramStyleProvider styleProvider) {
         GraphMetadata metadata = new GraphMetadata();
 
         SubstationLayout sLayout = sLayoutFactory.create(graph);
@@ -316,7 +319,7 @@ public class SVGWriter {
                     return componentLibrary.getAnchorPoints(type);
                 }
             };
-            drawNodes(root, vlGraph, metadata, anchorPointProvider);
+            drawNodes(root, vlGraph, metadata, anchorPointProvider, styleProvider);
             drawEdges(root, vlGraph, metadata, anchorPointProvider);
         }
 
@@ -380,7 +383,9 @@ public class SVGWriter {
     /*
      * Drawing the voltageLevel graph nodes
      */
-    private void drawNodes(Element root, Graph graph, GraphMetadata metadata, AnchorPointProvider anchorPointProvider) {
+    private void drawNodes(Element root, Graph graph, GraphMetadata metadata,
+                           AnchorPointProvider anchorPointProvider,
+                           SubstationDiagramStyleProvider styleProvider) {
         graph.getNodes().forEach(node -> {
             try {
                 String nodeId = URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name());
@@ -392,7 +397,7 @@ public class SVGWriter {
                 if (node.getType() == Node.NodeType.BUS) {
                     drawBus((BusNode) node, g);
                 } else {
-                    incorporateComponents(node, g);
+                    incorporateComponents(node, g, styleProvider);
                 }
 
                 BusCell.Direction direction = BusCell.Direction.UNDEFINED;
@@ -502,20 +507,40 @@ public class SVGWriter {
                         (node.isFictitious() && node.getComponentType() == ComponentType.THREE_WINDINGS_TRANSFORMER));
     }
 
-    private void incorporateComponents(Node node, Element g) {
+    private void incorporateComponents(Node node, Element g, SubstationDiagramStyleProvider styleProvider) {
         SVGOMDocument obj = componentLibrary.getSvgDocument(node.getComponentType());
         transformComponent(node, g);
         if (obj != null && canInsertComponentSVG(node)) {
-            insertComponentSVGIntoDocumentSVG(obj, g);
+            insertComponentSVGIntoDocumentSVG(obj, g, node, styleProvider);
         }
     }
 
-    private void insertComponentSVGIntoDocumentSVG(SVGOMDocument obj, Element g) {
+    private void insertComponentSVGIntoDocumentSVG(SVGOMDocument obj, Element g, Node node,
+                                                   SubstationDiagramStyleProvider styleProvider) {
         // The following code work correctly considering SVG part describing the component is the first child of "obj" the SVGDocument.
         // If SVG are written otherwise, it will not work correctly.
+        boolean firstCircle = true;
+        boolean secondCircle = true;
 
         for (int i = 0; i < obj.getChildNodes().item(0).getChildNodes().getLength(); i++) {
             org.w3c.dom.Node n = obj.getChildNodes().item(0).getChildNodes().item(i).cloneNode(true);
+
+            if (node instanceof Fictitious3WTNode && n instanceof SVGCircleElement) {
+                Optional<String> color;
+                if (firstCircle) {
+                    color = styleProvider.getNode3WTStyle((Fictitious3WTNode) node, ThreeWindingsTransformer.Side.ONE);
+                    firstCircle = false;
+                } else if (secondCircle) {
+                    color = styleProvider.getNode3WTStyle((Fictitious3WTNode) node, ThreeWindingsTransformer.Side.TWO);
+                    secondCircle = false;
+                } else {
+                    color = styleProvider.getNode3WTStyle((Fictitious3WTNode) node, ThreeWindingsTransformer.Side.THREE);
+                }
+                if (color.isPresent()) {
+                    ((SVGCircleElement) n).setAttribute("stroke", color.get());
+                }
+            }
+
             g.getOwnerDocument().adoptNode(n);
             g.appendChild(n);
         }

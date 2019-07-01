@@ -809,7 +809,7 @@ public class Graph {
                     Feeder3WTNode n3WT = (Feeder3WTNode) n;
 
                     // Add a fictitious node
-                    FictitiousNode nf = new FictitiousNode(this, n3WT.getLabel() + "_fictif", ComponentType.THREE_WINDINGS_TRANSFORMER);
+                    Fictitious3WTNode nf = new Fictitious3WTNode(this, n3WT.getLabel() + "_fictif", n3WT.getTransformer());
                     addNode(nf);
 
                     // Add a node for the feeder to the first voltage level

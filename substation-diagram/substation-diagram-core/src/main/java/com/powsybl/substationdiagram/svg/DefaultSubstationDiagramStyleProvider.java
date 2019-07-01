@@ -13,7 +13,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.powsybl.iidm.network.ThreeWindingsTransformer;
 import com.powsybl.substationdiagram.model.Edge;
+import com.powsybl.substationdiagram.model.Fictitious3WTNode;
 import com.powsybl.substationdiagram.model.Graph;
 import com.powsybl.substationdiagram.model.Node;
 
@@ -62,4 +64,8 @@ public class DefaultSubstationDiagramStyleProvider implements SubstationDiagramS
         return  Optional.empty();
     }
 
+    @Override
+    public Optional<String> getNode3WTStyle(Fictitious3WTNode node, ThreeWindingsTransformer.Side side) {
+        return Optional.empty();
+    }
 }

@@ -8,6 +8,7 @@ package com.powsybl.substationdiagram.svg;
 
 import com.powsybl.commons.exceptions.UncheckedTransformerException;
 import com.powsybl.iidm.network.ThreeWindingsTransformer;
+import com.powsybl.iidm.network.TwoWindingsTransformer;
 import com.powsybl.substationdiagram.layout.HorizontalSubstationLayout;
 import com.powsybl.substationdiagram.layout.HorizontalSubstationLayoutFactory;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
@@ -525,19 +526,33 @@ public class SVGWriter {
         for (int i = 0; i < obj.getChildNodes().item(0).getChildNodes().getLength(); i++) {
             org.w3c.dom.Node n = obj.getChildNodes().item(0).getChildNodes().item(i).cloneNode(true);
 
-            if (node instanceof Fictitious3WTNode && n instanceof SVGCircleElement) {
-                Optional<String> color;
-                if (firstCircle) {
-                    color = styleProvider.getNode3WTStyle((Fictitious3WTNode) node, ThreeWindingsTransformer.Side.ONE);
-                    firstCircle = false;
-                } else if (secondCircle) {
-                    color = styleProvider.getNode3WTStyle((Fictitious3WTNode) node, ThreeWindingsTransformer.Side.TWO);
-                    secondCircle = false;
-                } else {
-                    color = styleProvider.getNode3WTStyle((Fictitious3WTNode) node, ThreeWindingsTransformer.Side.THREE);
-                }
-                if (color.isPresent()) {
-                    ((SVGCircleElement) n).setAttribute("stroke", color.get());
+            if (n instanceof SVGCircleElement) {
+                if (node instanceof Fictitious3WTNode) {
+                    Optional<String> color;
+                    if (firstCircle) {
+                        color = styleProvider.getNode3WTStyle((Fictitious3WTNode) node, ThreeWindingsTransformer.Side.ONE);
+                        firstCircle = false;
+                    } else if (secondCircle) {
+                        color = styleProvider.getNode3WTStyle((Fictitious3WTNode) node, ThreeWindingsTransformer.Side.TWO);
+                        secondCircle = false;
+                    } else {
+                        color = styleProvider.getNode3WTStyle((Fictitious3WTNode) node, ThreeWindingsTransformer.Side.THREE);
+                    }
+                    if (color.isPresent()) {
+                        ((SVGCircleElement) n).setAttribute("stroke", color.get());
+                    }
+                } else if (node instanceof Feeder2WTNode) {
+                    Optional<String> color;
+                    if (firstCircle) {
+                        color = styleProvider.getNode2WTStyle((Feeder2WTNode) node, TwoWindingsTransformer.Side.ONE);
+                        firstCircle = false;
+                    } else {
+                        color = styleProvider.getNode2WTStyle((Feeder2WTNode) node, TwoWindingsTransformer.Side.TWO);
+                        secondCircle = false;
+                    }
+                    if (color.isPresent()) {
+                        ((SVGCircleElement) n).setAttribute("stroke", color.get());
+                    }
                 }
             }
 

@@ -30,7 +30,6 @@ import com.powsybl.iidm.network.ThreeWindingsTransformer;
 import com.powsybl.iidm.network.TopologyKind;
 import com.powsybl.iidm.network.TwoWindingsTransformer;
 import com.powsybl.iidm.network.VoltageLevel;
-import com.powsybl.substationdiagram.library.ComponentType;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
 import org.jgrapht.UndirectedGraph;
@@ -173,7 +172,7 @@ public class Graph {
         @Override
         public void visitTwoWindingsTransformer(TwoWindingsTransformer transformer,
                                                 TwoWindingsTransformer.Side side) {
-            addFeeder(FeederNode.create(Graph.this, transformer, side), transformer.getTerminal(side));
+            addFeeder(Feeder2WTNode.create(Graph.this, transformer, side), transformer.getTerminal(side));
         }
 
         @Override
@@ -812,18 +811,18 @@ public class Graph {
                     Fictitious3WTNode nf = new Fictitious3WTNode(this, n3WT.getLabel() + "_fictif", n3WT.getTransformer());
                     addNode(nf);
 
-                    // Add a node for the feeder to the first voltage level
+                    // Add a node for the feeder to the first other voltage level
                     String idFeeder1 = n3WT.getId() + "_" + n3WT.getId2();
                     String nameFeeder1 = n3WT.getName() + "_" + n3WT.getName2();
-                    FeederNode nfeeder1 = FeederNode.create(Graph.this, idFeeder1, nameFeeder1, ComponentType.TWO_WINDINGS_TRANSFORMER);
+                    Feeder2WTNode nfeeder1 = Feeder2WTNode.create(Graph.this, idFeeder1, nameFeeder1, n3WT.getVL2());
                     nfeeder1.setOrder(n3WT.getOrder());
                     nfeeder1.setDirection(n3WT.getDirection());
                     addNode(nfeeder1);
 
-                    // Add a node for the feeder to the second voltage level
+                    // Add a node for the feeder to the second other voltage level
                     String idFeeder2 = n3WT.getId() + "_" + n3WT.getId3();
                     String nameFeeder2 = n3WT.getName() + "_" + n3WT.getName3();
-                    FeederNode nfeeder2 = FeederNode.create(Graph.this, idFeeder2, nameFeeder2, ComponentType.TWO_WINDINGS_TRANSFORMER);
+                    Feeder2WTNode nfeeder2 = Feeder2WTNode.create(Graph.this, idFeeder2, nameFeeder2, n3WT.getVL3());
                     nfeeder2.setOrder(n3WT.getOrder() + 1);
                     nfeeder2.setDirection(n3WT.getDirection());
                     addNode(nfeeder2);

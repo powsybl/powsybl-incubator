@@ -12,7 +12,7 @@ import com.powsybl.math.matrix.Matrix;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class DefaultNewtonRaphsonObserver implements NewtonRaphsonObserver {
+public class DefaultAcLoadFlowObserver implements AcLoadFlowObserver {
 
     @Override
     public void beforeEquationSystemCreation() {

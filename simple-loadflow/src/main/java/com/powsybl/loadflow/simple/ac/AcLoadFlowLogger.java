@@ -18,9 +18,9 @@ import java.util.Map;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class NewtonRaphsonLogger extends DefaultNewtonRaphsonObserver {
+public class AcLoadFlowLogger extends DefaultAcLoadFlowObserver {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(NewtonRaphsonLogger.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AcLoadFlowLogger.class);
 
     @Override
     public void beginIteration(int iteration) {

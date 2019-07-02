@@ -17,9 +17,9 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class NewtonRaphsonProfiler extends DefaultNewtonRaphsonObserver {
+public class AcLoadFlowProfiler extends DefaultAcLoadFlowObserver {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(NewtonRaphsonProfiler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AcLoadFlowProfiler.class);
 
     private final Stopwatch iterationStopwatch = Stopwatch.createUnstarted();
 

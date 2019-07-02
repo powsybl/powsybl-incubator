@@ -7,7 +7,6 @@
 package com.powsybl.loadflow.simple.ac;
 
 import com.google.common.base.Stopwatch;
-import com.powsybl.loadflow.simple.ac.equations.AcEquationSystem;
 import com.powsybl.loadflow.simple.equations.*;
 import com.powsybl.loadflow.simple.network.LfBus;
 import com.powsybl.loadflow.simple.network.NetworkContext;
@@ -34,7 +33,15 @@ public class NewtonRaphson {
 
     private final MatrixFactory matrixFactory;
 
-    private final NewtonRaphsonObserver observer;
+    private final AcLoadFlowObserver observer;
+
+    private final EquationContext equationContext;
+
+    private final EquationSystem equationSystem;
+
+    private final NewtonRaphsonParameters parameters;
+
+    private int iteration;
 
     static class NewtonRaphsonContext {
 
@@ -49,10 +56,16 @@ public class NewtonRaphson {
         LUDecomposition lu;
     }
 
-    public NewtonRaphson(NetworkContext networkContext, MatrixFactory matrixFactory, NewtonRaphsonObserver observer) {
+    public NewtonRaphson(NetworkContext networkContext, MatrixFactory matrixFactory, AcLoadFlowObserver observer,
+                         EquationContext equationContext, EquationSystem equationSystem, NewtonRaphsonParameters parameters,
+                         int iteration) {
         this.networkContext = Objects.requireNonNull(networkContext);
         this.matrixFactory = Objects.requireNonNull(matrixFactory);
         this.observer = Objects.requireNonNull(observer);
+        this.equationContext = Objects.requireNonNull(equationContext);
+        this.equationSystem = Objects.requireNonNull(equationSystem);
+        this.parameters = Objects.requireNonNull(parameters);
+        this.iteration = iteration;
     }
 
     private NewtonRaphsonStatus runIteration(int iteration, EquationSystem system, NewtonRaphsonContext context) {
@@ -138,17 +151,10 @@ public class NewtonRaphson {
         return p;
     }
 
-    public NewtonRaphsonResult run(NewtonRaphsonParameters parameters) {
+    public NewtonRaphsonResult run() {
         Objects.requireNonNull(parameters);
 
         Stopwatch stopwatch = Stopwatch.createStarted();
-
-        observer.beforeEquationSystemCreation();
-
-        EquationContext equationContext = new EquationContext();
-        EquationSystem equationSystem = AcEquationSystem.create(networkContext, equationContext);
-
-        observer.afterEquationSystemCreation();
 
         NewtonRaphsonContext context = new NewtonRaphsonContext();
 
@@ -160,8 +166,6 @@ public class NewtonRaphson {
 
         // initialize mismatch vector (difference between equation values and targets)
         context.fx = new double[equationSystem.getEquationsToSolve().size()];
-
-        int iteration = 0;
 
         NewtonRaphsonStatus status = NewtonRaphsonStatus.NO_CALCULATION;
         while (iteration <= parameters.getMaxIteration()) {

@@ -15,14 +15,14 @@ import java.util.List;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public interface NewtonRaphsonObserver {
+public interface AcLoadFlowObserver {
 
-    static NewtonRaphsonObserver of(NewtonRaphsonObserver... observers) {
+    static AcLoadFlowObserver of(AcLoadFlowObserver... observers) {
         return of(Arrays.asList(observers));
     }
 
-    static NewtonRaphsonObserver of(List<NewtonRaphsonObserver> observers) {
-        return new MultipleNewtonRaphsonObserver(observers);
+    static AcLoadFlowObserver of(List<AcLoadFlowObserver> observers) {
+        return new MultipleAcLoadFlowObserver(observers);
     }
 
     void beforeEquationSystemCreation();

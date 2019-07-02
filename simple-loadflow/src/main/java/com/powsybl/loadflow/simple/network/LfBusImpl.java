@@ -38,10 +38,15 @@ public class LfBusImpl extends AbstractLfBus {
 
     private final List<LfShunt> shunts = new ArrayList<>();
 
-    public LfBusImpl(Bus bus, int num) {
-        super(num);
-        this.bus = Objects.requireNonNull(bus);
+    public LfBusImpl(Bus bus, int num, double v, double angle) {
+        super(num, v, angle);
+        this.bus = bus;
         nominalV = bus.getVoltageLevel().getNominalV();
+    }
+
+    public static LfBusImpl create(Bus bus, int num) {
+        Objects.requireNonNull(bus);
+        return new LfBusImpl(bus, num, bus.getV(), bus.getAngle());
     }
 
     @Override
@@ -145,22 +150,22 @@ public class LfBusImpl extends AbstractLfBus {
 
     @Override
     public double getV() {
-        return bus.getV() / nominalV;
+        return v / nominalV;
     }
 
     @Override
     public void setV(double v) {
-        bus.setV(v * nominalV);
+        this.v = v * nominalV;
     }
 
     @Override
     public double getAngle() {
-        return bus.getAngle();
+        return angle;
     }
 
     @Override
     public void setAngle(double angle) {
-        bus.setAngle(angle);
+        this.angle = angle;
     }
 
     @Override
@@ -171,5 +176,10 @@ public class LfBusImpl extends AbstractLfBus {
     @Override
     public List<LfShunt> getShunts() {
         return shunts;
+    }
+
+    @Override
+    public void updateState() {
+        bus.setV(v).setAngle(angle);
     }
 }

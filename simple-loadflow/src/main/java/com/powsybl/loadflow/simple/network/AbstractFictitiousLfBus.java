@@ -14,12 +14,8 @@ import java.util.List;
  */
 public abstract class AbstractFictitiousLfBus extends AbstractLfBus {
 
-    private double v = Double.NaN;
-
-    private double angle = Double.NaN;
-
     protected AbstractFictitiousLfBus(int num) {
-        super(num);
+        super(num, Double.NaN, Double.NaN);
     }
 
     @Override
@@ -53,27 +49,12 @@ public abstract class AbstractFictitiousLfBus extends AbstractLfBus {
     }
 
     @Override
-    public double getV() {
-        return v;
-    }
-
-    @Override
-    public void setV(double v) {
-        this.v = v;
-    }
-
-    @Override
-    public double getAngle() {
-        return angle;
-    }
-
-    @Override
-    public void setAngle(double angle) {
-        this.angle = angle;
-    }
-
-    @Override
     public List<LfShunt> getShunts() {
         return Collections.emptyList();
+    }
+
+    @Override
+    public void updateState() {
+        // nothing to update
     }
 }

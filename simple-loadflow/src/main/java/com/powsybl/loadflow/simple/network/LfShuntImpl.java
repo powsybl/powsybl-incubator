@@ -19,6 +19,8 @@ public class LfShuntImpl implements LfShunt {
 
     private final double b;
 
+    private double q = Double.NaN;
+
     public LfShuntImpl(ShuntCompensator shuntCompensator) {
         this.shuntCompensator = Objects.requireNonNull(shuntCompensator);
         double nominalV = shuntCompensator.getTerminal().getVoltageLevel().getNominalV();
@@ -33,6 +35,11 @@ public class LfShuntImpl implements LfShunt {
 
     @Override
     public void setQ(double q) {
-        shuntCompensator.getTerminal().setQ(q * PerUnit.SB);
+        this.q = q * PerUnit.SB;
+    }
+
+    @Override
+    public void updateState() {
+        shuntCompensator.getTerminal().setQ(q);
     }
 }

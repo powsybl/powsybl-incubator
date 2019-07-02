@@ -23,6 +23,11 @@ public class AcLoadFlowLogger extends DefaultAcLoadFlowObserver {
     private static final Logger LOGGER = LoggerFactory.getLogger(AcLoadFlowLogger.class);
 
     @Override
+    public void beginMacroIteration(int macroIteration) {
+        LOGGER.debug("Macro iteration {}", macroIteration);
+    }
+
+    @Override
     public void beginIteration(int iteration) {
         LOGGER.debug("Iteration {}", iteration);
     }

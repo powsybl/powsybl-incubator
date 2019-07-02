@@ -19,6 +19,8 @@ public class SimpleAcLoadFlowParameters extends AbstractExtension<LoadFlowParame
 
     private SlackBusSelectionMode slackBusSelectionMode = SlackBusSelectionMode.MOST_MESHED;
 
+    private boolean distributedSlack = true;
+
     @Override
     public String getName() {
         return "SimpleLoadFlowParameters";
@@ -30,6 +32,15 @@ public class SimpleAcLoadFlowParameters extends AbstractExtension<LoadFlowParame
 
     public SimpleAcLoadFlowParameters setSlackBusSelectionMode(SlackBusSelectionMode slackBusSelectionMode) {
         this.slackBusSelectionMode = Objects.requireNonNull(slackBusSelectionMode);
+        return this;
+    }
+
+    public boolean isDistributedSlack() {
+        return distributedSlack;
+    }
+
+    public SimpleAcLoadFlowParameters setDistributedSlack(boolean distributedSlack) {
+        this.distributedSlack = distributedSlack;
         return this;
     }
 }

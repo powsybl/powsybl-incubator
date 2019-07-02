@@ -15,16 +15,20 @@ import java.util.Objects;
  */
 public class MacroIterationContext {
 
+    private final int macroIteration;
+
     private final NetworkContext networkContext;
 
     private final NewtonRaphsonResult newtonRaphsonResult;
 
-    private final int iteration;
-
-    public MacroIterationContext(NetworkContext networkContext, NewtonRaphsonResult newtonRaphsonResult, int iteration) {
+    public MacroIterationContext(int macroIteration, NetworkContext networkContext, NewtonRaphsonResult newtonRaphsonResult) {
+        this.macroIteration = macroIteration;
         this.networkContext = Objects.requireNonNull(networkContext);
         this.newtonRaphsonResult = Objects.requireNonNull(newtonRaphsonResult);
-        this.iteration = iteration;
+    }
+
+    public int getMacroIteration() {
+        return macroIteration;
     }
 
     public NetworkContext getNetworkContext() {
@@ -33,9 +37,5 @@ public class MacroIterationContext {
 
     public NewtonRaphsonResult getNewtonRaphsonResult() {
         return newtonRaphsonResult;
-    }
-
-    public int getIteration() {
-        return iteration;
     }
 }

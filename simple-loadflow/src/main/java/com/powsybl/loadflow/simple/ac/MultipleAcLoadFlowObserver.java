@@ -34,6 +34,11 @@ public class MultipleAcLoadFlowObserver implements AcLoadFlowObserver {
     }
 
     @Override
+    public void beginMacroIteration(int macroIteration) {
+        observers.forEach(o -> o.beginMacroIteration(macroIteration));
+    }
+
+    @Override
     public void beginIteration(int iteration) {
         observers.forEach(o -> o.beginIteration(iteration));
     }
@@ -96,5 +101,20 @@ public class MultipleAcLoadFlowObserver implements AcLoadFlowObserver {
     @Override
     public void endIteration(int iteration) {
         observers.forEach(o -> o.endIteration(iteration));
+    }
+
+    @Override
+    public void beforeMacroActionRun(int macroIteration, String macroActionName) {
+        observers.forEach(o -> o.beforeMacroActionRun(macroIteration, macroActionName));
+    }
+
+    @Override
+    public void afterMacroActionRun(int macroIteration, String macroActionName) {
+        observers.forEach(o -> o.afterMacroActionRun(macroIteration, macroActionName));
+    }
+
+    @Override
+    public void endMacroIteration(int macroIteration) {
+        observers.forEach(o -> o.endMacroIteration(macroIteration));
     }
 }

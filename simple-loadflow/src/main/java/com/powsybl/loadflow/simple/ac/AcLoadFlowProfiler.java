@@ -106,4 +106,15 @@ public class AcLoadFlowProfiler extends DefaultAcLoadFlowObserver {
         iterationStopwatch.stop();
         LOGGER.debug("Iteration {} complete in {} ms", iteration, iterationStopwatch.elapsed(TimeUnit.MILLISECONDS));
     }
+
+    @Override
+    public void beforeMacroActionRun(int macroIteration, String macroActionName) {
+        restart(stopwatch);
+    }
+
+    @Override
+    public void afterMacroActionRun(int macroIteration, String macroActionName) {
+        stopwatch.stop();
+        LOGGER.debug("Macro action '{}' at macro iteration {} ran in {} us", macroActionName, macroIteration, stopwatch.elapsed(TimeUnit.MICROSECONDS));
+    }
 }

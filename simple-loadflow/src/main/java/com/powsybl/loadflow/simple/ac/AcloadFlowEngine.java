@@ -18,6 +18,7 @@ import com.powsybl.math.matrix.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -37,22 +38,26 @@ public class AcloadFlowEngine {
 
     private final AcLoadFlowObserver observer;
 
-    private final List<MacroIteration> macroIterations;
-
-    public AcloadFlowEngine(Network network, LoadFlowParameters parameters, MatrixFactory matrixFactory, AcLoadFlowObserver observer,
-                            List<MacroIteration> macroIterations) {
+    public AcloadFlowEngine(Network network, LoadFlowParameters parameters, MatrixFactory matrixFactory, AcLoadFlowObserver observer) {
         this.network = Objects.requireNonNull(network);
         this.parameters = Objects.requireNonNull(parameters);
         this.matrixFactory = Objects.requireNonNull(matrixFactory);
         this.observer = Objects.requireNonNull(observer);
-        this.macroIterations = Objects.requireNonNull(macroIterations);
     }
 
-    private boolean runMacroIterations(MacroIterationContext macroIterationContext) {
+    private boolean runMacroActions(List<MacroAction> macroActions, MacroIterationContext macroIterationContext) {
         boolean cont = false;
-        for (MacroIteration macroIteration : macroIterations) {
-            cont |= macroIteration.run(macroIterationContext);
+
+        for (MacroAction macroAction : macroActions) {
+            observer.beforeMacroActionRun(macroIterationContext.getMacroIteration(), macroAction.getName());
+
+            cont |= macroAction.run(macroIterationContext);
+
+            observer.afterMacroActionRun(macroIterationContext.getMacroIteration(), macroAction.getName());
         }
+
+        observer.endMacroIteration(macroIterationContext.getMacroIteration());
+
         return cont;
     }
 
@@ -62,6 +67,11 @@ public class AcloadFlowEngine {
         SimpleAcLoadFlowParameters parametersExt = parameters.getExtension(SimpleAcLoadFlowParameters.class);
         if (parametersExt == null) {
             parametersExt = new SimpleAcLoadFlowParameters();
+        }
+
+        List<MacroAction> macroActions = new ArrayList<>();
+        if (parametersExt.isDistributedSlack()) {
+            macroActions.add(new DistributedSlackAction());
         }
 
         List<NetworkContext> networkContexts = NetworkContext.of(network, parametersExt.getSlackBusSelectionMode());
@@ -82,11 +92,13 @@ public class AcloadFlowEngine {
         int macroIteration = 0;
         NewtonRaphsonResult newtonRaphsonResult = null;
         do {
+            observer.beginMacroIteration(macroIteration);
+
             int newtowRaphsonIteration = newtonRaphsonResult != null ? newtonRaphsonResult.getIteration() : 0;
             newtonRaphsonResult = new NewtonRaphson(networkContext, matrixFactory, observer, equationContext,
                                                     equationSystem, newtonRaphsonParameters, newtowRaphsonIteration)
                     .run();
-        } while (runMacroIterations(new MacroIterationContext(networkContext, newtonRaphsonResult, macroIteration)));
+        } while (runMacroActions(macroActions, new MacroIterationContext(macroIteration, networkContext, newtonRaphsonResult)));
 
         NetworkContext.resetState(network);
         networkContext.updateState();

@@ -25,6 +25,11 @@ public class DefaultAcLoadFlowObserver implements AcLoadFlowObserver {
     }
 
     @Override
+    public void beginMacroIteration(int macroIteration) {
+        // empty
+    }
+
+    @Override
     public void beginIteration(int iteration) {
         // empty
     }
@@ -86,6 +91,21 @@ public class DefaultAcLoadFlowObserver implements AcLoadFlowObserver {
 
     @Override
     public void endIteration(int iteration) {
+        // empty
+    }
+
+    @Override
+    public void beforeMacroActionRun(int macroIteration, String macroActionName) {
+        // empty
+    }
+
+    @Override
+    public void afterMacroActionRun(int macroIteration, String macroActionName) {
+        // empty
+    }
+
+    @Override
+    public void endMacroIteration(int macroIteration) {
         // empty
     }
 }

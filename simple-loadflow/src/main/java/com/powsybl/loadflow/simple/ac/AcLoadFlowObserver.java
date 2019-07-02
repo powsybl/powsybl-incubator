@@ -29,6 +29,8 @@ public interface AcLoadFlowObserver {
 
     void afterEquationSystemCreation();
 
+    void beginMacroIteration(int macroIteration);
+
     void beginIteration(int iteration);
 
     void norm(double norm);
@@ -54,4 +56,10 @@ public interface AcLoadFlowObserver {
     void afterStateUpdate(double[] x, EquationSystem equationSystem, int iteration);
 
     void endIteration(int iteration);
+
+    void beforeMacroActionRun(int macroIteration, String macroActionName);
+
+    void afterMacroActionRun(int macroIteration, String macroActionName);
+
+    void endMacroIteration(int macroIteration);
 }

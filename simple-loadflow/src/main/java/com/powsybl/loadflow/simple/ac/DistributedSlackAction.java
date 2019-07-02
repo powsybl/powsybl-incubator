@@ -9,7 +9,15 @@ package com.powsybl.loadflow.simple.ac;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public interface MacroIteration {
+public class DistributedSlackAction implements MacroAction {
 
-    boolean run(MacroIterationContext context);
+    @Override
+    public String getName() {
+        return "Distributed slack";
+    }
+
+    @Override
+    public boolean run(MacroIterationContext context) {
+        return false;
+    }
 }

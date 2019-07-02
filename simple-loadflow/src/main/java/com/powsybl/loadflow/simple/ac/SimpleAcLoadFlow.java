@@ -35,8 +35,6 @@ public class SimpleAcLoadFlow implements LoadFlow {
 
     private final List<AcLoadFlowObserver> additionalObservers = Collections.synchronizedList(new ArrayList<>());
 
-    private final List<MacroIteration> macroIterations = Collections.synchronizedList(new ArrayList<>());
-
     public SimpleAcLoadFlow(Network network) {
         this.network = Objects.requireNonNull(network);
         this.matrixFactory = new SparseMatrixFactory();
@@ -53,10 +51,6 @@ public class SimpleAcLoadFlow implements LoadFlow {
 
     public List<AcLoadFlowObserver> getAdditionalObservers() {
         return additionalObservers;
-    }
-
-    public List<MacroIteration> getMacroIterations() {
-        return macroIterations;
     }
 
     @Override
@@ -90,7 +84,7 @@ public class SimpleAcLoadFlow implements LoadFlow {
         return CompletableFuture.supplyAsync(() -> {
             network.getVariantManager().setWorkingVariant(workingStateId);
 
-            AcLoadFlowResult result = new AcloadFlowEngine(network, parameters, matrixFactory, getObserver(), macroIterations)
+            AcLoadFlowResult result = new AcloadFlowEngine(network, parameters, matrixFactory, getObserver())
                     .run();
 
             return new LoadFlowResultImpl(result.getNewtonRaphsonStatus() == NewtonRaphsonStatus.CONVERGED, createMetrics(result), null);

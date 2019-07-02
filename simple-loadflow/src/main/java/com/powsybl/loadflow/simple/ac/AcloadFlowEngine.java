@@ -88,6 +88,9 @@ public class AcloadFlowEngine {
                     .run();
         } while (runMacroIterations(new MacroIterationContext(networkContext, newtonRaphsonResult, macroIteration)));
 
+        NetworkContext.resetState(network);
+        networkContext.updateState();
+
         stopwatch.stop();
 
         LOGGER.info("Ac loadflow ran in {} ms (status={}, iteration={}, slackBusActivePowerMismatch={})", stopwatch.elapsed(TimeUnit.MILLISECONDS),

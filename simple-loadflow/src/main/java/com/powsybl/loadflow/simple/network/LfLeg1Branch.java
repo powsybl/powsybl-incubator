@@ -17,6 +17,10 @@ public class LfLeg1Branch extends AbstractLfBranch {
 
     private final ThreeWindingsTransformer.Leg1 leg1;
 
+    private double p = Double.NaN;
+
+    private double q = Double.NaN;
+
     protected LfLeg1Branch(LfBus bus1, LfBus bus0, ThreeWindingsTransformer.Leg1 leg1) {
         super(bus1, bus0, new PiModel(leg1.getR(), leg1.getX())
                             .setG2(leg1.getG())
@@ -35,7 +39,7 @@ public class LfLeg1Branch extends AbstractLfBranch {
 
     @Override
     public void setP1(double p1) {
-        leg1.getTerminal().setP(p1 * PerUnit.SB);
+        this.p = p1 * PerUnit.SB;
     }
 
     @Override
@@ -45,11 +49,17 @@ public class LfLeg1Branch extends AbstractLfBranch {
 
     @Override
     public void setQ1(double q1) {
-        leg1.getTerminal().setQ(q1 * PerUnit.SB);
+        this.q = q1 * PerUnit.SB;
     }
 
     @Override
     public void setQ2(double q2) {
         // nothing to update on star side
+    }
+
+    @Override
+    public void updateState() {
+        leg1.getTerminal().setP(p);
+        leg1.getTerminal().setQ(q);
     }
 }

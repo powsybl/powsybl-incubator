@@ -17,6 +17,10 @@ public class LfDanglingLineBranch extends AbstractLfBranch {
 
     private final DanglingLine danglingLine;
 
+    private double p = Double.NaN;
+
+    private double q = Double.NaN;
+
     protected LfDanglingLineBranch(DanglingLine danglingLine, LfBus bus1, LfBus bus2) {
         super(bus1, bus2, new PiModel(danglingLine.getR(), danglingLine.getX())
                             .setG1(danglingLine.getG() / 2)
@@ -37,7 +41,7 @@ public class LfDanglingLineBranch extends AbstractLfBranch {
 
     @Override
     public void setP1(double p1) {
-        danglingLine.getTerminal().setP(p1 * PerUnit.SB);
+        this.p = p1 * PerUnit.SB;
     }
 
     @Override
@@ -47,11 +51,17 @@ public class LfDanglingLineBranch extends AbstractLfBranch {
 
     @Override
     public void setQ1(double q1) {
-        danglingLine.getTerminal().setQ(q1 * PerUnit.SB);
+        this.q = q1 * PerUnit.SB;
     }
 
     @Override
     public void setQ2(double q2) {
         // nothing to do
+    }
+
+    @Override
+    public void updateState() {
+        danglingLine.getTerminal().setP(p);
+        danglingLine.getTerminal().setQ(q);
     }
 }

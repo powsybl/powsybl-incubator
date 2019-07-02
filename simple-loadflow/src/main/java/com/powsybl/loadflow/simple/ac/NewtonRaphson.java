@@ -181,8 +181,6 @@ public class NewtonRaphson {
             context.lu.close();
         }
 
-        networkContext.resetState();
-
         if (iteration < parameters.getMaxIteration()) {
             equationSystem.updateState(context.x);
         } else {

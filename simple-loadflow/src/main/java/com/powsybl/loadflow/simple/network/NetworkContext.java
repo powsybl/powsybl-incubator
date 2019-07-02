@@ -223,7 +223,7 @@ public class NetworkContext {
 
     private static LfBusImpl addLfBus(Bus bus, List<LfBus> lfBuses, Map<String, Integer> busIdToNum) {
         int busNum = lfBuses.size();
-        LfBusImpl lfBus = new LfBusImpl(bus, busNum);
+        LfBusImpl lfBus = LfBusImpl.create(bus, busNum);
         busIdToNum.put(bus.getId(), busNum);
         lfBuses.add(lfBus);
         return lfBus;
@@ -268,23 +268,7 @@ public class NetworkContext {
                 .collect(Collectors.toList());
     }
 
-    public List<LfBranch> getBranches() {
-        return branches;
-    }
-
-    public List<LfBus> getBuses() {
-        return buses;
-    }
-
-    public LfBus getBus(int num) {
-        return buses.get(num);
-    }
-
-    public LfBus getSlackBus() {
-        return slackBus;
-    }
-
-    public void resetState() {
+    public static void resetState(Network network) {
         Stopwatch stopwatch = Stopwatch.createStarted();
 
         for (Bus b : network.getBusView().getBuses()) {
@@ -303,6 +287,34 @@ public class NetworkContext {
 
         stopwatch.stop();
         LOGGER.debug("Network reset done in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
+    }
+
+    public List<LfBranch> getBranches() {
+        return branches;
+    }
+
+    public List<LfBus> getBuses() {
+        return buses;
+    }
+
+    public LfBus getBus(int num) {
+        return buses.get(num);
+    }
+
+    public LfBus getSlackBus() {
+        return slackBus;
+    }
+
+    public void updateState() {
+        for (LfBus bus : buses) {
+            bus.updateState();
+            for (LfShunt shunt : bus.getShunts()) {
+                shunt.updateState();
+            }
+        }
+        for (LfBranch branch : branches) {
+            branch.updateState();
+        }
     }
 
     public void writeJson(Path file) {

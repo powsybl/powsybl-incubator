@@ -44,4 +44,6 @@ public interface LfBranch {
     double a1();
 
     double a2();
+
+    void updateState();
 }

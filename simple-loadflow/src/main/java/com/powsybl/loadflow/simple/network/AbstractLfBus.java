@@ -15,8 +15,14 @@ public abstract class AbstractLfBus implements LfBus {
 
     private boolean slack = false;
 
-    protected AbstractLfBus(int num) {
+    protected double v;
+
+    protected double angle;
+
+    protected AbstractLfBus(int num, double v, double angle) {
         this.num = num;
+        this.v = v;
+        this.angle = angle;
     }
 
     @Override
@@ -42,5 +48,25 @@ public abstract class AbstractLfBus implements LfBus {
     @Override
     public double getTargetQ() {
         return getGenerationTargetQ() - getLoadTargetQ();
+    }
+
+    @Override
+    public double getV() {
+        return v;
+    }
+
+    @Override
+    public void setV(double v) {
+        this.v = v;
+    }
+
+    @Override
+    public double getAngle() {
+        return angle;
+    }
+
+    @Override
+    public void setAngle(double angle) {
+        this.angle = angle;
     }
 }

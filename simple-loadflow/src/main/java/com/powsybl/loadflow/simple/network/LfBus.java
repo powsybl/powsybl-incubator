@@ -54,4 +54,6 @@ public interface LfBus {
     List<LfShunt> getShunts();
 
     int getNeighbors();
+
+    void updateState();
 }

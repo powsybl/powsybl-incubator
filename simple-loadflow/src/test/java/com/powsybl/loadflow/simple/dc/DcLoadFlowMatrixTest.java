@@ -114,7 +114,7 @@ public class DcLoadFlowMatrixTest {
         assertEquals(-0.11239308112163815d, dx[2], 1E-14d);
         assertEquals(-0.2202418845341654d, dx[3], 1E-14d);
 
-        networkContext.resetState();
+        NetworkContext.resetState(network);
         equationSystem.updateState(dx);
 
         logNetwork(network);
@@ -133,7 +133,7 @@ public class DcLoadFlowMatrixTest {
             lu.solve(dx);
         }
 
-        networkContext.resetState();
+        NetworkContext.resetState(network);
         equationSystem.updateState(dx);
 
         logNetwork(network);

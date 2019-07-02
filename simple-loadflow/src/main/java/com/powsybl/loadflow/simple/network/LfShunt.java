@@ -14,4 +14,6 @@ public interface LfShunt {
     double getB();
 
     void setQ(double q);
+
+    void updateState();
 }

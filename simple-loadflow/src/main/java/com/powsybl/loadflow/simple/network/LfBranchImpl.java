@@ -20,6 +20,14 @@ public class LfBranchImpl extends AbstractLfBranch {
 
     private final Branch branch;
 
+    private double p1 = Double.NaN;
+
+    private double p2 = Double.NaN;
+
+    private double q1 = Double.NaN;
+
+    private double q2 = Double.NaN;
+
     protected LfBranchImpl(LfBus bus1, LfBus bus2, PiModel piModel, Branch branch) {
         super(bus1, bus2, piModel, branch.getTerminal1().getVoltageLevel().getNominalV(), branch.getTerminal2().getVoltageLevel().getNominalV());
         this.branch = branch;
@@ -50,21 +58,29 @@ public class LfBranchImpl extends AbstractLfBranch {
 
     @Override
     public void setP1(double p1) {
-        branch.getTerminal1().setP(p1 * PerUnit.SB);
+        this.p1 = p1 * PerUnit.SB;
     }
 
     @Override
     public void setP2(double p2) {
-        branch.getTerminal2().setP(p2 * PerUnit.SB);
+        this.p2 = p2 * PerUnit.SB;
     }
 
     @Override
     public void setQ1(double q1) {
-        branch.getTerminal1().setQ(q1 * PerUnit.SB);
+        this.q1 = q1 * PerUnit.SB;
     }
 
     @Override
     public void setQ2(double q2) {
-        branch.getTerminal2().setQ(q2 * PerUnit.SB);
+        this.q2 = q2 * PerUnit.SB;
+    }
+
+    @Override
+    public void updateState() {
+        branch.getTerminal1().setP(p1);
+        branch.getTerminal1().setQ(q1);
+        branch.getTerminal2().setP(p2);
+        branch.getTerminal2().setQ(q2);
     }
 }

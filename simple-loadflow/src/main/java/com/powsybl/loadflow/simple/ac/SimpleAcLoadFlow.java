@@ -106,6 +106,9 @@ public class SimpleAcLoadFlow implements LoadFlow {
             NewtonRaphsonResult result = new NewtonRaphson(networkContext, matrixFactory, getObserver())
                     .run(nrParameters);
 
+            NetworkContext.resetState(network);
+            networkContext.updateState();
+
             stopwatch.stop();
             LOGGER.info("Ac loadflow ran in {} ms (status={}, iteration={}, slackBusActivePowerMismatch={})", stopwatch.elapsed(TimeUnit.MILLISECONDS),
                     result.getStatus(), result.getIterations(), result.getSlackBusActivePowerMismatch() * PerUnit.SB);

@@ -7,6 +7,7 @@
 package com.powsybl.loadflow.simple.ac;
 
 import com.google.common.base.Stopwatch;
+import com.powsybl.loadflow.simple.ac.observer.DefaultAcLoadFlowObserver;
 import com.powsybl.loadflow.simple.equations.EquationSystem;
 import com.powsybl.math.matrix.Matrix;
 import org.slf4j.Logger;

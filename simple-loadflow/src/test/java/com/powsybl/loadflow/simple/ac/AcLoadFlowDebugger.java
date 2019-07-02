@@ -6,6 +6,7 @@
  */
 package com.powsybl.loadflow.simple.ac;
 
+import com.powsybl.loadflow.simple.ac.observer.DefaultAcLoadFlowObserver;
 import com.powsybl.loadflow.simple.equations.EquationSystem;
 import com.powsybl.math.matrix.DenseMatrixFactory;
 import com.powsybl.math.matrix.Matrix;

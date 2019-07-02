@@ -6,6 +6,7 @@
  */
 package com.powsybl.loadflow.simple.ac;
 
+import com.powsybl.loadflow.simple.ac.nr.NewtonRaphsonResult;
 import com.powsybl.loadflow.simple.network.NetworkContext;
 
 import java.util.Objects;
@@ -13,7 +14,7 @@ import java.util.Objects;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class MacroIterationContext {
+class MacroIterationContext {
 
     private final int macroIteration;
 
@@ -21,21 +22,21 @@ public class MacroIterationContext {
 
     private final NewtonRaphsonResult newtonRaphsonResult;
 
-    public MacroIterationContext(int macroIteration, NetworkContext networkContext, NewtonRaphsonResult newtonRaphsonResult) {
+    MacroIterationContext(int macroIteration, NetworkContext networkContext, NewtonRaphsonResult newtonRaphsonResult) {
         this.macroIteration = macroIteration;
         this.networkContext = Objects.requireNonNull(networkContext);
         this.newtonRaphsonResult = Objects.requireNonNull(newtonRaphsonResult);
     }
 
-    public int getMacroIteration() {
+    int getMacroIteration() {
         return macroIteration;
     }
 
-    public NetworkContext getNetworkContext() {
+    NetworkContext getNetworkContext() {
         return networkContext;
     }
 
-    public NewtonRaphsonResult getNewtonRaphsonResult() {
+    NewtonRaphsonResult getNewtonRaphsonResult() {
         return newtonRaphsonResult;
     }
 }

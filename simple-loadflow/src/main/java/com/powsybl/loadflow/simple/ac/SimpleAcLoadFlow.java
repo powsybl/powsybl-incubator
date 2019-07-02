@@ -12,6 +12,8 @@ import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
 import com.powsybl.loadflow.LoadFlowResultImpl;
+import com.powsybl.loadflow.simple.ac.nr.NewtonRaphsonStatus;
+import com.powsybl.loadflow.simple.ac.observer.AcLoadFlowObserver;
 import com.powsybl.math.matrix.MatrixFactory;
 import com.powsybl.math.matrix.SparseMatrixFactory;
 import com.powsybl.tools.PowsyblCoreVersion;

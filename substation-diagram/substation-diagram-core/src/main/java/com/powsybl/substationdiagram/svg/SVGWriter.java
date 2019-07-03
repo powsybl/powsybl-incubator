@@ -484,6 +484,23 @@ public class SVGWriter {
         }
     }
 
+    private void insertRotatedComponentSVGIntoDocumentSVG(SVGOMDocument obj, Element g, double angle, double cx, double cy) {
+        // The following code work correctly considering SVG part describing the component is the first child of "obj" the SVGDocument.
+        // If SVG are written otherwise, it will not work correctly.
+
+        for (int i = 0; i < obj.getChildNodes().item(0).getChildNodes().getLength(); i++) {
+            org.w3c.dom.Node n = obj.getChildNodes().item(0).getChildNodes().item(i).cloneNode(true);
+            if (n.getNodeName().equals("g")) {
+                if (n.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
+                    Element e = (Element) n;
+                    e.setAttribute("transform", "rotate(" + angle + "," + cx + "," + cy + ")");
+                }
+            }
+            g.getOwnerDocument().adoptNode(n);
+            g.appendChild(n);
+        }
+    }
+
     private void transformComponent(Node node, Element g) {
         ComponentSize componentSize = componentLibrary.getSize(node.getComponentType());
 
@@ -518,8 +535,25 @@ public class SVGWriter {
 
     private void transformArrow(List<Double> points, ComponentSize componentSize, double shift, Element g) {
 
-        double dx = points.get(2) - points.get(0);
-        double dy = points.get(3) - points.get(1);
+        double x1 = points.get(0);
+        double y1 = points.get(1);
+        double x2 = points.get(2);
+        double y2 = points.get(3);
+
+        if (points.size() > 4) {
+            if (Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)) < 3 * componentSize.getHeight()) {
+                double x3 = points.get(4);
+                double y3 = points.get(5);
+                if (Math.sqrt((x3 - x2) * (x3 - x2) + (y3 - y2) * (y3 - y2)) > 3 * componentSize.getHeight()) {
+                    x1 = x2;
+                    y1 = y2;
+                    x2 = x3;
+                    y2 = y3;
+                }
+            }
+        }
+        double dx = x2 - x1;
+        double dy = y2 - y1;
 
         double angle = Math.atan(dx / dy);
 
@@ -530,8 +564,8 @@ public class SVGWriter {
 
         double dist = this.layoutParameters.getArrowDistance();
 
-        double x = points.get(0) + sinRo * (points.get(0) > points.get(2) ? (dist + shift) : (dist + shift));
-        double y = points.get(1) + cosRo * (points.get(1) > points.get(3) ? -(dist + shift) : (dist + shift));
+        double x = x1 + sinRo * (x1 > x2 ? (dist + shift) : (dist + shift));
+        double y = y1 + cosRo * (y1 > y2 ? -(dist + shift) : (dist + shift));
 
         double e1 = layoutParameters.getTranslateX() - cdx * cosRo + cdy * sinRo + x;
         double f1 = layoutParameters.getTranslateY() - cdx * sinRo - cdy * cosRo + y;
@@ -542,6 +576,7 @@ public class SVGWriter {
                                + "," + Precision.round(-sinRo, precision) + "," + Precision.round(cosRo,
                                                                                                   precision) + ","
                                + Precision.round(e1, precision) + "," + Precision.round(f1, precision) + ")");
+
     }
 
     private void insertArrowsAndLabels(String wireId, List<Double> points, Element root, Node n, GraphMetadata metadata, SubstationDiagramInitialValueProvider initProvider) {
@@ -554,9 +589,14 @@ public class SVGWriter {
         Element g1 = root.getOwnerDocument().createElement("g");
         g1.setAttribute("id", wireId + "_ARROW1");
         SVGOMDocument arr = componentLibrary.getSvgDocument(ComponentType.ARROW);
-        //transformArrow(points, cd.getSize(), -cd.getSize().getHeight(), g1);
         transformArrow(points, cd.getSize(), 0, g1);
-        insertComponentSVGIntoDocumentSVG(arr, g1);
+        double y1 = points.get(1);
+        double y2 = points.get(3);
+        if (y1 > y2) {
+            insertRotatedComponentSVGIntoDocumentSVG(arr, g1, 180, cd.getSize().getWidth() / 2, cd.getSize().getHeight() / 2);
+        } else {
+            insertComponentSVGIntoDocumentSVG(arr, g1);
+        }
         if (init.getLabel1().isPresent()) {
             drawLabel(init.getLabel1().get(), false, shX, shY, g1);
         }
@@ -573,7 +613,11 @@ public class SVGWriter {
         Element g2 = root.getOwnerDocument().createElement("g");
         g2.setAttribute("id", wireId + "_ARROW2");
         transformArrow(points, cd.getSize(), 2 * cd.getSize().getHeight(), g2);
-        insertComponentSVGIntoDocumentSVG(arr, g2);
+        if (y1 > y2) {
+            insertRotatedComponentSVGIntoDocumentSVG(arr, g2, 180, 5, 5);
+        } else {
+            insertComponentSVGIntoDocumentSVG(arr, g2);
+        }
         if (init.getLabel2().isPresent()) {
             drawLabel(init.getLabel2().get(), false, shX, shY, g2);
         }
@@ -746,7 +790,8 @@ public class SVGWriter {
                     double mid = (x1 + x2) / 2;
                     pol.addAll(Arrays.asList(x1, y1, mid, y1, mid, y2, x2, y2));
                 } else {
-                    pol.addAll(Arrays.asList(x2, y2, x2, y1, x1, y1));
+                    pol.addAll(Arrays.asList(x1, y1, x2, y1, x2, y2));
+                    //pol.addAll(Arrays.asList(x2, y2, x2, y1, x1, y1));
                 }
                 break;
             case NONE:
@@ -754,7 +799,8 @@ public class SVGWriter {
                 if (anchorPoint2.getOrientation() == AnchorOrientation.HORIZONTAL) {
                     pol.addAll(Arrays.asList(x1, y1, x1, y2, x2, y2));
                 } else {
-                    pol.addAll(Arrays.asList(x2, y2, x2, y1, x1, y1));
+                    //pol.addAll(Arrays.asList(x2, y2, x2, y1, x1, y1));
+                    pol.addAll(Arrays.asList(x1, y1, x2, y1, x2, y2));
                 }
                 break;
             default:

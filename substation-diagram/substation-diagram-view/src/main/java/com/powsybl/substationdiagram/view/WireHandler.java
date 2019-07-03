@@ -6,6 +6,8 @@
  */
 package com.powsybl.substationdiagram.view;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -23,10 +25,6 @@ import javafx.scene.Node;
 import javafx.scene.shape.Polyline;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import static com.google.common.base.Preconditions.*;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
@@ -154,8 +152,19 @@ public class WireHandler {
         Point2D newCenterPoint = newCenterPosition.getPoint().subtract(center);
 
         arrow.getTransforms().clear();
+
         arrow.getTransforms().add(new Translate(newCenterPoint.getX(), newCenterPoint.getY()));
-        arrow.getTransforms().add(new Rotate(newCenterPosition.getOrientation(), center.getX(), center.getY()));
+        arrow.getChildren().forEach(c -> {
+            if (c instanceof Group) {
+                c.getTransforms().clear();
+                c.getTransforms().add(new Rotate(newCenterPosition.getOrientation(), center.getX(), center.getY()));
+            } else if (c instanceof javafx.scene.text.Text) {
+                c.getTransforms().clear();
+                if (newCenterPosition.getOrientation() != 180) {
+                    c.getTransforms().add(new Rotate(newCenterPosition.getOrientation(), center.getX(), center.getY()));
+                }
+            }
+        });
     }
 
     private static boolean isEven(int number) {
@@ -168,7 +177,7 @@ public class WireHandler {
         checkArgument(isEven(coordinates.size()), "Number of coordinates of polyline points should be even.");
 
         for (int i = 0; i < coordinates.size(); i = i + 2) {
-            points.add(new Point2D(coordinates.get(i), coordinates.get(i+1)));
+            points.add(new Point2D(coordinates.get(i), coordinates.get(i + 1)));
         }
         return ImmutableList.copyOf(points);
     }
@@ -194,7 +203,7 @@ public class WireHandler {
             if (segmentLength < residual) {
                 residual -= segmentLength;
             } else {
-                return positionAtRatio(start, end, residual/segmentLength);
+                return positionAtRatio(start, end, residual / segmentLength);
             }
         }
 

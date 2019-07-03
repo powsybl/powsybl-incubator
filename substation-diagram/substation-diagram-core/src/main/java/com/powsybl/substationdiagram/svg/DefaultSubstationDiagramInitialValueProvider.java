@@ -11,7 +11,6 @@ import com.powsybl.iidm.network.ShuntCompensator;
 import com.powsybl.iidm.network.StaticVarCompensator;
 import com.powsybl.iidm.network.TwoWindingsTransformer;
 import com.powsybl.iidm.network.VscConverterStation;
-import com.powsybl.substationdiagram.model.Cell;
 import com.powsybl.substationdiagram.model.Node;
 
 public class DefaultSubstationDiagramInitialValueProvider implements SubstationDiagramInitialValueProvider {
@@ -125,33 +124,17 @@ public class DefaultSubstationDiagramInitialValueProvider implements SubstationD
             if (valueP != null) {
                 label1 = String.valueOf(Math.round(valueP.doubleValue()));
                 if (valueP.doubleValue() > 0) {
-                    if (node.getCell() != null) {
-                        dir1 =  node.getCell().getDirection() == Cell.Direction.TOP ? Direction.UP : Direction.DOWN;
-                    } else {
-                        dir1 =  Direction.UP;
-                    }
+                    dir1 =  Direction.UP;
                 } else {
-                    if (node.getCell() != null) {
-                        dir1 = node.getCell().getDirection() == Cell.Direction.TOP ? Direction.DOWN : Direction.UP;
-                    } else {
-                        dir1 =  Direction.DOWN;
-                    }
+                    dir1 =  Direction.DOWN;
                 }
             }
             if (valueQ != null) {
                 label2 = String.valueOf(Math.round(valueQ.doubleValue()));
                 if (valueQ.doubleValue() > 0) {
-                    if (node.getCell() != null) {
-                        dir2 =  node.getCell().getDirection() == Cell.Direction.TOP ? Direction.UP : Direction.DOWN;
-                    } else {
-                        dir2 =  Direction.UP;
-                    }
+                    dir2 =  Direction.UP;
                 } else {
-                    if (node.getCell() != null) {
-                        dir2 = node.getCell().getDirection() == Cell.Direction.TOP ? Direction.DOWN : Direction.UP;
-                    } else {
-                        dir2 =  Direction.DOWN;
-                    }
+                    dir2 =  Direction.DOWN;
                 }
             }
         }

@@ -32,6 +32,10 @@ public class LfBusImpl extends AbstractLfBus {
 
     private double generationTargetQ = 0;
 
+    private double minP = Double.NaN;
+
+    private double maxP = Double.NaN;
+
     private double targetV = Double.NaN;
 
     private int neighbors = 0;
@@ -65,6 +69,19 @@ public class LfBusImpl extends AbstractLfBus {
         }
     }
 
+    private void setActivePowerLimits(double minP, double maxP) {
+        if (Double.isNaN(this.minP)) {
+            this.minP = minP;
+        } else {
+            this.minP = Math.max(this.minP, minP);
+        }
+        if (Double.isNaN(this.maxP)) {
+            this.maxP = maxP;
+        } else {
+            this.maxP = Math.min(this.maxP, maxP);
+        }
+    }
+
     void addLoad(Load load) {
         this.loadTargetP += load.getP0();
         this.loadTargetQ += load.getQ0();
@@ -73,6 +90,7 @@ public class LfBusImpl extends AbstractLfBus {
     void addBattery(Battery battery) {
         this.loadTargetP += battery.getP0();
         this.loadTargetQ += battery.getQ0();
+        setActivePowerLimits(battery.getMinP(), battery.getMaxP());
     }
 
     void addGenerator(Generator generator) {
@@ -84,6 +102,7 @@ public class LfBusImpl extends AbstractLfBus {
         } else {
             this.generationTargetQ += generator.getTargetQ();
         }
+        setActivePowerLimits(generator.getMinP(), generator.getMaxP());
     }
 
     void addStaticVarCompensator(StaticVarCompensator staticVarCompensator) {
@@ -96,7 +115,7 @@ public class LfBusImpl extends AbstractLfBus {
         }
     }
 
-    void addVscConverterStattion(VscConverterStation vscCs, HvdcLine line) {
+    void addVscConverterStation(VscConverterStation vscCs, HvdcLine line) {
         double targetP = line.getConverterStation1() == vscCs && line.getConvertersMode() == HvdcLine.ConvertersMode.SIDE_1_RECTIFIER_SIDE_2_INVERTER
                 ? line.getActivePowerSetpoint()
                 : -line.getActivePowerSetpoint();
@@ -108,6 +127,7 @@ public class LfBusImpl extends AbstractLfBus {
         } else {
             generationTargetQ += vscCs.getReactivePowerSetpoint();
         }
+        setActivePowerLimits(-line.getMaxP(), line.getMaxP());
     }
 
     void addShuntCompensator(ShuntCompensator sc) {
@@ -132,6 +152,16 @@ public class LfBusImpl extends AbstractLfBus {
     @Override
     public double getLoadTargetQ() {
         return loadTargetQ / PerUnit.SB;
+    }
+
+    @Override
+    public double getMinP() {
+        return minP / PerUnit.SB;
+    }
+
+    @Override
+    public double getMaxP() {
+        return maxP / PerUnit.SB;
     }
 
     @Override

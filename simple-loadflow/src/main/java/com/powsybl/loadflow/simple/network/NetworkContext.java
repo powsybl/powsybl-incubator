@@ -151,7 +151,7 @@ public class NetworkContext {
 
                 private void visitVscConverterStation(VscConverterStation vscCs) {
                     HvdcLine line = hvdcLines.get(vscCs);
-                    lfBus.addVscConverterStattion(vscCs, line);
+                    lfBus.addVscConverterStation(vscCs, line);
                 }
             });
         }
@@ -339,6 +339,12 @@ public class NetworkContext {
         }
         if (bus.getLoadTargetQ() != 0) {
             jsonGenerator.writeNumberField("loadTargetQ", bus.getLoadTargetQ());
+        }
+        if (!Double.isNaN(bus.getMinP())) {
+            jsonGenerator.writeNumberField("minP", bus.getMinP());
+        }
+        if (!Double.isNaN(bus.getMaxP())) {
+            jsonGenerator.writeNumberField("maxP", bus.getMaxP());
         }
         if (!Double.isNaN(bus.getTargetV())) {
             jsonGenerator.writeNumberField("targetV", bus.getTargetV());

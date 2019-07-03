@@ -3,6 +3,8 @@
     "id" : "VLGEN_0",
     "num" : 0,
     "generationTargetP" : 6.07,
+    "minP" : -99.9999,
+    "maxP" : 99.9999,
     "targetV" : 1.0208333333333333
   }, {
     "id" : "VLHV1_0",

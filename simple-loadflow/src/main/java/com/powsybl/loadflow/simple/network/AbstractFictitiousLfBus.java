@@ -44,6 +44,16 @@ public abstract class AbstractFictitiousLfBus extends AbstractLfBus {
     }
 
     @Override
+    public double getMinP() {
+        return Double.NaN;
+    }
+
+    @Override
+    public double getMaxP() {
+        return Double.NaN;
+    }
+
+    @Override
     public double getTargetV() {
         return Double.NaN;
     }

@@ -37,6 +37,10 @@ public interface LfBus {
 
     double getTargetV();
 
+    double getMinP();
+
+    double getMaxP();
+
     double getV();
 
     void setV(double v);

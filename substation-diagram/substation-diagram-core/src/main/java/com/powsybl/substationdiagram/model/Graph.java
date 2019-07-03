@@ -30,6 +30,7 @@ import com.powsybl.iidm.network.ThreeWindingsTransformer;
 import com.powsybl.iidm.network.TopologyKind;
 import com.powsybl.iidm.network.TwoWindingsTransformer;
 import com.powsybl.iidm.network.VoltageLevel;
+import com.powsybl.substationdiagram.library.ComponentType;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
 import org.jgrapht.UndirectedGraph;
@@ -53,9 +54,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -67,6 +70,7 @@ import java.util.stream.Stream;
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
+ * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
  */
 public class Graph {
 
@@ -96,12 +100,19 @@ public class Graph {
     private double x = 0;
     private double y = 0;
 
+    private final boolean forVoltageLevelDiagram;  // true if voltageLevel diagram
+                                                   // false if substation diagram
+
+    private final boolean showSelfFor3WT;
+
     /**
      * Constructor
      */
-    public Graph(VoltageLevel voltageLevel, boolean useName) {
+    public Graph(VoltageLevel voltageLevel, boolean useName, boolean forVoltageLevelDiagram, boolean showSelfFor3WT) {
         this.voltageLevel = Objects.requireNonNull(voltageLevel);
         this.useName = useName;
+        this.forVoltageLevelDiagram = forVoltageLevelDiagram;
+        this.showSelfFor3WT = showSelfFor3WT;
     }
 
     boolean isUseName() {
@@ -109,12 +120,12 @@ public class Graph {
     }
 
     public static Graph create(VoltageLevel vl) {
-        return create(vl, false);
+        return create(vl, false, true, false);
     }
 
-    public static Graph create(VoltageLevel vl, boolean useName) {
+    public static Graph create(VoltageLevel vl, boolean useName, boolean forVoltageLevelDiagram, boolean showSelfFor3WT) {
         Objects.requireNonNull(vl);
-        Graph g = new Graph(vl, useName);
+        Graph g = new Graph(vl, useName, forVoltageLevelDiagram, showSelfFor3WT);
         g.buildGraph(vl);
         return g;
     }
@@ -126,7 +137,7 @@ public class Graph {
     public static Map<String, Graph> create(Network network, boolean useName) {
         Map<String, Graph> graphs = new HashMap<>();
         for (VoltageLevel vl : network.getVoltageLevels()) {
-            graphs.put(vl.getId(), create(vl, useName));
+            graphs.put(vl.getId(), create(vl, useName, true, false));
         }
         return graphs;
     }
@@ -799,37 +810,139 @@ public class Graph {
         }
     }
 
+    private class InfosSelf3WT {
+        private final String id;    // id of the self
+        private final String name;  // name of the self
+        private final ThreeWindingsTransformer.Side side;  // side of the 3WT where the self is found
+
+        InfosSelf3WT(String id, String name, ThreeWindingsTransformer.Side side) {
+            this.id = id;
+            this.name = name;
+            this.side = side;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public ThreeWindingsTransformer.Side getSide() {
+            return side;
+        }
+    }
+
+    /*
+     * Finding the self, if present, in the tertiary voltage level of a 3 windings transformer
+     */
+    private InfosSelf3WT findSelfOf3WT(Feeder3WTNode node) {
+        final AtomicReference<InfosSelf3WT> infos = new AtomicReference<>();
+
+        ThreeWindingsTransformer transformer = node.getTransformer();
+
+        transformer.getTerminals().stream()
+                .filter(t -> transformer.getSide(t) != ThreeWindingsTransformer.Side.ONE)
+                .forEach(t -> {
+                    VoltageLevel v = t.getVoltageLevel();
+                    if (v != node.getGraph().getVoltageLevel()) {
+                        Optional<ShuntCompensator> s = v.getShuntCompensatorStream().findFirst();
+                        if (s.isPresent()
+                                && s.get().getbPerSection() < 0
+                                && infos.get() == null) {  // self found
+                            infos.set(new InfosSelf3WT(s.get().getId(),
+                                    s.get().getName(),
+                                    transformer.getSide(t)));
+                        }
+                    }
+                });
+        return infos.get();
+    }
+
     public void constructCellForThreeWindingsTransformer() {
         getNodes().stream()
                 .filter(n -> n instanceof Feeder3WTNode)
                 .forEach(n -> {
-                    // We represent a 3 windings transformer like a double feeder cell with
-                    // the windings to the 2 other voltage levels
                     Feeder3WTNode n3WT = (Feeder3WTNode) n;
 
-                    // Add a fictitious node
+                    // Create a new fictitious node
                     Fictitious3WTNode nf = new Fictitious3WTNode(this, n3WT.getLabel() + "_fictif", n3WT.getTransformer());
                     addNode(nf);
 
-                    // Add a node for the feeder to the first other voltage level
-                    String idFeeder1 = n3WT.getId() + "_" + n3WT.getId2();
-                    String nameFeeder1 = n3WT.getName() + "_" + n3WT.getName2();
-                    Feeder2WTNode nfeeder1 = Feeder2WTNode.create(Graph.this, idFeeder1, nameFeeder1, n3WT.getVL2());
-                    nfeeder1.setOrder(n3WT.getOrder());
-                    nfeeder1.setDirection(n3WT.getDirection());
-                    addNode(nfeeder1);
+                    FeederNode nfeeder1 = null;
+                    FeederNode nfeeder2 = null;
 
-                    // Add a node for the feeder to the second other voltage level
-                    String idFeeder2 = n3WT.getId() + "_" + n3WT.getId3();
-                    String nameFeeder2 = n3WT.getName() + "_" + n3WT.getName3();
-                    Feeder2WTNode nfeeder2 = Feeder2WTNode.create(Graph.this, idFeeder2, nameFeeder2, n3WT.getVL3());
-                    nfeeder2.setOrder(n3WT.getOrder() + 1);
-                    nfeeder2.setDirection(n3WT.getDirection());
-                    addNode(nfeeder2);
+                    InfosSelf3WT infosSelf = null;
+                    if (showSelfFor3WT && forVoltageLevelDiagram) {
+                        // finding the self in the tertiary voltage level
+                        infosSelf = findSelfOf3WT(n3WT);
+                    }
 
+                    if (infosSelf != null) {
+                        // We are in a voltage level diagram AND
+                        // We want to show, if we are in the primary voltage level,
+                        // the self present in the tertiary voltage level of the 3 windings transformer,
+
+                        // We represent the 3 windings transformer like a double feeder cell with :
+                        // . one winding to the secondary voltage level
+                        // . one feeder for the self present in the tertiary voltage level
+
+                        if (infosSelf.getSide() == ThreeWindingsTransformer.Side.TWO) {
+                            // Create a feeder for the self
+                            String idFeeder1 = infosSelf.getId();
+                            String nameFeeder1 = infosSelf.getName();
+                            nfeeder1 = FeederNode.create(Graph.this, idFeeder1, nameFeeder1, ComponentType.INDUCTOR);
+                        } else {
+                            // Create a feeder for the winding to the secondary voltage level
+                            String idFeeder1 = n3WT.getId() + "_" + n3WT.getId2();
+                            String nameFeeder1 = n3WT.getName() + "_" + n3WT.getName2();
+                            nfeeder1 = Feeder2WTNode.create(Graph.this, idFeeder1, nameFeeder1, n3WT.getVL2());
+                        }
+                        nfeeder1.setOrder(n3WT.getOrder());
+                        nfeeder1.setDirection(n3WT.getDirection());
+                        addNode(nfeeder1);
+
+                        if (infosSelf.getSide() == ThreeWindingsTransformer.Side.THREE) {
+                            // Create a feeder for the self
+                            String idFeeder2 = infosSelf.getId();
+                            String nameFeeder2 = infosSelf.getName();
+                            nfeeder2 = FeederNode.create(Graph.this, idFeeder2, nameFeeder2, ComponentType.INDUCTOR);
+                        } else {
+                            // Create a feeder for the self in the tertiary voltage level
+                            String idFeeder2 = n3WT.getId() + "_" + n3WT.getId3();
+                            String nameFeeder2 = n3WT.getName() + "_" + n3WT.getName3();
+                            nfeeder2 = Feeder2WTNode.create(Graph.this, idFeeder2, nameFeeder2, n3WT.getVL3());
+                        }
+                        nfeeder2.setOrder(n3WT.getOrder() + 1);
+                        nfeeder2.setDirection(n3WT.getDirection());
+                        addNode(nfeeder2);
+                    } else {
+                        // We represent the 3 windings transformer like a double feeder cell with :
+                        // . one winding to the first other voltage level
+                        // . one winding to the second other voltage level
+
+                        // Create a feeder for the winding to the first other voltage level
+                        String idFeeder1 = n3WT.getId() + "_" + n3WT.getId2();
+                        String nameFeeder1 = n3WT.getName() + "_" + n3WT.getName2();
+                        nfeeder1 = Feeder2WTNode.create(Graph.this, idFeeder1, nameFeeder1, n3WT.getVL2());
+                        nfeeder1.setOrder(n3WT.getOrder());
+                        nfeeder1.setDirection(n3WT.getDirection());
+                        addNode(nfeeder1);
+
+                        // Create a feeder for the winding to the second other voltage level
+                        String idFeeder2 = n3WT.getId() + "_" + n3WT.getId3();
+                        String nameFeeder2 = n3WT.getName() + "_" + n3WT.getName3();
+                        nfeeder2 = Feeder2WTNode.create(Graph.this, idFeeder2, nameFeeder2, n3WT.getVL3());
+                        nfeeder2.setOrder(n3WT.getOrder() + 1);
+                        nfeeder2.setDirection(n3WT.getDirection());
+                        addNode(nfeeder2);
+                    }
+
+                    // Replacement of the old 3WT feeder node by the new fictitious node
                     substitueNode(n3WT, nf);
 
-                    // Add edges between the fictitious node and the feeder nodes
+                    // Add edges between the new fictitious node and the new feeder nodes
                     addEdge(nf, nfeeder1);
                     addEdge(nf, nfeeder2);
                 });

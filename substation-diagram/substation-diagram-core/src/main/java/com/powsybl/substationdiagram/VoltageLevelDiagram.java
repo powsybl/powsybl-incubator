@@ -8,7 +8,6 @@ package com.powsybl.substationdiagram;
 
 import com.powsybl.iidm.network.VoltageLevel;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
-import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayoutFactory;
 import com.powsybl.substationdiagram.layout.VoltageLevelLayout;
 import com.powsybl.substationdiagram.layout.VoltageLevelLayoutFactory;
 import com.powsybl.substationdiagram.library.ComponentLibrary;
@@ -46,15 +45,12 @@ public final class VoltageLevelDiagram {
         this.layout = Objects.requireNonNull(layout);
     }
 
-    public static VoltageLevelDiagram build(VoltageLevel vl) {
-        return build(vl, new PositionVoltageLevelLayoutFactory(), false);
-    }
-
-    public static VoltageLevelDiagram build(VoltageLevel vl, VoltageLevelLayoutFactory layoutFactory, boolean useName) {
+    public static VoltageLevelDiagram build(VoltageLevel vl, VoltageLevelLayoutFactory layoutFactory,
+                                            boolean useName, boolean showSelfFor3WT) {
         Objects.requireNonNull(vl);
         Objects.requireNonNull(layoutFactory);
 
-        Graph graph = Graph.create(vl, useName);
+        Graph graph = Graph.create(vl, useName, true, showSelfFor3WT);
 
         VoltageLevelLayout layout = layoutFactory.create(graph);
 

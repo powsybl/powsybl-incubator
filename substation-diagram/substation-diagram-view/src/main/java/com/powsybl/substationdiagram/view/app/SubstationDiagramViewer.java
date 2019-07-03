@@ -208,7 +208,8 @@ public class SubstationDiagramViewer extends Application {
                 SubstationDiagramStyleProvider styleProvider = styles.get(styleComboBox.getSelectionModel().getSelectedItem());
 
                 if (c.getContainerType() == ContainerType.VOLTAGE_LEVEL) {
-                    VoltageLevelDiagram diagram = VoltageLevelDiagram.build((VoltageLevel) c, getVoltageLevelLayoutFactory(), showNames.isSelected());
+                    VoltageLevelDiagram diagram = VoltageLevelDiagram.build((VoltageLevel) c, getVoltageLevelLayoutFactory(), showNames.isSelected(),
+                                                                            layoutParameters.get().isShowSelfFor3WT());
                     diagram.writeSvg(getComponentLibrary(), layoutParameters.get(), styleProvider, svgWriter, metadataWriter);
                 } else if (c.getContainerType() == ContainerType.SUBSTATION) {
                     SubstationDiagram diagram = SubstationDiagram.build((Substation) c, getSubstationLayoutFactory(), getVoltageLevelLayoutFactory(), showNames.isSelected());
@@ -510,6 +511,8 @@ public class SubstationDiagramViewer extends Application {
         addPositionLayoutCheckBox("Remove fictitious nodes", rowIndex, PositionVoltageLevelLayoutFactory::isRemoveUnnecessaryFictitiousNodes, PositionVoltageLevelLayoutFactory::setRemoveUnnecessaryFictitiousNodes);
         rowIndex += 1;
         addPositionLayoutCheckBox("Substitute singular fictitious nodes", rowIndex, PositionVoltageLevelLayoutFactory::isSubstituteSingularFictitiousByFeederNode, PositionVoltageLevelLayoutFactory::setSubstituteSingularFictitiousByFeederNode);
+        rowIndex += 1;
+        addCheckBox("Show self for three windings transformers", rowIndex, LayoutParameters::isShowSelfFor3WT, LayoutParameters::setShowSelfFor3WT);
         rowIndex += 1;
         addSpinner("Scale factor:", 1, 20, 1, rowIndex, LayoutParameters::getScaleFactor, LayoutParameters::setScaleFactor);
     }

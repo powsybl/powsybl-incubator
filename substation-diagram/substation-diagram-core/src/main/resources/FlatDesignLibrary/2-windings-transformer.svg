@@ -11,7 +11,7 @@
    width="40.625"
    height="25"
    id="svg6"
-   sodipodi:docname="TwoWindingsTransformer.svg"
+   sodipodi:docname="2-windings-transformer.svg"
    inkscape:version="0.92.3 (2405546, 2018-03-11)">
   <metadata
      id="metadata12">
@@ -21,7 +21,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -36,43 +36,36 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1858"
-     inkscape:window-height="1057"
+     inkscape:window-width="1920"
+     inkscape:window-height="1016"
      id="namedview8"
      showgrid="true"
      inkscape:snap-bbox="true"
      inkscape:bbox-nodes="true"
      showguides="false"
      inkscape:zoom="19.363847"
-     inkscape:cx="2.2108491"
-     inkscape:cy="0.84656044"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
+     inkscape:cx="22.558046"
+     inkscape:cy="11.743156"
+     inkscape:window-x="584"
+     inkscape:window-y="1077"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg6">
     <inkscape:grid
        type="xygrid"
        id="grid37" />
   </sodipodi:namedview>
-  <g
-     id="g13"
-     transform="scale(3.125)">
-    <circle
-       r="4"
-       cy="9"
-       cx="-4"
-       id="circle42"
-       transform="rotate(-90)" />
-    <path
-       id="circle44"
-       d="M 7.0019531,0.54101562 A 4,4 0 0 0 5,4 4,4 0 0 0 6.9980469,7.4589844 4,4 0 0 0 9,4 4,4 0 0 0 7.0019531,0.54101562 Z"
-       inkscape:connector-curvature="0" />
-    <circle
-       transform="rotate(-90)"
-       id="circle33"
-       cx="-4"
-       cy="4"
-       r="4"
-       />
-  </g>
+  <circle
+     style="stroke-width:3.125"
+     transform="rotate(-90)"
+     id="circle75"
+     cx="-12.5"
+     cy="12.5"
+     r="12.5" />
+  <circle
+     r="12.5"
+     cy="28.5"
+     cx="-12.5"
+     id="circle33"
+     transform="rotate(-90)"
+     style="stroke-width:3.125" />
 </svg>

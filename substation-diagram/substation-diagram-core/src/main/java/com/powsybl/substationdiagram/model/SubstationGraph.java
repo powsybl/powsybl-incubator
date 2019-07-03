@@ -87,7 +87,7 @@ public class SubstationGraph {
         substation.getVoltageLevelStream()
                 .sorted(Comparator.comparing(VoltageLevel::getNominalV)
                         .reversed()).forEach(v -> {
-                            Graph vlGraph = Graph.create(v, useName);
+                            Graph vlGraph = Graph.create(v, useName, false, false);
                             addNode(vlGraph);
                         });
 

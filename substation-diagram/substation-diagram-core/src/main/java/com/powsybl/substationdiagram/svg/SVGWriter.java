@@ -25,7 +25,18 @@ import com.powsybl.substationdiagram.library.ComponentLibrary;
 import com.powsybl.substationdiagram.library.ComponentMetadata;
 import com.powsybl.substationdiagram.library.ComponentSize;
 import com.powsybl.substationdiagram.library.ComponentType;
-import com.powsybl.substationdiagram.model.*;
+import com.powsybl.substationdiagram.model.BusCell;
+import com.powsybl.substationdiagram.model.BusNode;
+import com.powsybl.substationdiagram.model.Coord;
+import com.powsybl.substationdiagram.model.Edge;
+import com.powsybl.substationdiagram.model.ExternCell;
+import com.powsybl.substationdiagram.model.Feeder2WTNode;
+import com.powsybl.substationdiagram.model.FeederNode;
+import com.powsybl.substationdiagram.model.Fictitious3WTNode;
+import com.powsybl.substationdiagram.model.Graph;
+import com.powsybl.substationdiagram.model.Node;
+import com.powsybl.substationdiagram.model.Side;
+import com.powsybl.substationdiagram.model.SubstationGraph;
 import org.apache.batik.anim.dom.SVGOMDocument;
 import org.apache.batik.dom.GenericDOMImplementation;
 import org.apache.commons.math3.util.Precision;
@@ -37,6 +48,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
 import org.w3c.dom.svg.SVGCircleElement;
+import org.w3c.dom.svg.SVGEllipseElement;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -79,6 +91,7 @@ public class SVGWriter {
     private static final int FONT_VOLTAGE_LEVEL_LABEL_SIZE = 12;
     private static final String POLYLINE = "polyline";
     private static final String POINTS = "points";
+    private static final String STROKE = "stroke";
 
     private final ComponentLibrary componentLibrary;
 
@@ -522,13 +535,13 @@ public class SVGWriter {
         // If SVG are written otherwise, it will not work correctly.
         boolean firstCircle = true;
         boolean secondCircle = true;
+        Optional<String> color;
 
         for (int i = 0; i < obj.getChildNodes().item(0).getChildNodes().getLength(); i++) {
             org.w3c.dom.Node n = obj.getChildNodes().item(0).getChildNodes().item(i).cloneNode(true);
 
-            if (n instanceof SVGCircleElement) {
+            if (n instanceof SVGCircleElement || n instanceof SVGEllipseElement) {
                 if (node instanceof Fictitious3WTNode) {
-                    Optional<String> color;
                     if (firstCircle) {
                         color = styleProvider.getNode3WTStyle((Fictitious3WTNode) node, ThreeWindingsTransformer.Side.ONE);
                         firstCircle = false;
@@ -539,10 +552,10 @@ public class SVGWriter {
                         color = styleProvider.getNode3WTStyle((Fictitious3WTNode) node, ThreeWindingsTransformer.Side.THREE);
                     }
                     if (color.isPresent()) {
-                        ((SVGCircleElement) n).setAttribute("stroke", color.get());
+                        ((Element) n).removeAttribute(STROKE);
+                        ((Element) n).setAttribute(STROKE, color.get());
                     }
                 } else if (node instanceof Feeder2WTNode) {
-                    Optional<String> color;
                     if (firstCircle) {
                         color = styleProvider.getNode2WTStyle((Feeder2WTNode) node, TwoWindingsTransformer.Side.ONE);
                         firstCircle = false;
@@ -551,7 +564,8 @@ public class SVGWriter {
                         secondCircle = false;
                     }
                     if (color.isPresent()) {
-                        ((SVGCircleElement) n).setAttribute("stroke", color.get());
+                        ((Element) n).removeAttribute(STROKE);
+                        ((Element) n).setAttribute(STROKE, color.get());
                     }
                 }
             }

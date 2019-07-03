@@ -36,64 +36,46 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1920"
-     inkscape:window-height="1016"
+     inkscape:window-width="1644"
+     inkscape:window-height="939"
      id="namedview8"
      showgrid="true"
      inkscape:snap-bbox="true"
      inkscape:bbox-nodes="true"
      showguides="false"
      inkscape:zoom="9.6819235"
-     inkscape:cx="18.839776"
+     inkscape:cx="13.468942"
      inkscape:cy="9.3159519"
-     inkscape:window-x="584"
-     inkscape:window-y="1077"
-     inkscape:window-maximized="1"
+     inkscape:window-x="622"
+     inkscape:window-y="1115"
+     inkscape:window-maximized="0"
      inkscape:current-layer="svg6">
     <inkscape:grid
        type="xygrid"
        id="grid37" />
   </sodipodi:namedview>
-  <g
-     id="g13"
-     transform="matrix(3.125,0,-0.03437326,2,0.13749303,0)">
-    <circle
-       r="4"
-       cy="9"
-       cx="-4"
-       id="circle42"
-       transform="rotate(-90)" />
-    <path
-       id="circle44"
-       d="M 7.0019531,0.54101562 A 4,4 0 0 0 5,4 4,4 0 0 0 6.9980469,7.4589844 4,4 0 0 0 9,4 4,4 0 0 0 7.0019531,0.54101562 Z"
-       inkscape:connector-curvature="0" />
-    <circle
-       transform="rotate(-90)"
-       id="circle33"
-       cx="-4"
-       cy="4"
-       r="4" />
-  </g>
   <ellipse
-     style="opacity:1;fill:none;fill-opacity:1;stroke:none;stroke-width:1.10000002;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0"
-     id="path4531"
-     cx="16.5"
+     transform="rotate(-90)"
+     id="circle33"
+     cx="-8"
      cy="10.5"
-     rx="5.5"
-     ry="2.5" />
+     rx="8"
+     ry="10.5"
+     style="stroke-width:2.2912879" />
   <ellipse
-     style="stroke-width:2.79521704"
-     ry="12.5"
-     rx="10.000945"
-     transform="matrix(0.013748,-0.99990549,1,0,0,0)"
+     cy="30.5"
+     cx="-7.5"
+     id="circle42"
+     transform="rotate(-90)"
+     rx="7.5"
+     ry="10.5"
+     style="stroke-width:2.21852994" />
+  <ellipse
+     style="stroke-width:2.85058093"
+     ry="12.99997"
+     rx="10.001022"
+     transform="matrix(0.01429778,-0.99989778,1,0,0,0)"
      id="circle33-3"
-     cx="-15.001418"
-     cy="19.705482" />
-  <ellipse
-     style="opacity:1;fill:none;fill-opacity:1;stroke:none;stroke-width:1.10000002;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0"
-     id="path4548"
-     cx="17"
-     cy="-2"
-     rx="3"
-     ry="2" />
+     cx="-15.001534"
+     cy="20.213732" />
 </svg>

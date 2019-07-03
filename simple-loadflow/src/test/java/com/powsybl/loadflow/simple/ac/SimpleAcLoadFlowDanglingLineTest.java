@@ -98,7 +98,10 @@ public class SimpleAcLoadFlowDanglingLineTest {
         network = createNetwork();
         loadFlow = new SimpleAcLoadFlow(network, new DenseMatrixFactory());
         parameters = new LoadFlowParameters();
-        parameters.addExtension(SimpleAcLoadFlowParameters.class, new SimpleAcLoadFlowParameters().setSlackBusSelectionMode(SlackBusSelectionMode.MOST_MESHED));
+        SimpleAcLoadFlowParameters parametersExt = new SimpleAcLoadFlowParameters()
+                .setSlackBusSelectionMode(SlackBusSelectionMode.MOST_MESHED)
+                .setDistributedSlack(false);
+        this.parameters.addExtension(SimpleAcLoadFlowParameters.class, parametersExt);
     }
 
     @Test

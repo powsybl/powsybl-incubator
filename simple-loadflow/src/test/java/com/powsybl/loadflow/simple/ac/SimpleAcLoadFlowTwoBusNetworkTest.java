@@ -44,7 +44,10 @@ public class SimpleAcLoadFlowTwoBusNetworkTest {
 
         loadFlow = new SimpleAcLoadFlow(network, new DenseMatrixFactory());
         parameters = new LoadFlowParameters();
-        parameters.addExtension(SimpleAcLoadFlowParameters.class, new SimpleAcLoadFlowParameters().setSlackBusSelectionMode(SlackBusSelectionMode.FIRST));
+        SimpleAcLoadFlowParameters parametersExt = new SimpleAcLoadFlowParameters()
+                .setSlackBusSelectionMode(SlackBusSelectionMode.FIRST)
+                .setDistributedSlack(false);
+        this.parameters.addExtension(SimpleAcLoadFlowParameters.class, parametersExt);
     }
 
     @Test

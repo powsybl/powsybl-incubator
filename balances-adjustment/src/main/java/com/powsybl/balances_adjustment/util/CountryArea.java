@@ -46,4 +46,21 @@ public class CountryArea extends AbstractNetworkArea {
     public String getName() {
         return country.getName();
     }
+
+    @Override
+    public boolean equals(Object object) {
+        if (object == this) {
+            return true;
+        }
+        if (!(object instanceof CountryArea)) {
+            return false;
+        }
+        CountryArea countryArea = (CountryArea) object;
+        return country.getName().equals(countryArea.getName());
+    }
+
+    @Override
+    public int hashCode() {
+        return country.hashCode();
+    }
 }

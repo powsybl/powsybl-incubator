@@ -696,7 +696,9 @@ public class SVGWriter {
             }
 
             if (edge.getNode1() instanceof FeederNode) {
-                insertArrowsAndLabels(wireId, pol, root, edge.getNode1(), metadata, initProvider);
+                if (!(edge.getNode2() instanceof FeederNode)) {
+                    insertArrowsAndLabels(wireId, pol, root, edge.getNode1(), metadata, initProvider);
+                }
             } else if  (edge.getNode2() instanceof FeederNode) {
                 insertArrowsAndLabels(wireId, pol, root, edge.getNode2(), metadata, initProvider);
             }
@@ -759,7 +761,9 @@ public class SVGWriter {
             }
 
             if (edge.getNode1() instanceof FeederNode) {
-                insertArrowsAndLabels(wireId, pol, root, edge.getNode1(), metadata, initProvider);
+                if (!(edge.getNode2() instanceof FeederNode)) {
+                    insertArrowsAndLabels(wireId, pol, root, edge.getNode1(), metadata, initProvider);
+                }
             } else if  (edge.getNode2() instanceof FeederNode) {
                 insertArrowsAndLabels(wireId, pol, root, edge.getNode2(), metadata, initProvider);
             }

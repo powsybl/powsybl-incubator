@@ -118,8 +118,6 @@ public final class SubstationDiagramView extends AbstractContainerDiagramView {
                     if (arrowMetadata != null) {
                         WireHandler wireHandler = wireHandlers.get(arrowMetadata.getWireId());
                         wireHandler.addArrow((Group) node);
-                    } else {
-                        LOGGER.warn("Missing handler " + node.getId());
                     }
                 }
             }

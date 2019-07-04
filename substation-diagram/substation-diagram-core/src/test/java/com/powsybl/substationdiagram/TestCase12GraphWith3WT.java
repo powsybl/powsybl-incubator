@@ -12,6 +12,7 @@ import com.powsybl.iidm.network.Generator;
 import com.powsybl.iidm.network.Load;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.NetworkFactory;
+import com.powsybl.iidm.network.ShuntCompensator;
 import com.powsybl.iidm.network.Substation;
 import com.powsybl.iidm.network.SwitchKind;
 import com.powsybl.iidm.network.ThreeWindingsTransformer;
@@ -106,6 +107,9 @@ public class TestCase12GraphWith3WT extends AbstractTestCase {
         createLoad(vl3, "load4", "load4", "load4", 0, ConnectablePosition.Direction.TOP, 1, 10, 10);
         createSwitch(vl3, "dload4", "dload4", SwitchKind.DISCONNECTOR, false, false, true, 0, 2);
         createSwitch(vl3, "bload4", "bload4", SwitchKind.BREAKER, true, false, true, 2, 1);
+        createShunt(vl3, "self4", "self4", "self4", 1, ConnectablePosition.Direction.BOTTOM, 3, -1, 1, 1);
+        createSwitch(vl3, "dself4", "dself4", SwitchKind.DISCONNECTOR, false, false, true, 0, 4);
+        createSwitch(vl3, "bself4", "bself4", SwitchKind.BREAKER, true, false, true, 4, 3);
 
         // two windings transformers between voltage levels
         //
@@ -277,6 +281,21 @@ public class TestCase12GraphWith3WT extends AbstractTestCase {
                 .Feeder(feederName, feederOrder, direction), null, null, null));
     }
 
+    private static void createShunt(VoltageLevel vl, String id, String name, String feederName, int feederOrder,
+                                   ConnectablePosition.Direction direction, int node,
+                                    double bPerSection, int maximumSectionCount, int currentSectionCount) {
+        ShuntCompensator shunt = vl.newShuntCompensator()
+                .setId(id)
+                .setName(name)
+                .setNode(node)
+                .setbPerSection(bPerSection)
+                .setMaximumSectionCount(maximumSectionCount)
+                .setCurrentSectionCount(currentSectionCount)
+                .add();
+        shunt.addExtension(ConnectablePosition.class, new ConnectablePosition<>(shunt, new ConnectablePosition
+                .Feeder(feederName, feederOrder, direction), null, null, null));
+    }
+
     private static void createTwoWindingsTransformer(Substation s, String id, String name,
                                                      double r, double x, double g, double b,
                                                      double ratedU1, double ratedU2,
@@ -361,7 +380,7 @@ public class TestCase12GraphWith3WT extends AbstractTestCase {
                 .setInitialYBus(260)
                 .setVerticalSpaceBus(25)
                 .setHorizontalBusPadding(20)
-                .setCellWidth(50)
+                .setCellWidth(80)
                 .setExternCellHeight(250)
                 .setInternCellHeight(40)
                 .setStackHeight(30)
@@ -374,18 +393,18 @@ public class TestCase12GraphWith3WT extends AbstractTestCase {
                 .setHorizontalSnakeLinePadding(30)
                 .setVerticalSnakeLinePadding(30);
 
-        // build substation graph
-        Graph g1 = Graph.create(vl1);
+        // build voltage level 1 graph
+        Graph g1 = Graph.create(vl1, false, true, true);
         new ImplicitCellDetector().detectCells(g1);
         assertTrue(new BlockOrganizer().organize(g1));
         new PositionVoltageLevelLayout(g1).run(layoutParameters);
 
-        Graph g2 = Graph.create(vl2);
+        Graph g2 = Graph.create(vl2, false, true, true);
         new ImplicitCellDetector().detectCells(g2);
         assertTrue(new BlockOrganizer().organize(g2));
         new PositionVoltageLevelLayout(g2).run(layoutParameters);
 
-        Graph g3 = Graph.create(vl3);
+        Graph g3 = Graph.create(vl3, false, true, false);
         new ImplicitCellDetector().detectCells(g3);
         assertTrue(new BlockOrganizer().organize(g3));
         new PositionVoltageLevelLayout(g3).run(layoutParameters);

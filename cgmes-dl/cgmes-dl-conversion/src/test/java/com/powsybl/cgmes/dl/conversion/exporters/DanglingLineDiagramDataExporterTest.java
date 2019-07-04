@@ -6,6 +6,7 @@
  */
 package com.powsybl.cgmes.dl.conversion.exporters;
 
+import com.powsybl.cgmes.iidm.extensions.dl.NetworkDiagramData;
 import org.junit.Before;
 import org.mockito.Mockito;
 
@@ -29,9 +30,10 @@ public class DanglingLineDiagramDataExporterTest extends AbstractNodeLineDiagram
         network = Networks.createNetworkWithDanglingLine();
         danglingLine = network.getDanglingLine("DanglingLine");
         LineDiagramData<DanglingLine> danglingLineDiagramData = new LineDiagramData<>(danglingLine);
-        danglingLineDiagramData.addPoint(point1);
-        danglingLineDiagramData.addPoint(point2);
+        danglingLineDiagramData.addPoint(basename, point1);
+        danglingLineDiagramData.addPoint(basename, point2);
         danglingLine.addExtension(LineDiagramData.class, danglingLineDiagramData);
+        NetworkDiagramData.addDiagramName(network, basename);
 
         Mockito.when(cgmesDLModel.getBusbarNodes()).thenReturn(new PropertyBags());
     }

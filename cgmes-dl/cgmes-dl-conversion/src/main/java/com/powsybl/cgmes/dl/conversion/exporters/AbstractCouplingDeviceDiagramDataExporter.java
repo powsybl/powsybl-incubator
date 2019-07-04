@@ -6,16 +6,15 @@
  */
 package com.powsybl.cgmes.dl.conversion.exporters;
 
-import java.util.Map;
-import java.util.Objects;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.powsybl.cgmes.dl.conversion.ExportContext;
 import com.powsybl.cgmes.iidm.extensions.dl.CouplingDeviceDiagramData;
 import com.powsybl.cgmes.iidm.extensions.dl.DiagramTerminal;
 import com.powsybl.triplestore.api.TripleStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Map;
+import java.util.Objects;
 
 /**
  *
@@ -32,10 +31,14 @@ public abstract class AbstractCouplingDeviceDiagramDataExporter extends Abstract
 
     protected void addDiagramData(String id, String name, CouplingDeviceDiagramData<?> diagramData, String diagramObjectStyleId) {
         if (diagramData != null) {
-            String diagramObjectId = addDiagramObject(id, name, diagramData.getRotation(), diagramObjectStyleId);
-            addDiagramObjectPoint(diagramObjectId, diagramData.getPoint());
-            addTerminalData(id, name, 1, diagramData.getTerminalPoints(DiagramTerminal.TERMINAL1), diagramObjectStyleId);
-            addTerminalData(id, name, 2, diagramData.getTerminalPoints(DiagramTerminal.TERMINAL2), diagramObjectStyleId);
+            diagramData.getDiagramsNames().forEach(diagramName -> {
+                CouplingDeviceDiagramData.CouplingDeviceDiagramDetails details = diagramData.getData(diagramName);
+                String diagramId = context.getDiagramId(diagramName);
+                String diagramObjectId = addDiagramObject(id, name, details.getRotation(), diagramObjectStyleId, diagramId);
+                addDiagramObjectPoint(diagramObjectId, details.getPoint());
+                addTerminalData(id, name, 1, details.getTerminalPoints(DiagramTerminal.TERMINAL1), diagramObjectStyleId, diagramId);
+                addTerminalData(id, name, 2, details.getTerminalPoints(DiagramTerminal.TERMINAL2), diagramObjectStyleId, diagramId);
+            });
         } else {
             LOG.warn("Coupling device {}, name {} has no diagram data, skipping export", id, name);
         }

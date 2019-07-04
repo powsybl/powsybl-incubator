@@ -14,15 +14,18 @@ import static org.junit.Assert.assertNotNull;
  * @author Massimo Ferraro <massimo.ferraro@techrain.eu>
  */
 public abstract class AbstractNodeDiagramDataTest {
+    protected static String DIAGRAM_NAME = "default";
 
-    protected <T> void checkDiagramData(NodeDiagramData<?> diagramData) {
+    protected <T> void checkDiagramData(NodeDiagramData<?> diagramData, String diagramName) {
         assertNotNull(diagramData);
-        assertEquals(1, diagramData.getPoint1().getSeq(), 0);
-        assertEquals(0, diagramData.getPoint1().getX(), 0);
-        assertEquals(10, diagramData.getPoint1().getY(), 0);
-        assertEquals(2, diagramData.getPoint2().getSeq(), 0);
-        assertEquals(10, diagramData.getPoint2().getX(), 0);
-        assertEquals(0, diagramData.getPoint2().getY(), 0);
+        NodeDiagramData.NodeDiagramDataDetails nodeDetails = diagramData.getData(diagramName);
+        assertNotNull(nodeDetails);
+        assertEquals(1, nodeDetails.getPoint1().getSeq(), 0);
+        assertEquals(0, nodeDetails.getPoint1().getX(), 0);
+        assertEquals(10, nodeDetails.getPoint1().getY(), 0);
+        assertEquals(2, nodeDetails.getPoint2().getSeq(), 0);
+        assertEquals(10, nodeDetails.getPoint2().getX(), 0);
+        assertEquals(0, nodeDetails.getPoint2().getY(), 0);
     }
 
 }

@@ -6,6 +6,7 @@
  */
 package com.powsybl.cgmes.dl.conversion.exporters;
 
+import com.powsybl.cgmes.iidm.extensions.dl.NetworkDiagramData;
 import org.junit.Before;
 import org.mockito.Mockito;
 
@@ -18,7 +19,6 @@ import com.powsybl.iidm.network.Load;
  * @author Massimo Ferraro <massimo.ferraro@techrain.eu>
  */
 public class LoadDiagramDataExporterTest extends AbstractInjectionDiagramDataExporterTest {
-
     private Load load;
 
     @Before
@@ -27,10 +27,13 @@ public class LoadDiagramDataExporterTest extends AbstractInjectionDiagramDataExp
 
         network = Networks.createNetworkWithLoad();
         load = network.getLoad("Load");
-        InjectionDiagramData<Load> loadDiagramData = new InjectionDiagramData<>(load, point, rotation);
-        loadDiagramData.addTerminalPoint(terminalPoint1);
-        loadDiagramData.addTerminalPoint(terminalPoint2);
+        InjectionDiagramData<Load> loadDiagramData = new InjectionDiagramData<>(load);
+        InjectionDiagramData.InjectionDiagramDetails details = loadDiagramData.new InjectionDiagramDetails(point, rotation);
+        details.addTerminalPoint(terminalPoint1);
+        details.addTerminalPoint(terminalPoint2);
+        loadDiagramData.addData(basename, details);
         load.addExtension(InjectionDiagramData.class, loadDiagramData);
+        NetworkDiagramData.addDiagramName(network, basename);
 
         Mockito.when(cgmesDLModel.getTerminals()).thenReturn(getTerminals(load.getId()));
     }

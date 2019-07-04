@@ -6,6 +6,9 @@
  */
 package com.powsybl.cgmes.iidm.extensions.dl;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 
 import com.powsybl.cgmes.iidm.Networks;
@@ -18,20 +21,45 @@ import com.powsybl.iidm.network.Network;
  */
 public class LineDiagramDataTest extends AbstractLineDiagramDataTest {
 
+    protected static final String DIAGRAM2_NAME = "diagram2";
+
     @Test
     public void test() {
         Network network = Networks.createNetworkWithLine();
         Line line = network.getLine("Line");
 
         LineDiagramData<Line> lineDiagramData = new LineDiagramData<>(line);
-        lineDiagramData.addPoint(new DiagramPoint(10, 0, 2));
-        lineDiagramData.addPoint(new DiagramPoint(0, 10, 1));
+        lineDiagramData.addPoint(DIAGRAM_NAME, new DiagramPoint(10, 0, 2));
+        lineDiagramData.addPoint(DIAGRAM_NAME, new DiagramPoint(0, 10, 1));
         line.addExtension(LineDiagramData.class, lineDiagramData);
 
         Line line2 = network.getLine("Line");
         LineDiagramData<Line> lineDiagramData2 = line2.getExtension(LineDiagramData.class);
 
-        checkDiagramData(lineDiagramData2);
+        assertTrue(lineDiagramData2.getDiagramsNames().size() == 1);
+        checkDiagramData(lineDiagramData2, DIAGRAM_NAME);
+    }
+
+    @Test
+    public void testMultipleDiagrams() {
+        Network network = Networks.createNetworkWithLine();
+        Line line = network.getLine("Line");
+
+        LineDiagramData<Line> lineDiagramData = new LineDiagramData<>(line);
+        lineDiagramData.addPoint(DIAGRAM_NAME, new DiagramPoint(10, 0, 2));
+        lineDiagramData.addPoint(DIAGRAM_NAME, new DiagramPoint(0, 10, 1));
+
+        lineDiagramData.addPoint(DIAGRAM2_NAME, new DiagramPoint(10, 20, 1));
+        lineDiagramData.addPoint(DIAGRAM2_NAME, new DiagramPoint(20, 10, 2));
+
+        line.addExtension(LineDiagramData.class, lineDiagramData);
+
+        Line line2 = network.getLine("Line");
+        LineDiagramData<Line> lineDiagramData2 = line2.getExtension(LineDiagramData.class);
+
+        assertEquals(2, lineDiagramData2.getDiagramsNames().size());
+        checkDiagramData(lineDiagramData2, DIAGRAM_NAME);
+        checkDiagramData(lineDiagramData2, DIAGRAM2_NAME);
     }
 
 }

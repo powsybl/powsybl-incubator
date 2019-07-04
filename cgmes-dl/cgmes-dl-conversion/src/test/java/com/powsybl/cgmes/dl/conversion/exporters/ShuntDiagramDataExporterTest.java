@@ -6,6 +6,7 @@
  */
 package com.powsybl.cgmes.dl.conversion.exporters;
 
+import com.powsybl.cgmes.iidm.extensions.dl.NetworkDiagramData;
 import org.junit.Before;
 import org.mockito.Mockito;
 
@@ -27,10 +28,13 @@ public class ShuntDiagramDataExporterTest extends AbstractInjectionDiagramDataEx
 
         network = Networks.createNetworkWithShuntCompensator();
         shunt = network.getShuntCompensator("Shunt");
-        InjectionDiagramData<ShuntCompensator> shuntDiagramData = new InjectionDiagramData<>(shunt, point, rotation);
-        shuntDiagramData.addTerminalPoint(terminalPoint1);
-        shuntDiagramData.addTerminalPoint(terminalPoint2);
+        InjectionDiagramData<ShuntCompensator> shuntDiagramData = new InjectionDiagramData<>(shunt);
+        InjectionDiagramData.InjectionDiagramDetails details = shuntDiagramData.new InjectionDiagramDetails(point, rotation);
+        details.addTerminalPoint(terminalPoint1);
+        details.addTerminalPoint(terminalPoint2);
+        shuntDiagramData.addData(basename, details);
         shunt.addExtension(InjectionDiagramData.class, shuntDiagramData);
+        NetworkDiagramData.addDiagramName(network, basename);
 
         Mockito.when(cgmesDLModel.getTerminals()).thenReturn(getTerminals(shunt.getId()));
     }

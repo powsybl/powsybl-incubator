@@ -6,6 +6,7 @@
  */
 package com.powsybl.cgmes.dl.conversion.exporters;
 
+import com.powsybl.cgmes.iidm.extensions.dl.NetworkDiagramData;
 import org.junit.Before;
 import org.mockito.Mockito;
 
@@ -27,10 +28,13 @@ public class GeneratorDiagramDataExporterTest extends AbstractInjectionDiagramDa
 
         network = Networks.createNetworkWithGenerator();
         generator = network.getGenerator("Generator");
-        InjectionDiagramData<Generator> generatorDiagramData = new InjectionDiagramData<>(generator, point, rotation);
-        generatorDiagramData.addTerminalPoint(terminalPoint1);
-        generatorDiagramData.addTerminalPoint(terminalPoint2);
+        InjectionDiagramData<Generator> generatorDiagramData = new InjectionDiagramData<>(generator);
+        InjectionDiagramData.InjectionDiagramDetails details = generatorDiagramData.new InjectionDiagramDetails(point, rotation);
+        details.addTerminalPoint(terminalPoint1);
+        details.addTerminalPoint(terminalPoint2);
+        generatorDiagramData.addData(basename, details);
         generator.addExtension(InjectionDiagramData.class, generatorDiagramData);
+        NetworkDiagramData.addDiagramName(network, basename);
 
         Mockito.when(cgmesDLModel.getTerminals()).thenReturn(getTerminals(generator.getId()));
     }

@@ -192,7 +192,7 @@ public class LayoutToCgmesExtensionsTest {
     @Test
     public void testCgmesDlExtensionsSet() {
         LayoutToCgmesExtensionsConverter lconv = new LayoutToCgmesExtensionsConverter();
-        lconv.convertLayout(network);
+        lconv.convertLayout(network, "new-diagram");
 
         checkExtensionsSet();
     }

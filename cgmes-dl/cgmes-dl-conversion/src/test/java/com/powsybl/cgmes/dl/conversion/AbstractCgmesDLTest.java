@@ -21,6 +21,8 @@ public abstract class AbstractCgmesDLTest {
 
     protected static String NAMESPACE = "http://network#";
 
+    protected static String DEFAULT_DIAGRAM_NAME = "default";
+
     protected PropertyBags terminalsPropertyBags;
     protected PropertyBags busesPropertyBags;
     protected PropertyBags busbarsPropertyBags;
@@ -98,17 +100,22 @@ public abstract class AbstractCgmesDLTest {
         busbarNodes = new PropertyBags(Arrays.asList(createBusbarNode(NAMESPACE + "Busbar", NAMESPACE + "BusbarNode")));
     }
 
-    protected PropertyBag createPropertyBag(String identifiedObject, String name, double x, double y, int seq) {
+    protected PropertyBag createPropertyBag(String identifiedObject, String name, double x, double y, int seq, String diagramName) {
         PropertyBag propertyBag = new PropertyBag(Arrays.asList("identifiedObject", "name", "x", "y", "seq"));
         propertyBag.put("identifiedObject", identifiedObject);
         propertyBag.put("name", name);
         propertyBag.put("x", Double.toString(x));
         propertyBag.put("y", Double.toString(y));
         propertyBag.put("seq", Integer.toString(seq));
+        propertyBag.put("diagramName", diagramName);
         return propertyBag;
     }
 
-    protected PropertyBag createPropertyBag(String identifiedObject, String name, double x, double y, int seq, int rotation) {
+    protected PropertyBag createPropertyBag(String identifiedObject, String name, double x, double y, int seq) {
+        return createPropertyBag(identifiedObject, name, x, y, seq, DEFAULT_DIAGRAM_NAME);
+    }
+
+    protected PropertyBag createPropertyBag(String identifiedObject, String name, double x, double y, int seq, int rotation, String diagramName) {
         PropertyBag propertyBag = new PropertyBag(Arrays.asList("identifiedObject", "name", "x", "y", "seq", "rotation"));
         propertyBag.put("identifiedObject", identifiedObject);
         propertyBag.put("name", name);
@@ -116,20 +123,30 @@ public abstract class AbstractCgmesDLTest {
         propertyBag.put("y", Double.toString(y));
         propertyBag.put("seq", Integer.toString(seq));
         propertyBag.put("rotation", Integer.toString(rotation));
+        propertyBag.put("diagramName", diagramName);
         return propertyBag;
     }
 
-    protected PropertyBag createTerminalPropertyBag(String terminalEquipment, String terminalSide, double x, double y, int seq) {
+    protected PropertyBag createPropertyBag(String identifiedObject, String name, double x, double y, int seq, int rotation) {
+        return createPropertyBag(identifiedObject, name, x, y, seq, rotation, DEFAULT_DIAGRAM_NAME);
+    }
+
+    protected PropertyBag createTerminalPropertyBag(String terminalEquipment, String terminalSide, double x, double y, int seq, String diagramName) {
         PropertyBag propertyBag = new PropertyBag(Arrays.asList("terminalEquipment", "terminalSide", "x", "y", "seq"));
         propertyBag.put("terminalEquipment", terminalEquipment);
         propertyBag.put("terminalSide", terminalSide);
         propertyBag.put("x", Double.toString(x));
         propertyBag.put("y", Double.toString(y));
         propertyBag.put("seq", Integer.toString(seq));
+        propertyBag.put("diagramName", diagramName);
         return propertyBag;
     }
 
-    protected PropertyBag createBusPropertyBag(String identifiedObject, String name, String voltageLevel, String vlName, double x, double y, int seq) {
+    protected PropertyBag createTerminalPropertyBag(String terminalEquipment, String terminalSide, double x, double y, int seq) {
+        return createTerminalPropertyBag(terminalEquipment, terminalSide, x, y, seq, DEFAULT_DIAGRAM_NAME);
+    }
+
+    protected PropertyBag createBusPropertyBag(String identifiedObject, String name, String voltageLevel, String vlName, double x, double y, int seq, String diagramName) {
         PropertyBag propertyBag = new PropertyBag(Arrays.asList("identifiedObject", "name", "voltageLevel", "vlname", "x", "y", "seq"));
         propertyBag.put("identifiedObject", identifiedObject);
         propertyBag.put("name", name);
@@ -138,27 +155,42 @@ public abstract class AbstractCgmesDLTest {
         propertyBag.put("x", Double.toString(x));
         propertyBag.put("y", Double.toString(y));
         propertyBag.put("seq", Integer.toString(seq));
+        propertyBag.put("diagramName", diagramName);
         return propertyBag;
     }
 
-    protected PropertyBag createBusbarPropertyBag(String identifiedObject, String name, double x, double y, int seq) {
+    protected PropertyBag createBusPropertyBag(String identifiedObject, String name, String voltageLevel, String vlName, double x, double y, int seq) {
+        return createBusPropertyBag(identifiedObject, name, voltageLevel, vlName, x, y, seq, DEFAULT_DIAGRAM_NAME);
+    }
+
+    protected PropertyBag createBusbarPropertyBag(String identifiedObject, String name, double x, double y, int seq, String diagramName) {
         PropertyBag propertyBag = new PropertyBag(Arrays.asList("identifiedObject", "name", "x", "y", "seq"));
         propertyBag.put("busbarSection", identifiedObject);
         propertyBag.put("name", name);
         propertyBag.put("x", Double.toString(x));
         propertyBag.put("y", Double.toString(y));
         propertyBag.put("seq", Integer.toString(seq));
+        propertyBag.put("diagramName", diagramName);
         return propertyBag;
     }
 
-    protected PropertyBag createSwitchPropertyBag(String identifiedObject, String name, double x, double y, int rotation) {
+    protected PropertyBag createBusbarPropertyBag(String identifiedObject, String name, double x, double y, int seq) {
+        return createBusbarPropertyBag(identifiedObject, name, x, y, seq, DEFAULT_DIAGRAM_NAME);
+    }
+
+    protected PropertyBag createSwitchPropertyBag(String identifiedObject, String name, double x, double y, int rotation, String diagramName) {
         PropertyBag propertyBag = new PropertyBag(Arrays.asList("identifiedObject", "name", "x", "y", "rotation"));
         propertyBag.put("identifiedObject", identifiedObject);
         propertyBag.put("name", name);
         propertyBag.put("x", Double.toString(x));
         propertyBag.put("y", Double.toString(y));
         propertyBag.put("rotation", Integer.toString(rotation));
+        propertyBag.put("diagramName", diagramName);
         return propertyBag;
+    }
+
+    protected PropertyBag createSwitchPropertyBag(String identifiedObject, String name, double x, double y, int rotation) {
+        return createSwitchPropertyBag(identifiedObject, name, x, y, rotation, DEFAULT_DIAGRAM_NAME);
     }
 
     private PropertyBag createTerminal(String terminal, int terminalSide, String equipment) {

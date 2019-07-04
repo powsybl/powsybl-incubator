@@ -9,6 +9,7 @@ package com.powsybl.substationdiagram.view.app;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
+import com.powsybl.cgmes.iidm.extensions.dl.NetworkDiagramData;
 import com.powsybl.commons.json.JsonUtil;
 import com.powsybl.computation.local.LocalComputationManager;
 import com.powsybl.iidm.import_.ImportConfig;
@@ -134,6 +135,8 @@ public class SubstationDiagramViewer extends Application {
 
     private final CheckBox showNames = new CheckBox("Show names");
 
+    private final ComboBox<String> diagramNamesComboBox = new ComboBox<>();
+
     private class ContainerDiagramPane extends BorderPane {
         private final ScrollPane flowPane = new ScrollPane();
 
@@ -207,12 +210,13 @@ public class SubstationDiagramViewer extends Application {
                  StringWriter metadataWriter = new StringWriter()) {
                 SubstationDiagramStyleProvider styleProvider = styles.get(styleComboBox.getSelectionModel().getSelectedItem());
 
+                String dName = getSelectedDiagramName();
                 if (c.getContainerType() == ContainerType.VOLTAGE_LEVEL) {
                     VoltageLevelDiagram diagram = VoltageLevelDiagram.build((VoltageLevel) c, getVoltageLevelLayoutFactory(), showNames.isSelected());
-                    diagram.writeSvg(getComponentLibrary(), layoutParameters.get(), styleProvider, svgWriter, metadataWriter, null);
+                    diagram.writeSvg(getComponentLibrary(), new LayoutParameters(layoutParameters.get()).setDiagramName(dName), styleProvider, svgWriter, metadataWriter, null);
                 } else if (c.getContainerType() == ContainerType.SUBSTATION) {
                     SubstationDiagram diagram = SubstationDiagram.build((Substation) c, getSubstationLayoutFactory(), getVoltageLevelLayoutFactory(), showNames.isSelected());
-                    diagram.writeSvg(getComponentLibrary(), layoutParameters.get(), styleProvider, svgWriter, metadataWriter, null);
+                    diagram.writeSvg(getComponentLibrary(), new LayoutParameters(layoutParameters.get()).setDiagramName(dName), styleProvider, svgWriter, metadataWriter, null);
                 }
 
                 svgWriter.flush();
@@ -398,6 +402,11 @@ public class SubstationDiagramViewer extends Application {
         return voltageLevelsLayouts.get(selectedItem);
     }
 
+    private String getSelectedDiagramName() {
+        String selectedItem = diagramNamesComboBox.getSelectionModel().getSelectedItem();
+        return selectedItem;
+    }
+
     private void setParameters(LayoutParameters layoutParameters) {
         this.layoutParameters.set(new LayoutParameters(layoutParameters));
     }
@@ -476,8 +485,21 @@ public class SubstationDiagramViewer extends Application {
         voltageLevelLayoutComboBox.getItems().addAll(voltageLevelsLayouts.keySet());
         voltageLevelLayoutComboBox.getSelectionModel().selectFirst();
         voltageLevelLayoutComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> refreshDiagram());
+
         parametersPane.add(new Label("VoltageLevel Layout:"), 0, rowIndex++);
         parametersPane.add(voltageLevelLayoutComboBox, 0, rowIndex++);
+
+        //CGMES-DL diagrams names list
+        parametersPane.add(new Label("CGMES-DL Diagrams:"), 0, ++rowIndex);
+        parametersPane.add(diagramNamesComboBox, 0, ++rowIndex);
+        diagramNamesComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            refreshDiagram();
+        });
+        diagramNamesComboBox.setDisable(true);
+        voltageLevelLayoutComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            setDiagramsNamesContent(networkProperty.get(), false);
+        });
+        rowIndex += 1;
 
         addSpinner("Horizontal substation padding:", 0, 200, 5, rowIndex, LayoutParameters::getHorizontalSubstationPadding, LayoutParameters::setHorizontalSubstationPadding);
         rowIndex += 2;
@@ -510,6 +532,20 @@ public class SubstationDiagramViewer extends Application {
         addPositionLayoutCheckBox("Substitute singular fictitious nodes", rowIndex, PositionVoltageLevelLayoutFactory::isSubstituteSingularFictitiousByFeederNode, PositionVoltageLevelLayoutFactory::setSubstituteSingularFictitiousByFeederNode);
         rowIndex += 1;
         addSpinner("Scale factor:", 1, 20, 1, rowIndex, LayoutParameters::getScaleFactor, LayoutParameters::setScaleFactor);
+    }
+
+    private void setDiagramsNamesContent(Network network, boolean setValues) {
+        if (NetworkDiagramData.checkNetworkDiagramData(network)) {
+            if (setValues) {
+                diagramNamesComboBox.getItems().setAll(NetworkDiagramData.getDiagramsNames(network));
+                diagramNamesComboBox.getSelectionModel().clearSelection();
+                diagramNamesComboBox.setValue(null);
+            }
+            diagramNamesComboBox.setDisable(!(getVoltageLevelLayoutFactory() instanceof CgmesVoltageLevelLayoutFactory));
+        } else {
+            diagramNamesComboBox.getItems().clear();
+            diagramNamesComboBox.setDisable(true);
+        }
     }
 
     private void refreshDiagram() {
@@ -709,6 +745,9 @@ public class SubstationDiagramViewer extends Application {
             initSubstationsTree();
             caseLoadingStatus.setStyle("-fx-background-color: green");
             preferences.put(CASE_PATH_PROPERTY, file.toAbsolutePath().toString());
+
+            setDiagramsNamesContent(networkProperty.get(), true);
+
         });
         networkService.setOnFailed(event -> {
             Throwable exception = event.getSource().getException();

@@ -39,14 +39,14 @@ public abstract class AbstractDiagramDataExporter {
         this.context = Objects.requireNonNull(context);
     }
 
-    protected String addDiagramObject(String id, String name, double rotation, String diagramObjectStyleId) {
+    protected String addDiagramObject(String id, String name, double rotation, String diagramObjectStyleId, String diagramId) {
         PropertyBag diagramObjectProperties = new PropertyBag(Arrays.asList("IdentifiedObject.name", "IdentifiedObject", "rotation", "Diagram", "DiagramObjectStyle"));
         diagramObjectProperties.setResourceNames(Arrays.asList("IdentifiedObject", "Diagram", "DiagramObjectStyle"));
         diagramObjectProperties.setClassPropertyNames(Arrays.asList("IdentifiedObject.name"));
         diagramObjectProperties.put("IdentifiedObject.name", name);
         diagramObjectProperties.put("IdentifiedObject", id);
         diagramObjectProperties.put("rotation", Double.toString(rotation));
-        diagramObjectProperties.put("Diagram", context.getDiagramId());
+        diagramObjectProperties.put("Diagram", diagramId);
         diagramObjectProperties.put("DiagramObjectStyle", diagramObjectStyleId);
         return tripleStore.add(context.getDlContext(), CgmesNamespace.CIM_16_NAMESPACE, "DiagramObject", diagramObjectProperties);
     }
@@ -89,8 +89,8 @@ public abstract class AbstractDiagramDataExporter {
         }
     }
 
-    protected void addTerminalData(String id, String name, int side, List<DiagramPoint> terminalPoints, String diagramObjectStyleId) {
-        String diagramObjectId = addDiagramObject(getTerminalId(id, side), getTerminalName(name, side), 0, diagramObjectStyleId);
+    protected void addTerminalData(String id, String name, int side, List<DiagramPoint> terminalPoints, String diagramObjectStyleId, String diagramId) {
+        String diagramObjectId = addDiagramObject(getTerminalId(id, side), getTerminalName(name, side), 0, diagramObjectStyleId, diagramId);
         terminalPoints.forEach(point -> addDiagramObjectPoint(diagramObjectId, point));
     }
 

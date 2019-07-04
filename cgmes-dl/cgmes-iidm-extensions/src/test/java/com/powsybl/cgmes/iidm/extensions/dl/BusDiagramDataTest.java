@@ -24,14 +24,18 @@ public class BusDiagramDataTest extends AbstractNodeDiagramDataTest {
         Bus bus = network.getVoltageLevel("VoltageLevel").getBusBreakerView().getBus("Bus");
 
         NodeDiagramData<Bus> busDiagramData = new NodeDiagramData<>(bus);
-        busDiagramData.setPoint1(new DiagramPoint(0, 10, 1));
-        busDiagramData.setPoint2(new DiagramPoint(10, 0, 2));
+        NodeDiagramData.NodeDiagramDataDetails busDiagramDetails = busDiagramData.new NodeDiagramDataDetails();
+
+        busDiagramDetails.setPoint1(new DiagramPoint(0, 10, 1));
+        busDiagramDetails.setPoint2(new DiagramPoint(10, 0, 2));
+        busDiagramData.addData(DIAGRAM_NAME, busDiagramDetails);
+
         bus.addExtension(NodeDiagramData.class, busDiagramData);
 
         Bus bus2 = network.getVoltageLevel("VoltageLevel").getBusBreakerView().getBus("Bus");
         NodeDiagramData<Bus> busDiagramData2 = bus2.getExtension(NodeDiagramData.class);
 
-        checkDiagramData(busDiagramData2);
+        checkDiagramData(busDiagramData2, DIAGRAM_NAME);
     }
 
 }

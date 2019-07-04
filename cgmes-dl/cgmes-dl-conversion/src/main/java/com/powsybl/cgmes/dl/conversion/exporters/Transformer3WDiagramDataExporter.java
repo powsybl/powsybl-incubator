@@ -36,11 +36,15 @@ public class Transformer3WDiagramDataExporter extends AbstractDiagramDataExporte
         ThreeWindingsTransformerDiagramData transformerDiagramData = transformer.getExtension(ThreeWindingsTransformerDiagramData.class);
         String diagramObjectStyleId = addDiagramObjectStyle(transformer.getLeg1().getTerminal().getVoltageLevel().getTopologyKind());
         if (transformerDiagramData != null) {
-            String diagramObjectId = addDiagramObject(transformer.getId(), transformer.getName(), transformerDiagramData.getRotation(), diagramObjectStyleId);
-            addDiagramObjectPoint(diagramObjectId, transformerDiagramData.getPoint());
-            addTerminalData(transformer.getId(), transformer.getName(), 1, transformerDiagramData.getTerminalPoints(DiagramTerminal.TERMINAL1), diagramObjectStyleId);
-            addTerminalData(transformer.getId(), transformer.getName(), 2, transformerDiagramData.getTerminalPoints(DiagramTerminal.TERMINAL2), diagramObjectStyleId);
-            addTerminalData(transformer.getId(), transformer.getName(), 3, transformerDiagramData.getTerminalPoints(DiagramTerminal.TERMINAL3), diagramObjectStyleId);
+            transformerDiagramData.getDiagramsNames().forEach(diagramName -> {
+                ThreeWindingsTransformerDiagramData.ThreeWindingsTransformerDiagramDataDetails details = transformerDiagramData.getData(diagramName);
+                String diagramId = context.getDiagramId(diagramName);
+                String diagramObjectId = addDiagramObject(transformer.getId(), transformer.getName(), details.getRotation(), diagramObjectStyleId, diagramId);
+                addDiagramObjectPoint(diagramObjectId, details.getPoint());
+                addTerminalData(transformer.getId(), transformer.getName(), 1, details.getTerminalPoints(DiagramTerminal.TERMINAL1), diagramObjectStyleId, diagramId);
+                addTerminalData(transformer.getId(), transformer.getName(), 2, details.getTerminalPoints(DiagramTerminal.TERMINAL2), diagramObjectStyleId, diagramId);
+                addTerminalData(transformer.getId(), transformer.getName(), 3, details.getTerminalPoints(DiagramTerminal.TERMINAL3), diagramObjectStyleId, diagramId);
+            });
         } else {
             LOG.warn("Transformer {}, name {} has no diagram data, skipping export", transformer.getId(), transformer.getName());
         }

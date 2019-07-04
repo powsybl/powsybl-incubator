@@ -9,6 +9,7 @@ package com.powsybl.cgmes.dl.conversion.exporters;
 import java.util.Arrays;
 import java.util.Collections;
 
+import com.powsybl.cgmes.iidm.extensions.dl.NetworkDiagramData;
 import org.junit.Before;
 import org.mockito.Mockito;
 
@@ -34,9 +35,12 @@ public class BusbarDiagramDataExporterTest extends AbstractNodeLineDiagramDataEx
         network = Networks.createNetworkWithBusbar();
         busbar = network.getVoltageLevel("VoltageLevel").getNodeBreakerView().getBusbarSection("Busbar");
         NodeDiagramData<BusbarSection> busbarDiagramData = new NodeDiagramData<>(busbar);
-        busbarDiagramData.setPoint1(point1);
-        busbarDiagramData.setPoint2(point2);
+        NodeDiagramData.NodeDiagramDataDetails details = busbarDiagramData.new NodeDiagramDataDetails();
+        details.setPoint1(point1);
+        details.setPoint2(point2);
+        busbarDiagramData.addData(basename, details);
         busbar.addExtension(NodeDiagramData.class, busbarDiagramData);
+        NetworkDiagramData.addDiagramName(network, basename);
 
         PropertyBag busbarNode = new PropertyBag(Arrays.asList("busbarSection", "busbarNode"));
         busbarNode.put("busbarSection", dataNs + busbar.getId());

@@ -34,12 +34,12 @@ public abstract class AbstractCouplingDeviceDiagramDataImporter {
         this.terminalsDiagramData = Objects.requireNonNull(terminalsDiagramData);
     }
 
-    protected void addTerminalPoints(String equipmentId, String equipmentName, DiagramTerminal terminal, String terminalSide, CouplingDeviceDiagramData<?> diagramData) {
+    protected void addTerminalPoints(String equipmentId, String equipmentName, DiagramTerminal terminal, String terminalSide, CouplingDeviceDiagramData<?> diagramData, CouplingDeviceDiagramData.CouplingDeviceDiagramDetails diagramDetails) {
         String terminalKey = equipmentId + "_" + terminalSide;
         if (terminalsDiagramData.containsKey(terminalKey)) {
             PropertyBags equipmentTerminalsDiagramData = terminalsDiagramData.get(terminalKey);
             equipmentTerminalsDiagramData.forEach(terminalDiagramData ->
-                diagramData.addTerminalPoint(terminal, new DiagramPoint(terminalDiagramData.asDouble("x"), terminalDiagramData.asDouble("y"), terminalDiagramData.asInt("seq")))
+                    diagramDetails.addTerminalPoint(terminal, new DiagramPoint(terminalDiagramData.asDouble("x"), terminalDiagramData.asDouble("y"), terminalDiagramData.asInt("seq")))
             );
         } else {
             LOG.warn("Cannot find terminal diagram data of equipment {}, name {}, terminal {}", equipmentId, equipmentName, terminal);

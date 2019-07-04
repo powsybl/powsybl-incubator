@@ -9,6 +9,7 @@ package com.powsybl.cgmes.dl.conversion.importers;
 import java.util.Map;
 import java.util.Objects;
 
+import com.powsybl.cgmes.iidm.extensions.dl.NetworkDiagramData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,11 +37,14 @@ public class GeneratorDiagramDataImporter extends AbstractInjectionDiagramDataIm
         String generatorId = generatorDiagramData.getId("identifiedObject");
         Generator generator = network.getGenerator(generatorId);
         if (generator != null) {
-            InjectionDiagramData<Generator> generatorIidmDiagramData = new InjectionDiagramData<>(generator,
-                    new DiagramPoint(generatorDiagramData.asDouble("x"), generatorDiagramData.asDouble("y"), generatorDiagramData.asInt("seq")),
+            InjectionDiagramData<Generator> generatorIidmDiagramData = new InjectionDiagramData<>(generator);
+            InjectionDiagramData.InjectionDiagramDetails diagramDetails = generatorIidmDiagramData.new InjectionDiagramDetails(new DiagramPoint(generatorDiagramData.asDouble("x"), generatorDiagramData.asDouble("y"), generatorDiagramData.asInt("seq")),
                     generatorDiagramData.asDouble("rotation"));
-            addTerminalPoints(generatorId, generator.getName(), generatorIidmDiagramData);
+            addTerminalPoints(generatorId, generator.getName(), generatorIidmDiagramData, diagramDetails);
+            String diagramName = generatorDiagramData.get("diagramName");
+            generatorIidmDiagramData.addData(diagramName, diagramDetails);
             generator.addExtension(InjectionDiagramData.class, generatorIidmDiagramData);
+            NetworkDiagramData.addDiagramName(network, diagramName);
         } else {
             LOG.warn("Cannot find generator {}, name {} in network {}: skipping generator diagram data", generatorId, generatorDiagramData.get("name"), network.getId());
         }

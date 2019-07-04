@@ -38,6 +38,8 @@ public class LayoutParameters {
     private double horizontalSubstationPadding = 50;
     private double verticalSubstationPadding = 50;
 
+    private String diagramName = null;
+
     public LayoutParameters() {
     }
 
@@ -224,6 +226,15 @@ public class LayoutParameters {
 
     public LayoutParameters setVerticalSubstationPadding(double padding) {
         this.verticalSubstationPadding = padding;
+        return this;
+    }
+
+    public String getDiagramName() {
+        return diagramName;
+    }
+
+    public LayoutParameters setDiagramName(String diagramName) {
+        this.diagramName = diagramName;
         return this;
     }
 }

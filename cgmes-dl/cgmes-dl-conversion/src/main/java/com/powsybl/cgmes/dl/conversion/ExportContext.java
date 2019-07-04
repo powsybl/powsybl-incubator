@@ -6,7 +6,7 @@
  */
 package com.powsybl.cgmes.dl.conversion;
 
-import java.util.Objects;
+import java.util.*;
 
 import com.powsybl.cgmes.model.CgmesSubset;
 import com.powsybl.commons.datasource.DataSource;
@@ -21,9 +21,9 @@ public class ExportContext {
     private final String basename;
     private final String baseNamespace;
     private final String dlContext;
-    private String diagramId;
     private String busBranchDiagramObjectStyleId;
     private String nodeBreakerDiagramObjectStyleId;
+    Map<String, String> diagrams = new HashMap<>();
 
     public ExportContext(DataSource dataSource, TripleStore tripleStore) {
         Objects.requireNonNull(dataSource);
@@ -45,12 +45,22 @@ public class ExportContext {
         return dlContext;
     }
 
-    public void setDiagramId(String diagramId) {
-        this.diagramId = Objects.requireNonNull(diagramId);
+    public void setDiagramId(String diagramId, String diagramName) {
+        Objects.requireNonNull(diagramId);
+        Objects.requireNonNull(diagramName);
+        this.diagrams.put(diagramName, diagramId);
     }
 
-    public String getDiagramId() {
-        return diagramId;
+    public String getDiagramId(String diagramName) {
+        return diagrams.get(diagramName);
+    }
+
+    public List<String> getDiagramsIds() {
+        return new ArrayList<>(diagrams.keySet());
+    }
+
+    public List<String> getDiagramsNames() {
+        return new ArrayList<>(diagrams.values());
     }
 
     public void setBusBranchDiagramObjectStyleId(String busBranchDiagramObjectStyleId) {

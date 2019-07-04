@@ -9,6 +9,7 @@ package com.powsybl.cgmes.dl.conversion.importers;
 import java.util.Map;
 import java.util.Objects;
 
+import com.powsybl.cgmes.iidm.extensions.dl.NetworkDiagramData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +22,6 @@ import com.powsybl.triplestore.api.PropertyBag;
 import com.powsybl.triplestore.api.PropertyBags;
 
 /**
- *
  * @author Massimo Ferraro <massimo.ferraro@techrain.eu>
  */
 public class SwitchDiagramDataImporter extends AbstractCouplingDeviceDiagramDataImporter {
@@ -37,12 +37,14 @@ public class SwitchDiagramDataImporter extends AbstractCouplingDeviceDiagramData
         String switchId = switchesDiagramData.getId("identifiedObject");
         Switch sw = network.getSwitch(switchId);
         if (sw != null) {
-            CouplingDeviceDiagramData<Switch> switchIidmDiagramData = new CouplingDeviceDiagramData<>(sw,
-                    new DiagramPoint(switchesDiagramData.asDouble("x"), switchesDiagramData.asDouble("y"), 0),
+            CouplingDeviceDiagramData<Switch> switchIidmDiagramData = new CouplingDeviceDiagramData<>(sw);
+            CouplingDeviceDiagramData.CouplingDeviceDiagramDetails diagramDetails = switchIidmDiagramData.new CouplingDeviceDiagramDetails(new DiagramPoint(switchesDiagramData.asDouble("x"), switchesDiagramData.asDouble("y"), 0),
                     switchesDiagramData.asDouble("rotation"));
-            addTerminalPoints(switchId, sw.getName(), DiagramTerminal.TERMINAL1, "1", switchIidmDiagramData);
-            addTerminalPoints(switchId, sw.getName(), DiagramTerminal.TERMINAL2, "2", switchIidmDiagramData);
+            addTerminalPoints(switchId, sw.getName(), DiagramTerminal.TERMINAL1, "1", switchIidmDiagramData, diagramDetails);
+            addTerminalPoints(switchId, sw.getName(), DiagramTerminal.TERMINAL2, "2", switchIidmDiagramData, diagramDetails);
+            switchIidmDiagramData.addData(switchesDiagramData.get("diagramName"), diagramDetails);
             sw.addExtension(CouplingDeviceDiagramData.class, switchIidmDiagramData);
+            NetworkDiagramData.addDiagramName(network, switchesDiagramData.get("diagramName"));
         } else {
             LOG.warn("Cannot find switch {}, name {} in network {}: skipping switch diagram data", switchId, switchesDiagramData.get("name"), network.getId());
         }

@@ -48,6 +48,7 @@ public final class CgmesDLUtils {
         network.getSwitchStream().forEach(sw -> {
             sw.removeExtension(CouplingDeviceDiagramData.class);
         });
+        network.removeExtension(NetworkDiagramData.class);
     }
 
     //retrieve, if exists, the tripleStore currently available from the CGMES model in the IIDM CGMES extensions

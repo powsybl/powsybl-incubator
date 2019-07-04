@@ -27,9 +27,13 @@ public abstract class AbstractNodeDiagramDataExporter extends AbstractDiagramDat
 
     protected void addDiagramData(String id, String name, NodeDiagramData<?> diagramData, String diagramObjectStyleId) {
         if (diagramData != null) {
-            String diagramObjectId = addDiagramObject(id, name, 0, diagramObjectStyleId);
-            addDiagramObjectPoint(diagramObjectId, diagramData.getPoint1());
-            addDiagramObjectPoint(diagramObjectId, diagramData.getPoint2());
+            diagramData.getDiagramsNames().forEach(diagramName -> {
+                NodeDiagramData.NodeDiagramDataDetails details = diagramData.getData(diagramName);
+                String diagramId = context.getDiagramId(diagramName);
+                String diagramObjectId = addDiagramObject(id, name, 0, diagramObjectStyleId, diagramId);
+                addDiagramObjectPoint(diagramObjectId, details.getPoint1());
+                addDiagramObjectPoint(diagramObjectId, details.getPoint2());
+            });
         } else {
             LOG.warn("Node {}, name {} has no diagram data, skipping export", id, name);
         }

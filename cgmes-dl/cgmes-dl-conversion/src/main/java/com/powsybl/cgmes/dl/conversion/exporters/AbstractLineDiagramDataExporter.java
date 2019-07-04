@@ -27,8 +27,11 @@ public abstract class AbstractLineDiagramDataExporter extends AbstractDiagramDat
 
     protected void addDiagramData(String id, String name, LineDiagramData<?> diagramData, String diagramObjectStyleId) {
         if (diagramData != null) {
-            String diagramObjectId = addDiagramObject(id, name, 0, diagramObjectStyleId);
-            diagramData.getPoints().forEach(point -> addDiagramObjectPoint(diagramObjectId, point));
+            diagramData.getDiagramsNames().forEach(diagramName -> {
+                String diagramId = context.getDiagramId(diagramName);
+                String diagramObjectId = addDiagramObject(id, name, 0, diagramObjectStyleId, diagramId);
+                diagramData.getPoints(diagramName).forEach(point -> addDiagramObjectPoint(diagramObjectId, point));
+            });
         } else {
             LOG.warn("Line {}, name {} has no diagram data, skipping export", id, name);
         }

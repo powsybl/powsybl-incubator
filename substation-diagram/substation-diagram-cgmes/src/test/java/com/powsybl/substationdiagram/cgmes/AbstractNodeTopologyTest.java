@@ -10,15 +10,10 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 
+import com.powsybl.cgmes.iidm.extensions.dl.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.powsybl.cgmes.iidm.extensions.dl.CouplingDeviceDiagramData;
-import com.powsybl.cgmes.iidm.extensions.dl.DiagramPoint;
-import com.powsybl.cgmes.iidm.extensions.dl.DiagramTerminal;
-import com.powsybl.cgmes.iidm.extensions.dl.InjectionDiagramData;
-import com.powsybl.cgmes.iidm.extensions.dl.LineDiagramData;
-import com.powsybl.cgmes.iidm.extensions.dl.NodeDiagramData;
 import com.powsybl.iidm.network.BusbarSection;
 import com.powsybl.iidm.network.Country;
 import com.powsybl.iidm.network.Generator;
@@ -58,6 +53,7 @@ public abstract class AbstractNodeTopologyTest extends AbstractCgmesVoltageLevel
         createSecondVoltageLevel(network);
         createLine(network, 3);
         addDiagramData(network);
+        NetworkDiagramData.addDiagramName(network, DIAGRAM_NAME);
     }
 
     protected void createNetworkWithInternalConnections() {
@@ -102,6 +98,7 @@ public abstract class AbstractNodeTopologyTest extends AbstractCgmesVoltageLevel
         createSecondVoltageLevel(network);
         createLine(network, 11);
         addDiagramData(network);
+        NetworkDiagramData.addDiagramName(network, DIAGRAM_NAME);
     }
 
     protected VoltageLevel createFirstVoltageLevel(Network network, int busbarNode, int generatorNode, int disconnector1Node1, int disconnector1Node2,
@@ -181,32 +178,38 @@ public abstract class AbstractNodeTopologyTest extends AbstractCgmesVoltageLevel
 
     protected void addBusbarSectionDiagramData(BusbarSection busbarSection, DiagramPoint point1, DiagramPoint point2) {
         NodeDiagramData<BusbarSection> busbarDiagramData = new NodeDiagramData<>(busbarSection);
-        busbarDiagramData.setPoint1(point1);
-        busbarDiagramData.setPoint2(point2);
+        NodeDiagramData.NodeDiagramDataDetails diagramDetails = busbarDiagramData.new NodeDiagramDataDetails();
+        diagramDetails.setPoint1(point1);
+        diagramDetails.setPoint2(point2);
+        busbarDiagramData.addData(DIAGRAM_NAME, diagramDetails);
         busbarSection.addExtension(NodeDiagramData.class, busbarDiagramData);
     }
 
     protected void addGeneratorDiagramData(Generator generator, DiagramPoint generatorPoint, DiagramPoint terminalPoint1, DiagramPoint terminalPoint2) {
-        InjectionDiagramData<Generator> generatorDiagramData = new InjectionDiagramData<>(generator, generatorPoint, 0);
-        generatorDiagramData.addTerminalPoint(terminalPoint1);
-        generatorDiagramData.addTerminalPoint(terminalPoint2);
+        InjectionDiagramData<Generator> generatorDiagramData = new InjectionDiagramData<>(generator);
+        InjectionDiagramData.InjectionDiagramDetails diagramDetails = generatorDiagramData.new InjectionDiagramDetails(generatorPoint, 0);
+        diagramDetails.addTerminalPoint(terminalPoint1);
+        diagramDetails.addTerminalPoint(terminalPoint2);
+        generatorDiagramData.addData(DIAGRAM_NAME, diagramDetails);
         generator.addExtension(InjectionDiagramData.class, generatorDiagramData);
     }
 
     protected void addSwitchDiagramData(Switch sw, DiagramPoint switchPoint, int rotation, DiagramPoint terminal1Point1, DiagramPoint terminal1Point2,
                                         DiagramPoint terminal2Point1, DiagramPoint terminal2Point2) {
-        CouplingDeviceDiagramData<Switch> switchDiagramData = new CouplingDeviceDiagramData<>(sw, switchPoint, rotation);
-        switchDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL1, terminal1Point1);
-        switchDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL1, terminal1Point2);
-        switchDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL2, terminal2Point1);
-        switchDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL2, terminal2Point2);
+        CouplingDeviceDiagramData<Switch> switchDiagramData = new CouplingDeviceDiagramData<>(sw);
+        CouplingDeviceDiagramData.CouplingDeviceDiagramDetails diagramDetails = switchDiagramData.new CouplingDeviceDiagramDetails(switchPoint, rotation);
+        diagramDetails.addTerminalPoint(DiagramTerminal.TERMINAL1, terminal1Point1);
+        diagramDetails.addTerminalPoint(DiagramTerminal.TERMINAL1, terminal1Point2);
+        diagramDetails.addTerminalPoint(DiagramTerminal.TERMINAL2, terminal2Point1);
+        diagramDetails.addTerminalPoint(DiagramTerminal.TERMINAL2, terminal2Point2);
+        switchDiagramData.addData(DIAGRAM_NAME, diagramDetails);
         sw.addExtension(CouplingDeviceDiagramData.class, switchDiagramData);
     }
 
     protected void addLineDiagramData(Line line, DiagramPoint point1, DiagramPoint point2) {
         LineDiagramData<Line> lineDiagramData = new LineDiagramData<>(line);
-        lineDiagramData.addPoint(point1);
-        lineDiagramData.addPoint(point2);
+        lineDiagramData.addPoint(DIAGRAM_NAME, point1);
+        lineDiagramData.addPoint(DIAGRAM_NAME, point2);
         line.addExtension(LineDiagramData.class, lineDiagramData);
     }
 

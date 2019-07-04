@@ -6,17 +6,11 @@
  */
 package com.powsybl.cgmes.iidm.extensions.dl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 import com.powsybl.commons.extensions.AbstractExtension;
-import com.powsybl.iidm.network.Generator;
-import com.powsybl.iidm.network.Injection;
-import com.powsybl.iidm.network.Load;
-import com.powsybl.iidm.network.ShuntCompensator;
-import com.powsybl.iidm.network.StaticVarCompensator;
+import com.powsybl.iidm.network.*;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -26,30 +20,54 @@ public class InjectionDiagramData<T extends Injection<T>> extends AbstractExtens
 
     static final String NAME = "injection-diagram-data";
 
-    private final DiagramPoint point;
-    private final double rotation;
-    private List<DiagramPoint> terminalPoints = new ArrayList<>();
+    public class InjectionDiagramDetails {
+        private final DiagramPoint point;
+        private final double rotation;
+        private List<DiagramPoint> terminalPoints = new ArrayList<>();
 
-    private InjectionDiagramData(T injection, DiagramPoint point, double rotation) {
+        public InjectionDiagramDetails(DiagramPoint point, double rotation) {
+            this.point = Objects.requireNonNull(point);
+            this.rotation = Objects.requireNonNull(rotation);
+        }
+
+        public void addTerminalPoint(DiagramPoint point) {
+            Objects.requireNonNull(point);
+            terminalPoints.add(point);
+        }
+
+        public DiagramPoint getPoint() {
+            return point;
+        }
+
+        public double getRotation() {
+            return rotation;
+        }
+
+        public List<DiagramPoint> getTerminalPoints() {
+            return terminalPoints.stream().sorted().collect(Collectors.toList());
+        }
+    }
+
+    Map<String, InjectionDiagramDetails> diagramsDetails = new HashMap<>();
+
+    private InjectionDiagramData(T injection) {
         super(injection);
-        this.point = Objects.requireNonNull(point);
-        this.rotation = Objects.requireNonNull(rotation);
     }
 
-    public InjectionDiagramData(Generator generator, DiagramPoint point, double rotation) {
-        this((T) generator, point, rotation);
+    public InjectionDiagramData(Generator generator) {
+        this((T) generator);
     }
 
-    public InjectionDiagramData(Load load, DiagramPoint point, double rotation) {
-        this((T) load, point, rotation);
+    public InjectionDiagramData(Load load) {
+        this((T) load);
     }
 
-    public InjectionDiagramData(ShuntCompensator shunt, DiagramPoint point, double rotation) {
-        this((T) shunt, point, rotation);
+    public InjectionDiagramData(ShuntCompensator shunt) {
+        this((T) shunt);
     }
 
-    public InjectionDiagramData(StaticVarCompensator svc, DiagramPoint point, double rotation) {
-        this((T) svc, point, rotation);
+    public InjectionDiagramData(StaticVarCompensator svc) {
+        this((T) svc);
     }
 
     @Override
@@ -57,21 +75,18 @@ public class InjectionDiagramData<T extends Injection<T>> extends AbstractExtens
         return NAME;
     }
 
-    public void addTerminalPoint(DiagramPoint point) {
-        Objects.requireNonNull(point);
-        terminalPoints.add(point);
+    public void addData(String diagramName, InjectionDiagramDetails diagramData) {
+        Objects.requireNonNull(diagramName);
+        Objects.requireNonNull(diagramData);
+        diagramsDetails.put(diagramName, diagramData);
     }
 
-    public DiagramPoint getPoint() {
-        return point;
+    public InjectionDiagramDetails getData(String diagramName) {
+        Objects.requireNonNull(diagramName);
+        return diagramsDetails.get(diagramName);
     }
 
-    public double getRotation() {
-        return rotation;
+    public List<String> getDiagramsNames() {
+        return new ArrayList<>(diagramsDetails.keySet());
     }
-
-    public List<DiagramPoint> getTerminalPoints() {
-        return terminalPoints.stream().sorted().collect(Collectors.toList());
-    }
-
 }

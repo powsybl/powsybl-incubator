@@ -8,6 +8,7 @@ package com.powsybl.cgmes.dl.conversion.exporters;
 
 import java.util.Arrays;
 
+import com.powsybl.cgmes.iidm.extensions.dl.NetworkDiagramData;
 import org.junit.Before;
 import org.mockito.Mockito;
 
@@ -44,14 +45,17 @@ public class Transformer3WDiagramDataExporterTest extends AbstractCgmesDLExporte
 
         network = Networks.createNetworkWithThreeWindingsTransformer();
         twt = network.getThreeWindingsTransformer("Transformer3w");
-        ThreeWindingsTransformerDiagramData twtDiagramData = new ThreeWindingsTransformerDiagramData(twt, point, rotation);
-        twtDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL1, terminal1Point1);
-        twtDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL1, terminal1Point2);
-        twtDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL2, terminal2Point1);
-        twtDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL2, terminal2Point2);
-        twtDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL3, terminal3Point1);
-        twtDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL3, terminal3Point2);
+        ThreeWindingsTransformerDiagramData twtDiagramData = new ThreeWindingsTransformerDiagramData(twt);
+        ThreeWindingsTransformerDiagramData.ThreeWindingsTransformerDiagramDataDetails details = twtDiagramData.new ThreeWindingsTransformerDiagramDataDetails(point, rotation);
+        details.addTerminalPoint(DiagramTerminal.TERMINAL1, terminal1Point1);
+        details.addTerminalPoint(DiagramTerminal.TERMINAL1, terminal1Point2);
+        details.addTerminalPoint(DiagramTerminal.TERMINAL2, terminal2Point1);
+        details.addTerminalPoint(DiagramTerminal.TERMINAL2, terminal2Point2);
+        details.addTerminalPoint(DiagramTerminal.TERMINAL3, terminal3Point1);
+        details.addTerminalPoint(DiagramTerminal.TERMINAL3, terminal3Point2);
+        twtDiagramData.addData(basename, details);
         twt.addExtension(ThreeWindingsTransformerDiagramData.class, twtDiagramData);
+        NetworkDiagramData.addDiagramName(network, basename);
 
         Mockito.when(cgmesDLModel.getTerminals()).thenReturn(getTerminals(twt.getId()));
         Mockito.when(cgmesDLModel.getBusbarNodes()).thenReturn(new PropertyBags());

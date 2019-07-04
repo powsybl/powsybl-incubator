@@ -24,14 +24,16 @@ public class BusbarDiagramDataTest extends AbstractNodeDiagramDataTest {
         BusbarSection busbar = network.getVoltageLevel("VoltageLevel").getNodeBreakerView().getBusbarSection("Busbar");
 
         NodeDiagramData<BusbarSection> busbarDiagramData = new NodeDiagramData<>(busbar);
-        busbarDiagramData.setPoint2(new DiagramPoint(10, 0, 2));
-        busbarDiagramData.setPoint1(new DiagramPoint(0, 10, 1));
+        NodeDiagramData.NodeDiagramDataDetails nodeDetails = busbarDiagramData.new NodeDiagramDataDetails();
+        nodeDetails.setPoint2(new DiagramPoint(10, 0, 2));
+        nodeDetails.setPoint1(new DiagramPoint(0, 10, 1));
+        busbarDiagramData.addData(DIAGRAM_NAME, nodeDetails);
         busbar.addExtension(NodeDiagramData.class, busbarDiagramData);
 
         BusbarSection busbar2 = network.getVoltageLevel("VoltageLevel").getNodeBreakerView().getBusbarSection("Busbar");
         NodeDiagramData<BusbarSection> busbarDiagramData2 = busbar2.getExtension(NodeDiagramData.class);
 
-        checkDiagramData(busbarDiagramData2);
+        checkDiagramData(busbarDiagramData2, DIAGRAM_NAME);
     }
 
 }

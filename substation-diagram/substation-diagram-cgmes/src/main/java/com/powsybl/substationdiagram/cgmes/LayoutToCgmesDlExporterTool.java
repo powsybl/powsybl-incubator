@@ -51,7 +51,7 @@ public class LayoutToCgmesDlExporterTool implements Tool {
             = ImmutableMap.of("horizontal", new HorizontalSubstationLayoutFactory(),
             "vertical", new VerticalSubstationLayoutFactory());
 
-    private static final String DEFAULT_VOLTAGE_LAYOUT = "auto-extensions";
+    private static final String DEFAULT_VOLTAGE_LAYOUT = "auto-without-extensions";
     private static final String DEFAULT_SUBSTATION_LAYOUT = "horizontal";
 
     @Override
@@ -114,7 +114,6 @@ public class LayoutToCgmesDlExporterTool implements Tool {
         ToolOptions toolOptions = new ToolOptions(line, context);
         Path inputFile = toolOptions.getPath(INPUT_FILE).orElseThrow(() -> new PowsyblException(INPUT_FILE + " option is missing"));
         Path outputDir = toolOptions.getPath(OUTPUT_DIR).orElseThrow(() -> new PowsyblException(OUTPUT_DIR + " option is missing"));
-        String diagramName = "substation-diagram-layout";
 
         String substationLayout = toolOptions.getValue(SUBSTATION_LAYOUT).orElse(DEFAULT_SUBSTATION_LAYOUT);
         String voltageLayout = toolOptions.getValue(VOLTAGE_LEVEL_LAYOUT).orElse(DEFAULT_VOLTAGE_LAYOUT);
@@ -133,7 +132,7 @@ public class LayoutToCgmesDlExporterTool implements Tool {
         context.getOutputStream().println("Generating layout for the network ...");
         ResourcesComponentLibrary componentLibrary = new ResourcesComponentLibrary("/ConvergenceLibrary");
         LayoutToCgmesExtensionsConverter lTranslator = new LayoutToCgmesExtensionsConverter(sFactory, vFactory, new LayoutParameters(), componentLibrary, new DefaultSubstationDiagramStyleProvider(), true);
-        lTranslator.convertLayout(network);
+        lTranslator.convertLayout(network, null);
 
         context.getOutputStream().println("Exporting network data (including the DL file) to " + outputDir);
         TripleStore tStore = CgmesDLUtils.getTripleStore(network);
@@ -141,6 +140,6 @@ public class LayoutToCgmesDlExporterTool implements Tool {
             tStore = TripleStoreFactory.create();
         }
         CgmesDLExporter dlExporter = new CgmesDLExporter(network, tStore);
-        dlExporter.exportDLData(new FileDataSource(outputDir, diagramName));
+        dlExporter.exportDLData(new FileDataSource(outputDir, network.getName()));
     }
 }

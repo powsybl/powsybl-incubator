@@ -6,19 +6,15 @@
  */
 package com.powsybl.cgmes.iidm.extensions.dl;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
-
 import com.powsybl.commons.extensions.AbstractExtension;
 import com.powsybl.iidm.network.DanglingLine;
 import com.powsybl.iidm.network.HvdcLine;
 import com.powsybl.iidm.network.Identifiable;
 import com.powsybl.iidm.network.Line;
+import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -28,7 +24,7 @@ public class LineDiagramData<T extends Identifiable<T>> extends AbstractExtensio
 
     static final String NAME = "line-diagram-data";
 
-    private List<DiagramPoint> points = new ArrayList<>();
+    Map<String, List<DiagramPoint>> diagramsDetails = new HashMap<>();
 
     private LineDiagramData(T line) {
         super(line);
@@ -51,35 +47,40 @@ public class LineDiagramData<T extends Identifiable<T>> extends AbstractExtensio
         return NAME;
     }
 
-    public void addPoint(DiagramPoint point) {
+    public void addPoint(String diagramName, DiagramPoint point) {
+        Objects.requireNonNull(diagramName);
         Objects.requireNonNull(point);
+        List<DiagramPoint> points = diagramsDetails.getOrDefault(diagramName, new ArrayList<>());
         points.add(point);
+        diagramsDetails.put(diagramName, points);
     }
 
-    public List<DiagramPoint> getPoints() {
-        return points.stream().sorted().collect(Collectors.toList());
+    public List<DiagramPoint> getPoints(String diagramName) {
+        return diagramsDetails.getOrDefault(diagramName, Collections.emptyList()).stream().sorted().collect(Collectors.toList());
     }
 
-    public DiagramPoint getFirstPoint() {
-        return points.stream().sorted().findFirst().orElse(new DiagramPoint(0, 0, 0));
+    public DiagramPoint getFirstPoint(String diagramName) {
+        return diagramsDetails.getOrDefault(diagramName, Collections.emptyList()).stream().sorted().findFirst().orElse(new DiagramPoint(0, 0, 0));
     }
 
-    public DiagramPoint getLastPoint() {
-        return points.stream().sorted(Comparator.reverseOrder()).findFirst().orElse(new DiagramPoint(0, 0, 0));
+    public DiagramPoint getLastPoint(String diagramName) {
+        return diagramsDetails.getOrDefault(diagramName, Collections.emptyList()).stream().sorted(Comparator.reverseOrder()).findFirst().orElse(new DiagramPoint(0, 0, 0));
     }
 
-    public DiagramPoint getFirstPoint(double offset) {
+    public DiagramPoint getFirstPoint(String diagramName, double offset) {
+        List<DiagramPoint> points = diagramsDetails.getOrDefault(diagramName, Collections.emptyList());
         if (points.size() < 2) {
-            return getFirstPoint();
+            return getFirstPoint(diagramName);
         }
         DiagramPoint firstPoint = points.stream().sorted().findFirst().orElseThrow(AssertionError::new);
         DiagramPoint secondPoint = points.stream().sorted().skip(1).findFirst().orElseThrow(AssertionError::new);
         return shiftPoint(firstPoint, secondPoint, offset);
     }
 
-    public DiagramPoint getLastPoint(double offset) {
+    public DiagramPoint getLastPoint(String diagramName, double offset) {
+        List<DiagramPoint> points = diagramsDetails.getOrDefault(diagramName, Collections.emptyList());
         if (points.size() < 2) {
-            return getLastPoint();
+            return getLastPoint(diagramName);
         }
         DiagramPoint lastPoint = points.stream().sorted(Comparator.reverseOrder()).findFirst().orElseThrow(AssertionError::new);
         DiagramPoint secondLastPoint = points.stream().sorted(Comparator.reverseOrder()).skip(1).findFirst().orElseThrow(AssertionError::new);
@@ -91,6 +92,10 @@ public class LineDiagramData<T extends Identifiable<T>> extends AbstractExtensio
         Vector2D otherPointVector = new Vector2D(otherPoint.getX(), otherPoint.getY());
         Vector2D shiftedPointVector = pointVector.add(otherPointVector.subtract(pointVector).normalize().scalarMultiply(offset));
         return new DiagramPoint(shiftedPointVector.getX(), shiftedPointVector.getY(), point.getSeq());
+    }
+
+    public List<String> getDiagramsNames() {
+        return new ArrayList<>(diagramsDetails.keySet());
     }
 
 }

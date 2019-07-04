@@ -6,6 +6,7 @@
  */
 package com.powsybl.cgmes.dl.conversion.exporters;
 
+import com.powsybl.cgmes.iidm.extensions.dl.NetworkDiagramData;
 import org.junit.Before;
 import org.mockito.Mockito;
 
@@ -29,9 +30,10 @@ public class HvdcLineDiagramDataExporterTest extends AbstractNodeLineDiagramData
         network = Networks.createNetworkWithHvdcLine();
         hvdcLine = network.getHvdcLine("HvdcLine");
         LineDiagramData<HvdcLine> hvdcLineDiagramData = new LineDiagramData<>(hvdcLine);
-        hvdcLineDiagramData.addPoint(point1);
-        hvdcLineDiagramData.addPoint(point2);
+        hvdcLineDiagramData.addPoint(basename, point1);
+        hvdcLineDiagramData.addPoint(basename, point2);
         hvdcLine.addExtension(LineDiagramData.class, hvdcLineDiagramData);
+        NetworkDiagramData.addDiagramName(network, basename);
 
         Mockito.when(cgmesDLModel.getBusbarNodes()).thenReturn(new PropertyBags());
     }

@@ -6,6 +6,7 @@
  */
 package com.powsybl.cgmes.dl.conversion.exporters;
 
+import com.powsybl.cgmes.iidm.extensions.dl.NetworkDiagramData;
 import org.junit.Before;
 import org.mockito.Mockito;
 
@@ -29,9 +30,12 @@ public class BusDiagramDataExporterTest extends AbstractNodeLineDiagramDataExpor
         network = Networks.createNetworkWithBus();
         bus = network.getVoltageLevel("VoltageLevel").getBusBreakerView().getBus("Bus");
         NodeDiagramData<Bus> busDiagramData = new NodeDiagramData<>(bus);
-        busDiagramData.setPoint1(point1);
-        busDiagramData.setPoint2(point2);
+        NodeDiagramData.NodeDiagramDataDetails details = busDiagramData.new NodeDiagramDataDetails();
+        details.setPoint1(point1);
+        details.setPoint2(point2);
+        busDiagramData.addData(basename, details);
         bus.addExtension(NodeDiagramData.class, busDiagramData);
+        NetworkDiagramData.addDiagramName(network, basename);
 
         Mockito.when(cgmesDLModel.getBusbarNodes()).thenReturn(new PropertyBags());
     }

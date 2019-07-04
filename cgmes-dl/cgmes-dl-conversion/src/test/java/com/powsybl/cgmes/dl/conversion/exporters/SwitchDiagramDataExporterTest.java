@@ -6,6 +6,7 @@
  */
 package com.powsybl.cgmes.dl.conversion.exporters;
 
+import com.powsybl.cgmes.iidm.extensions.dl.NetworkDiagramData;
 import org.junit.Before;
 import org.mockito.Mockito;
 
@@ -28,12 +29,15 @@ public class SwitchDiagramDataExporterTest extends AbstractCouplingDeviceDiagram
 
         network = Networks.createNetworkWithSwitch();
         sw = network.getSwitch("Switch");
-        CouplingDeviceDiagramData<Switch> switchDiagramData = new CouplingDeviceDiagramData<>(sw, point, rotation);
-        switchDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL1, terminal1Point1);
-        switchDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL1, terminal1Point2);
-        switchDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL2, terminal2Point1);
-        switchDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL2, terminal2Point2);
+        CouplingDeviceDiagramData<Switch> switchDiagramData = new CouplingDeviceDiagramData<>(sw);
+        CouplingDeviceDiagramData.CouplingDeviceDiagramDetails details = switchDiagramData.new CouplingDeviceDiagramDetails(point, rotation);
+        details.addTerminalPoint(DiagramTerminal.TERMINAL1, terminal1Point1);
+        details.addTerminalPoint(DiagramTerminal.TERMINAL1, terminal1Point2);
+        details.addTerminalPoint(DiagramTerminal.TERMINAL2, terminal2Point1);
+        details.addTerminalPoint(DiagramTerminal.TERMINAL2, terminal2Point2);
+        switchDiagramData.addData(basename, details);
         sw.addExtension(CouplingDeviceDiagramData.class, switchDiagramData);
+        NetworkDiagramData.addDiagramName(network, basename);
 
         Mockito.when(cgmesDLModel.getTerminals()).thenReturn(getTerminals(sw.getId()));
     }

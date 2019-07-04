@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import com.powsybl.cgmes.iidm.extensions.dl.NetworkDiagramData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +70,7 @@ public class CgmesDLExporter {
         Map<String, String> busbarNodes = getBusbarNodes();
         addNamespaces(context);
         addModel(context);
-        addDiagram(context);
+        addDiagrams(context);
         exportNodesDLData(context, busbarNodes);
         exportLinesDLData(context);
         exportDanglingLinesDLData(context);
@@ -129,14 +130,16 @@ public class CgmesDLExporter {
         tripleStore.add(context.getDlContext(), MD_NAMESPACE, "FullModel", modelProperties);
     }
 
-    private void addDiagram(ExportContext context) {
-        PropertyBag diagramObjectProperties = new PropertyBag(Arrays.asList("IdentifiedObject.name", "orientation"));
-        diagramObjectProperties.setResourceNames(Arrays.asList("orientation"));
-        diagramObjectProperties.setClassPropertyNames(Arrays.asList("IdentifiedObject.name"));
-        diagramObjectProperties.put("IdentifiedObject.name", context.getBasename());
-        diagramObjectProperties.put("orientation", CgmesNamespace.CIM_16_NAMESPACE + "OrientationKind.negative");
-        String diagramId = tripleStore.add(context.getDlContext(), CgmesNamespace.CIM_16_NAMESPACE, "Diagram", diagramObjectProperties);
-        context.setDiagramId(diagramId);
+    private void addDiagrams(ExportContext context) {
+        NetworkDiagramData.getDiagramsNames(network).forEach(diagramName -> {
+            PropertyBag diagramObjectProperties = new PropertyBag(Arrays.asList("IdentifiedObject.name", "orientation"));
+            diagramObjectProperties.setResourceNames(Arrays.asList("orientation"));
+            diagramObjectProperties.setClassPropertyNames(Arrays.asList("IdentifiedObject.name"));
+            diagramObjectProperties.put("IdentifiedObject.name", diagramName);
+            diagramObjectProperties.put("orientation", CgmesNamespace.CIM_16_NAMESPACE + "OrientationKind.negative");
+            String diagramId = tripleStore.add(context.getDlContext(), CgmesNamespace.CIM_16_NAMESPACE, "Diagram", diagramObjectProperties);
+            context.setDiagramId(diagramId, diagramName);
+        });
     }
 
     private void exportNodesDLData(ExportContext context, Map<String, String> busbarNodes) {

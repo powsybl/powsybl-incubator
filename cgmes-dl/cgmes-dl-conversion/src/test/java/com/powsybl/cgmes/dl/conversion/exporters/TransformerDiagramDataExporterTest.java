@@ -6,6 +6,7 @@
  */
 package com.powsybl.cgmes.dl.conversion.exporters;
 
+import com.powsybl.cgmes.iidm.extensions.dl.NetworkDiagramData;
 import org.junit.Before;
 import org.mockito.Mockito;
 
@@ -19,7 +20,6 @@ import com.powsybl.iidm.network.TwoWindingsTransformer;
  * @author Massimo Ferraro <massimo.ferraro@techrain.eu>
  */
 public class TransformerDiagramDataExporterTest extends AbstractCouplingDeviceDiagramDataExporterTest {
-
     private TwoWindingsTransformer twt;
 
     @Before
@@ -28,12 +28,15 @@ public class TransformerDiagramDataExporterTest extends AbstractCouplingDeviceDi
 
         network = Networks.createNetworkWithTwoWindingsTransformer();
         twt = network.getTwoWindingsTransformer("Transformer");
-        CouplingDeviceDiagramData<TwoWindingsTransformer> twtDiagramData = new CouplingDeviceDiagramData<>(twt, point, rotation);
-        twtDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL1, terminal1Point1);
-        twtDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL1, terminal1Point2);
-        twtDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL2, terminal2Point1);
-        twtDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL2, terminal2Point2);
+        CouplingDeviceDiagramData<TwoWindingsTransformer> twtDiagramData = new CouplingDeviceDiagramData<>(twt);
+        CouplingDeviceDiagramData.CouplingDeviceDiagramDetails details = twtDiagramData.new CouplingDeviceDiagramDetails(point, rotation);
+        details.addTerminalPoint(DiagramTerminal.TERMINAL1, terminal1Point1);
+        details.addTerminalPoint(DiagramTerminal.TERMINAL1, terminal1Point2);
+        details.addTerminalPoint(DiagramTerminal.TERMINAL2, terminal2Point1);
+        details.addTerminalPoint(DiagramTerminal.TERMINAL2, terminal2Point2);
+        twtDiagramData.addData(basename, details);
         twt.addExtension(CouplingDeviceDiagramData.class, twtDiagramData);
+        NetworkDiagramData.addDiagramName(network, basename);
 
         Mockito.when(cgmesDLModel.getTerminals()).thenReturn(getTerminals(twt.getId()));
     }

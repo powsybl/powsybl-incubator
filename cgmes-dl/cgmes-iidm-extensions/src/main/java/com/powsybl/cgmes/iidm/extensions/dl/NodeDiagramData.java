@@ -6,12 +6,12 @@
  */
 package com.powsybl.cgmes.iidm.extensions.dl;
 
-import java.util.Objects;
-
 import com.powsybl.commons.extensions.AbstractExtension;
 import com.powsybl.iidm.network.Bus;
 import com.powsybl.iidm.network.BusbarSection;
 import com.powsybl.iidm.network.Identifiable;
+
+import java.util.*;
 
 /**
  *
@@ -21,8 +21,31 @@ public class NodeDiagramData<T extends Identifiable<T>> extends AbstractExtensio
 
     static final String NAME = "node-diagram-data";
 
-    private DiagramPoint point1;
-    private DiagramPoint point2;
+    public class NodeDiagramDataDetails {
+        private DiagramPoint point1;
+        private DiagramPoint point2;
+
+        public NodeDiagramDataDetails() {
+        }
+
+        public DiagramPoint getPoint1() {
+            return point1;
+        }
+
+        public void setPoint1(DiagramPoint point1) {
+            this.point1 = Objects.requireNonNull(point1);
+        }
+
+        public DiagramPoint getPoint2() {
+            return point2;
+        }
+
+        public void setPoint2(DiagramPoint point2) {
+            this.point2 = Objects.requireNonNull(point2);
+        }
+    }
+
+    Map<String, NodeDiagramDataDetails> diagramsDetails = new HashMap<>();
 
     private NodeDiagramData(T identifiable) {
         super(identifiable);
@@ -41,20 +64,19 @@ public class NodeDiagramData<T extends Identifiable<T>> extends AbstractExtensio
         return NAME;
     }
 
-    public DiagramPoint getPoint1() {
-        return point1;
+    public void addData(String diagramName, NodeDiagramDataDetails nodeDetails) {
+        Objects.requireNonNull(diagramName);
+        Objects.requireNonNull(nodeDetails);
+        diagramsDetails.put(diagramName, nodeDetails);
     }
 
-    public void setPoint1(DiagramPoint point1) {
-        this.point1 = Objects.requireNonNull(point1);
+    public NodeDiagramDataDetails getData(String diagramName) {
+        Objects.requireNonNull(diagramName);
+        return diagramsDetails.get(diagramName);
     }
 
-    public DiagramPoint getPoint2() {
-        return point2;
-    }
-
-    public void setPoint2(DiagramPoint point2) {
-        this.point2 = Objects.requireNonNull(point2);
+    public List<String> getDiagramsNames() {
+        return new ArrayList<>(diagramsDetails.keySet());
     }
 
 }

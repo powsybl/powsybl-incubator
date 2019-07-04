@@ -6,6 +6,7 @@
  */
 package com.powsybl.cgmes.dl.conversion.exporters;
 
+import com.powsybl.cgmes.iidm.extensions.dl.NetworkDiagramData;
 import org.junit.Before;
 import org.mockito.Mockito;
 
@@ -27,10 +28,13 @@ public class SvcDiagramDataExporterTest extends AbstractInjectionDiagramDataExpo
 
         network = Networks.createNetworkWithStaticVarCompensator();
         svc = network.getStaticVarCompensator("Svc");
-        InjectionDiagramData<StaticVarCompensator> svcDiagramData = new InjectionDiagramData<>(svc, point, rotation);
-        svcDiagramData.addTerminalPoint(terminalPoint1);
-        svcDiagramData.addTerminalPoint(terminalPoint2);
+        InjectionDiagramData<StaticVarCompensator> svcDiagramData = new InjectionDiagramData<>(svc);
+        InjectionDiagramData.InjectionDiagramDetails details = svcDiagramData.new InjectionDiagramDetails(point, rotation);
+        details.addTerminalPoint(terminalPoint1);
+        details.addTerminalPoint(terminalPoint2);
+        svcDiagramData.addData(basename, details);
         svc.addExtension(InjectionDiagramData.class, svcDiagramData);
+        NetworkDiagramData.addDiagramName(network, basename);
 
         Mockito.when(cgmesDLModel.getTerminals()).thenReturn(getTerminals(svc.getId()));
     }

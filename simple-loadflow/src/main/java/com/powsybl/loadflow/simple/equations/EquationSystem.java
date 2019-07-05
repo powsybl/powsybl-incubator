@@ -7,7 +7,7 @@
 package com.powsybl.loadflow.simple.equations;
 
 import com.powsybl.commons.PowsyblException;
-import com.powsybl.loadflow.LoadFlowParameters;
+import com.powsybl.loadflow.simple.ac.nr.VoltageInitializer;
 import com.powsybl.loadflow.simple.network.NetworkContext;
 import com.powsybl.math.matrix.Matrix;
 import com.powsybl.math.matrix.MatrixFactory;
@@ -123,14 +123,10 @@ public class EquationSystem {
         return getVariablesToFind().stream().map(v -> networkContext.getBus(v.getNum()).getId() + "/" + v.getType()).collect(Collectors.toList());
     }
 
-    public double[] initState() {
-        return initState(LoadFlowParameters.VoltageInitMode.UNIFORM_VALUES);
-    }
-
-    public double[] initState(LoadFlowParameters.VoltageInitMode mode) {
+    public double[] initState(VoltageInitializer initializer) {
         double[] x = new double[getVariablesToFind().size()];
         for (Variable v : getVariablesToFind()) {
-            v.initState(mode, networkContext, x);
+            v.initState(initializer, networkContext, x);
         }
         return x;
     }

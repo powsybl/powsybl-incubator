@@ -36,7 +36,7 @@ public class NetworkContextTest extends AbstractConverterTest {
                 .setCurrentSectionCount(1)
                 .add();
 
-        List<NetworkContext> networkContexts = NetworkContext.of(network, SlackBusSelectionMode.MOST_MESHED);
+        List<NetworkContext> networkContexts = NetworkContext.of(network, new MostMeshedSlackBusSelector());
         assertEquals(1, networkContexts.size());
         Path file = fileSystem.getPath("/work/n.json");
         networkContexts.get(0).writeJson(file);

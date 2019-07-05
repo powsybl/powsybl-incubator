@@ -12,11 +12,12 @@ import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
 import com.powsybl.loadflow.LoadFlowResultImpl;
+import com.powsybl.loadflow.simple.ac.nr.VoltageInitializer;
 import com.powsybl.loadflow.simple.dc.equations.DcEquationSystem;
 import com.powsybl.loadflow.simple.equations.EquationSystem;
+import com.powsybl.loadflow.simple.network.FirstSlackBusSelector;
 import com.powsybl.loadflow.simple.network.LfBus;
 import com.powsybl.loadflow.simple.network.NetworkContext;
-import com.powsybl.loadflow.simple.network.SlackBusSelectionMode;
 import com.powsybl.math.matrix.LUDecomposition;
 import com.powsybl.math.matrix.Matrix;
 import com.powsybl.math.matrix.MatrixFactory;
@@ -99,13 +100,15 @@ public class SimpleDcLoadFlow implements LoadFlow {
 
             network.getVariantManager().setWorkingVariant(workingStateId);
 
-            NetworkContext networkContext = NetworkContext.of(network, SlackBusSelectionMode.FIRST).get(0);
+            NetworkContext networkContext = NetworkContext.of(network, new FirstSlackBusSelector()).get(0);
 
             balance(networkContext);
 
             EquationSystem equationSystem = DcEquationSystem.create(networkContext);
 
-            double[] x = equationSystem.initState(loadFlowParameters.getVoltageInitMode());
+            VoltageInitializer voltageInitializer = VoltageInitializer.getFromParameters(loadFlowParameters);
+
+            double[] x = equationSystem.initState(voltageInitializer);
 
             double[] targets = equationSystem.initTargets();
 

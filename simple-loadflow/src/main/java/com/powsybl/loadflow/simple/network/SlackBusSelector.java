@@ -6,10 +6,12 @@
  */
 package com.powsybl.loadflow.simple.network;
 
+import java.util.List;
+
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public enum SlackBusSelectionMode {
-    FIRST,
-    MOST_MESHED
+public interface SlackBusSelector {
+
+    LfBus select(List<LfBus> buses);
 }

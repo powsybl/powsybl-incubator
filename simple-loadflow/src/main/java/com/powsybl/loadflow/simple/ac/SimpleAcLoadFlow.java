@@ -13,7 +13,9 @@ import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
 import com.powsybl.loadflow.LoadFlowResultImpl;
 import com.powsybl.loadflow.simple.ac.nr.NewtonRaphsonStatus;
+import com.powsybl.loadflow.simple.ac.nr.VoltageInitializer;
 import com.powsybl.loadflow.simple.ac.observer.AcLoadFlowObserver;
+import com.powsybl.loadflow.simple.network.SlackBusSelector;
 import com.powsybl.math.matrix.MatrixFactory;
 import com.powsybl.math.matrix.SparseMatrixFactory;
 import com.powsybl.tools.PowsyblCoreVersion;
@@ -86,7 +88,21 @@ public class SimpleAcLoadFlow implements LoadFlow {
         return CompletableFuture.supplyAsync(() -> {
             network.getVariantManager().setWorkingVariant(workingStateId);
 
-            AcLoadFlowResult result = new AcloadFlowEngine(network, parameters, matrixFactory, getObserver())
+            SimpleAcLoadFlowParameters parametersExt = parameters.getExtension(SimpleAcLoadFlowParameters.class);
+            if (parametersExt == null) {
+                parametersExt = new SimpleAcLoadFlowParameters();
+            }
+
+            SlackBusSelector slackBusSelector = parametersExt.getSlackBusSelectionMode().getSelector();
+
+            VoltageInitializer voltageInitializer = VoltageInitializer.getFromParameters(parameters);
+
+            List<MacroAction> macroActions = new ArrayList<>();
+            if (parametersExt.isDistributedSlack()) {
+                macroActions.add(new DistributedSlackAction());
+            }
+
+            AcLoadFlowResult result = new AcloadFlowEngine(network, slackBusSelector, voltageInitializer, macroActions, matrixFactory, getObserver())
                     .run();
 
             return new LoadFlowResultImpl(result.getNewtonRaphsonStatus() == NewtonRaphsonStatus.CONVERGED, createMetrics(result), null);

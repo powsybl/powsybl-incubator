@@ -40,7 +40,7 @@ public class NewtonRaphson {
 
     private final EquationSystem equationSystem;
 
-    private final NewtonRaphsonParameters parameters;
+    private final VoltageInitializer voltageInitializer;
 
     private int iteration;
 
@@ -58,14 +58,14 @@ public class NewtonRaphson {
     }
 
     public NewtonRaphson(NetworkContext networkContext, MatrixFactory matrixFactory, AcLoadFlowObserver observer,
-                         EquationContext equationContext, EquationSystem equationSystem, NewtonRaphsonParameters parameters,
+                         EquationContext equationContext, EquationSystem equationSystem,  VoltageInitializer voltageInitializer,
                          int iteration) {
         this.networkContext = Objects.requireNonNull(networkContext);
         this.matrixFactory = Objects.requireNonNull(matrixFactory);
         this.observer = Objects.requireNonNull(observer);
         this.equationContext = Objects.requireNonNull(equationContext);
         this.equationSystem = Objects.requireNonNull(equationSystem);
-        this.parameters = Objects.requireNonNull(parameters);
+        this.voltageInitializer = Objects.requireNonNull(voltageInitializer);
         this.iteration = iteration;
     }
 
@@ -152,7 +152,7 @@ public class NewtonRaphson {
         return p;
     }
 
-    public NewtonRaphsonResult run() {
+    public NewtonRaphsonResult run(NewtonRaphsonParameters parameters) {
         Objects.requireNonNull(parameters);
 
         Stopwatch stopwatch = Stopwatch.createStarted();
@@ -160,7 +160,7 @@ public class NewtonRaphson {
         NewtonRaphsonContext context = new NewtonRaphsonContext();
 
         // initialize state vector (flat start)
-        context.x = equationSystem.initState(parameters.getVoltageInitMode());
+        context.x = equationSystem.initState(voltageInitializer);
 
         // initialize target vector
         context.targets = equationSystem.initTargets();

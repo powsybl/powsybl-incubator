@@ -8,7 +8,6 @@ package com.powsybl.loadflow.simple.ac;
 
 import com.powsybl.commons.extensions.AbstractExtension;
 import com.powsybl.loadflow.LoadFlowParameters;
-import com.powsybl.loadflow.simple.network.SlackBusSelectionMode;
 
 import java.util.Objects;
 

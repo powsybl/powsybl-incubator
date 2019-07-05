@@ -362,12 +362,26 @@ public class SubstationDiagramViewer extends Application {
             VoltageLevel vl = networkProperty.get().getVoltageLevel(id);
             if (vl != null) {
                 Tab tab = new Tab(id, new ContainerDiagramPane(vl));
-                tab.setOnCloseRequest(event -> checkedProperty.set(false));
+                tab.setOnCloseRequest(event -> {
+                    checkedProperty.set(false);
+                    uncheckvItemTree(id);
+                });
                 checkedDiagramsPane.getTabs().add(tab);
                 checkedDiagramsPane.getSelectionModel().select(tab);
             } else {
                 LOGGER.warn("Voltage level {} not found", id);
             }
+        }
+
+        private void uncheckvItemTree(String id) {
+            substationsTree.getRoot().getChildren().stream().forEach(childS ->
+                    childS.getChildren().stream().forEach(childV -> {
+                        CheckBoxTreeItem<VoltageLevel> vItem = (CheckBoxTreeItem) childV;
+                        if (vItem.getValue().getId().equals(id)) {
+                            vItem.setSelected(false);
+                        }
+                    })
+            );
         }
     }
 
@@ -381,12 +395,24 @@ public class SubstationDiagramViewer extends Application {
             Substation s = networkProperty.get().getSubstation(id);
             if (s != null) {
                 Tab tab = new Tab(id, new ContainerDiagramPane(s));
-                tab.setOnCloseRequest(event -> checkedProperty.set(false));
+                tab.setOnCloseRequest(event -> {
+                    checkedProperty.set(false);
+                    unchecksItemTree(id);
+                });
                 checkedDiagramsPane.getTabs().add(tab);
                 checkedDiagramsPane.getSelectionModel().select(tab);
             } else {
                 LOGGER.warn("Substation {} not found", id);
             }
+        }
+
+        private void unchecksItemTree(String id) {
+            substationsTree.getRoot().getChildren().stream().forEach(child -> {
+                CheckBoxTreeItem<Substation> sItem = (CheckBoxTreeItem) child;
+                if (sItem.getValue().getId().equals(id)) {
+                    sItem.setSelected(false);
+                }
+            });
         }
     }
 

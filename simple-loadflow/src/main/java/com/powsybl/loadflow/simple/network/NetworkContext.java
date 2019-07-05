@@ -65,7 +65,7 @@ public class NetworkContext {
 
         slackBus = slackBusSelector.select(this.buses);
         slackBus.setSlack(true);
-        LOGGER.debug("Selected slack bus (class={}): {}", slackBusSelector.getClass(), slackBus.getId());
+        LOGGER.debug("Selected slack bus (class={}): {}", slackBusSelector.getClass().getSimpleName(), slackBus.getId());
     }
 
     private static List<LfBus> createBuses(List<Bus> buses, Map<HvdcConverterStation, HvdcLine> hvdcLines, CreationContext creationContext) {

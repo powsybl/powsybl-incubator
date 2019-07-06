@@ -6,7 +6,6 @@
  */
 package com.powsybl.loadflow.simple.ac.nr;
 
-import com.powsybl.loadflow.LoadFlowParameters;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -21,20 +20,12 @@ public class NewtonRaphsonParametersTest {
     public void test() {
         NewtonRaphsonParameters parameters = new NewtonRaphsonParameters();
         assertEquals(30, parameters.getMaxIteration());
-        assertEquals(LoadFlowParameters.VoltageInitMode.UNIFORM_VALUES, parameters.getVoltageInitMode());
         parameters.setMaxIteration(40);
         assertEquals(40, parameters.getMaxIteration());
         try {
             parameters.setMaxIteration(-3);
             fail();
         } catch (IllegalArgumentException ignored) {
-        }
-        parameters.setVoltageInitMode(LoadFlowParameters.VoltageInitMode.PREVIOUS_VALUES);
-        assertEquals(LoadFlowParameters.VoltageInitMode.PREVIOUS_VALUES, parameters.getVoltageInitMode());
-        try {
-            parameters.setVoltageInitMode(null);
-            fail();
-        } catch (NullPointerException ignored) {
         }
     }
 }

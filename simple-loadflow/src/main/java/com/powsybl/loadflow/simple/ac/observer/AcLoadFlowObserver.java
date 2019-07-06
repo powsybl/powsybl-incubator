@@ -29,7 +29,7 @@ public interface AcLoadFlowObserver {
 
     void afterEquationSystemCreation();
 
-    void beginMacroIteration(int macroIteration);
+    void beginMacroIteration(int macroIteration, String macroActionName);
 
     void beginIteration(int iteration);
 
@@ -59,7 +59,7 @@ public interface AcLoadFlowObserver {
 
     void beforeMacroActionRun(int macroIteration, String macroActionName);
 
-    void afterMacroActionRun(int macroIteration, String macroActionName);
+    void afterMacroActionRun(int macroIteration, String macroActionName, boolean cont);
 
-    void endMacroIteration(int macroIteration);
+    void endMacroIteration(int macroIteration, String macroActionName);
 }

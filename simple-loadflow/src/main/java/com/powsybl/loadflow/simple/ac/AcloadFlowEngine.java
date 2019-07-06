@@ -56,18 +56,26 @@ public class AcloadFlowEngine {
         this.observer = Objects.requireNonNull(observer);
     }
 
-    private boolean runMacroActions(List<MacroAction> macroActions, MacroIterationContext macroIterationContext) {
-        boolean cont = false;
+    private NewtonRaphsonResult runNewtowRaphson(NetworkContext networkContext, NewtonRaphsonParameters newtonRaphsonParameters,
+                                                 EquationContext equationContext, EquationSystem equationSystem, int macroIteration,
+                                                 String macroActionName, int newtowRaphsonIteration) {
+        observer.beginMacroIteration(macroIteration, macroActionName);
 
-        for (MacroAction macroAction : macroActions) {
-            observer.beforeMacroActionRun(macroIterationContext.getMacroIteration(), macroAction.getName());
+        NewtonRaphsonResult newtonRaphsonResult = new NewtonRaphson(networkContext, matrixFactory, observer, equationContext,
+                                                                    equationSystem, voltageInitializer, newtowRaphsonIteration)
+                .run(newtonRaphsonParameters);
 
-            cont |= macroAction.run(macroIterationContext);
+        observer.endMacroIteration(macroIteration, macroActionName);
 
-            observer.afterMacroActionRun(macroIterationContext.getMacroIteration(), macroAction.getName());
-        }
+        return newtonRaphsonResult;
+    }
 
-        observer.endMacroIteration(macroIterationContext.getMacroIteration());
+    private boolean runMacroAction(MacroIterationContext macroIterationContext, MacroAction macroAction) {
+        observer.beforeMacroActionRun(macroIterationContext.getMacroIteration(), macroAction.getName());
+
+        boolean cont = macroAction.run(macroIterationContext);
+
+        observer.afterMacroActionRun(macroIterationContext.getMacroIteration(), macroAction.getName(), cont);
 
         return cont;
     }
@@ -89,16 +97,28 @@ public class AcloadFlowEngine {
 
         observer.afterEquationSystemCreation();
 
+        // first macro iteration
         int macroIteration = 0;
-        NewtonRaphsonResult newtonRaphsonResult = null;
-        do {
-            observer.beginMacroIteration(macroIteration);
 
-            int newtowRaphsonIteration = newtonRaphsonResult != null ? newtonRaphsonResult.getIteration() : 0;
-            newtonRaphsonResult = new NewtonRaphson(networkContext, matrixFactory, observer, equationContext,
-                                                    equationSystem, voltageInitializer, newtowRaphsonIteration)
-                    .run(newtonRaphsonParameters);
-        } while (runMacroActions(macroActions, new MacroIterationContext(macroIteration, networkContext, newtonRaphsonResult)));
+        NewtonRaphsonResult newtonRaphsonResult = runNewtowRaphson(networkContext, newtonRaphsonParameters, equationContext,
+                                                                   equationSystem, macroIteration++, "First", 0);
+
+        // for each macro action run macro iteration until stabilized
+        // macro actions are nested: inner most loop first in the list
+        for (MacroAction macroAction : macroActions) {
+            MacroIterationContext macroIterationContext = new MacroIterationContext(macroIteration, networkContext, newtonRaphsonResult);
+            while (runMacroAction(macroIterationContext, macroAction)) {
+                observer.beginMacroIteration(macroIteration, macroAction.getName());
+
+                newtonRaphsonResult = runNewtowRaphson(networkContext, newtonRaphsonParameters, equationContext,
+                                                       equationSystem, macroIteration, macroAction.getName(),
+                                                       newtonRaphsonResult.getIteration());
+
+                observer.endMacroIteration(macroIteration, macroAction.getName());
+
+                macroIteration++;
+            }
+        }
 
         NetworkContext.resetState(network);
         networkContext.updateState();

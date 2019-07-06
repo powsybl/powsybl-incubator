@@ -34,6 +34,8 @@ public class AcloadFlowEngine {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AcloadFlowEngine.class);
 
+    private static final String INITIAL_MACRO_ACTION_NAME = "Init";
+
     private final Network network;
 
     private final SlackBusSelector slackBusSelector;
@@ -56,9 +58,9 @@ public class AcloadFlowEngine {
         this.observer = Objects.requireNonNull(observer);
     }
 
-    private NewtonRaphsonResult runNewtowRaphson(NetworkContext networkContext, NewtonRaphsonParameters newtonRaphsonParameters,
-                                                 EquationContext equationContext, EquationSystem equationSystem, int macroIteration,
-                                                 String macroActionName, int newtowRaphsonIteration) {
+    private NewtonRaphsonResult runNewtowRaphson(NetworkContext networkContext, EquationContext equationContext,
+                                                 EquationSystem equationSystem, NewtonRaphsonParameters newtonRaphsonParameters,
+                                                 int newtowRaphsonIteration, int macroIteration, String macroActionName) {
         observer.beginMacroIteration(macroIteration, macroActionName);
 
         NewtonRaphsonResult newtonRaphsonResult = new NewtonRaphson(networkContext, matrixFactory, observer, equationContext,
@@ -97,22 +99,23 @@ public class AcloadFlowEngine {
 
         observer.afterEquationSystemCreation();
 
-        // first macro iteration
+        // initial macro iteration
         int macroIteration = 0;
 
-        NewtonRaphsonResult newtonRaphsonResult = runNewtowRaphson(networkContext, newtonRaphsonParameters, equationContext,
-                                                                   equationSystem, macroIteration++, "First", 0);
+        NewtonRaphsonResult newtonRaphsonResult = runNewtowRaphson(networkContext, equationContext, equationSystem,
+                                                                   newtonRaphsonParameters, 0,
+                                                                   macroIteration++, INITIAL_MACRO_ACTION_NAME);
 
-        // for each macro action run macro iteration until stabilized
+        // for each macro action run macro iterations until stabilized
         // macro actions are nested: inner most loop first in the list
         for (MacroAction macroAction : macroActions) {
             MacroIterationContext macroIterationContext = new MacroIterationContext(macroIteration, networkContext, newtonRaphsonResult);
             while (runMacroAction(macroIterationContext, macroAction)) {
                 observer.beginMacroIteration(macroIteration, macroAction.getName());
 
-                newtonRaphsonResult = runNewtowRaphson(networkContext, newtonRaphsonParameters, equationContext,
-                                                       equationSystem, macroIteration, macroAction.getName(),
-                                                       newtonRaphsonResult.getIteration());
+                newtonRaphsonResult = runNewtowRaphson(networkContext, equationContext, equationSystem,
+                                                       newtonRaphsonParameters, newtonRaphsonResult.getIteration(),
+                                                       macroIteration, macroAction.getName());
 
                 observer.endMacroIteration(macroIteration, macroAction.getName());
 

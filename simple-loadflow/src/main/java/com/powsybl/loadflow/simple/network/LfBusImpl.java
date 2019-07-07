@@ -8,10 +8,9 @@ package com.powsybl.loadflow.simple.network;
 
 import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.*;
+import com.powsybl.iidm.network.extensions.ActivePowerControl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -36,11 +35,15 @@ public class LfBusImpl extends AbstractLfBus {
 
     private double maxP = Double.NaN;
 
+    private double participationFactor = 0;
+
     private double targetV = Double.NaN;
 
     private int neighbors = 0;
 
     private final List<LfShunt> shunts = new ArrayList<>();
+
+    private final Map<Generator, Float> generators = new HashMap<>();
 
     public LfBusImpl(Bus bus, int num, double v, double angle) {
         super(num, v, angle);
@@ -103,6 +106,13 @@ public class LfBusImpl extends AbstractLfBus {
             this.generationTargetQ += generator.getTargetQ();
         }
         setActivePowerLimits(generator.getMinP(), generator.getMaxP());
+
+        // get participation factor from extension
+        ActivePowerControl<Generator> activePowerControl = generator.getExtension(ActivePowerControl.class);
+        if (activePowerControl != null && activePowerControl.isParticipate()) {
+            participationFactor += activePowerControl.getDroop();
+            generators.put(generator, activePowerControl.getDroop());
+        }
     }
 
     void addStaticVarCompensator(StaticVarCompensator staticVarCompensator) {
@@ -165,6 +175,11 @@ public class LfBusImpl extends AbstractLfBus {
     }
 
     @Override
+    public double getParticipationFactor() {
+        return participationFactor;
+    }
+
+    @Override
     public double getTargetV() {
         return targetV / nominalV;
     }
@@ -211,5 +226,7 @@ public class LfBusImpl extends AbstractLfBus {
     @Override
     public void updateState() {
         bus.setV(v).setAngle(angle);
+
+        // TODO update generator active power
     }
 }

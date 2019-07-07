@@ -41,6 +41,8 @@ public interface LfBus {
 
     double getMaxP();
 
+    double getParticipationFactor();
+
     double getV();
 
     void setV(double v);

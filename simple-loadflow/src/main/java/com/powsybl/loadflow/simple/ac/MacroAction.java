@@ -13,5 +13,7 @@ public interface MacroAction {
 
     String getName();
 
+    void init(MacroIterationContext macroIterationContext);
+
     boolean run(MacroIterationContext context);
 }

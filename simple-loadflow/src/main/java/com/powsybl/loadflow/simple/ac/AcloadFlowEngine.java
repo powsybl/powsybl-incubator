@@ -112,6 +112,11 @@ public class AcloadFlowEngine {
         // macro actions are nested: inner most loop first in the list
         for (MacroAction macroAction : macroActions) {
             MacroIterationContext macroIterationContext = new MacroIterationContext(macroIteration, networkContext, newtonRaphsonResult);
+
+            // macro action initialization
+            macroAction.init(macroIterationContext);
+
+            // re-run macro action + newtow raphson until stabilization
             while (runMacroAction(macroIterationContext, macroAction)) {
                 observer.beginMacroIteration(macroIteration, macroAction.getName());
 
@@ -125,6 +130,7 @@ public class AcloadFlowEngine {
             }
         }
 
+        // update network state
         NetworkContext.resetState(network);
         networkContext.updateState();
 

@@ -54,6 +54,11 @@ public abstract class AbstractFictitiousLfBus extends AbstractLfBus {
     }
 
     @Override
+    public double getParticipationFactor() {
+        return 0;
+    }
+
+    @Override
     public double getTargetV() {
         return Double.NaN;
     }

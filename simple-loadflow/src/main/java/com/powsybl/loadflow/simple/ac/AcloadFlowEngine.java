@@ -9,10 +9,7 @@ package com.powsybl.loadflow.simple.ac;
 import com.google.common.base.Stopwatch;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.loadflow.simple.ac.equations.AcEquationSystem;
-import com.powsybl.loadflow.simple.ac.nr.NewtonRaphson;
-import com.powsybl.loadflow.simple.ac.nr.NewtonRaphsonParameters;
-import com.powsybl.loadflow.simple.ac.nr.NewtonRaphsonResult;
-import com.powsybl.loadflow.simple.ac.nr.VoltageInitializer;
+import com.powsybl.loadflow.simple.ac.nr.*;
 import com.powsybl.loadflow.simple.ac.observer.AcLoadFlowObserver;
 import com.powsybl.loadflow.simple.equations.EquationContext;
 import com.powsybl.loadflow.simple.equations.EquationSystem;
@@ -63,8 +60,13 @@ public class AcloadFlowEngine {
                                                  int newtowRaphsonIteration, int macroIteration, String macroActionName) {
         observer.beginMacroIteration(macroIteration, macroActionName);
 
+        // for next macro iteration, restart from previous voltage
+        VoltageInitializer macroIterationVoltageInitializer = macroIteration == 0 ? this.voltageInitializer
+                                                                                  : new PreviousValueVoltageInitializer();
+
         NewtonRaphsonResult newtonRaphsonResult = new NewtonRaphson(networkContext, matrixFactory, observer, equationContext,
-                                                                    equationSystem, voltageInitializer, newtowRaphsonIteration)
+                                                                    equationSystem, macroIterationVoltageInitializer,
+                                                                    newtowRaphsonIteration)
                 .run(newtonRaphsonParameters);
 
         observer.endMacroIteration(macroIteration, macroActionName);

@@ -119,5 +119,7 @@ public class CountryAreaTest {
         List<CountryArea> countries = Arrays.asList(countryAreaBE, countryAreaES, countryAreaFR);
         CountryArea countryAreaFr2 = new CountryArea(Country.valueOf("FR"));
         assertTrue(countries.contains(countryAreaFr2));
+        assertTrue(!countryAreaFR.equals(countryAreaES));
+        assertTrue(countryAreaFR.equals(countryAreaFR));
     }
 }

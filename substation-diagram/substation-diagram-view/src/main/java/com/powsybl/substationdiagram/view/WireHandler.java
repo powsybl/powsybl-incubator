@@ -6,6 +6,11 @@
  */
 package com.powsybl.substationdiagram.view;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
+import com.google.common.collect.ImmutableList;
+import com.powsybl.substationdiagram.library.ComponentSize;
+import com.powsybl.substationdiagram.library.ComponentType;
 import com.powsybl.substationdiagram.svg.GraphMetadata;
 import com.powsybl.substationdiagram.svg.WireConnection;
 
@@ -13,7 +18,10 @@ import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.shape.Polyline;
+import javafx.scene.transform.Rotate;
+import javafx.scene.transform.Translate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -81,7 +89,7 @@ public class WireHandler {
 
     private void relocateArrows() {
         for (int i = 0; i < arrows.size(); i++) {
-            relocateArrow(polyline, arrows.get(i), i);
+            relocateArrow(node, arrows.get(i), i);
         }
     }
 

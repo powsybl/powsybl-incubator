@@ -25,6 +25,7 @@
         <module>substation-diagram-core</module>
         <module>substation-diagram-view</module>
         <module>substation-diagram-cgmes</module>
+        <module>substation-diagram-util</module>
         <!--<module>substation-diagram-force-layout</module>-->
     </modules>
 
@@ -48,7 +49,12 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.xmlgraphics</groupId>
-                <artifactId>batik-dom</artifactId>
+                <artifactId>batik-anim</artifactId>
+                <version>${batik.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.xmlgraphics</groupId>
+                <artifactId>batik-bridge</artifactId>
                 <version>${batik.version}</version>
             </dependency>
             <dependency>

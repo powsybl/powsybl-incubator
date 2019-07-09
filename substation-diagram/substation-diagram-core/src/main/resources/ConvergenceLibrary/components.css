@@ -11,7 +11,7 @@
     stroke-width:3
 }
 .GENERATOR{stroke:rgb(0,0,255);}
-.LINE{stroke:rgb(0,0,255);} 
+.LINE{stroke:rgb(0,0,255);}
 .LOAD{stroke:rgb(0,0,255);}
 .LOAD_BREAK_SWITCH{stroke:rgb(0,0,255);}
 .NODE {stroke:rgb(0,0,0);fill:rgb(0,0,0);fill-opacity:1;}

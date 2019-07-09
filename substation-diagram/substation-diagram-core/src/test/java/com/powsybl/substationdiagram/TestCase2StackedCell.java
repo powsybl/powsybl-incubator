@@ -113,16 +113,16 @@ public class TestCase2StackedCell extends AbstractTestCase {
         assertEquals(1, g.getCells().size());
         Cell cell = g.getCells().iterator().next();
         assertEquals(Cell.CellType.EXTERN, cell.getType());
-        assertEquals(-1, cell.getOrder());
+        assertEquals(-1, ((ExternCell) cell).getOrder());
         assertEquals(7, cell.getNodes().size());
-        assertEquals(2, cell.getBusNodes().size());
+        assertEquals(2, ((BusCell) cell).getBusNodes().size());
         assertEquals("EXTERN[FICT_vl_2, b, bbs1, bbs2, d1, d2, l]", cell.getFullId());
 
         // build blocks
         assertTrue(new BlockOrganizer().organize(g));
 
         // assert blocks and nodes rotation
-        assertEquals(2, cell.getPrimaryBlocksConnectedToBus().size());
+        assertEquals(2, ((BusCell) cell).getPrimaryBlocksConnectedToBus().size());
         assertNotNull(cell.getRootBlock());
         assertTrue(cell.getRootBlock() instanceof SerialBlock);
         SerialBlock bc = (SerialBlock) cell.getRootBlock();
@@ -166,10 +166,22 @@ public class TestCase2StackedCell extends AbstractTestCase {
         assertEquals(1, bpy2.getStackableBlocks().size());
 
         // calculate coordinates
-        LayoutParameters layoutParameters = new LayoutParameters(20, 50, 0, 260,
-                                                                 25, 20,
-                                                                 50, 250, 40,
-                                                                 30, true, true, 1, 50, 50, 30);
+        LayoutParameters layoutParameters = new LayoutParameters()
+                .setTranslateX(20)
+                .setTranslateY(50)
+                .setInitialXBus(0)
+                .setInitialYBus(260)
+                .setVerticalSpaceBus(25)
+                .setHorizontalBusPadding(20)
+                .setCellWidth(50)
+                .setExternCellHeight(250)
+                .setInternCellHeight(40)
+                .setStackHeight(30)
+                .setShowGrid(true)
+                .setShowInternalNodes(true)
+                .setScaleFactor(1)
+                .setHorizontalSubstationPadding(50)
+                .setVerticalSubstationPadding(50);
 
         new PositionVoltageLevelLayout(g).run(layoutParameters);
 

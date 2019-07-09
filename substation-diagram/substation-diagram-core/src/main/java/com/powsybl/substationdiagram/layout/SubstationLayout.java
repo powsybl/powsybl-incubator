@@ -6,8 +6,11 @@
  */
 package com.powsybl.substationdiagram.layout;
 
-import com.powsybl.substationdiagram.model.Coord;
-import com.powsybl.substationdiagram.model.Graph;
+import com.powsybl.commons.PowsyblException;
+import com.powsybl.substationdiagram.model.*;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
@@ -15,7 +18,29 @@ import com.powsybl.substationdiagram.model.Graph;
 public interface SubstationLayout {
 
     /**
-     * Calculate real coordinate of voltageLevels in the substation
+     * Calculate real coordinate of voltageLevels in the substation graph
      */
-    Coord run(LayoutParameters layoutParam, Graph vlGraph);
+    Coord calculateCoordVoltageLevel(LayoutParameters layoutParam, Graph vlGraph);
+
+    /*
+     * Calculate polyline points of a snakeLine in the substation graph
+     */
+    List<Double> calculatePolylineSnakeLine(LayoutParameters layoutParam,
+                                            Edge edge,
+                                            Map<BusCell.Direction, Integer> nbSnakeLinesTopBottom,
+                                            Map<Side, Integer> nbSnakeLinesLeftRight,
+                                            Map<String, Integer> nbSnakeLinesBetween,
+                                            Map<String, Integer> nbSnakeLinesBottomVL,
+                                            Map<String, Integer> nbSnakeLinesTopVL);
+
+    default BusCell.Direction getNodeDirection(Node node, int nb) {
+        if (node.getType() != Node.NodeType.FEEDER) {
+            throw new PowsyblException("Node " + nb + " is not a feeder node");
+        }
+        BusCell.Direction dNode = node.getCell() != null ? ((ExternCell) node.getCell()).getDirection() : BusCell.Direction.TOP;
+        if (dNode != BusCell.Direction.TOP && dNode != BusCell.Direction.BOTTOM) {
+            throw new PowsyblException("Node " + nb + " cell direction not TOP or BOTTOM");
+        }
+        return dNode;
+    }
 }

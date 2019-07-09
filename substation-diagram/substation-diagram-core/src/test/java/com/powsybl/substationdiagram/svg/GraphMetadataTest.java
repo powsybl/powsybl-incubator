@@ -10,13 +10,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.powsybl.commons.json.JsonUtil;
 import com.powsybl.substationdiagram.library.*;
+import com.powsybl.substationdiagram.model.BusCell;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
@@ -32,9 +32,9 @@ public class GraphMetadataTest {
                                                             null,
                                                             ImmutableList.of(new AnchorPoint(5, 4, AnchorOrientation.NONE)),
                                                             new ComponentSize(10, 12)));
-        metadata.addNodeMetadata(new GraphMetadata.NodeMetadata("id1", ComponentType.BREAKER, true, false));
-        metadata.addNodeMetadata(new GraphMetadata.NodeMetadata("id2", ComponentType.BUSBAR_SECTION, false, false));
-        metadata.addWireMetadata(new GraphMetadata.WireMetadata("id3", "id1", "id2"));
+        metadata.addNodeMetadata(new GraphMetadata.NodeMetadata("id1", "vid1", ComponentType.BREAKER, true, false, BusCell.Direction.UNDEFINED, false));
+        metadata.addNodeMetadata(new GraphMetadata.NodeMetadata("id2", "vid2", ComponentType.BUSBAR_SECTION, false, false, BusCell.Direction.UNDEFINED, false));
+        metadata.addWireMetadata(new GraphMetadata.WireMetadata("id3", "id1", "id2", false, false));
 
         ObjectMapper objectMapper = JsonUtil.createObjectMapper();
         String json = objectMapper.writerWithDefaultPrettyPrinter()
@@ -52,14 +52,17 @@ public class GraphMetadataTest {
         assertEquals(2, metadata2.getNodeMetadata().size());
         assertNotNull(metadata2.getNodeMetadata("id1"));
         assertEquals("id1", metadata2.getNodeMetadata("id1").getId());
+        assertEquals("vid1", metadata2.getNodeMetadata("id1").getVId());
         Assert.assertEquals(ComponentType.BREAKER, metadata2.getNodeMetadata("id1").getComponentType());
         Assert.assertEquals(ComponentType.BUSBAR_SECTION, metadata2.getNodeMetadata("id2").getComponentType());
         assertEquals("id2", metadata2.getNodeMetadata("id2").getId());
+        assertEquals("vid2", metadata2.getNodeMetadata("id2").getVId());
         assertNotNull(metadata2.getNodeMetadata("id2"));
         assertEquals(1, metadata2.getWireMetadata().size());
         assertNotNull(metadata2.getWireMetadata("id3"));
         assertEquals("id3", metadata2.getWireMetadata("id3").getId());
         assertEquals("id1", metadata2.getWireMetadata("id3").getNodeId1());
         assertEquals("id2", metadata2.getWireMetadata("id3").getNodeId2());
+        assertFalse(metadata2.getWireMetadata("id3").isStraight());
     }
 }

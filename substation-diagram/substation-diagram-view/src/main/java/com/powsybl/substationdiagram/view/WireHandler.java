@@ -6,16 +6,6 @@
  */
 package com.powsybl.substationdiagram.view;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
-import com.google.common.collect.ImmutableList;
-import com.powsybl.substationdiagram.library.AnchorOrientation;
-import com.powsybl.substationdiagram.library.ComponentSize;
-import com.powsybl.substationdiagram.library.ComponentType;
 import com.powsybl.substationdiagram.svg.GraphMetadata;
 import com.powsybl.substationdiagram.svg.WireConnection;
 
@@ -23,8 +13,9 @@ import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.shape.Polyline;
-import javafx.scene.transform.Rotate;
-import javafx.scene.transform.Translate;
+
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
@@ -33,7 +24,7 @@ import javafx.scene.transform.Translate;
  */
 public class WireHandler {
 
-    private final Polyline polyline;
+    private final Polyline node;
 
     private final List<Group> arrows = new ArrayList<>();
 
@@ -41,17 +32,28 @@ public class WireHandler {
 
     private final NodeHandler nodeHandler2;
 
+    private final boolean straight;
+
+    private final boolean snakeLine;
+
     private final GraphMetadata metadata;
 
-    public WireHandler(Polyline polyline, NodeHandler nodeHandler1, NodeHandler nodeHandler2, GraphMetadata metadata) {
-        this.polyline = Objects.requireNonNull(polyline);
+    public WireHandler(Polyline node, NodeHandler nodeHandler1, NodeHandler nodeHandler2,
+                       boolean straight, boolean snakeLine, GraphMetadata metadata) {
+        this.node = Objects.requireNonNull(node);
         this.nodeHandler1 = Objects.requireNonNull(nodeHandler1);
         this.nodeHandler2 = Objects.requireNonNull(nodeHandler2);
+        this.straight = straight;
+        this.snakeLine = snakeLine;
         this.metadata = Objects.requireNonNull(metadata);
     }
 
-    public Node getPolyline() {
-        return this.polyline;
+    public Node getNode() {
+        return this.node;
+    }
+
+    public boolean isSnakeLine() {
+        return snakeLine;
     }
 
     public NodeHandler getNodeHandler1() {
@@ -70,44 +72,10 @@ public class WireHandler {
 
         WireConnection wireConnection = WireConnection.searchBetterAnchorPoints(metadata, nodeHandler1, nodeHandler2);
 
-        // update polyline
-        double x1 = nodeHandler1.getX() + wireConnection.getAnchorPoint1().getX();
-        double y1 = nodeHandler1.getY() + wireConnection.getAnchorPoint1().getY();
-        double x2 = nodeHandler2.getX() + wireConnection.getAnchorPoint2().getX();
-        double y2 = nodeHandler2.getY() + wireConnection.getAnchorPoint2().getY();
-
-        if (x1 == x2 || y1 == y2) {
-            polyline.getPoints().setAll(x1, y1, x2, y2);
-        } else {
-            switch (wireConnection.getAnchorPoint1().getOrientation()) {
-                case VERTICAL:
-                    if (wireConnection.getAnchorPoint2().getOrientation().equals(AnchorOrientation.VERTICAL)) {
-                        polyline.getPoints().setAll(x1, y1, x1, (y1 + y2) / 2, x2, (y1 + y2) / 2, x2, y2);
-                    } else {
-                        polyline.getPoints().setAll(x1, y1, x1, y2, x2, y2);
-                    }
-                    break;
-                case HORIZONTAL:
-
-                    if (wireConnection.getAnchorPoint2().getOrientation().equals(AnchorOrientation.HORIZONTAL)) {
-                        polyline.getPoints().setAll(x1, y1, (x1 + x2) / 2, y1, (x1 + x2) / 2, y2, x2, y2);
-                    } else {
-                        polyline.getPoints().setAll(x1, y1, x2, y1, x2, y2);
-                    }
-                    break;
-                case NONE:
-                    // Case none-none is not handled, it never happens atm
-                    if (wireConnection.getAnchorPoint2().getOrientation().equals(AnchorOrientation.HORIZONTAL)) {
-                        polyline.getPoints().setAll(x1, y1, x1, y2, x2, y2);
-                    } else {
-                        polyline.getPoints().setAll(x1, y1, x1, (y1 + y2) / 2, x2, (y1 + y2) / 2, x2, y2);
-                    }
-                    break;
-                default:
-                    break;
-            }
+        if (!snakeLine) {   // inside voltageLevel
+            List<Double> pol = wireConnection.calculatePolylinePoints(nodeHandler1, nodeHandler2, straight);
+            node.getPoints().setAll(pol);
         }
-
         relocateArrows();
     }
 

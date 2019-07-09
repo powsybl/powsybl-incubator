@@ -157,26 +157,38 @@ public class TestCase5ShuntVertical extends AbstractTestCase {
         assertTrue(new BlockOrganizer().organize(g));
 
         // assert blocks and nodes rotation
-        assertEquals(1, cella.getPrimaryBlocksConnectedToBus().size());
+        assertEquals(1, ((BusCell) cella).getPrimaryBlocksConnectedToBus().size());
         assertNotNull(cella.getRootBlock());
         assertTrue(cella.getRootBlock() instanceof SerialBlock);
         assertEquals(new Position(0, 0, 1, 3, false, Orientation.VERTICAL), cella.getRootBlock().getPosition());
 
-        assertEquals(1, cellb.getPrimaryBlocksConnectedToBus().size());
+        assertEquals(1, ((BusCell) cellb).getPrimaryBlocksConnectedToBus().size());
         assertNotNull(cellb.getRootBlock());
         assertTrue(cellb.getRootBlock() instanceof SerialBlock);
         assertEquals(new Position(1, 0, 1, 2, false, Orientation.VERTICAL), cellb.getRootBlock().getPosition());
 
-        assertEquals(0, cellShunt.getPrimaryBlocksConnectedToBus().size());
         assertNotNull(cellShunt.getRootBlock());
         assertTrue(cellShunt.getRootBlock() instanceof PrimaryBlock);
         assertEquals(new Position(-1, -1, 0, 0, false, Orientation.HORIZONTAL), cellShunt.getRootBlock().getPosition());
 
         // calculate coordinates
-        LayoutParameters layoutParameters = new LayoutParameters(20, 50, 0, 260,
-                                                                 25, 20,
-                                                                 50, 250, 40,
-                                                                 30, true, true, 1, 50, 50, 30);
+        LayoutParameters layoutParameters = new LayoutParameters()
+                .setTranslateX(20)
+                .setTranslateY(50)
+                .setInitialXBus(0)
+                .setInitialYBus(260)
+                .setVerticalSpaceBus(25)
+                .setHorizontalBusPadding(20)
+                .setCellWidth(50)
+                .setExternCellHeight(250)
+                .setInternCellHeight(40)
+                .setStackHeight(30)
+                .setShowGrid(true)
+                .setShowInternalNodes(true)
+                .setScaleFactor(1)
+                .setHorizontalSubstationPadding(50)
+                .setVerticalSubstationPadding(50);
+
         new PositionVoltageLevelLayout(g).run(layoutParameters);
 
         // assert coordinate

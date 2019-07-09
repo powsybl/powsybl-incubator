@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg">
+    <style><![CDATA[.substation-diagram {fill:rgb(255,255,255);stroke-width:1;fill-opacity:0;}.wire_vl {stroke:rgb(200,0,0);stroke-width:1;}.grid {stroke:rgb(0,55,0);stroke-width:1;stroke-dasharray:1,10;}.bus_vl {stroke:rgb(0,0,0);stroke-width:3;}.component-label {fill:black;color:black;stroke:none;fill-opacity:1;}.BUSBAR_SECTION{stroke:rgb(0,0,255);}
+
+
+
+.BREAKER {
+
+    stroke:rgb(0,0,255);
+
+    stroke-width:2;
+
+    fill-opacity:1;
+
+}
+
+
+
+.DISCONNECTOR {
+
+    stroke:rgb(0,0,0);
+
+    stroke-width:3
+
+}
+
+.GENERATOR{stroke:rgb(0,0,255);}
+
+.LINE{stroke:rgb(0,0,255);}
+
+.LOAD{stroke:rgb(0,0,255);}
+
+.LOAD_BREAK_SWITCH{stroke:rgb(0,0,255);}
+
+.NODE {stroke:rgb(0,0,0);fill:rgb(0,0,0);fill-opacity:1;}
+
+.CAPACITOR{stroke:rgb(0,0,255);}
+
+.INDUCTOR{stroke:rgb(0,0,255);}
+
+.STATIC_VAR_COMPENSATOR{stroke:rgb(0,0,255);}
+
+#path5227 { stroke-width:0.4; stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:1.4;}
+
+#path5229 {stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;}
+
+#path5231 {stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;}
+
+.TWO_WINDINGS_TRANSFORMER{stroke:rgb(0,0,255);}
+
+.THREE_WINDINGS_TRANSFORMER{stroke:rgb(0,0,255);}
+
+.VSC_CONVERTER_STATION {stroke:rgb(0,0,255);font-size:7.4314661px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;stroke-miterlimit:4;}
+
+.DANGLING_LINE {stroke:rgb(0,0,0);stroke-width:2;}
+
+.PHASE_SHIFT_TRANSFORMER {stroke:rgb(0,0,255);stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;}
+
+.ARROW1__l_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1__l_UP .arrow-down { visibility: hidden;}.ARROW1__l_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1__l_DOWN .arrow-up { visibility: hidden;}.ARROW2__l_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2__l_UP .arrow-down { visibility: hidden;}.ARROW2__l_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2__l_DOWN .arrow-up { visibility: hidden;}.b1_l .open { visibility: hidden;}.b1_l .closed { visibility: visible;}]]></style>
+    <g class="substation-diagram">
+        <g id="GRID_vl">
+            <line y2="590.0" x1="0.0" class="grid" x2="0.0" transform="translate(20.0,50.0)" y1="-20.0"/>
+            <line y2="590.0" x1="50.0" class="grid" x2="50.0" transform="translate(20.0,50.0)" y1="-20.0"/>
+        </g>
+        <g class="substation-diagram BUSBAR_SECTION b1" id="b1" transform="translate(30.0,310.0)">
+            <line y2="0" x1="0" class="bus_vl" x2="30.0" y1="0"/>
+            <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">b1</text>
+        </g>
+        <g class="substation-diagram BUSBAR_SECTION b2" id="b2" transform="translate(-20.0,335.0)">
+            <line y2="0" x1="0" class="bus_vl" x2="-20.0" y1="0"/>
+            <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">b2</text>
+        </g>
+        <g class="substation-diagram LOAD _l" id="l" transform="translate(37.0,25.5)">
+    <rect height="9" width="16"/>
+    <line y2="9" x1="0" x2="16" y1="0"/>
+    <line y2="9" x1="16" x2="0" y1="0"/>
+<text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">l</text>
+        </g>
+        <g class="substation-diagram DISCONNECTOR b1_l" id="b1_l" transform="translate(41.0,306.0)">
+    <g id="closed">
+        <line y2="8" x1="0" x2="8" y1="0"/>
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+    <g id="open">
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+</g>
+        <g class="substation-diagram NODE FICT_vl_b1_lFictif" id="FICT_vl_b1_lFictif" transform="translate(41.0,276.0)">
+    <circle r="4" cx="4" cy="4"/>
+</g>
+        <polyline class="wire_vl" points="45.0,310.0 45.0,310.0" id="vl_Wire0"/>
+        <polyline class="wire_vl" points="45.0,34.0 45.0,280.0" id="vl_Wire1"/>
+        <g class="substation-diagram ARROW1__l_UP" id="vl_Wire1_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,40.0,49.0)">   
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+<text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">10</text>
+        </g>
+        <g class="substation-diagram ARROW2__l_UP" id="vl_Wire1_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,40.0,69.0)">   
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+<text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">10</text>
+        </g>
+        <polyline class="wire_vl" points="45.0,310.0 45.0,280.0" id="vl_Wire2"/>
+        <g id="LABEL_VL_vl">
+            <text x="0.0" font-size="12" y="0.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">vl</text>
+        </g>
+    </g>
+</svg>

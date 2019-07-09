@@ -6,6 +6,9 @@
  */
 package com.powsybl.substationdiagram.layout;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Objects;
 
 /**
@@ -38,27 +41,36 @@ public class LayoutParameters {
     private double horizontalSubstationPadding = 50;
     private double verticalSubstationPadding = 50;
 
+    private boolean drawStraightWires = false;
+
+    private double horizontalSnakeLinePadding = 20;
+    private double verticalSnakeLinePadding = 25;
     private double arrowDistance = 20;
 
+    @JsonCreator
     public LayoutParameters() {
     }
 
-    public LayoutParameters(double translateX,
-                            double translateY,
-                            double initialXBus,
-                            double initialYBus,
-                            double verticalSpaceBus,
-                            double horizontalBusPadding,
-                            double cellWidth,
-                            double externCellHeight,
-                            double internCellHeight,
-                            double stackHeight,
-                            boolean showGrid,
-                            boolean showInternalNodes,
-                            double scaleFactor,
-                            double horizontalSubstationPadding,
-                            double verticalSubstationPadding,
-                            double arrowDistance) {
+    @JsonCreator
+    public LayoutParameters(@JsonProperty("translateX") double translateX,
+                            @JsonProperty("translateY") double translateY,
+                            @JsonProperty("initialXBus") double initialXBus,
+                            @JsonProperty("initialYBus") double initialYBus,
+                            @JsonProperty("verticalSpaceBus") double verticalSpaceBus,
+                            @JsonProperty("horizontalBusPadding") double horizontalBusPadding,
+                            @JsonProperty("cellWidth") double cellWidth,
+                            @JsonProperty("externCellHeight") double externCellHeight,
+                            @JsonProperty("internCellHeight") double internCellHeight,
+                            @JsonProperty("stackHeight") double stackHeight,
+                            @JsonProperty("showGrid") boolean showGrid,
+                            @JsonProperty("showInternalNodes") boolean showInternalNodes,
+                            @JsonProperty("scaleFactor") double scaleFactor,
+                            @JsonProperty("horizontalSubstationPadding") double horizontalSubstationPadding,
+                            @JsonProperty("verticalSubstationPadding") double verticalSubstationPadding,
+                            @JsonProperty("drawStraightWires") boolean drawStraightWires,
+                            @JsonProperty("horizontalSnakeLinePadding") double horizontalSnakeLinePadding,
+                            @JsonProperty("verticalSnakeLinePadding") double verticalSnakeLinePadding,
+                            @JsonProperty("arrowDistance") double arrowDistance) {
         this.translateX = translateX;
         this.translateY = translateY;
         this.initialXBus = initialXBus;
@@ -74,6 +86,9 @@ public class LayoutParameters {
         this.scaleFactor = scaleFactor;
         this.horizontalSubstationPadding = horizontalSubstationPadding;
         this.verticalSubstationPadding = verticalSubstationPadding;
+        this.drawStraightWires = drawStraightWires;
+        this.horizontalSnakeLinePadding = horizontalSnakeLinePadding;
+        this.verticalSnakeLinePadding = verticalSnakeLinePadding;
         this.arrowDistance = arrowDistance;
     }
 
@@ -94,6 +109,9 @@ public class LayoutParameters {
         scaleFactor = other.scaleFactor;
         horizontalSubstationPadding = other.horizontalSubstationPadding;
         verticalSubstationPadding = other.verticalSubstationPadding;
+        drawStraightWires = other.drawStraightWires;
+        horizontalSnakeLinePadding = other.horizontalSnakeLinePadding;
+        verticalSnakeLinePadding = other.verticalSnakeLinePadding;
         arrowDistance = other.arrowDistance;
     }
 
@@ -229,6 +247,33 @@ public class LayoutParameters {
 
     public LayoutParameters setVerticalSubstationPadding(double padding) {
         this.verticalSubstationPadding = padding;
+        return this;
+    }
+
+    public boolean isDrawStraightWires() {
+        return drawStraightWires;
+    }
+
+    public LayoutParameters setDrawStraightWires(boolean drawStraightWires) {
+        this.drawStraightWires = drawStraightWires;
+        return this;
+    }
+
+    public double getHorizontalSnakeLinePadding() {
+        return horizontalSnakeLinePadding;
+    }
+
+    public LayoutParameters setHorizontalSnakeLinePadding(double horizontalSnakeLinePadding) {
+        this.horizontalSnakeLinePadding = horizontalSnakeLinePadding;
+        return this;
+    }
+
+    public double getVerticalSnakeLinePadding() {
+        return verticalSnakeLinePadding;
+    }
+
+    public LayoutParameters setVerticalSnakeLinePadding(double verticalSnakeLinePadding) {
+        this.verticalSnakeLinePadding = verticalSnakeLinePadding;
         return this;
     }
 

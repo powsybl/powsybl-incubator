@@ -6,38 +6,6 @@
  */
 package com.powsybl.substationdiagram.svg;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
-import org.apache.batik.anim.dom.SVGOMDocument;
-import org.apache.batik.dom.GenericDOMImplementation;
-import org.apache.commons.math3.util.Precision;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.CDATASection;
-import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Text;
-
 import com.powsybl.commons.exceptions.UncheckedTransformerException;
 import com.powsybl.substationdiagram.layout.HorizontalSubstationLayout;
 import com.powsybl.substationdiagram.layout.HorizontalSubstationLayoutFactory;
@@ -55,15 +23,42 @@ import com.powsybl.substationdiagram.library.ComponentLibrary;
 import com.powsybl.substationdiagram.library.ComponentMetadata;
 import com.powsybl.substationdiagram.library.ComponentSize;
 import com.powsybl.substationdiagram.library.ComponentType;
-import com.powsybl.substationdiagram.model.BusNode;
-import com.powsybl.substationdiagram.model.Cell;
-import com.powsybl.substationdiagram.model.Coord;
-import com.powsybl.substationdiagram.model.Edge;
-import com.powsybl.substationdiagram.model.FeederNode;
-import com.powsybl.substationdiagram.model.Graph;
-import com.powsybl.substationdiagram.model.Node;
-import com.powsybl.substationdiagram.model.SubstationGraph;
+import com.powsybl.substationdiagram.model.*;
 import com.powsybl.substationdiagram.svg.GraphMetadata.ArrowMetadata;
+
+import org.apache.batik.anim.dom.SVGOMDocument;
+import org.apache.batik.dom.GenericDOMImplementation;
+import org.apache.commons.math3.util.Precision;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.CDATASection;
+import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Text;
+
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
@@ -80,6 +75,7 @@ public class SVGWriter {
     private static final int FONT_SIZE = 8;
     private static final String FONT_FAMILY = "Verdana";
     private static final int LABEL_OFFSET = 5;
+    private static final int FONT_VOLTAGE_LEVEL_LABEL_SIZE = 12;
 
     private final ComponentLibrary componentLibrary;
 
@@ -93,7 +89,7 @@ public class SVGWriter {
     /**
      * Create the SVGDocument corresponding to the graph
      *
-     * @param graph  graph
+     * @param graph   graph
      * @param svgFile file
      */
     public GraphMetadata write(Graph graph, SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider, Path svgFile) {
@@ -162,7 +158,7 @@ public class SVGWriter {
         root.setAttribute(CLASS, SubstationDiagramStyles.SUBSTATION_STYLE_CLASS);
 
         if (layoutParameters.isShowGrid()) {
-            root.appendChild(drawGrid(graph, document));
+            root.appendChild(drawGrid(graph, document, metadata));
         }
 
         AnchorPointProvider anchorPointProvider = (type, id) -> {
@@ -183,7 +179,9 @@ public class SVGWriter {
 
         drawNodes(root, graph, metadata, anchorPointProvider, initProvider);
         drawEdges(root, graph, metadata, anchorPointProvider, initProvider);
-
+        // the drawing of the voltageLevel graph label is done at the end in order to
+        // facilitate the move of a voltageLevel in the diagram
+        drawGraphLabel(root, graph, metadata);
         document.adoptNode(root);
         document.getDocumentElement().appendChild(root);
 
@@ -193,7 +191,7 @@ public class SVGWriter {
     /**
      * Create the SVGDocument corresponding to the substation graph
      *
-     * @param graph  substation graph
+     * @param graph   substation graph
      * @param svgFile file
      */
     public GraphMetadata write(SubstationGraph graph, SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider,
@@ -221,8 +219,10 @@ public class SVGWriter {
         Element style = document.createElement("style");
 
         StringBuilder graphStyle = new StringBuilder();
-        Optional<String> globalStyle = styleProvider.getGlobalStyle(graph.getNodes().get(0));
-        globalStyle.ifPresent(graphStyle::append);
+        for (Graph vlGraph : graph.getNodes()) {
+            Optional<String> globalStyle = styleProvider.getGlobalStyle(vlGraph);
+            globalStyle.ifPresent(graphStyle::append);
+        }
         graphStyle.append(componentLibrary.getStyleSheet());
 
         for (Graph vlGraph : graph.getNodes()) {
@@ -283,7 +283,7 @@ public class SVGWriter {
             vLayout.run(layoutParameters);
 
             // Calculate the coordinate of the voltageLevel graph inside the substation graph
-            Coord posVLGraph = sLayout.run(layoutParameters, vlGraph);
+            Coord posVLGraph = sLayout.calculateCoordVoltageLevel(layoutParameters, vlGraph);
 
             graphX += posVLGraph.getX() + (sLayout instanceof HorizontalSubstationLayout ? layoutParameters.getHorizontalSubstationPadding() : 0);
             graphY += posVLGraph.getY() + (sLayout instanceof VerticalSubstationLayout ? layoutParameters.getVerticalSubstationPadding() : 0);
@@ -292,7 +292,7 @@ public class SVGWriter {
         // Drawing grid lines
         if (layoutParameters.isShowGrid()) {
             for (Graph vlGraph : graph.getNodes()) {
-                root.appendChild(drawGrid(vlGraph, document));
+                root.appendChild(drawGrid(vlGraph, document, metadata));
             }
         }
 
@@ -318,12 +318,14 @@ public class SVGWriter {
             drawEdges(root, vlGraph, metadata, anchorPointProvider, initProvider);
         }
 
+        drawSnakeLines(root, graph, metadata, sLayout);
+/*
         // Drawing the lines between the voltageLevels
         AnchorPointProvider anchorPointProvider = (type, id) ->
             componentLibrary.getAnchorPoints(type);
 
         drawEdges(root, graph, metadata, anchorPointProvider, initProvider);
-
+*/
         document.adoptNode(root);
         document.getDocumentElement().appendChild(root);
 
@@ -333,7 +335,7 @@ public class SVGWriter {
     /*
      * Drawing the grid lines (if required)
      */
-    private Element drawGrid(Graph graph, Document document) {
+    private Element drawGrid(Graph graph, Document document, GraphMetadata metadata) {
         int maxH = graph.getNodeBuses().stream()
                 .mapToInt(nodeBus -> nodeBus.getPosition().getH() + nodeBus.getPosition().getHSpan())
                 .max().orElse(0);
@@ -341,29 +343,39 @@ public class SVGWriter {
                 .mapToInt(nodeBus -> nodeBus.getPosition().getV())
                 .max().orElse(0);
         Element gridRoot = document.createElement("g");
+        String gridId = "GRID_" + graph.getVoltageLevel().getId();
+        gridRoot.setAttribute("id", gridId);
         for (int i = 0; i < maxH + 1; i++) {
             Element line = document.createElement("line");
             line.setAttribute("x1",
-                              Double.toString(layoutParameters.getInitialXBus() + i * layoutParameters.getCellWidth() + graph.getX()));
+                    Double.toString(layoutParameters.getInitialXBus() + i * layoutParameters.getCellWidth() + graph.getX()));
             line.setAttribute("x2",
-                              Double.toString(layoutParameters.getInitialXBus() + i * layoutParameters.getCellWidth() + graph.getX()));
+                    Double.toString(layoutParameters.getInitialXBus() + i * layoutParameters.getCellWidth() + graph.getX()));
             line.setAttribute("y1",
-                              Double.toString(layoutParameters.getInitialYBus() - layoutParameters.getStackHeight()
-                                                      - layoutParameters.getExternCellHeight() + graph.getY()));
+                    Double.toString(layoutParameters.getInitialYBus() - layoutParameters.getStackHeight()
+                            - layoutParameters.getExternCellHeight() + graph.getY()));
             line.setAttribute("y2", Double.toString(
                     layoutParameters.getInitialYBus() + layoutParameters.getStackHeight() + layoutParameters.getExternCellHeight()
                             + layoutParameters.getVerticalSpaceBus() * maxV + graph.getY()));
             line.setAttribute(CLASS, SubstationDiagramStyles.GRID_STYLE_CLASS);
 
             line.setAttribute(TRANSFORM,
-                              TRANSLATE + "(" + layoutParameters.getTranslateX() + "," + layoutParameters.getTranslateY() + ")");
+                    TRANSLATE + "(" + layoutParameters.getTranslateX() + "," + layoutParameters.getTranslateY() + ")");
             gridRoot.appendChild(line);
         }
+        metadata.addNodeMetadata(new GraphMetadata.NodeMetadata(gridId,
+                graph.getVoltageLevel().getId(),
+                null,
+                false,
+                false,
+                BusCell.Direction.UNDEFINED,
+                false));
+
         return gridRoot;
     }
 
     /*
-     * Drawing the graph nodes
+     * Drawing the voltageLevel graph nodes
      */
     private void drawNodes(Element root, Graph graph, GraphMetadata metadata, AnchorPointProvider anchorPointProvider, SubstationDiagramInitialValueProvider initProvider) {
         graph.getNodes().forEach(node -> {
@@ -379,47 +391,53 @@ public class SVGWriter {
                 } else {
                     incorporateComponents(node, g);
                 }
+
+                BusCell.Direction direction = BusCell.Direction.UNDEFINED;
+
                 if (!node.isFictitious()) {
                     if (node instanceof FeederNode) {
                         int yShift = -LABEL_OFFSET;
                         if (node.getCell() != null) {
-                            yShift = node.getCell().getDirection() == Cell.Direction.TOP
+                            direction = ((ExternCell) node.getCell()).getDirection();
+                            yShift = direction == BusCell.Direction.TOP
                                     ? -LABEL_OFFSET
                                     : ((int) (componentLibrary.getSize(node.getComponentType()).getHeight()) + FONT_SIZE + LABEL_OFFSET);
                         }
-                        drawLabel(node.getLabel(), node.isRotated(), -LABEL_OFFSET, yShift, g);
+                        drawLabel(node.getLabel(), node.isRotated(), -LABEL_OFFSET, yShift, g, FONT_SIZE);
                     } else if (node instanceof BusNode) {
                         InitialValue val = initProvider.getInitialValue(node);
                         int d = (int) ((BusNode) node).getPxWidth();
                         if (val.getLabel1().isPresent()) {
-                            drawLabel(val.getLabel1().get(), false, -LABEL_OFFSET, -LABEL_OFFSET, g);
+                            drawLabel(val.getLabel1().get(), false, -LABEL_OFFSET, -LABEL_OFFSET, g, FONT_SIZE);
                         }
                         if (val.getLabel2().isPresent()) {
-                            drawLabel(val.getLabel2().get(), false,  d - LABEL_OFFSET, -LABEL_OFFSET, g);
+                            drawLabel(val.getLabel2().get(), false,  d - LABEL_OFFSET, -LABEL_OFFSET, g, FONT_SIZE);
                         }
                         if (val.getLabel3().isPresent()) {
-                            drawLabel(val.getLabel3().get(), false, -LABEL_OFFSET, LABEL_OFFSET + FONT_SIZE / 2, g);
+                            drawLabel(val.getLabel3().get(), false, -LABEL_OFFSET, LABEL_OFFSET + FONT_SIZE / 2, g, FONT_SIZE);
                         }
                         if (val.getLabel4().isPresent()) {
-                            drawLabel(val.getLabel4().get(), false, d - LABEL_OFFSET, LABEL_OFFSET + FONT_SIZE / 2, g);
+                            drawLabel(val.getLabel4().get(), false, d - LABEL_OFFSET, LABEL_OFFSET + FONT_SIZE / 2, g, FONT_SIZE);
                         }
                     }
                 }
                 root.appendChild(g);
 
                 metadata.addNodeMetadata(
-                        new GraphMetadata.NodeMetadata(nodeId, node.getComponentType(), node.isRotated(), node.isOpen()));
+                        new GraphMetadata.NodeMetadata(nodeId, graph.getVoltageLevel().getId(),
+                                                       node.getComponentType(), node.isRotated(),
+                                                       node.isOpen(), direction, false));
                 if (node.getType() == Node.NodeType.BUS) {
                     metadata.addComponentMetadata(new ComponentMetadata(ComponentType.BUSBAR_SECTION,
-                                                                        nodeId,
-                                                                        anchorPointProvider.getAnchorPoints(ComponentType.BUSBAR_SECTION, node.getId()),
-                                                                        new ComponentSize(0, 0)));
+                            nodeId,
+                            anchorPointProvider.getAnchorPoints(ComponentType.BUSBAR_SECTION, node.getId()),
+                            new ComponentSize(0, 0)));
                 } else {
                     if (metadata.getComponentMetadata(node.getComponentType()) == null) {
                         metadata.addComponentMetadata(new ComponentMetadata(node.getComponentType(),
-                                                                            null,
-                                                                            componentLibrary.getAnchorPoints(node.getComponentType()),
-                                                                            componentLibrary.getSize(node.getComponentType())));
+                                null,
+                                componentLibrary.getAnchorPoints(node.getComponentType()),
+                                componentLibrary.getSize(node.getComponentType())));
                     }
                 }
             } catch (UnsupportedEncodingException e) {
@@ -428,6 +446,30 @@ public class SVGWriter {
         });
     }
 
+    /*
+     * Drawing the graph label
+     */
+    private void drawGraphLabel(Element root, Graph graph, GraphMetadata metadata) {
+        // drawing the label of the voltageLevel
+        String idLabelVoltageLevel = "LABEL_VL_" + graph.getVoltageLevel().getId();
+        Element gLabel = root.getOwnerDocument().createElement("g");
+        gLabel.setAttribute("id", idLabelVoltageLevel);
+
+        drawLabel(graph.getVoltageLevel().getId(), false, graph.getX(), graph.getY(), gLabel, FONT_VOLTAGE_LEVEL_LABEL_SIZE);
+        root.appendChild(gLabel);
+
+        metadata.addNodeMetadata(new GraphMetadata.NodeMetadata(idLabelVoltageLevel,
+                graph.getVoltageLevel().getId(),
+                null,
+                false,
+                false,
+                BusCell.Direction.UNDEFINED,
+                true));
+    }
+
+    /*
+     * Drawing the voltageLevel graph busbar sections
+     */
     private void drawBus(BusNode node, Element g) {
         Element line = g.getOwnerDocument().createElement("line");
         line.setAttribute("x1", "0");
@@ -439,7 +481,7 @@ public class SVGWriter {
             line.setAttribute("x2", String.valueOf(node.getPxWidth()));
             line.setAttribute("y2", "0");
         }
-        line.setAttribute(CLASS, SubstationDiagramStyles.BUS_STYLE_CLASS);
+        line.setAttribute(CLASS, SubstationDiagramStyles.BUS_STYLE_CLASS + "_" + SubstationDiagramStyles.escapeClassName(node.getGraph().getVoltageLevel().getId()));
 
         g.appendChild(line);
 
@@ -447,12 +489,16 @@ public class SVGWriter {
                 + (layoutParameters.getTranslateY() + node.getY()) + ")");
     }
 
-    private void drawLabel(String str, boolean rotated, int xShift, int yShift, Element g) {
+    /*
+     * Drawing the voltageLevel graph busbar section names and feeder names
+     */
+    private void drawLabel(String str, boolean rotated, double xShift, double yShift, Element g,
+                           int fontSize) {
         Element label = g.getOwnerDocument().createElement("text");
-        label.setAttribute("x", Integer.toString(xShift));
-        label.setAttribute("y", Integer.toString(yShift));
+        label.setAttribute("x", String.valueOf(xShift));
+        label.setAttribute("y", String.valueOf(yShift));
         label.setAttribute("font-family", FONT_FAMILY);
-        label.setAttribute("font-size", Integer.toString(FONT_SIZE));
+        label.setAttribute("font-size", Integer.toString(fontSize));
         label.setAttribute(CLASS, SubstationDiagramStyles.LABEL_STYLE_CLASS);
         Text text = g.getOwnerDocument().createTextNode(str);
         label.setAttribute(TRANSFORM, "rotate(" + (rotated ? -90 : 0) + "," + 0 + "," + 0 + ")");
@@ -506,8 +552,8 @@ public class SVGWriter {
 
         if (!node.isRotated()) {
             g.setAttribute(TRANSFORM,
-                           TRANSLATE + "(" + (layoutParameters.getTranslateX() + node.getX() - componentSize.getWidth() / 2) + ","
-                                   + (layoutParameters.getTranslateY() + node.getY() - componentSize.getHeight() / 2) + ")");
+                    TRANSLATE + "(" + (layoutParameters.getTranslateX() + node.getX() - componentSize.getWidth() / 2) + ","
+                            + (layoutParameters.getTranslateY() + node.getY() - componentSize.getHeight() / 2) + ")");
             return;
         }
 
@@ -527,10 +573,10 @@ public class SVGWriter {
         double f1 = layoutParameters.getTranslateY() - cdx * sinRo - cdy * cosRo + node.getY();
 
         g.setAttribute(TRANSFORM,
-                       "matrix(" + Precision.round(cosRo, precision) + "," + Precision.round(sinRo, precision)
-                               + "," + Precision.round(-sinRo, precision) + "," + Precision.round(cosRo,
-                                                                                                  precision) + ","
-                               + Precision.round(e1, precision) + "," + Precision.round(f1, precision) + ")");
+                "matrix(" + Precision.round(cosRo, precision) + "," + Precision.round(sinRo, precision)
+                        + "," + Precision.round(-sinRo, precision) + "," + Precision.round(cosRo,
+                        precision) + ","
+                        + Precision.round(e1, precision) + "," + Precision.round(f1, precision) + ")");
     }
 
     private void transformArrow(List<Double> points, ComponentSize componentSize, double shift, Element g) {
@@ -598,7 +644,7 @@ public class SVGWriter {
             insertComponentSVGIntoDocumentSVG(arr, g1);
         }
         if (init.getLabel1().isPresent()) {
-            drawLabel(init.getLabel1().get(), false, shX, shY, g1);
+            drawLabel(init.getLabel1().get(), false, shX, shY, g1, FONT_SIZE);
         }
         if (init.getArrowDirection1().isPresent()) {
             try {
@@ -619,7 +665,7 @@ public class SVGWriter {
             insertComponentSVGIntoDocumentSVG(arr, g2);
         }
         if (init.getLabel2().isPresent()) {
-            drawLabel(init.getLabel2().get(), false, shX, shY, g2);
+            drawLabel(init.getLabel2().get(), false, shX, shY, g2, FONT_SIZE);
         }
         if (init.getArrowDirection2().isPresent()) {
             try {
@@ -629,10 +675,10 @@ public class SVGWriter {
             }
         }
         if (init.getLabel3().isPresent()) {
-            drawLabel(init.getLabel3().get(), false, -(init.getLabel3().get().length() * FONT_SIZE / 2 + LABEL_OFFSET), shY, g1);
+            drawLabel(init.getLabel3().get(), false, -(init.getLabel3().get().length() * FONT_SIZE / 2 + LABEL_OFFSET), shY, g1, FONT_SIZE);
         }
         if (init.getLabel4().isPresent()) {
-            drawLabel(init.getLabel4().get(), false, -(init.getLabel4().get().length() * FONT_SIZE / 2 + LABEL_OFFSET), shY, g2);
+            drawLabel(init.getLabel4().get(), false, -(init.getLabel4().get().length() * FONT_SIZE / 2 + LABEL_OFFSET), shY, g2, FONT_SIZE);
         }
 
         root.appendChild(g2);
@@ -640,7 +686,7 @@ public class SVGWriter {
     }
 
     /*
-     * Drawing the graph edges
+     * Drawing the voltageLevel graph edges
      */
     private void drawEdges(Element root, Graph graph, GraphMetadata metadata, AnchorPointProvider anchorPointProvider, SubstationDiagramInitialValueProvider initProvider) {
         String vId = graph.getVoltageLevel().getId();
@@ -650,12 +696,11 @@ public class SVGWriter {
             Element g = root.getOwnerDocument().createElement("polyline");
             g.setAttribute("id", wireId);
 
-            WireConnection anchorPoints = WireConnection.searchBetterAnchorPoints(anchorPointProvider, edge.getNode1(),
-                                                                                  edge.getNode2());
+            WireConnection anchorPoints = WireConnection.searchBetterAnchorPoints(anchorPointProvider, edge.getNode1(), edge.getNode2());
 
             // Determine points of the polyline
-            List<Double> pol = calculatePolylinePoints(edge, anchorPoints.getAnchorPoint1(),
-                                                       anchorPoints.getAnchorPoint2());
+            List<Double> pol = anchorPoints.calculatePolylinePoints(edge.getNode1(), edge.getNode2(),
+                                                                    layoutParameters.isDrawStraightWires());
 
             StringBuilder polPoints = new StringBuilder();
             for (int i = 0; i < pol.size(); i++) {
@@ -676,14 +721,15 @@ public class SVGWriter {
             }
 
             g.setAttribute("points", polPoints.toString());
-            g.setAttribute(CLASS, SubstationDiagramStyles.WIRE_STYLE_CLASS);
+            g.setAttribute(CLASS, SubstationDiagramStyles.WIRE_STYLE_CLASS + "_" + SubstationDiagramStyles.escapeClassName(vId));
             root.appendChild(g);
 
             try {
                 metadata.addWireMetadata(new GraphMetadata.WireMetadata(wireId,
                         URLEncoder.encode(edge.getNode1().getId(), StandardCharsets.UTF_8.name()),
-                        URLEncoder.encode(edge.getNode2().getId(), StandardCharsets.UTF_8.name())));
-
+                        URLEncoder.encode(edge.getNode2().getId(), StandardCharsets.UTF_8.name()),
+                        layoutParameters.isDrawStraightWires(),
+                        false));
             } catch (UnsupportedEncodingException e) {
                 throw new UncheckedIOException(e);
             }
@@ -706,9 +752,18 @@ public class SVGWriter {
     }
 
     /*
-     * Drawing the substation graph edges
+     * Drawing the substation graph edges (snakelines between voltageLevel diagram)
      */
-    private void drawEdges(Element root, SubstationGraph graph, GraphMetadata metadata, AnchorPointProvider anchorPointProvider,  SubstationDiagramInitialValueProvider initProvider) {
+    private void drawSnakeLines(Element root, SubstationGraph graph, GraphMetadata metadata,
+                                SubstationLayout sLayout) {
+
+        Map<BusCell.Direction, Integer> nbSnakeLinesTopBottom = EnumSet.allOf(BusCell.Direction.class).stream().collect(Collectors.toMap(Function.identity(), v -> 0));
+        Map<String, Integer> nbSnakeLinesBetween = graph.getNodes().stream().collect(Collectors.toMap(g -> g.getVoltageLevel().getId(), v -> 0));
+
+        Map<Side, Integer> nbSnakeLinesLeftRight = EnumSet.allOf(Side.class).stream().collect(Collectors.toMap(Function.identity(), v -> 0));
+        Map<String, Integer> nbSnakeLinesBottomVL = graph.getNodes().stream().collect(Collectors.toMap(g -> g.getVoltageLevel().getId(), v -> 0));
+        Map<String, Integer> nbSnakeLinesTopVL = graph.getNodes().stream().collect(Collectors.toMap(g -> g.getVoltageLevel().getId(), v -> 0));
+
         for (Edge edge : graph.getEdges()) {
             String vId1 = edge.getNode1().getGraph().getVoltageLevel().getId();
             String vId2 = edge.getNode2().getGraph().getVoltageLevel().getId();
@@ -717,11 +772,14 @@ public class SVGWriter {
             Element g = root.getOwnerDocument().createElement("polyline");
             g.setAttribute("id", wireId);
 
-            WireConnection anchorPoints = WireConnection.searchBetterAnchorPoints(anchorPointProvider, edge.getNode1(), edge.getNode2());
-
-            // Determine points of the polyline
-            List<Double> pol = calculatePolylinePoints(edge, anchorPoints.getAnchorPoint1(),
-                    anchorPoints.getAnchorPoint2());
+            // Determine points of the snakeLine
+            List<Double> pol = sLayout.calculatePolylineSnakeLine(layoutParameters,
+                    edge,
+                    nbSnakeLinesTopBottom,
+                    nbSnakeLinesLeftRight,
+                    nbSnakeLinesBetween,
+                    nbSnakeLinesBottomVL,
+                    nbSnakeLinesTopVL);
 
             StringBuilder polPoints = new StringBuilder();
             for (int i = 0; i < pol.size(); i++) {
@@ -742,13 +800,22 @@ public class SVGWriter {
             }
 
             g.setAttribute("points", polPoints.toString());
-            g.setAttribute(CLASS, SubstationDiagramStyles.WIRE_STYLE_CLASS);
+            String vId;
+            if (edge.getNode1().getGraph().getVoltageLevel().getNominalV() > edge.getNode2().getGraph().getVoltageLevel().getNominalV()) {
+                vId = vId1;
+            } else {
+                vId = vId2;
+            }
+
+            g.setAttribute(CLASS, SubstationDiagramStyles.WIRE_STYLE_CLASS + "_" + SubstationDiagramStyles.escapeClassName(vId));
             root.appendChild(g);
 
             try {
                 metadata.addWireMetadata(new GraphMetadata.WireMetadata(wireId,
-                    URLEncoder.encode(edge.getNode1().getId(), StandardCharsets.UTF_8.name()),
-                    URLEncoder.encode(edge.getNode2().getId(), StandardCharsets.UTF_8.name())));
+                        URLEncoder.encode(edge.getNode1().getId(), StandardCharsets.UTF_8.name()),
+                        URLEncoder.encode(edge.getNode2().getId(), StandardCharsets.UTF_8.name()),
+                        layoutParameters.isDrawStraightWires(),
+                        true));
             } catch (UnsupportedEncodingException e) {
                 throw new UncheckedIOException(e);
             }
@@ -760,56 +827,7 @@ public class SVGWriter {
                                                                     componentLibrary.getSize(ComponentType.ARROW)));
             }
 
-            if (edge.getNode1() instanceof FeederNode) {
-                if (!(edge.getNode2() instanceof FeederNode)) {
-                    insertArrowsAndLabels(wireId, pol, root, edge.getNode1(), metadata, initProvider);
-                }
-            } else if  (edge.getNode2() instanceof FeederNode) {
-                insertArrowsAndLabels(wireId, pol, root, edge.getNode2(), metadata, initProvider);
-            }
         }
     }
 
-    private List<Double> calculatePolylinePoints(Edge edge, AnchorPoint anchorPoint1, AnchorPoint anchorPoint2) {
-        double x1 = edge.getNode1().getX() + anchorPoint1.getX();
-        double y1 = edge.getNode1().getY() + anchorPoint1.getY();
-        double x2 = edge.getNode2().getX() + anchorPoint2.getX();
-        double y2 = edge.getNode2().getY() + anchorPoint2.getY();
-
-        if (x1 == x2 || y1 == y2) {
-            return Arrays.asList(x1, y1, x2, y2);
-        }
-        List<Double> pol = new ArrayList<>();
-        switch (anchorPoint1.getOrientation()) {
-            case VERTICAL:
-                if (anchorPoint2.getOrientation() == AnchorOrientation.VERTICAL) {
-                    double mid = (y1 + y2) / 2;
-                    pol.addAll(Arrays.asList(x1, y1, x1, mid, x2, mid, x2, y2));
-                } else {
-                    pol.addAll(Arrays.asList(x1, y1, x1, y2, x2, y2));
-                }
-                break;
-            case HORIZONTAL:
-                if (anchorPoint2.getOrientation() == AnchorOrientation.HORIZONTAL) {
-                    double mid = (x1 + x2) / 2;
-                    pol.addAll(Arrays.asList(x1, y1, mid, y1, mid, y2, x2, y2));
-                } else {
-                    pol.addAll(Arrays.asList(x1, y1, x2, y1, x2, y2));
-                    //pol.addAll(Arrays.asList(x2, y2, x2, y1, x1, y1));
-                }
-                break;
-            case NONE:
-                // Case none-none is not handled, it never happens (even if it happen it will execute another case)
-                if (anchorPoint2.getOrientation() == AnchorOrientation.HORIZONTAL) {
-                    pol.addAll(Arrays.asList(x1, y1, x1, y2, x2, y2));
-                } else {
-                    //pol.addAll(Arrays.asList(x2, y2, x2, y1, x1, y1));
-                    pol.addAll(Arrays.asList(x1, y1, x2, y1, x2, y2));
-                }
-                break;
-            default:
-                break;
-        }
-        return pol;
-    }
 }

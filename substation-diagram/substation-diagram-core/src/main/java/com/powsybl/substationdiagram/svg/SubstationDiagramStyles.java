@@ -6,7 +6,10 @@
  */
 package com.powsybl.substationdiagram.svg;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -24,7 +27,18 @@ public final class SubstationDiagramStyles {
 
     public static String escapeClassName(String input) {
         Objects.requireNonNull(input);
-        String temp = Character.isDigit(input.charAt(0)) ? "d" + input : input;
-        return temp.replaceAll("\\+", "-").replaceAll("\\.", "_");
+        String temp = input;
+        // class name length should be at least 2
+        if (temp.length() < 2) {
+            temp = StringUtils.leftPad(temp, 2, "_");
+        }
+        // class name cannot start with a digit
+        temp = Character.isDigit(temp.charAt(0)) ? "d" + temp : temp;
+        // class name cannot begin with two hyphens or a hyphen followed by a digit
+        if (temp.startsWith("--") || (temp.charAt(0) == '-' && Character.isDigit(temp.charAt(1)))) {
+            temp = "d" + temp;
+        }
+        // Substitution of all non authorized characters
+        return Pattern.compile("[^\\_\\-a-zA-Z0-9][^\\_\\-a-zA-Z0-9]*", 32).matcher(temp).replaceAll("_");
     }
 }

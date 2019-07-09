@@ -1,0 +1,32 @@
+/**
+ * Copyright (c) 2019, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+package com.powsybl.loadflow.simple.dc.equations;
+
+import com.powsybl.loadflow.simple.equations.VariableUpdate;
+import com.powsybl.loadflow.simple.network.LfBranch;
+
+import java.util.Objects;
+
+/**
+ * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
+ */
+public class OpenBranchSide2DcFlowUpdate implements VariableUpdate {
+
+    private final LfBranch branch;
+
+    public OpenBranchSide2DcFlowUpdate(LfBranch branch) {
+        this.branch = Objects.requireNonNull(branch);
+    }
+
+    @Override
+    public void update() {
+        branch.setP1(0);
+        branch.setQ1(Double.NaN);
+        branch.setP2(Double.NaN);
+        branch.setQ2(Double.NaN);
+    }
+}

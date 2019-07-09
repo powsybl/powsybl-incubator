@@ -6,9 +6,11 @@
  */
 package com.powsybl.substationdiagram.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
+
+import java.io.IOException;
+import java.util.Objects;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
@@ -17,39 +19,30 @@ import com.powsybl.substationdiagram.layout.LayoutParameters;
  */
 public abstract class AbstractBlock implements Block {
 
-    protected Type type;
+    protected final Type type;
 
-    @JsonIgnore
     private int cardinalityStart;
-    @JsonIgnore
+
     private int cardinalityEnd;
-    @JsonBackReference
+
     private Block parentBlock;
-    @JsonIgnore
+
     private BusNode busNode;
 
-    @JsonIgnore
     private Cell cell;
 
     private Position position;
+
     private Coord coord;
 
     /**
      * Constructor for primary layout.block with the list of nodes corresponding to the
      * layout.block
      */
-    AbstractBlock() {
+    AbstractBlock(Type type) {
+        this.type = Objects.requireNonNull(type);
         position = new Position(-1, -1);
         coord = new Coord(-1, -1);
-        this.parentBlock = null;
-        this.busNode = null;
-    }
-
-    AbstractBlock(Cell cell) {
-        this();
-        if (cell != null) {
-            setCell(cell);
-        }
     }
 
     @Override
@@ -123,8 +116,7 @@ public abstract class AbstractBlock implements Block {
     @Override
     public void setCell(Cell cell) {
         this.cell = cell;
-        if (cell.getType() == Cell.CellType.INTERNBOUND
-                || cell.getType() == Cell.CellType.SHUNT) {
+        if (cell.getType() == Cell.CellType.SHUNT) {
             setOrientation(Orientation.HORIZONTAL);
         } else {
             setOrientation(Orientation.VERTICAL);
@@ -141,6 +133,7 @@ public abstract class AbstractBlock implements Block {
         getPosition().setOrientation(orientation);
     }
 
+    @Override
     public Coord getCoord() {
         return coord;
     }
@@ -184,9 +177,9 @@ public abstract class AbstractBlock implements Block {
     private void calculateRootCoord(LayoutParameters layoutParam) {
         double dyToBus = 0;
         coord.setXSpan((double) position.getHSpan() * layoutParam.getCellWidth());
-        if (cell.getType() == Cell.CellType.INTERN || cell.getType() == Cell.CellType.INTERNBOUND) {
+        if (cell.getType() == Cell.CellType.INTERN) {
             coord.setYSpan(0);
-            if (cell.getDirection() != Cell.Direction.FLAT) {
+            if (((InternCell) cell).getDirection() != BusCell.Direction.FLAT) {
                 dyToBus = layoutParam.getInternCellHeight() * position.getV();
             }
         } else {
@@ -195,18 +188,18 @@ public abstract class AbstractBlock implements Block {
         }
 
         coord.setX(layoutParam.getInitialXBus()
-                           + layoutParam.getCellWidth() * position.getH()
-                           + coord.getXSpan() / 2);
+                + layoutParam.getCellWidth() * position.getH()
+                + coord.getXSpan() / 2);
 
-        switch (cell.getDirection()) {
+        switch (((BusCell) cell).getDirection()) {
             case BOTTOM:
                 coord.setY(layoutParam.getInitialYBus()
-                                   + (cell.getMaxBusPosition().getV() - 1) * layoutParam.getVerticalSpaceBus()
-                                   + dyToBus);
+                        + (((BusCell) cell).getMaxBusPosition().getV() - 1) * layoutParam.getVerticalSpaceBus()
+                        + dyToBus);
                 break;
             case TOP:
                 coord.setY(layoutParam.getInitialYBus()
-                                   - dyToBus);
+                        - dyToBus);
                 break;
             case FLAT:
                 coord.setY(
@@ -219,5 +212,15 @@ public abstract class AbstractBlock implements Block {
     @Override
     public Block.Type getType() {
         return this.type;
+    }
+
+    protected abstract void writeJsonContent(JsonGenerator generator) throws IOException;
+
+    @Override
+    public void writeJson(JsonGenerator generator) throws IOException {
+        generator.writeStartObject();
+        generator.writeStringField("type", type.name());
+        writeJsonContent(generator);
+        generator.writeEndObject();
     }
 }

@@ -6,17 +6,6 @@
  */
 package com.powsybl.substationdiagram;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.io.Writer;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Objects;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.Substation;
 import com.powsybl.substationdiagram.layout.HorizontalSubstationLayoutFactory;
@@ -32,6 +21,16 @@ import com.powsybl.substationdiagram.svg.GraphMetadata;
 import com.powsybl.substationdiagram.svg.SVGWriter;
 import com.powsybl.substationdiagram.svg.SubstationDiagramInitialValueProvider;
 import com.powsybl.substationdiagram.svg.SubstationDiagramStyleProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Objects;
 
 /**
  * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
@@ -81,30 +80,24 @@ public final class SubstationDiagram {
         }
 
         try (Writer svgWriter = Files.newBufferedWriter(svgFile, StandardCharsets.UTF_8);
-             Writer metadataWriter = Files.newBufferedWriter(dir.resolve(svgFileName.replace(".svg", "_metadata.json")), StandardCharsets.UTF_8);
-             Writer graphWriter = debug ? Files.newBufferedWriter(dir.resolve(svgFileName.replace(".svg", "_graph.json")), StandardCharsets.UTF_8) : null) {
-            writeSvg(componentLibrary, layoutParameters, svgWriter, metadataWriter, graphWriter, network);
+                Writer metadataWriter = Files.newBufferedWriter(dir.resolve(svgFileName.replace(".svg", "_metadata.json")), StandardCharsets.UTF_8)) {
+            writeSvg(componentLibrary, layoutParameters, svgWriter, metadataWriter, network);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }
 
     public void writeSvg(ComponentLibrary componentLibrary, LayoutParameters layoutParameters,
-                         Writer svgWriter, Writer metadataWriter, Writer graphWriter, Network network) {
-        writeSvg(componentLibrary, layoutParameters, new DefaultSubstationDiagramInitialValueProvider(network), new DefaultSubstationDiagramStyleProvider(), svgWriter, metadataWriter, graphWriter);
+                         Writer svgWriter, Writer metadataWriter, Network network) {
+        writeSvg(componentLibrary, layoutParameters, new DefaultSubstationDiagramInitialValueProvider(network), new DefaultSubstationDiagramStyleProvider(), svgWriter, metadataWriter);
     }
 
     public void writeSvg(ComponentLibrary componentLibrary, LayoutParameters layoutParameters, SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider,
-                         Writer svgWriter, Writer metadataWriter, Writer graphWriter) {
+                         Writer svgWriter, Writer metadataWriter) {
         Objects.requireNonNull(componentLibrary);
         Objects.requireNonNull(layoutParameters);
         Objects.requireNonNull(svgWriter);
         Objects.requireNonNull(metadataWriter);
-
-        // write graph debug file
-        if (graphWriter != null) {
-            graph.whenSerializingUsingJsonAnyGetterThenCorrect(graphWriter);
-        }
 
         // write SVG file
         LOGGER.info("Writing SVG and JSON metadata files...");

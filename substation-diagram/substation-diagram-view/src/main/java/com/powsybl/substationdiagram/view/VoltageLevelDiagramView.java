@@ -6,27 +6,10 @@
  */
 package com.powsybl.substationdiagram.view;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UncheckedIOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.powsybl.commons.PowsyblException;
-import com.powsybl.substationdiagram.library.ComponentType;
-import com.powsybl.substationdiagram.svg.GraphMetadata;
-
-import afester.javafx.svg.SvgLoader;
 import javafx.scene.Group;
-import javafx.scene.Node;
-import javafx.scene.input.MouseButton;
-import javafx.scene.shape.Polyline;
+
+import java.io.InputStream;
+import java.util.Objects;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
@@ -137,33 +120,8 @@ public final class VoltageLevelDiagramView extends AbstractContainerDiagramView 
         Objects.requireNonNull(svgInputStream);
         Objects.requireNonNull(metadataInputStream);
 
-        // convert svg file to JavaFX components
-        Group svgImage = new SvgLoader().loadSvg(svgInputStream);
-        System.out.println("LOAD VL");
-
-        // load metadata
-        GraphMetadata metadata = GraphMetadata.parseJson(metadataInputStream);
-
-        // install node and wire handlers to allow diagram edition
-        installHandlers(svgImage, metadata);
+        Group svgImage = loadSvgAndMetadata(svgInputStream, metadataInputStream);
 
         return new VoltageLevelDiagramView(svgImage);
-    }
-
-    public static VoltageLevelDiagramView load(Path svgFile) {
-        Objects.requireNonNull(svgFile);
-
-        Path dir = svgFile.toAbsolutePath().getParent();
-        String svgFileName = svgFile.getFileName().toString();
-        Path metadataFile = dir.resolve(svgFileName.replace(".svg", "_metadata.json"));
-
-        LOGGER.info("Load substation diagram: {} and {}", svgFile.toAbsolutePath(), metadataFile);
-
-        try (InputStream svgInputStream = Files.newInputStream(svgFile);
-             InputStream metadataInputStream = Files.newInputStream(metadataFile)) {
-            return load(svgInputStream, metadataInputStream);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
     }
 }

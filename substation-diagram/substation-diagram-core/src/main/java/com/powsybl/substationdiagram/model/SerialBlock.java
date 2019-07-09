@@ -6,9 +6,13 @@
  */
 package com.powsybl.substationdiagram.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.google.common.collect.ImmutableList;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
@@ -17,12 +21,11 @@ import com.powsybl.substationdiagram.layout.LayoutParameters;
  */
 public class SerialBlock extends AbstractBlock {
 
-    @JsonManagedReference
     private Block lowerBlock;
-    @JsonManagedReference
+
     private Block upperBlock;
-    @JsonIgnore
-    private Block[] subBlocks;
+
+    private List<Block> subBlocks;
 
     private boolean isH2V = false;
 
@@ -50,7 +53,11 @@ public class SerialBlock extends AbstractBlock {
     public SerialBlock(Block block1,
                        Block block2,
                        Node commonNode) {
-        type = Type.SERIAL;
+        super(Type.SERIAL);
+        Objects.requireNonNull(block1);
+        Objects.requireNonNull(block2);
+        Objects.requireNonNull(commonNode);
+
         if (block1.isEmbedingNodeType(Node.NodeType.BUS) || block2.isEmbedingNodeType(Node.NodeType.FEEDER)) {
             upperBlock = block2;
             lowerBlock = block1;
@@ -62,9 +69,7 @@ public class SerialBlock extends AbstractBlock {
         upperBlock.getPosition().setHV(0, 1);
         lowerBlock.getPosition().setHV(0, 0);
 
-        subBlocks = new Block[2];
-        subBlocks[0] = this.lowerBlock;
-        subBlocks[1] = this.upperBlock;
+        subBlocks = ImmutableList.of(lowerBlock, upperBlock);
 
         for (Block child : subBlocks) {
             child.setParentBlock(this);
@@ -75,6 +80,11 @@ public class SerialBlock extends AbstractBlock {
         setCardinalityEnd(upperBlock.getCardinalityInverse(commonNode));
         upperBlock.defineExtremity(commonNode, Extremity.START);
         lowerBlock.defineExtremity(commonNode, Extremity.END);
+    }
+
+    @Override
+    public Graph getGraph() {
+        return lowerBlock.getGraph();
     }
 
     @Override
@@ -149,7 +159,7 @@ public class SerialBlock extends AbstractBlock {
     public void coordVerticalCase(LayoutParameters layoutParam) {
         double y0;
         double yPxStep;
-        int sign = getCell().getDirection() == Cell.Direction.TOP ? 1 : -1;
+        int sign = ((BusCell) getCell()).getDirection() == BusCell.Direction.TOP ? 1 : -1;
         y0 = getCoord().getY() + sign * getCoord().getYSpan() / 2;
         yPxStep = -sign * getCoord().getYSpan() / getPosition().getVSpan();
 
@@ -173,11 +183,26 @@ public class SerialBlock extends AbstractBlock {
 
         for (Block sub : subBlocks) {
             sub.setX(x0 + (sub.getPosition().getH() + (double) sub.getPosition().getHSpan() / 2) * xPxStep
-                             + ((sub == upperBlock) ? xTranslateInternalNonFlatCell : 0));
+                    + ((sub == upperBlock) ? xTranslateInternalNonFlatCell : 0));
             sub.setXSpan(sub.getPosition().getHSpan() * xPxStep);
             sub.setY(getCoord().getY());
             sub.setYSpan(getCoord().getYSpan());
             sub.calculateCoord(layoutParam);
         }
+    }
+
+    @Override
+    protected void writeJsonContent(JsonGenerator generator) throws IOException {
+        generator.writeFieldName("blocks");
+        generator.writeStartArray();
+        for (Block subBlock : subBlocks) {
+            subBlock.writeJson(generator);
+        }
+        generator.writeEndArray();
+    }
+
+    @Override
+    public String toString() {
+        return "SerialBlock(subBlocks=" + subBlocks + ")";
     }
 }

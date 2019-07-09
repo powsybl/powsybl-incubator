@@ -15,10 +15,14 @@ import java.nio.charset.StandardCharsets;
 
 import com.google.common.io.ByteStreams;
 import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.network.Substation;
 import com.powsybl.iidm.network.VoltageLevel;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
+import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayoutFactory;
+import com.powsybl.substationdiagram.layout.SubstationLayoutFactory;
 import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
 import com.powsybl.substationdiagram.model.Graph;
+import com.powsybl.substationdiagram.model.SubstationGraph;
 import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramInitialValueProvider;
 import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramStyleProvider;
 import com.powsybl.substationdiagram.svg.SVGWriter;
@@ -34,10 +38,11 @@ public abstract class AbstractTestCase {
     protected Network network;
 
     protected VoltageLevel vl;
+    protected Substation substation;
 
-    private final ResourcesComponentLibrary componentLibrary = new ResourcesComponentLibrary("/ConvergenceLibrary");
+    protected final ResourcesComponentLibrary componentLibrary = new ResourcesComponentLibrary("/ConvergenceLibrary");
 
-    private final SubstationDiagramStyleProvider styleProvider = new DefaultSubstationDiagramStyleProvider();
+    protected final SubstationDiagramStyleProvider styleProvider = new DefaultSubstationDiagramStyleProvider();
 
     private static String normalizeLineSeparator(String str) {
         return str.replace("\r\n", "\n")
@@ -58,11 +63,39 @@ public abstract class AbstractTestCase {
         return vl;
     }
 
+    Substation getSubstation() {
+        return substation;
+    }
+
     public void compareSvg(Graph graph, LayoutParameters layoutParameters, String refSvgName) {
         try (StringWriter writer = new StringWriter()) {
             new SVGWriter(componentLibrary, layoutParameters)
                     .write(graph, new DefaultSubstationDiagramInitialValueProvider(network), styleProvider, writer);
             writer.flush();
+
+//            FileWriter fw = new FileWriter(System.getProperty("user.home") + refSvgName);
+//            fw.write(writer.toString());
+//            fw.close();
+
+            String refSvg = normalizeLineSeparator(new String(ByteStreams.toByteArray(getClass().getResourceAsStream(refSvgName)), StandardCharsets.UTF_8));
+            String svg = normalizeLineSeparator(writer.toString());
+            assertEquals(refSvg, svg);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    public void compareSvg(SubstationGraph graph, LayoutParameters layoutParameters,
+                           String refSvgName, SubstationLayoutFactory sLayoutFactory) {
+        try (StringWriter writer = new StringWriter()) {
+            new SVGWriter(componentLibrary, layoutParameters)
+                    .write(graph, new DefaultSubstationDiagramInitialValueProvider(network), styleProvider, writer, sLayoutFactory,
+                           new PositionVoltageLevelLayoutFactory());
+            writer.flush();
+
+//            FileWriter fw = new FileWriter(System.getProperty("user.home") + refSvgName);
+//            fw.write(writer.toString());
+//            fw.close();
 
             String refSvg = normalizeLineSeparator(new String(ByteStreams.toByteArray(getClass().getResourceAsStream(refSvgName)), StandardCharsets.UTF_8));
             String svg = normalizeLineSeparator(writer.toString());

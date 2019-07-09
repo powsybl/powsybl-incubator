@@ -34,7 +34,7 @@
         </dependency>
         <dependency>
             <groupId>com.powsybl</groupId>
-            <artifactId>powsybl-substation-diagram-cgmes</artifactId>
+            <artifactId>powsybl-substation-diagram-util</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -51,11 +51,6 @@
         <dependency>
             <groupId>com.powsybl</groupId>
             <artifactId>powsybl-cgmes-conversion</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.powsybl</groupId>
-            <artifactId>powsybl-cgmes-dl-conversion</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>

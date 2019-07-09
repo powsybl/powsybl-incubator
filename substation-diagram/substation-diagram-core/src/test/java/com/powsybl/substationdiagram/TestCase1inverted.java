@@ -97,13 +97,12 @@ public class TestCase1inverted extends AbstractTestCase {
         Cell cell = g.getCells().iterator().next();
         assertEquals(Cell.CellType.EXTERN, cell.getType());
         assertEquals(5, cell.getNodes().size());
-        assertTrue(cell.getPrimaryBlocksConnectedToBus().isEmpty());
-        assertEquals(1, cell.getBusNodes().size());
-        assertEquals("bbs", cell.getBusNodes().get(0).getId());
+        assertTrue(((BusCell) cell).getPrimaryBlocksConnectedToBus().isEmpty());
+        assertEquals(1, ((BusCell) cell).getBusNodes().size());
+        assertEquals("bbs", ((BusCell) cell).getBusNodes().get(0).getId());
         assertNull(cell.getRootBlock());
-        assertTrue(cell.getCellBridgingWith().isEmpty());
         assertEquals("EXTERN[FICT_vl_dFictif, b, bbs, d, l]", cell.getFullId());
-        assertEquals(new Position(0, 0), cell.getMaxBusPosition());
+        assertEquals(new Position(0, 0), ((BusCell) cell).getMaxBusPosition());
 
         // build blocks
         assertTrue(new BlockOrganizer().organize(g));
@@ -115,7 +114,7 @@ public class TestCase1inverted extends AbstractTestCase {
         assertEquals(new Position(0, 0, 1, 2, false, Orientation.VERTICAL), bc.getPosition());
         assertEquals("bbs", bc.getStartingNode().getId());
         assertEquals("l", bc.getEndingNode().getId());
-        assertEquals(1, cell.getPrimaryBlocksConnectedToBus().size());
+        assertEquals(1, ((BusCell) cell).getPrimaryBlocksConnectedToBus().size());
 
         assertTrue(bc.getUpperBlock() instanceof PrimaryBlock);
         PrimaryBlock ub = (PrimaryBlock) bc.getUpperBlock();
@@ -132,10 +131,22 @@ public class TestCase1inverted extends AbstractTestCase {
         assertTrue(lb.getStackableBlocks().isEmpty());
 
         // calculate coordinates
-        LayoutParameters layoutParameters = new LayoutParameters(20, 50, 0, 260,
-                                                                 25, 20,
-                                                                 50, 250, 40,
-                                                                 30, true, true, 1, 50, 50);
+        LayoutParameters layoutParameters = new LayoutParameters()
+                .setTranslateX(20)
+                .setTranslateY(50)
+                .setInitialXBus(0)
+                .setInitialYBus(260)
+                .setVerticalSpaceBus(25)
+                .setHorizontalBusPadding(20)
+                .setCellWidth(50)
+                .setExternCellHeight(250)
+                .setInternCellHeight(40)
+                .setStackHeight(30)
+                .setShowGrid(true)
+                .setShowInternalNodes(true)
+                .setScaleFactor(1)
+                .setHorizontalSubstationPadding(50)
+                .setVerticalSubstationPadding(50);
 
         new PositionVoltageLevelLayout(g).run(layoutParameters);
 

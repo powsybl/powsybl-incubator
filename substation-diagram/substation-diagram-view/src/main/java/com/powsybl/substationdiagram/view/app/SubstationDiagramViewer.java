@@ -211,12 +211,13 @@ public class SubstationDiagramViewer extends Application {
                 SubstationDiagramStyleProvider styleProvider = styles.get(styleComboBox.getSelectionModel().getSelectedItem());
 
                 String dName = getSelectedDiagramName();
+                LayoutParameters diagramLayoutParameters = new LayoutParameters(layoutParameters.get()).setDiagramName(dName);
                 if (c.getContainerType() == ContainerType.VOLTAGE_LEVEL) {
                     VoltageLevelDiagram diagram = VoltageLevelDiagram.build((VoltageLevel) c, getVoltageLevelLayoutFactory(), showNames.isSelected());
-                    diagram.writeSvg(getComponentLibrary(), new LayoutParameters(layoutParameters.get()).setDiagramName(dName), styleProvider, svgWriter, metadataWriter, null);
+                    diagram.writeSvg(getComponentLibrary(), diagramLayoutParameters, styleProvider, svgWriter, metadataWriter);
                 } else if (c.getContainerType() == ContainerType.SUBSTATION) {
                     SubstationDiagram diagram = SubstationDiagram.build((Substation) c, getSubstationLayoutFactory(), getVoltageLevelLayoutFactory(), showNames.isSelected());
-                    diagram.writeSvg(getComponentLibrary(), new LayoutParameters(layoutParameters.get()).setDiagramName(dName), styleProvider, svgWriter, metadataWriter, null);
+                    diagram.writeSvg(getComponentLibrary(), diagramLayoutParameters, styleProvider, svgWriter, metadataWriter);
                 }
 
                 svgWriter.flush();
@@ -501,9 +502,9 @@ public class SubstationDiagramViewer extends Application {
         });
         rowIndex += 1;
 
-        addSpinner("Horizontal substation padding:", 0, 200, 5, rowIndex, LayoutParameters::getHorizontalSubstationPadding, LayoutParameters::setHorizontalSubstationPadding);
+        addSpinner("Horizontal substation padding:", 50, 300, 5, rowIndex, LayoutParameters::getHorizontalSubstationPadding, LayoutParameters::setHorizontalSubstationPadding);
         rowIndex += 2;
-        addSpinner("Vertical substation padding:", 0, 200, 5, rowIndex, LayoutParameters::getVerticalSubstationPadding, LayoutParameters::setVerticalSubstationPadding);
+        addSpinner("Vertical substation padding:", 50, 300, 5, rowIndex, LayoutParameters::getVerticalSubstationPadding, LayoutParameters::setVerticalSubstationPadding);
         rowIndex += 2;
         addSpinner("Initial busbar X:", 0, 100, 5, rowIndex, LayoutParameters::getInitialXBus, LayoutParameters::setInitialXBus);
         rowIndex += 2;
@@ -524,6 +525,8 @@ public class SubstationDiagramViewer extends Application {
         addCheckBox("Show grid", rowIndex, LayoutParameters::isShowGrid, LayoutParameters::setShowGrid);
         rowIndex += 1;
         addCheckBox("Show internal nodes", rowIndex, LayoutParameters::isShowInternalNodes, LayoutParameters::setShowInternalNodes);
+        rowIndex += 1;
+        addCheckBox("Draw straight wires", rowIndex, LayoutParameters::isDrawStraightWires, LayoutParameters::setDrawStraightWires);
         rowIndex += 1;
         addPositionLayoutCheckBox("Stack feeders", rowIndex, PositionVoltageLevelLayoutFactory::isFeederStacked, PositionVoltageLevelLayoutFactory::setFeederStacked);
         rowIndex += 1;

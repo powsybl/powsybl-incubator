@@ -10,8 +10,8 @@ import com.powsybl.computation.ComputationManager;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowFactory;
-import com.powsybl.math.matrix.DenseMatrixFactory;
 import com.powsybl.math.matrix.MatrixFactory;
+import com.powsybl.math.matrix.SparseMatrixFactory;
 
 import java.util.Objects;
 
@@ -23,7 +23,7 @@ public class SimpleDcLoadFlowFactory implements LoadFlowFactory {
     private final MatrixFactory matrixFactory;
 
     public SimpleDcLoadFlowFactory() {
-        this(new DenseMatrixFactory());
+        this(new SparseMatrixFactory());
     }
 
     public SimpleDcLoadFlowFactory(MatrixFactory matrixFactory) {

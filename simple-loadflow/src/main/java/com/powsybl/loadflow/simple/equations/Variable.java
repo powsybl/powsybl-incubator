@@ -6,7 +6,7 @@
  */
 package com.powsybl.loadflow.simple.equations;
 
-import com.powsybl.loadflow.LoadFlowParameters;
+import com.powsybl.loadflow.LoadFlowParameters.VoltageInitMode;
 import com.powsybl.loadflow.simple.network.NetworkContext;
 
 import java.util.Objects;
@@ -17,21 +17,21 @@ import java.util.Objects;
 public class Variable implements Comparable<Variable> {
 
     /**
-     * Bus or any other equipment id.
+     * Bus or any other equipment num.
      */
-    private final String id;
+    private final int num;
 
     private final VariableType type;
 
     private int column = -1;
 
-    Variable(String id, VariableType type) {
-        this.id = Objects.requireNonNull(id);
+    Variable(int num, VariableType type) {
+        this.num = num;
         this.type = Objects.requireNonNull(type);
     }
 
-    public String getId() {
-        return id;
+    public int getNum() {
+        return num;
     }
 
     public VariableType getType() {
@@ -46,39 +46,20 @@ public class Variable implements Comparable<Variable> {
         this.column = column;
     }
 
-    void initState(LoadFlowParameters.VoltageInitMode mode, NetworkContext networkContext, double[] x) {
+    void initState(VoltageInitMode mode, NetworkContext networkContext, double[] x) {
         Objects.requireNonNull(mode);
         Objects.requireNonNull(networkContext);
         Objects.requireNonNull(x);
-        switch (type) {
-            case BUS_V:
-                switch (mode) {
-                    case UNIFORM_VALUES:
-                        x[column] = networkContext.getBus(id).getVoltageLevel().getNominalV();
-                        break;
-                    case PREVIOUS_VALUES:
-                        x[column] = networkContext.getBus(id).getV();
-                        break;
-                    default:
-                        throw new UnsupportedOperationException("Unsupported voltage init mode: " + mode);
-                }
-                break;
-
-            case BUS_PHI:
-                switch (mode) {
-                    case UNIFORM_VALUES:
-                        x[column] = 0;
-                        break;
-                    case PREVIOUS_VALUES:
-                        x[column] = Math.toRadians(networkContext.getBus(id).getAngle());
-                        break;
-                    default:
-                        throw new UnsupportedOperationException("Unsupported voltage init mode: " + mode);
-                }
-                break;
-
-            default:
-                throw new IllegalStateException("Unknown variable type "  + type);
+        if (type == VariableType.BUS_V && mode == VoltageInitMode.UNIFORM_VALUES) {
+            x[column] = 1;
+        } else if (type == VariableType.BUS_V && mode == VoltageInitMode.PREVIOUS_VALUES) {
+            x[column] = networkContext.getBus(num).getV();
+        } else if (type == VariableType.BUS_PHI && mode == VoltageInitMode.UNIFORM_VALUES) {
+            x[column] = 0;
+        } else if (type == VariableType.BUS_PHI && mode == VoltageInitMode.PREVIOUS_VALUES) {
+            x[column] = Math.toRadians(networkContext.getBus(num).getAngle());
+        } else {
+            throw new UnsupportedOperationException("Incorrect state variable initialization: type=" + type + " and mode=" + mode);
         }
     }
 
@@ -87,11 +68,11 @@ public class Variable implements Comparable<Variable> {
         Objects.requireNonNull(x);
         switch (type) {
             case BUS_V:
-                networkContext.getBus(id).setV(x[column]);
+                networkContext.getBus(num).setV(x[column]);
                 break;
 
             case BUS_PHI:
-                networkContext.getBus(id).setAngle(Math.toDegrees(x[column]));
+                networkContext.getBus(num).setAngle(Math.toDegrees(x[column]));
                 break;
 
             default:
@@ -101,7 +82,7 @@ public class Variable implements Comparable<Variable> {
 
     @Override
     public int hashCode() {
-        return id.hashCode() + type.hashCode() + column;
+        return num + type.hashCode();
     }
 
     @Override
@@ -120,18 +101,15 @@ public class Variable implements Comparable<Variable> {
         if (o == this) {
             return 0;
         }
-        int c = column - o.column;
+        int c = num - o.num;
         if (c == 0) {
-            c = id.compareTo(o.id);
-            if (c == 0) {
-                c = type.ordinal() - o.type.ordinal();
-            }
+            c = type.ordinal() - o.type.ordinal();
         }
         return c;
     }
 
     @Override
     public String toString() {
-        return "Variable(id=" + id + ", type=" + type + ", column=" + column + ")";
+        return "Variable(num=" + num + ", type=" + type + ", column=" + column + ")";
     }
 }

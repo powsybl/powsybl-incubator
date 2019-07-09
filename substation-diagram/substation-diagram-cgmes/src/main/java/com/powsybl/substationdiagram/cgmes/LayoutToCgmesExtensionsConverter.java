@@ -107,7 +107,7 @@ public class LayoutToCgmesExtensionsConverter {
              StringWriter metadataWriter = new StringWriter()) {
 
             //apply the specified layout and retrieve the computed graph
-            diagram.writeSvg(convergenceComponentLibrary, lparams, sProvider, svgWriter, metadataWriter, null);
+            diagram.writeSvg(convergenceComponentLibrary, lparams, sProvider, svgWriter, metadataWriter);
             SubstationGraph sgraph = diagram.getGraph();
 
             LayoutInfo subsBoundary = new LayoutInfo(0.0, 0.0);

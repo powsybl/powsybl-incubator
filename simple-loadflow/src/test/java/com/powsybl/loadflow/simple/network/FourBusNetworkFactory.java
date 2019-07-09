@@ -8,7 +8,6 @@ package com.powsybl.loadflow.simple.network;
 
 import com.powsybl.iidm.network.Bus;
 import com.powsybl.iidm.network.Network;
-import com.powsybl.iidm.network.NetworkFactory;
 
 /**
  * <p>4 bus test network:</p>
@@ -31,7 +30,7 @@ import com.powsybl.iidm.network.NetworkFactory;
 public class FourBusNetworkFactory extends AbstractLoadFlowNetworkFactory {
 
     public static Network create() {
-        Network network = NetworkFactory.create("test", "code");
+        Network network = Network.create("test", "code");
         Bus b1 = createBus(network, "b1");
         Bus b2 = createBus(network, "b2");
         Bus b3 = createBus(network, "b3");

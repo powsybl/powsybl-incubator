@@ -48,53 +48,55 @@ public class SimpleDcSecurityAnalysis extends AbstractSecurityAnalysis {
         Objects.requireNonNull(securityAnalysisParameters);
         Objects.requireNonNull(contingenciesProvider);
 
-        LoadFlowParameters loadFlowParameters = securityAnalysisParameters.getLoadFlowParameters();
+        return CompletableFuture.supplyAsync(() -> {
+            LoadFlowParameters loadFlowParameters = securityAnalysisParameters.getLoadFlowParameters();
 
-        LoadFlow loadFlow = new SimpleDcLoadFlow(network, matrixFactory);
+            LoadFlow loadFlow = new SimpleDcLoadFlow(network, matrixFactory);
 
-        // start post contingency LF from pre-contingency state variables
-        LoadFlowParameters postContParameters = loadFlowParameters.copy().setVoltageInitMode(LoadFlowParameters.VoltageInitMode.PREVIOUS_VALUES);
+            // start post contingency LF from pre-contingency state variables
+            LoadFlowParameters postContParameters = loadFlowParameters.copy().setVoltageInitMode(LoadFlowParameters.VoltageInitMode.PREVIOUS_VALUES);
 
-        LoadFlowResult loadFlowResult = loadFlow.run(workingStateId, loadFlowParameters).join();
-        network.getVariantManager().setWorkingVariant(workingStateId);
-        SecurityAnalysisResultBuilder resultBuilder = createResultBuilder(workingStateId);
+            LoadFlowResult loadFlowResult = loadFlow.run(workingStateId, loadFlowParameters).join();
+            network.getVariantManager().setWorkingVariant(workingStateId);
+            SecurityAnalysisResultBuilder resultBuilder = createResultBuilder(workingStateId);
 
-        if (!loadFlowResult.isOk()) {
+            if (!loadFlowResult.isOk()) {
+                resultBuilder.preContingency()
+                        .setComputationOk(false)
+                        .endPreContingency()
+                        .build();
+                return resultBuilder.build();
+            }
+
             resultBuilder.preContingency()
-                    .setComputationOk(false)
-                    .endPreContingency()
-                    .build();
-            return CompletableFuture.completedFuture(resultBuilder.build());
-        }
-
-        resultBuilder.preContingency()
-                .setComputationOk(true);
-        violationDetector.checkAll(network, resultBuilder::addViolation);
-        resultBuilder.endPreContingency();
-
-        List<Contingency> contingencies = contingenciesProvider.getContingencies(network);
-
-        String postContStateId = workingStateId + "_contingency";
-
-        for (Contingency contingency : contingencies) {
-
-            // run one loadflow per contingency
-            network.getVariantManager().cloneVariant(workingStateId, postContStateId);
-            network.getVariantManager().setWorkingVariant(postContStateId);
-
-            // apply the contingency on the network
-            contingency.toTask().modify(network, null);
-
-            LoadFlowResult contingencyResult = loadFlow.run(postContStateId, postContParameters).join();
-            resultBuilder.contingency(contingency)
-                    .setComputationOk(contingencyResult.isOk());
+                    .setComputationOk(true);
             violationDetector.checkAll(network, resultBuilder::addViolation);
-            resultBuilder.endContingency();
+            resultBuilder.endPreContingency();
 
-            network.getVariantManager().removeVariant(postContStateId);
-        }
-        network.getVariantManager().setWorkingVariant(workingStateId);
+            List<Contingency> contingencies = contingenciesProvider.getContingencies(network);
 
-        return CompletableFuture.completedFuture(resultBuilder.build());
+            String postContStateId = workingStateId + "_contingency";
+
+            for (Contingency contingency : contingencies) {
+
+                // run one loadflow per contingency
+                network.getVariantManager().cloneVariant(workingStateId, postContStateId);
+                network.getVariantManager().setWorkingVariant(postContStateId);
+
+                // apply the contingency on the network
+                contingency.toTask().modify(network, null);
+
+                LoadFlowResult contingencyResult = loadFlow.run(postContStateId, postContParameters).join();
+                resultBuilder.contingency(contingency)
+                        .setComputationOk(contingencyResult.isOk());
+                violationDetector.checkAll(network, resultBuilder::addViolation);
+                resultBuilder.endContingency();
+
+                network.getVariantManager().removeVariant(postContStateId);
+            }
+            network.getVariantManager().setWorkingVariant(workingStateId);
+
+            return resultBuilder.build();
+        });
     }
 }

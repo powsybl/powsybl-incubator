@@ -86,6 +86,13 @@
         </dependency>
         <dependency>
             <groupId>com.powsybl</groupId>
+            <artifactId>powsybl-commons</artifactId>
+            <version>${powsyblcore.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.powsybl</groupId>
             <artifactId>powsybl-iidm-test</artifactId>
             <version>${powsyblcore.version}</version>
             <scope>test</scope>

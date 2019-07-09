@@ -9,9 +9,9 @@ package com.powsybl.loadflow.simple.dc;
 import com.powsybl.iidm.network.Branch;
 import com.powsybl.iidm.network.Bus;
 import com.powsybl.iidm.network.CurrentLimits;
-import com.powsybl.security.AbstractLimitViolationDetector;
 import com.powsybl.security.LimitViolation;
 import com.powsybl.security.LimitViolationType;
+import com.powsybl.security.detectors.AbstractLimitViolationDetector;
 
 import java.util.function.Consumer;
 

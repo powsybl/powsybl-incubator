@@ -11,5 +11,5 @@ package com.powsybl.loadflow.simple.equations;
  */
 public interface VariableUpdate {
 
-    void update(double[] x);
+    void update();
 }

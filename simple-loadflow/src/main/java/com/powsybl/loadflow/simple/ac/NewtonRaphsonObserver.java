@@ -9,18 +9,49 @@ package com.powsybl.loadflow.simple.ac;
 import com.powsybl.loadflow.simple.equations.EquationSystem;
 import com.powsybl.math.matrix.Matrix;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
 public interface NewtonRaphsonObserver {
 
+    static NewtonRaphsonObserver of(NewtonRaphsonObserver... observers) {
+        return of(Arrays.asList(observers));
+    }
+
+    static NewtonRaphsonObserver of(List<NewtonRaphsonObserver> observers) {
+        return new MultipleNewtonRaphsonObserver(observers);
+    }
+
+    void beforeEquationSystemCreation();
+
+    void afterEquationSystemCreation();
+
     void beginIteration(int iteration);
 
-    void endIteration(int iteration, double fxNorm);
+    void norm(double norm);
 
-    void j(Matrix j, EquationSystem equationSystem, int iteration);
+    void beforeEquationEvaluation(int iteration);
 
-    void x(double[] x, EquationSystem equationSystem, int iteration);
+    void afterEquationEvaluation(double[] fx, EquationSystem equationSystem, int iteration);
 
-    void fx(double[] fx, EquationSystem equationSystem, int iteration);
+    void beforeJacobianBuild(int iteration);
+
+    void afterJacobianBuild(Matrix j, EquationSystem equationSystem, int iteration);
+
+    void beforeLuDecomposition(int iteration);
+
+    void afterLuDecomposition(int iteration);
+
+    void beforeLuSolve(int iteration);
+
+    void afterLuSolve(int iteration);
+
+    void beforeStateUpdate(int iteration);
+
+    void afterStateUpdate(double[] x, EquationSystem equationSystem, int iteration);
+
+    void endIteration(int iteration);
 }

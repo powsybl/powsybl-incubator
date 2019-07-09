@@ -6,7 +6,7 @@
  */
 package com.powsybl.substationdiagram.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.Bus;
 import com.powsybl.iidm.network.BusbarSection;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
@@ -21,9 +21,10 @@ import java.util.Objects;
  */
 public class BusNode extends Node {
 
-    @JsonIgnore
     private double pxWidth = 1;
+
     private Position structuralPosition;
+
     private Position position = new Position(-1, -1);
 
     protected BusNode(String id, String name, boolean fictitious, Graph graph) {
@@ -48,11 +49,19 @@ public class BusNode extends Node {
 
     public void calculateCoord(LayoutParameters layoutParameters) {
         setY(layoutParameters.getInitialYBus() +
-                     (position.getV() - 1) * layoutParameters.getVerticalSpaceBus());
+                (position.getV() - 1) * layoutParameters.getVerticalSpaceBus());
         setX(layoutParameters.getInitialXBus()
-                     + position.getH() * layoutParameters.getCellWidth()
-                     + layoutParameters.getHorizontalBusPadding() / 2);
+                + position.getH() * layoutParameters.getCellWidth()
+                + layoutParameters.getHorizontalBusPadding() / 2);
         setPxWidth(position.getHSpan() * layoutParameters.getCellWidth() - layoutParameters.getHorizontalBusPadding());
+    }
+
+    @Override
+    public void setCell(Cell cell) {
+        if (!(cell instanceof BusCell)) {
+            throw new PowsyblException("The Cell of a feeder node shall be a BusCell");
+        }
+        super.setCell(cell);
     }
 
     public double getPxWidth() {

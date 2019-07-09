@@ -6,10 +6,6 @@
  */
 package com.powsybl.substationdiagram.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -18,14 +14,12 @@ import java.util.stream.Collectors;
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class InternCell extends Cell {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(InternCell.class);
+public class InternCell extends BusCell {
 
     private Block centralBlock;
-    @JsonIgnore
+
     private Map<Side, Block> sideToBlock;
-    @JsonIgnore
+
     private Map<Side, List<PrimaryBlock>> sideToConnectedBlocks;
 
     public InternCell(Graph graph) {
@@ -40,68 +34,22 @@ public class InternCell extends Cell {
 
     public void postPositioningSettings() {
         identifyIfFlat();
-        if (getType() == CellType.INTERNBOUND) {
-            if (getDirection() == Direction.FLAT) {
-                centralBlock = getRootBlock();
-            } else {
-                handleNonFlatInterbound();
-            }
-        } else {
-            if (centralBlock != null) {
-                refactorBlocks();
-            }
+        if (centralBlock != null) {
+            refactorBlocks();
         }
     }
 
     private void identifyIfFlat() {
         List<BusNode> buses = getBusNodes();
-        if (buses.size() < 2) {
+        if (buses.size() != 2) {
             return;
         }
         Position pos1 = buses.get(0).getStructuralPosition();
         Position pos2 = buses.get(1).getStructuralPosition();
-        if (buses.size() == 2 && Math.abs(pos2.getH() - pos1.getH()) == 1
-                && pos2.getV() == pos1.getV()) {
+        if (Math.abs(pos2.getH() - pos1.getH()) == 1 && pos2.getV() == pos1.getV()) {
             setDirection(Direction.FLAT);
             getRootBlock().setOrientation(Orientation.HORIZONTAL);
         }
-    }
-
-    private void handleNonFlatInterbound() {
-        PrimaryBlock initialRootBlock = (PrimaryBlock) getRootBlock();
-        SwitchNode ns = (SwitchNode) (initialRootBlock.getNodes().get(1));
-        graph.extendSwitchBetweenBus(ns);
-        getPrimaryBlocksConnectedToBus().clear();
-        Block block0 = createAdjacentPrimaryBlock(ns, 0);
-        Block block1 = createAdjacentPrimaryBlock(ns, 1);
-        fillInSideToBlock(block0, block1);
-///*
-//        if (block0.getBusNode().getStructuralPosition().getH() < block1.getBusNode().getStructuralPosition().getH()) {
-//            sideToBlock.put(Side.LEFT, block0);
-//            sideToBlock.put(Side.RIGHT, block1);
-//        } else {
-//            sideToBlock.put(Side.LEFT, block1);
-//            sideToBlock.put(Side.RIGHT, block0);
-//        }
-//*/
-        centralBlock = new PrimaryBlock(Arrays.asList(block0.getEndingNode(), ns, block1.getEndingNode()), this);
-        setType(CellType.INTERN);
-        refactorBlocks();
-    }
-
-    private Block createAdjacentPrimaryBlock(SwitchNode ns, int id) {
-        FictitiousNode nf = (FictitiousNode) ns.getAdjacentNodes().get(id);
-        Node fictSwitch = otherNodeFromAdj(nf, ns);
-        BusNode bus = (BusNode) otherNodeFromAdj(fictSwitch, nf);
-        PrimaryBlock bpy = new PrimaryBlock(Arrays.asList(new Node[]{bus, fictSwitch, nf}), this);
-        bpy.setBusNode(bus);
-        getPrimaryBlocksConnectedToBus().add(bpy);
-        return bpy;
-    }
-
-    private Node otherNodeFromAdj(Node nodeOrigin, Node toBeOther) {
-        List<Node> adj = nodeOrigin.getAdjacentNodes();
-        return adj.get(0) == toBeOther ? adj.get(1) : adj.get(0);
     }
 
     /**
@@ -204,20 +152,10 @@ public class InternCell extends Cell {
     }
 
     public void reverseCell() {
-        if (getType() != CellType.INTERNBOUND) {
-            Block swap = sideToBlock.get(Side.LEFT);
-            sideToBlock.put(Side.LEFT, sideToBlock.get(Side.RIGHT));
-            sideToBlock.put(Side.RIGHT, swap);
-            refactorBlocks();
-        }
-    }
-
-    @Override
-    public void setNodes(List<Node> nodes) {
-        super.setNodes(nodes);
-        if (getNodes().size() == 3) {
-            setType(CellType.INTERNBOUND);
-        }
+        Block swap = sideToBlock.get(Side.LEFT);
+        sideToBlock.put(Side.LEFT, sideToBlock.get(Side.RIGHT));
+        sideToBlock.put(Side.RIGHT, swap);
+        refactorBlocks();
     }
 
     public int getSideHPos(Side side) {
@@ -231,31 +169,11 @@ public class InternCell extends Cell {
         return getRootBlock().getPosition().getH() + rightBlockPos.getH();
     }
 
-    public List<PrimaryBlock> getSideConnectedBlocks(Side side) {
-        return sideToConnectedBlocks.get(side);
-    }
-
     public Block getSideToBlock(Side side) {
         return sideToBlock.get(side);
     }
 
     public List<BusNode> getSideBusNodes(Side side) {
-        if (getType() == CellType.INTERNBOUND) {
-            Position pos0 = getBusNodes().get(0).getStructuralPosition();
-            Position pos1 = getBusNodes().get(1).getStructuralPosition();
-            if (pos0 == null || pos1 == null || pos0.getH() < pos1.getH()) {
-                if (side == Side.LEFT) {
-                    return new ArrayList<>(Collections.singletonList(getBusNodes().get(0)));
-                } else {
-                    return new ArrayList<>(Collections.singletonList(getBusNodes().get(1)));
-                }
-            }
-            if (side == Side.LEFT) {
-                return new ArrayList<>(Collections.singletonList(getBusNodes().get(1)));
-            } else {
-                return new ArrayList<>(Collections.singletonList(getBusNodes().get(0)));
-            }
-        }
         return sideToConnectedBlocks.get(side).stream()
                 .map(PrimaryBlock::getBusNode)
                 .collect(Collectors.toList());
@@ -263,15 +181,5 @@ public class InternCell extends Cell {
 
     public Block getCentralBlock() {
         return centralBlock;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return super.equals(obj);
-    }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode();
     }
 }

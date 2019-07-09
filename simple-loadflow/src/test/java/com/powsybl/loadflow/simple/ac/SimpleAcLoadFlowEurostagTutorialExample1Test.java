@@ -7,10 +7,14 @@
 
 package com.powsybl.loadflow.simple.ac;
 
-import com.powsybl.iidm.network.*;
+import com.powsybl.iidm.network.Bus;
+import com.powsybl.iidm.network.Line;
+import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.network.VariantManagerConstants;
 import com.powsybl.iidm.network.test.EurostagTutorialExample1Factory;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
+import com.powsybl.loadflow.simple.network.SlackBusSelectionMode;
 import com.powsybl.math.matrix.DenseMatrixFactory;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,23 +35,26 @@ public class SimpleAcLoadFlowEurostagTutorialExample1Test {
     private Line line1;
     private Line line2;
     private SimpleAcLoadFlow loadFlow;
+    private LoadFlowParameters parameters;
 
     @Before
     public void setUp() {
         network = EurostagTutorialExample1Factory.create();
-        genBus = network.getBusBreakerView().getBusStream().filter(b -> b.getId().equals("NGEN")).findFirst().orElseThrow(AssertionError::new);
-        bus1 = network.getBusBreakerView().getBusStream().filter(b -> b.getId().equals("NHV1")).findFirst().orElseThrow(AssertionError::new);
-        bus2 = network.getBusBreakerView().getBusStream().filter(b -> b.getId().equals("NHV2")).findFirst().orElseThrow(AssertionError::new);
-        loadBus = network.getBusBreakerView().getBusStream().filter(b -> b.getId().equals("NLOAD")).findFirst().orElseThrow(AssertionError::new);
+        genBus = network.getBusBreakerView().getBus("NGEN");
+        bus1 = network.getBusBreakerView().getBus("NHV1");
+        bus2 = network.getBusBreakerView().getBus("NHV2");
+        loadBus = network.getBusBreakerView().getBus("NLOAD");
         line1 = network.getLine("NHV1_NHV2_1");
         line2 = network.getLine("NHV1_NHV2_2");
 
         loadFlow = new SimpleAcLoadFlow(network, new DenseMatrixFactory());
+        parameters = new LoadFlowParameters();
+        parameters.addExtension(SimpleAcLoadFlowParameters.class, new SimpleAcLoadFlowParameters().setSlackBusSelectionMode(SlackBusSelectionMode.FIRST));
     }
 
     @Test
     public void baseCaseTest() {
-        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, new LoadFlowParameters()).join();
+        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
         assertTrue(result.isOk());
 
         assertVoltageEquals(24.5, genBus);
@@ -55,7 +62,7 @@ public class SimpleAcLoadFlowEurostagTutorialExample1Test {
         assertVoltageEquals(402.143, bus1);
         assertAngleEquals(-2.325965, bus1);
         assertVoltageEquals(389.953, bus2);
-        assertAngleEquals(-5.832323, bus2);
+        assertAngleEquals(-5.832329, bus2);
         assertVoltageEquals(147.578, loadBus);
         assertAngleEquals(-11.940451, loadBus);
         assertActivePowerEquals(302.444, line1.getTerminal1());
@@ -72,7 +79,7 @@ public class SimpleAcLoadFlowEurostagTutorialExample1Test {
     public void line1Side1DeconnectionTest() {
         line1.getTerminal1().disconnect();
 
-        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, new LoadFlowParameters()).join();
+        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
         assertTrue(result.isOk());
 
         assertVoltageEquals(24.5, genBus);
@@ -97,7 +104,7 @@ public class SimpleAcLoadFlowEurostagTutorialExample1Test {
     public void line1Side2DeconnectionTest() {
         line1.getTerminal2().disconnect();
 
-        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, new LoadFlowParameters()).join();
+        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
         assertTrue(result.isOk());
 
         assertVoltageEquals(24.5, genBus);
@@ -123,7 +130,7 @@ public class SimpleAcLoadFlowEurostagTutorialExample1Test {
         line1.getTerminal1().disconnect();
         line1.getTerminal2().disconnect();
 
-        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, new LoadFlowParameters()).join();
+        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
         assertTrue(result.isOk());
 
         assertVoltageEquals(24.5, genBus);
@@ -155,13 +162,13 @@ public class SimpleAcLoadFlowEurostagTutorialExample1Test {
                 .setCurrentSectionCount(1)
                 .add();
 
-        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, new LoadFlowParameters()).join();
+        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
         assertTrue(result.isOk());
 
         assertVoltageEquals(152.327, loadBus);
-        assertReactivePowerEquals(52.988, line1.getTerminal1());
-        assertReactivePowerEquals(-95.064, line1.getTerminal2());
-        assertReactivePowerEquals(52.988, line2.getTerminal1());
-        assertReactivePowerEquals(-95.064, line2.getTerminal2());
+        assertReactivePowerEquals(52.987, line1.getTerminal1());
+        assertReactivePowerEquals(-95.063, line1.getTerminal2());
+        assertReactivePowerEquals(52.987, line2.getTerminal1());
+        assertReactivePowerEquals(-95.063, line2.getTerminal2());
     }
 }

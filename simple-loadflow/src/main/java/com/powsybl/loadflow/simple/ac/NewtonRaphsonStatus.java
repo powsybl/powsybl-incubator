@@ -12,5 +12,6 @@ package com.powsybl.loadflow.simple.ac;
 public enum NewtonRaphsonStatus {
     CONVERGED,
     MAX_ITERATION_REACHED,
-    SOLVER_FAILED
+    SOLVER_FAILED,
+    NO_CALCULATION
 }

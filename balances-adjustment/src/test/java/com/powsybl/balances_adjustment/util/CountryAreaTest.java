@@ -11,6 +11,7 @@ import com.powsybl.iidm.network.*;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -111,6 +112,14 @@ public class CountryAreaTest {
         //Test network with HVDCLines
         assertEquals(testNetwork2.getHvdcLine("hvdcLineFrEs").getConverterStation1().getTerminal().getP(), countryAreaFR.getNetPosition(testNetwork2), 1e-3);
         assertEquals(testNetwork2.getHvdcLine("hvdcLineFrEs").getConverterStation2().getTerminal().getP(), countryAreaES.getNetPosition(testNetwork2), 1e-3);
+    }
 
+    @Test
+    public void testEquals() {
+        List<CountryArea> countries = Arrays.asList(countryAreaBE, countryAreaES, countryAreaFR);
+        CountryArea countryAreaFr2 = new CountryArea(Country.valueOf("FR"));
+        assertTrue(countries.contains(countryAreaFr2));
+        assertTrue(!countryAreaFR.equals(countryAreaES));
+        assertTrue(countryAreaFR.equals(countryAreaFR));
     }
 }

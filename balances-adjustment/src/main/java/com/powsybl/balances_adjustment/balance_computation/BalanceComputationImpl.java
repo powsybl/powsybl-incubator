@@ -229,7 +229,7 @@ public class BalanceComputationImpl implements BalanceComputation {
     private List<String> listNetworkAreaInjectionsViolations(NetworkArea networkArea, Map<NetworkArea, Scalable> networkAreasScalableMap) {
         List<String> listOfViolations = new ArrayList<>();
         if (!networkAreasScalableMap.containsKey(networkArea)) {
-            listOfViolations.add("The " + networkArea + " is not defined in the scalable network areas map");
+            listOfViolations.add("The " + networkArea.getName() + " is not defined in the scalable network areas map");
 
         } else {
             Scalable scalable = networkAreasScalableMap.get(networkArea);

@@ -57,7 +57,7 @@
   <circle
      style="stroke-width:3.125"
      transform="rotate(-90)"
-     id="circle75"
+     id="WINDING1"
      cx="-12.5"
      cy="12.5"
      r="12.5" />
@@ -65,7 +65,7 @@
      r="12.5"
      cy="28.5"
      cx="-12.5"
-     id="circle33"
+     id="WINDING2"
      transform="rotate(-90)"
      style="stroke-width:3.125" />
 </svg>

@@ -47,8 +47,7 @@ import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
-import org.w3c.dom.svg.SVGCircleElement;
-import org.w3c.dom.svg.SVGEllipseElement;
+import org.w3c.dom.svg.SVGElement;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -533,40 +532,28 @@ public class SVGWriter {
                                                    SubstationDiagramStyleProvider styleProvider) {
         // The following code work correctly considering SVG part describing the component is the first child of "obj" the SVGDocument.
         // If SVG are written otherwise, it will not work correctly.
-        boolean firstCircle = true;
-        boolean secondCircle = true;
-        Optional<String> color;
-
+        //
         for (int i = 0; i < obj.getChildNodes().item(0).getChildNodes().getLength(); i++) {
             org.w3c.dom.Node n = obj.getChildNodes().item(0).getChildNodes().item(i).cloneNode(true);
 
-            if (n instanceof SVGCircleElement || n instanceof SVGEllipseElement) {
-                if (node instanceof Fictitious3WTNode) {
-                    if (firstCircle) {
-                        color = styleProvider.getNode3WTStyle((Fictitious3WTNode) node, ThreeWindingsTransformer.Side.ONE);
-                        firstCircle = false;
-                    } else if (secondCircle) {
-                        color = styleProvider.getNode3WTStyle((Fictitious3WTNode) node, ThreeWindingsTransformer.Side.TWO);
-                        secondCircle = false;
-                    } else {
-                        color = styleProvider.getNode3WTStyle((Fictitious3WTNode) node, ThreeWindingsTransformer.Side.THREE);
-                    }
-                    if (color.isPresent()) {
-                        ((Element) n).removeAttribute(STROKE);
-                        ((Element) n).setAttribute(STROKE, color.get());
-                    }
-                } else if (node instanceof Feeder2WTNode) {
-                    if (firstCircle) {
-                        color = styleProvider.getNode2WTStyle((Feeder2WTNode) node, TwoWindingsTransformer.Side.ONE);
-                        firstCircle = false;
-                    } else {
-                        color = styleProvider.getNode2WTStyle((Feeder2WTNode) node, TwoWindingsTransformer.Side.TWO);
-                        secondCircle = false;
-                    }
-                    if (color.isPresent()) {
-                        ((Element) n).removeAttribute(STROKE);
-                        ((Element) n).setAttribute(STROKE, color.get());
-                    }
+            if ((node instanceof Fictitious3WTNode || node instanceof Feeder2WTNode) && n instanceof SVGElement) {
+                Optional<String> color = Optional.empty();
+
+                if (((SVGElement) n).getId().equals("WINDING1")) {
+                    color = node instanceof Fictitious3WTNode
+                            ? styleProvider.getNode3WTStyle((Fictitious3WTNode) node, ThreeWindingsTransformer.Side.ONE)
+                            : styleProvider.getNode2WTStyle((Feeder2WTNode) node, TwoWindingsTransformer.Side.ONE);
+                } else if (((SVGElement) n).getId().equals("WINDING2")) {
+                    color = node instanceof Fictitious3WTNode
+                            ? styleProvider.getNode3WTStyle((Fictitious3WTNode) node, ThreeWindingsTransformer.Side.TWO)
+                            : styleProvider.getNode2WTStyle((Feeder2WTNode) node, TwoWindingsTransformer.Side.TWO);
+                } else if (((SVGElement) n).getId().equals("WINDING3") && node instanceof Fictitious3WTNode) {
+                    color = styleProvider.getNode3WTStyle((Fictitious3WTNode) node, ThreeWindingsTransformer.Side.THREE);
+                }
+
+                if (color.isPresent()) {
+                    ((Element) n).removeAttribute(STROKE);
+                    ((Element) n).setAttribute(STROKE, color.get());
                 }
             }
 

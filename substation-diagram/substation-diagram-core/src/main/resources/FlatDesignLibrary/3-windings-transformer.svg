@@ -56,7 +56,7 @@
   </sodipodi:namedview>
   <ellipse
      transform="rotate(-90)"
-     id="circle33"
+     id="WINDING1"
      cx="-8"
      cy="10.5"
      rx="8"
@@ -65,7 +65,7 @@
   <ellipse
      cy="30.5"
      cx="-7.5"
-     id="circle42"
+     id="WINDING2"
      transform="rotate(-90)"
      rx="7.5"
      ry="10.5"
@@ -75,7 +75,7 @@
      ry="12.99997"
      rx="10.001022"
      transform="matrix(0.01429778,-0.99989778,1,0,0,0)"
-     id="circle33-3"
+     id="WINDING3"
      cx="-15.001534"
      cy="20.213732" />
 </svg>

@@ -25,6 +25,7 @@ import com.powsybl.substationdiagram.library.ComponentSize;
 import com.powsybl.substationdiagram.library.ComponentType;
 import com.powsybl.substationdiagram.model.*;
 import com.powsybl.substationdiagram.svg.GraphMetadata.ArrowMetadata;
+import com.powsybl.substationdiagram.svg.SubstationDiagramInitialValueProvider.Direction;
 
 import org.apache.batik.anim.dom.SVGOMDocument;
 import org.apache.batik.dom.GenericDOMImplementation;
@@ -74,7 +75,7 @@ public class SVGWriter {
     private static final String TRANSLATE = "translate";
     private static final int FONT_SIZE = 8;
     private static final String FONT_FAMILY = "Verdana";
-    private static final int LABEL_OFFSET = 5;
+    private static final double LABEL_OFFSET = 5d;
     private static final int FONT_VOLTAGE_LEVEL_LABEL_SIZE = 12;
 
     private final ComponentLibrary componentLibrary;
@@ -396,7 +397,7 @@ public class SVGWriter {
 
                 if (!node.isFictitious()) {
                     if (node instanceof FeederNode) {
-                        int yShift = -LABEL_OFFSET;
+                        double yShift = -LABEL_OFFSET;
                         if (node.getCell() != null) {
                             direction = ((ExternCell) node.getCell()).getDirection();
                             yShift = direction == BusCell.Direction.TOP
@@ -406,7 +407,7 @@ public class SVGWriter {
                         drawLabel(node.getLabel(), node.isRotated(), -LABEL_OFFSET, yShift, g, FONT_SIZE);
                     } else if (node instanceof BusNode) {
                         InitialValue val = initProvider.getInitialValue(node);
-                        int d = (int) ((BusNode) node).getPxWidth();
+                        double d = ((BusNode) node).getPxWidth();
                         if (val.getLabel1().isPresent()) {
                             drawLabel(val.getLabel1().get(), false, -LABEL_OFFSET, -LABEL_OFFSET, g, FONT_SIZE);
                         }
@@ -610,7 +611,7 @@ public class SVGWriter {
 
         double dist = this.layoutParameters.getArrowDistance();
 
-        double x = x1 + sinRo * (x1 > x2 ? (dist + shift) : (dist + shift));
+        double x = x1 + sinRo * (dist + shift);
         double y = y1 + cosRo * (y1 > y2 ? -(dist + shift) : (dist + shift));
 
         double e1 = layoutParameters.getTranslateX() - cdx * cosRo + cdy * sinRo + x;
@@ -629,8 +630,8 @@ public class SVGWriter {
         InitialValue init = initProvider.getInitialValue(n);
         ComponentMetadata cd = metadata.getComponentMetadata(ComponentType.ARROW);
 
-        int shX = (int) cd.getSize().getWidth()  + LABEL_OFFSET;
-        int shY = (int) (cd.getSize().getHeight() - LABEL_OFFSET + FONT_SIZE / 2);
+        double shX = cd.getSize().getWidth()  + LABEL_OFFSET;
+        double shY = cd.getSize().getHeight() - LABEL_OFFSET + FONT_SIZE / 2;
 
         Element g1 = root.getOwnerDocument().createElement("g");
         g1.setAttribute("id", wireId + "_ARROW1");
@@ -643,12 +644,14 @@ public class SVGWriter {
         } else {
             insertComponentSVGIntoDocumentSVG(arr, g1);
         }
-        if (init.getLabel1().isPresent()) {
-            drawLabel(init.getLabel1().get(), false, shX, shY, g1, FONT_SIZE);
+        Optional<String> label1 = init.getLabel1();
+        if (label1.isPresent()) {
+            drawLabel(label1.get(), false, shX, shY, g1, FONT_SIZE);
         }
-        if (init.getArrowDirection1().isPresent()) {
+        Optional<Direction> dir1 = init.getArrowDirection1();
+        if (dir1.isPresent()) {
             try {
-                g1.setAttribute(CLASS, SubstationDiagramStyles.SUBSTATION_STYLE_CLASS + " "  + "ARROW1_" + SubstationDiagramStyles.escapeClassName(URLEncoder.encode(n.getId(), StandardCharsets.UTF_8.name())) + "_" +  init.getArrowDirection1().get());
+                g1.setAttribute(CLASS, SubstationDiagramStyles.SUBSTATION_STYLE_CLASS + " "  + "ARROW1_" + SubstationDiagramStyles.escapeClassName(URLEncoder.encode(n.getId(), StandardCharsets.UTF_8.name())) + "_" + dir1.get());
             } catch (UnsupportedEncodingException e) {
                 throw new UncheckedIOException(e);
             }
@@ -664,21 +667,25 @@ public class SVGWriter {
         } else {
             insertComponentSVGIntoDocumentSVG(arr, g2);
         }
-        if (init.getLabel2().isPresent()) {
-            drawLabel(init.getLabel2().get(), false, shX, shY, g2, FONT_SIZE);
+        Optional<String> label2 = init.getLabel2();
+        if (label2.isPresent()) {
+            drawLabel(label2.get(), false, shX, shY, g2, FONT_SIZE);
         }
-        if (init.getArrowDirection2().isPresent()) {
+        Optional<Direction> dir2 = init.getArrowDirection2();
+        if (dir2.isPresent()) {
             try {
-                g2.setAttribute("class", SubstationDiagramStyles.SUBSTATION_STYLE_CLASS + " "  + "ARROW2_" + SubstationDiagramStyles.escapeClassName(URLEncoder.encode(n.getId(), StandardCharsets.UTF_8.name())) + "_" +  init.getArrowDirection2().get());
+                g2.setAttribute("class", SubstationDiagramStyles.SUBSTATION_STYLE_CLASS + " "  + "ARROW2_" + SubstationDiagramStyles.escapeClassName(URLEncoder.encode(n.getId(), StandardCharsets.UTF_8.name())) + "_" + dir2.get());
             } catch (UnsupportedEncodingException e) {
                 throw new UncheckedIOException(e);
             }
         }
-        if (init.getLabel3().isPresent()) {
-            drawLabel(init.getLabel3().get(), false, -(init.getLabel3().get().length() * FONT_SIZE / 2 + LABEL_OFFSET), shY, g1, FONT_SIZE);
+        Optional<String> label3 = init.getLabel3();
+        if (label3.isPresent()) {
+            drawLabel(label3.get(), false, -(init.getLabel3().get().length() * FONT_SIZE / 2 + LABEL_OFFSET), shY, g1, FONT_SIZE);
         }
-        if (init.getLabel4().isPresent()) {
-            drawLabel(init.getLabel4().get(), false, -(init.getLabel4().get().length() * FONT_SIZE / 2 + LABEL_OFFSET), shY, g2, FONT_SIZE);
+        Optional<String> label4 = init.getLabel4();
+        if (label4.isPresent()) {
+            drawLabel(label4.get(), false, -(init.getLabel4().get().length() * FONT_SIZE / 2 + LABEL_OFFSET), shY, g2, FONT_SIZE);
         }
 
         root.appendChild(g2);

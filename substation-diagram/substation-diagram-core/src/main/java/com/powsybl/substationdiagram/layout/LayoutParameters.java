@@ -45,6 +45,7 @@ public class LayoutParameters {
 
     private double horizontalSnakeLinePadding = 20;
     private double verticalSnakeLinePadding = 25;
+    private double arrowDistance = 20;
 
     @JsonCreator
     public LayoutParameters() {
@@ -68,7 +69,8 @@ public class LayoutParameters {
                             @JsonProperty("verticalSubstationPadding") double verticalSubstationPadding,
                             @JsonProperty("drawStraightWires") boolean drawStraightWires,
                             @JsonProperty("horizontalSnakeLinePadding") double horizontalSnakeLinePadding,
-                            @JsonProperty("verticalSnakeLinePadding") double verticalSnakeLinePadding) {
+                            @JsonProperty("verticalSnakeLinePadding") double verticalSnakeLinePadding,
+                            @JsonProperty("arrowDistance") double arrowDistance) {
         this.translateX = translateX;
         this.translateY = translateY;
         this.initialXBus = initialXBus;
@@ -87,6 +89,7 @@ public class LayoutParameters {
         this.drawStraightWires = drawStraightWires;
         this.horizontalSnakeLinePadding = horizontalSnakeLinePadding;
         this.verticalSnakeLinePadding = verticalSnakeLinePadding;
+        this.arrowDistance = arrowDistance;
     }
 
     public LayoutParameters(LayoutParameters other) {
@@ -109,6 +112,7 @@ public class LayoutParameters {
         drawStraightWires = other.drawStraightWires;
         horizontalSnakeLinePadding = other.horizontalSnakeLinePadding;
         verticalSnakeLinePadding = other.verticalSnakeLinePadding;
+        arrowDistance = other.arrowDistance;
     }
 
     public double getTranslateX() {
@@ -270,6 +274,15 @@ public class LayoutParameters {
 
     public LayoutParameters setVerticalSnakeLinePadding(double verticalSnakeLinePadding) {
         this.verticalSnakeLinePadding = verticalSnakeLinePadding;
+        return this;
+    }
+
+    public double getArrowDistance() {
+        return arrowDistance;
+    }
+
+    public LayoutParameters setArrowDistance(double arrowDistance) {
+        this.arrowDistance = arrowDistance;
         return this;
     }
 }

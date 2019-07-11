@@ -24,6 +24,8 @@ import com.powsybl.substationdiagram.library.ComponentMetadata;
 import com.powsybl.substationdiagram.library.ComponentSize;
 import com.powsybl.substationdiagram.library.ComponentType;
 import com.powsybl.substationdiagram.model.*;
+import com.powsybl.substationdiagram.svg.GraphMetadata.ArrowMetadata;
+
 import org.apache.batik.anim.dom.SVGOMDocument;
 import org.apache.batik.dom.GenericDOMImplementation;
 import org.apache.commons.math3.util.Precision;
@@ -90,9 +92,9 @@ public class SVGWriter {
      * @param graph   graph
      * @param svgFile file
      */
-    public GraphMetadata write(Graph graph, SubstationDiagramStyleProvider styleProvider, Path svgFile) {
+    public GraphMetadata write(Graph graph, SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider, Path svgFile) {
         try (Writer writer = Files.newBufferedWriter(svgFile)) {
-            return write(graph, styleProvider, writer);
+            return write(graph, initProvider, styleProvider, writer);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -104,7 +106,7 @@ public class SVGWriter {
      * @param graph  graph
      * @param writer writer
      */
-    public GraphMetadata write(Graph graph, SubstationDiagramStyleProvider styleProvider, Writer writer) {
+    public GraphMetadata write(Graph graph, SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider, Writer writer) {
         DOMImplementation domImpl = GenericDOMImplementation.getDOMImplementation();
 
         Document document = domImpl.createDocument("http://www.w3.org/2000/svg", "svg", null);
@@ -129,7 +131,7 @@ public class SVGWriter {
         document.adoptNode(style);
         document.getDocumentElement().appendChild(style);
 
-        GraphMetadata metadata = writegraph(graph, document);
+        GraphMetadata metadata = writegraph(graph, document, initProvider);
 
         try {
             DOMSource source = new DOMSource(document);
@@ -149,7 +151,7 @@ public class SVGWriter {
     /**
      * Create the SVGDocument corresponding to the graph
      */
-    private GraphMetadata writegraph(Graph graph, Document document) {
+    private GraphMetadata writegraph(Graph graph, Document document, SubstationDiagramInitialValueProvider initProvider) {
         GraphMetadata metadata = new GraphMetadata();
 
         Element root = document.createElement("g");
@@ -175,12 +177,11 @@ public class SVGWriter {
             return componentLibrary.getAnchorPoints(type);
         };
 
-        drawNodes(root, graph, metadata, anchorPointProvider);
-        drawEdges(root, graph, metadata, anchorPointProvider);
+        drawNodes(root, graph, metadata, anchorPointProvider, initProvider);
+        drawEdges(root, graph, metadata, anchorPointProvider, initProvider);
         // the drawing of the voltageLevel graph label is done at the end in order to
         // facilitate the move of a voltageLevel in the diagram
         drawGraphLabel(root, graph, metadata);
-
         document.adoptNode(root);
         document.getDocumentElement().appendChild(root);
 
@@ -193,10 +194,10 @@ public class SVGWriter {
      * @param graph   substation graph
      * @param svgFile file
      */
-    public GraphMetadata write(SubstationGraph graph, SubstationDiagramStyleProvider styleProvider,
+    public GraphMetadata write(SubstationGraph graph, SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider,
                                Path svgFile) {
         try (Writer writer = Files.newBufferedWriter(svgFile)) {
-            return write(graph, styleProvider, writer, new HorizontalSubstationLayoutFactory(), new PositionVoltageLevelLayoutFactory());
+            return write(graph, initProvider, styleProvider, writer, new HorizontalSubstationLayoutFactory(), new PositionVoltageLevelLayoutFactory());
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -208,7 +209,7 @@ public class SVGWriter {
      * @param graph  substation graph
      * @param writer writer
      */
-    public GraphMetadata write(SubstationGraph graph, SubstationDiagramStyleProvider styleProvider,
+    public GraphMetadata write(SubstationGraph graph, SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider,
                                Writer writer, SubstationLayoutFactory sLayoutFactory,
                                VoltageLevelLayoutFactory vLayoutFactory) {
         DOMImplementation domImpl = GenericDOMImplementation.getDOMImplementation();
@@ -240,7 +241,7 @@ public class SVGWriter {
         document.adoptNode(style);
         document.getDocumentElement().appendChild(style);
 
-        GraphMetadata metadata = writegraph(graph, document, sLayoutFactory, vLayoutFactory);
+        GraphMetadata metadata = writegraph(graph, document, sLayoutFactory, vLayoutFactory, initProvider);
 
         try {
             DOMSource source = new DOMSource(document);
@@ -262,7 +263,7 @@ public class SVGWriter {
      */
     private GraphMetadata writegraph(SubstationGraph graph,
                                      Document document, SubstationLayoutFactory sLayoutFactory,
-                                     VoltageLevelLayoutFactory vLayoutFactory) {
+                                     VoltageLevelLayoutFactory vLayoutFactory,  SubstationDiagramInitialValueProvider initProvider) {
         GraphMetadata metadata = new GraphMetadata();
 
         SubstationLayout sLayout = sLayoutFactory.create(graph);
@@ -313,8 +314,8 @@ public class SVGWriter {
                     return componentLibrary.getAnchorPoints(type);
                 }
             };
-            drawNodes(root, vlGraph, metadata, anchorPointProvider);
-            drawEdges(root, vlGraph, metadata, anchorPointProvider);
+            drawNodes(root, vlGraph, metadata, anchorPointProvider, initProvider);
+            drawEdges(root, vlGraph, metadata, anchorPointProvider, initProvider);
         }
 
         drawSnakeLines(root, graph, metadata, sLayout);
@@ -376,7 +377,7 @@ public class SVGWriter {
     /*
      * Drawing the voltageLevel graph nodes
      */
-    private void drawNodes(Element root, Graph graph, GraphMetadata metadata, AnchorPointProvider anchorPointProvider) {
+    private void drawNodes(Element root, Graph graph, GraphMetadata metadata, AnchorPointProvider anchorPointProvider, SubstationDiagramInitialValueProvider initProvider) {
         graph.getNodes().forEach(node -> {
             try {
                 String nodeId = URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name());
@@ -404,7 +405,20 @@ public class SVGWriter {
                         }
                         drawLabel(node.getLabel(), node.isRotated(), -LABEL_OFFSET, yShift, g, FONT_SIZE);
                     } else if (node instanceof BusNode) {
-                        drawLabel(node.getLabel(), false, -LABEL_OFFSET, -LABEL_OFFSET, g, FONT_SIZE);
+                        InitialValue val = initProvider.getInitialValue(node);
+                        int d = (int) ((BusNode) node).getPxWidth();
+                        if (val.getLabel1().isPresent()) {
+                            drawLabel(val.getLabel1().get(), false, -LABEL_OFFSET, -LABEL_OFFSET, g, FONT_SIZE);
+                        }
+                        if (val.getLabel2().isPresent()) {
+                            drawLabel(val.getLabel2().get(), false,  d - LABEL_OFFSET, -LABEL_OFFSET, g, FONT_SIZE);
+                        }
+                        if (val.getLabel3().isPresent()) {
+                            drawLabel(val.getLabel3().get(), false, -LABEL_OFFSET, LABEL_OFFSET + FONT_SIZE / 2, g, FONT_SIZE);
+                        }
+                        if (val.getLabel4().isPresent()) {
+                            drawLabel(val.getLabel4().get(), false, d - LABEL_OFFSET, LABEL_OFFSET + FONT_SIZE / 2, g, FONT_SIZE);
+                        }
                     }
                 }
                 root.appendChild(g);
@@ -516,6 +530,23 @@ public class SVGWriter {
         }
     }
 
+    private void insertRotatedComponentSVGIntoDocumentSVG(SVGOMDocument obj, Element g, double angle, double cx, double cy) {
+        // The following code work correctly considering SVG part describing the component is the first child of "obj" the SVGDocument.
+        // If SVG are written otherwise, it will not work correctly.
+
+        for (int i = 0; i < obj.getChildNodes().item(0).getChildNodes().getLength(); i++) {
+            org.w3c.dom.Node n = obj.getChildNodes().item(0).getChildNodes().item(i).cloneNode(true);
+            if (n.getNodeName().equals("g")) {
+                if (n.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
+                    Element e = (Element) n;
+                    e.setAttribute("transform", "rotate(" + angle + "," + cx + "," + cy + ")");
+                }
+            }
+            g.getOwnerDocument().adoptNode(n);
+            g.appendChild(n);
+        }
+    }
+
     private void transformComponent(Node node, Element g) {
         ComponentSize componentSize = componentLibrary.getSize(node.getComponentType());
 
@@ -548,10 +579,116 @@ public class SVGWriter {
                         + Precision.round(e1, precision) + "," + Precision.round(f1, precision) + ")");
     }
 
+    private void transformArrow(List<Double> points, ComponentSize componentSize, double shift, Element g) {
+
+        double x1 = points.get(0);
+        double y1 = points.get(1);
+        double x2 = points.get(2);
+        double y2 = points.get(3);
+
+        if (points.size() > 4) {
+            if (Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)) < 3 * componentSize.getHeight()) {
+                double x3 = points.get(4);
+                double y3 = points.get(5);
+                if (Math.sqrt((x3 - x2) * (x3 - x2) + (y3 - y2) * (y3 - y2)) > 3 * componentSize.getHeight()) {
+                    x1 = x2;
+                    y1 = y2;
+                    x2 = x3;
+                    y2 = y3;
+                }
+            }
+        }
+        double dx = x2 - x1;
+        double dy = y2 - y1;
+
+        double angle = Math.atan(dx / dy);
+
+        double cosRo = Math.cos(angle);
+        double sinRo = Math.sin(angle);
+        double cdx = componentSize.getWidth() / 2;
+        double cdy = componentSize.getHeight() / 2;
+
+        double dist = this.layoutParameters.getArrowDistance();
+
+        double x = x1 + sinRo * (x1 > x2 ? (dist + shift) : (dist + shift));
+        double y = y1 + cosRo * (y1 > y2 ? -(dist + shift) : (dist + shift));
+
+        double e1 = layoutParameters.getTranslateX() - cdx * cosRo + cdy * sinRo + x;
+        double f1 = layoutParameters.getTranslateY() - cdx * sinRo - cdy * cosRo + y;
+
+        int precision = 4;
+        g.setAttribute(TRANSFORM,
+                       "matrix(" + Precision.round(cosRo, precision) + "," + Precision.round(sinRo, precision)
+                               + "," + Precision.round(-sinRo, precision) + "," + Precision.round(cosRo,
+                                                                                                  precision) + ","
+                               + Precision.round(e1, precision) + "," + Precision.round(f1, precision) + ")");
+
+    }
+
+    private void insertArrowsAndLabels(String wireId, List<Double> points, Element root, Node n, GraphMetadata metadata, SubstationDiagramInitialValueProvider initProvider) {
+        InitialValue init = initProvider.getInitialValue(n);
+        ComponentMetadata cd = metadata.getComponentMetadata(ComponentType.ARROW);
+
+        int shX = (int) cd.getSize().getWidth()  + LABEL_OFFSET;
+        int shY = (int) (cd.getSize().getHeight() - LABEL_OFFSET + FONT_SIZE / 2);
+
+        Element g1 = root.getOwnerDocument().createElement("g");
+        g1.setAttribute("id", wireId + "_ARROW1");
+        SVGOMDocument arr = componentLibrary.getSvgDocument(ComponentType.ARROW);
+        transformArrow(points, cd.getSize(), 0, g1);
+        double y1 = points.get(1);
+        double y2 = points.get(3);
+        if (y1 > y2) {
+            insertRotatedComponentSVGIntoDocumentSVG(arr, g1, 180, cd.getSize().getWidth() / 2, cd.getSize().getHeight() / 2);
+        } else {
+            insertComponentSVGIntoDocumentSVG(arr, g1);
+        }
+        if (init.getLabel1().isPresent()) {
+            drawLabel(init.getLabel1().get(), false, shX, shY, g1, FONT_SIZE);
+        }
+        if (init.getArrowDirection1().isPresent()) {
+            try {
+                g1.setAttribute(CLASS, SubstationDiagramStyles.SUBSTATION_STYLE_CLASS + " "  + "ARROW1_" + SubstationDiagramStyles.escapeClassName(URLEncoder.encode(n.getId(), StandardCharsets.UTF_8.name())) + "_" +  init.getArrowDirection1().get());
+            } catch (UnsupportedEncodingException e) {
+                throw new UncheckedIOException(e);
+            }
+        }
+        root.appendChild(g1);
+        metadata.addArrowMetadata(new ArrowMetadata(wireId + "_ARROW1", wireId, layoutParameters.getArrowDistance()));
+
+        Element g2 = root.getOwnerDocument().createElement("g");
+        g2.setAttribute("id", wireId + "_ARROW2");
+        transformArrow(points, cd.getSize(), 2 * cd.getSize().getHeight(), g2);
+        if (y1 > y2) {
+            insertRotatedComponentSVGIntoDocumentSVG(arr, g2, 180, 5, 5);
+        } else {
+            insertComponentSVGIntoDocumentSVG(arr, g2);
+        }
+        if (init.getLabel2().isPresent()) {
+            drawLabel(init.getLabel2().get(), false, shX, shY, g2, FONT_SIZE);
+        }
+        if (init.getArrowDirection2().isPresent()) {
+            try {
+                g2.setAttribute("class", SubstationDiagramStyles.SUBSTATION_STYLE_CLASS + " "  + "ARROW2_" + SubstationDiagramStyles.escapeClassName(URLEncoder.encode(n.getId(), StandardCharsets.UTF_8.name())) + "_" +  init.getArrowDirection2().get());
+            } catch (UnsupportedEncodingException e) {
+                throw new UncheckedIOException(e);
+            }
+        }
+        if (init.getLabel3().isPresent()) {
+            drawLabel(init.getLabel3().get(), false, -(init.getLabel3().get().length() * FONT_SIZE / 2 + LABEL_OFFSET), shY, g1, FONT_SIZE);
+        }
+        if (init.getLabel4().isPresent()) {
+            drawLabel(init.getLabel4().get(), false, -(init.getLabel4().get().length() * FONT_SIZE / 2 + LABEL_OFFSET), shY, g2, FONT_SIZE);
+        }
+
+        root.appendChild(g2);
+        metadata.addArrowMetadata(new ArrowMetadata(wireId + "_ARROW2", wireId, layoutParameters.getArrowDistance()));
+    }
+
     /*
      * Drawing the voltageLevel graph edges
      */
-    private void drawEdges(Element root, Graph graph, GraphMetadata metadata, AnchorPointProvider anchorPointProvider) {
+    private void drawEdges(Element root, Graph graph, GraphMetadata metadata, AnchorPointProvider anchorPointProvider, SubstationDiagramInitialValueProvider initProvider) {
         String vId = graph.getVoltageLevel().getId();
         for (Edge edge : graph.getEdges()) {
             // for unicity purpose (in substation diagram), we prefix the id of the WireMetadata with the voltageLevel id and "_"
@@ -595,6 +732,21 @@ public class SVGWriter {
                         false));
             } catch (UnsupportedEncodingException e) {
                 throw new UncheckedIOException(e);
+            }
+
+            if (metadata.getComponentMetadata(ComponentType.ARROW) == null) {
+                metadata.addComponentMetadata(new ComponentMetadata(ComponentType.ARROW,
+                                                                    null,
+                                                                    componentLibrary.getAnchorPoints(ComponentType.ARROW),
+                                                                    componentLibrary.getSize(ComponentType.ARROW)));
+            }
+
+            if (edge.getNode1() instanceof FeederNode) {
+                if (!(edge.getNode2() instanceof FeederNode)) {
+                    insertArrowsAndLabels(wireId, pol, root, edge.getNode1(), metadata, initProvider);
+                }
+            } else if  (edge.getNode2() instanceof FeederNode) {
+                insertArrowsAndLabels(wireId, pol, root, edge.getNode2(), metadata, initProvider);
             }
         }
     }
@@ -667,6 +819,15 @@ public class SVGWriter {
             } catch (UnsupportedEncodingException e) {
                 throw new UncheckedIOException(e);
             }
+
+            if (metadata.getComponentMetadata(ComponentType.ARROW) == null) {
+                metadata.addComponentMetadata(new ComponentMetadata(ComponentType.ARROW,
+                                                                    null,
+                                                                    componentLibrary.getAnchorPoints(ComponentType.ARROW),
+                                                                    componentLibrary.getSize(ComponentType.ARROW)));
+            }
+
         }
     }
+
 }

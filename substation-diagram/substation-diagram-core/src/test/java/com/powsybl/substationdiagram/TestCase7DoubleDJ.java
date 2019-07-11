@@ -24,7 +24,7 @@ public class TestCase7DoubleDJ extends AbstractTestCase {
 
     @Override
     void setUp() {
-        Network network = NetworkFactory.create("testCase", "test");
+        network = NetworkFactory.create("testCase", "test");
         Substation s = network.newSubstation()
                 .setId("s")
                 .setCountry(Country.FR)

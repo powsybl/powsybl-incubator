@@ -51,7 +51,7 @@ public class TestCase5ShuntVertical extends AbstractTestCase {
     public void setUp() {
         fileSystem = Jimfs.newFileSystem(Configuration.unix());
 
-        Network network = NetworkFactory.create("testCase1", "test");
+        network = NetworkFactory.create("testCase1", "test");
         Substation s = network.newSubstation()
                 .setId("s")
                 .setCountry(Country.FR)

@@ -6,13 +6,20 @@
  */
 package com.powsybl.substationdiagram;
 
+import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.Substation;
-import com.powsybl.substationdiagram.layout.*;
+import com.powsybl.substationdiagram.layout.HorizontalSubstationLayoutFactory;
+import com.powsybl.substationdiagram.layout.LayoutParameters;
+import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayoutFactory;
+import com.powsybl.substationdiagram.layout.SubstationLayoutFactory;
+import com.powsybl.substationdiagram.layout.VoltageLevelLayoutFactory;
 import com.powsybl.substationdiagram.library.ComponentLibrary;
 import com.powsybl.substationdiagram.model.SubstationGraph;
+import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramInitialValueProvider;
 import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramStyleProvider;
 import com.powsybl.substationdiagram.svg.GraphMetadata;
 import com.powsybl.substationdiagram.svg.SVGWriter;
+import com.powsybl.substationdiagram.svg.SubstationDiagramInitialValueProvider;
 import com.powsybl.substationdiagram.svg.SubstationDiagramStyleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,12 +67,12 @@ public final class SubstationDiagram {
         return new SubstationDiagram(graph, sLayoutFactory, vLayoutFactory);
     }
 
-    public void writeSvg(ComponentLibrary componentLibrary, LayoutParameters layoutParameters, Path svgFile) {
-        writeSvg(componentLibrary, layoutParameters, svgFile, false);
+    public void writeSvg(ComponentLibrary componentLibrary, LayoutParameters layoutParameters, Network network, Path svgFile) {
+        writeSvg(componentLibrary, layoutParameters, svgFile, network, false);
     }
 
     public void writeSvg(ComponentLibrary componentLibrary, LayoutParameters layoutParameters,
-                         Path svgFile, boolean debug) {
+                         Path svgFile, Network network, boolean debug) {
         Path dir = svgFile.toAbsolutePath().getParent();
         String svgFileName = svgFile.getFileName().toString();
         if (!svgFileName.endsWith(".svg")) {
@@ -73,19 +80,19 @@ public final class SubstationDiagram {
         }
 
         try (Writer svgWriter = Files.newBufferedWriter(svgFile, StandardCharsets.UTF_8);
-             Writer metadataWriter = Files.newBufferedWriter(dir.resolve(svgFileName.replace(".svg", "_metadata.json")), StandardCharsets.UTF_8)) {
-            writeSvg(componentLibrary, layoutParameters, svgWriter, metadataWriter);
+                Writer metadataWriter = Files.newBufferedWriter(dir.resolve(svgFileName.replace(".svg", "_metadata.json")), StandardCharsets.UTF_8)) {
+            writeSvg(componentLibrary, layoutParameters, svgWriter, metadataWriter, network);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }
 
     public void writeSvg(ComponentLibrary componentLibrary, LayoutParameters layoutParameters,
-                         Writer svgWriter, Writer metadataWriter) {
-        writeSvg(componentLibrary, layoutParameters, new DefaultSubstationDiagramStyleProvider(), svgWriter, metadataWriter);
+                         Writer svgWriter, Writer metadataWriter, Network network) {
+        writeSvg(componentLibrary, layoutParameters, new DefaultSubstationDiagramInitialValueProvider(network), new DefaultSubstationDiagramStyleProvider(), svgWriter, metadataWriter);
     }
 
-    public void writeSvg(ComponentLibrary componentLibrary, LayoutParameters layoutParameters, SubstationDiagramStyleProvider styleProvider,
+    public void writeSvg(ComponentLibrary componentLibrary, LayoutParameters layoutParameters, SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider,
                          Writer svgWriter, Writer metadataWriter) {
         Objects.requireNonNull(componentLibrary);
         Objects.requireNonNull(layoutParameters);
@@ -96,7 +103,7 @@ public final class SubstationDiagram {
         LOGGER.info("Writing SVG and JSON metadata files...");
 
         GraphMetadata metadata = new SVGWriter(componentLibrary, layoutParameters)
-                .write(graph, styleProvider, svgWriter, sLayoutFactory, vLayoutFactory);
+                .write(graph, initProvider, styleProvider, svgWriter, sLayoutFactory, vLayoutFactory);
 
         // write metadata file
         metadata.writeJson(metadataWriter);

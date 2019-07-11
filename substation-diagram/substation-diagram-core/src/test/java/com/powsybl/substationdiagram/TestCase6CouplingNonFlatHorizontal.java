@@ -38,7 +38,7 @@ public class TestCase6CouplingNonFlatHorizontal extends AbstractTestCase {
 
     @Before
     public void setUp() {
-        Network network = NetworkFactory.create("testCase1", "test");
+        network = NetworkFactory.create("testCase1", "test");
         Substation s = network.newSubstation()
                 .setId("s")
                 .setCountry(Country.FR)

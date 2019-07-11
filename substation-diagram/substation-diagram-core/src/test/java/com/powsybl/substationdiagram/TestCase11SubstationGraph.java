@@ -35,7 +35,7 @@ public class TestCase11SubstationGraph extends AbstractTestCase {
 
     @Before
     public void setUp() {
-        Network network = NetworkFactory.create("testCase11", "test");
+        network = NetworkFactory.create("testCase11", "test");
 
         substation = createSubstation(network, "subst", "subst", Country.FR);
 

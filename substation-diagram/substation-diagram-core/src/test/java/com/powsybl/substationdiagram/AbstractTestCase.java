@@ -6,7 +6,15 @@
  */
 package com.powsybl.substationdiagram;
 
+import static org.junit.Assert.assertEquals;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
+
 import com.google.common.io.ByteStreams;
+import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.Substation;
 import com.powsybl.iidm.network.VoltageLevel;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
@@ -15,16 +23,10 @@ import com.powsybl.substationdiagram.layout.SubstationLayoutFactory;
 import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
 import com.powsybl.substationdiagram.model.Graph;
 import com.powsybl.substationdiagram.model.SubstationGraph;
+import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramInitialValueProvider;
 import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramStyleProvider;
 import com.powsybl.substationdiagram.svg.SVGWriter;
 import com.powsybl.substationdiagram.svg.SubstationDiagramStyleProvider;
-
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.UncheckedIOException;
-import java.nio.charset.StandardCharsets;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
@@ -32,6 +34,8 @@ import static org.junit.Assert.assertEquals;
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
 public abstract class AbstractTestCase {
+
+    protected Network network;
 
     protected VoltageLevel vl;
     protected Substation substation;
@@ -66,7 +70,7 @@ public abstract class AbstractTestCase {
     public void compareSvg(Graph graph, LayoutParameters layoutParameters, String refSvgName) {
         try (StringWriter writer = new StringWriter()) {
             new SVGWriter(componentLibrary, layoutParameters)
-                    .write(graph, styleProvider, writer);
+                    .write(graph, new DefaultSubstationDiagramInitialValueProvider(network), styleProvider, writer);
             writer.flush();
 
 //            FileWriter fw = new FileWriter(System.getProperty("user.home") + refSvgName);
@@ -85,7 +89,7 @@ public abstract class AbstractTestCase {
                            String refSvgName, SubstationLayoutFactory sLayoutFactory) {
         try (StringWriter writer = new StringWriter()) {
             new SVGWriter(componentLibrary, layoutParameters)
-                    .write(graph, styleProvider, writer, sLayoutFactory,
+                    .write(graph, new DefaultSubstationDiagramInitialValueProvider(network), styleProvider, writer, sLayoutFactory,
                            new PositionVoltageLevelLayoutFactory());
             writer.flush();
 

@@ -14,6 +14,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.powsybl.substationdiagram.model.Edge;
+import com.powsybl.substationdiagram.model.FeederNode;
 import com.powsybl.substationdiagram.model.Graph;
 import com.powsybl.substationdiagram.model.Node;
 
@@ -44,10 +45,38 @@ public class DefaultSubstationDiagramStyleProvider implements SubstationDiagramS
                 StringBuilder style = new StringBuilder();
                 String className = escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name()));
                 style.append(".").append(className)
-                        .append(" .open { visibility: ").append(node.isOpen() ? "visible;" : "hidden;}");
+                        .append(" .open { visibility: ").append(node.isOpen() ? "visible;}" : "hidden;}");
 
                 style.append(".").append(className)
-                        .append(" .closed { visibility: ").append(node.isOpen() ? "hidden;" : "visible;}");
+                        .append(" .closed { visibility: ").append(node.isOpen() ? "hidden;}" : "visible;}");
+
+                return Optional.of(style.toString());
+            } catch (UnsupportedEncodingException e) {
+                throw new UncheckedIOException(e);
+            }
+        }
+        if (node instanceof FeederNode) {
+            try {
+                StringBuilder style = new StringBuilder();
+                style.append(".ARROW1_").append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
+                        .append("_UP").append(" .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}");
+                style.append(".ARROW1_").append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
+                .append("_UP").append(" .arrow-down { visibility: hidden;}");
+
+                style.append(".ARROW1_").append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
+                .append("_DOWN").append(" .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}");
+                style.append(".ARROW1_").append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
+                .append("_DOWN").append(" .arrow-up { visibility: hidden;}");
+
+                style.append(".ARROW2_").append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
+                .append("_UP").append(" .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}");
+                style.append(".ARROW2_").append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
+                .append("_UP").append(" .arrow-down { visibility: hidden;}");
+
+                style.append(".ARROW2_").append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
+                .append("_DOWN").append(" .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}");
+                style.append(".ARROW2_").append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
+                .append("_DOWN").append(" .arrow-up { visibility: hidden;}");
 
                 return Optional.of(style.toString());
             } catch (UnsupportedEncodingException e) {

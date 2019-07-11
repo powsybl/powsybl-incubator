@@ -631,7 +631,7 @@ public class SVGWriter {
         ComponentMetadata cd = metadata.getComponentMetadata(ComponentType.ARROW);
 
         double shX = cd.getSize().getWidth()  + LABEL_OFFSET;
-        double shY = cd.getSize().getHeight() - LABEL_OFFSET +(double) FONT_SIZE / 2;
+        double shY = cd.getSize().getHeight() - LABEL_OFFSET + (double) FONT_SIZE / 2;
 
         Element g1 = root.getOwnerDocument().createElement("g");
         g1.setAttribute("id", wireId + "_ARROW1");

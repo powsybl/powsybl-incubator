@@ -415,10 +415,10 @@ public class SVGWriter {
                             drawLabel(val.getLabel2().get(), false,  d - LABEL_OFFSET, -LABEL_OFFSET, g, FONT_SIZE);
                         }
                         if (val.getLabel3().isPresent()) {
-                            drawLabel(val.getLabel3().get(), false, -LABEL_OFFSET, LABEL_OFFSET + FONT_SIZE / 2, g, FONT_SIZE);
+                            drawLabel(val.getLabel3().get(), false, -LABEL_OFFSET, LABEL_OFFSET + (double) FONT_SIZE / 2, g, FONT_SIZE);
                         }
                         if (val.getLabel4().isPresent()) {
-                            drawLabel(val.getLabel4().get(), false, d - LABEL_OFFSET, LABEL_OFFSET + FONT_SIZE / 2, g, FONT_SIZE);
+                            drawLabel(val.getLabel4().get(), false, d - LABEL_OFFSET, LABEL_OFFSET + (double) FONT_SIZE / 2, g, FONT_SIZE);
                         }
                     }
                 }
@@ -631,7 +631,7 @@ public class SVGWriter {
         ComponentMetadata cd = metadata.getComponentMetadata(ComponentType.ARROW);
 
         double shX = cd.getSize().getWidth()  + LABEL_OFFSET;
-        double shY = cd.getSize().getHeight() - LABEL_OFFSET + FONT_SIZE / 2;
+        double shY = cd.getSize().getHeight() - LABEL_OFFSET +(double) FONT_SIZE / 2;
 
         Element g1 = root.getOwnerDocument().createElement("g");
         g1.setAttribute("id", wireId + "_ARROW1");
@@ -681,11 +681,11 @@ public class SVGWriter {
         }
         Optional<String> label3 = init.getLabel3();
         if (label3.isPresent()) {
-            drawLabel(label3.get(), false, -(label3.get().length() * FONT_SIZE / 2 + LABEL_OFFSET), shY, g1, FONT_SIZE);
+            drawLabel(label3.get(), false, -(label3.get().length() * (double) FONT_SIZE / 2 + LABEL_OFFSET), shY, g1, FONT_SIZE);
         }
         Optional<String> label4 = init.getLabel4();
         if (label4.isPresent()) {
-            drawLabel(label4.get(), false, -(label4.get().length() * FONT_SIZE / 2 + LABEL_OFFSET), shY, g2, FONT_SIZE);
+            drawLabel(label4.get(), false, -(label4.get().length() * (double) FONT_SIZE / 2 + LABEL_OFFSET), shY, g2, FONT_SIZE);
         }
 
         root.appendChild(g2);

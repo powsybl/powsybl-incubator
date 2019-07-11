@@ -103,16 +103,16 @@ public class Graph {
     private final boolean forVoltageLevelDiagram;  // true if voltageLevel diagram
                                                    // false if substation diagram
 
-    private final boolean showSelfFor3WT;
+    private final boolean showInductorFor3WT;
 
     /**
      * Constructor
      */
-    public Graph(VoltageLevel voltageLevel, boolean useName, boolean forVoltageLevelDiagram, boolean showSelfFor3WT) {
+    public Graph(VoltageLevel voltageLevel, boolean useName, boolean forVoltageLevelDiagram, boolean showInductorFor3WT) {
         this.voltageLevel = Objects.requireNonNull(voltageLevel);
         this.useName = useName;
         this.forVoltageLevelDiagram = forVoltageLevelDiagram;
-        this.showSelfFor3WT = showSelfFor3WT;
+        this.showInductorFor3WT = showInductorFor3WT;
     }
 
     boolean isUseName() {
@@ -123,9 +123,9 @@ public class Graph {
         return create(vl, false, true, false);
     }
 
-    public static Graph create(VoltageLevel vl, boolean useName, boolean forVoltageLevelDiagram, boolean showSelfFor3WT) {
+    public static Graph create(VoltageLevel vl, boolean useName, boolean forVoltageLevelDiagram, boolean showInductorFor3WT) {
         Objects.requireNonNull(vl);
-        Graph g = new Graph(vl, useName, forVoltageLevelDiagram, showSelfFor3WT);
+        Graph g = new Graph(vl, useName, forVoltageLevelDiagram, showInductorFor3WT);
         g.buildGraph(vl);
         return g;
     }
@@ -874,7 +874,7 @@ public class Graph {
                     FeederNode nfeeder2 = null;
 
                     InfosSelf3WT infosSelf = null;
-                    if (showSelfFor3WT && forVoltageLevelDiagram) {
+                    if (showInductorFor3WT && forVoltageLevelDiagram) {
                         // finding the self in the tertiary voltage level
                         infosSelf = findSelfOf3WT(n3WT);
                     }

@@ -47,7 +47,7 @@ public class LayoutParameters {
     private double horizontalSnakeLinePadding = 20;
     private double verticalSnakeLinePadding = 25;
 
-    private boolean showSelfFor3WT = false;
+    private boolean showInductorFor3WT = false;
 
     @JsonCreator
     public LayoutParameters() {
@@ -72,7 +72,7 @@ public class LayoutParameters {
                             @JsonProperty("drawStraightWires") boolean drawStraightWires,
                             @JsonProperty("horizontalSnakeLinePadding") double horizontalSnakeLinePadding,
                             @JsonProperty("verticalSnakeLinePadding") double verticalSnakeLinePadding,
-                            @JsonProperty("showSelfFor3WT") boolean showSelfFor3WT) {
+                            @JsonProperty("showInductorFor3WT") boolean showInductorFor3WT) {
         this.translateX = translateX;
         this.translateY = translateY;
         this.initialXBus = initialXBus;
@@ -91,7 +91,7 @@ public class LayoutParameters {
         this.drawStraightWires = drawStraightWires;
         this.horizontalSnakeLinePadding = horizontalSnakeLinePadding;
         this.verticalSnakeLinePadding = verticalSnakeLinePadding;
-        this.showSelfFor3WT = showSelfFor3WT;
+        this.showInductorFor3WT = showInductorFor3WT;
     }
 
     public LayoutParameters(LayoutParameters other) {
@@ -114,7 +114,7 @@ public class LayoutParameters {
         drawStraightWires = other.drawStraightWires;
         horizontalSnakeLinePadding = other.horizontalSnakeLinePadding;
         verticalSnakeLinePadding = other.verticalSnakeLinePadding;
-        showSelfFor3WT = other.showSelfFor3WT;
+        showInductorFor3WT = other.showInductorFor3WT;
     }
 
     public double getTranslateX() {
@@ -279,12 +279,12 @@ public class LayoutParameters {
         return this;
     }
 
-    public boolean isShowSelfFor3WT() {
-        return showSelfFor3WT;
+    public boolean isShowInductorFor3WT() {
+        return showInductorFor3WT;
     }
 
-    public LayoutParameters setShowSelfFor3WT(boolean showSelfFor3WT) {
-        this.showSelfFor3WT = showSelfFor3WT;
+    public LayoutParameters setShowInductorFor3WT(boolean showInductorFor3WT) {
+        this.showInductorFor3WT = showInductorFor3WT;
         return this;
     }
 }

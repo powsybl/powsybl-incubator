@@ -681,11 +681,11 @@ public class SVGWriter {
         }
         Optional<String> label3 = init.getLabel3();
         if (label3.isPresent()) {
-            drawLabel(label3.get(), false, -(init.getLabel3().get().length() * FONT_SIZE / 2 + LABEL_OFFSET), shY, g1, FONT_SIZE);
+            drawLabel(label3.get(), false, -(label3.get().length() * FONT_SIZE / 2 + LABEL_OFFSET), shY, g1, FONT_SIZE);
         }
         Optional<String> label4 = init.getLabel4();
         if (label4.isPresent()) {
-            drawLabel(label4.get(), false, -(init.getLabel4().get().length() * FONT_SIZE / 2 + LABEL_OFFSET), shY, g2, FONT_SIZE);
+            drawLabel(label4.get(), false, -(label4.get().length() * FONT_SIZE / 2 + LABEL_OFFSET), shY, g2, FONT_SIZE);
         }
 
         root.appendChild(g2);

@@ -76,12 +76,12 @@ public class LfBusImpl extends AbstractLfBus {
         if (Double.isNaN(this.minP)) {
             this.minP = minP;
         } else {
-            this.minP = Math.max(this.minP, minP);
+            this.minP += minP;
         }
         if (Double.isNaN(this.maxP)) {
             this.maxP = maxP;
         } else {
-            this.maxP = Math.min(this.maxP, maxP);
+            this.maxP += maxP;
         }
     }
 
@@ -147,6 +147,11 @@ public class LfBusImpl extends AbstractLfBus {
     @Override
     public double getGenerationTargetP() {
         return generationTargetP / PerUnit.SB;
+    }
+
+    @Override
+    public void setGenerationTargetP(double generationTargetP) {
+        this.generationTargetP = generationTargetP * PerUnit.SB;
     }
 
     @Override

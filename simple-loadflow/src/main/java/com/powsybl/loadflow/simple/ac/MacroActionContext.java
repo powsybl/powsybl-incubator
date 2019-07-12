@@ -14,7 +14,7 @@ import java.util.Objects;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-class MacroIterationContext {
+class MacroActionContext {
 
     private final int macroIteration;
 
@@ -22,7 +22,7 @@ class MacroIterationContext {
 
     private final NewtonRaphsonResult newtonRaphsonResult;
 
-    MacroIterationContext(int macroIteration, NetworkContext networkContext, NewtonRaphsonResult newtonRaphsonResult) {
+    MacroActionContext(int macroIteration, NetworkContext networkContext, NewtonRaphsonResult newtonRaphsonResult) {
         this.macroIteration = macroIteration;
         this.networkContext = Objects.requireNonNull(networkContext);
         this.newtonRaphsonResult = Objects.requireNonNull(newtonRaphsonResult);

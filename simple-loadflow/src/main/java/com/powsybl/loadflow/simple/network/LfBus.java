@@ -33,6 +33,8 @@ public interface LfBus {
 
     double getGenerationTargetP();
 
+    void setGenerationTargetP(double generationTargetP);
+
     double getGenerationTargetQ();
 
     double getTargetV();

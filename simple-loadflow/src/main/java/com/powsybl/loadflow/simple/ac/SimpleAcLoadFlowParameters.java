@@ -18,7 +18,7 @@ public class SimpleAcLoadFlowParameters extends AbstractExtension<LoadFlowParame
 
     private SlackBusSelectionMode slackBusSelectionMode = SlackBusSelectionMode.MOST_MESHED;
 
-    private boolean distributedSlack = true;
+    private boolean distributedSlack = false;
 
     @Override
     public String getName() {

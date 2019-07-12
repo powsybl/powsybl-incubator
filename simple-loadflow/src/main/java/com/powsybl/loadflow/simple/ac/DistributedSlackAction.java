@@ -131,7 +131,7 @@ public class DistributedSlackAction implements MacroAction {
             return true;
         }
 
-        LOGGER.info("Already balanced");
+        LOGGER.debug("Already balanced");
 
         return false;
     }

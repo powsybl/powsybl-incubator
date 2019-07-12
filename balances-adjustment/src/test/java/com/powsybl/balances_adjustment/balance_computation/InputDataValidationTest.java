@@ -135,7 +135,7 @@ public class InputDataValidationTest {
 
         balanceComputation = balanceComputationFactory.create(testNetwork1, networkAreaNetPositionTargetMap, networkAreasScalableMap, loadFlowFactory, computationManager, 1);
         List<String> listOfViolations = ((BalanceComputationImpl) balanceComputation).listInputDataViolations();
-        assertTrue(listOfViolations.contains("The " + countryAreaBE + " is not defined in the scalable network areas map"));
+        assertTrue(listOfViolations.contains("The " + countryAreaBE.getName() + " is not defined in the scalable network areas map"));
         assertTrue(listOfViolations.contains("The scalable of " + countryAreaFR + " doesn't contain injections in network"));
 
         try {

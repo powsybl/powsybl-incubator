@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.powsybl.loadflow.simple.ac;
+package com.powsybl.loadflow.simple.ac.observer;
 
 import com.powsybl.loadflow.simple.equations.EquationSystem;
 import com.powsybl.math.matrix.Matrix;
@@ -15,19 +15,21 @@ import java.util.List;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public interface NewtonRaphsonObserver {
+public interface AcLoadFlowObserver {
 
-    static NewtonRaphsonObserver of(NewtonRaphsonObserver... observers) {
+    static AcLoadFlowObserver of(AcLoadFlowObserver... observers) {
         return of(Arrays.asList(observers));
     }
 
-    static NewtonRaphsonObserver of(List<NewtonRaphsonObserver> observers) {
-        return new MultipleNewtonRaphsonObserver(observers);
+    static AcLoadFlowObserver of(List<AcLoadFlowObserver> observers) {
+        return new MultipleAcLoadFlowObserver(observers);
     }
 
     void beforeEquationSystemCreation();
 
     void afterEquationSystemCreation();
+
+    void beginMacroIteration(int macroIteration, String macroActionName);
 
     void beginIteration(int iteration);
 
@@ -54,4 +56,10 @@ public interface NewtonRaphsonObserver {
     void afterStateUpdate(double[] x, EquationSystem equationSystem, int iteration);
 
     void endIteration(int iteration);
+
+    void beforeMacroActionRun(int macroIteration, String macroActionName);
+
+    void afterMacroActionRun(int macroIteration, String macroActionName, boolean cont);
+
+    void endMacroIteration(int macroIteration, String macroActionName);
 }

@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.powsybl.loadflow.simple.ac;
+package com.powsybl.loadflow.simple.ac.observer;
 
 import com.powsybl.loadflow.simple.equations.EquationSystem;
 import com.powsybl.math.matrix.Matrix;
@@ -15,22 +15,27 @@ import java.util.Objects;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class MultipleNewtonRaphsonObserver implements NewtonRaphsonObserver {
+public class MultipleAcLoadFlowObserver implements AcLoadFlowObserver {
 
-    private final List<NewtonRaphsonObserver> observers;
+    private final List<AcLoadFlowObserver> observers;
 
-    public MultipleNewtonRaphsonObserver(List<NewtonRaphsonObserver> observers) {
+    public MultipleAcLoadFlowObserver(List<AcLoadFlowObserver> observers) {
         this.observers = Objects.requireNonNull(observers);
     }
 
     @Override
     public void beforeEquationSystemCreation() {
-        observers.forEach(NewtonRaphsonObserver::beforeEquationSystemCreation);
+        observers.forEach(AcLoadFlowObserver::beforeEquationSystemCreation);
     }
 
     @Override
     public void afterEquationSystemCreation() {
-        observers.forEach(NewtonRaphsonObserver::afterEquationSystemCreation);
+        observers.forEach(AcLoadFlowObserver::afterEquationSystemCreation);
+    }
+
+    @Override
+    public void beginMacroIteration(int macroIteration, String macroActionName) {
+        observers.forEach(o -> o.beginMacroIteration(macroIteration, macroActionName));
     }
 
     @Override
@@ -96,5 +101,20 @@ public class MultipleNewtonRaphsonObserver implements NewtonRaphsonObserver {
     @Override
     public void endIteration(int iteration) {
         observers.forEach(o -> o.endIteration(iteration));
+    }
+
+    @Override
+    public void beforeMacroActionRun(int macroIteration, String macroActionName) {
+        observers.forEach(o -> o.beforeMacroActionRun(macroIteration, macroActionName));
+    }
+
+    @Override
+    public void afterMacroActionRun(int macroIteration, String macroActionName, boolean cont) {
+        observers.forEach(o -> o.afterMacroActionRun(macroIteration, macroActionName, cont));
+    }
+
+    @Override
+    public void endMacroIteration(int macroIteration, String macroActionName) {
+        observers.forEach(o -> o.endMacroIteration(macroIteration, macroActionName));
     }
 }

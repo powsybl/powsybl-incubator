@@ -4,14 +4,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.powsybl.loadflow.simple.ac;
+package com.powsybl.loadflow.simple.network;
+
+import java.util.List;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public enum NewtonRaphsonStatus {
-    CONVERGED,
-    MAX_ITERATION_REACHED,
-    SOLVER_FAILED,
-    NO_CALCULATION
+public interface SlackBusSelector {
+
+    LfBus select(List<LfBus> buses);
 }

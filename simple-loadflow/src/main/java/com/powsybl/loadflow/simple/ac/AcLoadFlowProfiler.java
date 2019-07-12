@@ -7,6 +7,7 @@
 package com.powsybl.loadflow.simple.ac;
 
 import com.google.common.base.Stopwatch;
+import com.powsybl.loadflow.simple.ac.observer.DefaultAcLoadFlowObserver;
 import com.powsybl.loadflow.simple.equations.EquationSystem;
 import com.powsybl.math.matrix.Matrix;
 import org.slf4j.Logger;
@@ -17,9 +18,9 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class NewtonRaphsonProfiler extends DefaultNewtonRaphsonObserver {
+public class AcLoadFlowProfiler extends DefaultAcLoadFlowObserver {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(NewtonRaphsonProfiler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AcLoadFlowProfiler.class);
 
     private final Stopwatch iterationStopwatch = Stopwatch.createUnstarted();
 
@@ -105,5 +106,16 @@ public class NewtonRaphsonProfiler extends DefaultNewtonRaphsonObserver {
     public void endIteration(int iteration) {
         iterationStopwatch.stop();
         LOGGER.debug("Iteration {} complete in {} ms", iteration, iterationStopwatch.elapsed(TimeUnit.MILLISECONDS));
+    }
+
+    @Override
+    public void beforeMacroActionRun(int macroIteration, String macroActionName) {
+        restart(stopwatch);
+    }
+
+    @Override
+    public void afterMacroActionRun(int macroIteration, String macroActionName, boolean cont) {
+        stopwatch.stop();
+        LOGGER.debug("Macro action '{}' ran in {} us", macroActionName, stopwatch.elapsed(TimeUnit.MICROSECONDS));
     }
 }

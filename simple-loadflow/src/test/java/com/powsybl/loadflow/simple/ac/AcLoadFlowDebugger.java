@@ -6,6 +6,7 @@
  */
 package com.powsybl.loadflow.simple.ac;
 
+import com.powsybl.loadflow.simple.ac.observer.DefaultAcLoadFlowObserver;
 import com.powsybl.loadflow.simple.equations.EquationSystem;
 import com.powsybl.math.matrix.DenseMatrixFactory;
 import com.powsybl.math.matrix.Matrix;
@@ -19,9 +20,9 @@ import java.util.Objects;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class NewtonRaphsonDebugger extends DefaultNewtonRaphsonObserver {
+public class AcLoadFlowDebugger extends DefaultAcLoadFlowObserver {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(NewtonRaphsonDebugger.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AcLoadFlowDebugger.class);
 
     @Override
     public void beginIteration(int iteration) {

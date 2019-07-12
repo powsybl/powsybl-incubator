@@ -6,34 +6,30 @@
  */
 package com.powsybl.loadflow.simple.ac;
 
-import com.google.common.base.Stopwatch;
 import com.google.common.collect.ImmutableMap;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
 import com.powsybl.loadflow.LoadFlowResultImpl;
-import com.powsybl.loadflow.simple.network.NetworkContext;
-import com.powsybl.loadflow.simple.network.PerUnit;
+import com.powsybl.loadflow.simple.ac.nr.NewtonRaphsonStatus;
+import com.powsybl.loadflow.simple.ac.nr.VoltageInitializer;
+import com.powsybl.loadflow.simple.ac.observer.AcLoadFlowObserver;
+import com.powsybl.loadflow.simple.network.SlackBusSelector;
 import com.powsybl.math.matrix.MatrixFactory;
 import com.powsybl.math.matrix.SparseMatrixFactory;
 import com.powsybl.tools.PowsyblCoreVersion;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
 public class SimpleAcLoadFlow implements LoadFlow {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleAcLoadFlow.class);
 
     private static final String NAME = "Simple loadflow";
 
@@ -41,7 +37,7 @@ public class SimpleAcLoadFlow implements LoadFlow {
 
     private final MatrixFactory matrixFactory;
 
-    private final List<NewtonRaphsonObserver> additionalObservers = Collections.synchronizedList(new ArrayList<>());
+    private final List<AcLoadFlowObserver> additionalObservers = Collections.synchronizedList(new ArrayList<>());
 
     public SimpleAcLoadFlow(Network network) {
         this.network = Objects.requireNonNull(network);
@@ -57,7 +53,7 @@ public class SimpleAcLoadFlow implements LoadFlow {
         return new SimpleAcLoadFlow(network);
     }
 
-    public List<NewtonRaphsonObserver> getAdditionalObservers() {
+    public List<AcLoadFlowObserver> getAdditionalObservers() {
         return additionalObservers;
     }
 
@@ -71,17 +67,17 @@ public class SimpleAcLoadFlow implements LoadFlow {
         return new PowsyblCoreVersion().getMavenProjectVersion();
     }
 
-    private NewtonRaphsonObserver getObserver() {
-        List<NewtonRaphsonObserver> observers = new ArrayList<>(additionalObservers.size() + 2);
-        observers.add(new NewtonRaphsonLogger());
-        observers.add(new NewtonRaphsonProfiler());
+    private AcLoadFlowObserver getObserver() {
+        List<AcLoadFlowObserver> observers = new ArrayList<>(additionalObservers.size() + 2);
+        observers.add(new AcLoadFlowLogger());
+        observers.add(new AcLoadFlowProfiler());
         observers.addAll(additionalObservers);
-        return NewtonRaphsonObserver.of(observers);
+        return AcLoadFlowObserver.of(observers);
     }
 
-    private static ImmutableMap<String, String> createMetrics(NewtonRaphsonResult result) {
-        return ImmutableMap.of("iterations", Integer.toString(result.getIterations()),
-                               "status", result.getStatus().name());
+    private static ImmutableMap<String, String> createMetrics(AcLoadFlowResult result) {
+        return ImmutableMap.of("iterations", Integer.toString(result.getNewtowRaphsonIterations()),
+                               "status", result.getNewtonRaphsonStatus().name());
     }
 
     @Override
@@ -90,8 +86,6 @@ public class SimpleAcLoadFlow implements LoadFlow {
         Objects.requireNonNull(parameters);
 
         return CompletableFuture.supplyAsync(() -> {
-            Stopwatch stopwatch = Stopwatch.createStarted();
-
             network.getVariantManager().setWorkingVariant(workingStateId);
 
             SimpleAcLoadFlowParameters parametersExt = parameters.getExtension(SimpleAcLoadFlowParameters.class);
@@ -99,21 +93,19 @@ public class SimpleAcLoadFlow implements LoadFlow {
                 parametersExt = new SimpleAcLoadFlowParameters();
             }
 
-            NetworkContext networkContext = NetworkContext.of(network, parametersExt.getSlackBusSelectionMode()).get(0);
+            SlackBusSelector slackBusSelector = parametersExt.getSlackBusSelectionMode().getSelector();
 
-            NewtonRaphsonParameters nrParameters = new NewtonRaphsonParameters()
-                    .setVoltageInitMode(parameters.getVoltageInitMode());
-            NewtonRaphsonResult result = new NewtonRaphson(networkContext, matrixFactory, getObserver())
-                    .run(nrParameters);
+            VoltageInitializer voltageInitializer = VoltageInitializer.getFromParameters(parameters);
 
-            NetworkContext.resetState(network);
-            networkContext.updateState();
+            List<MacroAction> macroActions = new ArrayList<>();
+            if (parametersExt.isDistributedSlack()) {
+                macroActions.add(new DistributedSlackAction());
+            }
 
-            stopwatch.stop();
-            LOGGER.info("Ac loadflow ran in {} ms (status={}, iteration={}, slackBusActivePowerMismatch={})", stopwatch.elapsed(TimeUnit.MILLISECONDS),
-                    result.getStatus(), result.getIterations(), result.getSlackBusActivePowerMismatch() * PerUnit.SB);
+            AcLoadFlowResult result = new AcloadFlowEngine(network, slackBusSelector, voltageInitializer, macroActions, matrixFactory, getObserver())
+                    .run();
 
-            return new LoadFlowResultImpl(result.getStatus() == NewtonRaphsonStatus.CONVERGED, createMetrics(result), null);
+            return new LoadFlowResultImpl(result.getNewtonRaphsonStatus() == NewtonRaphsonStatus.CONVERGED, createMetrics(result), null);
         });
     }
 }

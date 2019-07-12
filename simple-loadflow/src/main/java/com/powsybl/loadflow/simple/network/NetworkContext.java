@@ -48,25 +48,24 @@ public class NetworkContext {
         private final Set<ThreeWindingsTransformer> t3wtSet = new LinkedHashSet<>();
 
         private final Map<String, Integer> busIdToNum = new HashMap<>();
-
-        private double maxNominalV = Double.MIN_VALUE;
     }
 
-    public NetworkContext(Network network, List<Bus> buses, SlackBusSelectionMode slackBusSelectionMode,
-                          Map<HvdcConverterStation, HvdcLine> hvdcLines) {
+    public NetworkContext(Network network, List<Bus> buses, SlackBusSelector slackBusSelector, Map<HvdcConverterStation, HvdcLine> hvdcLines) {
         this.network = Objects.requireNonNull(network);
         Objects.requireNonNull(buses);
         if (buses.isEmpty()) {
             throw new IllegalArgumentException("Empty bus list");
         }
-        Objects.requireNonNull(slackBusSelectionMode);
+        Objects.requireNonNull(slackBusSelector);
         Objects.requireNonNull(hvdcLines);
 
         CreationContext creationContext = new CreationContext();
         this.buses = createBuses(buses, hvdcLines, creationContext);
         branches = createBranches(this.buses, creationContext);
 
-        slackBus = selectSlackBus(slackBusSelectionMode, creationContext.maxNominalV);
+        slackBus = slackBusSelector.select(this.buses);
+        slackBus.setSlack(true);
+        LOGGER.debug("Selected slack bus (class={}): {}", slackBusSelector.getClass().getSimpleName(), slackBus.getId());
     }
 
     private static List<LfBus> createBuses(List<Bus> buses, Map<HvdcConverterStation, HvdcLine> hvdcLines, CreationContext creationContext) {
@@ -75,8 +74,6 @@ public class NetworkContext {
 
         for (Bus bus : buses) {
             LfBusImpl lfBus = addLfBus(bus, lfBuses, creationContext.busIdToNum);
-
-            creationContext.maxNominalV = Math.max(creationContext.maxNominalV, lfBus.getNominalV());
 
             bus.visitConnectedEquipments(new DefaultTopologyVisitor() {
 
@@ -151,7 +148,7 @@ public class NetworkContext {
 
                 private void visitVscConverterStation(VscConverterStation vscCs) {
                     HvdcLine line = hvdcLines.get(vscCs);
-                    lfBus.addVscConverterStattion(vscCs, line);
+                    lfBus.addVscConverterStation(vscCs, line);
                 }
             });
         }
@@ -191,27 +188,6 @@ public class NetworkContext {
         return lfBranches;
     }
 
-    private LfBus selectSlackBus(SlackBusSelectionMode slackBusSelectionMode, double maxNominalV) {
-        LfBus selectedSlackBus;
-        switch (slackBusSelectionMode) {
-            case FIRST:
-                selectedSlackBus = this.buses.get(0);
-                break;
-            case MOST_MESHED:
-                // select most meshed bus among buses with highest nominal voltage
-                selectedSlackBus = this.buses.stream()
-                        .filter(bus -> bus.getNominalV() == maxNominalV)
-                        .max(Comparator.comparingInt(LfBus::getNeighbors))
-                        .orElseThrow(AssertionError::new);
-                break;
-            default:
-                throw new IllegalStateException("Slack bus selection mode unknown:" + slackBusSelectionMode);
-        }
-        selectedSlackBus.setSlack(true);
-        LOGGER.debug("Selected slack bus (mode={}): {}", slackBusSelectionMode, selectedSlackBus.getId());
-        return selectedSlackBus;
-    }
-
     private static LfBus getLfBus(Terminal terminal, List<LfBus> lfBuses, Map<String, Integer> busIdToNum) {
         Bus bus = terminal.getBusView().getBus();
         if (bus != null) {
@@ -245,7 +221,7 @@ public class NetworkContext {
         return lfBus;
     }
 
-    public static List<NetworkContext> of(Network network, SlackBusSelectionMode slackBusSelectionMode) {
+    public static List<NetworkContext> of(Network network, SlackBusSelector slackBusSelector) {
         Objects.requireNonNull(network);
         Map<Integer, List<Bus>> buseByCc = new TreeMap<>();
         for (Bus bus : network.getBusView().getBuses()) {
@@ -264,7 +240,7 @@ public class NetworkContext {
 
         return buseByCc.entrySet().stream()
                 .filter(e -> e.getKey() == ComponentConstants.MAIN_NUM)
-                .map(e -> new NetworkContext(network, e.getValue(), slackBusSelectionMode, hvdcLines))
+                .map(e -> new NetworkContext(network, e.getValue(), slackBusSelector, hvdcLines))
                 .collect(Collectors.toList());
     }
 
@@ -339,6 +315,12 @@ public class NetworkContext {
         }
         if (bus.getLoadTargetQ() != 0) {
             jsonGenerator.writeNumberField("loadTargetQ", bus.getLoadTargetQ());
+        }
+        if (!Double.isNaN(bus.getMinP())) {
+            jsonGenerator.writeNumberField("minP", bus.getMinP());
+        }
+        if (!Double.isNaN(bus.getMaxP())) {
+            jsonGenerator.writeNumberField("maxP", bus.getMaxP());
         }
         if (!Double.isNaN(bus.getTargetV())) {
             jsonGenerator.writeNumberField("targetV", bus.getTargetV());

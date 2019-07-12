@@ -4,10 +4,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.powsybl.loadflow.simple.ac;
+package com.powsybl.loadflow.simple.ac.nr;
 
 import com.google.common.base.Stopwatch;
-import com.powsybl.loadflow.simple.ac.equations.AcEquationSystem;
+import com.powsybl.loadflow.simple.ac.observer.AcLoadFlowObserver;
 import com.powsybl.loadflow.simple.equations.*;
 import com.powsybl.loadflow.simple.network.LfBus;
 import com.powsybl.loadflow.simple.network.NetworkContext;
@@ -34,7 +34,15 @@ public class NewtonRaphson {
 
     private final MatrixFactory matrixFactory;
 
-    private final NewtonRaphsonObserver observer;
+    private final AcLoadFlowObserver observer;
+
+    private final EquationContext equationContext;
+
+    private final EquationSystem equationSystem;
+
+    private final VoltageInitializer voltageInitializer;
+
+    private int iteration;
 
     static class NewtonRaphsonContext {
 
@@ -49,10 +57,16 @@ public class NewtonRaphson {
         LUDecomposition lu;
     }
 
-    public NewtonRaphson(NetworkContext networkContext, MatrixFactory matrixFactory, NewtonRaphsonObserver observer) {
+    public NewtonRaphson(NetworkContext networkContext, MatrixFactory matrixFactory, AcLoadFlowObserver observer,
+                         EquationContext equationContext, EquationSystem equationSystem,  VoltageInitializer voltageInitializer,
+                         int iteration) {
         this.networkContext = Objects.requireNonNull(networkContext);
         this.matrixFactory = Objects.requireNonNull(matrixFactory);
         this.observer = Objects.requireNonNull(observer);
+        this.equationContext = Objects.requireNonNull(equationContext);
+        this.equationSystem = Objects.requireNonNull(equationSystem);
+        this.voltageInitializer = Objects.requireNonNull(voltageInitializer);
+        this.iteration = iteration;
     }
 
     private NewtonRaphsonStatus runIteration(int iteration, EquationSystem system, NewtonRaphsonContext context) {
@@ -143,25 +157,16 @@ public class NewtonRaphson {
 
         Stopwatch stopwatch = Stopwatch.createStarted();
 
-        observer.beforeEquationSystemCreation();
-
-        EquationContext equationContext = new EquationContext();
-        EquationSystem equationSystem = AcEquationSystem.create(networkContext, equationContext);
-
-        observer.afterEquationSystemCreation();
-
         NewtonRaphsonContext context = new NewtonRaphsonContext();
 
         // initialize state vector (flat start)
-        context.x = equationSystem.initState(parameters.getVoltageInitMode());
+        context.x = equationSystem.initState(voltageInitializer);
 
         // initialize target vector
         context.targets = equationSystem.initTargets();
 
         // initialize mismatch vector (difference between equation values and targets)
         context.fx = new double[equationSystem.getEquationsToSolve().size()];
-
-        int iteration = 0;
 
         NewtonRaphsonStatus status = NewtonRaphsonStatus.NO_CALCULATION;
         while (iteration <= parameters.getMaxIteration()) {

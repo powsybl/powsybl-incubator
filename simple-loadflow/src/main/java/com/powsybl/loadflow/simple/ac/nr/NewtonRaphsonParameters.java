@@ -4,11 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.powsybl.loadflow.simple.ac;
-
-import com.powsybl.loadflow.LoadFlowParameters;
-
-import java.util.Objects;
+package com.powsybl.loadflow.simple.ac.nr;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -19,8 +15,6 @@ public class NewtonRaphsonParameters {
 
     private int maxIteration = DEFAULT_MAX_ITERATION;
 
-    private LoadFlowParameters.VoltageInitMode voltageInitMode = LoadFlowParameters.VoltageInitMode.UNIFORM_VALUES;
-
     public int getMaxIteration() {
         return maxIteration;
     }
@@ -30,15 +24,6 @@ public class NewtonRaphsonParameters {
             throw new IllegalArgumentException("Invalid max iteration value: " + maxIteration);
         }
         this.maxIteration = maxIteration;
-        return this;
-    }
-
-    public LoadFlowParameters.VoltageInitMode getVoltageInitMode() {
-        return voltageInitMode;
-    }
-
-    public NewtonRaphsonParameters setVoltageInitMode(LoadFlowParameters.VoltageInitMode voltageInitMode) {
-        this.voltageInitMode = Objects.requireNonNull(voltageInitMode);
         return this;
     }
 }

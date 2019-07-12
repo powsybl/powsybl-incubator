@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.powsybl.loadflow.simple.ac;
+package com.powsybl.loadflow.simple.ac.nr;
 
 import java.util.Objects;
 
@@ -13,18 +13,18 @@ import java.util.Objects;
  */
 public class NewtonRaphsonResult {
 
-    private int iterations;
+    private int iteration;
 
     private NewtonRaphsonStatus status;
 
     private double slackBusActivePowerMismatch;
 
-    public NewtonRaphsonResult(NewtonRaphsonStatus status, int iterations, double slackBusActivePowerMismatch) {
-        if (iterations < 0) {
-            throw new IllegalArgumentException("Invalid iteration count: " + iterations);
+    public NewtonRaphsonResult(NewtonRaphsonStatus status, int iteration, double slackBusActivePowerMismatch) {
+        if (iteration < 0) {
+            throw new IllegalArgumentException("Invalid iteration value: " + iteration);
         }
         this.status = Objects.requireNonNull(status);
-        this.iterations = iterations;
+        this.iteration = iteration;
         this.slackBusActivePowerMismatch = slackBusActivePowerMismatch;
     }
 
@@ -32,8 +32,8 @@ public class NewtonRaphsonResult {
         return status;
     }
 
-    public int getIterations() {
-        return iterations;
+    public int getIteration() {
+        return iteration;
     }
 
     public double getSlackBusActivePowerMismatch() {

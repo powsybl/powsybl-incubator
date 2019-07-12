@@ -6,6 +6,7 @@
  */
 package com.powsybl.loadflow.simple.ac;
 
+import com.powsybl.loadflow.simple.ac.observer.DefaultAcLoadFlowObserver;
 import com.powsybl.loadflow.simple.equations.Equation;
 import com.powsybl.loadflow.simple.equations.EquationSystem;
 import org.slf4j.Logger;
@@ -18,9 +19,14 @@ import java.util.Map;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class NewtonRaphsonLogger extends DefaultNewtonRaphsonObserver {
+public class AcLoadFlowLogger extends DefaultAcLoadFlowObserver {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(NewtonRaphsonLogger.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AcLoadFlowLogger.class);
+
+    @Override
+    public void beginMacroIteration(int macroIteration, String macroActionName) {
+        LOGGER.debug("Macro iteration {} (action={})", macroIteration, macroActionName);
+    }
 
     @Override
     public void beginIteration(int iteration) {

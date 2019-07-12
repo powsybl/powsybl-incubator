@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.powsybl.loadflow.simple.ac;
+package com.powsybl.loadflow.simple.ac.observer;
 
 import com.powsybl.loadflow.simple.equations.EquationSystem;
 import com.powsybl.math.matrix.Matrix;
@@ -12,7 +12,7 @@ import com.powsybl.math.matrix.Matrix;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class DefaultNewtonRaphsonObserver implements NewtonRaphsonObserver {
+public class DefaultAcLoadFlowObserver implements AcLoadFlowObserver {
 
     @Override
     public void beforeEquationSystemCreation() {
@@ -21,6 +21,11 @@ public class DefaultNewtonRaphsonObserver implements NewtonRaphsonObserver {
 
     @Override
     public void afterEquationSystemCreation() {
+        // empty
+    }
+
+    @Override
+    public void beginMacroIteration(int macroIteration, String macroActionName) {
         // empty
     }
 
@@ -86,6 +91,21 @@ public class DefaultNewtonRaphsonObserver implements NewtonRaphsonObserver {
 
     @Override
     public void endIteration(int iteration) {
+        // empty
+    }
+
+    @Override
+    public void beforeMacroActionRun(int macroIteration, String macroActionName) {
+        // empty
+    }
+
+    @Override
+    public void afterMacroActionRun(int macroIteration, String macroActionName, boolean cont) {
+        // empty
+    }
+
+    @Override
+    public void endMacroIteration(int macroIteration, String macroActionName) {
         // empty
     }
 }

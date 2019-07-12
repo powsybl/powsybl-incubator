@@ -39,7 +39,27 @@ public abstract class AbstractFictitiousLfBus extends AbstractLfBus {
     }
 
     @Override
+    public void setGenerationTargetP(double generationTargetP) {
+        throw new IllegalStateException("Cannot change fictitious bus generation");
+    }
+
+    @Override
     public double getGenerationTargetQ() {
+        return 0;
+    }
+
+    @Override
+    public double getMinP() {
+        return Double.NaN;
+    }
+
+    @Override
+    public double getMaxP() {
+        return Double.NaN;
+    }
+
+    @Override
+    public double getParticipationFactor() {
         return 0;
     }
 

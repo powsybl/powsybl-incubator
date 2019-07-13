@@ -10,7 +10,7 @@ import com.google.common.base.Stopwatch;
 import com.powsybl.loadflow.simple.ac.observer.AcLoadFlowObserver;
 import com.powsybl.loadflow.simple.equations.*;
 import com.powsybl.loadflow.simple.network.LfBus;
-import com.powsybl.loadflow.simple.network.NetworkContext;
+import com.powsybl.loadflow.simple.network.LfNetwork;
 import com.powsybl.math.matrix.LUDecomposition;
 import com.powsybl.math.matrix.Matrix;
 import com.powsybl.math.matrix.MatrixFactory;
@@ -30,7 +30,7 @@ public class NewtonRaphson {
 
     private static final double EPS_CONV = Math.pow(10, -4);
 
-    private final NetworkContext networkContext;
+    private final LfNetwork network;
 
     private final MatrixFactory matrixFactory;
 
@@ -57,10 +57,10 @@ public class NewtonRaphson {
         LUDecomposition lu;
     }
 
-    public NewtonRaphson(NetworkContext networkContext, MatrixFactory matrixFactory, AcLoadFlowObserver observer,
-                         EquationContext equationContext, EquationSystem equationSystem,  VoltageInitializer voltageInitializer,
+    public NewtonRaphson(LfNetwork network, MatrixFactory matrixFactory, AcLoadFlowObserver observer,
+                         EquationContext equationContext, EquationSystem equationSystem, VoltageInitializer voltageInitializer,
                          int iteration) {
-        this.networkContext = Objects.requireNonNull(networkContext);
+        this.network = Objects.requireNonNull(network);
         this.matrixFactory = Objects.requireNonNull(matrixFactory);
         this.observer = Objects.requireNonNull(observer);
         this.equationContext = Objects.requireNonNull(equationContext);
@@ -137,7 +137,7 @@ public class NewtonRaphson {
 
     private double computeSlackBusActivePowerMismatch(EquationContext equationContext, EquationSystem equationSystem) {
         // find equation terms need to calculate slack bus active power injection
-        LfBus slackBus = networkContext.getSlackBus();
+        LfBus slackBus = network.getSlackBus();
         Equation slackBusActivePowerEquation = equationContext.getEquation(slackBus.getNum(), EquationType.BUS_P);
         List<EquationTerm> slackBusActivePowerEquationTerms = equationSystem.getEquationTerms(slackBusActivePowerEquation);
 

@@ -9,6 +9,7 @@ package com.powsybl.loadflow.simple.network;
 import com.powsybl.commons.AbstractConverterTest;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.test.EurostagTutorialExample1Factory;
+import com.powsybl.loadflow.simple.network.impl.LfNetworks;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -22,7 +23,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class NetworkContextTest extends AbstractConverterTest {
+public class LfNetworkTest extends AbstractConverterTest {
 
     @Test
     public void test() throws IOException {
@@ -36,10 +37,10 @@ public class NetworkContextTest extends AbstractConverterTest {
                 .setCurrentSectionCount(1)
                 .add();
 
-        List<NetworkContext> networkContexts = NetworkContext.of(network, new MostMeshedSlackBusSelector());
-        assertEquals(1, networkContexts.size());
+        List<LfNetwork> lfNetworks = LfNetworks.create(network, new MostMeshedSlackBusSelector());
+        assertEquals(1, lfNetworks.size());
         Path file = fileSystem.getPath("/work/n.json");
-        networkContexts.get(0).writeJson(file);
+        lfNetworks.get(0).writeJson(file);
         try (InputStream is = Files.newInputStream(file)) {
             compareTxt(getClass().getResourceAsStream("/n.json"), is);
         }

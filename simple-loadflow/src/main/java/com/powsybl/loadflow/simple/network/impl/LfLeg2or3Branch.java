@@ -4,22 +4,21 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.powsybl.loadflow.simple.network;
+package com.powsybl.loadflow.simple.network.impl;
 
 import com.powsybl.iidm.network.ThreeWindingsTransformer;
+import com.powsybl.loadflow.simple.network.AbstractFictitiousBranch;
+import com.powsybl.loadflow.simple.network.LfBus;
+import com.powsybl.loadflow.simple.network.PiModel;
 
 import java.util.Objects;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class LfLeg2or3Branch extends AbstractLfBranch {
+public class LfLeg2or3Branch extends AbstractFictitiousBranch {
 
     private final ThreeWindingsTransformer.Leg2or3 leg2or3;
-
-    private double p = Double.NaN;
-
-    private double q = Double.NaN;
 
     protected LfLeg2or3Branch(LfBus bus2or3, LfBus bus0, ThreeWindingsTransformer t3wt, ThreeWindingsTransformer.Leg2or3 leg2or3) {
         super(bus2or3, bus0, new PiModel(leg2or3.getR(), leg2or3.getX())
@@ -35,26 +34,6 @@ public class LfLeg2or3Branch extends AbstractLfBranch {
         Objects.requireNonNull(t3wt);
         Objects.requireNonNull(leg2or3);
         return new LfLeg2or3Branch(bus2or3, bus0, t3wt, leg2or3);
-    }
-
-    @Override
-    public void setP1(double p1) {
-        this.p = p1 * PerUnit.SB;
-    }
-
-    @Override
-    public void setP2(double p2) {
-        // nothing to update on star side
-    }
-
-    @Override
-    public void setQ1(double q1) {
-        this.q = q1 * PerUnit.SB;
-    }
-
-    @Override
-    public void setQ2(double q2) {
-        // nothing to update on star side
     }
 
     @Override

@@ -8,7 +8,7 @@ package com.powsybl.loadflow.simple.ac;
 
 import com.powsybl.commons.PowsyblException;
 import com.powsybl.loadflow.simple.network.LfBus;
-import com.powsybl.loadflow.simple.network.NetworkContext;
+import com.powsybl.loadflow.simple.network.LfNetwork;
 import com.powsybl.loadflow.simple.network.PerUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,8 +43,8 @@ public class DistributedSlackAction implements MacroAction {
         return "Distributed slack";
     }
 
-    private static List<ParticipatingBus> getParticipatingBuses(NetworkContext networkContext) {
-        return networkContext.getBuses()
+    private static List<ParticipatingBus> getParticipatingBuses(LfNetwork network) {
+        return network.getBuses()
                 .stream()
                 .map(bus -> new ParticipatingBus(bus, bus.getParticipationFactor()))
                 .filter(participatingBus -> participatingBus.factor != 0)
@@ -67,9 +67,9 @@ public class DistributedSlackAction implements MacroAction {
     public boolean run(MacroActionContext context) {
         double slackBusActivePowerMismatch = context.getNewtonRaphsonResult().getSlackBusActivePowerMismatch();
         if (Math.abs(slackBusActivePowerMismatch) > SLACK_EPSILON) {
-            NetworkContext networkContext = context.getNetworkContext();
+            LfNetwork network = context.getNetwork();
 
-            List<ParticipatingBus> participatingBuses = getParticipatingBuses(networkContext);
+            List<ParticipatingBus> participatingBuses = getParticipatingBuses(network);
 
             int iteration = 0;
             double remainingMismatch = slackBusActivePowerMismatch;

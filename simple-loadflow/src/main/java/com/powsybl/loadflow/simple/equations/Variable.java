@@ -8,7 +8,7 @@ package com.powsybl.loadflow.simple.equations;
 
 import com.powsybl.loadflow.simple.ac.nr.VoltageInitializer;
 import com.powsybl.loadflow.simple.network.LfBus;
-import com.powsybl.loadflow.simple.network.NetworkContext;
+import com.powsybl.loadflow.simple.network.LfNetwork;
 
 import java.util.Objects;
 
@@ -47,11 +47,11 @@ public class Variable implements Comparable<Variable> {
         this.column = column;
     }
 
-    void initState(VoltageInitializer initializer, NetworkContext networkContext, double[] x) {
+    void initState(VoltageInitializer initializer, LfNetwork network, double[] x) {
         Objects.requireNonNull(initializer);
-        Objects.requireNonNull(networkContext);
+        Objects.requireNonNull(network);
         Objects.requireNonNull(x);
-        LfBus bus = networkContext.getBus(num);
+        LfBus bus = network.getBus(num);
         switch (type) {
             case BUS_V:
                 x[column] = initializer.getMagnitude(bus);
@@ -66,16 +66,16 @@ public class Variable implements Comparable<Variable> {
         }
     }
 
-    void updateState(NetworkContext networkContext, double[] x) {
-        Objects.requireNonNull(networkContext);
+    void updateState(LfNetwork network, double[] x) {
+        Objects.requireNonNull(network);
         Objects.requireNonNull(x);
         switch (type) {
             case BUS_V:
-                networkContext.getBus(num).setV(x[column]);
+                network.getBus(num).setV(x[column]);
                 break;
 
             case BUS_PHI:
-                networkContext.getBus(num).setAngle(Math.toDegrees(x[column]));
+                network.getBus(num).setAngle(Math.toDegrees(x[column]));
                 break;
 
             default:

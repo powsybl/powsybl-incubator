@@ -16,7 +16,8 @@ import com.powsybl.loadflow.simple.equations.EquationType;
 import com.powsybl.loadflow.simple.equations.VariableType;
 import com.powsybl.loadflow.simple.network.FirstSlackBusSelector;
 import com.powsybl.loadflow.simple.network.LfBus;
-import com.powsybl.loadflow.simple.network.NetworkContext;
+import com.powsybl.loadflow.simple.network.LfNetwork;
+import com.powsybl.loadflow.simple.network.impl.LfNetworks;
 import com.powsybl.math.matrix.DenseMatrixFactory;
 import com.powsybl.math.matrix.LUDecomposition;
 import com.powsybl.math.matrix.Matrix;
@@ -53,15 +54,15 @@ public class DcLoadFlowMatrixTest {
 
         logNetwork(network);
 
-        NetworkContext networkContext = NetworkContext.of(network, new FirstSlackBusSelector()).get(0);
+        LfNetwork lfNetwork = LfNetworks.create(network, new FirstSlackBusSelector()).get(0);
 
         EquationContext context = new EquationContext();
-        for (LfBus b : networkContext.getBuses()) {
+        for (LfBus b : lfNetwork.getBuses()) {
             context.getEquation(b.getNum(), EquationType.BUS_P);
             context.getVariable(b.getNum(), VariableType.BUS_PHI);
         }
 
-        EquationSystem equationSystem = DcEquationSystem.create(networkContext, context);
+        EquationSystem equationSystem = DcEquationSystem.create(lfNetwork, context);
 
         double[] x = equationSystem.initState(new UniformValueVoltageInitializer());
         try (PrintStream ps = LoggerFactory.getInfoPrintStream(LOGGER)) {
@@ -115,7 +116,7 @@ public class DcLoadFlowMatrixTest {
         assertEquals(-0.11239308112163815d, dx[2], 1E-14d);
         assertEquals(-0.2202418845341654d, dx[3], 1E-14d);
 
-        NetworkContext.resetState(network);
+        LfNetworks.resetState(network);
         equationSystem.updateState(dx);
 
         logNetwork(network);
@@ -123,9 +124,9 @@ public class DcLoadFlowMatrixTest {
         network.getLine("NHV1_NHV2_1").getTerminal1().disconnect();
         network.getLine("NHV1_NHV2_1").getTerminal2().disconnect();
 
-        networkContext = NetworkContext.of(network, new FirstSlackBusSelector()).get(0);
+        lfNetwork = LfNetworks.create(network, new FirstSlackBusSelector()).get(0);
 
-        equationSystem = DcEquationSystem.create(networkContext, context);
+        equationSystem = DcEquationSystem.create(lfNetwork, context);
 
         j = equationSystem.buildJacobian(matrixFactory);
 
@@ -134,7 +135,7 @@ public class DcLoadFlowMatrixTest {
             lu.solve(dx);
         }
 
-        NetworkContext.resetState(network);
+        LfNetworks.resetState(network);
         equationSystem.updateState(dx);
 
         logNetwork(network);

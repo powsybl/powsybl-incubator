@@ -17,7 +17,8 @@ import com.powsybl.loadflow.simple.dc.equations.DcEquationSystem;
 import com.powsybl.loadflow.simple.equations.EquationSystem;
 import com.powsybl.loadflow.simple.network.FirstSlackBusSelector;
 import com.powsybl.loadflow.simple.network.LfBus;
-import com.powsybl.loadflow.simple.network.NetworkContext;
+import com.powsybl.loadflow.simple.network.LfNetwork;
+import com.powsybl.loadflow.simple.network.impl.LfNetworks;
 import com.powsybl.math.matrix.LUDecomposition;
 import com.powsybl.math.matrix.Matrix;
 import com.powsybl.math.matrix.MatrixFactory;
@@ -79,10 +80,10 @@ public class SimpleDcLoadFlow implements LoadFlow {
         return new PowsyblCoreVersion().getMavenProjectVersion();
     }
 
-    private static void balance(NetworkContext networkContext) {
+    private static void balance(LfNetwork network) {
         double activeGeneration = 0;
         double activeLoad = 0;
-        for (LfBus b : networkContext.getBuses()) {
+        for (LfBus b : network.getBuses()) {
             activeGeneration += b.getGenerationTargetP();
             activeLoad += b.getLoadTargetP();
         }
@@ -100,11 +101,11 @@ public class SimpleDcLoadFlow implements LoadFlow {
 
             network.getVariantManager().setWorkingVariant(workingStateId);
 
-            NetworkContext networkContext = NetworkContext.of(network, new FirstSlackBusSelector()).get(0);
+            LfNetwork lfNetwork = LfNetworks.create(network, new FirstSlackBusSelector()).get(0);
 
-            balance(networkContext);
+            balance(lfNetwork);
 
-            EquationSystem equationSystem = DcEquationSystem.create(networkContext);
+            EquationSystem equationSystem = DcEquationSystem.create(lfNetwork);
 
             VoltageInitializer voltageInitializer = VoltageInitializer.getFromParameters(loadFlowParameters);
 
@@ -131,8 +132,8 @@ public class SimpleDcLoadFlow implements LoadFlow {
             equationSystem.updateEquationTerms(dx);
             equationSystem.updateState(dx);
 
-            NetworkContext.resetState(network);
-            networkContext.updateState();
+            LfNetworks.resetState(network);
+            lfNetwork.updateState();
 
             stopwatch.stop();
             LOGGER.info("DC loadflow complete in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));

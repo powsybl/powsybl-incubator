@@ -7,15 +7,13 @@
 package com.powsybl.loadflow.simple.ac;
 
 import com.google.common.base.Stopwatch;
-import com.powsybl.iidm.network.Network;
 import com.powsybl.loadflow.simple.ac.equations.AcEquationSystem;
 import com.powsybl.loadflow.simple.ac.nr.*;
 import com.powsybl.loadflow.simple.ac.observer.AcLoadFlowObserver;
 import com.powsybl.loadflow.simple.equations.EquationContext;
 import com.powsybl.loadflow.simple.equations.EquationSystem;
-import com.powsybl.loadflow.simple.network.NetworkContext;
 import com.powsybl.loadflow.simple.network.PerUnit;
-import com.powsybl.loadflow.simple.network.SlackBusSelector;
+import com.powsybl.loadflow.simple.network.LfNetwork;
 import com.powsybl.math.matrix.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,9 +31,7 @@ public class AcloadFlowEngine {
 
     private static final String INITIAL_MACRO_ACTION_NAME = "Init";
 
-    private final Network network;
-
-    private final SlackBusSelector slackBusSelector;
+    private final LfNetwork network;
 
     private final VoltageInitializer voltageInitializer;
 
@@ -45,17 +41,16 @@ public class AcloadFlowEngine {
 
     private final AcLoadFlowObserver observer;
 
-    public AcloadFlowEngine(Network network, SlackBusSelector slackBusSelector, VoltageInitializer voltageInitializer,
-                            List<MacroAction> macroActions, MatrixFactory matrixFactory, AcLoadFlowObserver observer) {
+    public AcloadFlowEngine(LfNetwork network, VoltageInitializer voltageInitializer, List<MacroAction> macroActions,
+                            MatrixFactory matrixFactory, AcLoadFlowObserver observer) {
         this.network = Objects.requireNonNull(network);
-        this.slackBusSelector = Objects.requireNonNull(slackBusSelector);
         this.voltageInitializer = Objects.requireNonNull(voltageInitializer);
         this.macroActions = Objects.requireNonNull(macroActions);
         this.matrixFactory = Objects.requireNonNull(matrixFactory);
         this.observer = Objects.requireNonNull(observer);
     }
 
-    private NewtonRaphsonResult runNewtowRaphson(NetworkContext networkContext, EquationContext equationContext,
+    private NewtonRaphsonResult runNewtowRaphson(LfNetwork network, EquationContext equationContext,
                                                  EquationSystem equationSystem, NewtonRaphsonParameters newtonRaphsonParameters,
                                                  int newtowRaphsonIteration, int macroIteration, String macroActionName) {
         observer.beginMacroIteration(macroIteration, macroActionName);
@@ -64,7 +59,7 @@ public class AcloadFlowEngine {
         VoltageInitializer macroIterationVoltageInitializer = macroIteration == 0 ? this.voltageInitializer
                                                                                   : new PreviousValueVoltageInitializer();
 
-        NewtonRaphsonResult newtonRaphsonResult = new NewtonRaphson(networkContext, matrixFactory, observer, equationContext,
+        NewtonRaphsonResult newtonRaphsonResult = new NewtonRaphson(network, matrixFactory, observer, equationContext,
                                                                     equationSystem, macroIterationVoltageInitializer,
                                                                     newtowRaphsonIteration)
                 .run(newtonRaphsonParameters);
@@ -77,24 +72,19 @@ public class AcloadFlowEngine {
     public AcLoadFlowResult run() {
         Stopwatch stopwatch = Stopwatch.createStarted();
 
-        List<NetworkContext> networkContexts = NetworkContext.of(network, slackBusSelector);
-
-        // only process main (largest) connected component
-        NetworkContext networkContext = networkContexts.get(0);
-
         NewtonRaphsonParameters newtonRaphsonParameters = new NewtonRaphsonParameters();
 
         observer.beforeEquationSystemCreation();
 
         EquationContext equationContext = new EquationContext();
-        EquationSystem equationSystem = AcEquationSystem.create(networkContext, equationContext);
+        EquationSystem equationSystem = AcEquationSystem.create(network, equationContext);
 
         observer.afterEquationSystemCreation();
 
         // initial macro iteration
         int macroIteration = 0;
 
-        NewtonRaphsonResult lastNewtonRaphsonResult = runNewtowRaphson(networkContext, equationContext, equationSystem,
+        NewtonRaphsonResult lastNewtonRaphsonResult = runNewtowRaphson(network, equationContext, equationSystem,
                                                                        newtonRaphsonParameters, 0,
                                                                        macroIteration++, INITIAL_MACRO_ACTION_NAME);
 
@@ -106,22 +96,18 @@ public class AcloadFlowEngine {
             do {
                 observer.beforeMacroActionRun(macroIteration, macroAction.getName());
 
-                cont = macroAction.run(new MacroActionContext(macroIteration, networkContext, lastNewtonRaphsonResult));
+                cont = macroAction.run(new MacroActionContext(macroIteration, network, lastNewtonRaphsonResult));
 
                 observer.afterMacroActionRun(macroIteration, macroAction.getName(), cont);
 
                 if (cont) {
-                    lastNewtonRaphsonResult = runNewtowRaphson(networkContext, equationContext, equationSystem,
+                    lastNewtonRaphsonResult = runNewtowRaphson(network, equationContext, equationSystem,
                                                            newtonRaphsonParameters, lastNewtonRaphsonResult.getIteration() + 1,
                                                            macroIteration, macroAction.getName());
                     macroIteration++;
                 }
             } while (cont);
         }
-
-        // update network state
-        NetworkContext.resetState(network);
-        networkContext.updateState();
 
         stopwatch.stop();
 

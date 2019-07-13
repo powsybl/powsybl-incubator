@@ -15,7 +15,9 @@ import com.powsybl.loadflow.LoadFlowResultImpl;
 import com.powsybl.loadflow.simple.ac.nr.NewtonRaphsonStatus;
 import com.powsybl.loadflow.simple.ac.nr.VoltageInitializer;
 import com.powsybl.loadflow.simple.ac.observer.AcLoadFlowObserver;
+import com.powsybl.loadflow.simple.network.LfNetwork;
 import com.powsybl.loadflow.simple.network.SlackBusSelector;
+import com.powsybl.loadflow.simple.network.impl.LfNetworks;
 import com.powsybl.math.matrix.MatrixFactory;
 import com.powsybl.math.matrix.SparseMatrixFactory;
 import com.powsybl.tools.PowsyblCoreVersion;
@@ -102,8 +104,17 @@ public class SimpleAcLoadFlow implements LoadFlow {
                 macroActions.add(new DistributedSlackAction());
             }
 
-            AcLoadFlowResult result = new AcloadFlowEngine(network, slackBusSelector, voltageInitializer, macroActions, matrixFactory, getObserver())
+            List<LfNetwork> lfNetworks = LfNetworks.create(network, slackBusSelector);
+
+            // only process main (largest) connected component
+            LfNetwork lfNetwork = lfNetworks.get(0);
+
+            AcLoadFlowResult result = new AcloadFlowEngine(lfNetwork, voltageInitializer, macroActions, matrixFactory, getObserver())
                     .run();
+
+            // update network state
+            LfNetworks.resetState(network);
+            lfNetwork.updateState();
 
             return new LoadFlowResultImpl(result.getNewtonRaphsonStatus() == NewtonRaphsonStatus.CONVERGED, createMetrics(result), null);
         });

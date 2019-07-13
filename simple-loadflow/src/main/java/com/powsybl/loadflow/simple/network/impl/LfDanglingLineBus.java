@@ -4,9 +4,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.powsybl.loadflow.simple.network;
+package com.powsybl.loadflow.simple.network.impl;
 
 import com.powsybl.iidm.network.DanglingLine;
+import com.powsybl.loadflow.simple.network.AbstractFictitiousLfBus;
+import com.powsybl.loadflow.simple.network.PerUnit;
 
 import java.util.Objects;
 

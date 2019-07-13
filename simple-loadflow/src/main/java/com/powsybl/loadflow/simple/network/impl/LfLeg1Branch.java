@@ -7,9 +7,8 @@
 package com.powsybl.loadflow.simple.network.impl;
 
 import com.powsybl.iidm.network.ThreeWindingsTransformer;
-import com.powsybl.loadflow.simple.network.AbstractLfBranch;
+import com.powsybl.loadflow.simple.network.AbstractFictitiousBranch;
 import com.powsybl.loadflow.simple.network.LfBus;
-import com.powsybl.loadflow.simple.network.PerUnit;
 import com.powsybl.loadflow.simple.network.PiModel;
 
 import java.util.Objects;
@@ -17,13 +16,9 @@ import java.util.Objects;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class LfLeg1Branch extends AbstractLfBranch {
+public class LfLeg1Branch extends AbstractFictitiousBranch {
 
     private final ThreeWindingsTransformer.Leg1 leg1;
-
-    private double p = Double.NaN;
-
-    private double q = Double.NaN;
 
     protected LfLeg1Branch(LfBus bus1, LfBus bus0, ThreeWindingsTransformer.Leg1 leg1) {
         super(bus1, bus0, new PiModel(leg1.getR(), leg1.getX())
@@ -39,26 +34,6 @@ public class LfLeg1Branch extends AbstractLfBranch {
         Objects.requireNonNull(bus0);
         Objects.requireNonNull(leg1);
         return new LfLeg1Branch(bus1, bus0, leg1);
-    }
-
-    @Override
-    public void setP1(double p1) {
-        this.p = p1 * PerUnit.SB;
-    }
-
-    @Override
-    public void setP2(double p2) {
-        // nothing to update on star side
-    }
-
-    @Override
-    public void setQ1(double q1) {
-        this.q = q1 * PerUnit.SB;
-    }
-
-    @Override
-    public void setQ2(double q2) {
-        // nothing to update on star side
     }
 
     @Override

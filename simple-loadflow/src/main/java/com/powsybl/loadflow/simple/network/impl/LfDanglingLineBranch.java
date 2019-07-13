@@ -7,9 +7,8 @@
 package com.powsybl.loadflow.simple.network.impl;
 
 import com.powsybl.iidm.network.DanglingLine;
-import com.powsybl.loadflow.simple.network.AbstractLfBranch;
+import com.powsybl.loadflow.simple.network.AbstractFictitiousBranch;
 import com.powsybl.loadflow.simple.network.LfBus;
-import com.powsybl.loadflow.simple.network.PerUnit;
 import com.powsybl.loadflow.simple.network.PiModel;
 
 import java.util.Objects;
@@ -17,13 +16,9 @@ import java.util.Objects;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class LfDanglingLineBranch extends AbstractLfBranch {
+public class LfDanglingLineBranch extends AbstractFictitiousBranch {
 
     private final DanglingLine danglingLine;
-
-    private double p = Double.NaN;
-
-    private double q = Double.NaN;
 
     protected LfDanglingLineBranch(DanglingLine danglingLine, LfBus bus1, LfBus bus2) {
         super(bus1, bus2, new PiModel(danglingLine.getR(), danglingLine.getX())
@@ -41,26 +36,6 @@ public class LfDanglingLineBranch extends AbstractLfBranch {
         Objects.requireNonNull(bus1);
         Objects.requireNonNull(bus2);
         return new LfDanglingLineBranch(danglingLine, bus1, bus2);
-    }
-
-    @Override
-    public void setP1(double p1) {
-        this.p = p1 * PerUnit.SB;
-    }
-
-    @Override
-    public void setP2(double p2) {
-        // nothing to do
-    }
-
-    @Override
-    public void setQ1(double q1) {
-        this.q = q1 * PerUnit.SB;
-    }
-
-    @Override
-    public void setQ2(double q2) {
-        // nothing to do
     }
 
     @Override

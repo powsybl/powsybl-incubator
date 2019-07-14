@@ -4,12 +4,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.powsybl.loadflow.simple.ac;
+package com.powsybl.loadflow.simple.ac.macro;
 
 import com.google.common.base.Stopwatch;
 import com.powsybl.loadflow.simple.ac.equations.AcEquationSystem;
 import com.powsybl.loadflow.simple.ac.nr.*;
-import com.powsybl.loadflow.simple.ac.observer.AcLoadFlowObserver;
 import com.powsybl.loadflow.simple.equations.EquationContext;
 import com.powsybl.loadflow.simple.equations.EquationSystem;
 import com.powsybl.loadflow.simple.network.PerUnit;
@@ -52,7 +51,7 @@ public class AcloadFlowEngine {
 
     private NewtonRaphsonResult runNewtowRaphson(LfNetwork network, EquationContext equationContext,
                                                  EquationSystem equationSystem, NewtonRaphsonParameters newtonRaphsonParameters,
-                                                 int newtowRaphsonIteration, int macroIteration, String macroActionName) {
+                                                 int newtonRaphsonIteration, int macroIteration, String macroActionName) {
         observer.beginMacroIteration(macroIteration, macroActionName);
 
         // for next macro iteration, restart from previous voltage
@@ -61,7 +60,7 @@ public class AcloadFlowEngine {
 
         NewtonRaphsonResult newtonRaphsonResult = new NewtonRaphson(network, matrixFactory, observer, equationContext,
                                                                     equationSystem, macroIterationVoltageInitializer,
-                                                                    newtowRaphsonIteration)
+                                                                    newtonRaphsonIteration)
                 .run(newtonRaphsonParameters);
 
         observer.endMacroIteration(macroIteration, macroActionName);
@@ -91,7 +90,7 @@ public class AcloadFlowEngine {
         // for each macro action run macro iterations until stabilized
         // macro actions are nested: inner most loop first in the list
         for (MacroAction macroAction : macroActions) {
-            // re-run macro action + newtow raphson until stabilization
+            // re-run macro action + newton-raphson until stabilization
             boolean cont;
             do {
                 observer.beforeMacroActionRun(macroIteration, macroAction.getName());

@@ -6,6 +6,8 @@
  */
 package com.powsybl.loadflow.simple.ac;
 
+import com.powsybl.iidm.network.Generator;
+import com.powsybl.iidm.network.Line;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.VariantManagerConstants;
 import com.powsybl.loadflow.LoadFlowParameters;
@@ -14,6 +16,9 @@ import com.powsybl.loadflow.simple.network.DistributedSlackNetworkFactory;
 import com.powsybl.math.matrix.DenseMatrixFactory;
 import org.junit.Test;
 
+import static com.powsybl.loadflow.simple.util.LoadFlowAssert.DELTA_POWER;
+import static com.powsybl.loadflow.simple.util.LoadFlowAssert.assertActivePowerEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -33,5 +38,22 @@ public class DistributedSlackTest {
 
         LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
         assertTrue(result.isOk());
+        Generator g1 = network.getGenerator("g1");
+        Generator g2 = network.getGenerator("g2");
+        Generator g3 = network.getGenerator("g3");
+        Generator g4 = network.getGenerator("g4");
+        assertEquals(148, g1.getTargetP(), DELTA_POWER);
+        assertEquals(224, g2.getTargetP(), DELTA_POWER);
+        assertEquals(126, g3.getTargetP(), DELTA_POWER);
+        assertEquals(102, g4.getTargetP(), DELTA_POWER);
+        Line l14 = network.getLine("l14");
+        Line l24 = network.getLine("l24");
+        Line l34 = network.getLine("l34");
+        assertActivePowerEquals(148, l14.getTerminal1());
+        assertActivePowerEquals(-148, l14.getTerminal2());
+        assertActivePowerEquals(224, l24.getTerminal1());
+        assertActivePowerEquals(-224, l24.getTerminal2());
+        assertActivePowerEquals(228, l34.getTerminal1());
+        assertActivePowerEquals(-228, l34.getTerminal2());
     }
 }

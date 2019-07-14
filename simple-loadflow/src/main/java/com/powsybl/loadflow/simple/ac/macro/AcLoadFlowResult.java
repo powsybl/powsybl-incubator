@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.powsybl.loadflow.simple.ac;
+package com.powsybl.loadflow.simple.ac.macro;
 
 import com.powsybl.loadflow.simple.ac.nr.NewtonRaphsonStatus;
 
@@ -15,13 +15,13 @@ public class AcLoadFlowResult {
 
     private final int macroIterations;
 
-    private final int newtowRaphsonIterations;
+    private final int newtonRaphsonIterations;
 
     private final NewtonRaphsonStatus newtonRaphsonStatus;
 
-    public AcLoadFlowResult(int macroIterations, int newtowRaphsonIterations, NewtonRaphsonStatus newtonRaphsonStatus) {
+    public AcLoadFlowResult(int macroIterations, int newtonRaphsonIterations, NewtonRaphsonStatus newtonRaphsonStatus) {
         this.macroIterations = macroIterations;
-        this.newtowRaphsonIterations = newtowRaphsonIterations;
+        this.newtonRaphsonIterations = newtonRaphsonIterations;
         this.newtonRaphsonStatus = newtonRaphsonStatus;
     }
 
@@ -29,8 +29,8 @@ public class AcLoadFlowResult {
         return macroIterations;
     }
 
-    public int getNewtowRaphsonIterations() {
-        return newtowRaphsonIterations;
+    public int getNewtonRaphsonIterations() {
+        return newtonRaphsonIterations;
     }
 
     public NewtonRaphsonStatus getNewtonRaphsonStatus() {

@@ -12,9 +12,12 @@ import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
 import com.powsybl.loadflow.LoadFlowResultImpl;
+import com.powsybl.loadflow.simple.ac.macro.AcLoadFlowObserver;
+import com.powsybl.loadflow.simple.ac.macro.AcLoadFlowResult;
+import com.powsybl.loadflow.simple.ac.macro.AcloadFlowEngine;
+import com.powsybl.loadflow.simple.ac.macro.MacroAction;
 import com.powsybl.loadflow.simple.ac.nr.NewtonRaphsonStatus;
 import com.powsybl.loadflow.simple.ac.nr.VoltageInitializer;
-import com.powsybl.loadflow.simple.ac.observer.AcLoadFlowObserver;
 import com.powsybl.loadflow.simple.network.LfNetwork;
 import com.powsybl.loadflow.simple.network.SlackBusSelector;
 import com.powsybl.loadflow.simple.network.impl.LfNetworks;
@@ -78,7 +81,7 @@ public class SimpleAcLoadFlow implements LoadFlow {
     }
 
     private static ImmutableMap<String, String> createMetrics(AcLoadFlowResult result) {
-        return ImmutableMap.of("iterations", Integer.toString(result.getNewtowRaphsonIterations()),
+        return ImmutableMap.of("iterations", Integer.toString(result.getNewtonRaphsonIterations()),
                                "status", result.getNewtonRaphsonStatus().name());
     }
 

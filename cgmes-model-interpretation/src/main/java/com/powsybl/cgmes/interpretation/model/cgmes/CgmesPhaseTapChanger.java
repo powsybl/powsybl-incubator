@@ -164,7 +164,7 @@ public class CgmesPhaseTapChanger extends CgmesTapChanger {
             double dy = (step - neutralStep) * (stepVoltageIncrement / 100.0);
             a = 2 * Math.asin(dy / 2);
         }
-        return new Complex(1.0, a);
+        return new Complex(1.0*Math.cos(a), 1.0*Math.sin(a));
     }
 
     private Complex asymmetricalRatio(double step) {

@@ -30,6 +30,8 @@ public class LfBusImpl extends AbstractLfBus {
 
     private double loadTargetQ = 0;
 
+    private double initialGenerationTargetP = 0;
+
     private double generationTargetP = 0;
 
     private double generationTargetQ = 0;
@@ -94,19 +96,20 @@ public class LfBusImpl extends AbstractLfBus {
     }
 
     void addBattery(Battery battery) {
-        this.loadTargetP += battery.getP0();
-        this.loadTargetQ += battery.getQ0();
+        loadTargetP += battery.getP0();
+        loadTargetQ += battery.getQ0();
         setActivePowerLimits(battery.getMinP(), battery.getMaxP());
     }
 
     void addGenerator(Generator generator) {
-        this.generationTargetP += generator.getTargetP();
+        initialGenerationTargetP += generator.getTargetP();
+        generationTargetP += generator.getTargetP();
         if (generator.isVoltageRegulatorOn()) {
             checkTargetV(generator.getTargetV());
             targetV = generator.getTargetV();
             voltageControl = true;
         } else {
-            this.generationTargetQ += generator.getTargetQ();
+            generationTargetQ += generator.getTargetQ();
         }
         setActivePowerLimits(generator.getMinP(), generator.getMaxP());
 
@@ -132,6 +135,7 @@ public class LfBusImpl extends AbstractLfBus {
         double targetP = line.getConverterStation1() == vscCs && line.getConvertersMode() == HvdcLine.ConvertersMode.SIDE_1_RECTIFIER_SIDE_2_INVERTER
                 ? line.getActivePowerSetpoint()
                 : -line.getActivePowerSetpoint();
+        initialGenerationTargetP += targetP;
         generationTargetP += targetP;
         if (vscCs.isVoltageRegulatorOn()) {
             checkTargetV(vscCs.getVoltageSetpoint());
@@ -235,6 +239,13 @@ public class LfBusImpl extends AbstractLfBus {
     public void updateState() {
         bus.setV(v).setAngle(angle);
 
-        // TODO update generator active power
+        // update generator active power proportionally to the participation factor
+        if (generationTargetP != initialGenerationTargetP) {
+            for (Map.Entry<Generator, Float> e : generators.entrySet()) {
+                Generator generator = e.getKey();
+                float generatorParticipationFactor = e.getValue();
+                generator.setTargetP(generator.getTargetP() + (generationTargetP - initialGenerationTargetP) * generatorParticipationFactor / participationFactor);
+            }
+        }
     }
 }

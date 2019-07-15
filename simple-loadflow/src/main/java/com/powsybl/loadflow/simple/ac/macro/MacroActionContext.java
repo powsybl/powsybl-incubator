@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.powsybl.loadflow.simple.ac;
+package com.powsybl.loadflow.simple.ac.macro;
 
 import com.powsybl.loadflow.simple.ac.nr.NewtonRaphsonResult;
 import com.powsybl.loadflow.simple.network.LfNetwork;
@@ -14,7 +14,7 @@ import java.util.Objects;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-class MacroActionContext {
+public class MacroActionContext {
 
     private final int macroIteration;
 
@@ -28,15 +28,15 @@ class MacroActionContext {
         this.newtonRaphsonResult = Objects.requireNonNull(newtonRaphsonResult);
     }
 
-    int getMacroIteration() {
+    public int getMacroIteration() {
         return macroIteration;
     }
 
-    LfNetwork getNetwork() {
+    public LfNetwork getNetwork() {
         return network;
     }
 
-    NewtonRaphsonResult getNewtonRaphsonResult() {
+    public NewtonRaphsonResult getNewtonRaphsonResult() {
         return newtonRaphsonResult;
     }
 }

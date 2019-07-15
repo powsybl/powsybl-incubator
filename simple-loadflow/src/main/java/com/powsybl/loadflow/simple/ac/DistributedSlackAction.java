@@ -7,6 +7,8 @@
 package com.powsybl.loadflow.simple.ac;
 
 import com.powsybl.commons.PowsyblException;
+import com.powsybl.loadflow.simple.ac.macro.MacroAction;
+import com.powsybl.loadflow.simple.ac.macro.MacroActionContext;
 import com.powsybl.loadflow.simple.network.LfBus;
 import com.powsybl.loadflow.simple.network.LfNetwork;
 import com.powsybl.loadflow.simple.network.PerUnit;
@@ -76,46 +78,7 @@ public class DistributedSlackAction implements MacroAction {
             while (!participatingBuses.isEmpty()
                     && Math.abs(remainingMismatch) > SLACK_EPSILON) {
 
-                // normalize participation factors at each iteration start as some
-                // buses might have reach a limit and have been discarded
-                normalizeParticipationFactors(participatingBuses);
-
-                double done = 0d;
-                Iterator<ParticipatingBus> it = participatingBuses.iterator();
-                while (it.hasNext()) {
-                    ParticipatingBus participatingBus = it.next();
-                    LfBus bus = participatingBus.bus;
-                    double factor = participatingBus.factor;
-
-                    double minP = bus.getMinP();
-                    double maxP = bus.getMaxP();
-                    double generationTargetP = bus.getGenerationTargetP();
-
-                    // we don't want to change the generation sign
-                    if (generationTargetP < 0) {
-                        maxP = Math.min(maxP, 0);
-                    } else {
-                        minP = Math.max(minP, 0);
-                    }
-
-                    double newGenerationTargetP = generationTargetP + remainingMismatch * factor;
-                    if (remainingMismatch > 0 && newGenerationTargetP > maxP) {
-                        newGenerationTargetP = maxP;
-                        it.remove();
-                    } else if (remainingMismatch < 0 && newGenerationTargetP < minP) {
-                        newGenerationTargetP = minP;
-                        it.remove();
-                    }
-
-                    if (LOGGER.isTraceEnabled()) {
-                        LOGGER.trace("Rescale '{}' active power target: {} -> {}",
-                                bus.getId(), generationTargetP, newGenerationTargetP);
-                    }
-                    bus.setGenerationTargetP(newGenerationTargetP);
-                    done += newGenerationTargetP - generationTargetP;
-                }
-
-                remainingMismatch -= done;
+                remainingMismatch -= run(participatingBuses, remainingMismatch);
 
                 iteration++;
             }
@@ -134,5 +97,48 @@ public class DistributedSlackAction implements MacroAction {
         LOGGER.debug("Already balanced");
 
         return false;
+    }
+
+    private double run(List<ParticipatingBus> participatingBuses, double remainingMismatch) {
+        // normalize participation factors at each iteration start as some
+        // buses might have reach a limit and have been discarded
+        normalizeParticipationFactors(participatingBuses);
+
+        double done = 0d;
+        Iterator<ParticipatingBus> it = participatingBuses.iterator();
+        while (it.hasNext()) {
+            ParticipatingBus participatingBus = it.next();
+            LfBus bus = participatingBus.bus;
+            double factor = participatingBus.factor;
+
+            double minP = bus.getMinP();
+            double maxP = bus.getMaxP();
+            double generationTargetP = bus.getGenerationTargetP();
+
+            // we don't want to change the generation sign
+            if (generationTargetP < 0) {
+                maxP = Math.min(maxP, 0);
+            } else {
+                minP = Math.max(minP, 0);
+            }
+
+            double newGenerationTargetP = generationTargetP + remainingMismatch * factor;
+            if (remainingMismatch > 0 && newGenerationTargetP > maxP) {
+                newGenerationTargetP = maxP;
+                it.remove();
+            } else if (remainingMismatch < 0 && newGenerationTargetP < minP) {
+                newGenerationTargetP = minP;
+                it.remove();
+            }
+
+            if (LOGGER.isTraceEnabled()) {
+                LOGGER.trace("Rescale '{}' active power target: {} -> {}",
+                        bus.getId(), generationTargetP, newGenerationTargetP);
+            }
+            bus.setGenerationTargetP(newGenerationTargetP);
+            done += newGenerationTargetP - generationTargetP;
+        }
+
+        return done;
     }
 }

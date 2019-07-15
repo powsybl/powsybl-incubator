@@ -83,10 +83,16 @@ public abstract class AbstractTestCase {
 
     public void compareSvg(SubstationGraph graph, LayoutParameters layoutParameters,
                            String refSvgName, SubstationLayoutFactory sLayoutFactory) {
+        compareSvg(graph, layoutParameters, refSvgName, sLayoutFactory, styleProvider);
+    }
+
+    public void compareSvg(SubstationGraph graph, LayoutParameters layoutParameters,
+                           String refSvgName, SubstationLayoutFactory sLayoutFactory,
+                           SubstationDiagramStyleProvider styleProvider) {
         try (StringWriter writer = new StringWriter()) {
             new SVGWriter(componentLibrary, layoutParameters)
                     .write(graph, styleProvider, writer, sLayoutFactory,
-                           new PositionVoltageLevelLayoutFactory());
+                            new PositionVoltageLevelLayoutFactory());
             writer.flush();
 
 //            FileWriter fw = new FileWriter(System.getProperty("user.home") + refSvgName);

@@ -22,6 +22,8 @@ import com.powsybl.substationdiagram.layout.HorizontalSubstationLayoutFactory;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
 import com.powsybl.substationdiagram.layout.VerticalSubstationLayoutFactory;
 import com.powsybl.substationdiagram.model.SubstationGraph;
+import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramStyleProvider;
+import com.powsybl.substationdiagram.util.NominalVoltageSubstationDiagramStyleProvider;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
 import org.junit.Before;
@@ -376,13 +378,23 @@ public class TestCase11SubstationGraph extends AbstractTestCase {
         assertEquals(3, g.getNodes().size());
         assertEquals(14, g.getEdges().size());
 
-        // write SVG and compare to reference (horizontal layout)
-        compareSvg(g, layoutParameters, "/TestCase11SubstationGraphHorizontal.svg", new HorizontalSubstationLayoutFactory());
+        // write SVG and compare to reference (horizontal layout and defaut style provider)
+        compareSvg(g, layoutParameters, "/TestCase11SubstationGraphHorizontal.svg",
+                   new HorizontalSubstationLayoutFactory(),
+                   new DefaultSubstationDiagramStyleProvider());
 
         // rebuild substation graph
         g = SubstationGraph.create(substation);
 
         // write SVG and compare to reference (vertical layout)
         compareSvg(g, layoutParameters, "/TestCase11SubstationGraphVertical.svg", new VerticalSubstationLayoutFactory());
+
+        // rebuild substation graph
+        g = SubstationGraph.create(substation);
+
+         // write SVG and compare to reference (horizontal layout and nominal voltage style)
+        compareSvg(g, layoutParameters, "/TestCase11SubstationGraphHorizontalNominalVoltageLevel.svg",
+                   new HorizontalSubstationLayoutFactory(),
+                   new NominalVoltageSubstationDiagramStyleProvider());
     }
 }

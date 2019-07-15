@@ -369,7 +369,8 @@ public class TestCase11SubstationGraph extends AbstractTestCase {
                 .setVerticalSubstationPadding(50)
                 .setDrawStraightWires(false)
                 .setHorizontalSnakeLinePadding(30)
-                .setVerticalSnakeLinePadding(30);
+                .setVerticalSnakeLinePadding(30)
+                .setShowInductorFor3WT(false);
 
         // build substation graph
         SubstationGraph g = SubstationGraph.create(substation);
@@ -396,5 +397,9 @@ public class TestCase11SubstationGraph extends AbstractTestCase {
         compareSvg(g, layoutParameters, "/TestCase11SubstationGraphHorizontalNominalVoltageLevel.svg",
                    new HorizontalSubstationLayoutFactory(),
                    new NominalVoltageSubstationDiagramStyleProvider());
+
+        LayoutParameters lp2 = new LayoutParameters(layoutParameters);
+        assertEquals(lp2.getCellWidth(), layoutParameters.getCellWidth(), 0.);
+        assertEquals(lp2.getHorizontalSnakeLinePadding(), layoutParameters.getHorizontalSnakeLinePadding(), 0.);
     }
 }

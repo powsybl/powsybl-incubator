@@ -90,8 +90,4 @@ public class Feeder3WTNode extends FeederNode {
     public ThreeWindingsTransformer getTransformer() {
         return transformer;
     }
-
-    public ThreeWindingsTransformer.Side getSide() {
-        return side;
-    }
 }

@@ -6,8 +6,6 @@
  */
 package com.powsybl.substationdiagram.model;
 
-import com.powsybl.commons.PowsyblException;
-import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.Substation;
 import com.powsybl.iidm.network.Terminal;
 import com.powsybl.iidm.network.ThreeWindingsTransformer;
@@ -33,10 +31,6 @@ public class SubstationGraph {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubstationGraph.class);
 
-    private static final String MESSAGE_GRAPH_FOR_VOLTAGE_LEVEL = "Graph for voltageLevel ";
-    private static final String MESSAGE_NOT_FOUND = " not found";
-    private static final String MESSAGE_NODE = "Node ";
-
     private Substation substation;
 
     private final boolean useName;
@@ -55,10 +49,6 @@ public class SubstationGraph {
         this.useName = useName;
     }
 
-    boolean isUseName() {
-        return useName;
-    }
-
     public static SubstationGraph create(Substation s) {
         return create(s, false);
     }
@@ -68,18 +58,6 @@ public class SubstationGraph {
         SubstationGraph g = new SubstationGraph(s, useName);
         g.buildSubstationGraph(useName);
         return g;
-    }
-
-    public static Map<String, SubstationGraph> create(Network network) {
-        return create(network, false);
-    }
-
-    public static Map<String, SubstationGraph> create(Network network, boolean useName) {
-        Map<String, SubstationGraph> graphs = new HashMap<>();
-        for (Substation s : network.getSubstations()) {
-            graphs.put(s.getId(), create(s, useName));
-        }
-        return graphs;
     }
 
     private void buildSubstationGraph(boolean useName) {
@@ -113,21 +91,9 @@ public class SubstationGraph {
 
             Graph g1 = getNode(v1.getId());
             Graph g2 = getNode(v2.getId());
-            if (g1 == null) {
-                throw new PowsyblException(MESSAGE_GRAPH_FOR_VOLTAGE_LEVEL + v1.getId() + MESSAGE_NOT_FOUND);
-            }
-            if (g2 == null) {
-                throw new PowsyblException(MESSAGE_GRAPH_FOR_VOLTAGE_LEVEL + v2.getId() + MESSAGE_NOT_FOUND);
-            }
 
             Node n1 = g1.getNode(id1);
             Node n2 = g2.getNode(id2);
-            if (n1 == null) {
-                throw new PowsyblException(MESSAGE_NODE + id1 + MESSAGE_NOT_FOUND);
-            }
-            if (n2 == null) {
-                throw new PowsyblException(MESSAGE_NODE + id2 + MESSAGE_NOT_FOUND);
-            }
 
             addEdge(n1, n2);
         }
@@ -155,15 +121,6 @@ public class SubstationGraph {
             Graph g1 = getNode(v1.getId());
             Graph g2 = getNode(v2.getId());
             Graph g3 = getNode(v3.getId());
-            if (g1 == null) {
-                throw new PowsyblException(MESSAGE_GRAPH_FOR_VOLTAGE_LEVEL + v1.getId() + MESSAGE_NOT_FOUND);
-            }
-            if (g2 == null) {
-                throw new PowsyblException(MESSAGE_GRAPH_FOR_VOLTAGE_LEVEL + v2.getId() + MESSAGE_NOT_FOUND);
-            }
-            if (g3 == null) {
-                throw new PowsyblException(MESSAGE_GRAPH_FOR_VOLTAGE_LEVEL + v3.getId() + MESSAGE_NOT_FOUND);
-            }
 
             Node n12 = g1.getNode(id12);
             Node n13 = g1.getNode(id13);
@@ -201,10 +158,6 @@ public class SubstationGraph {
 
     public List<Edge> getEdges() {
         return new ArrayList<>(edges);
-    }
-
-    public Substation getSubstation() {
-        return substation;
     }
 
     public boolean graphAdjacents(Graph g1, Graph g2) {

@@ -20,7 +20,6 @@ import com.powsybl.iidm.network.HvdcConverterStation;
 import com.powsybl.iidm.network.Injection;
 import com.powsybl.iidm.network.Line;
 import com.powsybl.iidm.network.Load;
-import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.ShuntCompensator;
 import com.powsybl.iidm.network.StaticVarCompensator;
 import com.powsybl.iidm.network.Switch;
@@ -128,18 +127,6 @@ public class Graph {
         Graph g = new Graph(vl, useName, forVoltageLevelDiagram, showInductorFor3WT);
         g.buildGraph(vl);
         return g;
-    }
-
-    public static Map<String, Graph> create(Network network) {
-        return create(network, false);
-    }
-
-    public static Map<String, Graph> create(Network network, boolean useName) {
-        Map<String, Graph> graphs = new HashMap<>();
-        for (VoltageLevel vl : network.getVoltageLevels()) {
-            graphs.put(vl.getId(), create(vl, useName, true, false));
-        }
-        return graphs;
     }
 
     int getNextCellIndex() {

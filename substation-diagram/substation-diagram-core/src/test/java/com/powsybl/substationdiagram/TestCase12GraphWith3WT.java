@@ -391,7 +391,8 @@ public class TestCase12GraphWith3WT extends AbstractTestCase {
                 .setVerticalSubstationPadding(50)
                 .setDrawStraightWires(false)
                 .setHorizontalSnakeLinePadding(30)
-                .setVerticalSnakeLinePadding(30);
+                .setVerticalSnakeLinePadding(30)
+                .setShowInductorFor3WT(true);
 
         // build voltage level 1 graph
         Graph g1 = Graph.create(vl1, false, true, true);

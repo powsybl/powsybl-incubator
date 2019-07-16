@@ -436,12 +436,12 @@ public class TestCase12GraphWith3WT extends AbstractTestCase {
         Assert.assertTrue(Files.exists(pathMetadata));
         try {
             String refSvg = normalizeLineSeparator(new String(ByteStreams.toByteArray(getClass().getResourceAsStream("/vlDiag.svg")), StandardCharsets.UTF_8));
-            String svg = new String(Files.readAllBytes(pathSVG));
+            String svg = normalizeLineSeparator(new String(Files.readAllBytes(pathSVG), StandardCharsets.UTF_8));
             assertEquals(refSvg, svg);
             Files.deleteIfExists(pathSVG);
 
             String refMetadata = normalizeLineSeparator(new String(ByteStreams.toByteArray(getClass().getResourceAsStream("/vlDiag_metadata.json")), StandardCharsets.UTF_8));
-            String metadata = new String(Files.readAllBytes(pathMetadata));
+            String metadata = normalizeLineSeparator(new String(Files.readAllBytes(pathMetadata), StandardCharsets.UTF_8));
             assertEquals(refMetadata, metadata);
             Files.deleteIfExists(pathMetadata);
 

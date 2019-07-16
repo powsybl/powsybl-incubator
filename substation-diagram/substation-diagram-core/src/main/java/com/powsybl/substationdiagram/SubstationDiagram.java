@@ -68,11 +68,11 @@ public final class SubstationDiagram {
     }
 
     public void writeSvg(ComponentLibrary componentLibrary, LayoutParameters layoutParameters, Network network, Path svgFile) {
-        writeSvg(componentLibrary, layoutParameters, svgFile, network, false);
+        writeSvg(componentLibrary, layoutParameters, svgFile, network);
     }
 
     public void writeSvg(ComponentLibrary componentLibrary, LayoutParameters layoutParameters,
-                         Path svgFile, Network network, boolean debug) {
+                         Path svgFile, Network network) {
         Path dir = svgFile.toAbsolutePath().getParent();
         String svgFileName = svgFile.getFileName().toString();
         if (!svgFileName.endsWith(".svg")) {

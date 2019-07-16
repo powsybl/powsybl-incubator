@@ -65,6 +65,10 @@ public class DistributedSlackAction implements MacroAction {
         }
     }
 
+    private static String formatMw(double d) {
+        return String.format("%.1f", d * PerUnit.SB);
+    }
+
     @Override
     public boolean run(MacroActionContext context) {
         double slackBusActivePowerMismatch = context.getNewtonRaphsonResult().getSlackBusActivePowerMismatch();
@@ -78,17 +82,19 @@ public class DistributedSlackAction implements MacroAction {
             while (!participatingBuses.isEmpty()
                     && Math.abs(remainingMismatch) > SLACK_EPSILON) {
 
-                remainingMismatch -= run(participatingBuses, remainingMismatch);
+                remainingMismatch -= run(participatingBuses, iteration, remainingMismatch);
 
                 iteration++;
             }
 
             if (Math.abs(remainingMismatch) > SLACK_EPSILON) {
                 throw new PowsyblException("Failed to distribute slack bus active power mismatch, "
-                        + remainingMismatch + " MW remains");
+                        + formatMw(remainingMismatch) + " MW remains");
             } else {
-                LOGGER.debug("Slack bus active power mismatch ({} MW) distributed in {} iterations",
-                        slackBusActivePowerMismatch, iteration);
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("Slack bus active power ({} MW) distributed in {} iterations",
+                            formatMw(slackBusActivePowerMismatch), iteration);
+                }
             }
 
             return true;
@@ -99,12 +105,15 @@ public class DistributedSlackAction implements MacroAction {
         return false;
     }
 
-    private double run(List<ParticipatingBus> participatingBuses, double remainingMismatch) {
+    private double run(List<ParticipatingBus> participatingBuses, int iteration, double remainingMismatch) {
         // normalize participation factors at each iteration start as some
         // buses might have reach a limit and have been discarded
         normalizeParticipationFactors(participatingBuses);
 
         double done = 0d;
+        int modifiedBuses = 0;
+        int busesAtMax = 0;
+        int busesAtMin = 0;
         Iterator<ParticipatingBus> it = participatingBuses.iterator();
         while (it.hasNext()) {
             ParticipatingBus participatingBus = it.next();
@@ -125,18 +134,30 @@ public class DistributedSlackAction implements MacroAction {
             double newGenerationTargetP = generationTargetP + remainingMismatch * factor;
             if (remainingMismatch > 0 && newGenerationTargetP > maxP) {
                 newGenerationTargetP = maxP;
+                busesAtMax++;
                 it.remove();
             } else if (remainingMismatch < 0 && newGenerationTargetP < minP) {
                 newGenerationTargetP = minP;
+                busesAtMin++;
                 it.remove();
             }
 
-            if (LOGGER.isTraceEnabled()) {
-                LOGGER.trace("Rescale '{}' active power target: {} -> {}",
-                        bus.getId(), generationTargetP, newGenerationTargetP);
+            if (newGenerationTargetP != generationTargetP) {
+                if (LOGGER.isTraceEnabled()) {
+                    LOGGER.trace("Rescale '{}' active power target: {} -> {}",
+                            bus.getId(), formatMw(generationTargetP), formatMw(newGenerationTargetP));
+                }
+
+                bus.setGenerationTargetP(newGenerationTargetP);
+                done += newGenerationTargetP - generationTargetP;
+                modifiedBuses++;
             }
-            bus.setGenerationTargetP(newGenerationTargetP);
-            done += newGenerationTargetP - generationTargetP;
+        }
+
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("{} MW / {} MW distributed at iteration {} to {} buses ({} at max power, {} at min power)",
+                    formatMw(done), formatMw(remainingMismatch), iteration, modifiedBuses,
+                    busesAtMax, busesAtMin);
         }
 
         return done;

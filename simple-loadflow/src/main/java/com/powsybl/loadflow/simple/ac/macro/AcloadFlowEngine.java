@@ -34,16 +34,19 @@ public class AcloadFlowEngine {
 
     private final VoltageInitializer voltageInitializer;
 
+    private final NewtonRaphsonStoppingCriteria stoppingCriteria;
+
     private final List<MacroAction> macroActions;
 
     private final MatrixFactory matrixFactory;
 
     private final AcLoadFlowObserver observer;
 
-    public AcloadFlowEngine(LfNetwork network, VoltageInitializer voltageInitializer, List<MacroAction> macroActions,
-                            MatrixFactory matrixFactory, AcLoadFlowObserver observer) {
+    public AcloadFlowEngine(LfNetwork network, VoltageInitializer voltageInitializer, NewtonRaphsonStoppingCriteria stoppingCriteria,
+                            List<MacroAction> macroActions, MatrixFactory matrixFactory, AcLoadFlowObserver observer) {
         this.network = Objects.requireNonNull(network);
         this.voltageInitializer = Objects.requireNonNull(voltageInitializer);
+        this.stoppingCriteria = Objects.requireNonNull(stoppingCriteria);
         this.macroActions = Objects.requireNonNull(macroActions);
         this.matrixFactory = Objects.requireNonNull(matrixFactory);
         this.observer = Objects.requireNonNull(observer);
@@ -60,7 +63,7 @@ public class AcloadFlowEngine {
 
         NewtonRaphsonResult newtonRaphsonResult = new NewtonRaphson(network, matrixFactory, observer, equationContext,
                                                                     equationSystem, macroIterationVoltageInitializer,
-                                                                    newtonRaphsonIteration)
+                                                                    stoppingCriteria, newtonRaphsonIteration)
                 .run(newtonRaphsonParameters);
 
         observer.endMacroIteration(macroIteration, macroActionName);

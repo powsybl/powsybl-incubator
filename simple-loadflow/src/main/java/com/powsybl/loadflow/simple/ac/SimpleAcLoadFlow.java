@@ -16,7 +16,9 @@ import com.powsybl.loadflow.simple.ac.macro.AcLoadFlowObserver;
 import com.powsybl.loadflow.simple.ac.macro.AcLoadFlowResult;
 import com.powsybl.loadflow.simple.ac.macro.AcloadFlowEngine;
 import com.powsybl.loadflow.simple.ac.macro.MacroAction;
+import com.powsybl.loadflow.simple.ac.nr.DefaultNewtonRaphsonStoppingCriteria;
 import com.powsybl.loadflow.simple.ac.nr.NewtonRaphsonStatus;
+import com.powsybl.loadflow.simple.ac.nr.NewtonRaphsonStoppingCriteria;
 import com.powsybl.loadflow.simple.ac.nr.VoltageInitializer;
 import com.powsybl.loadflow.simple.network.LfNetwork;
 import com.powsybl.loadflow.simple.network.SlackBusSelector;
@@ -102,6 +104,8 @@ public class SimpleAcLoadFlow implements LoadFlow {
 
             VoltageInitializer voltageInitializer = VoltageInitializer.getFromParameters(parameters);
 
+            NewtonRaphsonStoppingCriteria stoppingCriteria = new DefaultNewtonRaphsonStoppingCriteria();
+
             List<MacroAction> macroActions = new ArrayList<>();
             if (parametersExt.isDistributedSlack()) {
                 macroActions.add(new DistributedSlackAction());
@@ -112,7 +116,7 @@ public class SimpleAcLoadFlow implements LoadFlow {
             // only process main (largest) connected component
             LfNetwork lfNetwork = lfNetworks.get(0);
 
-            AcLoadFlowResult result = new AcloadFlowEngine(lfNetwork, voltageInitializer, macroActions, matrixFactory, getObserver())
+            AcLoadFlowResult result = new AcloadFlowEngine(lfNetwork, voltageInitializer, stoppingCriteria, macroActions, matrixFactory, getObserver())
                     .run();
 
             // update network state

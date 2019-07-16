@@ -6,6 +6,7 @@
  */
 package com.powsybl.substationdiagram;
 
+import com.google.common.io.ByteStreams;
 import com.powsybl.iidm.network.BusbarSection;
 import com.powsybl.iidm.network.Country;
 import com.powsybl.iidm.network.Generator;
@@ -21,6 +22,7 @@ import com.powsybl.iidm.network.VoltageLevel;
 import com.powsybl.substationdiagram.layout.HorizontalSubstationLayoutFactory;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
 import com.powsybl.substationdiagram.layout.VerticalSubstationLayoutFactory;
+import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
 import com.powsybl.substationdiagram.model.SubstationGraph;
 import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramStyleProvider;
 import com.powsybl.substationdiagram.util.NominalVoltageSubstationDiagramStyleProvider;
@@ -29,7 +31,15 @@ import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
@@ -397,6 +407,28 @@ public class TestCase11SubstationGraph extends AbstractTestCase {
         compareSvg(g, layoutParameters, "/TestCase11SubstationGraphHorizontalNominalVoltageLevel.svg",
                    new HorizontalSubstationLayoutFactory(),
                    new NominalVoltageSubstationDiagramStyleProvider());
+
+        // Create substation diagram (svg + metadata files)
+        SubstationDiagram diagram = SubstationDiagram.build(substation);
+        Path pathSVG = Paths.get(System.getProperty("user.home"), "substDiag.svg");
+        Path pathMetadata = Paths.get(System.getProperty("user.home"), "substDiag_metadata.json");
+        diagram.writeSvg(new ResourcesComponentLibrary("/ConvergenceLibrary"), layoutParameters, pathSVG);
+        assertTrue(Files.exists(pathSVG));
+        assertTrue(Files.exists(pathMetadata));
+        try {
+            String refSvg = normalizeLineSeparator(new String(ByteStreams.toByteArray(getClass().getResourceAsStream("/substDiag.svg")), StandardCharsets.UTF_8));
+            String svg = new String(Files.readAllBytes(pathSVG));
+            assertEquals(refSvg, svg);
+            Files.deleteIfExists(pathSVG);
+
+            String refMetadata = normalizeLineSeparator(new String(ByteStreams.toByteArray(getClass().getResourceAsStream("/substDiag_metadata.json")), StandardCharsets.UTF_8));
+            String metadata = new String(Files.readAllBytes(pathMetadata));
+            assertEquals(refMetadata, metadata);
+            Files.deleteIfExists(pathMetadata);
+
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
 
         LayoutParameters lp2 = new LayoutParameters(layoutParameters);
         assertEquals(lp2.getCellWidth(), layoutParameters.getCellWidth(), 0.);

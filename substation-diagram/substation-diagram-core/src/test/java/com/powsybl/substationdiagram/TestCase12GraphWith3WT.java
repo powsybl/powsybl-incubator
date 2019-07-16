@@ -6,6 +6,7 @@
  */
 package com.powsybl.substationdiagram;
 
+import com.google.common.io.ByteStreams;
 import com.powsybl.iidm.network.BusbarSection;
 import com.powsybl.iidm.network.Country;
 import com.powsybl.iidm.network.Generator;
@@ -23,13 +24,24 @@ import com.powsybl.substationdiagram.layout.BlockOrganizer;
 import com.powsybl.substationdiagram.layout.ImplicitCellDetector;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
 import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayout;
+import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayoutFactory;
+import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
 import com.powsybl.substationdiagram.model.Graph;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
@@ -414,5 +426,27 @@ public class TestCase12GraphWith3WT extends AbstractTestCase {
         compareSvg(g1, layoutParameters, "/TestCase12GraphVL1.svg");
         compareSvg(g2, layoutParameters, "/TestCase12GraphVL2.svg");
         compareSvg(g3, layoutParameters, "/TestCase12GraphVL3.svg");
+
+        // Create voltageLevel diagram (svg + metadata files)
+        VoltageLevelDiagram diagram = VoltageLevelDiagram.build(vl1, new PositionVoltageLevelLayoutFactory(), false, true);
+        Path pathSVG = Paths.get(System.getProperty("user.home"), "vlDiag.svg");
+        Path pathMetadata = Paths.get(System.getProperty("user.home"), "vlDiag_metadata.json");
+        diagram.writeSvg(new ResourcesComponentLibrary("/ConvergenceLibrary"), layoutParameters, pathSVG);
+        Assert.assertTrue(Files.exists(pathSVG));
+        Assert.assertTrue(Files.exists(pathMetadata));
+        try {
+            String refSvg = normalizeLineSeparator(new String(ByteStreams.toByteArray(getClass().getResourceAsStream("/vlDiag.svg")), StandardCharsets.UTF_8));
+            String svg = new String(Files.readAllBytes(pathSVG));
+            assertEquals(refSvg, svg);
+            Files.deleteIfExists(pathSVG);
+
+            String refMetadata = normalizeLineSeparator(new String(ByteStreams.toByteArray(getClass().getResourceAsStream("/vlDiag_metadata.json")), StandardCharsets.UTF_8));
+            String metadata = new String(Files.readAllBytes(pathMetadata));
+            assertEquals(refMetadata, metadata);
+            Files.deleteIfExists(pathMetadata);
+
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 }

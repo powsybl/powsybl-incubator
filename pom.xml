@@ -14,7 +14,7 @@
 
     <groupId>com.powsybl</groupId>
     <artifactId>powsybl-incubator</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>0.1.0</version>
     <packaging>pom</packaging>
 
     <name>powsybl incubator</name>
@@ -104,8 +104,8 @@
             **/generated/**/*
         </sonar.exclusions>
 
-        <powsyblcore.version>3.0.0-SNAPSHOT</powsyblcore.version>
-        <powsybl-iidm-cvg-extensions.version>2.5.0</powsybl-iidm-cvg-extensions.version>
+        <powsyblcore.version>2.6.0</powsyblcore.version>
+        <powsybl-iidm-cvg-extensions.version>2.6.0</powsybl-iidm-cvg-extensions.version>
     </properties>
 
     <build>

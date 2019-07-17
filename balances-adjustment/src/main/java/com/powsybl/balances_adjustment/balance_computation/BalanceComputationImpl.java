@@ -121,6 +121,7 @@ public class BalanceComputationImpl implements BalanceComputation {
                 // Change the workingStateId with final scaling
                 network.getVariantManager().setWorkingVariant(workingStateId);
                 scaleBalancedNetwork(previousScalingMap);
+                runLoadFlow(loadFlow, workingStateId);
                 result = new BalanceComputationResult(BalanceComputationResult.Status.SUCCESS, iterationCounter, previousScalingMap);
 
             } else {
@@ -142,10 +143,6 @@ public class BalanceComputationImpl implements BalanceComputation {
             LOGGER.info(" Network areas : {} are balanced after {} iterations", networkAreasName, result.getIterationCount());
 
         } else {
-            // return the network at initial working state id
-            network.getVariantManager().removeVariant(workingVariantCopyId);
-            network.getVariantManager().cloneVariant(workingStateId, workingVariantCopyId);
-            network.getVariantManager().setWorkingVariant(workingVariantCopyId);
             LOGGER.error(" Network areas are unbalanced after {} iterations", iterationCounter);
         }
 

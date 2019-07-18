@@ -1,17 +1,23 @@
+/**
+ * Copyright (c) 2019, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 package com.powsybl.substationdiagram.svg;
 
 import java.util.Objects;
 
 import com.powsybl.iidm.network.Branch;
 import com.powsybl.iidm.network.Branch.Side;
-import com.powsybl.iidm.network.Generator;
+import com.powsybl.iidm.network.Injection;
 import com.powsybl.iidm.network.Load;
 import com.powsybl.iidm.network.Network;
-import com.powsybl.iidm.network.ShuntCompensator;
-import com.powsybl.iidm.network.StaticVarCompensator;
-import com.powsybl.iidm.network.VscConverterStation;
 import com.powsybl.substationdiagram.model.Node;
 
+/**
+ * @author Giovanni Ferrari <giovanni.ferrari at techrain.eu>
+ */
 public class DefaultSubstationDiagramInitialValueProvider implements SubstationDiagramInitialValueProvider {
 
     private final Network network;
@@ -31,45 +37,28 @@ public class DefaultSubstationDiagramInitialValueProvider implements SubstationD
             switch (node.getComponentType()) {
                 case LINE:
                 case TWO_WINDINGS_TRANSFORMER: {
-                    Branch branch = network.getBranch(nodeId.substring(0, nodeId.length() - 4));
-                    if (branch != null) {
-                        initialValue = new InitialValue(branch, Side.valueOf(nodeId.substring(nodeId.length() - 3)));
-                    }
+                    initialValue = getBranchInitialValue(nodeId);
                     break;
                 }
                 case LOAD: {
-                    Load ld = network.getLoad(nodeId);
-                    if (ld != null) {
-                        initialValue = new InitialValue(ld);
-                    }
+                    initialValue = getLoadInitialValue(network.getLoad(nodeId));
+                    break;
                 }
                 case INDUCTOR:
                 case CAPACITOR: {
-                    ShuntCompensator sh = network.getShuntCompensator(nodeId);
-                    if (sh != null)  {
-                        initialValue = new InitialValue(sh);
-                    }
+                    initialValue = getInjectionInitialValue(network.getShuntCompensator(nodeId));
                     break;
                 }
                 case GENERATOR: {
-                    Generator g = network.getGenerator(nodeId);
-                    if (g != null) {
-                        initialValue = new InitialValue(g);
-                    }
+                    initialValue = getInjectionInitialValue(network.getGenerator(nodeId));
                     break;
                 }
                 case STATIC_VAR_COMPENSATOR: {
-                    StaticVarCompensator svc = network.getStaticVarCompensator(nodeId);
-                    if (svc != null) {
-                        initialValue = new InitialValue(svc);
-                    }
+                    initialValue = getInjectionInitialValue(network.getStaticVarCompensator(nodeId));
                     break;
                 }
                 case VSC_CONVERTER_STATION: {
-                    VscConverterStation vsc = network.getVscConverterStation(nodeId);
-                    if (vsc != null) {
-                        initialValue = new InitialValue(vsc);
-                    }
+                    initialValue = getInjectionInitialValue(network.getVscConverterStation(nodeId));
                     break;
                 }
                 case BUSBAR_SECTION:
@@ -84,4 +73,28 @@ public class DefaultSubstationDiagramInitialValueProvider implements SubstationD
         return initialValue;
     }
 
+    private InitialValue getInjectionInitialValue(Injection<?> injection) {
+        if (injection != null) {
+            return new InitialValue(injection);
+        } else {
+            return new InitialValue(null, null, null, null, null, null);
+        }
+    }
+
+    private InitialValue getLoadInitialValue(Load load) {
+        if (load != null) {
+            return new InitialValue(load);
+        } else {
+            return new InitialValue(null, null, null, null, null, null);
+        }
+    }
+
+    private InitialValue getBranchInitialValue(String nodeId) {
+        Branch branch = network.getBranch(nodeId.substring(0, nodeId.length() - 4));
+        if (branch != null) {
+            return new InitialValue(branch, Side.valueOf(nodeId.substring(nodeId.length() - 3)));
+        } else {
+            return new InitialValue(null, null, null, null, null, null);
+        }
+    }
 }

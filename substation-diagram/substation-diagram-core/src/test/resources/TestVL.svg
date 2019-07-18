@@ -59,8 +59,8 @@
     </g>
 </g>
         <g class="substation-diagram NODE FICT_vl_dFictif" id="FICT_vl_dFictif" transform="translate(41.0,276.0)"/>
-        <polyline class="wire_vl" points="45.0,310.0 45.0,310.0" id="vl_Wire0"/>
-        <polyline class="wire_vl" points="45.0,145.0 45.0,34.0" id="vl_Wire1"/>
+        <polyline class="wire_vl" points="45.0,310.0,45.0,310.0" id="vl_Wire0"/>
+        <polyline class="wire_vl" points="45.0,145.0,45.0,34.0" id="vl_Wire1"/>
         <g class="substation-diagram ARROW1__l_UP" id="vl_Wire1_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,40.0,120.0)">
      <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
         <polygon points="5,0 10,10 0,10"/>
@@ -79,8 +79,8 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">10</text>
         </g>
-        <polyline class="wire_vl" points="45.0,165.0 45.0,280.0" id="vl_Wire2"/>
-        <polyline class="wire_vl" points="45.0,310.0 45.0,280.0" id="vl_Wire3"/>
+        <polyline class="wire_vl" points="45.0,165.0,45.0,280.0" id="vl_Wire2"/>
+        <polyline class="wire_vl" points="45.0,310.0,45.0,280.0" id="vl_Wire3"/>
         <g id="LABEL_VL_vl">
             <text x="0.0" font-size="12" y="0.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">vl</text>
         </g>

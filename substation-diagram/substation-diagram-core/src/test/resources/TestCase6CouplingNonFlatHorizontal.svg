@@ -127,24 +127,24 @@
         <g class="substation-diagram NODE FICT_vl_ds2fNode1" id="FICT_vl_ds2fNode1" transform="matrix(0.0,1.0,-1.0,0.0,124.0,331.0)">
     <circle r="4" cx="4" cy="4"/>
 </g>
-        <polyline class="wire_vl" points="45.0,310.0 45.0,310.0" id="vl_Wire0"/>
-        <polyline class="wire_vl" points="145.0,335.0 145.0,335.0" id="vl_Wire1"/>
-        <polyline class="wire_vl" points="60.0,270.0 45.0,270.0" id="vl_Wire2"/>
-        <polyline class="wire_vl" points="45.0,310.0 45.0,270.0" id="vl_Wire3"/>
-        <polyline class="wire_vl" points="80.0,270.0 145.0,270.0" id="vl_Wire4"/>
-        <polyline class="wire_vl" points="145.0,335.0 145.0,270.0" id="vl_Wire5"/>
-        <polyline class="wire_vl" points="60.0,310.0 70.0,310.0" id="vl_Wire6"/>
-        <polyline class="wire_vl" points="70.0,310.0 70.0,310.0" id="vl_Wire7"/>
-        <polyline class="wire_vl" points="70.0,310.0 95.0,310.0" id="vl_Wire8"/>
-        <polyline class="wire_vl" points="130.0,310.0 120.0,310.0" id="vl_Wire9"/>
-        <polyline class="wire_vl" points="120.0,310.0 120.0,310.0" id="vl_Wire10"/>
-        <polyline class="wire_vl" points="120.0,310.0 95.0,310.0" id="vl_Wire11"/>
-        <polyline class="wire_vl" points="60.0,335.0 70.0,335.0" id="vl_Wire12"/>
-        <polyline class="wire_vl" points="70.0,335.0 70.0,335.0" id="vl_Wire13"/>
-        <polyline class="wire_vl" points="70.0,335.0 95.0,335.0" id="vl_Wire14"/>
-        <polyline class="wire_vl" points="130.0,335.0 120.0,335.0" id="vl_Wire15"/>
-        <polyline class="wire_vl" points="120.0,335.0 120.0,335.0" id="vl_Wire16"/>
-        <polyline class="wire_vl" points="120.0,335.0 95.0,335.0" id="vl_Wire17"/>
+        <polyline class="wire_vl" points="45.0,310.0,45.0,310.0" id="vl_Wire0"/>
+        <polyline class="wire_vl" points="145.0,335.0,145.0,335.0" id="vl_Wire1"/>
+        <polyline class="wire_vl" points="60.0,270.0,45.0,270.0" id="vl_Wire2"/>
+        <polyline class="wire_vl" points="45.0,310.0,45.0,270.0" id="vl_Wire3"/>
+        <polyline class="wire_vl" points="80.0,270.0,145.0,270.0" id="vl_Wire4"/>
+        <polyline class="wire_vl" points="145.0,335.0,145.0,270.0" id="vl_Wire5"/>
+        <polyline class="wire_vl" points="60.0,310.0,70.0,310.0" id="vl_Wire6"/>
+        <polyline class="wire_vl" points="70.0,310.0,70.0,310.0" id="vl_Wire7"/>
+        <polyline class="wire_vl" points="70.0,310.0,95.0,310.0" id="vl_Wire8"/>
+        <polyline class="wire_vl" points="130.0,310.0,120.0,310.0" id="vl_Wire9"/>
+        <polyline class="wire_vl" points="120.0,310.0,120.0,310.0" id="vl_Wire10"/>
+        <polyline class="wire_vl" points="120.0,310.0,95.0,310.0" id="vl_Wire11"/>
+        <polyline class="wire_vl" points="60.0,335.0,70.0,335.0" id="vl_Wire12"/>
+        <polyline class="wire_vl" points="70.0,335.0,70.0,335.0" id="vl_Wire13"/>
+        <polyline class="wire_vl" points="70.0,335.0,95.0,335.0" id="vl_Wire14"/>
+        <polyline class="wire_vl" points="130.0,335.0,120.0,335.0" id="vl_Wire15"/>
+        <polyline class="wire_vl" points="120.0,335.0,120.0,335.0" id="vl_Wire16"/>
+        <polyline class="wire_vl" points="120.0,335.0,95.0,335.0" id="vl_Wire17"/>
         <g id="LABEL_VL_vl">
             <text x="0.0" font-size="12" y="0.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">vl</text>
         </g>

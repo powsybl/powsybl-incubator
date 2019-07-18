@@ -60,6 +60,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
@@ -393,34 +394,10 @@ public class SVGWriter {
                     incorporateComponents(node, g);
                 }
 
-                BusCell.Direction direction = BusCell.Direction.UNDEFINED;
+                BusCell.Direction direction = (node instanceof FeederNode && node.getCell() != null) ? ((ExternCell) node.getCell()).getDirection() : BusCell.Direction.UNDEFINED;
 
                 if (!node.isFictitious()) {
-                    if (node instanceof FeederNode) {
-                        double yShift = -LABEL_OFFSET;
-                        if (node.getCell() != null) {
-                            direction = ((ExternCell) node.getCell()).getDirection();
-                            yShift = direction == BusCell.Direction.TOP
-                                    ? -LABEL_OFFSET
-                                    : ((int) (componentLibrary.getSize(node.getComponentType()).getHeight()) + FONT_SIZE + LABEL_OFFSET);
-                        }
-                        drawLabel(node.getLabel(), node.isRotated(), -LABEL_OFFSET, yShift, g, FONT_SIZE);
-                    } else if (node instanceof BusNode) {
-                        InitialValue val = initProvider.getInitialValue(node);
-                        double d = ((BusNode) node).getPxWidth();
-                        if (val.getLabel1().isPresent()) {
-                            drawLabel(val.getLabel1().get(), false, -LABEL_OFFSET, -LABEL_OFFSET, g, FONT_SIZE);
-                        }
-                        if (val.getLabel2().isPresent()) {
-                            drawLabel(val.getLabel2().get(), false,  d - LABEL_OFFSET, -LABEL_OFFSET, g, FONT_SIZE);
-                        }
-                        if (val.getLabel3().isPresent()) {
-                            drawLabel(val.getLabel3().get(), false, -LABEL_OFFSET, LABEL_OFFSET + (double) FONT_SIZE / 2, g, FONT_SIZE);
-                        }
-                        if (val.getLabel4().isPresent()) {
-                            drawLabel(val.getLabel4().get(), false, d - LABEL_OFFSET, LABEL_OFFSET + (double) FONT_SIZE / 2, g, FONT_SIZE);
-                        }
-                    }
+                    drawNodeLabel(g, node, initProvider, direction);
                 }
                 root.appendChild(g);
 
@@ -445,6 +422,33 @@ public class SVGWriter {
                 throw new UncheckedIOException(e);
             }
         });
+    }
+
+    private void drawNodeLabel(Element g, Node node, SubstationDiagramInitialValueProvider initProvider, BusCell.Direction direction) {
+        if (node instanceof FeederNode) {
+            double yShift = -LABEL_OFFSET;
+            if (node.getCell() != null) {
+                yShift = direction == BusCell.Direction.TOP
+                        ? -LABEL_OFFSET
+                        : ((int) (componentLibrary.getSize(node.getComponentType()).getHeight()) + FONT_SIZE + LABEL_OFFSET);
+            }
+            drawLabel(node.getLabel(), node.isRotated(), -LABEL_OFFSET, yShift, g, FONT_SIZE);
+        } else if (node instanceof BusNode) {
+            InitialValue val = initProvider.getInitialValue(node);
+            double d = ((BusNode) node).getPxWidth();
+            if (val.getLabel1().isPresent()) {
+                drawLabel(val.getLabel1().get(), false, -LABEL_OFFSET, -LABEL_OFFSET, g, FONT_SIZE);
+            }
+            if (val.getLabel2().isPresent()) {
+                drawLabel(val.getLabel2().get(), false,  d - LABEL_OFFSET, -LABEL_OFFSET, g, FONT_SIZE);
+            }
+            if (val.getLabel3().isPresent()) {
+                drawLabel(val.getLabel3().get(), false, -LABEL_OFFSET, LABEL_OFFSET + (double) FONT_SIZE / 2, g, FONT_SIZE);
+            }
+            if (val.getLabel4().isPresent()) {
+                drawLabel(val.getLabel4().get(), false, d - LABEL_OFFSET, LABEL_OFFSET + (double) FONT_SIZE / 2, g, FONT_SIZE);
+            }
+        }
     }
 
     /*
@@ -537,11 +541,9 @@ public class SVGWriter {
 
         for (int i = 0; i < obj.getChildNodes().item(0).getChildNodes().getLength(); i++) {
             org.w3c.dom.Node n = obj.getChildNodes().item(0).getChildNodes().item(i).cloneNode(true);
-            if (n.getNodeName().equals("g")) {
-                if (n.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
-                    Element e = (Element) n;
-                    e.setAttribute("transform", "rotate(" + angle + "," + cx + "," + cy + ")");
-                }
+            if (n.getNodeName().equals("g") && n.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
+                Element e = (Element) n;
+                e.setAttribute(TRANSFORM, "rotate(" + angle + "," + cx + "," + cy + ")");
             }
             g.getOwnerDocument().adoptNode(n);
             g.appendChild(n);
@@ -587,16 +589,14 @@ public class SVGWriter {
         double x2 = points.get(2);
         double y2 = points.get(3);
 
-        if (points.size() > 4) {
-            if (Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)) < 3 * componentSize.getHeight()) {
-                double x3 = points.get(4);
-                double y3 = points.get(5);
-                if (Math.sqrt((x3 - x2) * (x3 - x2) + (y3 - y2) * (y3 - y2)) > 3 * componentSize.getHeight()) {
-                    x1 = x2;
-                    y1 = y2;
-                    x2 = x3;
-                    y2 = y3;
-                }
+        if (points.size() > 4 && Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)) < 3 * componentSize.getHeight()) {
+            double x3 = points.get(4);
+            double y3 = points.get(5);
+            if (Math.sqrt((x3 - x2) * (x3 - x2) + (y3 - y2) * (y3 - y2)) > 3 * componentSize.getHeight()) {
+                x1 = x2;
+                y1 = y2;
+                x2 = x3;
+                y2 = y3;
             }
         }
         double dx = x2 - x1;
@@ -674,7 +674,7 @@ public class SVGWriter {
         Optional<Direction> dir2 = init.getArrowDirection2();
         if (dir2.isPresent()) {
             try {
-                g2.setAttribute("class", SubstationDiagramStyles.SUBSTATION_STYLE_CLASS + " "  + "ARROW2_" + SubstationDiagramStyles.escapeClassName(URLEncoder.encode(n.getId(), StandardCharsets.UTF_8.name())) + "_" + dir2.get());
+                g2.setAttribute(CLASS, SubstationDiagramStyles.SUBSTATION_STYLE_CLASS + " "  + "ARROW2_" + SubstationDiagramStyles.escapeClassName(URLEncoder.encode(n.getId(), StandardCharsets.UTF_8.name())) + "_" + dir2.get());
             } catch (UnsupportedEncodingException e) {
                 throw new UncheckedIOException(e);
             }
@@ -709,25 +709,7 @@ public class SVGWriter {
             List<Double> pol = anchorPoints.calculatePolylinePoints(edge.getNode1(), edge.getNode2(),
                                                                     layoutParameters.isDrawStraightWires());
 
-            StringBuilder polPoints = new StringBuilder();
-            for (int i = 0; i < pol.size(); i++) {
-                if (i != 0) {
-                    if (i % 2 == 0) {
-                        polPoints.append(" ");
-                    } else {
-                        polPoints.append(",");
-                    }
-                }
-                if (i % 2 == 0) {
-                    double x = pol.get(i) + layoutParameters.getTranslateX();
-                    polPoints.append(x);
-                } else {
-                    double y = pol.get(i) + layoutParameters.getTranslateY();
-                    polPoints.append(y);
-                }
-            }
-
-            g.setAttribute("points", polPoints.toString());
+            g.setAttribute("points", pointsListToString(pol));
             g.setAttribute(CLASS, SubstationDiagramStyles.WIRE_STYLE_CLASS + "_" + SubstationDiagramStyles.escapeClassName(vId));
             root.appendChild(g);
 
@@ -788,25 +770,8 @@ public class SVGWriter {
                     nbSnakeLinesBottomVL,
                     nbSnakeLinesTopVL);
 
-            StringBuilder polPoints = new StringBuilder();
-            for (int i = 0; i < pol.size(); i++) {
-                if (i != 0) {
-                    if (i % 2 == 0) {
-                        polPoints.append(" ");
-                    } else {
-                        polPoints.append(",");
-                    }
-                }
-                if (i % 2 == 0) {
-                    double x = pol.get(i) + layoutParameters.getTranslateX();
-                    polPoints.append(x);
-                } else {
-                    double y = pol.get(i) + layoutParameters.getTranslateY();
-                    polPoints.append(y);
-                }
-            }
+            g.setAttribute("points", pointsListToString(pol));
 
-            g.setAttribute("points", polPoints.toString());
             String vId;
             if (edge.getNode1().getGraph().getVoltageLevel().getNominalV() > edge.getNode2().getGraph().getVoltageLevel().getNominalV()) {
                 vId = vId1;
@@ -835,6 +800,14 @@ public class SVGWriter {
             }
 
         }
+    }
+
+    private String pointsListToString(List<Double> pol) {
+
+        return IntStream.range(0, pol.size())
+                .mapToObj(n ->  n % 2 == 0 ? pol.get(n) + layoutParameters.getTranslateX() : pol.get(n) + layoutParameters.getTranslateY())
+                .map(i -> i.toString())
+                .collect(Collectors.joining(","));
     }
 
 }

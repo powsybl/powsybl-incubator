@@ -25,6 +25,11 @@ import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.*;
  */
 public class DefaultSubstationDiagramStyleProvider implements SubstationDiagramStyleProvider {
 
+    private static final String ARROW1 = ".ARROW1_";
+    private static final String ARROW2 = ".ARROW2_";
+    private static final String UP = "_UP";
+    private static final String DOWN = "_DOWN";
+
     @Override
     public Optional<String> getGlobalStyle(Graph graph) {
         String idVL = escapeClassName(graph.getVoltageLevel().getId());
@@ -58,25 +63,25 @@ public class DefaultSubstationDiagramStyleProvider implements SubstationDiagramS
         if (node instanceof FeederNode) {
             try {
                 StringBuilder style = new StringBuilder();
-                style.append(".ARROW1_").append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
+                style.append(ARROW1).append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
                         .append("_UP").append(" .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}");
-                style.append(".ARROW1_").append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
-                .append("_UP").append(" .arrow-down { visibility: hidden;}");
+                style.append(ARROW1).append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
+                .append(UP).append(" .arrow-down { visibility: hidden;}");
 
-                style.append(".ARROW1_").append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
-                .append("_DOWN").append(" .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}");
-                style.append(".ARROW1_").append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
-                .append("_DOWN").append(" .arrow-up { visibility: hidden;}");
+                style.append(ARROW1).append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
+                .append(DOWN).append(" .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}");
+                style.append(ARROW1).append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
+                .append(DOWN).append(" .arrow-up { visibility: hidden;}");
 
-                style.append(".ARROW2_").append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
-                .append("_UP").append(" .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}");
-                style.append(".ARROW2_").append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
-                .append("_UP").append(" .arrow-down { visibility: hidden;}");
+                style.append(ARROW2).append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
+                .append(UP).append(" .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}");
+                style.append(ARROW2).append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
+                .append(UP).append(" .arrow-down { visibility: hidden;}");
 
-                style.append(".ARROW2_").append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
-                .append("_DOWN").append(" .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}");
-                style.append(".ARROW2_").append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
-                .append("_DOWN").append(" .arrow-up { visibility: hidden;}");
+                style.append(ARROW2).append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
+                .append(DOWN).append(" .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}");
+                style.append(ARROW2).append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
+                .append(DOWN).append(" .arrow-up { visibility: hidden;}");
 
                 return Optional.of(style.toString());
             } catch (UnsupportedEncodingException e) {

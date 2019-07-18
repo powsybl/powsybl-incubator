@@ -363,12 +363,12 @@
         <g class="substation-diagram NODE FICT_vl1_dsect22Fictif" id="FICT_vl1_dsect22Fictif" transform="matrix(0.0,1.0,-1.0,0.0,374.0,381.0)"/>
         <g class="substation-diagram NODE FICT_vl1_dgen2Fictif" id="FICT_vl1_dgen2Fictif" transform="translate(541.0,411.0)"/>
         <g class="substation-diagram NODE FICT_vl1_dtrf14Fictif" id="FICT_vl1_dtrf14Fictif" transform="translate(441.0,411.0)"/>
-        <polyline class="wire_vl1" points="310.0,360.0 320.0,360.0" id="vl1_Wire0"/>
-        <polyline class="wire_vl1" points="370.0,360.0 380.0,360.0" id="vl1_Wire1"/>
-        <polyline class="wire_vl1" points="310.0,385.0 320.0,385.0" id="vl1_Wire2"/>
-        <polyline class="wire_vl1" points="370.0,385.0 380.0,385.0" id="vl1_Wire3"/>
-        <polyline class="wire_vl1" points="95.0,360.0 95.0,360.0" id="vl1_Wire4"/>
-        <polyline class="wire_vl1" points="95.0,84.0 95.0,195.0" id="vl1_Wire5"/>
+        <polyline class="wire_vl1" points="310.0,360.0,320.0,360.0" id="vl1_Wire0"/>
+        <polyline class="wire_vl1" points="370.0,360.0,380.0,360.0" id="vl1_Wire1"/>
+        <polyline class="wire_vl1" points="310.0,385.0,320.0,385.0" id="vl1_Wire2"/>
+        <polyline class="wire_vl1" points="370.0,385.0,380.0,385.0" id="vl1_Wire3"/>
+        <polyline class="wire_vl1" points="95.0,360.0,95.0,360.0" id="vl1_Wire4"/>
+        <polyline class="wire_vl1" points="95.0,84.0,95.0,195.0" id="vl1_Wire5"/>
         <g class="substation-diagram ARROW1_load1_UP" id="vl1_Wire5_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,90.0,99.0)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
@@ -387,8 +387,8 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">10</text>
         </g>
-        <polyline class="wire_vl1" points="195.0,385.0 195.0,385.0" id="vl1_Wire6"/>
-        <polyline class="wire_vl1" points="195.0,659.0 195.0,550.0" id="vl1_Wire7"/>
+        <polyline class="wire_vl1" points="195.0,385.0,195.0,385.0" id="vl1_Wire6"/>
+        <polyline class="wire_vl1" points="195.0,659.0,195.0,550.0" id="vl1_Wire7"/>
         <g class="substation-diagram ARROW1_gen1_DOWN" id="vl1_Wire7_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,190.0,634.0)">
      <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
         <polygon points="5,0 10,10 0,10"/>
@@ -407,8 +407,8 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <polyline class="wire_vl1" points="395.0,360.0 395.0,360.0" id="vl1_Wire8"/>
-        <polyline class="wire_vl1" points="395.0,84.0 395.0,195.0" id="vl1_Wire9"/>
+        <polyline class="wire_vl1" points="395.0,360.0,395.0,360.0" id="vl1_Wire8"/>
+        <polyline class="wire_vl1" points="395.0,84.0,395.0,195.0" id="vl1_Wire9"/>
         <g class="substation-diagram ARROW1_load2_UP" id="vl1_Wire9_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,390.0,99.0)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
@@ -427,8 +427,8 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">10</text>
         </g>
-        <polyline class="wire_vl1" points="545.0,385.0 545.0,385.0" id="vl1_Wire10"/>
-        <polyline class="wire_vl1" points="545.0,659.0 545.0,550.0" id="vl1_Wire11"/>
+        <polyline class="wire_vl1" points="545.0,385.0,545.0,385.0" id="vl1_Wire10"/>
+        <polyline class="wire_vl1" points="545.0,659.0,545.0,550.0" id="vl1_Wire11"/>
         <g class="substation-diagram ARROW1_gen2_DOWN" id="vl1_Wire11_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,540.0,634.0)">
      <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
         <polygon points="5,0 10,10 0,10"/>
@@ -447,8 +447,8 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <polyline class="wire_vl1" points="145.0,360.0 145.0,360.0" id="vl1_Wire12"/>
-        <polyline class="wire_vl1" points="145.0,195.0 145.0,84.0" id="vl1_Wire13"/>
+        <polyline class="wire_vl1" points="145.0,360.0,145.0,360.0" id="vl1_Wire12"/>
+        <polyline class="wire_vl1" points="145.0,195.0,145.0,84.0" id="vl1_Wire13"/>
         <g class="substation-diagram ARROW1_trf1_ONE_DOWN" id="vl1_Wire13_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,140.0,170.0)">
      <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
         <polygon points="5,0 10,10 0,10"/>
@@ -467,8 +467,8 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <polyline class="wire_vl1" points="495.0,360.0 495.0,360.0" id="vl1_Wire14"/>
-        <polyline class="wire_vl1" points="495.0,195.0 495.0,84.0" id="vl1_Wire15"/>
+        <polyline class="wire_vl1" points="495.0,360.0,495.0,360.0" id="vl1_Wire14"/>
+        <polyline class="wire_vl1" points="495.0,195.0,495.0,84.0" id="vl1_Wire15"/>
         <g class="substation-diagram ARROW1_trf2_ONE_DOWN" id="vl1_Wire15_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,490.0,170.0)">
      <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
         <polygon points="5,0 10,10 0,10"/>
@@ -487,8 +487,8 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <polyline class="wire_vl1" points="245.0,385.0 245.0,385.0" id="vl1_Wire16"/>
-        <polyline class="wire_vl1" points="245.0,550.0 245.0,661.0" id="vl1_Wire17"/>
+        <polyline class="wire_vl1" points="245.0,385.0,245.0,385.0" id="vl1_Wire16"/>
+        <polyline class="wire_vl1" points="245.0,550.0,245.0,661.0" id="vl1_Wire17"/>
         <g class="substation-diagram ARROW1_trf3_ONE_DOWN" id="vl1_Wire17_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,240.0,565.0)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
@@ -507,8 +507,8 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <polyline class="wire_vl1" points="445.0,385.0 445.0,385.0" id="vl1_Wire18"/>
-        <polyline class="wire_vl1" points="445.0,550.0 445.0,661.0" id="vl1_Wire19"/>
+        <polyline class="wire_vl1" points="445.0,385.0,445.0,385.0" id="vl1_Wire18"/>
+        <polyline class="wire_vl1" points="445.0,550.0,445.0,661.0" id="vl1_Wire19"/>
         <g class="substation-diagram ARROW1_trf4_ONE_DOWN" id="vl1_Wire19_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,440.0,565.0)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
@@ -527,8 +527,8 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <polyline class="wire_vl1" points="295.0,360.0 295.0,360.0" id="vl1_Wire20"/>
-        <polyline class="wire_vl1" points="295.0,195.0 295.0,84.0" id="vl1_Wire21"/>
+        <polyline class="wire_vl1" points="295.0,360.0,295.0,360.0" id="vl1_Wire20"/>
+        <polyline class="wire_vl1" points="295.0,195.0,295.0,84.0" id="vl1_Wire21"/>
         <g class="substation-diagram ARROW1_trf5_ONE_DOWN" id="vl1_Wire21_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,290.0,170.0)">
      <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
         <polygon points="5,0 10,10 0,10"/>
@@ -547,32 +547,32 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <polyline class="wire_vl1" points="335.0,360.0 320.0,360.0" id="vl1_Wire22"/>
-        <polyline class="wire_vl1" points="320.0,360.0 320.0,360.0" id="vl1_Wire23"/>
-        <polyline class="wire_vl1" points="95.0,215.0 95.0,330.0" id="vl1_Wire24"/>
-        <polyline class="wire_vl1" points="95.0,360.0 95.0,330.0" id="vl1_Wire25"/>
-        <polyline class="wire_vl1" points="145.0,215.0 145.0,330.0" id="vl1_Wire26"/>
-        <polyline class="wire_vl1" points="145.0,360.0 145.0,330.0" id="vl1_Wire27"/>
-        <polyline class="wire_vl1" points="295.0,215.0 295.0,330.0" id="vl1_Wire28"/>
-        <polyline class="wire_vl1" points="295.0,360.0 295.0,330.0" id="vl1_Wire29"/>
-        <polyline class="wire_vl1" points="355.0,360.0 370.0,360.0" id="vl1_Wire30"/>
-        <polyline class="wire_vl1" points="370.0,360.0 370.0,360.0" id="vl1_Wire31"/>
-        <polyline class="wire_vl1" points="395.0,215.0 395.0,330.0" id="vl1_Wire32"/>
-        <polyline class="wire_vl1" points="395.0,360.0 395.0,330.0" id="vl1_Wire33"/>
-        <polyline class="wire_vl1" points="495.0,215.0 495.0,330.0" id="vl1_Wire34"/>
-        <polyline class="wire_vl1" points="495.0,360.0 495.0,330.0" id="vl1_Wire35"/>
-        <polyline class="wire_vl1" points="335.0,385.0 320.0,385.0" id="vl1_Wire36"/>
-        <polyline class="wire_vl1" points="320.0,385.0 320.0,385.0" id="vl1_Wire37"/>
-        <polyline class="wire_vl1" points="195.0,530.0 195.0,415.0" id="vl1_Wire38"/>
-        <polyline class="wire_vl1" points="195.0,385.0 195.0,415.0" id="vl1_Wire39"/>
-        <polyline class="wire_vl1" points="245.0,530.0 245.0,415.0" id="vl1_Wire40"/>
-        <polyline class="wire_vl1" points="245.0,385.0 245.0,415.0" id="vl1_Wire41"/>
-        <polyline class="wire_vl1" points="355.0,385.0 370.0,385.0" id="vl1_Wire42"/>
-        <polyline class="wire_vl1" points="370.0,385.0 370.0,385.0" id="vl1_Wire43"/>
-        <polyline class="wire_vl1" points="545.0,530.0 545.0,415.0" id="vl1_Wire44"/>
-        <polyline class="wire_vl1" points="545.0,385.0 545.0,415.0" id="vl1_Wire45"/>
-        <polyline class="wire_vl1" points="445.0,530.0 445.0,415.0" id="vl1_Wire46"/>
-        <polyline class="wire_vl1" points="445.0,385.0 445.0,415.0" id="vl1_Wire47"/>
+        <polyline class="wire_vl1" points="335.0,360.0,320.0,360.0" id="vl1_Wire22"/>
+        <polyline class="wire_vl1" points="320.0,360.0,320.0,360.0" id="vl1_Wire23"/>
+        <polyline class="wire_vl1" points="95.0,215.0,95.0,330.0" id="vl1_Wire24"/>
+        <polyline class="wire_vl1" points="95.0,360.0,95.0,330.0" id="vl1_Wire25"/>
+        <polyline class="wire_vl1" points="145.0,215.0,145.0,330.0" id="vl1_Wire26"/>
+        <polyline class="wire_vl1" points="145.0,360.0,145.0,330.0" id="vl1_Wire27"/>
+        <polyline class="wire_vl1" points="295.0,215.0,295.0,330.0" id="vl1_Wire28"/>
+        <polyline class="wire_vl1" points="295.0,360.0,295.0,330.0" id="vl1_Wire29"/>
+        <polyline class="wire_vl1" points="355.0,360.0,370.0,360.0" id="vl1_Wire30"/>
+        <polyline class="wire_vl1" points="370.0,360.0,370.0,360.0" id="vl1_Wire31"/>
+        <polyline class="wire_vl1" points="395.0,215.0,395.0,330.0" id="vl1_Wire32"/>
+        <polyline class="wire_vl1" points="395.0,360.0,395.0,330.0" id="vl1_Wire33"/>
+        <polyline class="wire_vl1" points="495.0,215.0,495.0,330.0" id="vl1_Wire34"/>
+        <polyline class="wire_vl1" points="495.0,360.0,495.0,330.0" id="vl1_Wire35"/>
+        <polyline class="wire_vl1" points="335.0,385.0,320.0,385.0" id="vl1_Wire36"/>
+        <polyline class="wire_vl1" points="320.0,385.0,320.0,385.0" id="vl1_Wire37"/>
+        <polyline class="wire_vl1" points="195.0,530.0,195.0,415.0" id="vl1_Wire38"/>
+        <polyline class="wire_vl1" points="195.0,385.0,195.0,415.0" id="vl1_Wire39"/>
+        <polyline class="wire_vl1" points="245.0,530.0,245.0,415.0" id="vl1_Wire40"/>
+        <polyline class="wire_vl1" points="245.0,385.0,245.0,415.0" id="vl1_Wire41"/>
+        <polyline class="wire_vl1" points="355.0,385.0,370.0,385.0" id="vl1_Wire42"/>
+        <polyline class="wire_vl1" points="370.0,385.0,370.0,385.0" id="vl1_Wire43"/>
+        <polyline class="wire_vl1" points="545.0,530.0,545.0,415.0" id="vl1_Wire44"/>
+        <polyline class="wire_vl1" points="545.0,385.0,545.0,415.0" id="vl1_Wire45"/>
+        <polyline class="wire_vl1" points="445.0,530.0,445.0,415.0" id="vl1_Wire46"/>
+        <polyline class="wire_vl1" points="445.0,385.0,445.0,415.0" id="vl1_Wire47"/>
         <g class="substation-diagram BUSBAR_SECTION bbs5" id="bbs5" transform="translate(730.0,360.0)">
             <line y2="0" x1="0" class="bus_vl2" x2="380.0" y1="0"/>
             <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs5</text>
@@ -763,10 +763,10 @@
         <g class="substation-diagram NODE FICT_vl2_dgen4Fictif" id="FICT_vl2_dgen4Fictif" transform="translate(941.0,411.0)"/>
         <g class="substation-diagram NODE FICT_vl2_dtrf22Fictif" id="FICT_vl2_dtrf22Fictif" transform="translate(1041.0,411.0)"/>
         <g class="substation-diagram NODE FICT_vl2_dtrf23Fictif" id="FICT_vl2_dtrf23Fictif" transform="translate(1091.0,411.0)"/>
-        <polyline class="wire_vl2" points="795.0,360.0 795.0,360.0" id="vl2_Wire0"/>
-        <polyline class="wire_vl2" points="745.0,385.0 745.0,385.0" id="vl2_Wire1"/>
-        <polyline class="wire_vl2" points="845.0,360.0 845.0,360.0" id="vl2_Wire2"/>
-        <polyline class="wire_vl2" points="845.0,84.0 845.0,195.0" id="vl2_Wire3"/>
+        <polyline class="wire_vl2" points="795.0,360.0,795.0,360.0" id="vl2_Wire0"/>
+        <polyline class="wire_vl2" points="745.0,385.0,745.0,385.0" id="vl2_Wire1"/>
+        <polyline class="wire_vl2" points="845.0,360.0,845.0,360.0" id="vl2_Wire2"/>
+        <polyline class="wire_vl2" points="845.0,84.0,845.0,195.0" id="vl2_Wire3"/>
         <g class="substation-diagram ARROW1_load3_UP" id="vl2_Wire3_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,840.0,99.0)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
@@ -785,8 +785,8 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">10</text>
         </g>
-        <polyline class="wire_vl2" points="945.0,385.0 945.0,385.0" id="vl2_Wire4"/>
-        <polyline class="wire_vl2" points="945.0,659.0 945.0,550.0" id="vl2_Wire5"/>
+        <polyline class="wire_vl2" points="945.0,385.0,945.0,385.0" id="vl2_Wire4"/>
+        <polyline class="wire_vl2" points="945.0,659.0,945.0,550.0" id="vl2_Wire5"/>
         <g class="substation-diagram ARROW1_gen4_DOWN" id="vl2_Wire5_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,940.0,634.0)">
      <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
         <polygon points="5,0 10,10 0,10"/>
@@ -805,8 +805,8 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <polyline class="wire_vl2" points="895.0,360.0 895.0,360.0" id="vl2_Wire6"/>
-        <polyline class="wire_vl2" points="895.0,195.0 895.0,84.0" id="vl2_Wire7"/>
+        <polyline class="wire_vl2" points="895.0,360.0,895.0,360.0" id="vl2_Wire6"/>
+        <polyline class="wire_vl2" points="895.0,195.0,895.0,84.0" id="vl2_Wire7"/>
         <g class="substation-diagram ARROW1_trf1_TWO_DOWN" id="vl2_Wire7_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,890.0,170.0)">
      <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
         <polygon points="5,0 10,10 0,10"/>
@@ -825,8 +825,8 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <polyline class="wire_vl2" points="1045.0,385.0 1045.0,385.0" id="vl2_Wire8"/>
-        <polyline class="wire_vl2" points="1045.0,550.0 1045.0,661.0" id="vl2_Wire9"/>
+        <polyline class="wire_vl2" points="1045.0,385.0,1045.0,385.0" id="vl2_Wire8"/>
+        <polyline class="wire_vl2" points="1045.0,550.0,1045.0,661.0" id="vl2_Wire9"/>
         <g class="substation-diagram ARROW1_trf2_TWO_DOWN" id="vl2_Wire9_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,1040.0,565.0)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
@@ -845,8 +845,8 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <polyline class="wire_vl2" points="1095.0,385.0 1095.0,385.0" id="vl2_Wire10"/>
-        <polyline class="wire_vl2" points="1095.0,550.0 1095.0,661.0" id="vl2_Wire11"/>
+        <polyline class="wire_vl2" points="1095.0,385.0,1095.0,385.0" id="vl2_Wire10"/>
+        <polyline class="wire_vl2" points="1095.0,550.0,1095.0,661.0" id="vl2_Wire11"/>
         <g class="substation-diagram ARROW1_trf3_TWO_DOWN" id="vl2_Wire11_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,1090.0,565.0)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
@@ -865,8 +865,8 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <polyline class="wire_vl2" points="995.0,360.0 995.0,360.0" id="vl2_Wire12"/>
-        <polyline class="wire_vl2" points="995.0,195.0 995.0,84.0" id="vl2_Wire13"/>
+        <polyline class="wire_vl2" points="995.0,360.0,995.0,360.0" id="vl2_Wire12"/>
+        <polyline class="wire_vl2" points="995.0,195.0,995.0,84.0" id="vl2_Wire13"/>
         <g class="substation-diagram ARROW1_trf4_TWO_DOWN" id="vl2_Wire13_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,990.0,170.0)">
      <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
         <polygon points="5,0 10,10 0,10"/>
@@ -885,22 +885,22 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <polyline class="wire_vl2" points="780.0,320.0 795.0,320.0" id="vl2_Wire14"/>
-        <polyline class="wire_vl2" points="795.0,360.0 795.0,320.0" id="vl2_Wire15"/>
-        <polyline class="wire_vl2" points="845.0,215.0 845.0,330.0" id="vl2_Wire16"/>
-        <polyline class="wire_vl2" points="845.0,360.0 845.0,330.0" id="vl2_Wire17"/>
-        <polyline class="wire_vl2" points="895.0,215.0 895.0,330.0" id="vl2_Wire18"/>
-        <polyline class="wire_vl2" points="895.0,360.0 895.0,330.0" id="vl2_Wire19"/>
-        <polyline class="wire_vl2" points="995.0,215.0 995.0,330.0" id="vl2_Wire20"/>
-        <polyline class="wire_vl2" points="995.0,360.0 995.0,330.0" id="vl2_Wire21"/>
-        <polyline class="wire_vl2" points="760.0,320.0 745.0,320.0" id="vl2_Wire22"/>
-        <polyline class="wire_vl2" points="745.0,385.0 745.0,320.0" id="vl2_Wire23"/>
-        <polyline class="wire_vl2" points="945.0,530.0 945.0,415.0" id="vl2_Wire24"/>
-        <polyline class="wire_vl2" points="945.0,385.0 945.0,415.0" id="vl2_Wire25"/>
-        <polyline class="wire_vl2" points="1045.0,530.0 1045.0,415.0" id="vl2_Wire26"/>
-        <polyline class="wire_vl2" points="1045.0,385.0 1045.0,415.0" id="vl2_Wire27"/>
-        <polyline class="wire_vl2" points="1095.0,530.0 1095.0,415.0" id="vl2_Wire28"/>
-        <polyline class="wire_vl2" points="1095.0,385.0 1095.0,415.0" id="vl2_Wire29"/>
+        <polyline class="wire_vl2" points="780.0,320.0,795.0,320.0" id="vl2_Wire14"/>
+        <polyline class="wire_vl2" points="795.0,360.0,795.0,320.0" id="vl2_Wire15"/>
+        <polyline class="wire_vl2" points="845.0,215.0,845.0,330.0" id="vl2_Wire16"/>
+        <polyline class="wire_vl2" points="845.0,360.0,845.0,330.0" id="vl2_Wire17"/>
+        <polyline class="wire_vl2" points="895.0,215.0,895.0,330.0" id="vl2_Wire18"/>
+        <polyline class="wire_vl2" points="895.0,360.0,895.0,330.0" id="vl2_Wire19"/>
+        <polyline class="wire_vl2" points="995.0,215.0,995.0,330.0" id="vl2_Wire20"/>
+        <polyline class="wire_vl2" points="995.0,360.0,995.0,330.0" id="vl2_Wire21"/>
+        <polyline class="wire_vl2" points="760.0,320.0,745.0,320.0" id="vl2_Wire22"/>
+        <polyline class="wire_vl2" points="745.0,385.0,745.0,320.0" id="vl2_Wire23"/>
+        <polyline class="wire_vl2" points="945.0,530.0,945.0,415.0" id="vl2_Wire24"/>
+        <polyline class="wire_vl2" points="945.0,385.0,945.0,415.0" id="vl2_Wire25"/>
+        <polyline class="wire_vl2" points="1045.0,530.0,1045.0,415.0" id="vl2_Wire26"/>
+        <polyline class="wire_vl2" points="1045.0,385.0,1045.0,415.0" id="vl2_Wire27"/>
+        <polyline class="wire_vl2" points="1095.0,530.0,1095.0,415.0" id="vl2_Wire28"/>
+        <polyline class="wire_vl2" points="1095.0,385.0,1095.0,415.0" id="vl2_Wire29"/>
         <g class="substation-diagram BUSBAR_SECTION bbs7" id="bbs7" transform="translate(1280.0,360.0)">
             <line y2="0" x1="0" class="bus_vl3" x2="80.0" y1="0"/>
             <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs7</text>
@@ -956,8 +956,8 @@
 </g>
         <g class="substation-diagram NODE FICT_vl3_dload4Fictif" id="FICT_vl3_dload4Fictif" transform="translate(1291.0,326.0)"/>
         <g class="substation-diagram NODE FICT_vl3_dtrf25Fictif" id="FICT_vl3_dtrf25Fictif" transform="translate(1341.0,386.0)"/>
-        <polyline class="wire_vl3" points="1295.0,360.0 1295.0,360.0" id="vl3_Wire0"/>
-        <polyline class="wire_vl3" points="1295.0,195.0 1295.0,84.0" id="vl3_Wire1"/>
+        <polyline class="wire_vl3" points="1295.0,360.0,1295.0,360.0" id="vl3_Wire0"/>
+        <polyline class="wire_vl3" points="1295.0,195.0,1295.0,84.0" id="vl3_Wire1"/>
         <g class="substation-diagram ARROW1_load4_UP" id="vl3_Wire1_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,1290.0,170.0)">
      <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
         <polygon points="5,0 10,10 0,10"/>
@@ -976,8 +976,8 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">10</text>
         </g>
-        <polyline class="wire_vl3" points="1345.0,360.0 1345.0,360.0" id="vl3_Wire2"/>
-        <polyline class="wire_vl3" points="1345.0,525.0 1345.0,636.0" id="vl3_Wire3"/>
+        <polyline class="wire_vl3" points="1345.0,360.0,1345.0,360.0" id="vl3_Wire2"/>
+        <polyline class="wire_vl3" points="1345.0,525.0,1345.0,636.0" id="vl3_Wire3"/>
         <g class="substation-diagram ARROW1_trf5_TWO_DOWN" id="vl3_Wire3_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,1340.0,540.0)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
@@ -996,15 +996,15 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <polyline class="wire_vl3" points="1295.0,215.0 1295.0,330.0" id="vl3_Wire4"/>
-        <polyline class="wire_vl3" points="1295.0,360.0 1295.0,330.0" id="vl3_Wire5"/>
-        <polyline class="wire_vl3" points="1345.0,505.0 1345.0,390.0" id="vl3_Wire6"/>
-        <polyline class="wire_vl3" points="1345.0,360.0 1345.0,390.0" id="vl3_Wire7"/>
-        <polyline class="wire_vl1" points="145.0,80.0 145.0,50.0 895.0,50.0 895.0,80.0" id="vl1_vl2_Wire0"/>
-        <polyline class="wire_vl1" points="495.0,80.0 495.0,20.0 690.0,20.0 690.0,695.0 1045.0,695.0 1045.0,665.0" id="vl1_vl2_Wire1"/>
-        <polyline class="wire_vl1" points="245.0,665.0 245.0,725.0 1095.0,725.0 1095.0,665.0" id="vl1_vl2_Wire2"/>
-        <polyline class="wire_vl1" points="445.0,665.0 445.0,755.0 660.0,755.0 660.0,-10.0 995.0,-10.0 995.0,80.0" id="vl1_vl2_Wire3"/>
-        <polyline class="wire_vl1" points="295.0,80.0 295.0,-40.0 1240.0,-40.0 1240.0,760.0 1345.0,760.0 1345.0,640.0" id="vl1_vl3_Wire4"/>
+        <polyline class="wire_vl3" points="1295.0,215.0,1295.0,330.0" id="vl3_Wire4"/>
+        <polyline class="wire_vl3" points="1295.0,360.0,1295.0,330.0" id="vl3_Wire5"/>
+        <polyline class="wire_vl3" points="1345.0,505.0,1345.0,390.0" id="vl3_Wire6"/>
+        <polyline class="wire_vl3" points="1345.0,360.0,1345.0,390.0" id="vl3_Wire7"/>
+        <polyline class="wire_vl1" points="145.0,80.0,145.0,50.0,895.0,50.0,895.0,80.0" id="vl1_vl2_Wire0"/>
+        <polyline class="wire_vl1" points="495.0,80.0,495.0,20.0,690.0,20.0,690.0,695.0,1045.0,695.0,1045.0,665.0" id="vl1_vl2_Wire1"/>
+        <polyline class="wire_vl1" points="245.0,665.0,245.0,725.0,1095.0,725.0,1095.0,665.0" id="vl1_vl2_Wire2"/>
+        <polyline class="wire_vl1" points="445.0,665.0,445.0,755.0,660.0,755.0,660.0,-10.0,995.0,-10.0,995.0,80.0" id="vl1_vl2_Wire3"/>
+        <polyline class="wire_vl1" points="295.0,80.0,295.0,-40.0,1240.0,-40.0,1240.0,760.0,1345.0,760.0,1345.0,640.0" id="vl1_vl3_Wire4"/>
         <g id="LABEL_VL_vl1">
             <text x="50.0" font-size="12" y="50.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">vl1</text>
         </g>

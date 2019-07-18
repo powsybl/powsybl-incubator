@@ -51,6 +51,7 @@ import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
+ * @author Giovanni Ferrari <giovanni.ferrari at techrain.eu>
  */
 public class TestSubstationDiagram extends AbstractTestCase {
     Substation substation;

@@ -47,6 +47,7 @@ import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
+ * @author Giovanni Ferrari <giovanni.ferrari at techrain.eu>
  */
 public class TestVoltageLevelDiagram extends AbstractTestCase {
     Substation substation;
@@ -71,7 +72,6 @@ public class TestVoltageLevelDiagram extends AbstractTestCase {
         try {
             tmpDir = Files.createDirectory(fileSystem.getPath("/tmp"));
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -81,7 +81,7 @@ public class TestVoltageLevelDiagram extends AbstractTestCase {
         ComponentLibrary componentLibrary = new ResourcesComponentLibrary("/ConvergenceLibrary");
         LayoutParameters layoutParameters = new LayoutParameters();
 
-        Path outSvg = tmpDir.resolve("sub.svg");
+        Path outSvg = tmpDir.resolve("vl.svg");
 
         VoltageLevelDiagram.build(vl).writeSvg(componentLibrary, layoutParameters, network, outSvg);
         String svgStr = normalizeLineSeparator(new String(Files.readAllBytes(outSvg), StandardCharsets.UTF_8));

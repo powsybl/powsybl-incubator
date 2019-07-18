@@ -78,12 +78,12 @@
         <line y2="10" x1="5" x2="15" y1="10"/>
     </g>
 </g>
-        <polyline class="wire_vl" points="45.0,310.0 45.0,310.0" id="vl_Wire0"/>
-        <polyline class="wire_vl" points="45.0,310.0 45.0,280.0" id="vl_Wire1"/>
-        <polyline class="wire_vl" points="45.0,335.0 45.0,335.0" id="vl_Wire2"/>
-        <polyline class="wire_vl" points="45.0,335.0 45.0,280.0" id="vl_Wire3"/>
-        <polyline class="wire_vl" points="45.0,280.0 45.0,165.0" id="vl_Wire4"/>
-        <polyline class="wire_vl" points="45.0,145.0 45.0,34.0" id="vl_Wire5"/>
+        <polyline class="wire_vl" points="45.0,310.0,45.0,310.0" id="vl_Wire0"/>
+        <polyline class="wire_vl" points="45.0,310.0,45.0,280.0" id="vl_Wire1"/>
+        <polyline class="wire_vl" points="45.0,335.0,45.0,335.0" id="vl_Wire2"/>
+        <polyline class="wire_vl" points="45.0,335.0,45.0,280.0" id="vl_Wire3"/>
+        <polyline class="wire_vl" points="45.0,280.0,45.0,165.0" id="vl_Wire4"/>
+        <polyline class="wire_vl" points="45.0,145.0,45.0,34.0" id="vl_Wire5"/>
         <g class="substation-diagram ARROW1__l_UP" id="vl_Wire5_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,40.0,120.0)">
      <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
         <polygon points="5,0 10,10 0,10"/>

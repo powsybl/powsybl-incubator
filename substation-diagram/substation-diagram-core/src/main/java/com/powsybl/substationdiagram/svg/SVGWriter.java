@@ -401,27 +401,32 @@ public class SVGWriter {
                 }
                 root.appendChild(g);
 
-                metadata.addNodeMetadata(
-                        new GraphMetadata.NodeMetadata(nodeId, graph.getVoltageLevel().getId(),
-                                                       node.getComponentType(), node.isRotated(),
-                                                       node.isOpen(), direction, false));
-                if (node.getType() == Node.NodeType.BUS) {
-                    metadata.addComponentMetadata(new ComponentMetadata(ComponentType.BUSBAR_SECTION,
-                            nodeId,
-                            anchorPointProvider.getAnchorPoints(ComponentType.BUSBAR_SECTION, node.getId()),
-                            new ComponentSize(0, 0)));
-                } else {
-                    if (metadata.getComponentMetadata(node.getComponentType()) == null) {
-                        metadata.addComponentMetadata(new ComponentMetadata(node.getComponentType(),
-                                null,
-                                componentLibrary.getAnchorPoints(node.getComponentType()),
-                                componentLibrary.getSize(node.getComponentType())));
-                    }
-                }
+                setMetadata(metadata, node, nodeId, graph, direction, anchorPointProvider);
+
             } catch (UnsupportedEncodingException e) {
                 throw new UncheckedIOException(e);
             }
         });
+    }
+
+    private void setMetadata(GraphMetadata metadata, Node node, String nodeId, Graph graph, BusCell.Direction direction, AnchorPointProvider anchorPointProvider) {
+        metadata.addNodeMetadata(
+                new GraphMetadata.NodeMetadata(nodeId, graph.getVoltageLevel().getId(),
+                                               node.getComponentType(), node.isRotated(),
+                                               node.isOpen(), direction, false));
+        if (node.getType() == Node.NodeType.BUS) {
+            metadata.addComponentMetadata(new ComponentMetadata(ComponentType.BUSBAR_SECTION,
+                    nodeId,
+                    anchorPointProvider.getAnchorPoints(ComponentType.BUSBAR_SECTION, node.getId()),
+                    new ComponentSize(0, 0)));
+        } else {
+            if (metadata.getComponentMetadata(node.getComponentType()) == null) {
+                metadata.addComponentMetadata(new ComponentMetadata(node.getComponentType(),
+                        null,
+                        componentLibrary.getAnchorPoints(node.getComponentType()),
+                        componentLibrary.getSize(node.getComponentType())));
+            }
+        }
     }
 
     private void drawNodeLabel(Element g, Node node, SubstationDiagramInitialValueProvider initProvider, BusCell.Direction direction) {
@@ -436,17 +441,21 @@ public class SVGWriter {
         } else if (node instanceof BusNode) {
             InitialValue val = initProvider.getInitialValue(node);
             double d = ((BusNode) node).getPxWidth();
-            if (val.getLabel1().isPresent()) {
-                drawLabel(val.getLabel1().get(), false, -LABEL_OFFSET, -LABEL_OFFSET, g, FONT_SIZE);
+            Optional<String> label1 = val.getLabel1();
+            if (label1.isPresent()) {
+                drawLabel(label1.get(), false, -LABEL_OFFSET, -LABEL_OFFSET, g, FONT_SIZE);
             }
-            if (val.getLabel2().isPresent()) {
-                drawLabel(val.getLabel2().get(), false,  d - LABEL_OFFSET, -LABEL_OFFSET, g, FONT_SIZE);
+            Optional<String> label2 = val.getLabel2();
+            if (label2.isPresent()) {
+                drawLabel(label2.get(), false,  d - LABEL_OFFSET, -LABEL_OFFSET, g, FONT_SIZE);
             }
-            if (val.getLabel3().isPresent()) {
-                drawLabel(val.getLabel3().get(), false, -LABEL_OFFSET, LABEL_OFFSET + (double) FONT_SIZE / 2, g, FONT_SIZE);
+            Optional<String> label3 = val.getLabel3();
+            if (label3.isPresent()) {
+                drawLabel(label3.get(), false, -LABEL_OFFSET, LABEL_OFFSET + (double) FONT_SIZE / 2, g, FONT_SIZE);
             }
-            if (val.getLabel4().isPresent()) {
-                drawLabel(val.getLabel4().get(), false, d - LABEL_OFFSET, LABEL_OFFSET + (double) FONT_SIZE / 2, g, FONT_SIZE);
+            Optional<String> label4 = val.getLabel4();
+            if (label4.isPresent()) {
+                drawLabel(label4.get(), false, d - LABEL_OFFSET, LABEL_OFFSET + (double) FONT_SIZE / 2, g, FONT_SIZE);
             }
         }
     }

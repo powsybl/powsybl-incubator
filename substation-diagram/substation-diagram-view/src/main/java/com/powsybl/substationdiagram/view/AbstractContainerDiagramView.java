@@ -77,17 +77,15 @@ public abstract class AbstractContainerDiagramView extends BorderPane {
                     setNodeVisibility((Group) node, nodeMetadata);
                 }
                 installNodeHandlers(node, metadata, nodeMetadata, nodeHandlers, vlHandlers);
-            } else {
-                GraphMetadata.WireMetadata wireMetadata = metadata.getWireMetadata(node.getId());
-                if (wireMetadata != null) {
-                    installWireHandlers(node, metadata, wireMetadata, nodeHandlers, wireHandlers);
-                } else {
-                    GraphMetadata.ArrowMetadata arrowMetadata = metadata.getArrowMetadata(node.getId());
-                    if (arrowMetadata != null) {
-                        WireHandler wireHandler = wireHandlers.get(arrowMetadata.getWireId());
-                        wireHandler.addArrow((Group) node);
-                    }
-                }
+            }
+            GraphMetadata.WireMetadata wireMetadata = metadata.getWireMetadata(node.getId());
+            if (wireMetadata != null) {
+                installWireHandlers(node, metadata, wireMetadata, nodeHandlers, wireHandlers);
+            }
+            GraphMetadata.ArrowMetadata arrowMetadata = metadata.getArrowMetadata(node.getId());
+            if (arrowMetadata != null) {
+                WireHandler wireHandler = wireHandlers.get(arrowMetadata.getWireId());
+                wireHandler.addArrow((Group) node);
             }
         }
 

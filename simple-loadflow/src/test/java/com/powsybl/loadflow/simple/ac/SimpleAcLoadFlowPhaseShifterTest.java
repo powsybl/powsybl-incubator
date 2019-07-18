@@ -62,18 +62,18 @@ public class SimpleAcLoadFlowPhaseShifterTest {
 
         assertVoltageEquals(400, bus1);
         assertAngleEquals(0, bus1);
-        assertVoltageEquals(385.693, bus2);
-        assertAngleEquals(-3.679206, bus2);
-        assertVoltageEquals(392.644, bus3);
-        assertAngleEquals(-1.806094, bus3);
-        assertActivePowerEquals(50.084, line1.getTerminal1());
-        assertReactivePowerEquals(29.201, line1.getTerminal1());
-        assertActivePowerEquals(-50, line1.getTerminal2());
-        assertReactivePowerEquals(-25, line1.getTerminal2());
-        assertActivePowerEquals(50.042, line2.getTerminal1());
-        assertReactivePowerEquals(27.1, line2.getTerminal1());
-        assertActivePowerEquals(-50, line2.getTerminal2());
-        assertReactivePowerEquals(-25, line2.getTerminal2());
+        assertVoltageEquals(385.698, bus2);
+        assertAngleEquals(-3.679569, bus2);
+        assertVoltageEquals(392.648, bus3);
+        assertAngleEquals(-1.806254, bus3);
+        assertActivePowerEquals(50.089, line1.getTerminal1());
+        assertReactivePowerEquals(29.192, line1.getTerminal1());
+        assertActivePowerEquals(-50.005, line1.getTerminal2());
+        assertReactivePowerEquals(-24.991, line1.getTerminal2());
+        assertActivePowerEquals(50.048, line2.getTerminal1());
+        assertReactivePowerEquals(27.097, line2.getTerminal1());
+        assertActivePowerEquals(-50.006, line2.getTerminal2());
+        assertReactivePowerEquals(-24.996, line2.getTerminal2());
     }
 
     @Test

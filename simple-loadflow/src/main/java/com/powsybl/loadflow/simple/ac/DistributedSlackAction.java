@@ -19,6 +19,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.powsybl.loadflow.simple.ac.nr.DefaultNewtonRaphsonStoppingCriteria.CONV_EPS_PER_EQ;
+
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
@@ -26,7 +28,10 @@ public class DistributedSlackAction implements MacroAction {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DistributedSlackAction.class);
 
-    private static final double SLACK_EPSILON = 1d / PerUnit.SB;
+    /**
+     * Slack active power residue epsilon: 10^-5 in p.u => 10^-3 in Mw
+     */
+    private static final double SLACK_P_RESIDUE_EPS = Math.pow(10, -5);
 
     static class ParticipatingBus {
 
@@ -65,14 +70,10 @@ public class DistributedSlackAction implements MacroAction {
         }
     }
 
-    private static String formatMw(double d) {
-        return String.format("%.1f", d * PerUnit.SB);
-    }
-
     @Override
     public boolean run(MacroActionContext context) {
         double slackBusActivePowerMismatch = context.getNewtonRaphsonResult().getSlackBusActivePowerMismatch();
-        if (Math.abs(slackBusActivePowerMismatch) > SLACK_EPSILON) {
+        if (Math.abs(slackBusActivePowerMismatch) > CONV_EPS_PER_EQ) {
             LfNetwork network = context.getNetwork();
 
             List<ParticipatingBus> participatingBuses = getParticipatingBuses(network);
@@ -80,21 +81,19 @@ public class DistributedSlackAction implements MacroAction {
             int iteration = 0;
             double remainingMismatch = slackBusActivePowerMismatch;
             while (!participatingBuses.isEmpty()
-                    && Math.abs(remainingMismatch) > SLACK_EPSILON) {
+                    && Math.abs(remainingMismatch) > SLACK_P_RESIDUE_EPS) {
 
                 remainingMismatch -= run(participatingBuses, iteration, remainingMismatch);
 
                 iteration++;
             }
 
-            if (Math.abs(remainingMismatch) > SLACK_EPSILON) {
+            if (Math.abs(remainingMismatch) > SLACK_P_RESIDUE_EPS) {
                 throw new PowsyblException("Failed to distribute slack bus active power mismatch, "
-                        + formatMw(remainingMismatch) + " MW remains");
+                        + remainingMismatch * PerUnit.SB + " MW remains");
             } else {
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("Slack bus active power ({} MW) distributed in {} iterations",
-                            formatMw(slackBusActivePowerMismatch), iteration);
-                }
+                LOGGER.debug("Slack bus active power ({} MW) distributed in {} iterations",
+                        slackBusActivePowerMismatch * PerUnit.SB, iteration);
             }
 
             return true;
@@ -145,7 +144,7 @@ public class DistributedSlackAction implements MacroAction {
             if (newGenerationTargetP != generationTargetP) {
                 if (LOGGER.isTraceEnabled()) {
                     LOGGER.trace("Rescale '{}' active power target: {} -> {}",
-                            bus.getId(), formatMw(generationTargetP), formatMw(newGenerationTargetP));
+                            bus.getId(), generationTargetP * PerUnit.SB, newGenerationTargetP * PerUnit.SB);
                 }
 
                 bus.setGenerationTargetP(newGenerationTargetP);
@@ -154,11 +153,9 @@ public class DistributedSlackAction implements MacroAction {
             }
         }
 
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("{} MW / {} MW distributed at iteration {} to {} buses ({} at max power, {} at min power)",
-                    formatMw(done), formatMw(remainingMismatch), iteration, modifiedBuses,
-                    busesAtMax, busesAtMin);
-        }
+        LOGGER.debug("{} MW / {} MW distributed at iteration {} to {} buses ({} at max power, {} at min power)",
+                done * PerUnit.SB, remainingMismatch * PerUnit.SB, iteration, modifiedBuses,
+                busesAtMax, busesAtMin);
 
         return done;
     }

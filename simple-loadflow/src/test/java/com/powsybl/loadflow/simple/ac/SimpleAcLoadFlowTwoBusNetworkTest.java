@@ -68,12 +68,12 @@ public class SimpleAcLoadFlowTwoBusNetworkTest {
     public void voltageInitModeTest() {
         LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
         assertTrue(result.isOk());
-        assertEquals("3", result.getMetrics().get("iterations"));
+        assertEquals("4", result.getMetrics().get("iterations"));
         // restart loadflow from previous calculated state, it should convergence in zero iteration
         result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters.setVoltageInitMode(LoadFlowParameters.VoltageInitMode.PREVIOUS_VALUES))
                 .join();
         assertTrue(result.isOk());
-        assertEquals("0", result.getMetrics().get("iterations"));
+        assertEquals("1", result.getMetrics().get("iterations"));
     }
 
     @Test

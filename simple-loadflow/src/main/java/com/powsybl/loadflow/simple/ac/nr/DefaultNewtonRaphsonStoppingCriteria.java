@@ -14,13 +14,16 @@ import com.powsybl.loadflow.simple.equations.Vectors;
  */
 public class DefaultNewtonRaphsonStoppingCriteria implements NewtonRaphsonStoppingCriteria {
 
-    private static final double EPS_CONV = Math.pow(10, -4);
+    /**
+     * Convergence epsilon per equation: 10^-4 in p.u => 10^-2 in Kv, Mw or MVar
+     */
+    public static final double CONV_EPS_PER_EQ = Math.pow(10, -4);
 
     @Override
     public boolean test(double[] fx, AcLoadFlowObserver observer) {
         // calculate norm L2 of equations mismatch vector
         double norm = Vectors.norm2(fx);
         observer.norm(norm);
-        return norm < EPS_CONV;
+        return norm < Math.sqrt(CONV_EPS_PER_EQ * CONV_EPS_PER_EQ * fx.length);
     }
 }

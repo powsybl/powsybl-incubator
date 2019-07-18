@@ -40,7 +40,7 @@ public class CellBlockDecomposer {
     }
 
     public void determineBusCellBlocks(BusCell busCell) {
-        if (busCell.getType() == Cell.CellType.INTERN && busCell.getNodes().size() == 3) {
+        if (busCell.getType() == Cell.CellType.INTERNAL && busCell.getNodes().size() == 3) {
             SwitchNode switchNode = (SwitchNode) busCell.getNodes().get(1);
             busCell.getGraph().extendSwitchBetweenBus(switchNode);
             List<Node> adj = switchNode.getAdjacentNodes();
@@ -104,7 +104,7 @@ public class CellBlockDecomposer {
     }
 
     private void addBlockOrganised(List<Block> blocks, Block b) {
-        if (b.isEmbedingNodeType(Node.NodeType.BUS)) {
+        if (b.isEmbeddingNodeType(Node.NodeType.BUS)) {
             blocks.add(b);
         } else {
             blocks.add(0, b);

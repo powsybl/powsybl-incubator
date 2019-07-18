@@ -37,7 +37,7 @@ public interface SubstationLayout {
         if (node.getType() != Node.NodeType.FEEDER) {
             throw new PowsyblException("Node " + nb + " is not a feeder node");
         }
-        BusCell.Direction dNode = node.getCell() != null ? ((ExternCell) node.getCell()).getDirection() : BusCell.Direction.TOP;
+        BusCell.Direction dNode = node.getCell() != null ? ((ExternalCell) node.getCell()).getDirection() : BusCell.Direction.TOP;
         if (dNode != BusCell.Direction.TOP && dNode != BusCell.Direction.BOTTOM) {
             throw new PowsyblException("Node " + nb + " cell direction not TOP or BOTTOM");
         }

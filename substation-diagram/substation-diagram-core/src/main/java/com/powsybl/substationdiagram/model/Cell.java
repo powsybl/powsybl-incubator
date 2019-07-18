@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  */
 public class Cell {
     public enum CellType {
-        INTERN, EXTERN, SHUNT
+        INTERNAL, EXTERNAL, SHUNT
     }
 
     final Graph graph;

@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * A block group that cannot be correctly decomposed anymore.
+ * A block group that cannot be correctly organized anymore.
  * All subBlocks are superposed.
  *
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -56,7 +56,7 @@ public class UndefinedBlock extends AbstractBlock {
     }
 
     @Override
-    public boolean isEmbedingNodeType(Node.NodeType type) {
+    public boolean isEmbeddingNodeType(Node.NodeType type) {
         return false;
     }
 

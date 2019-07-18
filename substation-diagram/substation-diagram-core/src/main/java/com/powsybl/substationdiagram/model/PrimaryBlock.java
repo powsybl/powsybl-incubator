@@ -16,6 +16,10 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ *
+ * A primary block is a "final" block in the hierarchy of blocks : it does not have sub-blocks.
+ * Instead, it is composed of a list of {@link Node}s.
+ *
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -64,7 +68,7 @@ public class PrimaryBlock extends AbstractBlock {
     }
 
     @Override
-    public boolean isEmbedingNodeType(Node.NodeType type) {
+    public boolean isEmbeddingNodeType(Node.NodeType type) {
         return nodes.stream().anyMatch(n -> n.getType() == type);
     }
 
@@ -103,13 +107,13 @@ public class PrimaryBlock extends AbstractBlock {
 
     @Override
     public void calculateDimensionAndInternPos() {
-        if (isEmbedingNodeType(Node.NodeType.BUS)
+        if (isEmbeddingNodeType(Node.NodeType.BUS)
                 && (((BusCell) getCell()).getDirection() == BusCell.Direction.FLAT || !getStackableBlocks().isEmpty())) {
             getPosition().setHSpan(0);
             getPosition().setVSpan(0);
             return;
         }
-        if (isEmbedingNodeType(Node.NodeType.BUS)) {
+        if (isEmbeddingNodeType(Node.NodeType.BUS)) {
             getPosition().setHSpan(1);
             getPosition().setVSpan(0);
             return;
@@ -129,7 +133,7 @@ public class PrimaryBlock extends AbstractBlock {
 
     @Override
     public void coordVerticalCase(LayoutParameters layoutParam) {
-        if (isEmbedingNodeType(Node.NodeType.BUS)) {
+        if (isEmbeddingNodeType(Node.NodeType.BUS)) {
             Node nodeBus = getBusNode();
             Node nodeMiddle = nodes.get(1);
             nodeMiddle.setX(getCoord().getX());
@@ -137,7 +141,7 @@ public class PrimaryBlock extends AbstractBlock {
             if (nodes.size() == 3) {
                 Node nodeSide = nodeBus == nodes.get(0) ? nodes.get(2) : nodes.get(0);
                 nodeSide.setX(getCoord().getX(), true);
-                if (getCell().getType() == Cell.CellType.INTERN && ((InternCell) getCell()).getCentralBlock() == null) {
+                if (getCell().getType() == Cell.CellType.INTERNAL && ((InternalCell) getCell()).getCentralBlock() == null) {
                     nodeSide.setY(layoutParam.getInitialYBus() - layoutParam.getInternCellHeight());
                 }
             }
@@ -157,7 +161,7 @@ public class PrimaryBlock extends AbstractBlock {
 
     @Override
     public void coordHorizontalCase(LayoutParameters layoutParam) {
-        if (isEmbedingNodeType(Node.NodeType.BUS)) {
+        if (isEmbeddingNodeType(Node.NodeType.BUS)) {
             Node nodeBus = getBusNode();
             Node nodeMiddle = nodes.get(1);
             nodeMiddle.setX(getCoord().getX() + getCoord().getXSpan() / 2);

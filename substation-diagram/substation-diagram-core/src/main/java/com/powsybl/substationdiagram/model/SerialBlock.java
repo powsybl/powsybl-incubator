@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Objects;
 
 /**
+ * A serial block is composed of 2 sub-blocks in series, one upper block and one lower block.
+ *
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -58,7 +60,7 @@ public class SerialBlock extends AbstractBlock {
         Objects.requireNonNull(block2);
         Objects.requireNonNull(commonNode);
 
-        if (block1.isEmbedingNodeType(Node.NodeType.BUS) || block2.isEmbedingNodeType(Node.NodeType.FEEDER)) {
+        if (block1.isEmbeddingNodeType(Node.NodeType.BUS) || block2.isEmbeddingNodeType(Node.NodeType.FEEDER)) {
             upperBlock = block2;
             lowerBlock = block1;
         } else {
@@ -88,8 +90,8 @@ public class SerialBlock extends AbstractBlock {
     }
 
     @Override
-    public boolean isEmbedingNodeType(Node.NodeType type) {
-        return lowerBlock.isEmbedingNodeType(type) || upperBlock.isEmbedingNodeType(type);
+    public boolean isEmbeddingNodeType(Node.NodeType type) {
+        return lowerBlock.isEmbeddingNodeType(type) || upperBlock.isEmbeddingNodeType(type);
     }
 
     @Override

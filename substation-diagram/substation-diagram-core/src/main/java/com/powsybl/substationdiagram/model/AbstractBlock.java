@@ -177,9 +177,9 @@ public abstract class AbstractBlock implements Block {
     private void calculateRootCoord(LayoutParameters layoutParam) {
         double dyToBus = 0;
         coord.setXSpan((double) position.getHSpan() * layoutParam.getCellWidth());
-        if (cell.getType() == Cell.CellType.INTERN) {
+        if (cell.getType() == Cell.CellType.INTERNAL) {
             coord.setYSpan(0);
-            if (((InternCell) cell).getDirection() != BusCell.Direction.FLAT) {
+            if (((InternalCell) cell).getDirection() != BusCell.Direction.FLAT) {
                 dyToBus = layoutParam.getInternCellHeight() * position.getV();
             }
         } else {

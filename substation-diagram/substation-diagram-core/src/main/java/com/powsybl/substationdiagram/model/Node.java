@@ -18,6 +18,18 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
+ *
+ * A node represents a graphical component to be displayed on the diagram.
+ * Node types are :
+ * <ul>
+ *     <li>Bus nodes : represent a bus bar</li>
+ *     <li>Feeder nodes : represent feeders connected to the substation: loads, lines, generators ... </li>
+ *     <li>Fictitious nodes : nodes which do not map to an actual equipment
+ *     <li>Switch nodes : represent a switch
+ *     <li>Shunt nodes : ?
+ * </ul>
+ * In order to be displayed, a position must be allocated to the node through {@link #setX} and {@link #setY} methods.
+ *
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>

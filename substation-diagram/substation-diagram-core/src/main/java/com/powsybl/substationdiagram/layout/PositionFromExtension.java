@@ -14,6 +14,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ *
+ * A {@link PositionFinder} which allocates positions according to position information defined
+ * in feeder nodes.
+ *
+ * //TODO: rename ? actually it is not directly based on extensions, but on information contained in Nodes
+ *
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -30,9 +36,9 @@ public class PositionFromExtension implements PositionFinder {
     @Override
     public void buildLayout(Graph graph) {
         gatherLayoutExtensionInformation(graph);
-        List<ExternCell> problematicCells = graph.getCells().stream()
-                .filter(cell -> cell.getType().equals(Cell.CellType.EXTERN))
-                .map(ExternCell.class::cast)
+        List<ExternalCell> problematicCells = graph.getCells().stream()
+                .filter(cell -> cell.getType().equals(Cell.CellType.EXTERNAL))
+                .map(ExternalCell.class::cast)
                 .filter(cell -> cell.getOrder() == -1).collect(Collectors.toList());
         if (!problematicCells.isEmpty()) {
             LOGGER.info("Unable to build the layout only with Extension\nproblematic cells :");
@@ -52,13 +58,13 @@ public class PositionFromExtension implements PositionFinder {
                 .filter(node -> node.getType() == Node.NodeType.FEEDER)
                 .map(FeederNode.class::cast)
                 .forEach(feederNode -> {
-                    ExternCell cell = (ExternCell) feederNode.getCell();
+                    ExternalCell cell = (ExternalCell) feederNode.getCell();
                     cell.setDirection(
                             feederNode.getDirection() == BusCell.Direction.UNDEFINED ? DEFAULTDIRECTION : feederNode.getDirection());
                     cell.setOrder(feederNode.getOrder());
                 });
-        graph.getCells().stream().filter(cell -> cell.getType() == Cell.CellType.EXTERN).map(ExternCell.class::cast)
-                .forEach(ExternCell::orderFromFeederOrders);
+        graph.getCells().stream().filter(cell -> cell.getType() == Cell.CellType.EXTERNAL).map(ExternalCell.class::cast)
+                .forEach(ExternalCell::orderFromFeederOrders);
     }
 
     private void forceSameOrientationForShuntedCell(Graph graph) {
@@ -66,8 +72,8 @@ public class PositionFromExtension implements PositionFinder {
                 .filter(c -> c.getType() == Cell.CellType.SHUNT).collect(Collectors.toList())) {
             List<Node> shNodes = cell.getNodes().stream()
                     .filter(node -> node.getType() == Node.NodeType.SHUNT).collect(Collectors.toList());
-            ((ExternCell) shNodes.get(1).getCell()).setDirection(
-                    ((ExternCell) shNodes.get(0).getCell()).getDirection());
+            ((ExternalCell) shNodes.get(1).getCell()).setDirection(
+                    ((ExternalCell) shNodes.get(0).getCell()).getDirection());
         }
     }
 }

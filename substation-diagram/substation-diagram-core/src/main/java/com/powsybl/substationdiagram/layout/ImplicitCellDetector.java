@@ -64,10 +64,10 @@ public class ImplicitCellDetector implements CellDetector {
         // ****************EXTERN AND SHUNT CELLS******
         stopTypes.add(Node.NodeType.FEEDER);
         genericDetectCell(graph, stopTypes, new ArrayList<>(), false, allocatedNodes);
-        for (ExternCell cell : graph.getCells().stream()
+        for (ExternalCell cell : graph.getCells().stream()
 
-                .filter(cell -> cell instanceof ExternCell)
-                .map(ExternCell.class::cast)
+                .filter(cell -> cell instanceof ExternalCell)
+                .map(ExternalCell.class::cast)
                 .collect(Collectors.toList())) {
 
             //*****************EXTERN CELL
@@ -116,7 +116,7 @@ public class ImplicitCellDetector implements CellDetector {
                 if (searchOK && !cellNodes.isEmpty()) {
                     cellNodes.add(adj);
                     cellNodes.add(bus);
-                    Cell cell = isCellIntern ? new InternCell(graph) : new ExternCell(graph);
+                    Cell cell = isCellIntern ? new InternalCell(graph) : new ExternalCell(graph);
                     cell.setNodes(cellNodes);
                     allocatedNodes.addAll(cellNodes);
                     // remove the BusNodes from allocatedNode for a BusNode can be part of many cells
@@ -174,7 +174,7 @@ public class ImplicitCellDetector implements CellDetector {
      *
      * @param cell : the cell to analyse
      **/
-    private boolean isPureExternCell(Graph graph, ExternCell cell) {
+    private boolean isPureExternCell(Graph graph, ExternalCell cell) {
         /*Explore the graph of the candidate cell. Remove successively one node, assess if it splits the graph into n>1 branches
         if so, then check if each component is exclusively reaching FEEDER or exclusively reaching BUS
         And verify you have at least one of them
@@ -241,9 +241,9 @@ public class ImplicitCellDetector implements CellDetector {
                         .filter(m -> !m.getType().equals(Node.NodeType.BUS))
                         .collect(Collectors.toList()));
                 n.setType(Node.NodeType.SHUNT);
-                ExternCell newExternCell = new ExternCell(graph);
+                ExternalCell newExternalCell = new ExternalCell(graph);
                 cellNodesExtern1.add(n);
-                newExternCell.setNodes(cellNodesExtern1);
+                newExternalCell.setNodes(cellNodesExtern1);
 
                 //create the shunt cell
 
@@ -261,8 +261,8 @@ public class ImplicitCellDetector implements CellDetector {
                                 cellNodesExtern2::contains))
                         .collect(Collectors.toList()));
 
-                ExternCell newExternCell2 = new ExternCell(graph);
-                newExternCell2.setNodes(cellNodesExtern2);
+                ExternalCell newExternalCell2 = new ExternalCell(graph);
+                newExternalCell2.setNodes(cellNodesExtern2);
 
                 graph.removeCell(cell);
 // TODO                shuntCell.setBridgingCellsFromShuntNodes();

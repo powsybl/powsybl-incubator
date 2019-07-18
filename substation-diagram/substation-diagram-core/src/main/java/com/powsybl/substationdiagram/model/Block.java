@@ -12,6 +12,10 @@ import com.powsybl.substationdiagram.layout.LayoutParameters;
 import java.io.IOException;
 
 /**
+ *
+ * A block is an aggregate of {@link Node}s which should be displayed together.
+ * In order to layout the graph, a first goal is to organize those nodes in a hierachy of blocks.
+ *
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -34,7 +38,7 @@ public interface Block {
 
     void reverseBlock();
 
-    boolean isEmbedingNodeType(Node.NodeType type);
+    boolean isEmbeddingNodeType(Node.NodeType type);
 
     void setParentBlock(Block parentBlock);
 

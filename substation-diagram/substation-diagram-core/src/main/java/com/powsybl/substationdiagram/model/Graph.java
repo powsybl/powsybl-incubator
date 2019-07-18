@@ -29,9 +29,20 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * This class builds the connectivity among the elements of a voltageLevel
+ *
+ * Represents the connectivity among the elements of a {@link VoltageLevel}.
+ *
+ * <p>This graph differs from the topology graph of the voltage level,
+ * in that nodes represent graphical components to be displayed, for example a switch,
+ * a load feeder, or a bus bar, whereas edges represent electrical wires which connect those nodes.
+ *
+ * <p>The goal is then to organize the nodes in 2D {@link Block}s on a plane surface,
+ * in order to compute appropriate coordinates for display.
+ *
  * buildGraphAndDetectCell establishes the List of nodes, edges and nodeBuses
  * cells is built by the PatternCellDetector Class
+ *
+ * TODO: separate building the graph and graph modeling in 2 classes?
  *
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene

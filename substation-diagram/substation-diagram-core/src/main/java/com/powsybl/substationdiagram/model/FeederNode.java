@@ -99,7 +99,7 @@ public class FeederNode extends Node {
 
     @Override
     public void setCell(Cell cell) {
-        if (!(cell instanceof ExternCell)) {
+        if (!(cell instanceof ExternalCell)) {
             throw new PowsyblException("The Cell of a feeder node shall be an ExternCell");
         }
         super.setCell(cell);

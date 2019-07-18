@@ -148,29 +148,29 @@ public class TestCase1 extends AbstractTestCase {
 
         // assert cells
         assertEquals(1, g.getCells().size());
-        ExternCell externCell = (ExternCell) g.getCells().iterator().next();
-        assertEquals(Cell.CellType.EXTERN, externCell.getType());
-        assertEquals(-1, externCell.getOrder());
-        assertEquals(5, externCell.getNodes().size());
-        assertTrue(externCell.getPrimaryBlocksConnectedToBus().isEmpty());
-        assertEquals(1, externCell.getBusNodes().size());
-        assertEquals("bbs", externCell.getBusNodes().get(0).getId());
-        assertNull(externCell.getRootBlock());
+        ExternalCell externalCell = (ExternalCell) g.getCells().iterator().next();
+        assertEquals(Cell.CellType.EXTERNAL, externalCell.getType());
+        assertEquals(-1, externalCell.getOrder());
+        assertEquals(5, externalCell.getNodes().size());
+        assertTrue(externalCell.getPrimaryBlocksConnectedToBus().isEmpty());
+        assertEquals(1, externalCell.getBusNodes().size());
+        assertEquals("bbs", externalCell.getBusNodes().get(0).getId());
+        assertNull(externalCell.getRootBlock());
 //        assertTrue(externCell.getAbstractCellBridgingWith().isEmpty()); //TODO
-        assertEquals("EXTERN[FICT_vl_dFictif, b, bbs, d, l]", externCell.getFullId());
-        assertEquals(new Position(0, 0), externCell.getMaxBusPosition());
+        assertEquals("EXTERN[FICT_vl_dFictif, b, bbs, d, l]", externalCell.getFullId());
+        assertEquals(new Position(0, 0), externalCell.getMaxBusPosition());
 
         // build blocks
         assertTrue(new BlockOrganizer().organize(g));
 
         // assert blocks and nodes rotation
-        assertNotNull(externCell.getRootBlock());
-        assertTrue(externCell.getRootBlock() instanceof SerialBlock);
-        SerialBlock bc = (SerialBlock) externCell.getRootBlock();
+        assertNotNull(externalCell.getRootBlock());
+        assertTrue(externalCell.getRootBlock() instanceof SerialBlock);
+        SerialBlock bc = (SerialBlock) externalCell.getRootBlock();
         assertEquals(new Position(0, 0, 1, 2, false, Orientation.VERTICAL), bc.getPosition());
         assertEquals("bbs", bc.getStartingNode().getId());
         assertEquals("l", bc.getEndingNode().getId());
-        assertEquals(1, externCell.getPrimaryBlocksConnectedToBus().size());
+        assertEquals(1, externalCell.getPrimaryBlocksConnectedToBus().size());
 
         assertTrue(bc.getUpperBlock() instanceof PrimaryBlock);
         PrimaryBlock ub = (PrimaryBlock) bc.getUpperBlock();

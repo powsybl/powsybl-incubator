@@ -15,6 +15,9 @@ import com.powsybl.substationdiagram.library.ComponentType;
 import java.util.Objects;
 
 /**
+ *
+ * A node representing a bus bar.
+ *
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>

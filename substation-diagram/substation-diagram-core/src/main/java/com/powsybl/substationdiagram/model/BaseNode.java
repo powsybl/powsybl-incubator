@@ -9,6 +9,11 @@ package com.powsybl.substationdiagram.model;
 import com.powsybl.substationdiagram.library.ComponentType;
 
 /**
+ * Common interface for objects which expose node attributes,
+ * in particular a 2D position and the underlying component type.
+ *
+ * TODO: is it useful to share this interface between actual nodes and handlers ??
+ *
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>

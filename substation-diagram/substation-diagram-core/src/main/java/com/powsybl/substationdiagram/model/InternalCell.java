@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class InternCell extends BusCell {
+public class InternalCell extends BusCell {
 
     private Block centralBlock;
 
@@ -22,8 +22,8 @@ public class InternCell extends BusCell {
 
     private Map<Side, List<PrimaryBlock>> sideToConnectedBlocks;
 
-    public InternCell(Graph graph) {
-        super(graph, CellType.INTERN);
+    public InternalCell(Graph graph) {
+        super(graph, CellType.INTERNAL);
         centralBlock = null;
         sideToConnectedBlocks = new EnumMap<>(Side.class);
         sideToConnectedBlocks.put(Side.RIGHT, new ArrayList<>());

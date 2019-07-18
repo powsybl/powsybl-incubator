@@ -9,8 +9,9 @@ package com.powsybl.substationdiagram.layout;
 import com.powsybl.substationdiagram.model.Graph;
 
 /**
- * this interface is implemented by classes determining the cells.
- * The expected result of CellDector is the creation and association of cell
+ * In charge of detecting {@link com.powsybl.substationdiagram.model.Cell Cells} in a {@link Graph}.
+ * The detector will add detected cells to the graph. We assume that the graph has not knowledge of cells
+ * prior to the call to {@link #detectCells(Graph)}.
  *
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene

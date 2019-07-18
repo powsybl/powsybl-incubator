@@ -13,11 +13,11 @@ import java.util.stream.Collectors;
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class ExternCell extends BusCell {
+public class ExternalCell extends BusCell {
     private int order = -1;
 
-    public ExternCell(Graph graph) {
-        super(graph, CellType.EXTERN);
+    public ExternalCell(Graph graph) {
+        super(graph, CellType.EXTERNAL);
     }
 
     public void orderFromFeederOrders() {

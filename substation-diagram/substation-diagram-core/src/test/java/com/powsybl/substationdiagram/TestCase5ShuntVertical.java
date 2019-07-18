@@ -139,7 +139,7 @@ public class TestCase5ShuntVertical extends AbstractTestCase {
         assertEquals(3, g.getCells().size());
         Iterator<Cell> it = g.getCells().iterator();
         Cell cellb = it.next();
-        assertEquals(Cell.CellType.EXTERN, cellb.getType());
+        assertEquals(Cell.CellType.EXTERNAL, cellb.getType());
         assertEquals(5, cellb.getNodes().size());
         assertEquals("EXTERN[FICT_vl_3, bb, bbs, db, lb]", cellb.getFullId());
 
@@ -149,7 +149,7 @@ public class TestCase5ShuntVertical extends AbstractTestCase {
         assertEquals("SHUNT[FICT_vl_3, FICT_vl_laFictif, bs]", cellShunt.getFullId());
 
         Cell cella = it.next();
-        assertEquals(Cell.CellType.EXTERN, cella.getType());
+        assertEquals(Cell.CellType.EXTERNAL, cella.getType());
         assertEquals(6, cella.getNodes().size());
         assertEquals("EXTERN[FICT_vl_daFictif, FICT_vl_laFictif, ba, bbs, da, la]", cella.getFullId());
 

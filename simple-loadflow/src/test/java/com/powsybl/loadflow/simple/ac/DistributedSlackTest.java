@@ -6,18 +6,24 @@
  */
 package com.powsybl.loadflow.simple.ac;
 
+import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.Generator;
 import com.powsybl.iidm.network.Line;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.VariantManagerConstants;
+import com.powsybl.iidm.network.extensions.ActivePowerControl;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
 import com.powsybl.loadflow.simple.network.DistributedSlackNetworkFactory;
 import com.powsybl.math.matrix.DenseMatrixFactory;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import static com.powsybl.loadflow.simple.util.LoadFlowAssert.DELTA_POWER;
 import static com.powsybl.loadflow.simple.util.LoadFlowAssert.assertActivePowerEquals;
+import static org.hamcrest.CoreMatchers.isA;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -26,22 +32,36 @@ import static org.junit.Assert.assertTrue;
  */
 public class DistributedSlackTest {
 
-    @Test
-    public void test() {
-        Network network = DistributedSlackNetworkFactory.create();
-        SimpleAcLoadFlow loadFlow = new SimpleAcLoadFlow(network, new DenseMatrixFactory());
-        LoadFlowParameters parameters = new LoadFlowParameters();
+    @Rule
+    public final ExpectedException exception = ExpectedException.none();
+
+    private Network network;
+    private Generator g1;
+    private Generator g2;
+    private Generator g3;
+    private Generator g4;
+    private SimpleAcLoadFlow loadFlow;
+    private LoadFlowParameters parameters;
+
+    @Before
+    public void setUp() {
+        network = DistributedSlackNetworkFactory.create();
+        g1 = network.getGenerator("g1");
+        g2 = network.getGenerator("g2");
+        g3 = network.getGenerator("g3");
+        g4 = network.getGenerator("g4");
+        loadFlow = new SimpleAcLoadFlow(network, new DenseMatrixFactory());
+        parameters = new LoadFlowParameters();
         SimpleAcLoadFlowParameters parametersExt = new SimpleAcLoadFlowParameters()
                 .setSlackBusSelectionMode(SlackBusSelectionMode.MOST_MESHED)
                 .setDistributedSlack(true);
         parameters.addExtension(SimpleAcLoadFlowParameters.class, parametersExt);
+    }
 
+    @Test
+    public void test() {
         LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
         assertTrue(result.isOk());
-        Generator g1 = network.getGenerator("g1");
-        Generator g2 = network.getGenerator("g2");
-        Generator g3 = network.getGenerator("g3");
-        Generator g4 = network.getGenerator("g4");
         assertEquals(148, g1.getTargetP(), DELTA_POWER);
         assertEquals(224, g2.getTargetP(), DELTA_POWER);
         assertEquals(126, g3.getTargetP(), DELTA_POWER);
@@ -55,5 +75,49 @@ public class DistributedSlackTest {
         assertActivePowerEquals(-224, l24.getTerminal2());
         assertActivePowerEquals(228, l34.getTerminal1());
         assertActivePowerEquals(-228, l34.getTerminal2());
+    }
+
+    @Test
+    public void maxTest() {
+        // decrease g1 max limit power, so that distributed slack algo reach the g1 max
+        g1.setMaxP(110);
+        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
+        assertTrue(result.isOk());
+        assertEquals(110, g1.getTargetP(), DELTA_POWER);
+        assertEquals(236.666, g2.getTargetP(), DELTA_POWER);
+        assertEquals(145, g3.getTargetP(), DELTA_POWER);
+        assertEquals(108.333, g4.getTargetP(), DELTA_POWER);
+    }
+
+    @Test
+    public void minTest() {
+        // increase g1 min limit power and global load so that distributed slack algo reach the g1 min
+        g1.setMinP(90);
+        network.getLoad("l1").setP0(400);
+        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
+        assertTrue(result.isOk());
+        assertEquals(90, g1.getTargetP(), DELTA_POWER);
+        assertEquals(176.666, g2.getTargetP(), DELTA_POWER);
+        assertEquals(55, g3.getTargetP(), DELTA_POWER);
+        assertEquals(78.333, g4.getTargetP(), DELTA_POWER);
+    }
+
+    @Test
+    public void zeroParticipatingGeneratorsTest() {
+        g1.getExtension(ActivePowerControl.class).setDroop(1);
+        g2.getExtension(ActivePowerControl.class).setDroop(-1);
+        g3.getExtension(ActivePowerControl.class).setDroop(0);
+        g4.getExtension(ActivePowerControl.class).setDroop(0);
+        exception.expectCause(isA(PowsyblException.class));
+        exception.expectMessage("No more generator participating to slack distribution");
+        loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
+    }
+
+    @Test
+    public void notEnoughActivePowerFailureTest() {
+        network.getLoad("l1").setP0(1000);
+        exception.expectCause(isA(PowsyblException.class));
+        exception.expectMessage("Failed to distribute slack bus active power mismatch");
+        loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
     }
 }

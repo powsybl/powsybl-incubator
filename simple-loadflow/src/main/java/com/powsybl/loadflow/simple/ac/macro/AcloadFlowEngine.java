@@ -34,16 +34,19 @@ public class AcloadFlowEngine {
 
     private final VoltageInitializer voltageInitializer;
 
+    private final NewtonRaphsonStoppingCriteria stoppingCriteria;
+
     private final List<MacroAction> macroActions;
 
     private final MatrixFactory matrixFactory;
 
     private final AcLoadFlowObserver observer;
 
-    public AcloadFlowEngine(LfNetwork network, VoltageInitializer voltageInitializer, List<MacroAction> macroActions,
-                            MatrixFactory matrixFactory, AcLoadFlowObserver observer) {
+    public AcloadFlowEngine(LfNetwork network, VoltageInitializer voltageInitializer, NewtonRaphsonStoppingCriteria stoppingCriteria,
+                            List<MacroAction> macroActions, MatrixFactory matrixFactory, AcLoadFlowObserver observer) {
         this.network = Objects.requireNonNull(network);
         this.voltageInitializer = Objects.requireNonNull(voltageInitializer);
+        this.stoppingCriteria = Objects.requireNonNull(stoppingCriteria);
         this.macroActions = Objects.requireNonNull(macroActions);
         this.matrixFactory = Objects.requireNonNull(matrixFactory);
         this.observer = Objects.requireNonNull(observer);
@@ -60,7 +63,7 @@ public class AcloadFlowEngine {
 
         NewtonRaphsonResult newtonRaphsonResult = new NewtonRaphson(network, matrixFactory, observer, equationContext,
                                                                     equationSystem, macroIterationVoltageInitializer,
-                                                                    newtonRaphsonIteration)
+                                                                    stoppingCriteria, newtonRaphsonIteration)
                 .run(newtonRaphsonParameters);
 
         observer.endMacroIteration(macroIteration, macroActionName);
@@ -71,7 +74,7 @@ public class AcloadFlowEngine {
     public AcLoadFlowResult run() {
         Stopwatch stopwatch = Stopwatch.createStarted();
 
-        NewtonRaphsonParameters newtonRaphsonParameters = new NewtonRaphsonParameters();
+        NewtonRaphsonParameters nrParameters = new NewtonRaphsonParameters();
 
         observer.beforeEquationSystemCreation();
 
@@ -83,10 +86,9 @@ public class AcloadFlowEngine {
         // initial macro iteration
         int macroIteration = 0;
 
-        NewtonRaphsonResult lastNewtonRaphsonResult = runNewtowRaphson(network, equationContext, equationSystem,
-                                                                       newtonRaphsonParameters, 0,
-                                                                       macroIteration++, INITIAL_MACRO_ACTION_NAME);
-
+        NewtonRaphsonResult lastNrResult = runNewtowRaphson(network, equationContext, equationSystem,
+                                                            nrParameters, 0,
+                                                            macroIteration++, INITIAL_MACRO_ACTION_NAME);
         // for each macro action run macro iterations until stabilized
         // macro actions are nested: inner most loop first in the list
         for (MacroAction macroAction : macroActions) {
@@ -95,28 +97,39 @@ public class AcloadFlowEngine {
             do {
                 observer.beforeMacroActionRun(macroIteration, macroAction.getName());
 
-                cont = macroAction.run(new MacroActionContext(macroIteration, network, lastNewtonRaphsonResult));
+                cont = macroAction.run(new MacroActionContext(macroIteration, network, lastNrResult));
 
                 observer.afterMacroActionRun(macroIteration, macroAction.getName(), cont);
 
                 if (cont) {
-                    lastNewtonRaphsonResult = runNewtowRaphson(network, equationContext, equationSystem,
-                                                           newtonRaphsonParameters, lastNewtonRaphsonResult.getIteration() + 1,
-                                                           macroIteration, macroAction.getName());
-                    macroIteration++;
+                    int nextNrIteration = lastNrResult.getIteration() + 1;
+                    lastNrResult = runNewtowRaphson(network, equationContext, equationSystem,
+                                                    nrParameters, nextNrIteration,
+                                                    macroIteration, macroAction.getName());
+
+                    // if newton raphson exit without running any iteration, it means that
+                    // macro action is stabilized, so we pass to next macro action
+                    if (lastNrResult.getIteration() == nextNrIteration) {
+                        cont = false;
+                    } else {
+                        macroIteration++;
+                    }
                 }
             } while (cont);
         }
 
         stopwatch.stop();
 
-        LOGGER.info("Ac loadflow ran in {} ms (status={}, iteration={}, macroIteration={}, slackBusActivePowerMismatch={})",
-                stopwatch.elapsed(TimeUnit.MILLISECONDS),
-                lastNewtonRaphsonResult.getStatus(),
-                lastNewtonRaphsonResult.getIteration(),
-                macroIteration,
-                lastNewtonRaphsonResult.getSlackBusActivePowerMismatch() * PerUnit.SB);
+        int iterations = lastNrResult.getIteration() + 1;
+        int macroIterations = macroIteration + 1;
 
-        return new AcLoadFlowResult(macroIteration, lastNewtonRaphsonResult.getIteration(), lastNewtonRaphsonResult.getStatus());
+        LOGGER.info("Ac loadflow ran in {} ms (status={}, iterations={}, macroIterations={}, slackBusActivePowerMismatch={})",
+                stopwatch.elapsed(TimeUnit.MILLISECONDS),
+                lastNrResult.getStatus(),
+                iterations,
+                macroIterations,
+                lastNrResult.getSlackBusActivePowerMismatch() * PerUnit.SB);
+
+        return new AcLoadFlowResult(macroIterations, iterations, lastNrResult.getStatus());
     }
 }

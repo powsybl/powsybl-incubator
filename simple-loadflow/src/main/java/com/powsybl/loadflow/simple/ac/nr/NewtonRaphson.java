@@ -28,8 +28,6 @@ public class NewtonRaphson {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NewtonRaphson.class);
 
-    private static final double EPS_CONV = Math.pow(10, -4);
-
     private final LfNetwork network;
 
     private final MatrixFactory matrixFactory;
@@ -41,6 +39,8 @@ public class NewtonRaphson {
     private final EquationSystem equationSystem;
 
     private final VoltageInitializer voltageInitializer;
+
+    private final NewtonRaphsonStoppingCriteria stoppingCriteria;
 
     private int iteration;
 
@@ -59,13 +59,14 @@ public class NewtonRaphson {
 
     public NewtonRaphson(LfNetwork network, MatrixFactory matrixFactory, AcLoadFlowObserver observer,
                          EquationContext equationContext, EquationSystem equationSystem, VoltageInitializer voltageInitializer,
-                         int iteration) {
+                         NewtonRaphsonStoppingCriteria stoppingCriteria, int iteration) {
         this.network = Objects.requireNonNull(network);
         this.matrixFactory = Objects.requireNonNull(matrixFactory);
         this.observer = Objects.requireNonNull(observer);
         this.equationContext = Objects.requireNonNull(equationContext);
         this.equationSystem = Objects.requireNonNull(equationSystem);
         this.voltageInitializer = Objects.requireNonNull(voltageInitializer);
+        this.stoppingCriteria = Objects.requireNonNull(stoppingCriteria);
         this.iteration = iteration;
     }
 
@@ -81,10 +82,7 @@ public class NewtonRaphson {
 
         observer.afterEquationEvaluation(context.fx, system, iteration);
 
-        // calculate norm L2 of equations
-        double norm = Vectors.norm2(context.fx);
-        observer.norm(norm);
-        if (norm < EPS_CONV) { // perfect match!
+        if (stoppingCriteria.test(context.fx, observer)) {
             observer.endIteration(iteration);
             return NewtonRaphsonStatus.CONVERGED;
         }

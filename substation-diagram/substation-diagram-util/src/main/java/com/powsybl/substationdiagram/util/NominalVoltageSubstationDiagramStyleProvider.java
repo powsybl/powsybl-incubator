@@ -6,11 +6,12 @@
  */
 package com.powsybl.substationdiagram.util;
 
-import com.powsybl.iidm.network.VoltageLevel;
-import com.powsybl.substationdiagram.model.Edge;
-import com.powsybl.substationdiagram.model.Graph;
-import com.powsybl.substationdiagram.model.Node;
-import com.powsybl.substationdiagram.svg.SubstationDiagramStyleProvider;
+import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.BUS_STYLE_CLASS;
+import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.GRID_STYLE_CLASS;
+import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.LABEL_STYLE_CLASS;
+import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.SUBSTATION_STYLE_CLASS;
+import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.WIRE_STYLE_CLASS;
+import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.escapeClassName;
 
 import java.io.UncheckedIOException;
 import java.io.UnsupportedEncodingException;
@@ -18,12 +19,16 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
-import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.*;
+import com.powsybl.iidm.network.VoltageLevel;
+import com.powsybl.substationdiagram.model.Edge;
+import com.powsybl.substationdiagram.model.Graph;
+import com.powsybl.substationdiagram.model.Node;
+import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramStyleProvider;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class NominalVoltageSubstationDiagramStyleProvider implements SubstationDiagramStyleProvider {
+public class NominalVoltageSubstationDiagramStyleProvider extends DefaultSubstationDiagramStyleProvider {
 
     private static String getColor(VoltageLevel vl) {
         if (vl.getNominalV() >= 300) {
@@ -58,17 +63,15 @@ public class NominalVoltageSubstationDiagramStyleProvider implements SubstationD
 
     @Override
     public Optional<String> getNodeStyle(Node node) {
+
+        Optional<String> defaultStyle = super.getNodeStyle(node);
+
         String color = getColor(node.getGraph().getVoltageLevel());
         try {
-            String className = escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name()));
             if (node.getType() == Node.NodeType.SWITCH) {
-                String style = "." + className +
-                        " .open { visibility: " + (node.isOpen() ? "visible;}" : "hidden;}") +
-                        "." + className +
-                        " .closed { visibility: " + (node.isOpen() ? "hidden;}" : "visible;}");
-                return Optional.of(style);
+                return defaultStyle;
             } else {
-                return Optional.of("." + className + " {stroke:" + color + ";stroke-width:1;fill-opacity:0;}"); // FIXME Doesn't work?
+                return Optional.of(defaultStyle.orElse("") + " ." + escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())) + " {stroke:" + color + ";stroke-width:1;fill-opacity:0;}");
             }
         } catch (UnsupportedEncodingException e) {
             throw new UncheckedIOException(e);

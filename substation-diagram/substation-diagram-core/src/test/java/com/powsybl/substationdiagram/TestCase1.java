@@ -157,7 +157,7 @@ public class TestCase1 extends AbstractTestCase {
         assertEquals("bbs", externalCell.getBusNodes().get(0).getId());
         assertNull(externalCell.getRootBlock());
 //        assertTrue(externCell.getAbstractCellBridgingWith().isEmpty()); //TODO
-        assertEquals("EXTERN[FICT_vl_dFictif, b, bbs, d, l]", externalCell.getFullId());
+        assertEquals("EXTERNAL[FICT_vl_dFictif, b, bbs, d, l]", externalCell.getFullId());
         assertEquals(new Position(0, 0), externalCell.getMaxBusPosition());
 
         // build blocks

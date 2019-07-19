@@ -101,7 +101,7 @@ public class TestCase1inverted extends AbstractTestCase {
         assertEquals(1, ((BusCell) cell).getBusNodes().size());
         assertEquals("bbs", ((BusCell) cell).getBusNodes().get(0).getId());
         assertNull(cell.getRootBlock());
-        assertEquals("EXTERN[FICT_vl_dFictif, b, bbs, d, l]", cell.getFullId());
+        assertEquals("EXTERNAL[FICT_vl_dFictif, b, bbs, d, l]", cell.getFullId());
         assertEquals(new Position(0, 0), ((BusCell) cell).getMaxBusPosition());
 
         // build blocks

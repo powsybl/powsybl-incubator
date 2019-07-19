@@ -99,7 +99,7 @@ public class TestCase3Coupling extends AbstractTestCase {
         assertEquals(Cell.CellType.INTERNAL, cell.getType());
         assertEquals(7, cell.getNodes().size());
         assertEquals(2, ((BusCell) cell).getBusNodes().size());
-        assertEquals("INTERN[FICT_vl_d1Fictif, FICT_vl_d2Fictif, b, bbs1, bbs2, d1, d2]", cell.getFullId());
+        assertEquals("INTERNAL[FICT_vl_d1Fictif, FICT_vl_d2Fictif, b, bbs1, bbs2, d1, d2]", cell.getFullId());
 
         // build blocks
         assertTrue(new BlockOrganizer().organize(g));

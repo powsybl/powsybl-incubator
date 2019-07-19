@@ -16,7 +16,7 @@ import java.util.Objects;
 
 /**
  *
- * A node representing a bus bar.
+ * A {@link Node} representing a bus bar.
  *
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene

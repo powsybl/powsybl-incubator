@@ -13,6 +13,17 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
+ * A cell is a chain of wires and switches which link together some equipments of the voltage level.
+ * For example, the chain linking one feeder to bus bar(s) constitutes a cell.
+ * The chain linking 2 bus bars through a breaker also consitutes another kind of cell.
+ *
+ * <p>We differentiate:
+ * <ul>
+ *     <li>Internal cells, which do not reach feeders</li>
+ *     <li>External cells, which link feeders to other equipments</li>
+ *     <li>Shunt cells, which link feeders together</li>
+ * </ul>
+ *
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>

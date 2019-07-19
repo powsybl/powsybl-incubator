@@ -16,6 +16,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ *
+ * Detect cells by walking the graph.
+ * <ul>
+ *     <li>Internal cells are composed of nodes linking bus nodes together, but not feeders</li>
+ *     <li>External cells are composed of nodes linking buses and feeders</li>
+ *     <li>Shunt cells are composed of nodes linking buses and feeders</li>
+ * </ul>
+ *
+ *
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>

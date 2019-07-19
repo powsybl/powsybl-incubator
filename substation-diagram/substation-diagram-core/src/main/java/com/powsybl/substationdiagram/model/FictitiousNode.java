@@ -9,6 +9,11 @@ package com.powsybl.substationdiagram.model;
 import com.powsybl.substationdiagram.library.ComponentType;
 
 /**
+ *
+ * A fictitious node represent a node in the graph which has no associated equipment.
+ * Typically, a fictitious node will be created between a disconnector and a breaker
+ * which are directly connected.
+ *
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>

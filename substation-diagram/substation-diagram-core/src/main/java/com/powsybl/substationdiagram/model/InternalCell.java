@@ -10,6 +10,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
+ *
+ * An internal cell is a {@link Cell} which link together internal equipments of
+ * the voltage level, which means it does not reach feeders.
+ * Typically, it will link bus bars together.
+ *
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>

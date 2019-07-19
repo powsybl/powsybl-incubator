@@ -28,6 +28,7 @@ public class DefaultSubstationDiagramInitialValueProvider implements SubstationD
 
     @Override
     public InitialValue getInitialValue(Node node) {
+        Objects.requireNonNull(node);
         InitialValue initialValue = new InitialValue(null, null, null, null, null, null);
 
         if (node.getType() == Node.NodeType.BUS) {

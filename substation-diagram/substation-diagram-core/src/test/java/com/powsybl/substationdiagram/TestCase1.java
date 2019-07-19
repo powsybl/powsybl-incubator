@@ -208,7 +208,8 @@ public class TestCase1 extends AbstractTestCase {
                 .setShowInternalNodes(true)
                 .setScaleFactor(1)
                 .setHorizontalSubstationPadding(50)
-                .setVerticalSubstationPadding(50);
+                .setVerticalSubstationPadding(50)
+                .setArrowDistance(20);
 
         new PositionVoltageLevelLayout(g).run(layoutParameters);
 

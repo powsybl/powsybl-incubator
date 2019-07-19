@@ -19,6 +19,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.powsybl.loadflow.simple.ac.nr.DefaultNewtonRaphsonStoppingCriteria.CONV_EPS_PER_EQ;
+
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
@@ -26,7 +28,10 @@ public class DistributedSlackAction implements MacroAction {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DistributedSlackAction.class);
 
-    private static final double SLACK_EPSILON = 1d / PerUnit.SB;
+    /**
+     * Slack active power residue epsilon: 10^-5 in p.u => 10^-3 in Mw
+     */
+    private static final double SLACK_P_RESIDUE_EPS = Math.pow(10, -5);
 
     static class ParticipatingBus {
 
@@ -68,7 +73,7 @@ public class DistributedSlackAction implements MacroAction {
     @Override
     public boolean run(MacroActionContext context) {
         double slackBusActivePowerMismatch = context.getNewtonRaphsonResult().getSlackBusActivePowerMismatch();
-        if (Math.abs(slackBusActivePowerMismatch) > SLACK_EPSILON) {
+        if (Math.abs(slackBusActivePowerMismatch) > CONV_EPS_PER_EQ) {
             LfNetwork network = context.getNetwork();
 
             List<ParticipatingBus> participatingBuses = getParticipatingBuses(network);
@@ -76,19 +81,19 @@ public class DistributedSlackAction implements MacroAction {
             int iteration = 0;
             double remainingMismatch = slackBusActivePowerMismatch;
             while (!participatingBuses.isEmpty()
-                    && Math.abs(remainingMismatch) > SLACK_EPSILON) {
+                    && Math.abs(remainingMismatch) > SLACK_P_RESIDUE_EPS) {
 
-                remainingMismatch -= run(participatingBuses, remainingMismatch);
+                remainingMismatch -= run(participatingBuses, iteration, remainingMismatch);
 
                 iteration++;
             }
 
-            if (Math.abs(remainingMismatch) > SLACK_EPSILON) {
+            if (Math.abs(remainingMismatch) > SLACK_P_RESIDUE_EPS) {
                 throw new PowsyblException("Failed to distribute slack bus active power mismatch, "
-                        + remainingMismatch + " MW remains");
+                        + remainingMismatch * PerUnit.SB + " MW remains");
             } else {
-                LOGGER.debug("Slack bus active power mismatch ({} MW) distributed in {} iterations",
-                        slackBusActivePowerMismatch, iteration);
+                LOGGER.debug("Slack bus active power ({} MW) distributed in {} iterations",
+                        slackBusActivePowerMismatch * PerUnit.SB, iteration);
             }
 
             return true;
@@ -99,12 +104,15 @@ public class DistributedSlackAction implements MacroAction {
         return false;
     }
 
-    private double run(List<ParticipatingBus> participatingBuses, double remainingMismatch) {
+    private double run(List<ParticipatingBus> participatingBuses, int iteration, double remainingMismatch) {
         // normalize participation factors at each iteration start as some
         // buses might have reach a limit and have been discarded
         normalizeParticipationFactors(participatingBuses);
 
         double done = 0d;
+        int modifiedBuses = 0;
+        int busesAtMax = 0;
+        int busesAtMin = 0;
         Iterator<ParticipatingBus> it = participatingBuses.iterator();
         while (it.hasNext()) {
             ParticipatingBus participatingBus = it.next();
@@ -125,19 +133,29 @@ public class DistributedSlackAction implements MacroAction {
             double newGenerationTargetP = generationTargetP + remainingMismatch * factor;
             if (remainingMismatch > 0 && newGenerationTargetP > maxP) {
                 newGenerationTargetP = maxP;
+                busesAtMax++;
                 it.remove();
             } else if (remainingMismatch < 0 && newGenerationTargetP < minP) {
                 newGenerationTargetP = minP;
+                busesAtMin++;
                 it.remove();
             }
 
-            if (LOGGER.isTraceEnabled()) {
-                LOGGER.trace("Rescale '{}' active power target: {} -> {}",
-                        bus.getId(), generationTargetP, newGenerationTargetP);
+            if (newGenerationTargetP != generationTargetP) {
+                if (LOGGER.isTraceEnabled()) {
+                    LOGGER.trace("Rescale '{}' active power target: {} -> {}",
+                            bus.getId(), generationTargetP * PerUnit.SB, newGenerationTargetP * PerUnit.SB);
+                }
+
+                bus.setGenerationTargetP(newGenerationTargetP);
+                done += newGenerationTargetP - generationTargetP;
+                modifiedBuses++;
             }
-            bus.setGenerationTargetP(newGenerationTargetP);
-            done += newGenerationTargetP - generationTargetP;
         }
+
+        LOGGER.debug("{} MW / {} MW distributed at iteration {} to {} buses ({} at max power, {} at min power)",
+                done * PerUnit.SB, remainingMismatch * PerUnit.SB, iteration, modifiedBuses,
+                busesAtMax, busesAtMin);
 
         return done;
     }

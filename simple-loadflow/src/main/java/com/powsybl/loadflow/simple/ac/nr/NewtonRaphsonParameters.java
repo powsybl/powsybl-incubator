@@ -6,6 +6,8 @@
  */
 package com.powsybl.loadflow.simple.ac.nr;
 
+import java.util.Objects;
+
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
@@ -14,6 +16,8 @@ public class NewtonRaphsonParameters {
     private static final int DEFAULT_MAX_ITERATION = 30;
 
     private int maxIteration = DEFAULT_MAX_ITERATION;
+
+    private VoltageInitializer voltageInitializer = new UniformValueVoltageInitializer();
 
     public int getMaxIteration() {
         return maxIteration;
@@ -24,6 +28,15 @@ public class NewtonRaphsonParameters {
             throw new IllegalArgumentException("Invalid max iteration value: " + maxIteration);
         }
         this.maxIteration = maxIteration;
+        return this;
+    }
+
+    public VoltageInitializer getVoltageInitializer() {
+        return voltageInitializer;
+    }
+
+    public NewtonRaphsonParameters setVoltageInitializer(VoltageInitializer voltageInitializer) {
+        this.voltageInitializer = Objects.requireNonNull(voltageInitializer);
         return this;
     }
 }

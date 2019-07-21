@@ -6,7 +6,6 @@
  */
 package com.powsybl.loadflow.simple.ac.nr;
 
-import com.google.common.base.Stopwatch;
 import com.powsybl.loadflow.simple.ac.macro.AcLoadFlowObserver;
 import com.powsybl.loadflow.simple.equations.*;
 import com.powsybl.loadflow.simple.network.LfBus;
@@ -19,7 +18,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -38,11 +36,9 @@ public class NewtonRaphson {
 
     private final EquationSystem equationSystem;
 
-    private final VoltageInitializer voltageInitializer;
-
     private final NewtonRaphsonStoppingCriteria stoppingCriteria;
 
-    private int iteration;
+    private int iteration = -1;
 
     static class NewtonRaphsonContext {
 
@@ -58,21 +54,17 @@ public class NewtonRaphson {
     }
 
     public NewtonRaphson(LfNetwork network, MatrixFactory matrixFactory, AcLoadFlowObserver observer,
-                         EquationContext equationContext, EquationSystem equationSystem, VoltageInitializer voltageInitializer,
-                         NewtonRaphsonStoppingCriteria stoppingCriteria, int iteration) {
+                         EquationContext equationContext, EquationSystem equationSystem,
+                         NewtonRaphsonStoppingCriteria stoppingCriteria) {
         this.network = Objects.requireNonNull(network);
         this.matrixFactory = Objects.requireNonNull(matrixFactory);
         this.observer = Objects.requireNonNull(observer);
         this.equationContext = Objects.requireNonNull(equationContext);
         this.equationSystem = Objects.requireNonNull(equationSystem);
-        this.voltageInitializer = Objects.requireNonNull(voltageInitializer);
         this.stoppingCriteria = Objects.requireNonNull(stoppingCriteria);
-        this.iteration = iteration;
     }
 
-    private NewtonRaphsonStatus runIteration(int iteration, EquationSystem system, NewtonRaphsonContext context) {
-        observer.beginIteration(iteration);
-
+    private NewtonRaphsonStatus runIteration(EquationSystem system, NewtonRaphsonContext context) {
         // evaluate equations
         observer.beforeEquationEvaluation(iteration);
 
@@ -83,7 +75,6 @@ public class NewtonRaphson {
         observer.afterEquationEvaluation(context.fx, system, iteration);
 
         if (stoppingCriteria.test(context.fx, observer)) {
-            observer.endIteration(iteration);
             return NewtonRaphsonStatus.CONVERGED;
         }
 
@@ -121,14 +112,18 @@ public class NewtonRaphson {
             return NewtonRaphsonStatus.SOLVER_FAILED;
         }
 
-        observer.endIteration(iteration);
-
         observer.beforeStateUpdate(iteration);
 
         // update x
         Vectors.minus(context.x, context.fx);
 
         observer.afterStateUpdate(context.x, system, iteration);
+
+        observer.endIteration(iteration);
+
+        iteration++;
+
+        observer.beginIteration(iteration);
 
         return null;
     }
@@ -153,12 +148,10 @@ public class NewtonRaphson {
     public NewtonRaphsonResult run(NewtonRaphsonParameters parameters) {
         Objects.requireNonNull(parameters);
 
-        Stopwatch stopwatch = Stopwatch.createStarted();
-
         NewtonRaphsonContext context = new NewtonRaphsonContext();
 
         // initialize state vector (flat start)
-        context.x = equationSystem.initState(voltageInitializer);
+        context.x = equationSystem.initState(parameters.getVoltageInitializer());
 
         // initialize target vector
         context.targets = equationSystem.initTargets();
@@ -166,14 +159,19 @@ public class NewtonRaphson {
         // initialize mismatch vector (difference between equation values and targets)
         context.fx = new double[equationSystem.getEquationsToSolve().size()];
 
+        if (iteration == -1) {
+            // first run
+            iteration = 0;
+            observer.beginIteration(iteration);
+        }
+
         NewtonRaphsonStatus status = NewtonRaphsonStatus.NO_CALCULATION;
         while (iteration <= parameters.getMaxIteration()) {
-            NewtonRaphsonStatus newStatus = runIteration(iteration, equationSystem, context);
+            NewtonRaphsonStatus newStatus = runIteration(equationSystem, context);
             if (newStatus != null) {
                 status = newStatus;
                 break;
             }
-            iteration++;
         }
 
         if (context.lu != null) {
@@ -187,9 +185,6 @@ public class NewtonRaphson {
         }
 
         double slackBusActivePowerMismatch = computeSlackBusActivePowerMismatch(equationContext, equationSystem);
-
-        stopwatch.stop();
-        LOGGER.debug("Newton Raphson done in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
 
         return new NewtonRaphsonResult(status, iteration, slackBusActivePowerMismatch);
     }

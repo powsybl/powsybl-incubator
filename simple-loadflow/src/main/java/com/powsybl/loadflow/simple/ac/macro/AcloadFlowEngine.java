@@ -11,8 +11,8 @@ import com.powsybl.loadflow.simple.ac.equations.AcEquationSystem;
 import com.powsybl.loadflow.simple.ac.nr.*;
 import com.powsybl.loadflow.simple.equations.EquationContext;
 import com.powsybl.loadflow.simple.equations.EquationSystem;
-import com.powsybl.loadflow.simple.network.PerUnit;
 import com.powsybl.loadflow.simple.network.LfNetwork;
+import com.powsybl.loadflow.simple.network.PerUnit;
 import com.powsybl.math.matrix.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,8 +27,6 @@ import java.util.concurrent.TimeUnit;
 public class AcloadFlowEngine {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AcloadFlowEngine.class);
-
-    private static final String INITIAL_MACRO_ACTION_NAME = "Init";
 
     private final LfNetwork network;
 
@@ -52,29 +50,8 @@ public class AcloadFlowEngine {
         this.observer = Objects.requireNonNull(observer);
     }
 
-    private NewtonRaphsonResult runNewtowRaphson(LfNetwork network, EquationContext equationContext,
-                                                 EquationSystem equationSystem, NewtonRaphsonParameters newtonRaphsonParameters,
-                                                 int newtonRaphsonIteration, int macroIteration, String macroActionName) {
-        observer.beginMacroIteration(macroIteration, macroActionName);
-
-        // for next macro iteration, restart from previous voltage
-        VoltageInitializer macroIterationVoltageInitializer = macroIteration == 0 ? this.voltageInitializer
-                                                                                  : new PreviousValueVoltageInitializer();
-
-        NewtonRaphsonResult newtonRaphsonResult = new NewtonRaphson(network, matrixFactory, observer, equationContext,
-                                                                    equationSystem, macroIterationVoltageInitializer,
-                                                                    stoppingCriteria, newtonRaphsonIteration)
-                .run(newtonRaphsonParameters);
-
-        observer.endMacroIteration(macroIteration, macroActionName);
-
-        return newtonRaphsonResult;
-    }
-
     public AcLoadFlowResult run() {
         Stopwatch stopwatch = Stopwatch.createStarted();
-
-        NewtonRaphsonParameters nrParameters = new NewtonRaphsonParameters();
 
         observer.beforeEquationSystemCreation();
 
@@ -83,14 +60,14 @@ public class AcloadFlowEngine {
 
         observer.afterEquationSystemCreation();
 
-        // initial macro iteration
-        int macroIteration = 0;
+        NewtonRaphson newtonRaphson = new NewtonRaphson(network, matrixFactory, observer, equationContext, equationSystem, stoppingCriteria);
 
-        NewtonRaphsonResult lastNrResult = runNewtowRaphson(network, equationContext, equationSystem,
-                                                            nrParameters, 0,
-                                                            macroIteration++, INITIAL_MACRO_ACTION_NAME);
+        // initial Newton-Raphson
+        NewtonRaphsonResult lastNrResult = newtonRaphson.run(new NewtonRaphsonParameters().setVoltageInitializer(voltageInitializer));
+
         // for each macro action run macro iterations until stabilized
         // macro actions are nested: inner most loop first in the list
+        int macroIteration = 0;
         for (MacroAction macroAction : macroActions) {
             // re-run macro action + newton-raphson until stabilization
             boolean cont;
@@ -102,14 +79,18 @@ public class AcloadFlowEngine {
                 observer.afterMacroActionRun(macroIteration, macroAction.getName(), cont);
 
                 if (cont) {
-                    int nextNrIteration = lastNrResult.getIteration() + 1;
-                    lastNrResult = runNewtowRaphson(network, equationContext, equationSystem,
-                                                    nrParameters, nextNrIteration,
-                                                    macroIteration, macroAction.getName());
+                    int nrIteration = lastNrResult.getIteration();
+
+                    observer.beginMacroIteration(macroIteration, macroAction.getName());
+
+                    // restart from previous voltage
+                    lastNrResult = newtonRaphson.run(new NewtonRaphsonParameters().setVoltageInitializer(new PreviousValueVoltageInitializer()));
+
+                    observer.endMacroIteration(macroIteration, macroAction.getName());
 
                     // if newton raphson exit without running any iteration, it means that
                     // macro action is stabilized, so we pass to next macro action
-                    if (lastNrResult.getIteration() == nextNrIteration) {
+                    if (lastNrResult.getIteration() == nrIteration) {
                         cont = false;
                     } else {
                         macroIteration++;

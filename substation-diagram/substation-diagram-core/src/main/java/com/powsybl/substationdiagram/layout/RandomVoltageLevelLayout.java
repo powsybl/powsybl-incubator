@@ -14,6 +14,8 @@ import java.util.Objects;
 import java.util.Random;
 
 /**
+ * A layout which sets random coordinates to every {@link Node} in the {@link Graph}.
+ *
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>

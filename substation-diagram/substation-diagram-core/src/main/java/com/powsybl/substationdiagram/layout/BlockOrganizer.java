@@ -51,12 +51,12 @@ public class BlockOrganizer {
     public boolean organize(Graph graph) {
         LOGGER.info("Organizing graph cells into blocks");
         graph.getCells().stream()
-                .filter(cell -> cell.getType().equals(Cell.CellType.EXTERN)
-                        || cell.getType().equals(Cell.CellType.INTERN))
+                .filter(cell -> cell.getType().equals(Cell.CellType.EXTERNAL)
+                        || cell.getType().equals(Cell.CellType.INTERNAL))
                 .forEach(cell -> {
                     new CellBlockDecomposer().determineBlocks(cell);
-                    if (cell.getType() == Cell.CellType.INTERN) {
-                        ((InternCell) cell).rationalizeOrganization();
+                    if (cell.getType() == Cell.CellType.INTERNAL) {
+                        ((InternalCell) cell).rationalizeOrganization();
                     }
                 });
         graph.getCells().stream()
@@ -69,8 +69,8 @@ public class BlockOrganizer {
         positionFinder.buildLayout(graph);
 
         graph.getCells().stream()
-                .filter(c -> c.getType() == Cell.CellType.INTERN)
-                .forEach(c -> ((InternCell) c).postPositioningSettings());
+                .filter(c -> c.getType() == Cell.CellType.INTERNAL)
+                .forEach(c -> ((InternalCell) c).postPositioningSettings());
 
         SubSections subSections = new SubSections(graph);
         subSections.handleSpanningBusBar();
@@ -115,7 +115,7 @@ public class BlockOrganizer {
         int prevHPos = 0;
         int hSpace = 0;
         int maxV = graph.getMaxBusStructuralPosition().getV();
-        List<InternCell> nonFlatCellsToClose = new ArrayList<>();
+        List<InternalCell> nonFlatCellsToClose = new ArrayList<>();
         PosNWidth posNWidth;
 
         int[] previousIndexes = new int[maxV];
@@ -133,7 +133,7 @@ public class BlockOrganizer {
             }
             hPos = placeHorizontalInternCell(hPos, prevHPos, hSs, Side.LEFT, nonFlatCellsToClose).pos;
             hPos = placeVerticalCoupling(hPos, hSs);
-            hPos = placeExternCell(hPos, hSs.getExternCells());
+            hPos = placeExternCell(hPos, hSs.getExternalCells());
 
             posNWidth = placeHorizontalInternCell(hPos, prevHPos, hSs, Side.RIGHT, nonFlatCellsToClose);
             hPos = posNWidth.pos;
@@ -163,9 +163,9 @@ public class BlockOrganizer {
         }
     }
 
-    private int placeExternCell(int hPos, Set<ExternCell> externCells) {
+    private int placeExternCell(int hPos, Set<ExternalCell> externalCells) {
         int hPos2 = hPos;
-        for (Cell cell : externCells) {
+        for (Cell cell : externalCells) {
             Position rootPosition = cell.getRootBlock().getPosition();
             rootPosition.setHV(hPos2, 0);
             hPos2 += rootPosition.getHSpan();
@@ -176,7 +176,7 @@ public class BlockOrganizer {
 
     private int placeVerticalCoupling(int hPos, SubSections.HorizontalSubSection hSs) {
         int hPos2 = hPos;
-        for (InternCell cell : hSs.getSideInternCells(Side.UNDEFINED)) {
+        for (InternalCell cell : hSs.getSideInternCells(Side.UNDEFINED)) {
             cell.getRootBlock().getPosition().setH(hPos2);
             hPos2 += cell.getRootBlock().getPosition().getHSpan();
 //            if (cell.getCentralBlock() != null) {
@@ -190,10 +190,10 @@ public class BlockOrganizer {
     private PosNWidth placeHorizontalInternCell(int hPos,
                                                 int prevHPos,
                                                 SubSections.HorizontalSubSection hSs,
-                                                Side side, List<InternCell> nonFlatCellsToClose) {
+                                                Side side, List<InternalCell> nonFlatCellsToClose) {
         int hPosRes = hPos;
-        Set<InternCell> cells = hSs.getSideInternCells(side);
-        List<InternCell> nonFlatCells = cells.stream()
+        Set<InternalCell> cells = hSs.getSideInternCells(side);
+        List<InternalCell> nonFlatCells = cells.stream()
                 .filter(cellIntern -> cellIntern.getDirection() != BusCell.Direction.FLAT).distinct()
                 .sorted(Comparator.comparingInt(c -> -nonFlatCellsToClose.indexOf(c)))
                 .collect(Collectors.toList());
@@ -206,7 +206,7 @@ public class BlockOrganizer {
         }
         cells.removeAll(nonFlatCells);
         int shift = 0;
-        for (InternCell cell : cells) {
+        for (InternalCell cell : cells) {
             if (side == Side.RIGHT) {
                 if (prevHPos == hPosRes) {
                     hPosRes++;
@@ -220,9 +220,9 @@ public class BlockOrganizer {
         return new PosNWidth(hPosRes + shift, shift);
     }
 
-    private int openHorizontalNonFlatCell(int hPos, List<InternCell> cells) {
+    private int openHorizontalNonFlatCell(int hPos, List<InternalCell> cells) {
         int hPosRes = hPos;
-        for (InternCell cell : cells) {
+        for (InternalCell cell : cells) {
             Position rootPosition = cell.getRootBlock().getPosition();
             rootPosition.setHV(hPosRes, 0);
             hPosRes += rootPosition.getHSpan() - cell.getSideToBlock(Side.RIGHT).getPosition().getHSpan();
@@ -230,9 +230,9 @@ public class BlockOrganizer {
         return hPosRes;
     }
 
-    private int closeHorizontalNonFlatCell(int hPos, List<InternCell> cells) {
+    private int closeHorizontalNonFlatCell(int hPos, List<InternalCell> cells) {
         int hPosRes = hPos;
-        for (InternCell cell : cells) {
+        for (InternalCell cell : cells) {
             Block rightBlock = cell.getSideToBlock(Side.RIGHT);
             if (rightBlock != null) {
                 rightBlock.getPosition().setH(hPosRes);
@@ -254,9 +254,9 @@ public class BlockOrganizer {
     }
 
     private void manageInternCellOverlaps(Graph graph) {
-        List<InternCell> cellsToHandle = graph.getCells().stream()
-                .filter(cell -> cell.getType() == Cell.CellType.INTERN)
-                .map(InternCell.class::cast)
+        List<InternalCell> cellsToHandle = graph.getCells().stream()
+                .filter(cell -> cell.getType() == Cell.CellType.INTERNAL)
+                .map(InternalCell.class::cast)
                 .filter(internCell -> internCell.getDirection() != BusCell.Direction.FLAT
                         && internCell.getCentralBlock() != null)
                 .collect(Collectors.toList());
@@ -270,18 +270,18 @@ public class BlockOrganizer {
      * arrangeLane at this stage balance the lanes on TOP and BOTTOM this could be improved by having various VPos per lane
      */
     private class Lane {
-        HashMap<InternCell, ArrayList<InternCell>> incompatibilities;
+        HashMap<InternalCell, ArrayList<InternalCell>> incompatibilities;
         Lane nextLane;
         List<Lane> lanes;
 
-        Lane(List<InternCell> cells) {
+        Lane(List<InternalCell> cells) {
             lanes = new ArrayList<>();
             lanes.add(this);
             incompatibilities = new HashMap<>();
             cells.forEach(this::addCell);
         }
 
-        Lane(InternCell cell, List<Lane> lanes) {
+        Lane(InternalCell cell, List<Lane> lanes) {
             this.lanes = lanes;
             lanes.add(this);
             incompatibilities = new HashMap<>();
@@ -293,7 +293,7 @@ public class BlockOrganizer {
             arrangeLanes();
         }
 
-        private void addCell(InternCell cell) {
+        private void addCell(InternalCell cell) {
             incompatibilities.put(cell, new ArrayList<>());
         }
 
@@ -305,18 +305,18 @@ public class BlockOrganizer {
 
         private boolean identifyIncompatibilities() {
             boolean hasIncompatibility = false;
-            for (Map.Entry<InternCell, ArrayList<InternCell>> entry : incompatibilities.entrySet()) {
-                InternCell internCellA = entry.getKey();
+            for (Map.Entry<InternalCell, ArrayList<InternalCell>> entry : incompatibilities.entrySet()) {
+                InternalCell internalCellA = entry.getKey();
                 entry.getValue().clear();
-                int hAmin = internCellA.getSideHPos(Side.LEFT);
-                int hAmax = internCellA.getSideHPos(Side.RIGHT);
+                int hAmin = internalCellA.getSideHPos(Side.LEFT);
+                int hAmax = internalCellA.getSideHPos(Side.RIGHT);
 
-                for (InternCell internCellB : incompatibilities.keySet()) {
-                    if (!internCellA.equals(internCellB)) {
-                        int hBmin = internCellB.getSideHPos(Side.LEFT);
-                        int hBmax = internCellB.getSideHPos(Side.RIGHT);
+                for (InternalCell internalCellB : incompatibilities.keySet()) {
+                    if (!internalCellA.equals(internalCellB)) {
+                        int hBmin = internalCellB.getSideHPos(Side.LEFT);
+                        int hBmax = internalCellB.getSideHPos(Side.RIGHT);
                         if (hAmax > hBmin && hBmax > hAmin) {
-                            entry.getValue().add(internCellB);
+                            entry.getValue().add(internalCellB);
                             hasIncompatibility = true;
                         }
                     }
@@ -326,12 +326,12 @@ public class BlockOrganizer {
         }
 
         private void shiftIncompatibilities() {
-            Map.Entry<InternCell, ArrayList<InternCell>> entry = incompatibilities.entrySet().stream()
+            Map.Entry<InternalCell, ArrayList<InternalCell>> entry = incompatibilities.entrySet().stream()
                     .filter(e -> !e.getValue().isEmpty())
                     .max(Comparator.comparingInt(e -> e.getValue().size())).orElse(null);
 
             if (entry != null) {
-                InternCell cell = entry.getKey();
+                InternalCell cell = entry.getKey();
                 incompatibilities.remove(cell);
                 if (nextLane == null) {
                     nextLane = new Lane(cell, lanes);

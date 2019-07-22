@@ -14,13 +14,16 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
+ *
+ * A {@link PositionFinder} which tries to find best positions for cells without exogenous information,
+ * only based on identified cells and the connectivity graph.
+ *
+ * <p>(TODO: keep this comment?) we assume that it is possible to stack all cells and be able to organize the voltage level consistently
+
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-
-// WE ASSUME THAT IT IS POSSIBLE TO STACK ALL CELLS AND BE ABLE TO ORGANISE THE VOLTAGELEVAL CONSITENTLY
-
 public class PositionFree implements PositionFinder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PositionFree.class);
@@ -30,7 +33,7 @@ public class PositionFree implements PositionFinder {
     private class Context {
         private final Graph graph;
         private final Map<BusNode, Integer> nodeToNb = new HashMap<>();
-        private final Map<VerticalBusConnectionPattern, List<ExternCell>> vbcpToCells = new HashMap<>();
+        private final Map<VerticalBusConnectionPattern, List<ExternalCell>> vbcpToCells = new HashMap<>();
         private List<HorizontalChain> hChains;
         private final Map<BusNode, NodeBelonging> busToBelonging = new HashMap<>();
         private final List<ConnectedCluster> connectedClusters = new ArrayList<>();
@@ -73,25 +76,25 @@ public class PositionFree implements PositionFinder {
                 .sorted(Comparator.comparing(Node::getId))
                 .collect(Collectors.toList())) {
             if (feederNode.getCell() != null) {
-                ((ExternCell) feederNode.getCell()).setDirection(DEFAULTDIRECTION);
+                ((ExternalCell) feederNode.getCell()).setDirection(DEFAULTDIRECTION);
                 feederNode.setOrder(12 * i);
                 i++;
             }
         }
         context.graph.getCells().stream()
-                .filter(cell -> cell.getType() == Cell.CellType.EXTERN)
-                .map(ExternCell.class::cast)
-                .forEach(ExternCell::orderFromFeederOrders);
+                .filter(cell -> cell.getType() == Cell.CellType.EXTERNAL)
+                .map(ExternalCell.class::cast)
+                .forEach(ExternalCell::orderFromFeederOrders);
     }
 
     private void initVbpcToCell(Context context) {
         context.graph.getCells().stream()
-                .filter(cell -> cell.getType() == Cell.CellType.EXTERN)
-                .map(ExternCell.class::cast)
+                .filter(cell -> cell.getType() == Cell.CellType.EXTERNAL)
+                .map(ExternalCell.class::cast)
                 .forEach(cell -> addBusNodeSet(cell.getBusNodes(), cell, context));
     }
 
-    private void addBusNodeSet(List<BusNode> busNodes, ExternCell externCell, Context context) {
+    private void addBusNodeSet(List<BusNode> busNodes, ExternalCell externalCell, Context context) {
         VerticalBusConnectionPattern vbcp = new VerticalBusConnectionPattern(context, busNodes);
         VerticalBusConnectionPattern targetBcp = null;
         for (VerticalBusConnectionPattern vbcp1 : new ArrayList<>(context.vbcpToCells.keySet())) {
@@ -109,8 +112,8 @@ public class PositionFree implements PositionFinder {
             targetBcp = vbcp;
         }
 
-        if (externCell != null) {
-            context.vbcpToCells.get(targetBcp).add(externCell);
+        if (externalCell != null) {
+            context.vbcpToCells.get(targetBcp).add(externalCell);
         }
     }
 
@@ -119,8 +122,8 @@ public class PositionFree implements PositionFinder {
     }
 
     private void organizeWithInternCells(Context context) {
-        List<InternCell> structuringInternCells = identifyStructuringCells(context);
-        List<InternCell> candidateFlatCell = structuringInternCells.stream()
+        List<InternalCell> structuringInternalCells = identifyStructuringCells(context);
+        List<InternalCell> candidateFlatCell = structuringInternalCells.stream()
                 .filter(internCell -> internCell.getBusNodes().size() == 2)
                 .collect(Collectors.toList());
         context.hChains = chainNodeBusesWithFlatCells(context, candidateFlatCell);
@@ -129,26 +132,26 @@ public class PositionFree implements PositionFinder {
         organizeClusters(context);
     }
 
-    private List<InternCell> identifyStructuringCells(Context context) {
-        List<InternCell> structuringInternCells
+    private List<InternalCell> identifyStructuringCells(Context context) {
+        List<InternalCell> structuringInternalCells
                 = context.graph.getCells().stream()
-                .filter(cell -> cell.getType() == Cell.CellType.INTERN)
-                .map(InternCell.class::cast)
+                .filter(cell -> cell.getType() == Cell.CellType.INTERNAL)
+                .map(InternalCell.class::cast)
                 .collect(Collectors.toList());
 
-        structuringInternCells.forEach(c -> addBusNodeSet(c.getSideBusNodes(Side.LEFT), context));
-        structuringInternCells.forEach(c -> addBusNodeSet(c.getSideBusNodes(Side.RIGHT), context));
+        structuringInternalCells.forEach(c -> addBusNodeSet(c.getSideBusNodes(Side.LEFT), context));
+        structuringInternalCells.forEach(c -> addBusNodeSet(c.getSideBusNodes(Side.RIGHT), context));
 
-        List<InternCell> verticalCells = structuringInternCells.stream()
+        List<InternalCell> verticalCells = structuringInternalCells.stream()
                 .filter(internCell ->
                         new VerticalBusConnectionPattern(context, internCell.getBusNodes()).isIncludedIn(context.vbcpToCells.keySet()) != null)
                 .collect(Collectors.toList());
-        structuringInternCells.removeAll(verticalCells);
-        return structuringInternCells;
+        structuringInternalCells.removeAll(verticalCells);
+        return structuringInternalCells;
     }
 
-    private List<HorizontalChain> chainNodeBusesWithFlatCells(Context context, List<InternCell> flatCells) {
-        Map<BusNode, List<InternCell>> bus2flatCells = new HashMap<>();
+    private List<HorizontalChain> chainNodeBusesWithFlatCells(Context context, List<InternalCell> flatCells) {
+        Map<BusNode, List<InternalCell>> bus2flatCells = new HashMap<>();
         flatCells.forEach(cell ->
                 cell.getBusNodes().forEach(busNode -> {
                     bus2flatCells.putIfAbsent(busNode, new ArrayList<>());
@@ -186,10 +189,10 @@ public class PositionFree implements PositionFinder {
     private void rBuildHChain(HorizontalChain hChain,
                               BusNode bus,
                               List<BusNode> busConnectedToFlatCell,
-                              Map<BusNode, List<InternCell>> bus2flatCells) {
+                              Map<BusNode, List<InternalCell>> bus2flatCells) {
         hChain.busNodes.add(bus);
         busConnectedToFlatCell.remove(bus);
-        for (InternCell cell : bus2flatCells.get(bus)) {
+        for (InternalCell cell : bus2flatCells.get(bus)) {
             BusNode otherBus = cell.getBusNodes().stream().filter(busNode -> busNode != bus).findAny().orElse(null);
             if (otherBus != null && busConnectedToFlatCell.contains(otherBus)) {
                 rBuildHChain(hChain, otherBus, busConnectedToFlatCell, bus2flatCells);
@@ -548,7 +551,7 @@ public class PositionFree implements PositionFinder {
             int feederPosition = firstFeederOrder;
             int cellPos = 0;
             for (VerticalBusConnectionPattern vbcp : vbcps) {
-                for (ExternCell cell : context.vbcpToCells.get(vbcp)) {
+                for (ExternalCell cell : context.vbcpToCells.get(vbcp)) {
                     cell.setDirection(cellPos % 2 == 0 ? BusCell.Direction.TOP : BusCell.Direction.BOTTOM);
                     cell.setOrder(cellPos);
                     cellPos++;

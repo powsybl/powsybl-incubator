@@ -397,7 +397,7 @@ public class SVGWriter {
                     if (node instanceof FeederNode) {
                         int yShift = -LABEL_OFFSET;
                         if (node.getCell() != null) {
-                            direction = ((ExternCell) node.getCell()).getDirection();
+                            direction = ((ExternalCell) node.getCell()).getDirection();
                             yShift = direction == BusCell.Direction.TOP
                                     ? -LABEL_OFFSET
                                     : ((int) (componentLibrary.getSize(node.getComponentType()).getHeight()) + FONT_SIZE + LABEL_OFFSET);

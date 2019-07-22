@@ -124,11 +124,11 @@ public class TestCase6CouplingNonFlatHorizontal extends AbstractTestCase {
         assertEquals(3, g.getCells().size());
         Iterator<Cell> it = g.getCells().iterator();
         Cell cellB = it.next();
-        assertEquals("INTERN[FICT_vl_d1Fictif, FICT_vl_d2Fictif, b, bbs1.1, bbs2.2, d1, d2]", cellB.getFullId());
+        assertEquals("INTERNAL[FICT_vl_d1Fictif, FICT_vl_d2Fictif, b, bbs1.1, bbs2.2, d1, d2]", cellB.getFullId());
         Cell cellD1 = it.next();
-        assertEquals("INTERN[bbs1.1, bbs1.2, ds1]", cellD1.getFullId());
+        assertEquals("INTERNAL[bbs1.1, bbs1.2, ds1]", cellD1.getFullId());
         Cell cellD2 = it.next();
-        assertEquals("INTERN[bbs2.1, bbs2.2, ds2]", cellD2.getFullId());
+        assertEquals("INTERNAL[bbs2.1, bbs2.2, ds2]", cellD2.getFullId());
 
         // build blocks
         assertTrue(new BlockOrganizer().organize(g));

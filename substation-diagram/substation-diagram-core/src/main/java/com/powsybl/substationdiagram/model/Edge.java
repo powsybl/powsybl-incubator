@@ -9,6 +9,8 @@ package com.powsybl.substationdiagram.model;
 import java.util.Objects;
 
 /**
+ * And edge represents a connection between 2 {@link Node}s.
+ *
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -20,7 +22,6 @@ public class Edge {
     private final Node node2;
 
     /**
-     * Constructor
      * @param node1 node1
      * @param node2 node2
      */

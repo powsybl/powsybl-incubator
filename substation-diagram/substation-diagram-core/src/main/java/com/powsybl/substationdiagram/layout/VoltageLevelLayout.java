@@ -7,6 +7,13 @@
 package com.powsybl.substationdiagram.layout;
 
 /**
+ *
+ * A layout is in charge of defining the actual coordinates of each {@link com.powsybl.substationdiagram.model.Node Node}
+ * of the {@link com.powsybl.substationdiagram.model.Graph Graph}.
+ *
+ * <p>Implementations may rely on previously computed abstractions such as {@link com.powsybl.substationdiagram.model.Block Blocks}
+ * and {@link com.powsybl.substationdiagram.model.Cell Cells}.
+ *
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>

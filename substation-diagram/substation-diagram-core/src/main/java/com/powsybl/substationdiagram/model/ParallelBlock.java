@@ -15,6 +15,9 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
+ *
+ * A parallel block is composed of multiple sub-blocks, positioned in parallel.
+ *
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -70,8 +73,8 @@ public class ParallelBlock extends AbstractBlock {
     }
 
     @Override
-    public boolean isEmbedingNodeType(Node.NodeType type) {
-        return subBlocks.stream().anyMatch(b -> b.isEmbedingNodeType(type));
+    public boolean isEmbeddingNodeType(Node.NodeType type) {
+        return subBlocks.stream().anyMatch(b -> b.isEmbeddingNodeType(type));
     }
 
     @Override
@@ -110,7 +113,7 @@ public class ParallelBlock extends AbstractBlock {
         }
         if (getPosition().getOrientation() == Orientation.VERTICAL) {
             getPosition().setVSpan(subBlocks.stream().mapToInt(b -> b.getPosition().getVSpan()).max().orElse(0));
-            if (isEmbedingNodeType(Node.NodeType.BUS)) {
+            if (isEmbeddingNodeType(Node.NodeType.BUS)) {
                 handleStackingOnBuses();
             } else {
                 orderSubBlocksByFeederOrder();
@@ -191,7 +194,7 @@ public class ParallelBlock extends AbstractBlock {
         subBlocks.forEach(sub -> {
             sub.setX(getCoord().getX());
 /*
-            if (sub.getType() == Type.PRIMARY && sub.isEmbedingNodeType(Node.NodeType.BUS)) {
+            if (sub.getType() == Type.PRIMARY && sub.isEmbeddingNodeType(Node.NodeType.BUS)) {
                 sub.setXSpan(0);
             } else {
 */

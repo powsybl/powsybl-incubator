@@ -176,10 +176,10 @@ public class TestCase4NotParallelel extends AbstractTestCase {
         assertEquals(4, g.getCells().size());
         Iterator<Cell> it = g.getCells().iterator();
         Cell cell = it.next();
-        assertEquals(Cell.CellType.INTERN, cell.getType());
+        assertEquals(Cell.CellType.INTERNAL, cell.getType());
         assertEquals(3, cell.getNodes().size());
         assertEquals(2, ((BusCell) cell).getBusNodes().size());
-        assertEquals("INTERN[bbs1.1, bbs1.2, ss1]", cell.getFullId());
+        assertEquals("INTERNAL[bbs1.1, bbs1.2, ss1]", cell.getFullId());
 
         // build blocks
         assertTrue(new BlockOrganizer().organize(g));

@@ -9,6 +9,9 @@ package com.powsybl.substationdiagram.layout;
 import com.powsybl.substationdiagram.model.Graph;
 
 /**
+ *
+ * In charge of creating {@link VoltageLevelLayout} instances for a specified {@link Graph}.
+ *
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>

@@ -95,13 +95,13 @@ public class TestCase1inverted extends AbstractTestCase {
         // assert cells
         assertEquals(1, g.getCells().size());
         Cell cell = g.getCells().iterator().next();
-        assertEquals(Cell.CellType.EXTERN, cell.getType());
+        assertEquals(Cell.CellType.EXTERNAL, cell.getType());
         assertEquals(5, cell.getNodes().size());
         assertTrue(((BusCell) cell).getPrimaryBlocksConnectedToBus().isEmpty());
         assertEquals(1, ((BusCell) cell).getBusNodes().size());
         assertEquals("bbs", ((BusCell) cell).getBusNodes().get(0).getId());
         assertNull(cell.getRootBlock());
-        assertEquals("EXTERN[FICT_vl_dFictif, b, bbs, d, l]", cell.getFullId());
+        assertEquals("EXTERNAL[FICT_vl_dFictif, b, bbs, d, l]", cell.getFullId());
         assertEquals(new Position(0, 0), ((BusCell) cell).getMaxBusPosition());
 
         // build blocks

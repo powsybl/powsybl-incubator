@@ -9,11 +9,15 @@ package com.powsybl.substationdiagram.layout;
 import com.powsybl.substationdiagram.model.Graph;
 
 /**
- * a PositionFinder determines:
+ * A position finder determines:
  * <ul>
- *     <li>the positions of nodeBuses</li>
+ *     <li>the positions of bus nodes</li>
  *     <li>cell order and direction of each cell connected to Bus (ie all cells except Shunt ones)</li>
  * </ul>
+ *
+ * It assumes that {@link com.powsybl.substationdiagram.model.Cell Cells} have been detected.
+ * It is used by the {@link PositionVoltageLevelLayout}, and sets
+ *
  *
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene

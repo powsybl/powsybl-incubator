@@ -9,6 +9,12 @@ package com.powsybl.substationdiagram.model;
 import java.util.Objects;
 
 /**
+ *
+ * The position of a {@link Block}, together with its spatial extension (span), and orientation (vertical or horizontal).
+ *
+ * TODO: difference with Coord, except for "absolute" and "orientation"?
+ *
+ *
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>

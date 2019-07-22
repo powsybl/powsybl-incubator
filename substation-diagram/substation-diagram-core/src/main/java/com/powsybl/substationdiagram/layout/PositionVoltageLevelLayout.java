@@ -15,6 +15,11 @@ import org.slf4j.LoggerFactory;
 import java.util.Objects;
 
 /**
+ *
+ * A layout which computes nodes coordinates based on previously computed {@link Cell}s
+ * and {@link com.powsybl.substationdiagram.model.Block Blocks}
+ *
+ *
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -48,8 +53,8 @@ public class PositionVoltageLevelLayout implements VoltageLevelLayout {
 
     private void calculateCellCoord(Graph graph, LayoutParameters layoutParam) {
         graph.getCells().stream()
-                .filter(cell -> cell.getType() == Cell.CellType.EXTERN
-                        || cell.getType() == Cell.CellType.INTERN)
+                .filter(cell -> cell.getType() == Cell.CellType.EXTERNAL
+                        || cell.getType() == Cell.CellType.INTERNAL)
                 .forEach(cell ->
                         cell.getRootBlock().calculateCoord(layoutParam));
         graph.getCells().stream()

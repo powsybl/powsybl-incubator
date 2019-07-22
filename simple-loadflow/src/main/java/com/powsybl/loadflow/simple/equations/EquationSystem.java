@@ -7,8 +7,8 @@
 package com.powsybl.loadflow.simple.equations;
 
 import com.powsybl.commons.PowsyblException;
-import com.powsybl.loadflow.LoadFlowParameters;
-import com.powsybl.loadflow.simple.network.NetworkContext;
+import com.powsybl.loadflow.simple.ac.nr.VoltageInitializer;
+import com.powsybl.loadflow.simple.network.LfNetwork;
 import com.powsybl.math.matrix.Matrix;
 import com.powsybl.math.matrix.MatrixFactory;
 
@@ -24,7 +24,7 @@ public class EquationSystem {
 
     private final List<EquationTerm> equationTerms;
 
-    private final NetworkContext networkContext;
+    private final LfNetwork network;
 
     private final NavigableMap<Equation, List<EquationTerm>> sortedEquationsToSolve = new TreeMap<>();
 
@@ -61,10 +61,10 @@ public class EquationSystem {
 
     private final List<PartialDerivative> partialDerivatives;
 
-    public EquationSystem(List<EquationTerm> equationTerms, List<VariableUpdate> variableUpdates, NetworkContext networkContext) {
+    public EquationSystem(List<EquationTerm> equationTerms, List<VariableUpdate> variableUpdates, LfNetwork network) {
         this.equationTerms = Objects.requireNonNull(equationTerms);
         this.variableUpdates = Objects.requireNonNull(variableUpdates);
-        this.networkContext = Objects.requireNonNull(networkContext);
+        this.network = Objects.requireNonNull(network);
         partialDerivatives = new ArrayList<>(equationTerms.size());
 
         // index derivatives per variable then per equation
@@ -116,21 +116,17 @@ public class EquationSystem {
     }
 
     public List<String> getRowNames() {
-        return getEquationsToSolve().stream().map(eq -> networkContext.getBus(eq.getNum()).getId() + "/" + eq.getType()).collect(Collectors.toList());
+        return getEquationsToSolve().stream().map(eq -> network.getBus(eq.getNum()).getId() + "/" + eq.getType()).collect(Collectors.toList());
     }
 
     public List<String> getColumnNames() {
-        return getVariablesToFind().stream().map(v -> networkContext.getBus(v.getNum()).getId() + "/" + v.getType()).collect(Collectors.toList());
+        return getVariablesToFind().stream().map(v -> network.getBus(v.getNum()).getId() + "/" + v.getType()).collect(Collectors.toList());
     }
 
-    public double[] initState() {
-        return initState(LoadFlowParameters.VoltageInitMode.UNIFORM_VALUES);
-    }
-
-    public double[] initState(LoadFlowParameters.VoltageInitMode mode) {
+    public double[] initState(VoltageInitializer initializer) {
         double[] x = new double[getVariablesToFind().size()];
         for (Variable v : getVariablesToFind()) {
-            v.initState(mode, networkContext, x);
+            v.initState(initializer, network, x);
         }
         return x;
     }
@@ -139,7 +135,7 @@ public class EquationSystem {
         double[] targets = new double[sortedEquationsToSolve.size()];
         for (Map.Entry<Equation, List<EquationTerm>> e : sortedEquationsToSolve.entrySet()) {
             Equation eq  = e.getKey();
-            eq.initTarget(networkContext, targets);
+            eq.initTarget(network, targets);
             for (EquationTerm equationTerm : e.getValue()) {
                 for (Variable variable : equationTerm.getVariables()) {
                     targets[equationTerm.getEquation().getRow()] -= equationTerm.rhs(variable);
@@ -158,7 +154,7 @@ public class EquationSystem {
     public void updateState(double[] x) {
         // update state variable
         for (Variable v : getVariablesToFind()) {
-            v.updateState(networkContext, x);
+            v.updateState(network, x);
         }
         // then other variables
         for (VariableUpdate variableUpdate : variableUpdates) {

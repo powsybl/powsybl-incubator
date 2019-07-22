@@ -6,7 +6,7 @@
  */
 package com.powsybl.loadflow.simple.equations;
 
-import com.powsybl.loadflow.simple.network.NetworkContext;
+import com.powsybl.loadflow.simple.network.LfNetwork;
 
 import java.util.Objects;
 
@@ -58,7 +58,7 @@ public class Equation implements Comparable<Equation> {
         this.toSolve = toSolve;
     }
 
-    void initTarget(NetworkContext network, double[] targets) {
+    void initTarget(LfNetwork network, double[] targets) {
         switch (type) {
             case BUS_P:
                 targets[row] = network.getBus(num).getTargetP();

@@ -9,7 +9,6 @@ package com.powsybl.loadflow.simple.ac;
 import com.powsybl.iidm.network.*;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
-import com.powsybl.loadflow.simple.network.SlackBusSelectionMode;
 import com.powsybl.math.matrix.DenseMatrixFactory;
 import org.junit.Before;
 import org.junit.Test;
@@ -156,7 +155,10 @@ public class SimpleAcLoadFlowVscTest {
         network = createNetwork();
         loadFlow = new SimpleAcLoadFlow(network, new DenseMatrixFactory());
         parameters = new LoadFlowParameters();
-        parameters.addExtension(SimpleAcLoadFlowParameters.class, new SimpleAcLoadFlowParameters().setSlackBusSelectionMode(SlackBusSelectionMode.MOST_MESHED));
+        SimpleAcLoadFlowParameters parametersExt = new SimpleAcLoadFlowParameters()
+                .setSlackBusSelectionMode(SlackBusSelectionMode.MOST_MESHED)
+                .setDistributedSlack(false);
+        this.parameters.addExtension(SimpleAcLoadFlowParameters.class, parametersExt);
     }
 
     @Test

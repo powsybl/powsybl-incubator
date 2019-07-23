@@ -10,7 +10,7 @@ import com.powsybl.loadflow.simple.equations.*;
 import com.powsybl.loadflow.simple.network.LfBranch;
 import com.powsybl.loadflow.simple.network.LfBus;
 import com.powsybl.loadflow.simple.network.LfShunt;
-import com.powsybl.loadflow.simple.network.NetworkContext;
+import com.powsybl.loadflow.simple.network.LfNetwork;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,14 +24,14 @@ public final class AcEquationSystem {
     private AcEquationSystem() {
     }
 
-    public static EquationSystem create(NetworkContext networkContext, EquationContext equationContext) {
-        Objects.requireNonNull(networkContext);
+    public static EquationSystem create(LfNetwork network, EquationContext equationContext) {
+        Objects.requireNonNull(network);
         Objects.requireNonNull(equationContext);
 
         List<EquationTerm> equationTerms = new ArrayList<>();
         List<VariableUpdate> variableUpdates = new ArrayList<>();
 
-        for (LfBus bus : networkContext.getBuses()) {
+        for (LfBus bus : network.getBuses()) {
             if (bus.isSlack()) {
                 equationTerms.add(new BusPhaseEquationTerm(bus, equationContext));
                 equationContext.getEquation(bus.getNum(), EquationType.BUS_P).setToSolve(false);
@@ -41,13 +41,13 @@ public final class AcEquationSystem {
                 equationContext.getEquation(bus.getNum(), EquationType.BUS_Q).setToSolve(false);
             }
             for (LfShunt shunt : bus.getShunts()) {
-                ShuntCompensatorReactiveFlowEquationTerm q = new ShuntCompensatorReactiveFlowEquationTerm(shunt, bus, networkContext, equationContext);
+                ShuntCompensatorReactiveFlowEquationTerm q = new ShuntCompensatorReactiveFlowEquationTerm(shunt, bus, network, equationContext);
                 equationTerms.add(q);
                 variableUpdates.add(new ShuntCompensatorReactiveFlowUpdate(shunt, q));
             }
         }
 
-        for (LfBranch branch : networkContext.getBranches()) {
+        for (LfBranch branch : network.getBranches()) {
             LfBus bus1 = branch.getBus1();
             LfBus bus2 = branch.getBus2();
             if (bus1 != null && bus2 != null) {
@@ -75,6 +75,6 @@ public final class AcEquationSystem {
             }
         }
 
-        return new EquationSystem(equationTerms, variableUpdates, networkContext);
+        return new EquationSystem(equationTerms, variableUpdates, network);
     }
 }

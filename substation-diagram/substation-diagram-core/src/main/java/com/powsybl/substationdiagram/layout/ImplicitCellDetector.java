@@ -6,7 +6,12 @@
  */
 package com.powsybl.substationdiagram.layout;
 
-import com.powsybl.substationdiagram.model.*;
+import com.powsybl.substationdiagram.model.Cell;
+import com.powsybl.substationdiagram.model.ExternCell;
+import com.powsybl.substationdiagram.model.Graph;
+import com.powsybl.substationdiagram.model.InternCell;
+import com.powsybl.substationdiagram.model.Node;
+import com.powsybl.substationdiagram.model.ShuntCell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +56,7 @@ public class ImplicitCellDetector implements CellDetector {
     @Override
     public void detectCells(Graph graph) {
         cleaning(graph);
+
         LOGGER.info("Detecting cells...");
 
         List<Node> allocatedNodes = new ArrayList<>();
@@ -348,5 +354,6 @@ public class ImplicitCellDetector implements CellDetector {
         shuntCell.setNodes(shuntCellNodes);
         return shuntCell;
     }
+
 }
 

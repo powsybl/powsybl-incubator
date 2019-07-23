@@ -8,7 +8,6 @@ package com.powsybl.loadflow.simple.ac;
 
 import com.powsybl.commons.extensions.AbstractExtension;
 import com.powsybl.loadflow.LoadFlowParameters;
-import com.powsybl.loadflow.simple.network.SlackBusSelectionMode;
 
 import java.util.Objects;
 
@@ -18,6 +17,8 @@ import java.util.Objects;
 public class SimpleAcLoadFlowParameters extends AbstractExtension<LoadFlowParameters> {
 
     private SlackBusSelectionMode slackBusSelectionMode = SlackBusSelectionMode.MOST_MESHED;
+
+    private boolean distributedSlack = false;
 
     @Override
     public String getName() {
@@ -30,6 +31,15 @@ public class SimpleAcLoadFlowParameters extends AbstractExtension<LoadFlowParame
 
     public SimpleAcLoadFlowParameters setSlackBusSelectionMode(SlackBusSelectionMode slackBusSelectionMode) {
         this.slackBusSelectionMode = Objects.requireNonNull(slackBusSelectionMode);
+        return this;
+    }
+
+    public boolean isDistributedSlack() {
+        return distributedSlack;
+    }
+
+    public SimpleAcLoadFlowParameters setDistributedSlack(boolean distributedSlack) {
+        this.distributedSlack = distributedSlack;
         return this;
     }
 }

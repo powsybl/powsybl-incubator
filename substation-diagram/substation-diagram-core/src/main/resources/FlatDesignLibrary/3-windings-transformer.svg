@@ -11,7 +11,7 @@
    width="40.625"
    height="25"
    id="svg6"
-   sodipodi:docname="2-windings-transformer.svg"
+   sodipodi:docname="3-windings-transformer.svg"
    inkscape:version="0.92.3 (2405546, 2018-03-11)">
   <metadata
      id="metadata12">
@@ -36,36 +36,46 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1920"
-     inkscape:window-height="1016"
+     inkscape:window-width="1644"
+     inkscape:window-height="939"
      id="namedview8"
      showgrid="true"
      inkscape:snap-bbox="true"
      inkscape:bbox-nodes="true"
      showguides="false"
-     inkscape:zoom="19.363847"
-     inkscape:cx="22.558046"
-     inkscape:cy="11.743156"
-     inkscape:window-x="584"
-     inkscape:window-y="1077"
-     inkscape:window-maximized="1"
+     inkscape:zoom="9.6819235"
+     inkscape:cx="13.468942"
+     inkscape:cy="9.3159519"
+     inkscape:window-x="622"
+     inkscape:window-y="1115"
+     inkscape:window-maximized="0"
      inkscape:current-layer="svg6">
     <inkscape:grid
        type="xygrid"
        id="grid37" />
   </sodipodi:namedview>
-  <circle
-     style="stroke-width:3.125"
+  <ellipse
      transform="rotate(-90)"
      id="WINDING1"
-     cx="-12.5"
-     cy="12.5"
-     r="12.5" />
-  <circle
-     r="12.5"
-     cy="28.5"
-     cx="-12.5"
+     cx="-8"
+     cy="10.5"
+     rx="8"
+     ry="10.5"
+     style="stroke-width:2.2912879" />
+  <ellipse
+     cy="30.5"
+     cx="-7.5"
      id="WINDING2"
      transform="rotate(-90)"
-     style="stroke-width:3.125" />
+     rx="7.5"
+     ry="10.5"
+     style="stroke-width:2.21852994" />
+  <ellipse
+     style="stroke-width:2.85058093"
+     ry="12.99997"
+     rx="10.001022"
+     transform="matrix(0.01429778,-0.99989778,1,0,0,0)"
+     id="WINDING3"
+     cx="-15.001534"
+     cy="20.213732" />
 </svg>

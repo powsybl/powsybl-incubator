@@ -13,11 +13,23 @@ import com.powsybl.commons.json.JsonUtil;
 import com.powsybl.computation.local.LocalComputationManager;
 import com.powsybl.iidm.import_.ImportConfig;
 import com.powsybl.iidm.import_.Importers;
-import com.powsybl.iidm.network.*;
+import com.powsybl.iidm.network.Container;
+import com.powsybl.iidm.network.ContainerType;
+import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.network.Substation;
+import com.powsybl.iidm.network.VoltageLevel;
 import com.powsybl.substationdiagram.SubstationDiagram;
 import com.powsybl.substationdiagram.VoltageLevelDiagram;
 import com.powsybl.substationdiagram.cgmes.CgmesVoltageLevelLayoutFactory;
-import com.powsybl.substationdiagram.layout.*;
+import com.powsybl.substationdiagram.layout.HorizontalSubstationLayoutFactory;
+import com.powsybl.substationdiagram.layout.LayoutParameters;
+import com.powsybl.substationdiagram.layout.PositionFree;
+import com.powsybl.substationdiagram.layout.PositionFromExtension;
+import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayoutFactory;
+import com.powsybl.substationdiagram.layout.RandomVoltageLevelLayoutFactory;
+import com.powsybl.substationdiagram.layout.SubstationLayoutFactory;
+import com.powsybl.substationdiagram.layout.VerticalSubstationLayoutFactory;
+import com.powsybl.substationdiagram.layout.VoltageLevelLayoutFactory;
 import com.powsybl.substationdiagram.library.ComponentLibrary;
 import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
 import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramStyleProvider;
@@ -43,9 +55,28 @@ import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Side;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.CheckBoxTreeItem;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.CheckBoxTreeCell;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
@@ -55,14 +86,26 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.prefs.Preferences;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -139,9 +182,17 @@ public class SubstationDiagramViewer extends Application {
 
         private final TextArea infoArea = new TextArea();
 
-        private final TextArea svgArea = new TextArea();
+        private final VBox svgArea = new VBox();
+        private final TextField svgSearchField = new TextField();
+        private final Button svgSearchButton = new Button("Search");
+        private final TextArea svgTextArea = new TextArea();
+        private AtomicReference<Integer> svgSearchStart = new AtomicReference<>(0);
 
-        private final TextArea metadataArea = new TextArea();
+        private final VBox metadataArea = new VBox();
+        private final TextField metadataSearchField = new TextField();
+        private final Button metadataSearchButton = new Button("Search");
+        private final TextArea metadataTextArea = new TextArea();
+        private final AtomicReference<Integer> metadataSearchStart = new AtomicReference<>(0);
 
         private final Tab tab1 = new Tab("Diagram", flowPane);
 
@@ -156,8 +207,9 @@ public class SubstationDiagramViewer extends Application {
         private final ChangeListener<LayoutParameters> listener;
 
         ContainerDiagramPane(Container c) {
-            svgArea.setEditable(false);
-            metadataArea.setEditable(false);
+            createSearchArea(svgSearchField, svgSearchButton, svgTextArea, svgArea, svgSearchStart);
+            createSearchArea(metadataSearchField, metadataSearchButton, metadataTextArea, metadataArea, metadataSearchStart);
+
             infoArea.setEditable(false);
             infoArea.setText(String.join(System.lineSeparator(),
                                          "id: " + c.getId(),
@@ -208,7 +260,8 @@ public class SubstationDiagramViewer extends Application {
                 SubstationDiagramStyleProvider styleProvider = styles.get(styleComboBox.getSelectionModel().getSelectedItem());
 
                 if (c.getContainerType() == ContainerType.VOLTAGE_LEVEL) {
-                    VoltageLevelDiagram diagram = VoltageLevelDiagram.build((VoltageLevel) c, getVoltageLevelLayoutFactory(), showNames.isSelected());
+                    VoltageLevelDiagram diagram = VoltageLevelDiagram.build((VoltageLevel) c, getVoltageLevelLayoutFactory(), showNames.isSelected(),
+                                                                            layoutParameters.get().isShowInductorFor3WT());
                     diagram.writeSvg(getComponentLibrary(), layoutParameters.get(), styleProvider, svgWriter, metadataWriter);
                 } else if (c.getContainerType() == ContainerType.SUBSTATION) {
                     SubstationDiagram diagram = SubstationDiagram.build((Substation) c, getSubstationLayoutFactory(), getVoltageLevelLayoutFactory(), showNames.isSelected());
@@ -255,14 +308,14 @@ public class SubstationDiagramViewer extends Application {
                 Text loading = new Text("Loading...");
                 loading.setFont(Font.font(30));
                 flowPane.setContent(loading);
-                svgArea.setText("");
-                metadataArea.setText("");
+                svgTextArea.setText("");
+                metadataTextArea.setText("");
             });
             loader.setOnSucceeded(event -> {
                 ContainerDiagramResult result = (ContainerDiagramResult) event.getSource().getValue();
                 flowPane.setContent(result.getView());
-                svgArea.setText(result.getSvgData());
-                metadataArea.setText(result.getMetadataData());
+                svgTextArea.setText(result.getSvgData());
+                metadataTextArea.setText(result.getMetadataData());
             });
             loader.setOnFailed(event -> {
                 Throwable e = event.getSource().getException();
@@ -279,6 +332,47 @@ public class SubstationDiagramViewer extends Application {
         private SubstationLayoutFactory getSubstationLayoutFactory() {
             String selectedItem = substationLayoutComboBox.getSelectionModel().getSelectedItem();
             return substationsLayouts.get(selectedItem);
+        }
+
+        private void createSearchArea(TextField searchField, Button searchButton,
+                                      TextArea textArea, VBox area,
+                                      AtomicReference<Integer> searchStart) {
+            HBox searchBox = new HBox();
+            searchBox.setSpacing(20);
+            searchBox.setPadding(new Insets(10));
+            searchField.setPrefColumnCount(35);
+            searchBox.getChildren().add(searchField);
+            searchBox.getChildren().add(searchButton);
+
+            searchStart.set(0);
+            searchButton.setOnAction(evh -> {
+                String txtPattern = searchField.getText();
+                Pattern pattern = Pattern.compile(txtPattern);
+                Matcher matcher = pattern.matcher(textArea.getText());
+                boolean found = matcher.find(searchStart.get());
+                if (found) {
+                    textArea.selectRange(matcher.start(), matcher.end());
+                    searchStart.set(matcher.end());
+                } else {
+                    textArea.deselect();
+                    searchStart.set(0);
+                    found = matcher.find(searchStart.get());
+                    if (found) {
+                        textArea.selectRange(matcher.start(), matcher.end());
+                        searchStart.set(matcher.end());
+                    }
+                }
+            });
+            searchField.textProperty().addListener((observable, oldValue, newValue) ->
+                searchStart.set(0)
+            );
+
+            area.setSpacing(8);
+            area.getChildren().add(searchBox);
+            area.getChildren().add(textArea);
+            VBox.setVgrow(searchBox, Priority.NEVER);
+            VBox.setVgrow(textArea, Priority.ALWAYS);
+            textArea.setEditable(false);
         }
     }
 
@@ -361,12 +455,25 @@ public class SubstationDiagramViewer extends Application {
             VoltageLevel vl = networkProperty.get().getVoltageLevel(id);
             if (vl != null) {
                 Tab tab = new Tab(id, new ContainerDiagramPane(vl));
-                tab.setOnCloseRequest(event -> checkedProperty.set(false));
+                tab.setOnCloseRequest(event -> {
+                    checkedProperty.set(false);
+                    uncheckvItemTree(id);
+                });
                 checkedDiagramsPane.getTabs().add(tab);
                 checkedDiagramsPane.getSelectionModel().select(tab);
             } else {
                 LOGGER.warn("Voltage level {} not found", id);
             }
+        }
+
+        private void uncheckvItemTree(String id) {
+            substationsTree.getRoot().getChildren().stream().forEach(childS ->
+                    childS.getChildren().stream().forEach(childV -> {
+                        if (childV.getValue().getId().equals(id)) {
+                            ((CheckBoxTreeItem) childV).setSelected(false);
+                        }
+                    })
+            );
         }
     }
 
@@ -380,12 +487,23 @@ public class SubstationDiagramViewer extends Application {
             Substation s = networkProperty.get().getSubstation(id);
             if (s != null) {
                 Tab tab = new Tab(id, new ContainerDiagramPane(s));
-                tab.setOnCloseRequest(event -> checkedProperty.set(false));
+                tab.setOnCloseRequest(event -> {
+                    checkedProperty.set(false);
+                    unchecksItemTree(id);
+                });
                 checkedDiagramsPane.getTabs().add(tab);
                 checkedDiagramsPane.getSelectionModel().select(tab);
             } else {
                 LOGGER.warn("Substation {} not found", id);
             }
+        }
+
+        private void unchecksItemTree(String id) {
+            substationsTree.getRoot().getChildren().stream().forEach(child -> {
+                if (child.getValue().getId().equals(id)) {
+                    ((CheckBoxTreeItem) child).setSelected(false);
+                }
+            });
         }
     }
 
@@ -510,6 +628,8 @@ public class SubstationDiagramViewer extends Application {
         addPositionLayoutCheckBox("Remove fictitious nodes", rowIndex, PositionVoltageLevelLayoutFactory::isRemoveUnnecessaryFictitiousNodes, PositionVoltageLevelLayoutFactory::setRemoveUnnecessaryFictitiousNodes);
         rowIndex += 1;
         addPositionLayoutCheckBox("Substitute singular fictitious nodes", rowIndex, PositionVoltageLevelLayoutFactory::isSubstituteSingularFictitiousByFeederNode, PositionVoltageLevelLayoutFactory::setSubstituteSingularFictitiousByFeederNode);
+        rowIndex += 1;
+        addCheckBox("Show inductor for three windings transformers", rowIndex, LayoutParameters::isShowInductorFor3WT, LayoutParameters::setShowInductorFor3WT);
         rowIndex += 1;
         addSpinner("Scale factor:", 1, 20, 1, rowIndex, LayoutParameters::getScaleFactor, LayoutParameters::setScaleFactor);
     }

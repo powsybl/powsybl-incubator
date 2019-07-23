@@ -9,7 +9,27 @@ package com.powsybl.substationdiagram.model;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.powsybl.commons.PowsyblException;
-import com.powsybl.iidm.network.*;
+import com.powsybl.iidm.network.Branch;
+import com.powsybl.iidm.network.Bus;
+import com.powsybl.iidm.network.BusbarSection;
+import com.powsybl.iidm.network.Connectable;
+import com.powsybl.iidm.network.DanglingLine;
+import com.powsybl.iidm.network.DefaultTopologyVisitor;
+import com.powsybl.iidm.network.Generator;
+import com.powsybl.iidm.network.HvdcConverterStation;
+import com.powsybl.iidm.network.Injection;
+import com.powsybl.iidm.network.Line;
+import com.powsybl.iidm.network.Load;
+import com.powsybl.iidm.network.ShuntCompensator;
+import com.powsybl.iidm.network.StaticVarCompensator;
+import com.powsybl.iidm.network.Switch;
+import com.powsybl.iidm.network.SwitchKind;
+import com.powsybl.iidm.network.Terminal;
+import com.powsybl.iidm.network.ThreeWindingsTransformer;
+import com.powsybl.iidm.network.TopologyKind;
+import com.powsybl.iidm.network.TwoWindingsTransformer;
+import com.powsybl.iidm.network.VoltageLevel;
+import com.powsybl.substationdiagram.library.ComponentType;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
 import org.jgrapht.UndirectedGraph;
@@ -24,7 +44,20 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -36,6 +69,7 @@ import java.util.stream.Stream;
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
+ * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
  */
 public class Graph {
 
@@ -65,12 +99,19 @@ public class Graph {
     private double x = 0;
     private double y = 0;
 
+    private final boolean forVoltageLevelDiagram;  // true if voltageLevel diagram
+                                                   // false if substation diagram
+
+    private final boolean showInductorFor3WT;
+
     /**
      * Constructor
      */
-    public Graph(VoltageLevel voltageLevel, boolean useName) {
+    public Graph(VoltageLevel voltageLevel, boolean useName, boolean forVoltageLevelDiagram, boolean showInductorFor3WT) {
         this.voltageLevel = Objects.requireNonNull(voltageLevel);
         this.useName = useName;
+        this.forVoltageLevelDiagram = forVoltageLevelDiagram;
+        this.showInductorFor3WT = showInductorFor3WT;
     }
 
     boolean isUseName() {
@@ -78,26 +119,14 @@ public class Graph {
     }
 
     public static Graph create(VoltageLevel vl) {
-        return create(vl, false);
+        return create(vl, false, true, false);
     }
 
-    public static Graph create(VoltageLevel vl, boolean useName) {
+    public static Graph create(VoltageLevel vl, boolean useName, boolean forVoltageLevelDiagram, boolean showInductorFor3WT) {
         Objects.requireNonNull(vl);
-        Graph g = new Graph(vl, useName);
+        Graph g = new Graph(vl, useName, forVoltageLevelDiagram, showInductorFor3WT);
         g.buildGraph(vl);
         return g;
-    }
-
-    public static Map<String, Graph> create(Network network) {
-        return create(network, false);
-    }
-
-    public static Map<String, Graph> create(Network network, boolean useName) {
-        Map<String, Graph> graphs = new HashMap<>();
-        for (VoltageLevel vl : network.getVoltageLevels()) {
-            graphs.put(vl.getId(), create(vl, useName));
-        }
-        return graphs;
     }
 
     int getNextCellIndex() {
@@ -141,7 +170,7 @@ public class Graph {
         @Override
         public void visitTwoWindingsTransformer(TwoWindingsTransformer transformer,
                                                 TwoWindingsTransformer.Side side) {
-            addFeeder(FeederNode.create(Graph.this, transformer, side), transformer.getTerminal(side));
+            addFeeder(Feeder2WTNode.create(Graph.this, transformer, side), transformer.getTerminal(side));
         }
 
         @Override
@@ -152,7 +181,7 @@ public class Graph {
         @Override
         public void visitThreeWindingsTransformer(ThreeWindingsTransformer transformer,
                                                   ThreeWindingsTransformer.Side side) {
-            addFeeder(FeederNode.create(Graph.this, transformer, side), transformer.getTerminal(side));
+            addFeeder(Feeder3WTNode.create(Graph.this, transformer, side), transformer.getTerminal(side));
         }
     }
 
@@ -306,6 +335,8 @@ public class Graph {
         }
 
         LOGGER.info("{} nodes, {} edges", nodes.size(), edges.size());
+
+        constructCellForThreeWindingsTransformer();
 
         handleConnectedComponents();
     }
@@ -765,4 +796,143 @@ public class Graph {
             throw new UncheckedIOException(e);
         }
     }
+
+    private class InfosInductor3WT {
+        private final String id;    // id of the inductor
+        private final String name;  // name of the inductor
+        private final ThreeWindingsTransformer.Side side;  // side of the 3WT where the inductor is found
+
+        InfosInductor3WT(String id, String name, ThreeWindingsTransformer.Side side) {
+            this.id = id;
+            this.name = name;
+            this.side = side;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public ThreeWindingsTransformer.Side getSide() {
+            return side;
+        }
+    }
+
+    /*
+     * Finding the inductor, if present, in the tertiary voltage level of a 3 windings transformer
+     */
+    private InfosInductor3WT findInductorOf3WT(Feeder3WTNode node) {
+        final AtomicReference<InfosInductor3WT> infos = new AtomicReference<>();
+
+        ThreeWindingsTransformer transformer = node.getTransformer();
+
+        transformer.getTerminals().stream()
+                .filter(t -> transformer.getSide(t) != ThreeWindingsTransformer.Side.ONE)
+                .forEach(t -> {
+                    VoltageLevel v = t.getVoltageLevel();
+                    if (v != node.getGraph().getVoltageLevel()) {
+                        Optional<ShuntCompensator> s = v.getShuntCompensatorStream().findFirst();
+                        if (s.isPresent()
+                                && s.get().getbPerSection() < 0
+                                && infos.get() == null) {  // inductor found
+                            infos.set(new InfosInductor3WT(s.get().getId(),
+                                    s.get().getName(),
+                                    transformer.getSide(t)));
+                        }
+                    }
+                });
+        return infos.get();
+    }
+
+    public void constructCellForThreeWindingsTransformer() {
+        getNodes().stream()
+                .filter(n -> n instanceof Feeder3WTNode)
+                .forEach(n -> {
+                    Feeder3WTNode n3WT = (Feeder3WTNode) n;
+
+                    // Create a new fictitious node
+                    Fictitious3WTNode nf = new Fictitious3WTNode(this, n3WT.getLabel() + "_fictif", n3WT.getTransformer());
+                    addNode(nf);
+
+                    FeederNode nfeeder1 = null;
+                    FeederNode nfeeder2 = null;
+
+                    InfosInductor3WT infosInductor = null;
+                    if (showInductorFor3WT && forVoltageLevelDiagram) {
+                        // finding the inductor in the tertiary voltage level
+                        infosInductor = findInductorOf3WT(n3WT);
+                    }
+
+                    if (infosInductor != null) {
+                        // We are in a voltage level diagram AND
+                        // We want to show, if we are in the primary voltage level,
+                        // the inductor present in the tertiary voltage level of the 3 windings transformer,
+
+                        // We represent the 3 windings transformer like a double feeder cell with :
+                        // . one winding to the secondary voltage level
+                        // . one feeder for the inductor present in the tertiary voltage level
+
+                        if (infosInductor.getSide() == ThreeWindingsTransformer.Side.TWO) {
+                            // Create a feeder for the inductor
+                            String idFeeder1 = infosInductor.getId();
+                            String nameFeeder1 = infosInductor.getName();
+                            nfeeder1 = FeederNode.create(Graph.this, idFeeder1, nameFeeder1, ComponentType.INDUCTOR);
+                        } else {
+                            // Create a feeder for the winding to the secondary voltage level
+                            String idFeeder1 = n3WT.getId() + "_" + n3WT.getId2();
+                            String nameFeeder1 = n3WT.getName() + "_" + n3WT.getName2();
+                            nfeeder1 = Feeder2WTNode.create(Graph.this, idFeeder1, nameFeeder1, n3WT.getVL2());
+                        }
+                        nfeeder1.setOrder(n3WT.getOrder());
+                        nfeeder1.setDirection(n3WT.getDirection());
+                        addNode(nfeeder1);
+
+                        if (infosInductor.getSide() == ThreeWindingsTransformer.Side.THREE) {
+                            // Create a feeder for the inductor
+                            String idFeeder2 = infosInductor.getId();
+                            String nameFeeder2 = infosInductor.getName();
+                            nfeeder2 = FeederNode.create(Graph.this, idFeeder2, nameFeeder2, ComponentType.INDUCTOR);
+                        } else {
+                            // Create a feeder for the inductor in the tertiary voltage level
+                            String idFeeder2 = n3WT.getId() + "_" + n3WT.getId3();
+                            String nameFeeder2 = n3WT.getName() + "_" + n3WT.getName3();
+                            nfeeder2 = Feeder2WTNode.create(Graph.this, idFeeder2, nameFeeder2, n3WT.getVL3());
+                        }
+                        nfeeder2.setOrder(n3WT.getOrder() + 1);
+                        nfeeder2.setDirection(n3WT.getDirection());
+                        addNode(nfeeder2);
+                    } else {
+                        // We represent the 3 windings transformer like a double feeder cell with :
+                        // . one winding to the first other voltage level
+                        // . one winding to the second other voltage level
+
+                        // Create a feeder for the winding to the first other voltage level
+                        String idFeeder1 = n3WT.getId() + "_" + n3WT.getId2();
+                        String nameFeeder1 = n3WT.getName() + "_" + n3WT.getName2();
+                        nfeeder1 = Feeder2WTNode.create(Graph.this, idFeeder1, nameFeeder1, n3WT.getVL2());
+                        nfeeder1.setOrder(n3WT.getOrder());
+                        nfeeder1.setDirection(n3WT.getDirection());
+                        addNode(nfeeder1);
+
+                        // Create a feeder for the winding to the second other voltage level
+                        String idFeeder2 = n3WT.getId() + "_" + n3WT.getId3();
+                        String nameFeeder2 = n3WT.getName() + "_" + n3WT.getName3();
+                        nfeeder2 = Feeder2WTNode.create(Graph.this, idFeeder2, nameFeeder2, n3WT.getVL3());
+                        nfeeder2.setOrder(n3WT.getOrder() + 1);
+                        nfeeder2.setDirection(n3WT.getDirection());
+                        addNode(nfeeder2);
+                    }
+
+                    // Replacement of the old 3WT feeder node by the new fictitious node
+                    substitueNode(n3WT, nf);
+
+                    // Add edges between the new fictitious node and the new feeder nodes
+                    addEdge(nf, nfeeder1);
+                    addEdge(nf, nfeeder2);
+                });
+    }
+
 }

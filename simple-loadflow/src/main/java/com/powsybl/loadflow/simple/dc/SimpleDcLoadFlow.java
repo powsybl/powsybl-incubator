@@ -109,12 +109,12 @@ public class SimpleDcLoadFlow implements LoadFlow {
 
             VoltageInitializer voltageInitializer = VoltageInitializer.getFromParameters(loadFlowParameters);
 
-            double[] x = equationSystem.initState(voltageInitializer);
+            double[] x = equationSystem.initStateVector(voltageInitializer);
 
-            double[] targets = equationSystem.initTargets();
+            double[] targets = equationSystem.initTargetVector();
 
             equationSystem.updateEquationTerms(x);
-            Matrix j = equationSystem.buildJacobian(matrixFactory);
+            Matrix j = equationSystem.buildJacobian(matrixFactory).getMatrix();
 
             double[] dx = Arrays.copyOf(targets, targets.length);
 
@@ -130,7 +130,7 @@ public class SimpleDcLoadFlow implements LoadFlow {
             }
 
             equationSystem.updateEquationTerms(dx);
-            equationSystem.updateState(dx);
+            equationSystem.updateNetwork(dx);
 
             LfNetworks.resetState(network);
             lfNetwork.updateState();

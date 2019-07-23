@@ -48,14 +48,25 @@ public class AcLoadFlowProfiler extends DefaultAcLoadFlowObserver {
     }
 
     @Override
-    public void beforeEquationEvaluation(int iteration) {
+    public void beforeEquationTermsUpdate(int iteration) {
         restart(stopwatch);
     }
 
     @Override
-    public void afterEquationEvaluation(double[] fx, EquationSystem equationSystem, int iteration) {
+    public void afterEquationTermsUpdate(EquationSystem equationSystem, int iteration) {
         stopwatch.stop();
-        LOGGER.debug("Equations evaluated at iteration {} in {} ms", iteration, stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        LOGGER.debug("Equation terms evaluated at iteration {} in {} ms", iteration, stopwatch.elapsed(TimeUnit.MILLISECONDS));
+    }
+
+    @Override
+    public void beforeEquationVectorUpdate(int iteration) {
+        restart(stopwatch);
+    }
+
+    @Override
+    public void afterEquationVectorUpdate(EquationSystem equationSystem, int iteration) {
+        stopwatch.stop();
+        LOGGER.debug("Equation vector updated at iteration {} in {} ms", iteration, stopwatch.elapsed(TimeUnit.MILLISECONDS));
     }
 
     @Override
@@ -89,17 +100,6 @@ public class AcLoadFlowProfiler extends DefaultAcLoadFlowObserver {
     public void afterLuSolve(int iteration) {
         stopwatch.stop();
         LOGGER.debug("LU solved at iteration {} in {} us", iteration, stopwatch.elapsed(TimeUnit.MICROSECONDS));
-    }
-
-    @Override
-    public void beforeStateUpdate(int iteration) {
-        restart(stopwatch);
-    }
-
-    @Override
-    public void afterStateUpdate(double[] x, EquationSystem equationSystem, int iteration) {
-        stopwatch.stop();
-        LOGGER.debug("Network state updated at iteration {} in {} us", iteration, stopwatch.elapsed(TimeUnit.MICROSECONDS));
     }
 
     @Override

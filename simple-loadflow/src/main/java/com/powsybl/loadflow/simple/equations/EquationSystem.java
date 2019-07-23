@@ -32,40 +32,10 @@ public class EquationSystem {
 
     private final NavigableMap<Variable, NavigableMap<Equation, List<EquationTerm>>> sortedVariablesToFind = new TreeMap<>();
 
-    private static final class PartialDerivative {
-
-        private final EquationTerm equationTerm;
-
-        private final Matrix.Element matrixElement;
-
-        private final Variable variable;
-
-        private PartialDerivative(EquationTerm equationTerm, Matrix.Element matrixElement, Variable variable) {
-            this.equationTerm = Objects.requireNonNull(equationTerm);
-            this.matrixElement = Objects.requireNonNull(matrixElement);
-            this.variable = Objects.requireNonNull(variable);
-        }
-
-        public EquationTerm getEquationTerm() {
-            return equationTerm;
-        }
-
-        public Matrix.Element getMatrixElement() {
-            return matrixElement;
-        }
-
-        public Variable getVariable() {
-            return variable;
-        }
-    }
-
-    private final List<PartialDerivative> partialDerivatives;
-
     public EquationSystem(List<EquationTerm> equationTerms, List<VariableUpdate> variableUpdates, LfNetwork network) {
         this.equationTerms = Objects.requireNonNull(equationTerms);
         this.variableUpdates = Objects.requireNonNull(variableUpdates);
         this.network = Objects.requireNonNull(network);
-        partialDerivatives = new ArrayList<>(equationTerms.size());
 
         // index derivatives per variable then per equation
         for (EquationTerm equationTerm : equationTerms) {
@@ -123,7 +93,7 @@ public class EquationSystem {
         return getVariablesToFind().stream().map(v -> network.getBus(v.getNum()).getId() + "/" + v.getType()).collect(Collectors.toList());
     }
 
-    public double[] initState(VoltageInitializer initializer) {
+    public double[] initStateVector(VoltageInitializer initializer) {
         double[] x = new double[getVariablesToFind().size()];
         for (Variable v : getVariablesToFind()) {
             v.initState(initializer, network, x);
@@ -131,18 +101,44 @@ public class EquationSystem {
         return x;
     }
 
-    public double[] initTargets() {
+    public double[] initTargetVector() {
         double[] targets = new double[sortedEquationsToSolve.size()];
         for (Map.Entry<Equation, List<EquationTerm>> e : sortedEquationsToSolve.entrySet()) {
             Equation eq  = e.getKey();
             eq.initTarget(network, targets);
             for (EquationTerm equationTerm : e.getValue()) {
-                for (Variable variable : equationTerm.getVariables()) {
-                    targets[equationTerm.getEquation().getRow()] -= equationTerm.rhs(variable);
+                if (equationTerm.hasRhs()) {
+                    for (Variable variable : equationTerm.getVariables()) {
+                        targets[equationTerm.getEquation().getRow()] -= equationTerm.rhs(variable);
+                    }
                 }
             }
         }
         return targets;
+    }
+
+    public double[] initEquationVector() {
+        double[] fx = new double[sortedEquationsToSolve.size()];
+        updateEquationVector(fx);
+        return fx;
+    }
+
+    public void updateEquationVector(double[] fx) {
+        if (fx.length != sortedEquationsToSolve.size()) {
+            throw new IllegalArgumentException("Bad equation vector length: " + fx.length);
+        }
+        Arrays.fill(fx, 0);
+        for (Map.Entry<Equation, List<EquationTerm>> e : sortedEquationsToSolve.entrySet()) {
+            Equation equation = e.getKey();
+            for (EquationTerm equationTerm : e.getValue()) {
+                fx[equation.getRow()] += equationTerm.eval();
+                if (equationTerm.hasRhs()) {
+                    for (Variable variable : equationTerm.getVariables()) {
+                        fx[equation.getRow()] -= equationTerm.rhs(variable);
+                    }
+                }
+            }
+        }
     }
 
     public void updateEquationTerms(double[] x) {
@@ -151,7 +147,7 @@ public class EquationSystem {
         }
     }
 
-    public void updateState(double[] x) {
+    public void updateNetwork(double[] x) {
         // update state variable
         for (Variable v : getVariablesToFind()) {
             v.updateState(network, x);
@@ -162,29 +158,14 @@ public class EquationSystem {
         }
     }
 
-    public void evalEquations(double[] fx) {
-        if (fx.length != sortedEquationsToSolve.size()) {
-            throw new IllegalArgumentException("Bad afterEquationEvaluation vector length: " + fx.length);
-        }
-        Arrays.fill(fx, 0);
-        for (Map.Entry<Equation, List<EquationTerm>> e : sortedEquationsToSolve.entrySet()) {
-            Equation equation = e.getKey();
-            for (EquationTerm equationTerm : e.getValue()) {
-                fx[equation.getRow()] += equationTerm.eval();
-                for (Variable variable : equationTerm.getVariables()) {
-                    fx[equation.getRow()] -= equationTerm.rhs(variable);
-                }
-            }
-        }
-    }
-
-    public Matrix buildJacobian(MatrixFactory matrixFactory) {
+    public Jacobian buildJacobian(MatrixFactory matrixFactory) {
         Objects.requireNonNull(matrixFactory);
 
         int rowCount = sortedEquationsToSolve.size();
         int columnCount = sortedVariablesToFind.size();
 
         Matrix j = matrixFactory.create(rowCount, columnCount, rowCount * 3);
+        List<Jacobian.PartialDerivative> partialDerivatives = new ArrayList<>(equationTerms.size());
 
         for (Map.Entry<Variable, NavigableMap<Equation, List<EquationTerm>>> e : sortedVariablesToFind.entrySet()) {
             Variable var = e.getKey();
@@ -195,23 +176,11 @@ public class EquationSystem {
                 for (EquationTerm equationTerm : e2.getValue()) {
                     double value = equationTerm.der(var);
                     Matrix.Element element = j.addAndGetElement(row, column, value);
-                    partialDerivatives.add(new PartialDerivative(equationTerm, element, var));
+                    partialDerivatives.add(new Jacobian.PartialDerivative(equationTerm, element, var));
                 }
             }
         }
 
-        return j;
-    }
-
-    public void updateJacobian(Matrix j) {
-        Objects.requireNonNull(j);
-        j.reset();
-        for (PartialDerivative partialDerivative : partialDerivatives) {
-            EquationTerm equationTerm = partialDerivative.getEquationTerm();
-            Matrix.Element element = partialDerivative.getMatrixElement();
-            Variable var = partialDerivative.getVariable();
-            double value = equationTerm.der(var);
-            element.add(value);
-        }
+        return new Jacobian(j, partialDerivatives);
     }
 }

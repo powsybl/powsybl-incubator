@@ -35,9 +35,13 @@ public interface AcLoadFlowObserver {
 
     void norm(double norm);
 
-    void beforeEquationEvaluation(int iteration);
+    void beforeEquationTermsUpdate(int iteration);
 
-    void afterEquationEvaluation(double[] fx, EquationSystem equationSystem, int iteration);
+    void afterEquationTermsUpdate(EquationSystem equationSystem, int iteration);
+
+    void beforeEquationVectorUpdate(int iteration);
+
+    void afterEquationVectorUpdate(EquationSystem equationSystem, int iteration);
 
     void beforeJacobianBuild(int iteration);
 
@@ -50,10 +54,6 @@ public interface AcLoadFlowObserver {
     void beforeLuSolve(int iteration);
 
     void afterLuSolve(int iteration);
-
-    void beforeStateUpdate(int iteration);
-
-    void afterStateUpdate(double[] x, EquationSystem equationSystem, int iteration);
 
     void endIteration(int iteration);
 

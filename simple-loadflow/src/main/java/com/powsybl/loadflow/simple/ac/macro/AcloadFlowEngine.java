@@ -60,48 +60,57 @@ public class AcloadFlowEngine {
 
         observer.afterEquationSystemCreation();
 
-        NewtonRaphson newtonRaphson = new NewtonRaphson(network, matrixFactory, observer, equationContext, equationSystem, stoppingCriteria);
-
-        // initial Newton-Raphson
-        NewtonRaphsonResult lastNrResult = newtonRaphson.run(new NewtonRaphsonParameters().setVoltageInitializer(voltageInitializer));
-
-        // for each macro action run macro iterations until stabilized
-        // macro actions are nested: inner most loop first in the list
+        NewtonRaphsonResult lastNrResult;
         int macroIteration = 0;
-        for (MacroAction macroAction : macroActions) {
-            // re-run macro action + newton-raphson until stabilization
-            boolean cont;
-            do {
-                observer.beforeMacroActionRun(macroIteration, macroAction.getName());
+        try (NewtonRaphson newtonRaphson = new NewtonRaphson(network, matrixFactory, observer, equationContext, equationSystem, stoppingCriteria)) {
 
-                cont = macroAction.run(new MacroActionContext(macroIteration, network, lastNrResult));
+            NewtonRaphsonParameters nrParameters = new NewtonRaphsonParameters().setVoltageInitializer(voltageInitializer);
 
-                observer.afterMacroActionRun(macroIteration, macroAction.getName(), cont);
+            // initial Newton-Raphson
+            lastNrResult = newtonRaphson.run(nrParameters);
 
-                if (cont) {
-                    int nrIteration = lastNrResult.getIteration();
+            // for each macro action run macro iterations until stabilized
+            // macro actions are nested: inner most loop first in the list
+            for (MacroAction macroAction : macroActions) {
+                // re-run macro action + newton-raphson until stabilization
+                boolean cont;
+                do {
+                    observer.beforeMacroActionRun(macroIteration, macroAction.getName());
 
-                    observer.beginMacroIteration(macroIteration, macroAction.getName());
+                    cont = macroAction.run(new MacroActionContext(macroIteration, network, lastNrResult));
 
-                    // restart from previous voltage
-                    lastNrResult = newtonRaphson.run(new NewtonRaphsonParameters().setVoltageInitializer(new PreviousValueVoltageInitializer()));
+                    observer.afterMacroActionRun(macroIteration, macroAction.getName(), cont);
 
-                    observer.endMacroIteration(macroIteration, macroAction.getName());
+                    if (cont) {
+                        int nrIteration = lastNrResult.getIteration();
 
-                    // if newton raphson exit without running any iteration, it means that
-                    // macro action is stabilized, so we pass to next macro action
-                    if (lastNrResult.getIteration() == nrIteration) {
-                        cont = false;
-                    } else {
-                        macroIteration++;
+                        observer.beginMacroIteration(macroIteration, macroAction.getName());
+
+                        // restart from previous voltage
+                        lastNrResult = newtonRaphson.run(nrParameters);
+
+                        observer.endMacroIteration(macroIteration, macroAction.getName());
+
+                        // if newton raphson exit without running any iteration, it means that
+                        // macro action is stabilized, so we pass to next macro action
+                        if (lastNrResult.getIteration() == nrIteration) {
+                            cont = false;
+                        } else {
+                            macroIteration++;
+                        }
                     }
-                }
-            } while (cont);
+                } while (cont);
+            }
+
+            // update network state variable
+            if (lastNrResult.getStatus() == NewtonRaphsonStatus.CONVERGED) {
+                equationSystem.updateNetwork(lastNrResult.getX());
+            }
         }
 
         stopwatch.stop();
 
-        int iterations = lastNrResult.getIteration() + 1;
+        int iterations = lastNrResult.getIteration();
         int macroIterations = macroIteration + 1;
 
         LOGGER.info("Ac loadflow ran in {} ms (status={}, iterations={}, macroIterations={}, slackBusActivePowerMismatch={})",

@@ -45,6 +45,11 @@ abstract class AbstractBranchAcFlowEquationTerm implements EquationTerm {
     }
 
     @Override
+    public boolean hasRhs() {
+        return false;
+    }
+
+    @Override
     public double rhs(Variable variable) {
         return 0;
     }

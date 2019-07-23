@@ -48,7 +48,7 @@ public class LfBusImpl extends AbstractLfBus {
 
     private final List<LfShunt> shunts = new ArrayList<>();
 
-    private final Map<Generator, Float> generators = new HashMap<>();
+    private final Map<Generator, Double> generators = new HashMap<>();
 
     public LfBusImpl(Bus bus, int num, double v, double angle) {
         super(num, v, angle);
@@ -114,10 +114,13 @@ public class LfBusImpl extends AbstractLfBus {
         setActivePowerLimits(generator.getMinP(), generator.getMaxP());
 
         // get participation factor from extension
-        ActivePowerControl<Generator> activePowerControl = generator.getExtension(ActivePowerControl.class);
-        if (activePowerControl != null && activePowerControl.isParticipate()) {
-            participationFactor += activePowerControl.getDroop();
-            generators.put(generator, activePowerControl.getDroop());
+        if (Math.abs(generator.getTargetP()) > 0) {
+            ActivePowerControl<Generator> activePowerControl = generator.getExtension(ActivePowerControl.class);
+            if (activePowerControl != null && activePowerControl.isParticipate() && activePowerControl.getDroop() != 0) {
+                double f = generator.getMaxP() / activePowerControl.getDroop();
+                participationFactor += f;
+                generators.put(generator, f);
+            }
         }
     }
 
@@ -241,10 +244,11 @@ public class LfBusImpl extends AbstractLfBus {
 
         // update generator active power proportionally to the participation factor
         if (generationTargetP != initialGenerationTargetP) {
-            for (Map.Entry<Generator, Float> e : generators.entrySet()) {
+            for (Map.Entry<Generator, Double> e : generators.entrySet()) {
                 Generator generator = e.getKey();
-                float generatorParticipationFactor = e.getValue();
-                generator.setTargetP(generator.getTargetP() + (generationTargetP - initialGenerationTargetP) * generatorParticipationFactor / participationFactor);
+                double generatorParticipationFactor = e.getValue();
+                double newTargetP = generator.getTargetP() + (generationTargetP - initialGenerationTargetP) * generatorParticipationFactor / participationFactor;
+                generator.getTerminal().setP(-newTargetP);
             }
         }
     }

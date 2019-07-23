@@ -6,6 +6,8 @@
  */
 package com.powsybl.loadflow.simple.equations;
 
+import net.jafama.FastMath;
+
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
@@ -28,6 +30,6 @@ public final class Vectors {
         for (double v : vector) {
             norm += v * v;
         }
-        return Math.sqrt(norm);
+        return FastMath.sqrt(norm);
     }
 }

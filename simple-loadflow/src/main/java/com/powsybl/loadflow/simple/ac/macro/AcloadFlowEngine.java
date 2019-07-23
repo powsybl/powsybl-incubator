@@ -104,7 +104,11 @@ public class AcloadFlowEngine {
 
             // update network state variable
             if (lastNrResult.getStatus() == NewtonRaphsonStatus.CONVERGED) {
+                observer.beforeNetworkUpdate();
+
                 equationSystem.updateNetwork(lastNrResult.getX());
+
+                observer.afterNetworkUpdate();
             }
         }
 

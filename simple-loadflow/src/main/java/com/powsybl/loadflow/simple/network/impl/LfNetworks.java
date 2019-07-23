@@ -204,6 +204,10 @@ public final class LfNetworks {
 
     public static List<LfNetwork> create(Network network, SlackBusSelector slackBusSelector) {
         Objects.requireNonNull(network);
+        Objects.requireNonNull(slackBusSelector);
+
+        Stopwatch stopwatch = Stopwatch.createStarted();
+
         Map<Integer, List<Bus>> buseByCc = new TreeMap<>();
         for (Bus bus : network.getBusView().getBuses()) {
             Component cc = bus.getConnectedComponent();
@@ -219,10 +223,15 @@ public final class LfNetworks {
             hvdcLines.put(line.getConverterStation2(), line);
         }
 
-        return buseByCc.entrySet().stream()
+        List<LfNetwork> lfNetworks = buseByCc.entrySet().stream()
                 .filter(e -> e.getKey() == ComponentConstants.MAIN_NUM)
                 .map(e -> create(e.getValue(), slackBusSelector, hvdcLines))
                 .collect(Collectors.toList());
+
+        stopwatch.stop();
+        LOGGER.debug("LF networks created in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
+
+        return lfNetworks;
     }
 
     public static void resetState(Network network) {
@@ -243,7 +252,7 @@ public final class LfNetworks {
         }
 
         stopwatch.stop();
-        LOGGER.debug("Network reset done in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        LOGGER.debug("IIDM network reset done in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
     }
 
 }

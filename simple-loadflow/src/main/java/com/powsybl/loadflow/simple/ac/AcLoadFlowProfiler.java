@@ -118,4 +118,14 @@ public class AcLoadFlowProfiler extends DefaultAcLoadFlowObserver {
         stopwatch.stop();
         LOGGER.debug("Macro action '{}' ran in {} us", macroActionName, stopwatch.elapsed(TimeUnit.MICROSECONDS));
     }
+
+    @Override
+    public void beforeNetworkUpdate() {
+        restart(stopwatch);
+    }
+
+    @Override
+    public void afterNetworkUpdate() {
+        LOGGER.debug("Network updated in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
+    }
 }

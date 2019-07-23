@@ -9,6 +9,7 @@ package com.powsybl.loadflow.simple.ac.equations;
 import com.powsybl.loadflow.simple.equations.EquationTerm;
 import com.powsybl.loadflow.simple.equations.Variable;
 import com.powsybl.loadflow.simple.network.LfBranch;
+import net.jafama.FastMath;
 
 import java.util.Objects;
 
@@ -40,8 +41,8 @@ abstract class AbstractBranchAcFlowEquationTerm implements EquationTerm {
         g2 = this.branch.g2();
         y = this.branch.y();
         ksi = this.branch.ksi();
-        sinKsi = Math.sin(ksi);
-        cosKsi = Math.cos(ksi);
+        sinKsi = FastMath.sin(ksi);
+        cosKsi = FastMath.cos(ksi);
     }
 
     @Override

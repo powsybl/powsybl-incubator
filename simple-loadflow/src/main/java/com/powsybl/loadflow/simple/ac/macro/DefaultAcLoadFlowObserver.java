@@ -108,4 +108,14 @@ public class DefaultAcLoadFlowObserver implements AcLoadFlowObserver {
     public void endMacroIteration(int macroIteration, String macroActionName) {
         // empty
     }
+
+    @Override
+    public void beforeNetworkUpdate() {
+        // empty
+    }
+
+    @Override
+    public void afterNetworkUpdate() {
+        // empty
+    }
 }

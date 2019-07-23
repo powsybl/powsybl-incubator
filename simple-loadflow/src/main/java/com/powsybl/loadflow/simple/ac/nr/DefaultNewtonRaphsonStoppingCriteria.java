@@ -8,6 +8,7 @@ package com.powsybl.loadflow.simple.ac.nr;
 
 import com.powsybl.loadflow.simple.ac.macro.AcLoadFlowObserver;
 import com.powsybl.loadflow.simple.equations.Vectors;
+import net.jafama.FastMath;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -24,6 +25,6 @@ public class DefaultNewtonRaphsonStoppingCriteria implements NewtonRaphsonStoppi
         // calculate norm L2 of equations mismatch vector
         double norm = Vectors.norm2(fx);
         observer.norm(norm);
-        return norm < Math.sqrt(CONV_EPS_PER_EQ * CONV_EPS_PER_EQ * fx.length);
+        return norm < FastMath.sqrt(CONV_EPS_PER_EQ * CONV_EPS_PER_EQ * fx.length);
     }
 }

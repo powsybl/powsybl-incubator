@@ -117,4 +117,14 @@ public class MultipleAcLoadFlowObserver implements AcLoadFlowObserver {
     public void endMacroIteration(int macroIteration, String macroActionName) {
         observers.forEach(o -> o.endMacroIteration(macroIteration, macroActionName));
     }
+
+    @Override
+    public void beforeNetworkUpdate() {
+        observers.forEach(AcLoadFlowObserver::beforeNetworkUpdate);
+    }
+
+    @Override
+    public void afterNetworkUpdate() {
+        observers.forEach(AcLoadFlowObserver::afterNetworkUpdate);
+    }
 }

@@ -62,6 +62,6 @@ public class PerUnitTest {
         x[2] = 404 / vb;
         x[3] = 0.0297;
         p1.update(x);
-        assertEquals(856.4176570806666, p1.eval() / PerUnit.SB, 0d);
+        assertEquals(856.4176570806668, p1.eval() / PerUnit.SB, 0d);
     }
 }

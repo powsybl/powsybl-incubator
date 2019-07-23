@@ -8,6 +8,7 @@ package com.powsybl.loadflow.simple.network;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.google.common.base.Stopwatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -63,6 +65,8 @@ public class LfNetwork {
     }
 
     public void updateState() {
+        Stopwatch stopwatch = Stopwatch.createStarted();
+
         for (LfBus bus : buses) {
             bus.updateState();
             for (LfShunt shunt : bus.getShunts()) {
@@ -72,6 +76,9 @@ public class LfNetwork {
         for (LfBranch branch : branches) {
             branch.updateState();
         }
+
+        stopwatch.stop();
+        LOGGER.debug("IIDM network updated in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
     }
 
     public void writeJson(Path file) {

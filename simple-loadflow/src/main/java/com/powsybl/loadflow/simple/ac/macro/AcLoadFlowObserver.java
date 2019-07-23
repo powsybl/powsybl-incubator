@@ -62,4 +62,8 @@ public interface AcLoadFlowObserver {
     void afterMacroActionRun(int macroIteration, String macroActionName, boolean cont);
 
     void endMacroIteration(int macroIteration, String macroActionName);
+
+    void beforeNetworkUpdate();
+
+    void afterNetworkUpdate();
 }

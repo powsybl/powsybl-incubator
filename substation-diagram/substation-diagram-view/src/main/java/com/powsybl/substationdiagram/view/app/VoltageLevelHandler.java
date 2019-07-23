@@ -126,6 +126,7 @@ public class VoltageLevelHandler implements BaseNode {
         Map<String, Coord> posVL = new HashMap<>();
 
         List<WireHandler> whSnakeLines = new ArrayList<>();
+
         for (NodeHandler nh : nodeHandlers) {
             if (nh.getComponentType() == ComponentType.BUSBAR_SECTION) {
                 if (!posVL.containsKey(nh.getVId())) {
@@ -175,10 +176,10 @@ public class VoltageLevelHandler implements BaseNode {
             idMaxGraph = nh2.getVId();
         }
 
-        double x1 = wh.getNodeHandler1().getX();
-        double y1 = wh.getNodeHandler1().getY();
-        double x2 = wh.getNodeHandler2().getX();
-        double y2 = wh.getNodeHandler2().getY();
+        double x1 = nh1.getX();
+        double y1 = nh1.getY();
+        double x2 = nh2.getX();
+        double y2 = nh2.getY();
 
         InfoCalcPoints info = new InfoCalcPoints();
         info.setLayoutParam(layoutParam);

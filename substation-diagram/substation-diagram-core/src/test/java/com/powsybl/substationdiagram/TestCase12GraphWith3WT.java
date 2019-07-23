@@ -13,21 +13,23 @@ import com.powsybl.iidm.network.Generator;
 import com.powsybl.iidm.network.Load;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.NetworkFactory;
+import com.powsybl.iidm.network.ShuntCompensator;
 import com.powsybl.iidm.network.Substation;
 import com.powsybl.iidm.network.SwitchKind;
 import com.powsybl.iidm.network.ThreeWindingsTransformer;
 import com.powsybl.iidm.network.TopologyKind;
 import com.powsybl.iidm.network.TwoWindingsTransformer;
 import com.powsybl.iidm.network.VoltageLevel;
-import com.powsybl.substationdiagram.layout.HorizontalSubstationLayoutFactory;
+import com.powsybl.substationdiagram.layout.BlockOrganizer;
+import com.powsybl.substationdiagram.layout.ImplicitCellDetector;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
-import com.powsybl.substationdiagram.layout.VerticalSubstationLayoutFactory;
+import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayout;
+import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayoutFactory;
 import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
-import com.powsybl.substationdiagram.model.SubstationGraph;
-import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramStyleProvider;
-import com.powsybl.substationdiagram.util.NominalVoltageSubstationDiagramStyleProvider;
+import com.powsybl.substationdiagram.model.Graph;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -38,13 +40,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
  */
-public class TestCase11SubstationGraph extends AbstractTestCase {
+public class TestCase12GraphWith3WT extends AbstractTestCase {
+
+    private VoltageLevel vl1;
+    private VoltageLevel vl2;
+    private VoltageLevel vl3;
 
     @Before
     public void setUp() {
@@ -54,7 +60,7 @@ public class TestCase11SubstationGraph extends AbstractTestCase {
 
         // first voltage level
         //
-        VoltageLevel vl1 = createVoltageLevel(substation, "vl1", "vl1", TopologyKind.NODE_BREAKER, 400, 50);
+        vl1 = createVoltageLevel(substation, "vl1", "vl1", TopologyKind.NODE_BREAKER, 400, 50);
 
         createBusBarSection(vl1, "bbs1", "bbs1", 0, 1, 1);
         createBusBarSection(vl1, "bbs2", "bbs2", 1, 1, 2);
@@ -87,7 +93,7 @@ public class TestCase11SubstationGraph extends AbstractTestCase {
 
         // second voltage level
         //
-        VoltageLevel vl2 = createVoltageLevel(substation, "vl2", "vl2", TopologyKind.NODE_BREAKER, 225, 30);
+        vl2 = createVoltageLevel(substation, "vl2", "vl2", TopologyKind.NODE_BREAKER, 225, 50);
 
         createBusBarSection(vl2, "bbs5", "bbs5", 0, 1, 1);
         createBusBarSection(vl2, "bbs6", "bbs6", 1, 2, 1);
@@ -106,13 +112,16 @@ public class TestCase11SubstationGraph extends AbstractTestCase {
 
         // third voltage level
         //
-        VoltageLevel vl3 = createVoltageLevel(substation, "vl3", "vl3", TopologyKind.NODE_BREAKER, 225, 20);
+        vl3 = createVoltageLevel(substation, "vl3", "vl3", TopologyKind.NODE_BREAKER, 225, 50);
 
         createBusBarSection(vl3, "bbs7", "bbs7", 0, 1, 1);
 
         createLoad(vl3, "load4", "load4", "load4", 0, ConnectablePosition.Direction.TOP, 1, 10, 10);
         createSwitch(vl3, "dload4", "dload4", SwitchKind.DISCONNECTOR, false, false, true, 0, 2);
         createSwitch(vl3, "bload4", "bload4", SwitchKind.BREAKER, true, false, true, 2, 1);
+        createShunt(vl3, "self4", "self4", "self4", 1, ConnectablePosition.Direction.BOTTOM, 3, -1, 1, 1);
+        createSwitch(vl3, "dself4", "dself4", SwitchKind.DISCONNECTOR, false, false, true, 0, 4);
+        createSwitch(vl3, "bself4", "bself4", SwitchKind.BREAKER, true, false, true, 4, 3);
 
         // two windings transformers between voltage levels
         //
@@ -284,6 +293,21 @@ public class TestCase11SubstationGraph extends AbstractTestCase {
                 .Feeder(feederName, feederOrder, direction), null, null, null));
     }
 
+    private static void createShunt(VoltageLevel vl, String id, String name, String feederName, int feederOrder,
+                                   ConnectablePosition.Direction direction, int node,
+                                    double bPerSection, int maximumSectionCount, int currentSectionCount) {
+        ShuntCompensator shunt = vl.newShuntCompensator()
+                .setId(id)
+                .setName(name)
+                .setNode(node)
+                .setbPerSection(bPerSection)
+                .setMaximumSectionCount(maximumSectionCount)
+                .setCurrentSectionCount(currentSectionCount)
+                .add();
+        shunt.addExtension(ConnectablePosition.class, new ConnectablePosition<>(shunt, new ConnectablePosition
+                .Feeder(feederName, feederOrder, direction), null, null, null));
+    }
+
     private static void createTwoWindingsTransformer(Substation s, String id, String name,
                                                      double r, double x, double g, double b,
                                                      double ratedU1, double ratedU2,
@@ -368,7 +392,7 @@ public class TestCase11SubstationGraph extends AbstractTestCase {
                 .setInitialYBus(260)
                 .setVerticalSpaceBus(25)
                 .setHorizontalBusPadding(20)
-                .setCellWidth(50)
+                .setCellWidth(80)
                 .setExternCellHeight(250)
                 .setInternCellHeight(40)
                 .setStackHeight(30)
@@ -380,48 +404,43 @@ public class TestCase11SubstationGraph extends AbstractTestCase {
                 .setDrawStraightWires(false)
                 .setHorizontalSnakeLinePadding(30)
                 .setVerticalSnakeLinePadding(30)
-                .setShowInductorFor3WT(false);
+                .setShowInductorFor3WT(true);
 
-        // build substation graph
-        SubstationGraph g = SubstationGraph.create(substation);
+        // build voltage level 1 graph
+        Graph g1 = Graph.create(vl1, false, true, true);
+        new ImplicitCellDetector().detectCells(g1);
+        assertTrue(new BlockOrganizer().organize(g1));
+        new PositionVoltageLevelLayout(g1).run(layoutParameters);
 
-        // assert substation graph structure
-        assertEquals(3, g.getNodes().size());
-        assertEquals(14, g.getEdges().size());
+        Graph g2 = Graph.create(vl2, false, true, true);
+        new ImplicitCellDetector().detectCells(g2);
+        assertTrue(new BlockOrganizer().organize(g2));
+        new PositionVoltageLevelLayout(g2).run(layoutParameters);
 
-        // write SVG and compare to reference (horizontal layout and defaut style provider)
-        compareSvg(g, layoutParameters, "/TestCase11SubstationGraphHorizontal.svg",
-                   new HorizontalSubstationLayoutFactory(),
-                   new DefaultSubstationDiagramStyleProvider());
+        Graph g3 = Graph.create(vl3, false, true, false);
+        new ImplicitCellDetector().detectCells(g3);
+        assertTrue(new BlockOrganizer().organize(g3));
+        new PositionVoltageLevelLayout(g3).run(layoutParameters);
 
-        // rebuild substation graph
-        g = SubstationGraph.create(substation);
+        // write SVG and compare to reference (horizontal layout)
+        compareSvg(g1, layoutParameters, "/TestCase12GraphVL1.svg");
+        compareSvg(g2, layoutParameters, "/TestCase12GraphVL2.svg");
+        compareSvg(g3, layoutParameters, "/TestCase12GraphVL3.svg");
 
-        // write SVG and compare to reference (vertical layout)
-        compareSvg(g, layoutParameters, "/TestCase11SubstationGraphVertical.svg", new VerticalSubstationLayoutFactory());
-
-        // rebuild substation graph
-        g = SubstationGraph.create(substation);
-
-         // write SVG and compare to reference (horizontal layout and nominal voltage style)
-        compareSvg(g, layoutParameters, "/TestCase11SubstationGraphHorizontalNominalVoltageLevel.svg",
-                   new HorizontalSubstationLayoutFactory(),
-                   new NominalVoltageSubstationDiagramStyleProvider());
-
-        // Create substation diagram (svg + metadata files)
-        SubstationDiagram diagram = SubstationDiagram.build(substation);
-        Path pathSVG = Paths.get(System.getProperty("user.home"), "substDiag.svg");
-        Path pathMetadata = Paths.get(System.getProperty("user.home"), "substDiag_metadata.json");
+        // Create voltageLevel diagram (svg + metadata files)
+        VoltageLevelDiagram diagram = VoltageLevelDiagram.build(vl1, new PositionVoltageLevelLayoutFactory(), false, true);
+        Path pathSVG = Paths.get(System.getProperty("user.home"), "vlDiag.svg");
+        Path pathMetadata = Paths.get(System.getProperty("user.home"), "vlDiag_metadata.json");
         diagram.writeSvg(new ResourcesComponentLibrary("/ConvergenceLibrary"), layoutParameters, pathSVG);
-        assertTrue(Files.exists(pathSVG));
-        assertTrue(Files.exists(pathMetadata));
+        Assert.assertTrue(Files.exists(pathSVG));
+        Assert.assertTrue(Files.exists(pathMetadata));
         try {
-            String refSvg = normalizeLineSeparator(new String(ByteStreams.toByteArray(getClass().getResourceAsStream("/substDiag.svg")), StandardCharsets.UTF_8));
+            String refSvg = normalizeLineSeparator(new String(ByteStreams.toByteArray(getClass().getResourceAsStream("/vlDiag.svg")), StandardCharsets.UTF_8));
             String svg = normalizeLineSeparator(new String(Files.readAllBytes(pathSVG), StandardCharsets.UTF_8));
             assertEquals(refSvg, svg);
             Files.deleteIfExists(pathSVG);
 
-            String refMetadata = normalizeLineSeparator(new String(ByteStreams.toByteArray(getClass().getResourceAsStream("/substDiag_metadata.json")), StandardCharsets.UTF_8));
+            String refMetadata = normalizeLineSeparator(new String(ByteStreams.toByteArray(getClass().getResourceAsStream("/vlDiag_metadata.json")), StandardCharsets.UTF_8));
             String metadata = normalizeLineSeparator(new String(Files.readAllBytes(pathMetadata), StandardCharsets.UTF_8));
             assertEquals(refMetadata, metadata);
             Files.deleteIfExists(pathMetadata);
@@ -429,9 +448,5 @@ public class TestCase11SubstationGraph extends AbstractTestCase {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-
-        LayoutParameters lp2 = new LayoutParameters(layoutParameters);
-        assertEquals(lp2.getCellWidth(), layoutParameters.getCellWidth(), 0.);
-        assertEquals(lp2.getHorizontalSnakeLinePadding(), layoutParameters.getHorizontalSnakeLinePadding(), 0.);
     }
 }

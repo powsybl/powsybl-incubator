@@ -62,9 +62,7 @@ public class WireHandler {
     public void refresh() {
         WireConnection wireConnection = WireConnection.searchBetterAnchorPoints(metadata, nodeHandler1, nodeHandler2);
 
-        if (!snakeLine) {   // inside voltageLevel
-            List<Double> pol = wireConnection.calculatePolylinePoints(nodeHandler1, nodeHandler2, straight);
-            node.getPoints().setAll(pol);
-        }
+        List<Double> pol = wireConnection.calculatePolylinePoints(nodeHandler1, nodeHandler2, straight);
+        node.getPoints().setAll(pol);
     }
 }

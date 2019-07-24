@@ -74,7 +74,8 @@ public class LayoutParameters {
                             @JsonProperty("drawStraightWires") boolean drawStraightWires,
                             @JsonProperty("horizontalSnakeLinePadding") double horizontalSnakeLinePadding,
                             @JsonProperty("verticalSnakeLinePadding") double verticalSnakeLinePadding,
-                            @JsonProperty("showInductorFor3WT") boolean showInductorFor3WT) {
+                            @JsonProperty("showInductorFor3WT") boolean showInductorFor3WT,
+                            @JsonProperty("diagramName") String diagramName) {
         this.translateX = translateX;
         this.translateY = translateY;
         this.initialXBus = initialXBus;
@@ -94,6 +95,7 @@ public class LayoutParameters {
         this.horizontalSnakeLinePadding = horizontalSnakeLinePadding;
         this.verticalSnakeLinePadding = verticalSnakeLinePadding;
         this.showInductorFor3WT = showInductorFor3WT;
+        this.diagramName = diagramName;
     }
 
     public LayoutParameters(LayoutParameters other) {
@@ -117,6 +119,7 @@ public class LayoutParameters {
         horizontalSnakeLinePadding = other.horizontalSnakeLinePadding;
         verticalSnakeLinePadding = other.verticalSnakeLinePadding;
         showInductorFor3WT = other.showInductorFor3WT;
+        diagramName = other.diagramName;
     }
 
     public double getTranslateX() {

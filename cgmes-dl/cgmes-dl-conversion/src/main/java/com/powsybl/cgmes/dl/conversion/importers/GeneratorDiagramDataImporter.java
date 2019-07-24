@@ -40,7 +40,7 @@ public class GeneratorDiagramDataImporter extends AbstractInjectionDiagramDataIm
             InjectionDiagramData<Generator> generatorIidmDiagramData = new InjectionDiagramData<>(generator);
             InjectionDiagramData.InjectionDiagramDetails diagramDetails = generatorIidmDiagramData.new InjectionDiagramDetails(new DiagramPoint(generatorDiagramData.asDouble("x"), generatorDiagramData.asDouble("y"), generatorDiagramData.asInt("seq")),
                     generatorDiagramData.asDouble("rotation"));
-            addTerminalPoints(generatorId, generator.getName(), generatorIidmDiagramData, diagramDetails);
+            addTerminalPoints(generatorId, generator.getName(), diagramDetails);
             String diagramName = generatorDiagramData.get("diagramName");
             generatorIidmDiagramData.addData(diagramName, diagramDetails);
             generator.addExtension(InjectionDiagramData.class, generatorIidmDiagramData);

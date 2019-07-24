@@ -266,7 +266,7 @@ public class LayoutToCgmesExtensionsConverter {
                             CouplingDeviceDiagramData<Switch> switchIidmDiagramData = new CouplingDeviceDiagramData<>(sw);
                             CouplingDeviceDiagramData.CouplingDeviceDiagramDetails diagramDetails = switchIidmDiagramData.new CouplingDeviceDiagramDetails(offsetPoint.newDiagramPoint(swNode.getX(), swNode.getY(), 0), rot);
                             switchIidmDiagramData.addData(diagramName, diagramDetails);
-                            LOG.debug("setting CGMES DL IIDM extensions for Switch {}, {} - {}", sw.getId(), switchIidmDiagramData);
+                            LOG.debug("setting CGMES DL IIDM extensions for Switch {}, {}", sw.getId(), switchIidmDiagramData);
                             sw.addExtension(CouplingDeviceDiagramData.class, switchIidmDiagramData);
                         }
                     });

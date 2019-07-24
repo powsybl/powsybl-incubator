@@ -40,8 +40,8 @@ public class SwitchDiagramDataImporter extends AbstractCouplingDeviceDiagramData
             CouplingDeviceDiagramData<Switch> switchIidmDiagramData = new CouplingDeviceDiagramData<>(sw);
             CouplingDeviceDiagramData.CouplingDeviceDiagramDetails diagramDetails = switchIidmDiagramData.new CouplingDeviceDiagramDetails(new DiagramPoint(switchesDiagramData.asDouble("x"), switchesDiagramData.asDouble("y"), 0),
                     switchesDiagramData.asDouble("rotation"));
-            addTerminalPoints(switchId, sw.getName(), DiagramTerminal.TERMINAL1, "1", switchIidmDiagramData, diagramDetails);
-            addTerminalPoints(switchId, sw.getName(), DiagramTerminal.TERMINAL2, "2", switchIidmDiagramData, diagramDetails);
+            addTerminalPoints(switchId, sw.getName(), DiagramTerminal.TERMINAL1, "1", diagramDetails);
+            addTerminalPoints(switchId, sw.getName(), DiagramTerminal.TERMINAL2, "2", diagramDetails);
             switchIidmDiagramData.addData(switchesDiagramData.get("diagramName"), diagramDetails);
             sw.addExtension(CouplingDeviceDiagramData.class, switchIidmDiagramData);
             NetworkDiagramData.addDiagramName(network, switchesDiagramData.get("diagramName"));

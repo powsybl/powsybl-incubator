@@ -34,7 +34,7 @@ public abstract class AbstractCouplingDeviceDiagramDataImporter {
         this.terminalsDiagramData = Objects.requireNonNull(terminalsDiagramData);
     }
 
-    protected void addTerminalPoints(String equipmentId, String equipmentName, DiagramTerminal terminal, String terminalSide, CouplingDeviceDiagramData<?> diagramData, CouplingDeviceDiagramData.CouplingDeviceDiagramDetails diagramDetails) {
+    protected void addTerminalPoints(String equipmentId, String equipmentName, DiagramTerminal terminal, String terminalSide, CouplingDeviceDiagramData.CouplingDeviceDiagramDetails diagramDetails) {
         String terminalKey = equipmentId + "_" + terminalSide;
         if (terminalsDiagramData.containsKey(terminalKey)) {
             PropertyBags equipmentTerminalsDiagramData = terminalsDiagramData.get(terminalKey);

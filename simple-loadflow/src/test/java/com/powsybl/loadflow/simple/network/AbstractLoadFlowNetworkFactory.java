@@ -14,13 +14,17 @@ import com.powsybl.iidm.network.*;
 public abstract class AbstractLoadFlowNetworkFactory {
 
     protected static Bus createBus(Network network, String id) {
+        return createBus(network, id, 1d);
+    }
+
+    protected static Bus createBus(Network network, String id, double nominalV) {
         Substation s = network.newSubstation()
                 .setId(id + "_s")
                 .setCountry(Country.FR)
                 .add();
         VoltageLevel vl = s.newVoltageLevel()
                 .setId(id + "_vl")
-                .setNominalV(1f)
+                .setNominalV(nominalV)
                 .setTopologyKind(TopologyKind.BUS_BREAKER)
                 .add();
         return vl.getBusBreakerView().newBus()

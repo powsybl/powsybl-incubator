@@ -28,6 +28,7 @@ import com.powsybl.iidm.network.Substation;
 import com.powsybl.iidm.network.TopologyKind;
 import com.powsybl.iidm.network.VoltageLevel;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
+import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayoutFactory;
 import com.powsybl.substationdiagram.library.ComponentLibrary;
 import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
@@ -83,7 +84,7 @@ public class TestVoltageLevelDiagram extends AbstractTestCase {
 
         Path outSvg = tmpDir.resolve("vl.svg");
 
-        VoltageLevelDiagram.build(vl).writeSvg(componentLibrary, layoutParameters, network, outSvg);
+        VoltageLevelDiagram.build(vl, new PositionVoltageLevelLayoutFactory(), false, false).writeSvg(componentLibrary, layoutParameters, network, outSvg);
         String svgStr = normalizeLineSeparator(new String(Files.readAllBytes(outSvg), StandardCharsets.UTF_8));
 
         String refSvg = normalizeLineSeparator(new String(

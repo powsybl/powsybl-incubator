@@ -15,6 +15,7 @@ import java.util.Objects;
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
+ * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
  */
 public class LayoutParameters {
 
@@ -47,6 +48,8 @@ public class LayoutParameters {
     private double verticalSnakeLinePadding = 25;
     private double arrowDistance = 20;
 
+    private boolean showInductorFor3WT = false;
+
     @JsonCreator
     public LayoutParameters() {
     }
@@ -70,7 +73,8 @@ public class LayoutParameters {
                             @JsonProperty("drawStraightWires") boolean drawStraightWires,
                             @JsonProperty("horizontalSnakeLinePadding") double horizontalSnakeLinePadding,
                             @JsonProperty("verticalSnakeLinePadding") double verticalSnakeLinePadding,
-                            @JsonProperty("arrowDistance") double arrowDistance) {
+                            @JsonProperty("arrowDistance") double arrowDistance,
+                            @JsonProperty("showInductorFor3WT") boolean showInductorFor3WT) {
         this.translateX = translateX;
         this.translateY = translateY;
         this.initialXBus = initialXBus;
@@ -90,6 +94,7 @@ public class LayoutParameters {
         this.horizontalSnakeLinePadding = horizontalSnakeLinePadding;
         this.verticalSnakeLinePadding = verticalSnakeLinePadding;
         this.arrowDistance = arrowDistance;
+        this.showInductorFor3WT = showInductorFor3WT;
     }
 
     public LayoutParameters(LayoutParameters other) {
@@ -113,6 +118,7 @@ public class LayoutParameters {
         horizontalSnakeLinePadding = other.horizontalSnakeLinePadding;
         verticalSnakeLinePadding = other.verticalSnakeLinePadding;
         arrowDistance = other.arrowDistance;
+        showInductorFor3WT = other.showInductorFor3WT;
     }
 
     public double getTranslateX() {
@@ -283,6 +289,15 @@ public class LayoutParameters {
 
     public LayoutParameters setArrowDistance(double arrowDistance) {
         this.arrowDistance = arrowDistance;
+        return this;
+    }
+
+    public boolean isShowInductorFor3WT() {
+        return showInductorFor3WT;
+    }
+
+    public LayoutParameters setShowInductorFor3WT(boolean showInductorFor3WT) {
+        this.showInductorFor3WT = showInductorFor3WT;
         return this;
     }
 }

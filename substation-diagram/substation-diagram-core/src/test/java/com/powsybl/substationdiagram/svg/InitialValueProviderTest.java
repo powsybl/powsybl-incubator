@@ -9,8 +9,6 @@ package com.powsybl.substationdiagram.svg;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -78,8 +76,8 @@ public class InitialValueProviderTest {
     public void test() {
         Network network2 = NetworkFactory.create("testCase2", "test2");
         DefaultSubstationDiagramInitialValueProvider initProvider = new DefaultSubstationDiagramInitialValueProvider(network2);
-        Map<String, Graph> map = Graph.create(network, false);
-        InitialValue init = initProvider.getInitialValue(map.get(vl.getId()).getNode("svc"));
+        Graph g = Graph.create(vl, false, false, false);
+        InitialValue init = initProvider.getInitialValue(g.getNode("svc"));
         assertFalse(init.getLabel1().isPresent());
         assertFalse(init.getLabel2().isPresent());
         assertFalse(init.getLabel3().isPresent());
@@ -87,28 +85,28 @@ public class InitialValueProviderTest {
         assertFalse(init.getArrowDirection1().isPresent());
         assertFalse(init.getArrowDirection2().isPresent());
         DefaultSubstationDiagramInitialValueProvider initProvider1 = new DefaultSubstationDiagramInitialValueProvider(network);
-        InitialValue init1 = initProvider1.getInitialValue(map.get(vl.getId()).getNode("svc"));
+        InitialValue init1 = initProvider1.getInitialValue(g.getNode("svc"));
         assertTrue(init1.getLabel1().isPresent());
         assertTrue(init1.getLabel2().isPresent());
         assertFalse(init1.getLabel3().isPresent());
         assertFalse(init1.getLabel4().isPresent());
         assertTrue(init1.getArrowDirection1().isPresent());
         assertTrue(init1.getArrowDirection2().isPresent());
-        InitialValue init2 = initProvider1.getInitialValue(map.get(vl.getId()).getNode("vsc"));
+        InitialValue init2 = initProvider1.getInitialValue(g.getNode("vsc"));
         assertTrue(init2.getLabel1().isPresent());
         assertTrue(init2.getLabel2().isPresent());
         assertFalse(init2.getLabel3().isPresent());
         assertFalse(init2.getLabel4().isPresent());
         assertTrue(init2.getArrowDirection1().isPresent());
         assertTrue(init2.getArrowDirection2().isPresent());
-        InitialValue init3 = initProvider1.getInitialValue(map.get(vl.getId()).getNode("C1"));
+        InitialValue init3 = initProvider1.getInitialValue(g.getNode("C1"));
         assertTrue(init3.getLabel1().isPresent());
         assertTrue(init3.getLabel2().isPresent());
         assertFalse(init3.getLabel3().isPresent());
         assertFalse(init3.getLabel4().isPresent());
         assertTrue(init3.getArrowDirection1().isPresent());
         assertTrue(init3.getArrowDirection2().isPresent());
-        InitialValue init4 = initProvider1.getInitialValue(map.get(vl.getId()).getNode("b"));
+        InitialValue init4 = initProvider1.getInitialValue(g.getNode("b"));
         assertFalse(init4.getLabel1().isPresent());
         assertFalse(init4.getLabel2().isPresent());
         assertFalse(init4.getLabel3().isPresent());

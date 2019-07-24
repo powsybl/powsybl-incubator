@@ -47,6 +47,8 @@ public interface EquationTerm {
      */
     double der(Variable variable);
 
+    boolean hasRhs();
+
     /**
      * Get part of the partial derivative that has to be moved to right hand side.
      * @param variable the variable the partial derivative is with respect to

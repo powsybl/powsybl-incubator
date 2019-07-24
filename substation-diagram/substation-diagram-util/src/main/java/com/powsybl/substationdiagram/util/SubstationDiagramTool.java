@@ -108,7 +108,7 @@ public class SubstationDiagramTool implements Tool {
         Path svgFile = outputDir.resolve(URLEncoder.encode(vl.getId(), StandardCharsets.UTF_8.name()) + ".svg");
         context.getOutputStream().println("Generating '" + svgFile + "' (" + vl.getNominalV() + ")");
         try {
-            VoltageLevelDiagram.build(vl, voltageLevelLayoutFactory, true)
+            VoltageLevelDiagram.build(vl, voltageLevelLayoutFactory, true, parameters.isShowInductorFor3WT())
                     .writeSvg(componentLibrary, parameters, network, svgFile);
         } catch (Exception e) {
             e.printStackTrace(context.getErrorStream());

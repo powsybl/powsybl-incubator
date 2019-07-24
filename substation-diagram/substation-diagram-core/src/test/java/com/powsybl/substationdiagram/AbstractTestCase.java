@@ -81,6 +81,20 @@ public abstract class AbstractTestCase {
         }
     }
 
+    public void compareSvg(Graph graph, LayoutParameters layoutParameters, String refSvgName, SubstationDiagramStyleProvider myStyleProvider) {
+        try (StringWriter writer = new StringWriter()) {
+            new SVGWriter(componentLibrary, layoutParameters)
+                    .write(graph, new DefaultSubstationDiagramInitialValueProvider(network), myStyleProvider, writer);
+            writer.flush();
+
+            String refSvg = normalizeLineSeparator(new String(ByteStreams.toByteArray(getClass().getResourceAsStream(refSvgName)), StandardCharsets.UTF_8));
+            String svg = normalizeLineSeparator(writer.toString());
+            assertEquals(refSvg, svg);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
     public void compareSvg(SubstationGraph graph, LayoutParameters layoutParameters,
                            String refSvgName, SubstationLayoutFactory sLayoutFactory) {
         try (StringWriter writer = new StringWriter()) {
@@ -96,4 +110,21 @@ public abstract class AbstractTestCase {
             throw new UncheckedIOException(e);
         }
     }
+
+    public void compareSvg(SubstationGraph graph, LayoutParameters layoutParameters,
+            String refSvgName, SubstationLayoutFactory sLayoutFactory,  SubstationDiagramStyleProvider myStyleProvider) {
+        try (StringWriter writer = new StringWriter()) {
+            new SVGWriter(componentLibrary, layoutParameters)
+                    .write(graph, new DefaultSubstationDiagramInitialValueProvider(network), myStyleProvider, writer, sLayoutFactory,
+                    new PositionVoltageLevelLayoutFactory());
+            writer.flush();
+
+            String refSvg = normalizeLineSeparator(new String(ByteStreams.toByteArray(getClass().getResourceAsStream(refSvgName)), StandardCharsets.UTF_8));
+            String svg = normalizeLineSeparator(writer.toString());
+            assertEquals(refSvg, svg);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
 }

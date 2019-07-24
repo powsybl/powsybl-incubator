@@ -37,6 +37,16 @@
         </metadata>
     </component>
     <component>
+        <fileName>3-windings-transformer.svg</fileName>
+        <metadata type="THREE_WINDINGS_TRANSFORMER">
+            <size width="40" height="25"/>
+            <anchorPoint x="0" y="-12" orientation="VERTICAL"/>
+            <anchorPoint x="0" y="12" orientation="VERTICAL"/>
+            <anchorPoint x="-20" y="0" orientation="HORIZONTAL"/>
+            <anchorPoint x="20" y="0" orientation="HORIZONTAL"/>
+        </metadata>
+    </component>
+    <component>
         <fileName>capacitor.svg</fileName>
         <metadata type="CAPACITOR">
             <size width="25" height="25"/>

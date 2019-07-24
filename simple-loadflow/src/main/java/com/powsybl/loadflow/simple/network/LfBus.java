@@ -33,9 +33,17 @@ public interface LfBus {
 
     double getGenerationTargetP();
 
+    void setGenerationTargetP(double generationTargetP);
+
     double getGenerationTargetQ();
 
     double getTargetV();
+
+    double getMinP();
+
+    double getMaxP();
+
+    double getParticipationFactor();
 
     double getV();
 

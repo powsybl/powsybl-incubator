@@ -10,7 +10,6 @@ import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.Branch;
 import com.powsybl.iidm.network.Injection;
 import com.powsybl.iidm.network.ShuntCompensator;
-import com.powsybl.iidm.network.ThreeWindingsTransformer;
 import com.powsybl.iidm.network.TwoWindingsTransformer;
 import com.powsybl.substationdiagram.library.ComponentType;
 
@@ -84,17 +83,12 @@ public class FeederNode extends Node {
         return new FeederNode(id, name, componentType, false, graph);
     }
 
-    public static FeederNode create(Graph graph, ThreeWindingsTransformer twt, ThreeWindingsTransformer.Side side) {
-        Objects.requireNonNull(graph);
-        Objects.requireNonNull(twt);
-        Objects.requireNonNull(side);
-        String id = twt.getId() + "_" + side.name();
-        String name = twt.getName() + "_" + side.name();
-        return new FeederNode(id, name, ComponentType.THREE_WINDINGS_TRANSFORMER, false, graph);
-    }
-
     public static FeederNode createFictitious(Graph graph, String id) {
         return new FeederNode(id, id, ComponentType.NODE, true, graph);
+    }
+
+    public static FeederNode create(Graph graph, String id, String name, ComponentType componentType) {
+        return new FeederNode(id, name, componentType, false, graph);
     }
 
     @Override

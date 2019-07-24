@@ -9,7 +9,7 @@ package com.powsybl.loadflow.simple.ac.equations;
 import com.powsybl.loadflow.simple.equations.*;
 import com.powsybl.loadflow.simple.network.LfBus;
 import com.powsybl.loadflow.simple.network.LfShunt;
-import com.powsybl.loadflow.simple.network.NetworkContext;
+import com.powsybl.loadflow.simple.network.LfNetwork;
 
 import java.util.Collections;
 import java.util.List;
@@ -32,11 +32,11 @@ public class ShuntCompensatorReactiveFlowEquationTerm implements EquationTerm {
 
     private double dqdv;
 
-    public ShuntCompensatorReactiveFlowEquationTerm(LfShunt shunt, LfBus bus, NetworkContext networkContext,
+    public ShuntCompensatorReactiveFlowEquationTerm(LfShunt shunt, LfBus bus, LfNetwork network,
                                                     EquationContext equationContext) {
         Objects.requireNonNull(shunt);
         Objects.requireNonNull(bus);
-        Objects.requireNonNull(networkContext);
+        Objects.requireNonNull(network);
         Objects.requireNonNull(equationContext);
         equation = equationContext.getEquation(bus.getNum(), EquationType.BUS_Q);
         vVar = equationContext.getVariable(bus.getNum(), VariableType.BUS_V);
@@ -75,6 +75,11 @@ public class ShuntCompensatorReactiveFlowEquationTerm implements EquationTerm {
         } else {
             throw new IllegalStateException("Unknown variable: " + variable);
         }
+    }
+
+    @Override
+    public boolean hasRhs() {
+        return false;
     }
 
     @Override

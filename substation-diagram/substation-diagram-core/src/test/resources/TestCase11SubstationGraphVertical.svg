@@ -27,7 +27,7 @@
 .VSC_CONVERTER_STATION {stroke:rgb(0,0,255);font-size:7.4314661px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;stroke-miterlimit:4;}
 .DANGLING_LINE {stroke:rgb(0,0,0);stroke-width:2;}
 .PHASE_SHIFT_TRANSFORMER {stroke:rgb(0,0,255);stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;}
-.ARROW1_load1_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_load1_UP .arrow-down { visibility: hidden;}.ARROW1_load1_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_load1_DOWN .arrow-up { visibility: hidden;}.ARROW2_load1_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_load1_UP .arrow-down { visibility: hidden;}.ARROW2_load1_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_load1_DOWN .arrow-up { visibility: hidden;}.ARROW1_gen1_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_gen1_UP .arrow-down { visibility: hidden;}.ARROW1_gen1_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_gen1_DOWN .arrow-up { visibility: hidden;}.ARROW2_gen1_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_gen1_UP .arrow-down { visibility: hidden;}.ARROW2_gen1_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_gen1_DOWN .arrow-up { visibility: hidden;}.ARROW1_load2_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_load2_UP .arrow-down { visibility: hidden;}.ARROW1_load2_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_load2_DOWN .arrow-up { visibility: hidden;}.ARROW2_load2_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_load2_UP .arrow-down { visibility: hidden;}.ARROW2_load2_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_load2_DOWN .arrow-up { visibility: hidden;}.ARROW1_gen2_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_gen2_UP .arrow-down { visibility: hidden;}.ARROW1_gen2_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_gen2_DOWN .arrow-up { visibility: hidden;}.ARROW2_gen2_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_gen2_UP .arrow-down { visibility: hidden;}.ARROW2_gen2_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_gen2_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf1_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf1_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf1_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf1_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf1_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf1_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf1_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf1_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf2_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf2_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf2_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf2_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf2_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf2_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf2_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf2_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf3_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf3_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf3_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf3_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf3_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf3_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf3_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf3_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf4_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf4_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf4_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf4_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf4_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf4_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf4_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf4_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf5_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf5_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf5_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf5_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf5_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf5_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf5_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf5_ONE_DOWN .arrow-up { visibility: hidden;}.dsect11 .open { visibility: hidden;}.dsect11 .closed { visibility: visible;}.dtrct11 .open { visibility: hidden;}.dtrct11 .closed { visibility: visible;}.dsect12 .open { visibility: hidden;}.dsect12 .closed { visibility: visible;}.dsect21 .open { visibility: hidden;}.dsect21 .closed { visibility: visible;}.dtrct21 .open { visibility: hidden;}.dtrct21 .closed { visibility: visible;}.dsect22 .open { visibility: hidden;}.dsect22 .closed { visibility: visible;}.dload1 .open { visibility: hidden;}.dload1 .closed { visibility: visible;}.bload1 .open { visibility: hidden;}.bload1 .closed { visibility: visible;}.dgen1 .open { visibility: hidden;}.dgen1 .closed { visibility: visible;}.bgen1 .open { visibility: hidden;}.bgen1 .closed { visibility: visible;}.dload2 .open { visibility: hidden;}.dload2 .closed { visibility: visible;}.bload2 .open { visibility: hidden;}.bload2 .closed { visibility: visible;}.dgen2 .open { visibility: hidden;}.dgen2 .closed { visibility: visible;}.bgen2 .open { visibility: hidden;}.bgen2 .closed { visibility: visible;}.dtrf11 .open { visibility: hidden;}.dtrf11 .closed { visibility: visible;}.btrf11 .open { visibility: hidden;}.btrf11 .closed { visibility: visible;}.dtrf12 .open { visibility: hidden;}.dtrf12 .closed { visibility: visible;}.btrf12 .open { visibility: hidden;}.btrf12 .closed { visibility: visible;}.dtrf13 .open { visibility: hidden;}.dtrf13 .closed { visibility: visible;}.btrf13 .open { visibility: hidden;}.btrf13 .closed { visibility: visible;}.dtrf14 .open { visibility: hidden;}.dtrf14 .closed { visibility: visible;}.btrf14 .open { visibility: hidden;}.btrf14 .closed { visibility: visible;}.dtrf15 .open { visibility: hidden;}.dtrf15 .closed { visibility: visible;}.btrf15 .open { visibility: hidden;}.btrf15 .closed { visibility: visible;}.ARROW1_load3_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_load3_UP .arrow-down { visibility: hidden;}.ARROW1_load3_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_load3_DOWN .arrow-up { visibility: hidden;}.ARROW2_load3_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_load3_UP .arrow-down { visibility: hidden;}.ARROW2_load3_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_load3_DOWN .arrow-up { visibility: hidden;}.ARROW1_gen4_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_gen4_UP .arrow-down { visibility: hidden;}.ARROW1_gen4_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_gen4_DOWN .arrow-up { visibility: hidden;}.ARROW2_gen4_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_gen4_UP .arrow-down { visibility: hidden;}.ARROW2_gen4_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_gen4_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf1_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf1_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf1_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf1_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf1_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf1_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf1_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf1_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf2_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf2_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf2_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf2_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf2_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf2_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf2_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf2_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf3_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf3_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf3_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf3_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf3_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf3_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf3_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf3_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf4_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf4_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf4_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf4_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf4_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf4_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf4_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf4_TWO_DOWN .arrow-up { visibility: hidden;}.dscpl1 .open { visibility: hidden;}.dscpl1 .closed { visibility: visible;}.ddcpl1 .open { visibility: hidden;}.ddcpl1 .closed { visibility: visible;}.dscpl2 .open { visibility: hidden;}.dscpl2 .closed { visibility: visible;}.dload3 .open { visibility: hidden;}.dload3 .closed { visibility: visible;}.bload3 .open { visibility: hidden;}.bload3 .closed { visibility: visible;}.dgen4 .open { visibility: hidden;}.dgen4 .closed { visibility: visible;}.bgen4 .open { visibility: hidden;}.bgen4 .closed { visibility: visible;}.dtrf21 .open { visibility: hidden;}.dtrf21 .closed { visibility: visible;}.btrf21 .open { visibility: hidden;}.btrf21 .closed { visibility: visible;}.dtrf22 .open { visibility: hidden;}.dtrf22 .closed { visibility: visible;}.btrf22 .open { visibility: hidden;}.btrf22 .closed { visibility: visible;}.dtrf23 .open { visibility: hidden;}.dtrf23 .closed { visibility: visible;}.btrf23 .open { visibility: hidden;}.btrf23 .closed { visibility: visible;}.dtrf24 .open { visibility: hidden;}.dtrf24 .closed { visibility: visible;}.btrf24 .open { visibility: hidden;}.btrf24 .closed { visibility: visible;}.ARROW1_load4_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_load4_UP .arrow-down { visibility: hidden;}.ARROW1_load4_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_load4_DOWN .arrow-up { visibility: hidden;}.ARROW2_load4_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_load4_UP .arrow-down { visibility: hidden;}.ARROW2_load4_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_load4_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf5_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf5_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf5_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf5_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf5_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf5_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf5_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf5_TWO_DOWN .arrow-up { visibility: hidden;}.dload4 .open { visibility: hidden;}.dload4 .closed { visibility: visible;}.bload4 .open { visibility: hidden;}.bload4 .closed { visibility: visible;}.dtrf25 .open { visibility: hidden;}.dtrf25 .closed { visibility: visible;}.btrf25 .open { visibility: hidden;}.btrf25 .closed { visibility: visible;}]]></style>
+.ARROW1_load1_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_load1_UP .arrow-down { visibility: hidden;}.ARROW1_load1_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_load1_DOWN .arrow-up { visibility: hidden;}.ARROW2_load1_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_load1_UP .arrow-down { visibility: hidden;}.ARROW2_load1_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_load1_DOWN .arrow-up { visibility: hidden;}.ARROW1_gen1_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_gen1_UP .arrow-down { visibility: hidden;}.ARROW1_gen1_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_gen1_DOWN .arrow-up { visibility: hidden;}.ARROW2_gen1_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_gen1_UP .arrow-down { visibility: hidden;}.ARROW2_gen1_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_gen1_DOWN .arrow-up { visibility: hidden;}.ARROW1_load2_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_load2_UP .arrow-down { visibility: hidden;}.ARROW1_load2_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_load2_DOWN .arrow-up { visibility: hidden;}.ARROW2_load2_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_load2_UP .arrow-down { visibility: hidden;}.ARROW2_load2_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_load2_DOWN .arrow-up { visibility: hidden;}.ARROW1_gen2_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_gen2_UP .arrow-down { visibility: hidden;}.ARROW1_gen2_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_gen2_DOWN .arrow-up { visibility: hidden;}.ARROW2_gen2_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_gen2_UP .arrow-down { visibility: hidden;}.ARROW2_gen2_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_gen2_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf1_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf1_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf1_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf1_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf1_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf1_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf1_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf1_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf2_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf2_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf2_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf2_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf2_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf2_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf2_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf2_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf3_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf3_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf3_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf3_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf3_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf3_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf3_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf3_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf4_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf4_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf4_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf4_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf4_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf4_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf4_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf4_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf5_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf5_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf5_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf5_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf5_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf5_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf5_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf5_ONE_DOWN .arrow-up { visibility: hidden;}.dsect11 .open { visibility: hidden;}.dsect11 .closed { visibility: visible;}.dtrct11 .open { visibility: hidden;}.dtrct11 .closed { visibility: visible;}.dsect12 .open { visibility: hidden;}.dsect12 .closed { visibility: visible;}.dsect21 .open { visibility: hidden;}.dsect21 .closed { visibility: visible;}.dtrct21 .open { visibility: hidden;}.dtrct21 .closed { visibility: visible;}.dsect22 .open { visibility: hidden;}.dsect22 .closed { visibility: visible;}.dload1 .open { visibility: hidden;}.dload1 .closed { visibility: visible;}.bload1 .open { visibility: hidden;}.bload1 .closed { visibility: visible;}.dgen1 .open { visibility: hidden;}.dgen1 .closed { visibility: visible;}.bgen1 .open { visibility: hidden;}.bgen1 .closed { visibility: visible;}.dload2 .open { visibility: hidden;}.dload2 .closed { visibility: visible;}.bload2 .open { visibility: hidden;}.bload2 .closed { visibility: visible;}.dgen2 .open { visibility: hidden;}.dgen2 .closed { visibility: visible;}.bgen2 .open { visibility: hidden;}.bgen2 .closed { visibility: visible;}.dtrf11 .open { visibility: hidden;}.dtrf11 .closed { visibility: visible;}.btrf11 .open { visibility: hidden;}.btrf11 .closed { visibility: visible;}.dtrf12 .open { visibility: hidden;}.dtrf12 .closed { visibility: visible;}.btrf12 .open { visibility: hidden;}.btrf12 .closed { visibility: visible;}.dtrf13 .open { visibility: hidden;}.dtrf13 .closed { visibility: visible;}.btrf13 .open { visibility: hidden;}.btrf13 .closed { visibility: visible;}.dtrf14 .open { visibility: hidden;}.dtrf14 .closed { visibility: visible;}.btrf14 .open { visibility: hidden;}.btrf14 .closed { visibility: visible;}.dtrf15 .open { visibility: hidden;}.dtrf15 .closed { visibility: visible;}.btrf15 .open { visibility: hidden;}.btrf15 .closed { visibility: visible;}.dtrf16 .open { visibility: hidden;}.dtrf16 .closed { visibility: visible;}.btrf16 .open { visibility: hidden;}.btrf16 .closed { visibility: visible;}.dtrf17 .open { visibility: hidden;}.dtrf17 .closed { visibility: visible;}.btrf17 .open { visibility: hidden;}.btrf17 .closed { visibility: visible;}.dtrf18 .open { visibility: hidden;}.dtrf18 .closed { visibility: visible;}.btrf18 .open { visibility: hidden;}.btrf18 .closed { visibility: visible;}.ARROW1_trf6_ONE_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf6_ONE_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf6_ONE_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf6_ONE_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf6_ONE_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf6_ONE_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf6_ONE_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf6_ONE_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf6_ONE_THREE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf6_ONE_THREE_UP .arrow-down { visibility: hidden;}.ARROW1_trf6_ONE_THREE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf6_ONE_THREE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf6_ONE_THREE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf6_ONE_THREE_UP .arrow-down { visibility: hidden;}.ARROW2_trf6_ONE_THREE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf6_ONE_THREE_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf7_ONE_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf7_ONE_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf7_ONE_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf7_ONE_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf7_ONE_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf7_ONE_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf7_ONE_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf7_ONE_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf7_ONE_THREE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf7_ONE_THREE_UP .arrow-down { visibility: hidden;}.ARROW1_trf7_ONE_THREE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf7_ONE_THREE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf7_ONE_THREE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf7_ONE_THREE_UP .arrow-down { visibility: hidden;}.ARROW2_trf7_ONE_THREE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf7_ONE_THREE_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf8_ONE_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf8_ONE_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf8_ONE_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf8_ONE_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf8_ONE_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf8_ONE_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf8_ONE_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf8_ONE_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf8_ONE_THREE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf8_ONE_THREE_UP .arrow-down { visibility: hidden;}.ARROW1_trf8_ONE_THREE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf8_ONE_THREE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf8_ONE_THREE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf8_ONE_THREE_UP .arrow-down { visibility: hidden;}.ARROW2_trf8_ONE_THREE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf8_ONE_THREE_DOWN .arrow-up { visibility: hidden;}.ARROW1_load3_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_load3_UP .arrow-down { visibility: hidden;}.ARROW1_load3_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_load3_DOWN .arrow-up { visibility: hidden;}.ARROW2_load3_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_load3_UP .arrow-down { visibility: hidden;}.ARROW2_load3_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_load3_DOWN .arrow-up { visibility: hidden;}.ARROW1_gen4_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_gen4_UP .arrow-down { visibility: hidden;}.ARROW1_gen4_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_gen4_DOWN .arrow-up { visibility: hidden;}.ARROW2_gen4_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_gen4_UP .arrow-down { visibility: hidden;}.ARROW2_gen4_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_gen4_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf1_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf1_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf1_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf1_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf1_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf1_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf1_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf1_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf2_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf2_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf2_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf2_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf2_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf2_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf2_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf2_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf3_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf3_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf3_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf3_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf3_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf3_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf3_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf3_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf4_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf4_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf4_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf4_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf4_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf4_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf4_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf4_TWO_DOWN .arrow-up { visibility: hidden;}.dscpl1 .open { visibility: hidden;}.dscpl1 .closed { visibility: visible;}.ddcpl1 .open { visibility: hidden;}.ddcpl1 .closed { visibility: visible;}.dscpl2 .open { visibility: hidden;}.dscpl2 .closed { visibility: visible;}.dload3 .open { visibility: hidden;}.dload3 .closed { visibility: visible;}.bload3 .open { visibility: hidden;}.bload3 .closed { visibility: visible;}.dgen4 .open { visibility: hidden;}.dgen4 .closed { visibility: visible;}.bgen4 .open { visibility: hidden;}.bgen4 .closed { visibility: visible;}.dtrf21 .open { visibility: hidden;}.dtrf21 .closed { visibility: visible;}.btrf21 .open { visibility: hidden;}.btrf21 .closed { visibility: visible;}.dtrf22 .open { visibility: hidden;}.dtrf22 .closed { visibility: visible;}.btrf22 .open { visibility: hidden;}.btrf22 .closed { visibility: visible;}.dtrf23 .open { visibility: hidden;}.dtrf23 .closed { visibility: visible;}.btrf23 .open { visibility: hidden;}.btrf23 .closed { visibility: visible;}.dtrf24 .open { visibility: hidden;}.dtrf24 .closed { visibility: visible;}.btrf24 .open { visibility: hidden;}.btrf24 .closed { visibility: visible;}.dtrf26 .open { visibility: hidden;}.dtrf26 .closed { visibility: visible;}.btrf26 .open { visibility: hidden;}.btrf26 .closed { visibility: visible;}.dtrf27 .open { visibility: hidden;}.dtrf27 .closed { visibility: visible;}.btrf27 .open { visibility: hidden;}.btrf27 .closed { visibility: visible;}.dtrf28 .open { visibility: hidden;}.dtrf28 .closed { visibility: visible;}.btrf28 .open { visibility: hidden;}.btrf28 .closed { visibility: visible;}.ARROW1_trf6_TWO_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf6_TWO_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf6_TWO_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf6_TWO_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf6_TWO_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf6_TWO_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf6_TWO_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf6_TWO_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf6_TWO_THREE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf6_TWO_THREE_UP .arrow-down { visibility: hidden;}.ARROW1_trf6_TWO_THREE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf6_TWO_THREE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf6_TWO_THREE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf6_TWO_THREE_UP .arrow-down { visibility: hidden;}.ARROW2_trf6_TWO_THREE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf6_TWO_THREE_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf7_TWO_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf7_TWO_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf7_TWO_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf7_TWO_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf7_TWO_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf7_TWO_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf7_TWO_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf7_TWO_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf7_TWO_THREE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf7_TWO_THREE_UP .arrow-down { visibility: hidden;}.ARROW1_trf7_TWO_THREE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf7_TWO_THREE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf7_TWO_THREE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf7_TWO_THREE_UP .arrow-down { visibility: hidden;}.ARROW2_trf7_TWO_THREE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf7_TWO_THREE_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf8_TWO_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf8_TWO_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf8_TWO_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf8_TWO_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf8_TWO_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf8_TWO_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf8_TWO_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf8_TWO_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf8_TWO_THREE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf8_TWO_THREE_UP .arrow-down { visibility: hidden;}.ARROW1_trf8_TWO_THREE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf8_TWO_THREE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf8_TWO_THREE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf8_TWO_THREE_UP .arrow-down { visibility: hidden;}.ARROW2_trf8_TWO_THREE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf8_TWO_THREE_DOWN .arrow-up { visibility: hidden;}.ARROW1_load4_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_load4_UP .arrow-down { visibility: hidden;}.ARROW1_load4_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_load4_DOWN .arrow-up { visibility: hidden;}.ARROW2_load4_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_load4_UP .arrow-down { visibility: hidden;}.ARROW2_load4_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_load4_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf5_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf5_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf5_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf5_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf5_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf5_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf5_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf5_TWO_DOWN .arrow-up { visibility: hidden;}.dload4 .open { visibility: hidden;}.dload4 .closed { visibility: visible;}.bload4 .open { visibility: hidden;}.bload4 .closed { visibility: visible;}.dtrf25 .open { visibility: hidden;}.dtrf25 .closed { visibility: visible;}.btrf25 .open { visibility: hidden;}.btrf25 .closed { visibility: visible;}.dtrf36 .open { visibility: hidden;}.dtrf36 .closed { visibility: visible;}.btrf36 .open { visibility: hidden;}.btrf36 .closed { visibility: visible;}.dtrf37 .open { visibility: hidden;}.dtrf37 .closed { visibility: visible;}.btrf37 .open { visibility: hidden;}.btrf37 .closed { visibility: visible;}.dtrf38 .open { visibility: hidden;}.dtrf38 .closed { visibility: visible;}.btrf38 .open { visibility: hidden;}.btrf38 .closed { visibility: visible;}.ARROW1_trf6_THREE_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf6_THREE_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf6_THREE_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf6_THREE_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf6_THREE_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf6_THREE_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf6_THREE_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf6_THREE_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf6_THREE_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf6_THREE_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf6_THREE_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf6_THREE_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf6_THREE_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf6_THREE_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf6_THREE_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf6_THREE_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf7_THREE_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf7_THREE_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf7_THREE_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf7_THREE_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf7_THREE_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf7_THREE_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf7_THREE_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf7_THREE_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf7_THREE_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf7_THREE_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf7_THREE_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf7_THREE_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf7_THREE_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf7_THREE_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf7_THREE_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf7_THREE_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf8_THREE_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf8_THREE_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf8_THREE_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf8_THREE_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf8_THREE_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf8_THREE_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf8_THREE_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf8_THREE_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf8_THREE_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf8_THREE_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf8_THREE_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf8_THREE_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf8_THREE_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf8_THREE_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf8_THREE_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf8_THREE_TWO_DOWN .arrow-up { visibility: hidden;}]]></style>
     <g class="substation-diagram">
         <g id="GRID_vl1">
             <line y2="640.0" x1="50.0" class="grid" x2="50.0" transform="translate(20.0,50.0)" y1="30.0"/>
@@ -41,6 +41,12 @@
             <line y2="640.0" x1="450.0" class="grid" x2="450.0" transform="translate(20.0,50.0)" y1="30.0"/>
             <line y2="640.0" x1="500.0" class="grid" x2="500.0" transform="translate(20.0,50.0)" y1="30.0"/>
             <line y2="640.0" x1="550.0" class="grid" x2="550.0" transform="translate(20.0,50.0)" y1="30.0"/>
+            <line y2="640.0" x1="600.0" class="grid" x2="600.0" transform="translate(20.0,50.0)" y1="30.0"/>
+            <line y2="640.0" x1="650.0" class="grid" x2="650.0" transform="translate(20.0,50.0)" y1="30.0"/>
+            <line y2="640.0" x1="700.0" class="grid" x2="700.0" transform="translate(20.0,50.0)" y1="30.0"/>
+            <line y2="640.0" x1="750.0" class="grid" x2="750.0" transform="translate(20.0,50.0)" y1="30.0"/>
+            <line y2="640.0" x1="800.0" class="grid" x2="800.0" transform="translate(20.0,50.0)" y1="30.0"/>
+            <line y2="640.0" x1="850.0" class="grid" x2="850.0" transform="translate(20.0,50.0)" y1="30.0"/>
         </g>
         <g id="GRID_vl2">
             <line y2="1330.0" x1="50.0" class="grid" x2="50.0" transform="translate(20.0,50.0)" y1="720.0"/>
@@ -52,26 +58,38 @@
             <line y2="1330.0" x1="350.0" class="grid" x2="350.0" transform="translate(20.0,50.0)" y1="720.0"/>
             <line y2="1330.0" x1="400.0" class="grid" x2="400.0" transform="translate(20.0,50.0)" y1="720.0"/>
             <line y2="1330.0" x1="450.0" class="grid" x2="450.0" transform="translate(20.0,50.0)" y1="720.0"/>
+            <line y2="1330.0" x1="500.0" class="grid" x2="500.0" transform="translate(20.0,50.0)" y1="720.0"/>
+            <line y2="1330.0" x1="550.0" class="grid" x2="550.0" transform="translate(20.0,50.0)" y1="720.0"/>
+            <line y2="1330.0" x1="600.0" class="grid" x2="600.0" transform="translate(20.0,50.0)" y1="720.0"/>
+            <line y2="1330.0" x1="650.0" class="grid" x2="650.0" transform="translate(20.0,50.0)" y1="720.0"/>
+            <line y2="1330.0" x1="700.0" class="grid" x2="700.0" transform="translate(20.0,50.0)" y1="720.0"/>
+            <line y2="1330.0" x1="750.0" class="grid" x2="750.0" transform="translate(20.0,50.0)" y1="720.0"/>
         </g>
         <g id="GRID_vl3">
             <line y2="1995.0" x1="50.0" class="grid" x2="50.0" transform="translate(20.0,50.0)" y1="1410.0"/>
             <line y2="1995.0" x1="100.0" class="grid" x2="100.0" transform="translate(20.0,50.0)" y1="1410.0"/>
             <line y2="1995.0" x1="150.0" class="grid" x2="150.0" transform="translate(20.0,50.0)" y1="1410.0"/>
+            <line y2="1995.0" x1="200.0" class="grid" x2="200.0" transform="translate(20.0,50.0)" y1="1410.0"/>
+            <line y2="1995.0" x1="250.0" class="grid" x2="250.0" transform="translate(20.0,50.0)" y1="1410.0"/>
+            <line y2="1995.0" x1="300.0" class="grid" x2="300.0" transform="translate(20.0,50.0)" y1="1410.0"/>
+            <line y2="1995.0" x1="350.0" class="grid" x2="350.0" transform="translate(20.0,50.0)" y1="1410.0"/>
+            <line y2="1995.0" x1="400.0" class="grid" x2="400.0" transform="translate(20.0,50.0)" y1="1410.0"/>
+            <line y2="1995.0" x1="450.0" class="grid" x2="450.0" transform="translate(20.0,50.0)" y1="1410.0"/>
         </g>
         <g class="substation-diagram BUSBAR_SECTION bbs1" id="bbs1" transform="translate(80.0,360.0)">
-            <line y2="0" x1="0" class="bus_vl1" x2="230.0" y1="0"/>
+            <line y2="0" x1="0" class="bus_vl1" x2="430.0" y1="0"/>
             <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs1</text>
         </g>
-        <g class="substation-diagram BUSBAR_SECTION bbs2" id="bbs2" transform="translate(380.0,360.0)">
-            <line y2="0" x1="0" class="bus_vl1" x2="180.0" y1="0"/>
+        <g class="substation-diagram BUSBAR_SECTION bbs2" id="bbs2" transform="translate(580.0,360.0)">
+            <line y2="0" x1="0" class="bus_vl1" x2="280.0" y1="0"/>
             <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs2</text>
         </g>
         <g class="substation-diagram BUSBAR_SECTION bbs3" id="bbs3" transform="translate(80.0,385.0)">
-            <line y2="0" x1="0" class="bus_vl1" x2="230.0" y1="0"/>
+            <line y2="0" x1="0" class="bus_vl1" x2="430.0" y1="0"/>
             <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs3</text>
         </g>
-        <g class="substation-diagram BUSBAR_SECTION bbs4" id="bbs4" transform="translate(380.0,385.0)">
-            <line y2="0" x1="0" class="bus_vl1" x2="180.0" y1="0"/>
+        <g class="substation-diagram BUSBAR_SECTION bbs4" id="bbs4" transform="translate(580.0,385.0)">
+            <line y2="0" x1="0" class="bus_vl1" x2="280.0" y1="0"/>
             <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs4</text>
         </g>
         <g class="substation-diagram LOAD load1" id="load1" transform="translate(87.0,75.5)">
@@ -86,44 +104,44 @@
     <path d="M6,6 A 6 20 0 0 0 12,6"/>
 <text x="-5.0" font-size="8" y="25.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">gen1</text>
         </g>
-        <g class="substation-diagram LOAD load2" id="load2" transform="translate(387.0,75.5)">
+        <g class="substation-diagram LOAD load2" id="load2" transform="translate(587.0,75.5)">
     <rect height="9" width="16"/>
     <line y2="9" x1="0" x2="16" y1="0"/>
     <line y2="9" x1="16" x2="0" y1="0"/>
 <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">load2</text>
         </g>
-        <g class="substation-diagram GENERATOR gen2" id="gen2" transform="translate(539.0,659.0)">
+        <g class="substation-diagram GENERATOR gen2" id="gen2" transform="translate(839.0,659.0)">
     <circle r="6" cx="6" cy="6"/>
     <path d="M6,6 A 6 20 0 0 0 0,6"/>
     <path d="M6,6 A 6 20 0 0 0 12,6"/>
 <text x="-5.0" font-size="8" y="25.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">gen2</text>
         </g>
         <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf1_ONE" id="trf1_ONE" transform="translate(138.5,76.0)">
-    <circle r="4" cx="4" cy="4"/>
-    <circle r="4" cx="9" cy="4"/>
+    <circle r="4" id="WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="WINDING2" cx="9" cy="4"/>
 <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf1</text>
         </g>
-        <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf2_ONE" id="trf2_ONE" transform="translate(488.5,76.0)">
-    <circle r="4" cx="4" cy="4"/>
-    <circle r="4" cx="9" cy="4"/>
+        <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf2_ONE" id="trf2_ONE" transform="translate(788.5,76.0)">
+    <circle r="4" id="WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="WINDING2" cx="9" cy="4"/>
 <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf2</text>
         </g>
         <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf3_ONE" id="trf3_ONE" transform="translate(238.5,661.0)">
-    <circle r="4" cx="4" cy="4"/>
-    <circle r="4" cx="9" cy="4"/>
+    <circle r="4" id="WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="WINDING2" cx="9" cy="4"/>
 <text x="-5.0" font-size="8" y="21.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf3</text>
         </g>
-        <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf4_ONE" id="trf4_ONE" transform="translate(438.5,661.0)">
-    <circle r="4" cx="4" cy="4"/>
-    <circle r="4" cx="9" cy="4"/>
+        <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf4_ONE" id="trf4_ONE" transform="translate(738.5,661.0)">
+    <circle r="4" id="WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="WINDING2" cx="9" cy="4"/>
 <text x="-5.0" font-size="8" y="21.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf4</text>
         </g>
         <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf5_ONE" id="trf5_ONE" transform="translate(288.5,76.0)">
-    <circle r="4" cx="4" cy="4"/>
-    <circle r="4" cx="9" cy="4"/>
+    <circle r="4" id="WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="WINDING2" cx="9" cy="4"/>
 <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf5</text>
         </g>
-        <g class="substation-diagram DISCONNECTOR dsect11" id="dsect11" transform="translate(316.0,356.0)">
+        <g class="substation-diagram DISCONNECTOR dsect11" id="dsect11" transform="translate(516.0,356.0)">
     <g id="closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
@@ -132,7 +150,7 @@
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
-        <g class="substation-diagram BREAKER dtrct11" id="dtrct11" transform="matrix(0.0,1.0,-1.0,0.0,355.0,350.0)">
+        <g class="substation-diagram BREAKER dtrct11" id="dtrct11" transform="matrix(0.0,1.0,-1.0,0.0,555.0,350.0)">
     <g class="closed" id="closed">
         <rect x="1" width="18" y="1" height="18"/>
         <line y2="15" x1="10" x2="10" y1="5"/>
@@ -142,7 +160,7 @@
         <line y2="10" x1="5" x2="15" y1="10"/>
     </g>
 </g>
-        <g class="substation-diagram DISCONNECTOR dsect12" id="dsect12" transform="translate(366.0,356.0)">
+        <g class="substation-diagram DISCONNECTOR dsect12" id="dsect12" transform="translate(566.0,356.0)">
     <g id="closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
@@ -151,7 +169,7 @@
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
-        <g class="substation-diagram DISCONNECTOR dsect21" id="dsect21" transform="translate(316.0,381.0)">
+        <g class="substation-diagram DISCONNECTOR dsect21" id="dsect21" transform="translate(516.0,381.0)">
     <g id="closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
@@ -160,7 +178,7 @@
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
-        <g class="substation-diagram BREAKER dtrct21" id="dtrct21" transform="matrix(0.0,1.0,-1.0,0.0,355.0,375.0)">
+        <g class="substation-diagram BREAKER dtrct21" id="dtrct21" transform="matrix(0.0,1.0,-1.0,0.0,555.0,375.0)">
     <g class="closed" id="closed">
         <rect x="1" width="18" y="1" height="18"/>
         <line y2="15" x1="10" x2="10" y1="5"/>
@@ -170,7 +188,7 @@
         <line y2="10" x1="5" x2="15" y1="10"/>
     </g>
 </g>
-        <g class="substation-diagram DISCONNECTOR dsect22" id="dsect22" transform="translate(366.0,381.0)">
+        <g class="substation-diagram DISCONNECTOR dsect22" id="dsect22" transform="translate(566.0,381.0)">
     <g id="closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
@@ -217,7 +235,7 @@
         <line y2="10" x1="5" x2="15" y1="10"/>
     </g>
 </g>
-        <g class="substation-diagram DISCONNECTOR dload2" id="dload2" transform="translate(391.0,356.0)">
+        <g class="substation-diagram DISCONNECTOR dload2" id="dload2" transform="translate(591.0,356.0)">
     <g id="closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
@@ -226,7 +244,7 @@
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
-        <g class="substation-diagram BREAKER bload2" id="bload2" transform="translate(385.0,195.0)">
+        <g class="substation-diagram BREAKER bload2" id="bload2" transform="translate(585.0,195.0)">
     <g class="closed" id="closed">
         <rect x="1" width="18" y="1" height="18"/>
         <line y2="15" x1="10" x2="10" y1="5"/>
@@ -236,7 +254,7 @@
         <line y2="10" x1="5" x2="15" y1="10"/>
     </g>
 </g>
-        <g class="substation-diagram DISCONNECTOR dgen2" id="dgen2" transform="translate(541.0,381.0)">
+        <g class="substation-diagram DISCONNECTOR dgen2" id="dgen2" transform="translate(841.0,381.0)">
     <g id="closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
@@ -245,7 +263,7 @@
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
-        <g class="substation-diagram BREAKER bgen2" id="bgen2" transform="translate(535.0,530.0)">
+        <g class="substation-diagram BREAKER bgen2" id="bgen2" transform="translate(835.0,530.0)">
     <g class="closed" id="closed">
         <rect x="1" width="18" y="1" height="18"/>
         <line y2="15" x1="10" x2="10" y1="5"/>
@@ -274,7 +292,7 @@
         <line y2="10" x1="5" x2="15" y1="10"/>
     </g>
 </g>
-        <g class="substation-diagram DISCONNECTOR dtrf12" id="dtrf12" transform="translate(491.0,356.0)">
+        <g class="substation-diagram DISCONNECTOR dtrf12" id="dtrf12" transform="translate(791.0,356.0)">
     <g id="closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
@@ -283,7 +301,7 @@
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
-        <g class="substation-diagram BREAKER btrf12" id="btrf12" transform="translate(485.0,195.0)">
+        <g class="substation-diagram BREAKER btrf12" id="btrf12" transform="translate(785.0,195.0)">
     <g class="closed" id="closed">
         <rect x="1" width="18" y="1" height="18"/>
         <line y2="15" x1="10" x2="10" y1="5"/>
@@ -312,7 +330,7 @@
         <line y2="10" x1="5" x2="15" y1="10"/>
     </g>
 </g>
-        <g class="substation-diagram DISCONNECTOR dtrf14" id="dtrf14" transform="translate(441.0,381.0)">
+        <g class="substation-diagram DISCONNECTOR dtrf14" id="dtrf14" transform="translate(741.0,381.0)">
     <g id="closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
@@ -321,7 +339,7 @@
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
-        <g class="substation-diagram BREAKER btrf14" id="btrf14" transform="translate(435.0,530.0)">
+        <g class="substation-diagram BREAKER btrf14" id="btrf14" transform="translate(735.0,530.0)">
     <g class="closed" id="closed">
         <rect x="1" width="18" y="1" height="18"/>
         <line y2="15" x1="10" x2="10" y1="5"/>
@@ -350,23 +368,128 @@
         <line y2="10" x1="5" x2="15" y1="10"/>
     </g>
 </g>
-        <g class="substation-diagram NODE FICT_vl1_dsect11Fictif" id="FICT_vl1_dsect11Fictif" transform="matrix(0.0,1.0,-1.0,0.0,324.0,356.0)"/>
+        <g class="substation-diagram DISCONNECTOR dtrf16" id="dtrf16" transform="translate(366.0,356.0)">
+    <g id="closed">
+        <line y2="8" x1="0" x2="8" y1="0"/>
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+    <g id="open">
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+</g>
+        <g class="substation-diagram BREAKER btrf16" id="btrf16" transform="translate(360.0,236.66666666666669)">
+    <g class="closed" id="closed">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="15" x1="10" x2="10" y1="5"/>
+    </g>
+    <g class="open" id="open">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="10" x1="5" x2="15" y1="10"/>
+    </g>
+</g>
+        <g class="substation-diagram DISCONNECTOR dtrf17" id="dtrf17" transform="translate(466.0,381.0)">
+    <g id="closed">
+        <line y2="8" x1="0" x2="8" y1="0"/>
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+    <g id="open">
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+</g>
+        <g class="substation-diagram BREAKER btrf17" id="btrf17" transform="translate(460.0,488.3333333333333)">
+    <g class="closed" id="closed">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="15" x1="10" x2="10" y1="5"/>
+    </g>
+    <g class="open" id="open">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="10" x1="5" x2="15" y1="10"/>
+    </g>
+</g>
+        <g class="substation-diagram DISCONNECTOR dtrf18" id="dtrf18" transform="translate(666.0,356.0)">
+    <g id="closed">
+        <line y2="8" x1="0" x2="8" y1="0"/>
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+    <g id="open">
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+</g>
+        <g class="substation-diagram BREAKER btrf18" id="btrf18" transform="translate(660.0,236.66666666666669)">
+    <g class="closed" id="closed">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="15" x1="10" x2="10" y1="5"/>
+    </g>
+    <g class="open" id="open">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="10" x1="5" x2="15" y1="10"/>
+    </g>
+</g>
+        <g class="substation-diagram THREE_WINDINGS_TRANSFORMER FICT_vl1_trf61_fictif" id="FICT_vl1_trf61_fictif" transform="translate(363.5,159.33333333333331)">
+    <circle r="4" id="WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="WINDING2" cx="9" cy="4"/>
+    <circle r="5" id="WINDING3" cx="6" cy="8"/>
+</g>
+        <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf6_ONE_TWO" id="trf6_ONE_TWO" transform="translate(338.5,76.00000000000003)">
+    <circle r="4" id="WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="WINDING2" cx="9" cy="4"/>
+<text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf6_ONE_TWO</text>
+        </g>
+        <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf6_ONE_THREE" id="trf6_ONE_THREE" transform="translate(388.5,76.00000000000003)">
+    <circle r="4" id="WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="WINDING2" cx="9" cy="4"/>
+<text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf6_ONE_THREE</text>
+        </g>
+        <g class="substation-diagram THREE_WINDINGS_TRANSFORMER FICT_vl1_trf71_fictif" id="FICT_vl1_trf71_fictif" transform="translate(463.5,577.6666666666665)">
+    <circle r="4" id="WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="WINDING2" cx="9" cy="4"/>
+    <circle r="5" id="WINDING3" cx="6" cy="8"/>
+</g>
+        <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf7_ONE_TWO" id="trf7_ONE_TWO" transform="translate(438.5,660.9999999999999)">
+    <circle r="4" id="WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="WINDING2" cx="9" cy="4"/>
+<text x="-5.0" font-size="8" y="21.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf7_ONE_TWO</text>
+        </g>
+        <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf7_ONE_THREE" id="trf7_ONE_THREE" transform="translate(488.5,660.9999999999999)">
+    <circle r="4" id="WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="WINDING2" cx="9" cy="4"/>
+<text x="-5.0" font-size="8" y="21.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf7_ONE_THREE</text>
+        </g>
+        <g class="substation-diagram THREE_WINDINGS_TRANSFORMER FICT_vl1_trf81_fictif" id="FICT_vl1_trf81_fictif" transform="translate(663.5,159.33333333333331)">
+    <circle r="4" id="WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="WINDING2" cx="9" cy="4"/>
+    <circle r="5" id="WINDING3" cx="6" cy="8"/>
+</g>
+        <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf8_ONE_TWO" id="trf8_ONE_TWO" transform="translate(638.5,76.00000000000003)">
+    <circle r="4" id="WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="WINDING2" cx="9" cy="4"/>
+<text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf8_ONE_TWO</text>
+        </g>
+        <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf8_ONE_THREE" id="trf8_ONE_THREE" transform="translate(688.5,76.00000000000003)">
+    <circle r="4" id="WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="WINDING2" cx="9" cy="4"/>
+<text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf8_ONE_THREE</text>
+        </g>
+        <g class="substation-diagram NODE FICT_vl1_dsect11Fictif" id="FICT_vl1_dsect11Fictif" transform="matrix(0.0,1.0,-1.0,0.0,524.0,356.0)"/>
         <g class="substation-diagram NODE FICT_vl1_dload1Fictif" id="FICT_vl1_dload1Fictif" transform="translate(91.0,326.0)"/>
         <g class="substation-diagram NODE FICT_vl1_dtrf11Fictif" id="FICT_vl1_dtrf11Fictif" transform="translate(141.0,326.0)"/>
         <g class="substation-diagram NODE FICT_vl1_dtrf15Fictif" id="FICT_vl1_dtrf15Fictif" transform="translate(291.0,326.0)"/>
-        <g class="substation-diagram NODE FICT_vl1_dsect12Fictif" id="FICT_vl1_dsect12Fictif" transform="matrix(0.0,1.0,-1.0,0.0,374.0,356.0)"/>
-        <g class="substation-diagram NODE FICT_vl1_dload2Fictif" id="FICT_vl1_dload2Fictif" transform="translate(391.0,326.0)"/>
-        <g class="substation-diagram NODE FICT_vl1_dtrf12Fictif" id="FICT_vl1_dtrf12Fictif" transform="translate(491.0,326.0)"/>
-        <g class="substation-diagram NODE FICT_vl1_dsect21Fictif" id="FICT_vl1_dsect21Fictif" transform="matrix(0.0,1.0,-1.0,0.0,324.0,381.0)"/>
+        <g class="substation-diagram NODE FICT_vl1_dtrf16Fictif" id="FICT_vl1_dtrf16Fictif" transform="translate(366.0,326.0)"/>
+        <g class="substation-diagram NODE FICT_vl1_dsect12Fictif" id="FICT_vl1_dsect12Fictif" transform="matrix(0.0,1.0,-1.0,0.0,574.0,356.0)"/>
+        <g class="substation-diagram NODE FICT_vl1_dload2Fictif" id="FICT_vl1_dload2Fictif" transform="translate(591.0,326.0)"/>
+        <g class="substation-diagram NODE FICT_vl1_dtrf12Fictif" id="FICT_vl1_dtrf12Fictif" transform="translate(791.0,326.0)"/>
+        <g class="substation-diagram NODE FICT_vl1_dtrf18Fictif" id="FICT_vl1_dtrf18Fictif" transform="translate(666.0,326.0)"/>
+        <g class="substation-diagram NODE FICT_vl1_dsect21Fictif" id="FICT_vl1_dsect21Fictif" transform="matrix(0.0,1.0,-1.0,0.0,524.0,381.0)"/>
         <g class="substation-diagram NODE FICT_vl1_dgen1Fictif" id="FICT_vl1_dgen1Fictif" transform="translate(191.0,411.0)"/>
         <g class="substation-diagram NODE FICT_vl1_dtrf13Fictif" id="FICT_vl1_dtrf13Fictif" transform="translate(241.0,411.0)"/>
-        <g class="substation-diagram NODE FICT_vl1_dsect22Fictif" id="FICT_vl1_dsect22Fictif" transform="matrix(0.0,1.0,-1.0,0.0,374.0,381.0)"/>
-        <g class="substation-diagram NODE FICT_vl1_dgen2Fictif" id="FICT_vl1_dgen2Fictif" transform="translate(541.0,411.0)"/>
-        <g class="substation-diagram NODE FICT_vl1_dtrf14Fictif" id="FICT_vl1_dtrf14Fictif" transform="translate(441.0,411.0)"/>
-        <polyline class="wire_vl1" points="310.0,360.0,320.0,360.0" id="vl1_Wire0"/>
-        <polyline class="wire_vl1" points="370.0,360.0,380.0,360.0" id="vl1_Wire1"/>
-        <polyline class="wire_vl1" points="310.0,385.0,320.0,385.0" id="vl1_Wire2"/>
-        <polyline class="wire_vl1" points="370.0,385.0,380.0,385.0" id="vl1_Wire3"/>
+        <g class="substation-diagram NODE FICT_vl1_dtrf17Fictif" id="FICT_vl1_dtrf17Fictif" transform="translate(466.0,411.0)"/>
+        <g class="substation-diagram NODE FICT_vl1_dsect22Fictif" id="FICT_vl1_dsect22Fictif" transform="matrix(0.0,1.0,-1.0,0.0,574.0,381.0)"/>
+        <g class="substation-diagram NODE FICT_vl1_dgen2Fictif" id="FICT_vl1_dgen2Fictif" transform="translate(841.0,411.0)"/>
+        <g class="substation-diagram NODE FICT_vl1_dtrf14Fictif" id="FICT_vl1_dtrf14Fictif" transform="translate(741.0,411.0)"/>
+        <polyline class="wire_vl1" points="510.0,360.0,520.0,360.0" id="vl1_Wire0"/>
+        <polyline class="wire_vl1" points="570.0,360.0,580.0,360.0" id="vl1_Wire1"/>
+        <polyline class="wire_vl1" points="510.0,385.0,520.0,385.0" id="vl1_Wire2"/>
+        <polyline class="wire_vl1" points="570.0,385.0,580.0,385.0" id="vl1_Wire3"/>
         <polyline class="wire_vl1" points="95.0,360.0,95.0,360.0" id="vl1_Wire4"/>
         <polyline class="wire_vl1" points="95.0,84.0,95.0,195.0" id="vl1_Wire5"/>
         <g class="substation-diagram ARROW1_load1_UP" id="vl1_Wire5_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,90.0,99.0)">
@@ -407,9 +530,9 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <polyline class="wire_vl1" points="395.0,360.0,395.0,360.0" id="vl1_Wire8"/>
-        <polyline class="wire_vl1" points="395.0,84.0,395.0,195.0" id="vl1_Wire9"/>
-        <g class="substation-diagram ARROW1_load2_UP" id="vl1_Wire9_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,390.0,99.0)">
+        <polyline class="wire_vl1" points="595.0,360.0,595.0,360.0" id="vl1_Wire8"/>
+        <polyline class="wire_vl1" points="595.0,84.0,595.0,195.0" id="vl1_Wire9"/>
+        <g class="substation-diagram ARROW1_load2_UP" id="vl1_Wire9_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,590.0,99.0)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -418,7 +541,7 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">10</text>
         </g>
-        <g class="substation-diagram ARROW2_load2_UP" id="vl1_Wire9_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,390.0,119.0)">
+        <g class="substation-diagram ARROW2_load2_UP" id="vl1_Wire9_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,590.0,119.0)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -427,9 +550,9 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">10</text>
         </g>
-        <polyline class="wire_vl1" points="545.0,385.0,545.0,385.0" id="vl1_Wire10"/>
-        <polyline class="wire_vl1" points="545.0,659.0,545.0,550.0" id="vl1_Wire11"/>
-        <g class="substation-diagram ARROW1_gen2_DOWN" id="vl1_Wire11_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,540.0,634.0)">
+        <polyline class="wire_vl1" points="845.0,385.0,845.0,385.0" id="vl1_Wire10"/>
+        <polyline class="wire_vl1" points="845.0,659.0,845.0,550.0" id="vl1_Wire11"/>
+        <g class="substation-diagram ARROW1_gen2_DOWN" id="vl1_Wire11_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,840.0,634.0)">
      <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -438,7 +561,7 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <g class="substation-diagram ARROW2_gen2_DOWN" id="vl1_Wire11_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,540.0,614.0)">
+        <g class="substation-diagram ARROW2_gen2_DOWN" id="vl1_Wire11_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,840.0,614.0)">
      <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -467,9 +590,9 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <polyline class="wire_vl1" points="495.0,360.0,495.0,360.0" id="vl1_Wire14"/>
-        <polyline class="wire_vl1" points="495.0,195.0,495.0,84.0" id="vl1_Wire15"/>
-        <g class="substation-diagram ARROW1_trf2_ONE_DOWN" id="vl1_Wire15_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,490.0,170.0)">
+        <polyline class="wire_vl1" points="795.0,360.0,795.0,360.0" id="vl1_Wire14"/>
+        <polyline class="wire_vl1" points="795.0,195.0,795.0,84.0" id="vl1_Wire15"/>
+        <g class="substation-diagram ARROW1_trf2_ONE_DOWN" id="vl1_Wire15_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,790.0,170.0)">
      <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -478,7 +601,7 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <g class="substation-diagram ARROW2_trf2_ONE_DOWN" id="vl1_Wire15_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,490.0,150.0)">
+        <g class="substation-diagram ARROW2_trf2_ONE_DOWN" id="vl1_Wire15_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,790.0,150.0)">
      <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -507,9 +630,9 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <polyline class="wire_vl1" points="445.0,385.0,445.0,385.0" id="vl1_Wire18"/>
-        <polyline class="wire_vl1" points="445.0,550.0,445.0,661.0" id="vl1_Wire19"/>
-        <g class="substation-diagram ARROW1_trf4_ONE_DOWN" id="vl1_Wire19_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,440.0,565.0)">
+        <polyline class="wire_vl1" points="745.0,385.0,745.0,385.0" id="vl1_Wire18"/>
+        <polyline class="wire_vl1" points="745.0,550.0,745.0,661.0" id="vl1_Wire19"/>
+        <g class="substation-diagram ARROW1_trf4_ONE_DOWN" id="vl1_Wire19_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,740.0,565.0)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -518,7 +641,7 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <g class="substation-diagram ARROW2_trf4_ONE_DOWN" id="vl1_Wire19_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,440.0,585.0)">
+        <g class="substation-diagram ARROW2_trf4_ONE_DOWN" id="vl1_Wire19_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,740.0,585.0)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -547,38 +670,152 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <polyline class="wire_vl1" points="335.0,360.0,320.0,360.0" id="vl1_Wire22"/>
-        <polyline class="wire_vl1" points="320.0,360.0,320.0,360.0" id="vl1_Wire23"/>
-        <polyline class="wire_vl1" points="95.0,215.0,95.0,330.0" id="vl1_Wire24"/>
-        <polyline class="wire_vl1" points="95.0,360.0,95.0,330.0" id="vl1_Wire25"/>
-        <polyline class="wire_vl1" points="145.0,215.0,145.0,330.0" id="vl1_Wire26"/>
-        <polyline class="wire_vl1" points="145.0,360.0,145.0,330.0" id="vl1_Wire27"/>
-        <polyline class="wire_vl1" points="295.0,215.0,295.0,330.0" id="vl1_Wire28"/>
-        <polyline class="wire_vl1" points="295.0,360.0,295.0,330.0" id="vl1_Wire29"/>
-        <polyline class="wire_vl1" points="355.0,360.0,370.0,360.0" id="vl1_Wire30"/>
-        <polyline class="wire_vl1" points="370.0,360.0,370.0,360.0" id="vl1_Wire31"/>
-        <polyline class="wire_vl1" points="395.0,215.0,395.0,330.0" id="vl1_Wire32"/>
-        <polyline class="wire_vl1" points="395.0,360.0,395.0,330.0" id="vl1_Wire33"/>
-        <polyline class="wire_vl1" points="495.0,215.0,495.0,330.0" id="vl1_Wire34"/>
-        <polyline class="wire_vl1" points="495.0,360.0,495.0,330.0" id="vl1_Wire35"/>
-        <polyline class="wire_vl1" points="335.0,385.0,320.0,385.0" id="vl1_Wire36"/>
-        <polyline class="wire_vl1" points="320.0,385.0,320.0,385.0" id="vl1_Wire37"/>
-        <polyline class="wire_vl1" points="195.0,530.0,195.0,415.0" id="vl1_Wire38"/>
-        <polyline class="wire_vl1" points="195.0,385.0,195.0,415.0" id="vl1_Wire39"/>
-        <polyline class="wire_vl1" points="245.0,530.0,245.0,415.0" id="vl1_Wire40"/>
-        <polyline class="wire_vl1" points="245.0,385.0,245.0,415.0" id="vl1_Wire41"/>
-        <polyline class="wire_vl1" points="355.0,385.0,370.0,385.0" id="vl1_Wire42"/>
-        <polyline class="wire_vl1" points="370.0,385.0,370.0,385.0" id="vl1_Wire43"/>
-        <polyline class="wire_vl1" points="545.0,530.0,545.0,415.0" id="vl1_Wire44"/>
-        <polyline class="wire_vl1" points="545.0,385.0,545.0,415.0" id="vl1_Wire45"/>
-        <polyline class="wire_vl1" points="445.0,530.0,445.0,415.0" id="vl1_Wire46"/>
-        <polyline class="wire_vl1" points="445.0,385.0,445.0,415.0" id="vl1_Wire47"/>
+        <polyline class="wire_vl1" points="370.0,360.0,370.0,360.0" id="vl1_Wire22"/>
+        <polyline class="wire_vl1" points="470.0,385.0,470.0,385.0" id="vl1_Wire23"/>
+        <polyline class="wire_vl1" points="670.0,360.0,670.0,360.0" id="vl1_Wire24"/>
+        <polyline class="wire_vl1" points="370.0,236.66666666666669,370.0,167.33333333333331" id="vl1_Wire25"/>
+        <polyline class="wire_vl1" points="370.0,159.33333333333331,370.0,121.66666666666667,345.0,121.66666666666667,345.0,84.00000000000003" id="vl1_Wire26"/>
+        <g id="vl1_Wire26_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,365.0,134.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <g id="vl1_Wire26_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,365.0,114.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <polyline class="wire_vl1" points="370.0,159.33333333333331,370.0,121.66666666666667,395.0,121.66666666666667,395.0,84.00000000000003" id="vl1_Wire27"/>
+        <g id="vl1_Wire27_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,365.0,134.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <g id="vl1_Wire27_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,365.0,114.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <polyline class="wire_vl1" points="470.0,508.3333333333333,470.0,577.6666666666665" id="vl1_Wire28"/>
+        <polyline class="wire_vl1" points="470.0,585.6666666666665,470.0,623.3333333333333,445.0,623.3333333333333,445.0,660.9999999999999" id="vl1_Wire29"/>
+        <g id="vl1_Wire29_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,465.0,600.6667)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <g id="vl1_Wire29_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,465.0,620.6667)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <polyline class="wire_vl1" points="470.0,585.6666666666665,470.0,623.3333333333333,495.0,623.3333333333333,495.0,660.9999999999999" id="vl1_Wire30"/>
+        <g id="vl1_Wire30_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,465.0,600.6667)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <g id="vl1_Wire30_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,465.0,620.6667)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <polyline class="wire_vl1" points="670.0,236.66666666666669,670.0,167.33333333333331" id="vl1_Wire31"/>
+        <polyline class="wire_vl1" points="670.0,159.33333333333331,670.0,121.66666666666667,645.0,121.66666666666667,645.0,84.00000000000003" id="vl1_Wire32"/>
+        <g id="vl1_Wire32_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,665.0,134.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <g id="vl1_Wire32_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,665.0,114.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <polyline class="wire_vl1" points="670.0,159.33333333333331,670.0,121.66666666666667,695.0,121.66666666666667,695.0,84.00000000000003" id="vl1_Wire33"/>
+        <g id="vl1_Wire33_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,665.0,134.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <g id="vl1_Wire33_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,665.0,114.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <polyline class="wire_vl1" points="535.0,360.0,520.0,360.0" id="vl1_Wire34"/>
+        <polyline class="wire_vl1" points="520.0,360.0,520.0,360.0" id="vl1_Wire35"/>
+        <polyline class="wire_vl1" points="95.0,215.0,95.0,330.0" id="vl1_Wire36"/>
+        <polyline class="wire_vl1" points="95.0,360.0,95.0,330.0" id="vl1_Wire37"/>
+        <polyline class="wire_vl1" points="145.0,215.0,145.0,330.0" id="vl1_Wire38"/>
+        <polyline class="wire_vl1" points="145.0,360.0,145.0,330.0" id="vl1_Wire39"/>
+        <polyline class="wire_vl1" points="295.0,215.0,295.0,330.0" id="vl1_Wire40"/>
+        <polyline class="wire_vl1" points="295.0,360.0,295.0,330.0" id="vl1_Wire41"/>
+        <polyline class="wire_vl1" points="370.0,256.6666666666667,370.0,330.0" id="vl1_Wire42"/>
+        <polyline class="wire_vl1" points="370.0,360.0,370.0,330.0" id="vl1_Wire43"/>
+        <polyline class="wire_vl1" points="555.0,360.0,570.0,360.0" id="vl1_Wire44"/>
+        <polyline class="wire_vl1" points="570.0,360.0,570.0,360.0" id="vl1_Wire45"/>
+        <polyline class="wire_vl1" points="595.0,215.0,595.0,330.0" id="vl1_Wire46"/>
+        <polyline class="wire_vl1" points="595.0,360.0,595.0,330.0" id="vl1_Wire47"/>
+        <polyline class="wire_vl1" points="795.0,215.0,795.0,330.0" id="vl1_Wire48"/>
+        <polyline class="wire_vl1" points="795.0,360.0,795.0,330.0" id="vl1_Wire49"/>
+        <polyline class="wire_vl1" points="670.0,256.6666666666667,670.0,330.0" id="vl1_Wire50"/>
+        <polyline class="wire_vl1" points="670.0,360.0,670.0,330.0" id="vl1_Wire51"/>
+        <polyline class="wire_vl1" points="535.0,385.0,520.0,385.0" id="vl1_Wire52"/>
+        <polyline class="wire_vl1" points="520.0,385.0,520.0,385.0" id="vl1_Wire53"/>
+        <polyline class="wire_vl1" points="195.0,530.0,195.0,415.0" id="vl1_Wire54"/>
+        <polyline class="wire_vl1" points="195.0,385.0,195.0,415.0" id="vl1_Wire55"/>
+        <polyline class="wire_vl1" points="245.0,530.0,245.0,415.0" id="vl1_Wire56"/>
+        <polyline class="wire_vl1" points="245.0,385.0,245.0,415.0" id="vl1_Wire57"/>
+        <polyline class="wire_vl1" points="470.0,488.3333333333333,470.0,415.0" id="vl1_Wire58"/>
+        <polyline class="wire_vl1" points="470.0,385.0,470.0,415.0" id="vl1_Wire59"/>
+        <polyline class="wire_vl1" points="555.0,385.0,570.0,385.0" id="vl1_Wire60"/>
+        <polyline class="wire_vl1" points="570.0,385.0,570.0,385.0" id="vl1_Wire61"/>
+        <polyline class="wire_vl1" points="845.0,530.0,845.0,415.0" id="vl1_Wire62"/>
+        <polyline class="wire_vl1" points="845.0,385.0,845.0,415.0" id="vl1_Wire63"/>
+        <polyline class="wire_vl1" points="745.0,530.0,745.0,415.0" id="vl1_Wire64"/>
+        <polyline class="wire_vl1" points="745.0,385.0,745.0,415.0" id="vl1_Wire65"/>
         <g class="substation-diagram BUSBAR_SECTION bbs5" id="bbs5" transform="translate(80.0,1050.0)">
-            <line y2="0" x1="0" class="bus_vl2" x2="380.0" y1="0"/>
+            <line y2="0" x1="0" class="bus_vl2" x2="680.0" y1="0"/>
             <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs5</text>
         </g>
         <g class="substation-diagram BUSBAR_SECTION bbs6" id="bbs6" transform="translate(80.0,1075.0)">
-            <line y2="0" x1="0" class="bus_vl2" x2="380.0" y1="0"/>
+            <line y2="0" x1="0" class="bus_vl2" x2="680.0" y1="0"/>
             <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs6</text>
         </g>
         <g class="substation-diagram LOAD load3" id="load3" transform="translate(187.0,765.5)">
@@ -594,23 +831,23 @@
 <text x="-5.0" font-size="8" y="25.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">gen4</text>
         </g>
         <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf1_TWO" id="trf1_TWO" transform="translate(238.5,766.0)">
-    <circle r="4" cx="4" cy="4"/>
-    <circle r="4" cx="9" cy="4"/>
+    <circle r="4" id="WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="WINDING2" cx="9" cy="4"/>
 <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf1</text>
         </g>
-        <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf2_TWO" id="trf2_TWO" transform="translate(388.5,1351.0)">
-    <circle r="4" cx="4" cy="4"/>
-    <circle r="4" cx="9" cy="4"/>
+        <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf2_TWO" id="trf2_TWO" transform="translate(688.5,1351.0)">
+    <circle r="4" id="WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="WINDING2" cx="9" cy="4"/>
 <text x="-5.0" font-size="8" y="21.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf2</text>
         </g>
-        <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf3_TWO" id="trf3_TWO" transform="translate(438.5,1351.0)">
-    <circle r="4" cx="4" cy="4"/>
-    <circle r="4" cx="9" cy="4"/>
+        <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf3_TWO" id="trf3_TWO" transform="translate(738.5,1351.0)">
+    <circle r="4" id="WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="WINDING2" cx="9" cy="4"/>
 <text x="-5.0" font-size="8" y="21.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf3</text>
         </g>
         <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf4_TWO" id="trf4_TWO" transform="translate(338.5,766.0)">
-    <circle r="4" cx="4" cy="4"/>
-    <circle r="4" cx="9" cy="4"/>
+    <circle r="4" id="WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="WINDING2" cx="9" cy="4"/>
 <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf4</text>
         </g>
         <g class="substation-diagram DISCONNECTOR dscpl1" id="dscpl1" transform="translate(141.0,1046.0)">
@@ -698,7 +935,7 @@
         <line y2="10" x1="5" x2="15" y1="10"/>
     </g>
 </g>
-        <g class="substation-diagram DISCONNECTOR dtrf22" id="dtrf22" transform="translate(391.0,1071.0)">
+        <g class="substation-diagram DISCONNECTOR dtrf22" id="dtrf22" transform="translate(691.0,1071.0)">
     <g id="closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
@@ -707,7 +944,7 @@
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
-        <g class="substation-diagram BREAKER btrf22" id="btrf22" transform="translate(385.0,1220.0)">
+        <g class="substation-diagram BREAKER btrf22" id="btrf22" transform="translate(685.0,1220.0)">
     <g class="closed" id="closed">
         <rect x="1" width="18" y="1" height="18"/>
         <line y2="15" x1="10" x2="10" y1="5"/>
@@ -717,7 +954,7 @@
         <line y2="10" x1="5" x2="15" y1="10"/>
     </g>
 </g>
-        <g class="substation-diagram DISCONNECTOR dtrf23" id="dtrf23" transform="translate(441.0,1071.0)">
+        <g class="substation-diagram DISCONNECTOR dtrf23" id="dtrf23" transform="translate(741.0,1071.0)">
     <g id="closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
@@ -726,7 +963,7 @@
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
-        <g class="substation-diagram BREAKER btrf23" id="btrf23" transform="translate(435.0,1220.0)">
+        <g class="substation-diagram BREAKER btrf23" id="btrf23" transform="translate(735.0,1220.0)">
     <g class="closed" id="closed">
         <rect x="1" width="18" y="1" height="18"/>
         <line y2="15" x1="10" x2="10" y1="5"/>
@@ -755,14 +992,119 @@
         <line y2="10" x1="5" x2="15" y1="10"/>
     </g>
 </g>
+        <g class="substation-diagram DISCONNECTOR dtrf26" id="dtrf26" transform="translate(516.0,1071.0)">
+    <g id="closed">
+        <line y2="8" x1="0" x2="8" y1="0"/>
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+    <g id="open">
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+</g>
+        <g class="substation-diagram BREAKER btrf26" id="btrf26" transform="translate(510.0,926.6666666666667)">
+    <g class="closed" id="closed">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="15" x1="10" x2="10" y1="5"/>
+    </g>
+    <g class="open" id="open">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="10" x1="5" x2="15" y1="10"/>
+    </g>
+</g>
+        <g class="substation-diagram DISCONNECTOR dtrf27" id="dtrf27" transform="translate(416.0,1046.0)">
+    <g id="closed">
+        <line y2="8" x1="0" x2="8" y1="0"/>
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+    <g id="open">
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+</g>
+        <g class="substation-diagram BREAKER btrf27" id="btrf27" transform="translate(410.0,926.6666666666667)">
+    <g class="closed" id="closed">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="15" x1="10" x2="10" y1="5"/>
+    </g>
+    <g class="open" id="open">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="10" x1="5" x2="15" y1="10"/>
+    </g>
+</g>
+        <g class="substation-diagram DISCONNECTOR dtrf28" id="dtrf28" transform="translate(616.0,1071.0)">
+    <g id="closed">
+        <line y2="8" x1="0" x2="8" y1="0"/>
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+    <g id="open">
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+</g>
+        <g class="substation-diagram BREAKER btrf28" id="btrf28" transform="translate(610.0,1178.3333333333333)">
+    <g class="closed" id="closed">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="15" x1="10" x2="10" y1="5"/>
+    </g>
+    <g class="open" id="open">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="10" x1="5" x2="15" y1="10"/>
+    </g>
+</g>
+        <g class="substation-diagram THREE_WINDINGS_TRANSFORMER FICT_vl2_trf62_fictif" id="FICT_vl2_trf62_fictif" transform="translate(513.5,849.3333333333334)">
+    <circle r="4" id="WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="WINDING2" cx="9" cy="4"/>
+    <circle r="5" id="WINDING3" cx="6" cy="8"/>
+</g>
+        <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf6_TWO_ONE" id="trf6_TWO_ONE" transform="translate(488.5,766.0)">
+    <circle r="4" id="WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="WINDING2" cx="9" cy="4"/>
+<text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf6_TWO_ONE</text>
+        </g>
+        <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf6_TWO_THREE" id="trf6_TWO_THREE" transform="translate(538.5,766.0)">
+    <circle r="4" id="WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="WINDING2" cx="9" cy="4"/>
+<text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf6_TWO_THREE</text>
+        </g>
+        <g class="substation-diagram THREE_WINDINGS_TRANSFORMER FICT_vl2_trf72_fictif" id="FICT_vl2_trf72_fictif" transform="translate(413.5,849.3333333333334)">
+    <circle r="4" id="WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="WINDING2" cx="9" cy="4"/>
+    <circle r="5" id="WINDING3" cx="6" cy="8"/>
+</g>
+        <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf7_TWO_ONE" id="trf7_TWO_ONE" transform="translate(388.5,766.0)">
+    <circle r="4" id="WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="WINDING2" cx="9" cy="4"/>
+<text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf7_TWO_ONE</text>
+        </g>
+        <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf7_TWO_THREE" id="trf7_TWO_THREE" transform="translate(438.5,766.0)">
+    <circle r="4" id="WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="WINDING2" cx="9" cy="4"/>
+<text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf7_TWO_THREE</text>
+        </g>
+        <g class="substation-diagram THREE_WINDINGS_TRANSFORMER FICT_vl2_trf82_fictif" id="FICT_vl2_trf82_fictif" transform="translate(613.5,1267.6666666666665)">
+    <circle r="4" id="WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="WINDING2" cx="9" cy="4"/>
+    <circle r="5" id="WINDING3" cx="6" cy="8"/>
+</g>
+        <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf8_TWO_ONE" id="trf8_TWO_ONE" transform="translate(588.5,1351.0)">
+    <circle r="4" id="WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="WINDING2" cx="9" cy="4"/>
+<text x="-5.0" font-size="8" y="21.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf8_TWO_ONE</text>
+        </g>
+        <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf8_TWO_THREE" id="trf8_TWO_THREE" transform="translate(638.5,1351.0)">
+    <circle r="4" id="WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="WINDING2" cx="9" cy="4"/>
+<text x="-5.0" font-size="8" y="21.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf8_TWO_THREE</text>
+        </g>
         <g class="substation-diagram NODE FICT_vl2_dscpl1Fictif" id="FICT_vl2_dscpl1Fictif" transform="matrix(0.0,1.0,-1.0,0.0,149.0,1006.0)"/>
         <g class="substation-diagram NODE FICT_vl2_dload3Fictif" id="FICT_vl2_dload3Fictif" transform="translate(191.0,1016.0)"/>
         <g class="substation-diagram NODE FICT_vl2_dtrf21Fictif" id="FICT_vl2_dtrf21Fictif" transform="translate(241.0,1016.0)"/>
         <g class="substation-diagram NODE FICT_vl2_dtrf24Fictif" id="FICT_vl2_dtrf24Fictif" transform="translate(341.0,1016.0)"/>
+        <g class="substation-diagram NODE FICT_vl2_dtrf27Fictif" id="FICT_vl2_dtrf27Fictif" transform="translate(416.0,1016.0)"/>
         <g class="substation-diagram NODE FICT_vl2_dscpl2Fictif" id="FICT_vl2_dscpl2Fictif" transform="matrix(0.0,1.0,-1.0,0.0,99.0,1006.0)"/>
         <g class="substation-diagram NODE FICT_vl2_dgen4Fictif" id="FICT_vl2_dgen4Fictif" transform="translate(291.0,1101.0)"/>
-        <g class="substation-diagram NODE FICT_vl2_dtrf22Fictif" id="FICT_vl2_dtrf22Fictif" transform="translate(391.0,1101.0)"/>
-        <g class="substation-diagram NODE FICT_vl2_dtrf23Fictif" id="FICT_vl2_dtrf23Fictif" transform="translate(441.0,1101.0)"/>
+        <g class="substation-diagram NODE FICT_vl2_dtrf22Fictif" id="FICT_vl2_dtrf22Fictif" transform="translate(691.0,1101.0)"/>
+        <g class="substation-diagram NODE FICT_vl2_dtrf23Fictif" id="FICT_vl2_dtrf23Fictif" transform="translate(741.0,1101.0)"/>
+        <g class="substation-diagram NODE FICT_vl2_dtrf26Fictif" id="FICT_vl2_dtrf26Fictif" transform="translate(516.0,1016.0)"/>
+        <g class="substation-diagram NODE FICT_vl2_dtrf28Fictif" id="FICT_vl2_dtrf28Fictif" transform="translate(616.0,1101.0)"/>
         <polyline class="wire_vl2" points="145.0,1050.0,145.0,1050.0" id="vl2_Wire0"/>
         <polyline class="wire_vl2" points="95.0,1075.0,95.0,1075.0" id="vl2_Wire1"/>
         <polyline class="wire_vl2" points="195.0,1050.0,195.0,1050.0" id="vl2_Wire2"/>
@@ -825,9 +1167,9 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <polyline class="wire_vl2" points="395.0,1075.0,395.0,1075.0" id="vl2_Wire8"/>
-        <polyline class="wire_vl2" points="395.0,1240.0,395.0,1351.0" id="vl2_Wire9"/>
-        <g class="substation-diagram ARROW1_trf2_TWO_DOWN" id="vl2_Wire9_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,390.0,1255.0)">
+        <polyline class="wire_vl2" points="695.0,1075.0,695.0,1075.0" id="vl2_Wire8"/>
+        <polyline class="wire_vl2" points="695.0,1240.0,695.0,1351.0" id="vl2_Wire9"/>
+        <g class="substation-diagram ARROW1_trf2_TWO_DOWN" id="vl2_Wire9_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,690.0,1255.0)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -836,7 +1178,7 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <g class="substation-diagram ARROW2_trf2_TWO_DOWN" id="vl2_Wire9_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,390.0,1275.0)">
+        <g class="substation-diagram ARROW2_trf2_TWO_DOWN" id="vl2_Wire9_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,690.0,1275.0)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -845,9 +1187,9 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <polyline class="wire_vl2" points="445.0,1075.0,445.0,1075.0" id="vl2_Wire10"/>
-        <polyline class="wire_vl2" points="445.0,1240.0,445.0,1351.0" id="vl2_Wire11"/>
-        <g class="substation-diagram ARROW1_trf3_TWO_DOWN" id="vl2_Wire11_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,440.0,1255.0)">
+        <polyline class="wire_vl2" points="745.0,1075.0,745.0,1075.0" id="vl2_Wire10"/>
+        <polyline class="wire_vl2" points="745.0,1240.0,745.0,1351.0" id="vl2_Wire11"/>
+        <g class="substation-diagram ARROW1_trf3_TWO_DOWN" id="vl2_Wire11_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,740.0,1255.0)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -856,7 +1198,7 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <g class="substation-diagram ARROW2_trf3_TWO_DOWN" id="vl2_Wire11_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,440.0,1275.0)">
+        <g class="substation-diagram ARROW2_trf3_TWO_DOWN" id="vl2_Wire11_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,740.0,1275.0)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -885,24 +1227,138 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <polyline class="wire_vl2" points="130.0,1010.0,145.0,1010.0" id="vl2_Wire14"/>
-        <polyline class="wire_vl2" points="145.0,1050.0,145.0,1010.0" id="vl2_Wire15"/>
-        <polyline class="wire_vl2" points="195.0,905.0,195.0,1020.0" id="vl2_Wire16"/>
-        <polyline class="wire_vl2" points="195.0,1050.0,195.0,1020.0" id="vl2_Wire17"/>
-        <polyline class="wire_vl2" points="245.0,905.0,245.0,1020.0" id="vl2_Wire18"/>
-        <polyline class="wire_vl2" points="245.0,1050.0,245.0,1020.0" id="vl2_Wire19"/>
-        <polyline class="wire_vl2" points="345.0,905.0,345.0,1020.0" id="vl2_Wire20"/>
-        <polyline class="wire_vl2" points="345.0,1050.0,345.0,1020.0" id="vl2_Wire21"/>
-        <polyline class="wire_vl2" points="110.0,1010.0,95.0,1010.0" id="vl2_Wire22"/>
-        <polyline class="wire_vl2" points="95.0,1075.0,95.0,1010.0" id="vl2_Wire23"/>
-        <polyline class="wire_vl2" points="295.0,1220.0,295.0,1105.0" id="vl2_Wire24"/>
-        <polyline class="wire_vl2" points="295.0,1075.0,295.0,1105.0" id="vl2_Wire25"/>
-        <polyline class="wire_vl2" points="395.0,1220.0,395.0,1105.0" id="vl2_Wire26"/>
-        <polyline class="wire_vl2" points="395.0,1075.0,395.0,1105.0" id="vl2_Wire27"/>
-        <polyline class="wire_vl2" points="445.0,1220.0,445.0,1105.0" id="vl2_Wire28"/>
-        <polyline class="wire_vl2" points="445.0,1075.0,445.0,1105.0" id="vl2_Wire29"/>
+        <polyline class="wire_vl2" points="520.0,1075.0,520.0,1075.0" id="vl2_Wire14"/>
+        <polyline class="wire_vl2" points="420.0,1050.0,420.0,1050.0" id="vl2_Wire15"/>
+        <polyline class="wire_vl2" points="620.0,1075.0,620.0,1075.0" id="vl2_Wire16"/>
+        <polyline class="wire_vl2" points="520.0,926.6666666666667,520.0,857.3333333333334" id="vl2_Wire17"/>
+        <polyline class="wire_vl2" points="520.0,849.3333333333334,520.0,811.6666666666667,495.0,811.6666666666667,495.0,774.0" id="vl2_Wire18"/>
+        <g id="vl2_Wire18_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,515.0,824.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <g id="vl2_Wire18_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,515.0,804.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <polyline class="wire_vl2" points="520.0,849.3333333333334,520.0,811.6666666666667,545.0,811.6666666666667,545.0,774.0" id="vl2_Wire19"/>
+        <g id="vl2_Wire19_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,515.0,824.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <g id="vl2_Wire19_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,515.0,804.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <polyline class="wire_vl2" points="420.0,926.6666666666667,420.0,857.3333333333334" id="vl2_Wire20"/>
+        <polyline class="wire_vl2" points="420.0,849.3333333333334,420.0,811.6666666666667,395.0,811.6666666666667,395.0,774.0" id="vl2_Wire21"/>
+        <g id="vl2_Wire21_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,415.0,824.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <g id="vl2_Wire21_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,415.0,804.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <polyline class="wire_vl2" points="420.0,849.3333333333334,420.0,811.6666666666667,445.0,811.6666666666667,445.0,774.0" id="vl2_Wire22"/>
+        <g id="vl2_Wire22_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,415.0,824.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <g id="vl2_Wire22_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,415.0,804.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <polyline class="wire_vl2" points="620.0,1198.3333333333333,620.0,1267.6666666666665" id="vl2_Wire23"/>
+        <polyline class="wire_vl2" points="620.0,1275.6666666666665,620.0,1313.3333333333333,595.0,1313.3333333333333,595.0,1351.0" id="vl2_Wire24"/>
+        <g id="vl2_Wire24_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,615.0,1290.6667)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <g id="vl2_Wire24_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,615.0,1310.6667)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <polyline class="wire_vl2" points="620.0,1275.6666666666665,620.0,1313.3333333333333,645.0,1313.3333333333333,645.0,1351.0" id="vl2_Wire25"/>
+        <g id="vl2_Wire25_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,615.0,1290.6667)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <g id="vl2_Wire25_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,615.0,1310.6667)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <polyline class="wire_vl2" points="130.0,1010.0,145.0,1010.0" id="vl2_Wire26"/>
+        <polyline class="wire_vl2" points="145.0,1050.0,145.0,1010.0" id="vl2_Wire27"/>
+        <polyline class="wire_vl2" points="195.0,905.0,195.0,1020.0" id="vl2_Wire28"/>
+        <polyline class="wire_vl2" points="195.0,1050.0,195.0,1020.0" id="vl2_Wire29"/>
+        <polyline class="wire_vl2" points="245.0,905.0,245.0,1020.0" id="vl2_Wire30"/>
+        <polyline class="wire_vl2" points="245.0,1050.0,245.0,1020.0" id="vl2_Wire31"/>
+        <polyline class="wire_vl2" points="345.0,905.0,345.0,1020.0" id="vl2_Wire32"/>
+        <polyline class="wire_vl2" points="345.0,1050.0,345.0,1020.0" id="vl2_Wire33"/>
+        <polyline class="wire_vl2" points="420.0,946.6666666666667,420.0,1020.0" id="vl2_Wire34"/>
+        <polyline class="wire_vl2" points="420.0,1050.0,420.0,1020.0" id="vl2_Wire35"/>
+        <polyline class="wire_vl2" points="110.0,1010.0,95.0,1010.0" id="vl2_Wire36"/>
+        <polyline class="wire_vl2" points="95.0,1075.0,95.0,1010.0" id="vl2_Wire37"/>
+        <polyline class="wire_vl2" points="295.0,1220.0,295.0,1105.0" id="vl2_Wire38"/>
+        <polyline class="wire_vl2" points="295.0,1075.0,295.0,1105.0" id="vl2_Wire39"/>
+        <polyline class="wire_vl2" points="695.0,1220.0,695.0,1105.0" id="vl2_Wire40"/>
+        <polyline class="wire_vl2" points="695.0,1075.0,695.0,1105.0" id="vl2_Wire41"/>
+        <polyline class="wire_vl2" points="745.0,1220.0,745.0,1105.0" id="vl2_Wire42"/>
+        <polyline class="wire_vl2" points="745.0,1075.0,745.0,1105.0" id="vl2_Wire43"/>
+        <polyline class="wire_vl2" points="520.0,946.6666666666667,520.0,1020.0" id="vl2_Wire44"/>
+        <polyline class="wire_vl2" points="520.0,1075.0,520.0,1020.0" id="vl2_Wire45"/>
+        <polyline class="wire_vl2" points="620.0,1178.3333333333333,620.0,1105.0" id="vl2_Wire46"/>
+        <polyline class="wire_vl2" points="620.0,1075.0,620.0,1105.0" id="vl2_Wire47"/>
         <g class="substation-diagram BUSBAR_SECTION bbs7" id="bbs7" transform="translate(80.0,1740.0)">
-            <line y2="0" x1="0" class="bus_vl3" x2="80.0" y1="0"/>
+            <line y2="0" x1="0" class="bus_vl3" x2="380.0" y1="0"/>
             <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs7</text>
         </g>
         <g class="substation-diagram LOAD load4" id="load4" transform="translate(87.0,1455.5)">
@@ -912,8 +1368,8 @@
 <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">load4</text>
         </g>
         <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf5_TWO" id="trf5_TWO" transform="translate(138.5,2016.0)">
-    <circle r="4" cx="4" cy="4"/>
-    <circle r="4" cx="9" cy="4"/>
+    <circle r="4" id="WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="WINDING2" cx="9" cy="4"/>
 <text x="-5.0" font-size="8" y="21.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf5</text>
         </g>
         <g class="substation-diagram DISCONNECTOR dload4" id="dload4" transform="translate(91.0,1736.0)">
@@ -954,8 +1410,113 @@
         <line y2="10" x1="5" x2="15" y1="10"/>
     </g>
 </g>
+        <g class="substation-diagram DISCONNECTOR dtrf36" id="dtrf36" transform="translate(216.0,1736.0)">
+    <g id="closed">
+        <line y2="8" x1="0" x2="8" y1="0"/>
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+    <g id="open">
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+</g>
+        <g class="substation-diagram BREAKER btrf36" id="btrf36" transform="translate(210.0,1616.6666666666667)">
+    <g class="closed" id="closed">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="15" x1="10" x2="10" y1="5"/>
+    </g>
+    <g class="open" id="open">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="10" x1="5" x2="15" y1="10"/>
+    </g>
+</g>
+        <g class="substation-diagram DISCONNECTOR dtrf37" id="dtrf37" transform="translate(316.0,1736.0)">
+    <g id="closed">
+        <line y2="8" x1="0" x2="8" y1="0"/>
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+    <g id="open">
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+</g>
+        <g class="substation-diagram BREAKER btrf37" id="btrf37" transform="translate(310.0,1843.3333333333333)">
+    <g class="closed" id="closed">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="15" x1="10" x2="10" y1="5"/>
+    </g>
+    <g class="open" id="open">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="10" x1="5" x2="15" y1="10"/>
+    </g>
+</g>
+        <g class="substation-diagram DISCONNECTOR dtrf38" id="dtrf38" transform="translate(416.0,1736.0)">
+    <g id="closed">
+        <line y2="8" x1="0" x2="8" y1="0"/>
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+    <g id="open">
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+</g>
+        <g class="substation-diagram BREAKER btrf38" id="btrf38" transform="translate(410.0,1616.6666666666667)">
+    <g class="closed" id="closed">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="15" x1="10" x2="10" y1="5"/>
+    </g>
+    <g class="open" id="open">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="10" x1="5" x2="15" y1="10"/>
+    </g>
+</g>
+        <g class="substation-diagram THREE_WINDINGS_TRANSFORMER FICT_vl3_trf63_fictif" id="FICT_vl3_trf63_fictif" transform="translate(213.5,1539.3333333333333)">
+    <circle r="4" id="WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="WINDING2" cx="9" cy="4"/>
+    <circle r="5" id="WINDING3" cx="6" cy="8"/>
+</g>
+        <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf6_THREE_ONE" id="trf6_THREE_ONE" transform="translate(188.5,1456.0)">
+    <circle r="4" id="WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="WINDING2" cx="9" cy="4"/>
+<text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf6_THREE_ONE</text>
+        </g>
+        <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf6_THREE_TWO" id="trf6_THREE_TWO" transform="translate(238.5,1456.0)">
+    <circle r="4" id="WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="WINDING2" cx="9" cy="4"/>
+<text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf6_THREE_TWO</text>
+        </g>
+        <g class="substation-diagram THREE_WINDINGS_TRANSFORMER FICT_vl3_trf73_fictif" id="FICT_vl3_trf73_fictif" transform="translate(313.5,1932.6666666666667)">
+    <circle r="4" id="WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="WINDING2" cx="9" cy="4"/>
+    <circle r="5" id="WINDING3" cx="6" cy="8"/>
+</g>
+        <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf7_THREE_ONE" id="trf7_THREE_ONE" transform="translate(288.5,2016.0)">
+    <circle r="4" id="WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="WINDING2" cx="9" cy="4"/>
+<text x="-5.0" font-size="8" y="21.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf7_THREE_ONE</text>
+        </g>
+        <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf7_THREE_TWO" id="trf7_THREE_TWO" transform="translate(338.5,2016.0)">
+    <circle r="4" id="WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="WINDING2" cx="9" cy="4"/>
+<text x="-5.0" font-size="8" y="21.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf7_THREE_TWO</text>
+        </g>
+        <g class="substation-diagram THREE_WINDINGS_TRANSFORMER FICT_vl3_trf83_fictif" id="FICT_vl3_trf83_fictif" transform="translate(413.5,1539.3333333333333)">
+    <circle r="4" id="WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="WINDING2" cx="9" cy="4"/>
+    <circle r="5" id="WINDING3" cx="6" cy="8"/>
+</g>
+        <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf8_THREE_ONE" id="trf8_THREE_ONE" transform="translate(388.5,1456.0)">
+    <circle r="4" id="WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="WINDING2" cx="9" cy="4"/>
+<text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf8_THREE_ONE</text>
+        </g>
+        <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf8_THREE_TWO" id="trf8_THREE_TWO" transform="translate(438.5,1456.0)">
+    <circle r="4" id="WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="WINDING2" cx="9" cy="4"/>
+<text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf8_THREE_TWO</text>
+        </g>
         <g class="substation-diagram NODE FICT_vl3_dload4Fictif" id="FICT_vl3_dload4Fictif" transform="translate(91.0,1706.0)"/>
         <g class="substation-diagram NODE FICT_vl3_dtrf25Fictif" id="FICT_vl3_dtrf25Fictif" transform="translate(141.0,1766.0)"/>
+        <g class="substation-diagram NODE FICT_vl3_dtrf36Fictif" id="FICT_vl3_dtrf36Fictif" transform="translate(216.0,1706.0)"/>
+        <g class="substation-diagram NODE FICT_vl3_dtrf37Fictif" id="FICT_vl3_dtrf37Fictif" transform="translate(316.0,1766.0)"/>
+        <g class="substation-diagram NODE FICT_vl3_dtrf38Fictif" id="FICT_vl3_dtrf38Fictif" transform="translate(416.0,1706.0)"/>
         <polyline class="wire_vl3" points="95.0,1740.0,95.0,1740.0" id="vl3_Wire0"/>
         <polyline class="wire_vl3" points="95.0,1575.0,95.0,1464.0" id="vl3_Wire1"/>
         <g class="substation-diagram ARROW1_load4_UP" id="vl3_Wire1_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,90.0,1550.0)">
@@ -996,15 +1557,138 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <polyline class="wire_vl3" points="95.0,1595.0,95.0,1710.0" id="vl3_Wire4"/>
-        <polyline class="wire_vl3" points="95.0,1740.0,95.0,1710.0" id="vl3_Wire5"/>
-        <polyline class="wire_vl3" points="145.0,1885.0,145.0,1770.0" id="vl3_Wire6"/>
-        <polyline class="wire_vl3" points="145.0,1740.0,145.0,1770.0" id="vl3_Wire7"/>
+        <polyline class="wire_vl3" points="220.0,1740.0,220.0,1740.0" id="vl3_Wire4"/>
+        <polyline class="wire_vl3" points="320.0,1740.0,320.0,1740.0" id="vl3_Wire5"/>
+        <polyline class="wire_vl3" points="420.0,1740.0,420.0,1740.0" id="vl3_Wire6"/>
+        <polyline class="wire_vl3" points="220.0,1616.6666666666667,220.0,1547.3333333333333" id="vl3_Wire7"/>
+        <polyline class="wire_vl3" points="220.0,1539.3333333333333,220.0,1501.6666666666665,195.0,1501.6666666666665,195.0,1464.0" id="vl3_Wire8"/>
+        <g id="vl3_Wire8_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,215.0,1514.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <g id="vl3_Wire8_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,215.0,1494.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <polyline class="wire_vl3" points="220.0,1539.3333333333333,220.0,1501.6666666666665,245.0,1501.6666666666665,245.0,1464.0" id="vl3_Wire9"/>
+        <g id="vl3_Wire9_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,215.0,1514.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <g id="vl3_Wire9_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,215.0,1494.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <polyline class="wire_vl3" points="320.0,1863.3333333333333,320.0,1932.6666666666667" id="vl3_Wire10"/>
+        <polyline class="wire_vl3" points="320.0,1940.6666666666667,320.0,1978.3333333333335,295.0,1978.3333333333335,295.0,2016.0" id="vl3_Wire11"/>
+        <g id="vl3_Wire11_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,315.0,1955.6667)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <g id="vl3_Wire11_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,315.0,1975.6667)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <polyline class="wire_vl3" points="320.0,1940.6666666666667,320.0,1978.3333333333335,345.0,1978.3333333333335,345.0,2016.0" id="vl3_Wire12"/>
+        <g id="vl3_Wire12_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,315.0,1955.6667)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <g id="vl3_Wire12_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,315.0,1975.6667)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <polyline class="wire_vl3" points="420.0,1616.6666666666667,420.0,1547.3333333333333" id="vl3_Wire13"/>
+        <polyline class="wire_vl3" points="420.0,1539.3333333333333,420.0,1501.6666666666665,395.0,1501.6666666666665,395.0,1464.0" id="vl3_Wire14"/>
+        <g id="vl3_Wire14_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,415.0,1514.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <g id="vl3_Wire14_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,415.0,1494.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <polyline class="wire_vl3" points="420.0,1539.3333333333333,420.0,1501.6666666666665,445.0,1501.6666666666665,445.0,1464.0" id="vl3_Wire15"/>
+        <g id="vl3_Wire15_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,415.0,1514.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <g id="vl3_Wire15_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,415.0,1494.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <polyline class="wire_vl3" points="95.0,1595.0,95.0,1710.0" id="vl3_Wire16"/>
+        <polyline class="wire_vl3" points="95.0,1740.0,95.0,1710.0" id="vl3_Wire17"/>
+        <polyline class="wire_vl3" points="145.0,1885.0,145.0,1770.0" id="vl3_Wire18"/>
+        <polyline class="wire_vl3" points="145.0,1740.0,145.0,1770.0" id="vl3_Wire19"/>
+        <polyline class="wire_vl3" points="220.0,1636.6666666666667,220.0,1710.0" id="vl3_Wire20"/>
+        <polyline class="wire_vl3" points="220.0,1740.0,220.0,1710.0" id="vl3_Wire21"/>
+        <polyline class="wire_vl3" points="320.0,1843.3333333333333,320.0,1770.0" id="vl3_Wire22"/>
+        <polyline class="wire_vl3" points="320.0,1740.0,320.0,1770.0" id="vl3_Wire23"/>
+        <polyline class="wire_vl3" points="420.0,1636.6666666666667,420.0,1710.0" id="vl3_Wire24"/>
+        <polyline class="wire_vl3" points="420.0,1740.0,420.0,1710.0" id="vl3_Wire25"/>
         <polyline class="wire_vl1" points="145.0,80.0,145.0,50.0,40.0,50.0,40.0,740.0,245.0,740.0,245.0,770.0" id="vl1_vl2_Wire0"/>
-        <polyline class="wire_vl1" points="495.0,80.0,495.0,20.0,10.0,20.0,10.0,1385.0,395.0,1385.0,395.0,1355.0" id="vl1_vl2_Wire1"/>
-        <polyline class="wire_vl1" points="245.0,665.0,245.0,695.0,630.0,695.0,630.0,1415.0,445.0,1415.0,445.0,1355.0" id="vl1_vl2_Wire2"/>
-        <polyline class="wire_vl1" points="445.0,665.0,445.0,725.0,345.0,725.0,345.0,770.0" id="vl1_vl2_Wire3"/>
+        <polyline class="wire_vl1" points="795.0,80.0,795.0,20.0,10.0,20.0,10.0,1385.0,695.0,1385.0,695.0,1355.0" id="vl1_vl2_Wire1"/>
+        <polyline class="wire_vl1" points="245.0,665.0,245.0,695.0,930.0,695.0,930.0,1415.0,745.0,1415.0,745.0,1355.0" id="vl1_vl2_Wire2"/>
+        <polyline class="wire_vl1" points="745.0,665.0,745.0,725.0,345.0,725.0,345.0,770.0" id="vl1_vl2_Wire3"/>
         <polyline class="wire_vl1" points="295.0,80.0,295.0,-10.0,-20.0,-10.0,-20.0,2050.0,145.0,2050.0,145.0,2020.0" id="vl1_vl3_Wire4"/>
+        <polyline class="wire_vl1" points="345.0,80.00000000000003,345.0,-39.99999999999997,-50.0,-39.99999999999997,-50.0,680.0,495.0,680.0,495.0,770.0" id="vl1_vl2_Wire5"/>
+        <polyline class="wire_vl1" points="395.0,80.00000000000003,395.0,-69.99999999999997,-80.0,-69.99999999999997,-80.0,1430.0,195.0,1430.0,195.0,1460.0" id="vl1_vl3_Wire6"/>
+        <polyline class="wire_vl3" points="545.0,770.0,545.0,650.0,-110.0,650.0,-110.0,1400.0,245.0,1400.0,245.0,1460.0" id="vl2_vl3_Wire7"/>
+        <polyline class="wire_vl1" points="445.0,664.9999999999999,445.0,754.9999999999999,395.0,754.9999999999999,395.0,770.0" id="vl1_vl2_Wire8"/>
+        <polyline class="wire_vl1" points="495.0,664.9999999999999,495.0,784.9999999999999,1080.0,784.9999999999999,1080.0,2080.0,295.0,2080.0,295.0,2020.0" id="vl1_vl3_Wire9"/>
+        <polyline class="wire_vl3" points="445.0,770.0,445.0,590.0,-140.0,590.0,-140.0,2110.0,345.0,2110.0,345.0,2020.0" id="vl2_vl3_Wire10"/>
+        <polyline class="wire_vl1" points="645.0,80.00000000000003,645.0,-99.99999999999997,-170.0,-99.99999999999997,-170.0,1445.0,595.0,1445.0,595.0,1355.0" id="vl1_vl2_Wire11"/>
+        <polyline class="wire_vl1" points="695.0,80.00000000000003,695.0,-129.99999999999997,-200.0,-129.99999999999997,-200.0,1370.0,395.0,1370.0,395.0,1460.0" id="vl1_vl3_Wire12"/>
+        <polyline class="wire_vl3" points="645.0,1355.0,645.0,1475.0,445.0,1475.0,445.0,1460.0" id="vl2_vl3_Wire13"/>
         <g id="LABEL_VL_vl1">
             <text x="50.0" font-size="12" y="50.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">vl1</text>
         </g>

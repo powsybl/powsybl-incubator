@@ -60,12 +60,8 @@ public final class SubstationDiagram {
         return new SubstationDiagram(graph, sLayoutFactory, vLayoutFactory);
     }
 
-    public void writeSvg(ComponentLibrary componentLibrary, LayoutParameters layoutParameters, Path svgFile) {
-        writeSvg(componentLibrary, layoutParameters, svgFile, false);
-    }
-
     public void writeSvg(ComponentLibrary componentLibrary, LayoutParameters layoutParameters,
-                         Path svgFile, boolean debug) {
+                         Path svgFile) {
         Path dir = svgFile.toAbsolutePath().getParent();
         String svgFileName = svgFile.getFileName().toString();
         if (!svgFileName.endsWith(".svg")) {

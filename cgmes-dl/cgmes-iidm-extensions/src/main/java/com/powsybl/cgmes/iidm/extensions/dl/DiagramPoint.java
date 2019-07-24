@@ -6,6 +6,8 @@
  */
 package com.powsybl.cgmes.iidm.extensions.dl;
 
+import java.util.Objects;
+
 /**
  *
  * @author Massimo Ferraro <massimo.ferraro@techrain.eu>
@@ -32,6 +34,22 @@ public class DiagramPoint implements Comparable<DiagramPoint> {
 
     public int getSeq() {
         return seq;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y, seq);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (obj instanceof DiagramPoint) {
+            return ((DiagramPoint) obj).compareTo(this) == 0;
+        }
+        return false;
     }
 
     @Override

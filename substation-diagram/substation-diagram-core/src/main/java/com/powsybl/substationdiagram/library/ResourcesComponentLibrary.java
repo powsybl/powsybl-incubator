@@ -28,7 +28,7 @@ public class ResourcesComponentLibrary implements ComponentLibrary {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ResourcesComponentLibrary.class);
 
-    private final Map<ComponentType, SVGOMDocument> svgDocuments = new HashMap<>();
+    private final Map<ComponentType, SVGOMDocument> svgDocuments = new EnumMap<>(ComponentType.class);
 
     private final Map<ComponentType, Component> components;
 

@@ -40,12 +40,22 @@ public class DefaultAcLoadFlowObserver implements AcLoadFlowObserver {
     }
 
     @Override
-    public void beforeEquationEvaluation(int iteration) {
+    public void beforeEquationTermsUpdate(int iteration) {
         // empty
     }
 
     @Override
-    public void afterEquationEvaluation(double[] fx, EquationSystem equationSystem, int iteration) {
+    public void afterEquationTermsUpdate(EquationSystem equationSystem, int iteration) {
+        // empty
+    }
+
+    @Override
+    public void beforeEquationVectorUpdate(int iteration) {
+        // empty
+    }
+
+    @Override
+    public void afterEquationVectorUpdate(EquationSystem equationSystem, int iteration) {
         // empty
     }
 
@@ -80,16 +90,6 @@ public class DefaultAcLoadFlowObserver implements AcLoadFlowObserver {
     }
 
     @Override
-    public void beforeStateUpdate(int iteration) {
-        // empty
-    }
-
-    @Override
-    public void afterStateUpdate(double[] x, EquationSystem equationSystem, int iteration) {
-        // empty
-    }
-
-    @Override
     public void endIteration(int iteration) {
         // empty
     }
@@ -106,6 +106,16 @@ public class DefaultAcLoadFlowObserver implements AcLoadFlowObserver {
 
     @Override
     public void endMacroIteration(int macroIteration, String macroActionName) {
+        // empty
+    }
+
+    @Override
+    public void beforeNetworkUpdate() {
+        // empty
+    }
+
+    @Override
+    public void afterNetworkUpdate() {
         // empty
     }
 }

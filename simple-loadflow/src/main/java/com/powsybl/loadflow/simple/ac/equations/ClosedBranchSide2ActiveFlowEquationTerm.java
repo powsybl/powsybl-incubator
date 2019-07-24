@@ -11,6 +11,7 @@ import com.powsybl.loadflow.simple.equations.EquationType;
 import com.powsybl.loadflow.simple.equations.Variable;
 import com.powsybl.loadflow.simple.network.LfBranch;
 import com.powsybl.loadflow.simple.network.LfBus;
+import net.jafama.FastMath;
 
 import java.util.Objects;
 
@@ -41,8 +42,8 @@ public class ClosedBranchSide2ActiveFlowEquationTerm extends AbstractClosedBranc
         double ph1 = x[ph1Var.getColumn()];
         double ph2 = x[ph2Var.getColumn()];
         double theta = ksi + a1 - a2 + ph1 - ph2;
-        double sinTheta = Math.sin(theta);
-        double cosTheta = Math.cos(theta);
+        double sinTheta = FastMath.sin(theta);
+        double cosTheta = FastMath.cos(theta);
         p2 = r2 * v2 * (g2 * r2 * v2 - y * r1 * v1 * sinTheta + y * r2 * v2 * sinKsi);
         dp2dv1 = -y * r1 * r2 * v2 * sinTheta;
         dp2dv2 = r2 * (2 * g2 * r2 * v2 - y * r1 * v1 * sinTheta + 2 * y * r2 * v2 * sinKsi);

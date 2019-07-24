@@ -11,7 +11,6 @@ import com.powsybl.loadflow.simple.equations.*;
 import com.powsybl.loadflow.simple.network.LfBus;
 import com.powsybl.loadflow.simple.network.LfNetwork;
 import com.powsybl.math.matrix.LUDecomposition;
-import com.powsybl.math.matrix.Matrix;
 import com.powsybl.math.matrix.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +21,7 @@ import java.util.Objects;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class NewtonRaphson {
+public class NewtonRaphson implements AutoCloseable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NewtonRaphson.class);
 
@@ -38,20 +37,11 @@ public class NewtonRaphson {
 
     private final NewtonRaphsonStoppingCriteria stoppingCriteria;
 
-    private int iteration = -1;
+    private int iteration = 0;
 
-    static class NewtonRaphsonContext {
+    private Jacobian j;
 
-        double[] x;
-
-        double[] targets;
-
-        double[] fx;
-
-        Matrix j;
-
-        LUDecomposition lu;
-    }
+    private double[] x;
 
     public NewtonRaphson(LfNetwork network, MatrixFactory matrixFactory, AcLoadFlowObserver observer,
                          EquationContext equationContext, EquationSystem equationSystem,
@@ -64,68 +54,64 @@ public class NewtonRaphson {
         this.stoppingCriteria = Objects.requireNonNull(stoppingCriteria);
     }
 
-    private NewtonRaphsonStatus runIteration(EquationSystem system, NewtonRaphsonContext context) {
-        // evaluate equations
-        observer.beforeEquationEvaluation(iteration);
-
-        system.updateEquationTerms(context.x);
-        system.evalEquations(context.fx);
-        Vectors.minus(context.fx, context.targets);
-
-        observer.afterEquationEvaluation(context.fx, system, iteration);
-
-        if (stoppingCriteria.test(context.fx, observer)) {
-            return NewtonRaphsonStatus.CONVERGED;
-        }
-
-        // build jacobian
-        observer.beforeJacobianBuild(iteration);
-
-        if (context.j == null) {
-            context.j = system.buildJacobian(matrixFactory);
-        } else {
-            system.updateJacobian(context.j);
-        }
-
-        observer.afterJacobianBuild(context.j, system, iteration);
-
-        // solve f(x) = j * dx
-
-        observer.beforeLuDecomposition(iteration);
-
-        if (context.lu == null) {
-            context.lu = context.j.decomposeLU();
-        } else {
-            context.lu.update();
-        }
-
-        observer.afterLuDecomposition(iteration);
-
-        try {
-            observer.beforeLuSolve(iteration);
-
-            context.lu.solve(context.fx);
-
-            observer.afterLuSolve(iteration);
-        } catch (Exception e) {
-            LOGGER.error(e.toString(), e);
-            return NewtonRaphsonStatus.SOLVER_FAILED;
-        }
-
-        observer.beforeStateUpdate(iteration);
-
-        // update x
-        Vectors.minus(context.x, context.fx);
-
-        observer.afterStateUpdate(context.x, system, iteration);
-
-        observer.endIteration(iteration);
-
-        iteration++;
-
+    private NewtonRaphsonStatus runIteration(double[] fx, double[] targets) {
         observer.beginIteration(iteration);
 
-        return null;
+        try {
+            // build jacobian
+            observer.beforeJacobianBuild(iteration);
+
+            if (j == null) {
+                j = equationSystem.buildJacobian(matrixFactory);
+            } else {
+                j.update();
+            }
+
+            observer.afterJacobianBuild(j.getMatrix(), equationSystem, iteration);
+
+            // solve f(x) = j * dx
+
+            observer.beforeLuDecomposition(iteration);
+
+            LUDecomposition lu = j.decomposeLU();
+
+            observer.afterLuDecomposition(iteration);
+
+            try {
+                observer.beforeLuSolve(iteration);
+
+                lu.solve(fx);
+
+                observer.afterLuSolve(iteration);
+            } catch (Exception e) {
+                LOGGER.error(e.toString(), e);
+                return NewtonRaphsonStatus.SOLVER_FAILED;
+            }
+
+            // update x
+            Vectors.minus(x, fx);
+
+            // evaluate equation terms with new x
+            updateEquationTerms();
+
+            // recalculate f(x) with new x
+            observer.beforeEquationVectorUpdate(iteration);
+
+            equationSystem.updateEquationVector(fx);
+
+            observer.afterEquationVectorUpdate(equationSystem, iteration);
+
+            Vectors.minus(fx, targets);
+
+            if (stoppingCriteria.test(fx, observer)) {
+                return NewtonRaphsonStatus.CONVERGED;
+            }
+
+            return null;
+        } finally {
+            observer.endIteration(iteration);
+            iteration++;
+        }
     }
 
     private double computeSlackBusActivePowerMismatch(EquationContext equationContext, EquationSystem equationSystem) {
@@ -148,44 +134,54 @@ public class NewtonRaphson {
     public NewtonRaphsonResult run(NewtonRaphsonParameters parameters) {
         Objects.requireNonNull(parameters);
 
-        NewtonRaphsonContext context = new NewtonRaphsonContext();
+        // initialize state vector
+        if (x == null) {
+            x = equationSystem.initStateVector(parameters.getVoltageInitializer());
 
-        // initialize state vector (flat start)
-        context.x = equationSystem.initState(parameters.getVoltageInitializer());
-
-        // initialize target vector
-        context.targets = equationSystem.initTargets();
-
-        // initialize mismatch vector (difference between equation values and targets)
-        context.fx = new double[equationSystem.getEquationsToSolve().size()];
-
-        if (iteration == -1) {
-            // first run
-            iteration = 0;
-            observer.beginIteration(iteration);
+            updateEquationTerms();
         }
 
+        // initialize target vector
+        double[] targets = equationSystem.initTargetVector();
+
+        // initialize mismatch vector (difference between equation values and targets)
+        observer.beforeEquationVectorUpdate(iteration);
+
+        double[] fx = equationSystem.initEquationVector();
+
+        observer.afterEquationVectorUpdate(equationSystem, iteration);
+
+        Vectors.minus(fx, targets);
+
+        // start iterations
         NewtonRaphsonStatus status = NewtonRaphsonStatus.NO_CALCULATION;
         while (iteration <= parameters.getMaxIteration()) {
-            NewtonRaphsonStatus newStatus = runIteration(equationSystem, context);
+            NewtonRaphsonStatus newStatus = runIteration(fx, targets);
             if (newStatus != null) {
                 status = newStatus;
                 break;
             }
         }
 
-        if (context.lu != null) {
-            context.lu.close();
-        }
-
-        if (iteration < parameters.getMaxIteration()) {
-            equationSystem.updateState(context.x);
-        } else {
+        if (iteration >= parameters.getMaxIteration()) {
             status = NewtonRaphsonStatus.MAX_ITERATION_REACHED;
         }
 
         double slackBusActivePowerMismatch = computeSlackBusActivePowerMismatch(equationContext, equationSystem);
 
-        return new NewtonRaphsonResult(status, iteration, slackBusActivePowerMismatch);
+        return new NewtonRaphsonResult(status, iteration, x, slackBusActivePowerMismatch);
+    }
+
+    private void updateEquationTerms() {
+        observer.beforeEquationTermsUpdate(iteration);
+
+        equationSystem.updateEquationTerms(x);
+
+        observer.afterEquationTermsUpdate(equationSystem, iteration);
+    }
+
+    @Override
+    public void close() {
+        j.cleanLU();
     }
 }

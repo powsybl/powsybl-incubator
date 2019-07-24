@@ -49,13 +49,23 @@ public class MultipleAcLoadFlowObserver implements AcLoadFlowObserver {
     }
 
     @Override
-    public void beforeEquationEvaluation(int iteration) {
-        observers.forEach(o -> o.beforeEquationEvaluation(iteration));
+    public void beforeEquationTermsUpdate(int iteration) {
+        observers.forEach(o -> o.beforeEquationTermsUpdate(iteration));
     }
 
     @Override
-    public void afterEquationEvaluation(double[] fx, EquationSystem equationSystem, int iteration) {
-        observers.forEach(o -> o.afterEquationEvaluation(fx, equationSystem, iteration));
+    public void afterEquationTermsUpdate(EquationSystem equationSystem, int iteration) {
+        observers.forEach(o -> o.afterEquationTermsUpdate(equationSystem, iteration));
+    }
+
+    @Override
+    public void beforeEquationVectorUpdate(int iteration) {
+        observers.forEach(o -> o.beforeEquationVectorUpdate(iteration));
+    }
+
+    @Override
+    public void afterEquationVectorUpdate(EquationSystem equationSystem, int iteration) {
+        observers.forEach(o -> o.afterEquationVectorUpdate(equationSystem, iteration));
     }
 
     @Override
@@ -89,16 +99,6 @@ public class MultipleAcLoadFlowObserver implements AcLoadFlowObserver {
     }
 
     @Override
-    public void beforeStateUpdate(int iteration) {
-        observers.forEach(o -> o.beforeStateUpdate(iteration));
-    }
-
-    @Override
-    public void afterStateUpdate(double[] x, EquationSystem equationSystem, int iteration) {
-        observers.forEach(o -> o.afterStateUpdate(x, equationSystem, iteration));
-    }
-
-    @Override
     public void endIteration(int iteration) {
         observers.forEach(o -> o.endIteration(iteration));
     }
@@ -116,5 +116,15 @@ public class MultipleAcLoadFlowObserver implements AcLoadFlowObserver {
     @Override
     public void endMacroIteration(int macroIteration, String macroActionName) {
         observers.forEach(o -> o.endMacroIteration(macroIteration, macroActionName));
+    }
+
+    @Override
+    public void beforeNetworkUpdate() {
+        observers.forEach(AcLoadFlowObserver::beforeNetworkUpdate);
+    }
+
+    @Override
+    public void afterNetworkUpdate() {
+        observers.forEach(AcLoadFlowObserver::afterNetworkUpdate);
     }
 }

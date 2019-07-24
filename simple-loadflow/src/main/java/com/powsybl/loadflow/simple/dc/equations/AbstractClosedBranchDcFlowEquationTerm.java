@@ -50,4 +50,9 @@ public abstract class AbstractClosedBranchDcFlowEquationTerm implements Equation
     public List<Variable> getVariables() {
         return variables;
     }
+
+    @Override
+    public boolean hasRhs() {
+        return true;
+    }
 }

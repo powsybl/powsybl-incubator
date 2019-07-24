@@ -48,14 +48,25 @@ public class AcLoadFlowProfiler extends DefaultAcLoadFlowObserver {
     }
 
     @Override
-    public void beforeEquationEvaluation(int iteration) {
+    public void beforeEquationTermsUpdate(int iteration) {
         restart(stopwatch);
     }
 
     @Override
-    public void afterEquationEvaluation(double[] fx, EquationSystem equationSystem, int iteration) {
+    public void afterEquationTermsUpdate(EquationSystem equationSystem, int iteration) {
         stopwatch.stop();
-        LOGGER.debug("Equations evaluated at iteration {} in {} ms", iteration, stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        LOGGER.debug("Equation terms evaluated at iteration {} in {} ms", iteration, stopwatch.elapsed(TimeUnit.MILLISECONDS));
+    }
+
+    @Override
+    public void beforeEquationVectorUpdate(int iteration) {
+        restart(stopwatch);
+    }
+
+    @Override
+    public void afterEquationVectorUpdate(EquationSystem equationSystem, int iteration) {
+        stopwatch.stop();
+        LOGGER.debug("Equation vector updated at iteration {} in {} ms", iteration, stopwatch.elapsed(TimeUnit.MILLISECONDS));
     }
 
     @Override
@@ -92,17 +103,6 @@ public class AcLoadFlowProfiler extends DefaultAcLoadFlowObserver {
     }
 
     @Override
-    public void beforeStateUpdate(int iteration) {
-        restart(stopwatch);
-    }
-
-    @Override
-    public void afterStateUpdate(double[] x, EquationSystem equationSystem, int iteration) {
-        stopwatch.stop();
-        LOGGER.debug("Network state updated at iteration {} in {} us", iteration, stopwatch.elapsed(TimeUnit.MICROSECONDS));
-    }
-
-    @Override
     public void endIteration(int iteration) {
         iterationStopwatch.stop();
         LOGGER.debug("Iteration {} complete in {} ms", iteration, iterationStopwatch.elapsed(TimeUnit.MILLISECONDS));
@@ -117,5 +117,15 @@ public class AcLoadFlowProfiler extends DefaultAcLoadFlowObserver {
     public void afterMacroActionRun(int macroIteration, String macroActionName, boolean cont) {
         stopwatch.stop();
         LOGGER.debug("Macro action '{}' ran in {} us", macroActionName, stopwatch.elapsed(TimeUnit.MICROSECONDS));
+    }
+
+    @Override
+    public void beforeNetworkUpdate() {
+        restart(stopwatch);
+    }
+
+    @Override
+    public void afterNetworkUpdate() {
+        LOGGER.debug("Network updated in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
     }
 }

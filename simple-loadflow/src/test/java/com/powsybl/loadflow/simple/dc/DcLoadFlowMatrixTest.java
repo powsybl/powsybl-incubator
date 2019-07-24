@@ -64,7 +64,7 @@ public class DcLoadFlowMatrixTest {
 
         EquationSystem equationSystem = DcEquationSystem.create(lfNetwork, context);
 
-        double[] x = equationSystem.initState(new UniformValueVoltageInitializer());
+        double[] x = equationSystem.initStateVector(new UniformValueVoltageInitializer());
         try (PrintStream ps = LoggerFactory.getInfoPrintStream(LOGGER)) {
             ps.println("X=");
             Matrix.createFromColumn(x, new DenseMatrixFactory())
@@ -73,7 +73,7 @@ public class DcLoadFlowMatrixTest {
 
         equationSystem.updateEquationTerms(x);
 
-        Matrix j = equationSystem.buildJacobian(matrixFactory);
+        Matrix j = equationSystem.buildJacobian(matrixFactory).getMatrix();
         try (PrintStream ps = LoggerFactory.getInfoPrintStream(LOGGER)) {
             ps.println("J=");
             j.print(ps, equationSystem.getRowNames(), equationSystem.getColumnNames());
@@ -99,7 +99,7 @@ public class DcLoadFlowMatrixTest {
         assertEquals(-55.63344061453968d, j.toDense().get(3, 2), 0d);
         assertEquals(55.63344061453968d, j.toDense().get(3, 3), 0d);
 
-        double[] targets = equationSystem.initTargets();
+        double[] targets = equationSystem.initTargetVector();
         try (PrintStream ps = LoggerFactory.getInfoPrintStream(LOGGER)) {
             ps.println("TGT=");
             Matrix.createFromColumn(targets, matrixFactory)
@@ -117,7 +117,7 @@ public class DcLoadFlowMatrixTest {
         assertEquals(-0.2202418845341654d, dx[3], 1E-14d);
 
         LfNetworks.resetState(network);
-        equationSystem.updateState(dx);
+        equationSystem.updateNetwork(dx);
 
         logNetwork(network);
 
@@ -128,7 +128,7 @@ public class DcLoadFlowMatrixTest {
 
         equationSystem = DcEquationSystem.create(lfNetwork, context);
 
-        j = equationSystem.buildJacobian(matrixFactory);
+        j = equationSystem.buildJacobian(matrixFactory).getMatrix();
 
         dx = Arrays.copyOf(targets, targets.length);
         try (LUDecomposition lu = j.decomposeLU()) {
@@ -136,7 +136,7 @@ public class DcLoadFlowMatrixTest {
         }
 
         LfNetworks.resetState(network);
-        equationSystem.updateState(dx);
+        equationSystem.updateNetwork(dx);
 
         logNetwork(network);
     }

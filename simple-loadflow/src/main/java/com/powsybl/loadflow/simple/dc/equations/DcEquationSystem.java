@@ -9,7 +9,7 @@ package com.powsybl.loadflow.simple.dc.equations;
 import com.powsybl.loadflow.simple.equations.*;
 import com.powsybl.loadflow.simple.network.LfBranch;
 import com.powsybl.loadflow.simple.network.LfBus;
-import com.powsybl.loadflow.simple.network.NetworkContext;
+import com.powsybl.loadflow.simple.network.LfNetwork;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,22 +22,22 @@ public final class DcEquationSystem {
     private DcEquationSystem() {
     }
 
-    public static EquationSystem create(NetworkContext networkContext) {
-        return create(networkContext, new EquationContext());
+    public static EquationSystem create(LfNetwork network) {
+        return create(network, new EquationContext());
     }
 
-    public static EquationSystem create(NetworkContext networkContext, EquationContext equationContext) {
+    public static EquationSystem create(LfNetwork network, EquationContext equationContext) {
         List<EquationTerm> equationTerms = new ArrayList<>();
         List<VariableUpdate> variableUpdates = new ArrayList<>();
 
-        for (LfBus bus : networkContext.getBuses()) {
+        for (LfBus bus : network.getBuses()) {
             if (bus.isSlack()) {
                 equationTerms.add(new BusPhaseEquationTerm(bus, equationContext));
                 equationContext.getEquation(bus.getNum(), EquationType.BUS_P).setToSolve(false);
             }
         }
 
-        for (LfBranch branch : networkContext.getBranches()) {
+        for (LfBranch branch : network.getBranches()) {
             LfBus bus1 = branch.getBus1();
             LfBus bus2 = branch.getBus2();
             if (bus1 != null && bus2 != null) {
@@ -53,6 +53,6 @@ public final class DcEquationSystem {
             }
         }
 
-        return new EquationSystem(equationTerms, variableUpdates, networkContext);
+        return new EquationSystem(equationTerms, variableUpdates, network);
     }
 }

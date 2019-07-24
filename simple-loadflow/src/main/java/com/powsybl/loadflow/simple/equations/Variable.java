@@ -6,8 +6,9 @@
  */
 package com.powsybl.loadflow.simple.equations;
 
-import com.powsybl.loadflow.LoadFlowParameters.VoltageInitMode;
-import com.powsybl.loadflow.simple.network.NetworkContext;
+import com.powsybl.loadflow.simple.ac.nr.VoltageInitializer;
+import com.powsybl.loadflow.simple.network.LfBus;
+import com.powsybl.loadflow.simple.network.LfNetwork;
 
 import java.util.Objects;
 
@@ -46,33 +47,35 @@ public class Variable implements Comparable<Variable> {
         this.column = column;
     }
 
-    void initState(VoltageInitMode mode, NetworkContext networkContext, double[] x) {
-        Objects.requireNonNull(mode);
-        Objects.requireNonNull(networkContext);
+    void initState(VoltageInitializer initializer, LfNetwork network, double[] x) {
+        Objects.requireNonNull(initializer);
+        Objects.requireNonNull(network);
         Objects.requireNonNull(x);
-        if (type == VariableType.BUS_V && mode == VoltageInitMode.UNIFORM_VALUES) {
-            x[column] = 1;
-        } else if (type == VariableType.BUS_V && mode == VoltageInitMode.PREVIOUS_VALUES) {
-            x[column] = networkContext.getBus(num).getV();
-        } else if (type == VariableType.BUS_PHI && mode == VoltageInitMode.UNIFORM_VALUES) {
-            x[column] = 0;
-        } else if (type == VariableType.BUS_PHI && mode == VoltageInitMode.PREVIOUS_VALUES) {
-            x[column] = Math.toRadians(networkContext.getBus(num).getAngle());
-        } else {
-            throw new UnsupportedOperationException("Incorrect state variable initialization: type=" + type + " and mode=" + mode);
-        }
-    }
-
-    void updateState(NetworkContext networkContext, double[] x) {
-        Objects.requireNonNull(networkContext);
-        Objects.requireNonNull(x);
+        LfBus bus = network.getBus(num);
         switch (type) {
             case BUS_V:
-                networkContext.getBus(num).setV(x[column]);
+                x[column] = initializer.getMagnitude(bus);
                 break;
 
             case BUS_PHI:
-                networkContext.getBus(num).setAngle(Math.toDegrees(x[column]));
+                x[column] = Math.toRadians(initializer.getAngle(bus));
+                break;
+
+            default:
+                throw new IllegalStateException("Unknown variable type "  + type);
+        }
+    }
+
+    void updateState(LfNetwork network, double[] x) {
+        Objects.requireNonNull(network);
+        Objects.requireNonNull(x);
+        switch (type) {
+            case BUS_V:
+                network.getBus(num).setV(x[column]);
+                break;
+
+            case BUS_PHI:
+                network.getBus(num).setAngle(Math.toDegrees(x[column]));
                 break;
 
             default:

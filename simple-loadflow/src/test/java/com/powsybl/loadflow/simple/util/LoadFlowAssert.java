@@ -17,9 +17,9 @@ import static org.junit.Assert.assertTrue;
  */
 public final class LoadFlowAssert {
 
-    private static final double DELTA_ANGLE = 1E-6d;
-    private static final double DELTA_V = 1E-3d;
-    private static final double DELTA_POWER = 1E-3d;
+    public static final double DELTA_ANGLE = 1E-6d;
+    public static final double DELTA_V = 1E-3d;
+    public static final double DELTA_POWER = 1E-3d;
 
     private LoadFlowAssert() {
     }

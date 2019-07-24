@@ -6,6 +6,8 @@
  */
 package com.powsybl.loadflow.simple.network;
 
+import net.jafama.FastMath;
+
 import java.util.Objects;
 
 /**
@@ -44,9 +46,9 @@ public abstract class AbstractLfBranch implements LfBranch {
         r1 = piModel.getR1() / nominalV2 * nominalV1;
         a1 = piModel.getA1();
 
-        double z = Math.hypot(piModel.getR(), piModel.getX()) / zb;
+        double z = FastMath.hypot(piModel.getR(), piModel.getX()) / zb;
         y = 1 / z;
-        ksi = Math.atan2(piModel.getR(), piModel.getX());
+        ksi = FastMath.atan2(piModel.getR(), piModel.getX());
     }
 
     @Override

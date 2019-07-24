@@ -40,6 +40,7 @@ public class BalanceComputationImplDcTest {
     private BalanceComputationParameters parameters;
     private BalanceComputationFactory balanceComputationFactory;
     private LoadFlowFactory loadFlowFactory;
+    private String newStateId = "NewStateId";
 
     @Before
     public void setUp() {
@@ -93,6 +94,34 @@ public class BalanceComputationImplDcTest {
 
         assertEquals(BalanceComputationResult.Status.SUCCESS, result.getStatus());
         assertEquals(2, result.getIterationCount());
+
+    }
+
+    @Test
+    public void testBalancesAdjustmentWithDifferentStateId() {
+        networkAreaNetPositionTargetMap = new HashMap<>();
+        networkAreaNetPositionTargetMap.put(countryAreaFR, 1100.);
+
+        testNetwork1.getVariantManager().cloneVariant(testNetwork1.getVariantManager().getWorkingVariantId(), newStateId);
+
+        Map<NetworkArea, Scalable> networkAreasScalableMap1 = new HashMap<>();
+        Scalable scalable1 = Scalable.onGenerator("FFR1AA1 _generator");
+        Scalable scalable2 = Scalable.onGenerator("FFR2AA1 _generator");
+        Scalable scalable3 = Scalable.onGenerator("FFR3AA1 _generator");
+
+        networkAreasScalableMap1.put(countryAreaFR, Scalable.proportional(28.f, scalable1, 28f, scalable2, 44.f, scalable3));
+
+        BalanceComputation balanceComputation = balanceComputationFactory.create(testNetwork1, networkAreaNetPositionTargetMap, networkAreasScalableMap1, loadFlowFactory, computationManager, 1);
+
+        BalanceComputationResult result = balanceComputation.run(newStateId, parameters).join();
+
+        assertEquals(BalanceComputationResult.Status.SUCCESS, result.getStatus());
+        assertEquals(2, result.getIterationCount());
+        // Check net position does not change with the initial state id after balances
+        assertEquals(1000., countryAreaFR.getNetPosition(testNetwork1), 1.);
+        // Check target net position after balances with the new state id
+        testNetwork1.getVariantManager().setWorkingVariant(newStateId);
+        assertEquals(1100., countryAreaFR.getNetPosition(testNetwork1), 1.);
 
     }
 

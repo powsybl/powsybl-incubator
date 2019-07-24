@@ -15,6 +15,7 @@ import java.util.Objects;
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
+ * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
  */
 public class LayoutParameters {
 
@@ -48,6 +49,8 @@ public class LayoutParameters {
     private double horizontalSnakeLinePadding = 20;
     private double verticalSnakeLinePadding = 25;
 
+    private boolean showInductorFor3WT = false;
+
     @JsonCreator
     public LayoutParameters() {
     }
@@ -70,7 +73,8 @@ public class LayoutParameters {
                             @JsonProperty("verticalSubstationPadding") double verticalSubstationPadding,
                             @JsonProperty("drawStraightWires") boolean drawStraightWires,
                             @JsonProperty("horizontalSnakeLinePadding") double horizontalSnakeLinePadding,
-                            @JsonProperty("verticalSnakeLinePadding") double verticalSnakeLinePadding) {
+                            @JsonProperty("verticalSnakeLinePadding") double verticalSnakeLinePadding,
+                            @JsonProperty("showInductorFor3WT") boolean showInductorFor3WT) {
         this.translateX = translateX;
         this.translateY = translateY;
         this.initialXBus = initialXBus;
@@ -89,6 +93,7 @@ public class LayoutParameters {
         this.drawStraightWires = drawStraightWires;
         this.horizontalSnakeLinePadding = horizontalSnakeLinePadding;
         this.verticalSnakeLinePadding = verticalSnakeLinePadding;
+        this.showInductorFor3WT = showInductorFor3WT;
     }
 
     public LayoutParameters(LayoutParameters other) {
@@ -111,6 +116,7 @@ public class LayoutParameters {
         drawStraightWires = other.drawStraightWires;
         horizontalSnakeLinePadding = other.horizontalSnakeLinePadding;
         verticalSnakeLinePadding = other.verticalSnakeLinePadding;
+        showInductorFor3WT = other.showInductorFor3WT;
     }
 
     public double getTranslateX() {
@@ -281,6 +287,15 @@ public class LayoutParameters {
 
     public LayoutParameters setVerticalSnakeLinePadding(double verticalSnakeLinePadding) {
         this.verticalSnakeLinePadding = verticalSnakeLinePadding;
+        return this;
+    }
+
+    public boolean isShowInductorFor3WT() {
+        return showInductorFor3WT;
+    }
+
+    public LayoutParameters setShowInductorFor3WT(boolean showInductorFor3WT) {
+        this.showInductorFor3WT = showInductorFor3WT;
         return this;
     }
 }

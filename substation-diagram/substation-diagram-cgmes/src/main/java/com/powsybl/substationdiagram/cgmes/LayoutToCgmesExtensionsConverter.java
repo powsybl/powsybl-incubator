@@ -174,7 +174,7 @@ public class LayoutToCgmesExtensionsConverter {
                     }
                 });
 
-                substation.getTwoWindingsTransformerStream().forEach(twoWindingsTransformer -> {
+                substation.getTwoWindingsTransformerStream().forEach(twoWindingsTransformer ->
                     vlGraph.getNodes().stream().filter(node -> node.getId().startsWith(twoWindingsTransformer.getId())).findFirst().ifPresent(node -> {
                         if (node.getComponentType().equals(ComponentType.TWO_WINDINGS_TRANSFORMER)) {
                             FeederNode transformerNode = (FeederNode) node;
@@ -185,10 +185,10 @@ public class LayoutToCgmesExtensionsConverter {
                             LOG.debug("setting CGMES DL IIDM extensions for TwoWindingTransformer: {}, {}", twoWindingsTransformer.getId(), tDiagramPoint);
                             twoWindingsTransformer.addExtension(CouplingDeviceDiagramData.class, transformerIidmDiagramData);
                         }
-                    });
-                });
+                    })
+                );
 
-                substation.getThreeWindingsTransformerStream().forEach(threeWindingsTransformer -> {
+                substation.getThreeWindingsTransformerStream().forEach(threeWindingsTransformer ->
                     vlGraph.getNodes().stream().filter(node -> node.getId().startsWith(threeWindingsTransformer.getId())).findFirst().ifPresent(node -> {
                         if (node.getComponentType().equals(ComponentType.THREE_WINDINGS_TRANSFORMER)) {
                             FeederNode transformerNode = (FeederNode) node;
@@ -199,8 +199,8 @@ public class LayoutToCgmesExtensionsConverter {
                             LOG.debug("setting CGMES DL IIDM extensions for ThreeWindingTransformer: {}, {}", threeWindingsTransformer.getId(), tDiagramPoint);
                             threeWindingsTransformer.addExtension(ThreeWindingsTransformerDiagramData.class, transformerIidmDiagramData);
                         }
-                    });
-                });
+                    })
+                );
 
                 vlGraph.getNodes().stream().filter(this::isLineNode).forEach(node -> {
                     switch (node.getComponentType()) {
@@ -210,7 +210,7 @@ public class LayoutToCgmesExtensionsConverter {
 
                             LineDiagramData<Line> lineDiagramData = line.getExtension(LineDiagramData.class);
                             if (lineDiagramData == null) {
-                                lineDiagramData = new LineDiagramData<Line>(line);
+                                lineDiagramData = new LineDiagramData<>(line);
                             }
                             int lineSeq = getMaxSeq(lineDiagramData.getPoints(diagramName)) + 1;
                             DiagramPoint linePoint = offsetPoint.newDiagramPoint(lineNode.getX(), lineNode.getY(), lineSeq);
@@ -225,7 +225,7 @@ public class LayoutToCgmesExtensionsConverter {
 
                             LineDiagramData<DanglingLine> danglingLineDiagramData = danglingLine.getExtension(LineDiagramData.class);
                             if (danglingLineDiagramData == null) {
-                                danglingLineDiagramData = new LineDiagramData<DanglingLine>(danglingLine);
+                                danglingLineDiagramData = new LineDiagramData<>(danglingLine);
                             }
                             int danglingLineSeq = getMaxSeq(danglingLineDiagramData.getPoints(diagramName)) + 1;
                             DiagramPoint danglingLinePoint = offsetPoint.newDiagramPoint(danglingLineNode.getX(), danglingLineNode.getY(), danglingLineSeq);
@@ -250,14 +250,14 @@ public class LayoutToCgmesExtensionsConverter {
                     });
 
                 } else {
-                    voltageLevel.getNodeBreakerView().getBusbarSectionStream().forEach(busbarSection -> {
+                    voltageLevel.getNodeBreakerView().getBusbarSectionStream().forEach(busbarSection ->
                         vlGraph.getNodeBuses().stream().filter(busNode -> busNode.getId().equals(busbarSection.getId())).findFirst().ifPresent(busNode -> {
                             NodeDiagramData<BusbarSection> busbarSectionDiagramData = busbarSection.getExtension(NodeDiagramData.class) != null ? busbarSection.getExtension(NodeDiagramData.class) : new NodeDiagramData<BusbarSection>(busbarSection);
                             setNodeDiagramPoints(busbarSectionDiagramData, busNode, offsetPoint, diagramName);
                             LOG.debug("setting CGMES DL IIDM extensions for BusbarSection {}, {} - {}", busbarSection.getId(), busbarSectionDiagramData.getData(diagramName).getPoint1(), busbarSectionDiagramData.getData(diagramName).getPoint2());
                             busbarSection.addExtension(NodeDiagramData.class, busbarSectionDiagramData);
-                        });
-                    });
+                        })
+                    );
 
                     voltageLevel.getNodeBreakerView().getSwitches().forEach(sw -> {
                         Node swNode = vlGraph.getNode(sw.getId());

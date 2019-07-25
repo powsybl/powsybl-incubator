@@ -45,9 +45,7 @@ public final class CgmesDLUtils {
                     throw new AssertionError("Unexpected topology kind: " + voltageLevel.getTopologyKind());
             }
         });
-        network.getSwitchStream().forEach(sw -> {
-            sw.removeExtension(CouplingDeviceDiagramData.class);
-        });
+        network.getSwitchStream().forEach(sw -> sw.removeExtension(CouplingDeviceDiagramData.class));
         network.removeExtension(NetworkDiagramData.class);
     }
 

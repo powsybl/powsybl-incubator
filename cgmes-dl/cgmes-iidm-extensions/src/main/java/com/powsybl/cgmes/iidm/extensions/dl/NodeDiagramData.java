@@ -25,9 +25,6 @@ public class NodeDiagramData<T extends Identifiable<T>> extends AbstractExtensio
         private DiagramPoint point1;
         private DiagramPoint point2;
 
-        public NodeDiagramDataDetails() {
-        }
-
         public DiagramPoint getPoint1() {
             return point1;
         }

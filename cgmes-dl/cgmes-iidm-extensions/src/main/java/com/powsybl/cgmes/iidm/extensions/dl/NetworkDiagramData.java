@@ -52,7 +52,7 @@ public final class NetworkDiagramData extends AbstractExtension<Network> {
     public static boolean containsDiagramName(Network network, String diagramName) {
         Objects.requireNonNull(network);
         Objects.requireNonNull(diagramName);
-        return checkNetworkDiagramData(network) ? getNetworkDiagramData(network).diagramsNames.contains(diagramName) : false;
+        return checkNetworkDiagramData(network) && getNetworkDiagramData(network).diagramsNames.contains(diagramName);
     }
 
     @Override

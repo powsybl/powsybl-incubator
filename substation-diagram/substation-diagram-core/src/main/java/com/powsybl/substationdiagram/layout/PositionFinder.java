@@ -6,7 +6,13 @@
  */
 package com.powsybl.substationdiagram.layout;
 
+import com.powsybl.substationdiagram.model.Cell;
+import com.powsybl.substationdiagram.model.ExternCell;
 import com.powsybl.substationdiagram.model.Graph;
+import com.powsybl.substationdiagram.model.Node;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * a PositionFinder determines:
@@ -22,4 +28,14 @@ import com.powsybl.substationdiagram.model.Graph;
 public interface PositionFinder {
 
     void buildLayout(Graph graph);
+
+    default void forceSameOrientationForShuntedCell(Graph graph) {
+        for (Cell cell : graph.getCells().stream()
+                .filter(c -> c.getType() == Cell.CellType.SHUNT).collect(Collectors.toList())) {
+            List<Node> shNodes = cell.getNodes().stream()
+                    .filter(node -> node.getType() == Node.NodeType.SHUNT).collect(Collectors.toList());
+            ((ExternCell) shNodes.get(1).getCell()).setDirection(
+                    ((ExternCell) shNodes.get(0).getCell()).getDirection());
+        }
+    }
 }

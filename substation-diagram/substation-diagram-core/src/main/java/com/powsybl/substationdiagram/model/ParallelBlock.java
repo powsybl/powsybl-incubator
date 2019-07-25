@@ -135,15 +135,8 @@ public class ParallelBlock extends AbstractBlock {
     private void handleStackingOnBuses() {
         List<Block> subBlocksCopy = new ArrayList<>(subBlocks);
         int h = 0;
-        Orientation previousOrientation = subBlocksCopy.get(0).getPosition().getOrientation();
         while (!subBlocksCopy.isEmpty()) {
             Block b = subBlocksCopy.get(0);
-/*
-            if (b.getPosition().getOrientation() == Orientation.HORIZONTAL
-                    && previousOrientation == Orientation.VERTICAL) {
-                h--;
-            }
-*/
             b.getPosition().setHV(h, 0);
             if (b instanceof PrimaryBlock && !((PrimaryBlock) b).getStackableBlocks().isEmpty()) {
                 final int finalH = h;
@@ -154,7 +147,6 @@ public class ParallelBlock extends AbstractBlock {
                 h += b.getPosition().getHSpan();
             }
             subBlocksCopy.remove(b);
-            previousOrientation = b.getPosition().getOrientation();
         }
         getPosition().setHSpan(h);
     }
@@ -190,13 +182,7 @@ public class ParallelBlock extends AbstractBlock {
     public void coordHorizontalCase(LayoutParameters layoutParam) {
         subBlocks.forEach(sub -> {
             sub.setX(getCoord().getX());
-/*
-            if (sub.getType() == Type.PRIMARY && sub.isEmbedingNodeType(Node.NodeType.BUS)) {
-                sub.setXSpan(0);
-            } else {
-*/
             sub.setXSpan(getCoord().getXSpan());
-//            }
             sub.setY(getCoord().getY());
             sub.setYSpan(getCoord().getYSpan());
             sub.calculateCoord(layoutParam);

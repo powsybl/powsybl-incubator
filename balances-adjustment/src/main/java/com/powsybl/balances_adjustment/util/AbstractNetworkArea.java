@@ -34,7 +34,7 @@ public abstract class AbstractNetworkArea implements NetworkArea {
         return network.getBranchStream().filter(branch ->
                 areaVoltageLevels.contains(branch.getTerminal1().getVoltageLevel()) && !areaVoltageLevels.contains(branch.getTerminal2().getVoltageLevel()) ||
                         areaVoltageLevels.contains(branch.getTerminal2().getVoltageLevel()) && !areaVoltageLevels.contains(branch.getTerminal1().getVoltageLevel()))
-                .map(branch -> new BorderBranch(branch))
+                .map(BorderBranch::new)
                 .collect(Collectors.toList());
 
     }
@@ -55,7 +55,7 @@ public abstract class AbstractNetworkArea implements NetworkArea {
             int n = getVoltageLevelsFoundCount(t, areaVoltageLevels);
             return n > 0 && n < 3;
         })
-                .map(t -> new BorderThreeWindingsTransformer(t))
+                .map(BorderThreeWindingsTransformer::new)
                 .collect(Collectors.toList());
     }
 
@@ -65,7 +65,7 @@ public abstract class AbstractNetworkArea implements NetworkArea {
                 !areaVoltageLevels.contains(h.getConverterStation2().getTerminal().getVoltageLevel()) ||
                 areaVoltageLevels.contains(h.getConverterStation2().getTerminal().getVoltageLevel()) &&
                         !areaVoltageLevels.contains(h.getConverterStation1().getTerminal().getVoltageLevel()))
-                .map(h -> new BorderHvdcLine(h))
+                .map(BorderHvdcLine::new)
                 .collect(Collectors.toList());
     }
 

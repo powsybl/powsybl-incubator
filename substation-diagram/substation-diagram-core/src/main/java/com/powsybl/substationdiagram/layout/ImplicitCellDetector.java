@@ -113,26 +113,24 @@ public class ImplicitCellDetector implements CellDetector {
                                    List<Node.NodeType> exclusionTypes,
                                    boolean isCellIntern,
                                    List<Node> allocatedNodes) {
-        graph.getNodeBuses().forEach(bus -> {
-            bus.getAdjacentNodes().forEach(adj -> {
-                List<Node> cellNodes = new ArrayList<>();
-                List<Node> visitedNodes = new ArrayList<>(allocatedNodes);
-                visitedNodes.add(bus);
-                boolean searchOK = rDelimitedExploration(adj, typeStops, exclusionTypes, cellNodes, visitedNodes);
-                if (searchOK && !cellNodes.isEmpty()) {
-                    cellNodes.add(adj);
-                    cellNodes.add(bus);
-                    Cell cell = isCellIntern ? new InternCell(graph) : new ExternCell(graph);
-                    cell.setNodes(cellNodes);
-                    allocatedNodes.addAll(cellNodes);
-                    // remove the BusNodes from allocatedNode for a BusNode can be part of many cells
-                    allocatedNodes.removeAll(
-                            cellNodes.stream()
-                                    .filter(node -> node.getType() == Node.NodeType.BUS)
-                                    .collect(Collectors.toList()));
-                }
-            });
-        });
+        graph.getNodeBuses().forEach(bus -> bus.getAdjacentNodes().forEach(adj -> {
+            List<Node> cellNodes = new ArrayList<>();
+            List<Node> visitedNodes = new ArrayList<>(allocatedNodes);
+            visitedNodes.add(bus);
+            boolean searchOK = rDelimitedExploration(adj, typeStops, exclusionTypes, cellNodes, visitedNodes);
+            if (searchOK && !cellNodes.isEmpty()) {
+                cellNodes.add(adj);
+                cellNodes.add(bus);
+                Cell cell = isCellIntern ? new InternCell(graph) : new ExternCell(graph);
+                cell.setNodes(cellNodes);
+                allocatedNodes.addAll(cellNodes);
+                // remove the BusNodes from allocatedNode for a BusNode can be part of many cells
+                allocatedNodes.removeAll(
+                        cellNodes.stream()
+                                .filter(node -> node.getType() == Node.NodeType.BUS)
+                                .collect(Collectors.toList()));
+            }
+        }));
     }
 
     /**

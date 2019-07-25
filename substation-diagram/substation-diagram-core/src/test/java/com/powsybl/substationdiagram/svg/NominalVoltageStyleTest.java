@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.powsybl.substationdiagram.util;
+package com.powsybl.substationdiagram.svg;
 
 import static org.junit.Assert.assertEquals;
 
@@ -32,7 +32,7 @@ import com.powsybl.substationdiagram.SubstationDiagram;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
 import com.powsybl.substationdiagram.library.ComponentLibrary;
 import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
-import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramInitialValueProvider;
+import com.powsybl.substationdiagram.util.NominalVoltageSubstationDiagramStyleProvider;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
 

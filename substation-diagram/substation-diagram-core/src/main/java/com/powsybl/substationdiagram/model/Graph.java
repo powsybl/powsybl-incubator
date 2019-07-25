@@ -53,7 +53,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -834,16 +833,21 @@ public class Graph {
                 .forEach(t -> {
                     VoltageLevel v = t.getVoltageLevel();
                     if (v != node.getGraph().getVoltageLevel()) {
-                        Optional<ShuntCompensator> s = v.getShuntCompensatorStream().findFirst();
-                        if (s.isPresent()
-                                && s.get().getbPerSection() < 0
-                                && infos.get() == null) {  // inductor found
-                            infos.set(new InfosInductor3WT(s.get().getId(),
-                                    s.get().getName(),
-                                    transformer.getSide(t)));
-                        }
+                        v.getShuntCompensatorStream().forEach(s -> {
+                            Bus connectableBusInductor = s.getTerminal().getBusView().getConnectableBus();
+                            Bus connectableBus3WT = t.getBusView().getConnectableBus();
+                            if (connectableBusInductor == connectableBus3WT) {
+                                if (s.getbPerSection() < 0
+                                        && infos.get() == null) {  // inductor found
+                                    infos.set(new InfosInductor3WT(s.getId(),
+                                            s.getName(),
+                                            transformer.getSide(t)));
+                                }
+                            }
+                        });
                     }
                 });
+
         return infos.get();
     }
 

@@ -6,6 +6,19 @@
  */
 package com.powsybl.substationdiagram;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import com.google.common.io.ByteStreams;
 import com.powsybl.iidm.network.BusbarSection;
 import com.powsybl.iidm.network.Country;
@@ -28,18 +41,6 @@ import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramStyleProvider;
 import com.powsybl.substationdiagram.util.NominalVoltageSubstationDiagramStyleProvider;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author Franck Lecuyer <franck.lecuyer at rte-france.com>

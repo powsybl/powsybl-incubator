@@ -24,7 +24,6 @@ import com.powsybl.iidm.network.BusbarSection;
 import com.powsybl.iidm.network.Country;
 import com.powsybl.iidm.network.Load;
 import com.powsybl.iidm.network.NetworkFactory;
-import com.powsybl.iidm.network.Substation;
 import com.powsybl.iidm.network.TopologyKind;
 import com.powsybl.iidm.network.VoltageLevel;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
@@ -51,12 +50,12 @@ import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
  * @author Giovanni Ferrari <giovanni.ferrari at techrain.eu>
  */
 public class TestVoltageLevelDiagram extends AbstractTestCase {
-    Substation substation;
+
     private FileSystem fileSystem;
     private Path tmpDir;
 
     @Before
-    public void setUp() {
+    public void setUp() throws IOException {
         network = NetworkFactory.create("testCase1", "test");
         substation = network.newSubstation().setId("s").setCountry(Country.FR).add();
         vl = substation.newVoltageLevel().setId("vl").setTopologyKind(TopologyKind.NODE_BREAKER).setNominalV(400).add();
@@ -70,11 +69,7 @@ public class TestVoltageLevelDiagram extends AbstractTestCase {
         view.newBreaker().setId("b").setNode1(1).setNode2(2).add();
 
         fileSystem = Jimfs.newFileSystem(Configuration.unix());
-        try {
-            tmpDir = Files.createDirectory(fileSystem.getPath("/tmp"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        tmpDir = Files.createDirectory(fileSystem.getPath("/tmp"));
     }
 
     @Test

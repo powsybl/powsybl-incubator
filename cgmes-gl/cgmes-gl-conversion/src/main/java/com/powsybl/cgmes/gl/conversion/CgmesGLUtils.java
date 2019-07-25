@@ -6,6 +6,11 @@
  */
 package com.powsybl.cgmes.gl.conversion;
 
+import java.util.Objects;
+
+import com.powsybl.cgmes.model.CgmesSubset;
+import com.powsybl.triplestore.api.TripleStore;
+
 /**
  *
  * @author Massimo Ferraro <massimo.ferraro@techrain.eu>
@@ -20,6 +25,32 @@ public final class CgmesGLUtils {
 
     public static boolean checkCoordinateSystem(String crsName, String crsUrn) {
         return COORDINATE_SYSTEM_NAME.equals(crsName) && COORDINATE_SYSTEM_URN.equals(crsUrn);
+    }
+
+    public static String contextNameFor(CgmesSubset subset, TripleStore tripleStore, String modelId) {
+        Objects.requireNonNull(subset);
+        Objects.requireNonNull(tripleStore);
+        Objects.requireNonNull(modelId);
+        String contextNameEQ = contextNameForEquipmentSubset(tripleStore);
+        return contextNameEQ != null
+                ? buildContextNameForSubsetFrom(contextNameEQ, subset)
+                : modelId + "_" + subset.getIdentifier() + ".xml";
+    }
+
+    private static String contextNameForEquipmentSubset(TripleStore tripleStore) {
+        String eq = CgmesSubset.EQUIPMENT.getIdentifier();
+        String eqBD = CgmesSubset.EQUIPMENT_BOUNDARY.getIdentifier();
+        for (String contextName : tripleStore.contextNames()) {
+            if (contextName.contains(eq) && !contextName.contains(eqBD)) {
+                return contextName;
+            }
+        }
+        return null;
+    }
+
+    private static String buildContextNameForSubsetFrom(String contextNameEQ, CgmesSubset subset) {
+        String eq = CgmesSubset.EQUIPMENT.getIdentifier();
+        return contextNameEQ.replace(eq, subset.getIdentifier());
     }
 
 }

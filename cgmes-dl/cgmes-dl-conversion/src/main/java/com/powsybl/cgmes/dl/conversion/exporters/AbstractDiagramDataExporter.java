@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
+import com.powsybl.cgmes.dl.conversion.CgmesDLModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,21 +41,21 @@ public abstract class AbstractDiagramDataExporter {
     }
 
     protected String addDiagramObject(String id, String name, double rotation, String diagramObjectStyleId, String diagramId) {
-        PropertyBag diagramObjectProperties = new PropertyBag(Arrays.asList("IdentifiedObject.name", "IdentifiedObject", "rotation", "Diagram", "DiagramObjectStyle"));
-        diagramObjectProperties.setResourceNames(Arrays.asList("IdentifiedObject", "Diagram", "DiagramObjectStyle"));
-        diagramObjectProperties.setClassPropertyNames(Arrays.asList("IdentifiedObject.name"));
-        diagramObjectProperties.put("IdentifiedObject.name", name);
-        diagramObjectProperties.put("IdentifiedObject", id);
+        PropertyBag diagramObjectProperties = new PropertyBag(Arrays.asList(CgmesDLModel.IDENTIFIED_OBJECT_NAME, CgmesDLModel.IDENTIFIED_OBJECT, "rotation", CgmesDLModel.DIAGRAM, CgmesDLModel.DIAGRAM_OBJECT_STYLE));
+        diagramObjectProperties.setResourceNames(Arrays.asList(CgmesDLModel.IDENTIFIED_OBJECT, CgmesDLModel.DIAGRAM, CgmesDLModel.DIAGRAM_OBJECT_STYLE));
+        diagramObjectProperties.setClassPropertyNames(Arrays.asList(CgmesDLModel.IDENTIFIED_OBJECT_NAME));
+        diagramObjectProperties.put(CgmesDLModel.IDENTIFIED_OBJECT_NAME, name);
+        diagramObjectProperties.put(CgmesDLModel.IDENTIFIED_OBJECT, id);
         diagramObjectProperties.put("rotation", Double.toString(rotation));
-        diagramObjectProperties.put("Diagram", diagramId);
-        diagramObjectProperties.put("DiagramObjectStyle", diagramObjectStyleId);
-        return tripleStore.add(context.getDlContext(), CgmesNamespace.CIM_16_NAMESPACE, "DiagramObject", diagramObjectProperties);
+        diagramObjectProperties.put(CgmesDLModel.DIAGRAM, diagramId);
+        diagramObjectProperties.put(CgmesDLModel.DIAGRAM_OBJECT_STYLE, diagramObjectStyleId);
+        return tripleStore.add(context.getDlContext(), CgmesNamespace.CIM_16_NAMESPACE, CgmesDLModel.DIAGRAM_OBJECT, diagramObjectProperties);
     }
 
     protected void addDiagramObjectPoint(String diagramObjectId, DiagramPoint point) {
-        PropertyBag diagramObjectPointProperties = new PropertyBag(Arrays.asList("DiagramObject", "sequenceNumber", "xPosition", "yPosition"));
-        diagramObjectPointProperties.setResourceNames(Arrays.asList("DiagramObject"));
-        diagramObjectPointProperties.put("DiagramObject", diagramObjectId);
+        PropertyBag diagramObjectPointProperties = new PropertyBag(Arrays.asList(CgmesDLModel.DIAGRAM_OBJECT, "sequenceNumber", "xPosition", "yPosition"));
+        diagramObjectPointProperties.setResourceNames(Arrays.asList(CgmesDLModel.DIAGRAM_OBJECT));
+        diagramObjectPointProperties.put(CgmesDLModel.DIAGRAM_OBJECT, diagramObjectId);
         diagramObjectPointProperties.put("sequenceNumber", Integer.toString(point.getSeq()));
         diagramObjectPointProperties.put("xPosition", Double.toString(point.getX()));
         diagramObjectPointProperties.put("yPosition", Double.toString(point.getY()));
@@ -62,10 +63,10 @@ public abstract class AbstractDiagramDataExporter {
     }
 
     protected String addDiagramObjectStyle(String name) {
-        PropertyBag diagramObjectStyleProperties = new PropertyBag(Arrays.asList("IdentifiedObject.name"));
-        diagramObjectStyleProperties.setClassPropertyNames(Arrays.asList("IdentifiedObject.name"));
-        diagramObjectStyleProperties.put("IdentifiedObject.name", name);
-        return tripleStore.add(context.getDlContext(), CgmesNamespace.CIM_16_NAMESPACE, "DiagramObjectStyle", diagramObjectStyleProperties);
+        PropertyBag diagramObjectStyleProperties = new PropertyBag(Arrays.asList(CgmesDLModel.IDENTIFIED_OBJECT_NAME));
+        diagramObjectStyleProperties.setClassPropertyNames(Arrays.asList(CgmesDLModel.IDENTIFIED_OBJECT_NAME));
+        diagramObjectStyleProperties.put(CgmesDLModel.IDENTIFIED_OBJECT_NAME, name);
+        return tripleStore.add(context.getDlContext(), CgmesNamespace.CIM_16_NAMESPACE, CgmesDLModel.DIAGRAM_OBJECT_STYLE, diagramObjectStyleProperties);
     }
 
     protected String addDiagramObjectStyle(TopologyKind topologyKind) {

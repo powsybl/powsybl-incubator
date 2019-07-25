@@ -8,6 +8,7 @@ package com.powsybl.cgmes.dl.conversion.importers;
 
 import java.util.Objects;
 
+import com.powsybl.cgmes.dl.conversion.CgmesDLModel;
 import com.powsybl.cgmes.iidm.extensions.dl.NetworkDiagramData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,9 +43,9 @@ public class LineDiagramDataImporter {
             if (lineIidmDiagramData == null) {
                 lineIidmDiagramData = new LineDiagramData<>(line);
             }
-            lineIidmDiagramData.addPoint(lineDiagramData.get("diagramName"), new DiagramPoint(lineDiagramData.asDouble("x"), lineDiagramData.asDouble("y"), lineDiagramData.asInt("seq")));
+            lineIidmDiagramData.addPoint(lineDiagramData.get(CgmesDLModel.DIAGRAM_NAME), new DiagramPoint(lineDiagramData.asDouble("x"), lineDiagramData.asDouble("y"), lineDiagramData.asInt("seq")));
             line.addExtension(LineDiagramData.class, lineIidmDiagramData);
-            NetworkDiagramData.addDiagramName(network, lineDiagramData.get("diagramName"));
+            NetworkDiagramData.addDiagramName(network, lineDiagramData.get(CgmesDLModel.DIAGRAM_NAME));
         } else {
             DanglingLine danglingLine = network.getDanglingLine(lineId);
             if (danglingLine != null) {
@@ -53,9 +54,9 @@ public class LineDiagramDataImporter {
                     danglingLineDiagramData = new LineDiagramData<>(danglingLine);
                 }
 
-                danglingLineDiagramData.addPoint(lineDiagramData.get("diagramName"), new DiagramPoint(lineDiagramData.asDouble("x"), lineDiagramData.asDouble("y"), lineDiagramData.asInt("seq")));
+                danglingLineDiagramData.addPoint(lineDiagramData.get(CgmesDLModel.DIAGRAM_NAME), new DiagramPoint(lineDiagramData.asDouble("x"), lineDiagramData.asDouble("y"), lineDiagramData.asInt("seq")));
                 danglingLine.addExtension(LineDiagramData.class, danglingLineDiagramData);
-                NetworkDiagramData.addDiagramName(network, lineDiagramData.get("diagramName"));
+                NetworkDiagramData.addDiagramName(network, lineDiagramData.get(CgmesDLModel.DIAGRAM_NAME));
             } else {
                 LOG.warn("Cannot find line/dangling line {}, name {} in network {}: skipping line diagram data", lineId, lineDiagramData.get("name"), network.getId());
             }

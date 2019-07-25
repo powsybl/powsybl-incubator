@@ -35,6 +35,19 @@ public class CgmesDLModel {
     public static final String SVC_DIAGRAM_DATA_QUERY_KEY = "svcDiagramData";
     public static final String TERMINALS_QUERY_KEY = "terminals";
     public static final String BUSBAR_NODES_QUERY_KEY = "busbarNodes";
+    public static final String MODEL_DESCRIPTION = "Model.description";
+    public static final String MODEL_DEPENDENT_ON = "Model.DependentOn";
+    public static final String MODEL_VERSION = "Model.version";
+    public static final String MODEL_PROFILE = "Model.profile";
+    public static final String MODEL_CREATED = "Model.created";
+    public static final String MODEL_SCENARIO_TIME = "Model.scenarioTime";
+    public static final String IDENTIFIED_OBJECT_NAME = "IdentifiedObject.name";
+    public static final String ORIENTATION = "orientation";
+    public static final String IDENTIFIED_OBJECT = "IdentifiedObject";
+    public static final String DIAGRAM = "Diagram";
+    public static final String DIAGRAM_OBJECT_STYLE = "DiagramObjectStyle";
+    public static final String DIAGRAM_OBJECT = "DiagramObject";
+    public static final String DIAGRAM_NAME = "diagramName";
 
     private static final Logger LOG = LoggerFactory.getLogger(CgmesDLModel.class);
 

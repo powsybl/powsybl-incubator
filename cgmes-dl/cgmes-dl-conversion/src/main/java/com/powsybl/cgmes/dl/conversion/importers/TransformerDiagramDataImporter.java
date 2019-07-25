@@ -9,6 +9,7 @@ package com.powsybl.cgmes.dl.conversion.importers;
 import java.util.Map;
 import java.util.Objects;
 
+import com.powsybl.cgmes.dl.conversion.CgmesDLModel;
 import com.powsybl.cgmes.iidm.extensions.dl.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,9 +42,9 @@ public class TransformerDiagramDataImporter extends AbstractCouplingDeviceDiagra
                     transformersDiagramData.asDouble("rotation"));
             addTerminalPoints(transformerId, transformer.getName(), DiagramTerminal.TERMINAL1, "1", diagramDetails);
             addTerminalPoints(transformerId, transformer.getName(), DiagramTerminal.TERMINAL2, "2", diagramDetails);
-            transformerIidmDiagramData.addData(transformersDiagramData.get("diagramName"), diagramDetails);
+            transformerIidmDiagramData.addData(transformersDiagramData.get(CgmesDLModel.DIAGRAM_NAME), diagramDetails);
             transformer.addExtension(CouplingDeviceDiagramData.class, transformerIidmDiagramData);
-            NetworkDiagramData.addDiagramName(network, transformersDiagramData.get("diagramName"));
+            NetworkDiagramData.addDiagramName(network, transformersDiagramData.get(CgmesDLModel.DIAGRAM_NAME));
         } else {
             ThreeWindingsTransformer transformer3w = network.getThreeWindingsTransformer(transformerId);
             if (transformer3w != null) {
@@ -53,9 +54,9 @@ public class TransformerDiagramDataImporter extends AbstractCouplingDeviceDiagra
                 addTerminalPoints(transformerId, transformer3w.getName(), DiagramTerminal.TERMINAL1, "1", diagramDetails);
                 addTerminalPoints(transformerId, transformer3w.getName(), DiagramTerminal.TERMINAL2, "2", diagramDetails);
                 addTerminalPoints(transformerId, transformer3w.getName(), DiagramTerminal.TERMINAL3, "3", diagramDetails);
-                transformerIidmDiagramData.addData(transformersDiagramData.get("diagramName"), diagramDetails);
+                transformerIidmDiagramData.addData(transformersDiagramData.get(CgmesDLModel.DIAGRAM_NAME), diagramDetails);
                 transformer3w.addExtension(ThreeWindingsTransformerDiagramData.class, transformerIidmDiagramData);
-                NetworkDiagramData.addDiagramName(network, transformersDiagramData.get("diagramName"));
+                NetworkDiagramData.addDiagramName(network, transformersDiagramData.get(CgmesDLModel.DIAGRAM_NAME));
             } else {
                 LOG.warn("Cannot find transformer {}, name {} in network {}: skipping transformer diagram data", transformerId, transformersDiagramData.get("name"), network.getId());
             }

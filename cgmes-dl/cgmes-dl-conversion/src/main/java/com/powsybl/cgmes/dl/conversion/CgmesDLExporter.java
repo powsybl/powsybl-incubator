@@ -118,25 +118,26 @@ public class CgmesDLExporter {
     }
 
     private void addModel(ExportContext context) {
-        PropertyBag modelProperties = new PropertyBag(Arrays.asList("Model.scenarioTime", "Model.created", "Model.description", "Model.version", "Model.profile", "Model.DependentOn"));
-        modelProperties.setResourceNames(Arrays.asList("Model.DependentOn"));
-        modelProperties.setClassPropertyNames(Arrays.asList("Model.scenarioTime", "Model.created", "Model.description", "Model.version", "Model.profile", "Model.DependentOn"));
-        modelProperties.put("Model.scenarioTime", network.getCaseDate().toString());
-        modelProperties.put("Model.created", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(new Date()));
-        modelProperties.put("Model.description", network.getName());
-        modelProperties.put("Model.version", "1");
-        modelProperties.put("Model.profile", "http://entsoe.eu/CIM/DiagramLayout/3/1");
-        modelProperties.put("Model.DependentOn", network.getId());
+        PropertyBag modelProperties = new PropertyBag(Arrays.asList(CgmesDLModel.MODEL_SCENARIO_TIME, CgmesDLModel.MODEL_CREATED, CgmesDLModel.MODEL_DESCRIPTION, "" +
+                CgmesDLModel.MODEL_VERSION, CgmesDLModel.MODEL_PROFILE, CgmesDLModel.MODEL_DEPENDENT_ON));
+        modelProperties.setResourceNames(Arrays.asList(CgmesDLModel.MODEL_DEPENDENT_ON));
+        modelProperties.setClassPropertyNames(Arrays.asList(CgmesDLModel.MODEL_SCENARIO_TIME, CgmesDLModel.MODEL_CREATED, CgmesDLModel.MODEL_DESCRIPTION, CgmesDLModel.MODEL_VERSION, CgmesDLModel.MODEL_PROFILE, CgmesDLModel.MODEL_DEPENDENT_ON));
+        modelProperties.put(CgmesDLModel.MODEL_SCENARIO_TIME, network.getCaseDate().toString());
+        modelProperties.put(CgmesDLModel.MODEL_CREATED, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(new Date()));
+        modelProperties.put(CgmesDLModel.MODEL_DESCRIPTION, network.getName());
+        modelProperties.put(CgmesDLModel.MODEL_VERSION, "1");
+        modelProperties.put(CgmesDLModel.MODEL_PROFILE, "http://entsoe.eu/CIM/DiagramLayout/3/1");
+        modelProperties.put(CgmesDLModel.MODEL_DEPENDENT_ON, network.getId());
         tripleStore.add(context.getDlContext(), MD_NAMESPACE, "FullModel", modelProperties);
     }
 
     private void addDiagrams(ExportContext context) {
         NetworkDiagramData.getDiagramsNames(network).forEach(diagramName -> {
-            PropertyBag diagramObjectProperties = new PropertyBag(Arrays.asList("IdentifiedObject.name", "orientation"));
-            diagramObjectProperties.setResourceNames(Arrays.asList("orientation"));
-            diagramObjectProperties.setClassPropertyNames(Arrays.asList("IdentifiedObject.name"));
-            diagramObjectProperties.put("IdentifiedObject.name", diagramName);
-            diagramObjectProperties.put("orientation", CgmesNamespace.CIM_16_NAMESPACE + "OrientationKind.negative");
+            PropertyBag diagramObjectProperties = new PropertyBag(Arrays.asList(CgmesDLModel.IDENTIFIED_OBJECT_NAME, CgmesDLModel.ORIENTATION));
+            diagramObjectProperties.setResourceNames(Arrays.asList(CgmesDLModel.ORIENTATION));
+            diagramObjectProperties.setClassPropertyNames(Arrays.asList(CgmesDLModel.IDENTIFIED_OBJECT_NAME));
+            diagramObjectProperties.put(CgmesDLModel.IDENTIFIED_OBJECT_NAME, diagramName);
+            diagramObjectProperties.put(CgmesDLModel.ORIENTATION, CgmesNamespace.CIM_16_NAMESPACE + "OrientationKind.negative");
             String diagramId = tripleStore.add(context.getDlContext(), CgmesNamespace.CIM_16_NAMESPACE, "Diagram", diagramObjectProperties);
             context.setDiagramId(diagramId, diagramName);
         });

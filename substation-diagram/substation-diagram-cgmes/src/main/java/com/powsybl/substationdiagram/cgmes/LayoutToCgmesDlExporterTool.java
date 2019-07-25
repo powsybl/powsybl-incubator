@@ -42,17 +42,16 @@ public class LayoutToCgmesDlExporterTool implements Tool {
     private static final String OUTPUT_DIR = "output-dir";
     private static final String VOLTAGE_LEVEL_LAYOUT = "voltage-level-layout";
     private static final String SUBSTATION_LAYOUT = "substation-layout";
+    private static final String DEFAULT_VOLTAGE_LAYOUT = "auto-without-extensions";
+    private static final String DEFAULT_SUBSTATION_LAYOUT = "horizontal";
 
     private final Map<String, VoltageLevelLayoutFactory> voltageLevelsLayouts
             = ImmutableMap.of("auto-extensions", new PositionVoltageLevelLayoutFactory(new PositionFromExtension()),
-            "auto-without-extensions", new PositionVoltageLevelLayoutFactory(new PositionFree()));
+            DEFAULT_VOLTAGE_LAYOUT, new PositionVoltageLevelLayoutFactory(new PositionFree()));
 
     private final Map<String, SubstationLayoutFactory> substationsLayouts
-            = ImmutableMap.of("horizontal", new HorizontalSubstationLayoutFactory(),
+            = ImmutableMap.of(DEFAULT_SUBSTATION_LAYOUT, new HorizontalSubstationLayoutFactory(),
             "vertical", new VerticalSubstationLayoutFactory());
-
-    private static final String DEFAULT_VOLTAGE_LAYOUT = "auto-without-extensions";
-    private static final String DEFAULT_SUBSTATION_LAYOUT = "horizontal";
 
     @Override
     public Command getCommand() {

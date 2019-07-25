@@ -8,6 +8,9 @@ package com.powsybl.cgmes.gl.conversion;
 
 import java.util.Objects;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.powsybl.cgmes.iidm.extensions.gl.SubstationPosition;
 import com.powsybl.iidm.network.Substation;
 import com.powsybl.triplestore.api.TripleStore;
@@ -18,6 +21,8 @@ import com.powsybl.triplestore.api.TripleStore;
  */
 public class SubstationPositionExporter extends AbstractPositionExporter {
 
+    private static final Logger LOG = LoggerFactory.getLogger(SubstationPositionExporter.class);
+
     public SubstationPositionExporter(TripleStore tripleStore, ExportContext context) {
         super(tripleStore, context);
     }
@@ -25,6 +30,10 @@ public class SubstationPositionExporter extends AbstractPositionExporter {
     public void exportPosition(Substation substation) {
         Objects.requireNonNull(substation);
         SubstationPosition substationPosition = substation.getExtension(SubstationPosition.class);
+        if (substationPosition == null) {
+            LOG.warn("Cannot find position data of substation {}, name {}: skipping export of substation position", substation.getId(), substation.getName());
+            return;
+        }
         String locationId = addLocation(substation.getId(), substation.getName());
         addLocationPoint(locationId, substationPosition.getCoordinate(), 0);
     }

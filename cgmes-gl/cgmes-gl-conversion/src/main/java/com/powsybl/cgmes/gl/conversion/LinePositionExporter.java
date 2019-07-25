@@ -8,6 +8,9 @@ package com.powsybl.cgmes.gl.conversion;
 
 import java.util.Objects;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.powsybl.cgmes.iidm.extensions.gl.LinePosition;
 import com.powsybl.iidm.network.DanglingLine;
 import com.powsybl.iidm.network.Line;
@@ -18,6 +21,8 @@ import com.powsybl.triplestore.api.TripleStore;
  * @author Massimo Ferraro <massimo.ferraro@techrain.eu>
  */
 public class LinePositionExporter extends AbstractPositionExporter {
+
+    private static final Logger LOG = LoggerFactory.getLogger(LinePositionExporter.class);
 
     public LinePositionExporter(TripleStore tripleStore, ExportContext context) {
         super(tripleStore, context);
@@ -36,6 +41,10 @@ public class LinePositionExporter extends AbstractPositionExporter {
     }
 
     private void exportPosition(String id, String name, LinePosition<?> linePosition) {
+        if (linePosition == null) {
+            LOG.warn("Cannot find position data of line {}, name {}: skipping export of line position", id, name);
+            return;
+        }
         String locationId = addLocation(id, name);
         for (int i = 0; i < linePosition.getCoordinates().size(); i++) {
             addLocationPoint(locationId, linePosition.getCoordinates().get(i), i + 1);

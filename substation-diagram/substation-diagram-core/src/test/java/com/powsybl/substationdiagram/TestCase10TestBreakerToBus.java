@@ -6,7 +6,13 @@
  */
 package com.powsybl.substationdiagram;
 
-import com.powsybl.iidm.network.*;
+import com.powsybl.iidm.network.BusbarSection;
+import com.powsybl.iidm.network.Country;
+import com.powsybl.iidm.network.Load;
+import com.powsybl.iidm.network.NetworkFactory;
+import com.powsybl.iidm.network.Substation;
+import com.powsybl.iidm.network.TopologyKind;
+import com.powsybl.iidm.network.VoltageLevel;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
 

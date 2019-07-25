@@ -48,7 +48,7 @@ public class NominalVoltageStyleTest {
     private Path tmpDir;
 
     @Before
-    public void setUp() {
+    public void setUp() throws IOException {
         network = NetworkFactory.create("testCase1", "test");
         substation = network.newSubstation().setId("s").setCountry(Country.FR).add();
         vl = substation.newVoltageLevel().setId("vl").setTopologyKind(TopologyKind.NODE_BREAKER).setNominalV(400).add();
@@ -62,11 +62,7 @@ public class NominalVoltageStyleTest {
         view.newBreaker().setId("b").setNode1(1).setNode2(2).add();
 
         fileSystem = Jimfs.newFileSystem(Configuration.unix());
-        try {
-            tmpDir = Files.createDirectory(fileSystem.getPath("/tmp"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        tmpDir = Files.createDirectory(fileSystem.getPath("/tmp"));
     }
 
     @Test

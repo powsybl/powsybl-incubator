@@ -6,19 +6,37 @@
  */
 package com.powsybl.substationdiagram;
 
-import com.powsybl.iidm.network.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import com.powsybl.iidm.network.BusbarSection;
+import com.powsybl.iidm.network.Country;
+import com.powsybl.iidm.network.Load;
+import com.powsybl.iidm.network.NetworkFactory;
+import com.powsybl.iidm.network.Substation;
+import com.powsybl.iidm.network.TopologyKind;
+import com.powsybl.iidm.network.VoltageLevel;
 import com.powsybl.substationdiagram.layout.BlockOrganizer;
 import com.powsybl.substationdiagram.layout.ImplicitCellDetector;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
 import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayout;
 import com.powsybl.substationdiagram.library.ComponentType;
-import com.powsybl.substationdiagram.model.*;
+import com.powsybl.substationdiagram.model.Cell;
+import com.powsybl.substationdiagram.model.ExternCell;
+import com.powsybl.substationdiagram.model.Graph;
+import com.powsybl.substationdiagram.model.Node;
+import com.powsybl.substationdiagram.model.Orientation;
+import com.powsybl.substationdiagram.model.Position;
+import com.powsybl.substationdiagram.model.PrimaryBlock;
+import com.powsybl.substationdiagram.model.SerialBlock;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 /**
  * <PRE>

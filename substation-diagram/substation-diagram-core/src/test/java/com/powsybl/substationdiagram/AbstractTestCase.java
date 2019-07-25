@@ -49,11 +49,7 @@ public abstract class AbstractTestCase {
                 .replace("\r", "\n");
     }
 
-    abstract void setUp();
-
-    AbstractTestCase() {
-        setUp();
-    }
+    abstract void setUp() throws IOException;
 
     String getName() {
         return getClass().getSimpleName();

@@ -37,13 +37,9 @@ public class GraphMetadataTest {
     private Path tmpDir;
 
     @Before
-    public void setUp() {
+    public void setUp() throws IOException {
         fileSystem = Jimfs.newFileSystem(Configuration.unix());
-        try {
-            tmpDir = Files.createDirectory(fileSystem.getPath("/tmp"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        tmpDir = Files.createDirectory(fileSystem.getPath("/tmp"));
     }
 
     @Test

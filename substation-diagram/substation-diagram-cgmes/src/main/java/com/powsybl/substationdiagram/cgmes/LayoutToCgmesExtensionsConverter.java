@@ -240,19 +240,19 @@ public class LayoutToCgmesExtensionsConverter {
                 });
 
                 if (TopologyKind.BUS_BREAKER.equals(voltageLevel.getTopologyKind())) {
-                    voltageLevel.getBusBreakerView().getBusStream().forEach(bus -> {
+                    voltageLevel.getBusBreakerView().getBusStream().forEach(bus ->
                         vlGraph.getNodeBuses().stream().filter(busNode -> busNode.getId().equals(bus.getId())).findFirst().ifPresent(busNode -> {
-                            NodeDiagramData<Bus> busDiagramData = bus.getExtension(NodeDiagramData.class) != null ? bus.getExtension(NodeDiagramData.class) : new NodeDiagramData<Bus>(bus);
+                            NodeDiagramData<Bus> busDiagramData = bus.getExtension(NodeDiagramData.class) != null ? bus.getExtension(NodeDiagramData.class) : new NodeDiagramData<>(bus);
                             setNodeDiagramPoints(busDiagramData, busNode, offsetPoint, diagramName);
                             LOG.debug("setting CGMES DL IIDM extensions for Bus {}, {} - {}", bus.getId(), busDiagramData.getData(diagramName).getPoint1(), busDiagramData.getData(diagramName).getPoint2());
                             bus.addExtension(NodeDiagramData.class, busDiagramData);
-                        });
-                    });
+                        })
+                    );
 
                 } else {
                     voltageLevel.getNodeBreakerView().getBusbarSectionStream().forEach(busbarSection ->
                         vlGraph.getNodeBuses().stream().filter(busNode -> busNode.getId().equals(busbarSection.getId())).findFirst().ifPresent(busNode -> {
-                            NodeDiagramData<BusbarSection> busbarSectionDiagramData = busbarSection.getExtension(NodeDiagramData.class) != null ? busbarSection.getExtension(NodeDiagramData.class) : new NodeDiagramData<BusbarSection>(busbarSection);
+                            NodeDiagramData<BusbarSection> busbarSectionDiagramData = busbarSection.getExtension(NodeDiagramData.class) != null ? busbarSection.getExtension(NodeDiagramData.class) : new NodeDiagramData<>(busbarSection);
                             setNodeDiagramPoints(busbarSectionDiagramData, busNode, offsetPoint, diagramName);
                             LOG.debug("setting CGMES DL IIDM extensions for BusbarSection {}, {} - {}", busbarSection.getId(), busbarSectionDiagramData.getData(diagramName).getPoint1(), busbarSectionDiagramData.getData(diagramName).getPoint2());
                             busbarSection.addExtension(NodeDiagramData.class, busbarSectionDiagramData);

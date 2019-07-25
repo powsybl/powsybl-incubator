@@ -61,7 +61,7 @@ public final class CgmesDLUtils {
         Objects.requireNonNull(network);
         TripleStore tStore = getTripleStore(network);
         if (tStore != null) {
-            tStore.contextNames().stream().filter(CgmesSubset.DIAGRAM_LAYOUT::isValidName).findFirst().ifPresent(contextName -> tStore.clear(contextName));
+            tStore.contextNames().stream().filter(CgmesSubset.DIAGRAM_LAYOUT::isValidName).findFirst().ifPresent(tStore::clear);
         }
     }
 }

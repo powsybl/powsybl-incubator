@@ -255,6 +255,10 @@ public class SubstationDiagramViewer extends Application {
             }
         }
 
+        private String getSelectedDiagramName() {
+            return diagramNamesComboBox.getSelectionModel().getSelectedItem();
+        }
+
         private ContainerDiagramResult createContainerDiagramView(Container c) {
             String svgData;
             String metadataData;
@@ -521,11 +525,6 @@ public class SubstationDiagramViewer extends Application {
         return voltageLevelsLayouts.get(selectedItem);
     }
 
-    private String getSelectedDiagramName() {
-        String selectedItem = diagramNamesComboBox.getSelectionModel().getSelectedItem();
-        return selectedItem;
-    }
-
     private void setParameters(LayoutParameters layoutParameters) {
         this.layoutParameters.set(new LayoutParameters(layoutParameters));
     }
@@ -611,13 +610,9 @@ public class SubstationDiagramViewer extends Application {
         //CGMES-DL diagrams names list
         parametersPane.add(new Label("CGMES-DL Diagrams:"), 0, ++rowIndex);
         parametersPane.add(diagramNamesComboBox, 0, ++rowIndex);
-        diagramNamesComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            refreshDiagram();
-        });
+        diagramNamesComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> refreshDiagram());
         diagramNamesComboBox.setDisable(true);
-        voltageLevelLayoutComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            setDiagramsNamesContent(networkProperty.get(), false);
-        });
+        voltageLevelLayoutComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> setDiagramsNamesContent(networkProperty.get(), false));
         rowIndex += 1;
 
         addSpinner("Horizontal substation padding:", 50, 300, 5, rowIndex, LayoutParameters::getHorizontalSubstationPadding, LayoutParameters::setHorizontalSubstationPadding);

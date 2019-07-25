@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import com.powsybl.cgmes.iidm.extensions.dl.NetworkDiagramData;
+import com.powsybl.triplestore.api.PrefixNamespace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -114,7 +115,7 @@ public class CgmesDLExporter {
     }
 
     private boolean namespaceAlreadyExist(String prefix) {
-        return tripleStore.getNamespaces().stream().map(prefixNamespace -> prefixNamespace.getPrefix()).anyMatch(prefix::equals);
+        return tripleStore.getNamespaces().stream().map(PrefixNamespace::getPrefix).anyMatch(prefix::equals);
     }
 
     private void addModel(ExportContext context) {

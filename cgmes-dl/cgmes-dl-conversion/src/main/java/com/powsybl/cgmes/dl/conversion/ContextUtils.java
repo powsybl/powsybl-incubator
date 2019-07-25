@@ -11,6 +11,10 @@ import com.powsybl.triplestore.api.TripleStore;
 
 import java.util.Objects;
 
+/**
+ *
+ * @author Massimo Ferraro <massimo.ferraro@techrain.eu>
+ */
 public final class ContextUtils {
 
     private ContextUtils() {

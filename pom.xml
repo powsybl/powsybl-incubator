@@ -55,6 +55,7 @@
         <module>substation-diagram</module>
         <module>cgmes-dl</module>
         <module>cgmes-gl</module>
+        <module>base-voltage-color</module>
     </modules>
 
     <properties>

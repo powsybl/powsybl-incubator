@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.powsybl.substationdiagram.svg;
+package com.powsybl.basevoltage;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,8 +18,6 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
 import com.powsybl.commons.config.PlatformConfig;
-import com.powsybl.substationdiagram.svg.config.BaseVoltageConfig;
-import com.powsybl.substationdiagram.svg.config.BaseVoltagesConfig;
 
 /**
  *

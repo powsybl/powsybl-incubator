@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.powsybl.substationdiagram.svg;
+package com.powsybl.basevoltage;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -25,7 +25,7 @@ public class BaseVoltageColorTest {
 
     @Test
     public void test() throws IOException, URISyntaxException {
-        Path configFile = Paths.get(getClass().getResource("/config/base-voltages.yml").toURI());
+        Path configFile = Paths.get(getClass().getResource("/base-voltages.yml").toURI());
         BaseVoltageColor baseVoltageColor = new BaseVoltageColor(configFile);
         // getProfiles
         assertEquals(Arrays.asList("RTE"), baseVoltageColor.getProfiles());

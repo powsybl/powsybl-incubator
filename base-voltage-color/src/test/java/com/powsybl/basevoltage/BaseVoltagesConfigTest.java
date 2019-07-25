@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.powsybl.substationdiagram.svg.config;
+package com.powsybl.basevoltage;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -25,7 +25,7 @@ public class BaseVoltagesConfigTest {
     @Test
     public void test() throws IOException {
         Yaml yaml = new Yaml(new Constructor(BaseVoltagesConfig.class));
-        InputStream configInputStream = getClass().getResourceAsStream("/config/base-voltages.yml");
+        InputStream configInputStream = getClass().getResourceAsStream("/base-voltages.yml");
         BaseVoltagesConfig config = yaml.load(configInputStream);
         assertNotNull(config);
         assertNotNull(config.getBaseVoltages());

@@ -6,9 +6,6 @@
  */
 package com.powsybl.cgmes.dl.conversion;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import com.powsybl.cgmes.iidm.extensions.dl.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,6 +27,8 @@ import com.powsybl.iidm.network.ThreeWindingsTransformer;
 import com.powsybl.iidm.network.TwoWindingsTransformer;
 
 import java.util.List;
+
+import static org.junit.Assert.*;
 
 /**
  *
@@ -279,6 +278,20 @@ public class CgmesDLImporterTest extends AbstractCgmesDLTest {
         ThreeWindingsTransformerDiagramData transformerDiagramData = transformer.getExtension(ThreeWindingsTransformerDiagramData.class);
 
         checkDiagramData(transformerDiagramData.getData(DEFAULT_DIAGRAM_NAME));
+    }
+
+    @Test
+    public void testRemoveExtensions() {
+        Mockito.when(cgmesDLModel.getTransformersDiagramData()).thenReturn(tranformers3wPropertyBags);
+        CgmesDLImporter cgmesDLImporter = new CgmesDLImporter(Networks.createNetworkWithLoad(), cgmesDLModel);
+        cgmesDLImporter.importDLData();
+        Network network = cgmesDLImporter.getNetworkWithDLData();
+        Load load = network.getLoad("Load");
+
+        assertNotNull(load.getExtension(InjectionDiagramData.class));
+        CgmesDLUtils.removeIidmCgmesExtensions(network);
+        CgmesDLUtils.clearCgmesDl(network);
+        assertNull(load.getExtension(InjectionDiagramData.class));
     }
 
 }

@@ -189,12 +189,11 @@ public class LayoutToCgmesExtensionsConverter {
                 );
 
                 substation.getThreeWindingsTransformerStream().forEach(threeWindingsTransformer ->
-                    vlGraph.getNodes().stream().filter(node -> node.getId().startsWith(threeWindingsTransformer.getId())).findFirst().ifPresent(node -> {
+                    vlGraph.getNodes().stream().filter(node -> node.getId().contains(threeWindingsTransformer.getId())).findFirst().ifPresent(node -> {
                         if (node.getComponentType().equals(ComponentType.THREE_WINDINGS_TRANSFORMER)) {
-                            FeederNode transformerNode = (FeederNode) node;
-                            DiagramPoint tDiagramPoint = offsetPoint.newDiagramPoint(transformerNode.getX(), transformerNode.getY(), transformerNode.getOrder());
+                            DiagramPoint tDiagramPoint = offsetPoint.newDiagramPoint(node.getX(), node.getY(), 0);
                             ThreeWindingsTransformerDiagramData transformerIidmDiagramData = new ThreeWindingsTransformerDiagramData(threeWindingsTransformer);
-                            ThreeWindingsTransformerDiagramData.ThreeWindingsTransformerDiagramDataDetails diagramDetails = transformerIidmDiagramData.new ThreeWindingsTransformerDiagramDataDetails(tDiagramPoint, transformerNode.isRotated() ? 0 : 180);
+                            ThreeWindingsTransformerDiagramData.ThreeWindingsTransformerDiagramDataDetails diagramDetails = transformerIidmDiagramData.new ThreeWindingsTransformerDiagramDataDetails(tDiagramPoint, node.isRotated() ? 0 : 180);
                             transformerIidmDiagramData.addData(diagramName, diagramDetails);
                             LOG.debug("setting CGMES DL IIDM extensions for ThreeWindingTransformer: {}, {}", threeWindingsTransformer.getId(), tDiagramPoint);
                             threeWindingsTransformer.addExtension(ThreeWindingsTransformerDiagramData.class, transformerIidmDiagramData);

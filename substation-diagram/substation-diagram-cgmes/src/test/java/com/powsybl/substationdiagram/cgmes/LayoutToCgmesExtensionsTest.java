@@ -6,10 +6,14 @@
  */
 package com.powsybl.substationdiagram.cgmes;
 
+import com.powsybl.cgmes.iidm.Networks;
 import com.powsybl.cgmes.iidm.extensions.dl.*;
 import com.powsybl.iidm.network.*;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -19,70 +23,28 @@ import static org.junit.Assert.assertNull;
  */
 public class LayoutToCgmesExtensionsTest {
 
-    private Network network;
+    private List<Network> networks = new ArrayList<>();
 
     @Before
     public void setUp() {
-        createNetwork();
+        createNetworks();
     }
 
-    private void createNetwork() {
-        network = NetworkFactory.findDefault().createNetwork("test", "test");
-        Substation substation = network.newSubstation()
-                .setId("Substation")
-                .setCountry(Country.FR)
-                .add();
-        createFirstVoltageLevel(substation);
+    private void createNetworks() {
+        networks.add(Networks.createNetworkWithGenerator());
+        networks.add(Networks.createNetworkWithLine());
+        networks.add(Networks.createNetworkWithDanglingLine());
+        networks.add(Networks.createNetworkWithBusbar());
+        networks.add(Networks.createNetworkWithBus());
+        networks.add(Networks.createNetworkWithLoad());
+        networks.add(Networks.createNetworkWithShuntCompensator());
+        networks.add(Networks.createNetworkWithStaticVarCompensator());
+        networks.add(Networks.createNetworkWithSwitch());
+        networks.add(Networks.createNetworkWithTwoWindingsTransformer());
+        networks.add(Networks.createNetworkWithThreeWindingsTransformer());
     }
 
-    private VoltageLevel createFirstVoltageLevel(Substation substation) {
-        VoltageLevel voltageLevel1 = substation.newVoltageLevel()
-                .setId("VoltageLevel1")
-                .setNominalV(400)
-                .setTopologyKind(TopologyKind.BUS_BREAKER)
-                .add();
-        voltageLevel1.getBusBreakerView().newBus()
-                .setId("Bus1")
-                .add();
-        voltageLevel1.newLoad()
-                .setId("Load")
-                .setBus("Bus1")
-                .setConnectableBus("Bus1")
-                .setP0(100)
-                .setQ0(50)
-                .add();
-        voltageLevel1.newShuntCompensator()
-                .setId("Shunt")
-                .setBus("Bus1")
-                .setConnectableBus("Bus1")
-                .setbPerSection(1e-5)
-                .setCurrentSectionCount(1)
-                .setMaximumSectionCount(1)
-                .add();
-        voltageLevel1.newDanglingLine()
-                .setId("DanglingLine")
-                .setBus("Bus1")
-                .setR(10.0)
-                .setX(1.0)
-                .setB(10e-6)
-                .setG(10e-5)
-                .setP0(50.0)
-                .setQ0(30.0)
-                .add();
-        voltageLevel1.newGenerator()
-                .setId("Generator")
-                .setName("Gen1")
-                .setBus("Bus1")
-                .setMinP(0.0)
-                .setMaxP(20.0)
-                .setVoltageRegulatorOn(false)
-                .setTargetP(10.0)
-                .setTargetQ(10.0)
-                .add();
-        return voltageLevel1;
-    }
-
-    private void checkExtensionsSet() {
+    private void checkExtensionsSet(Network network) {
         network.getVoltageLevelStream().forEach(vl -> {
             vl.visitEquipments(new DefaultTopologyVisitor() {
                 @Override
@@ -138,7 +100,7 @@ public class LayoutToCgmesExtensionsTest {
         });
     }
 
-    private void checkExtensionsUnset() {
+    private void checkExtensionsUnset(Network network) {
         network.getVoltageLevelStream().forEach(vl -> {
             vl.visitEquipments(new DefaultTopologyVisitor() {
                 @Override
@@ -196,30 +158,34 @@ public class LayoutToCgmesExtensionsTest {
 
     @Test
     public void testCgmesDlExtensionsEmpty() {
-        checkExtensionsUnset();
+        networks.stream().forEach(this::checkExtensionsUnset);
     }
 
     @Test
     public void testCgmesDlExtensionsSet() {
-        LayoutToCgmesExtensionsConverter lconv = new LayoutToCgmesExtensionsConverter();
-        lconv.convertLayout(network, "new-diagram");
-
-        checkExtensionsSet();
+        networks.stream().forEach(network -> {
+            LayoutToCgmesExtensionsConverter lconv = new LayoutToCgmesExtensionsConverter();
+            lconv.convertLayout(network, "new-diagram");
+            checkExtensionsSet(network);
+        });
     }
 
     @Test
     public void testCgmesDlExtensionsSetNoname() {
-        LayoutToCgmesExtensionsConverter lconv = new LayoutToCgmesExtensionsConverter();
-        lconv.convertLayout(network, null);
-
-        checkExtensionsSet();
+        networks.stream().forEach(network -> {
+            LayoutToCgmesExtensionsConverter lconv = new LayoutToCgmesExtensionsConverter();
+            lconv.convertLayout(network, null);
+            checkExtensionsSet(network);
+        });
     }
 
     @Test
     public void testCgmesDlExtensionsEmptyNetwork() {
+        Network network = NetworkFactory.findDefault().createNetwork("testEmpty", "testEmpty");
         LayoutToCgmesExtensionsConverter lconv = new LayoutToCgmesExtensionsConverter();
-        lconv.convertLayout(NetworkFactory.findDefault().createNetwork("testEmpty", "testEmpty"), null);
+        lconv.convertLayout(network, null);
 
-        checkExtensionsUnset();
+        checkExtensionsUnset(network);
     }
+
 }

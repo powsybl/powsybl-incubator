@@ -6,14 +6,12 @@
  */
 package com.powsybl.cgmes.iidm.extensions.dl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import org.junit.Test;
-
 import com.powsybl.cgmes.iidm.Networks;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.ThreeWindingsTransformer;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  *
@@ -40,6 +38,7 @@ public class ThreeWindingsTransformerDiagramDataTest {
 
         twtDiagramData.addData(DIAGRAM_NAME, diagramDetails);
         twt.addExtension(ThreeWindingsTransformerDiagramData.class, twtDiagramData);
+        assertTrue(twtDiagramData.getDiagramsNames().size() > 0);
 
         ThreeWindingsTransformer twt2 = network.getThreeWindingsTransformer("Transformer3w");
         ThreeWindingsTransformerDiagramData twtDiagramData2 = twt2.getExtension(ThreeWindingsTransformerDiagramData.class);

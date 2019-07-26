@@ -10,8 +10,7 @@ import com.powsybl.cgmes.iidm.Networks;
 import com.powsybl.iidm.network.Network;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.*;
 
 /**
  *
@@ -25,7 +24,10 @@ public class NetworkDiagramDataTest {
     @Test
     public void test() {
         Network network = Networks.createNetworkWithGenerator();
+        assertFalse(NetworkDiagramData.checkNetworkDiagramData(network));
         assertEquals(0, NetworkDiagramData.getDiagramsNames(network).size());
+        assertFalse(NetworkDiagramData.containsDiagramName(network, DIAGRAM_NAME));
+
         NetworkDiagramData.addDiagramName(network, DIAGRAM_NAME);
         assertEquals(1, NetworkDiagramData.getDiagramsNames(network).size());
         assertEquals(DIAGRAM_NAME, NetworkDiagramData.getDiagramsNames(network).get(0));
@@ -34,6 +36,11 @@ public class NetworkDiagramDataTest {
         Network network2 = Networks.createNetworkWithGenerator();
         assertEquals(0, NetworkDiagramData.getDiagramsNames(network2).size());
         assertEquals(1, NetworkDiagramData.getDiagramsNames(network).size());
+
+        assertTrue(NetworkDiagramData.checkNetworkDiagramData(network));
+        assertTrue(NetworkDiagramData.containsDiagramName(network, DIAGRAM_NAME));
+        assertFalse(NetworkDiagramData.containsDiagramName(network, DIAGRAM_NAME2));
+
     }
 
 }

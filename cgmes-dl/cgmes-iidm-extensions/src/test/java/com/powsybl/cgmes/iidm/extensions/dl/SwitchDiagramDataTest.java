@@ -6,11 +6,12 @@
  */
 package com.powsybl.cgmes.iidm.extensions.dl;
 
-import org.junit.Test;
-
 import com.powsybl.cgmes.iidm.Networks;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.Switch;
+import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  *
@@ -31,6 +32,7 @@ public class SwitchDiagramDataTest extends AbstractCouplingDeviceDiagramDataTest
         diagramDetails.addTerminalPoint(DiagramTerminal.TERMINAL2, new DiagramPoint(40, 10, 2));
         switchDiagramData.addData(DIAGRAM_NAME, diagramDetails);
         sw.addExtension(CouplingDeviceDiagramData.class, switchDiagramData);
+        assertTrue(switchDiagramData.getDiagramsNames().size() > 0);
 
         Switch sw2 = network.getSwitch("Switch");
         CouplingDeviceDiagramData<Switch> switchDiagramData2 = sw2.getExtension(CouplingDeviceDiagramData.class);

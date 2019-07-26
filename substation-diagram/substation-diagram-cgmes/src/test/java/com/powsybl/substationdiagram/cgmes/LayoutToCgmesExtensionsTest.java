@@ -27,7 +27,7 @@ public class LayoutToCgmesExtensionsTest {
     }
 
     private void createNetwork() {
-        network = NetworkFactory.create("test", "test");
+        network = NetworkFactory.findDefault().createNetwork("test", "test");
         Substation substation = network.newSubstation()
                 .setId("Substation")
                 .setCountry(Country.FR)
@@ -68,6 +68,16 @@ public class LayoutToCgmesExtensionsTest {
                 .setG(10e-5)
                 .setP0(50.0)
                 .setQ0(30.0)
+                .add();
+        voltageLevel1.newGenerator()
+                .setId("Generator")
+                .setName("Gen1")
+                .setBus("Bus1")
+                .setMinP(0.0)
+                .setMaxP(20.0)
+                .setVoltageRegulatorOn(false)
+                .setTargetP(10.0)
+                .setTargetQ(10.0)
                 .add();
         return voltageLevel1;
     }
@@ -197,4 +207,19 @@ public class LayoutToCgmesExtensionsTest {
         checkExtensionsSet();
     }
 
+    @Test
+    public void testCgmesDlExtensionsSetNoname() {
+        LayoutToCgmesExtensionsConverter lconv = new LayoutToCgmesExtensionsConverter();
+        lconv.convertLayout(network, null);
+
+        checkExtensionsSet();
+    }
+
+    @Test
+    public void testCgmesDlExtensionsEmptyNetwork() {
+        LayoutToCgmesExtensionsConverter lconv = new LayoutToCgmesExtensionsConverter();
+        lconv.convertLayout(NetworkFactory.findDefault().createNetwork("testEmpty", "testEmpty"), null);
+
+        checkExtensionsUnset();
+    }
 }

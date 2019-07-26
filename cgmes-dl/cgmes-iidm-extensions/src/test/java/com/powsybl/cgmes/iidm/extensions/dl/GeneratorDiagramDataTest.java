@@ -6,11 +6,12 @@
  */
 package com.powsybl.cgmes.iidm.extensions.dl;
 
-import org.junit.Test;
-
 import com.powsybl.cgmes.iidm.Networks;
 import com.powsybl.iidm.network.Generator;
 import com.powsybl.iidm.network.Network;
+import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  *
@@ -29,11 +30,13 @@ public class GeneratorDiagramDataTest extends AbstractInjectionDiagramDataTest {
         diagramDataDetails.addTerminalPoint(new DiagramPoint(0, 10, 1));
         generatorDiagramData.addData(DIAGRAM_NAME, diagramDataDetails);
         generator.addExtension(InjectionDiagramData.class, generatorDiagramData);
+        assertTrue(generatorDiagramData.getDiagramsNames().size() > 0);
 
         Generator generator2 = network.getGenerator("Generator");
         InjectionDiagramData<Generator> generatorDiagramData2 = generator2.getExtension(InjectionDiagramData.class);
 
         checkDiagramData(generatorDiagramData2, DIAGRAM_NAME);
+
     }
 
 }

@@ -6,36 +6,40 @@
  */
 package com.powsybl.loadflow.simple.network;
 
+import com.powsybl.loadflow.simple.util.Evaluable;
+
+import java.util.Objects;
+
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
 public abstract class AbstractFictitiousBranch extends AbstractLfBranch {
 
-    protected double p = Double.NaN;
+    protected Evaluable p = Evaluable.NAN;
 
-    protected double q = Double.NaN;
+    protected Evaluable q = Evaluable.NAN;
 
     protected AbstractFictitiousBranch(LfBus bus1, LfBus bus2, PiModel piModel, double nominalV1, double nominalV2) {
         super(bus1, bus2, piModel, nominalV1, nominalV2);
     }
 
     @Override
-    public void setP1(double p1) {
-        this.p = p1 * PerUnit.SB;
+    public void setP1(Evaluable p1) {
+        this.p = Objects.requireNonNull(p1);
     }
 
     @Override
-    public void setP2(double p2) {
+    public void setP2(Evaluable p2) {
         // nothing to do
     }
 
     @Override
-    public void setQ1(double q1) {
-        this.q = q1 * PerUnit.SB;
+    public void setQ1(Evaluable q1) {
+        this.q = Objects.requireNonNull(q1);
     }
 
     @Override
-    public void setQ2(double q2) {
+    public void setQ2(Evaluable q2) {
         // nothing to do
     }
 }

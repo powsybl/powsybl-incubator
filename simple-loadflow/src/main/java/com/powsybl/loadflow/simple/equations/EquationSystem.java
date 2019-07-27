@@ -20,8 +20,6 @@ import java.util.stream.Collectors;
  */
 public class EquationSystem {
 
-    private final List<VariableUpdate> variableUpdates;
-
     private final List<EquationTerm> equationTerms;
 
     private final LfNetwork network;
@@ -32,9 +30,8 @@ public class EquationSystem {
 
     private final NavigableMap<Variable, NavigableMap<Equation, List<EquationTerm>>> sortedVariablesToFind = new TreeMap<>();
 
-    public EquationSystem(List<EquationTerm> equationTerms, List<VariableUpdate> variableUpdates, LfNetwork network) {
+    public EquationSystem(List<EquationTerm> equationTerms, LfNetwork network) {
         this.equationTerms = Objects.requireNonNull(equationTerms);
-        this.variableUpdates = Objects.requireNonNull(variableUpdates);
         this.network = Objects.requireNonNull(network);
 
         // index derivatives per variable then per equation
@@ -151,10 +148,6 @@ public class EquationSystem {
         // update state variable
         for (Variable v : getVariablesToFind()) {
             v.updateState(network, x);
-        }
-        // then other variables
-        for (VariableUpdate variableUpdate : variableUpdates) {
-            variableUpdate.update();
         }
     }
 

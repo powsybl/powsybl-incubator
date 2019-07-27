@@ -4,12 +4,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.powsybl.loadflow.simple.equations;
+package com.powsybl.loadflow.simple.util;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public interface VariableUpdate {
+public interface Evaluable {
 
-    void update();
+    Evaluable NAN = () -> Double.NaN;
+
+    Evaluable ZERO = () -> 0;
+
+    double eval();
 }

@@ -10,10 +10,8 @@ import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.Branch;
 import com.powsybl.iidm.network.Line;
 import com.powsybl.iidm.network.TwoWindingsTransformer;
-import com.powsybl.loadflow.simple.network.AbstractLfBranch;
-import com.powsybl.loadflow.simple.network.LfBus;
-import com.powsybl.loadflow.simple.network.PerUnit;
-import com.powsybl.loadflow.simple.network.PiModel;
+import com.powsybl.loadflow.simple.network.*;
+import com.powsybl.loadflow.simple.util.Evaluable;
 
 import java.util.Objects;
 
@@ -24,13 +22,13 @@ public class LfBranchImpl extends AbstractLfBranch {
 
     private final Branch branch;
 
-    private double p1 = Double.NaN;
+    private Evaluable p1 = Evaluable.NAN;
 
-    private double p2 = Double.NaN;
+    private Evaluable p2 = Evaluable.NAN;
 
-    private double q1 = Double.NaN;
+    private Evaluable q1 = Evaluable.NAN;
 
-    private double q2 = Double.NaN;
+    private Evaluable q2 = Evaluable.NAN;
 
     protected LfBranchImpl(LfBus bus1, LfBus bus2, PiModel piModel, Branch branch) {
         super(bus1, bus2, piModel, branch.getTerminal1().getVoltageLevel().getNominalV(), branch.getTerminal2().getVoltageLevel().getNominalV());
@@ -61,30 +59,30 @@ public class LfBranchImpl extends AbstractLfBranch {
     }
 
     @Override
-    public void setP1(double p1) {
-        this.p1 = p1 * PerUnit.SB;
+    public void setP1(Evaluable p1) {
+        this.p1 = Objects.requireNonNull(p1);
     }
 
     @Override
-    public void setP2(double p2) {
-        this.p2 = p2 * PerUnit.SB;
+    public void setP2(Evaluable p2) {
+        this.p2 = Objects.requireNonNull(p2);
     }
 
     @Override
-    public void setQ1(double q1) {
-        this.q1 = q1 * PerUnit.SB;
+    public void setQ1(Evaluable q1) {
+        this.q1 = Objects.requireNonNull(q1);
     }
 
     @Override
-    public void setQ2(double q2) {
-        this.q2 = q2 * PerUnit.SB;
+    public void setQ2(Evaluable q2) {
+        this.q2 = Objects.requireNonNull(q2);
     }
 
     @Override
     public void updateState() {
-        branch.getTerminal1().setP(p1);
-        branch.getTerminal1().setQ(q1);
-        branch.getTerminal2().setP(p2);
-        branch.getTerminal2().setQ(q2);
+        branch.getTerminal1().setP(p1.eval() * PerUnit.SB);
+        branch.getTerminal1().setQ(q1.eval() * PerUnit.SB);
+        branch.getTerminal2().setP(p2.eval() * PerUnit.SB);
+        branch.getTerminal2().setQ(q2.eval() * PerUnit.SB);
     }
 }

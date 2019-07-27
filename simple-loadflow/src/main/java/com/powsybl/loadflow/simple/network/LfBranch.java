@@ -6,6 +6,8 @@
  */
 package com.powsybl.loadflow.simple.network;
 
+import com.powsybl.loadflow.simple.util.Evaluable;
+
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
@@ -15,13 +17,13 @@ public interface LfBranch {
 
     LfBus getBus2();
 
-    void setP1(double p1);
+    void setP1(Evaluable p1);
 
-    void setP2(double p2);
+    void setP2(Evaluable p2);
 
-    void setQ1(double q1);
+    void setQ1(Evaluable q1);
 
-    void setQ2(double q2);
+    void setQ2(Evaluable q2);
 
     double x();
 

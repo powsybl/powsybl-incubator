@@ -7,6 +7,7 @@
 package com.powsybl.loadflow.simple.network.impl;
 
 import com.powsybl.iidm.network.ShuntCompensator;
+import com.powsybl.loadflow.simple.util.Evaluable;
 import com.powsybl.loadflow.simple.network.LfShunt;
 import com.powsybl.loadflow.simple.network.PerUnit;
 
@@ -21,7 +22,7 @@ public class LfShuntImpl implements LfShunt {
 
     private final double b;
 
-    private double q = Double.NaN;
+    private Evaluable q = Evaluable.NAN;
 
     public LfShuntImpl(ShuntCompensator shuntCompensator) {
         this.shuntCompensator = Objects.requireNonNull(shuntCompensator);
@@ -36,12 +37,12 @@ public class LfShuntImpl implements LfShunt {
     }
 
     @Override
-    public void setQ(double q) {
-        this.q = q * PerUnit.SB;
+    public void setQ(Evaluable q) {
+        this.q = Objects.requireNonNull(q);
     }
 
     @Override
     public void updateState() {
-        shuntCompensator.getTerminal().setQ(q);
+        shuntCompensator.getTerminal().setQ(q.eval() * PerUnit.SB);
     }
 }

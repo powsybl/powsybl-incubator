@@ -6,6 +6,8 @@
  */
 package com.powsybl.loadflow.simple.network;
 
+import com.powsybl.loadflow.simple.util.Evaluable;
+
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
@@ -13,7 +15,7 @@ public interface LfShunt {
 
     double getB();
 
-    void setQ(double q);
+    void setQ(Evaluable q);
 
     void updateState();
 }

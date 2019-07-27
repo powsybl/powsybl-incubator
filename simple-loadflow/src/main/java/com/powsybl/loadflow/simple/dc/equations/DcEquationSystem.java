@@ -7,6 +7,7 @@
 package com.powsybl.loadflow.simple.dc.equations;
 
 import com.powsybl.loadflow.simple.equations.*;
+import com.powsybl.loadflow.simple.util.Evaluable;
 import com.powsybl.loadflow.simple.network.LfBranch;
 import com.powsybl.loadflow.simple.network.LfBus;
 import com.powsybl.loadflow.simple.network.LfNetwork;
@@ -28,7 +29,6 @@ public final class DcEquationSystem {
 
     public static EquationSystem create(LfNetwork network, EquationContext equationContext) {
         List<EquationTerm> equationTerms = new ArrayList<>();
-        List<VariableUpdate> variableUpdates = new ArrayList<>();
 
         for (LfBus bus : network.getBuses()) {
             if (bus.isSlack()) {
@@ -45,14 +45,15 @@ public final class DcEquationSystem {
                 ClosedBranchSide2DcFlowEquationTerm p2 = ClosedBranchSide2DcFlowEquationTerm.create(branch, bus1, bus2, equationContext);
                 equationTerms.add(p1);
                 equationTerms.add(p2);
-                variableUpdates.add(new ClosedBranchDcFlowUpdate(branch, p1, p2));
+                branch.setP1(p1);
+                branch.setP2(p2);
             } else if (bus1 != null) {
-                variableUpdates.add(new OpenBranchSide2DcFlowUpdate(branch));
+                branch.setP1(Evaluable.ZERO);
             } else if (bus2 != null) {
-                variableUpdates.add(new OpenBranchSide1DcFlowUpdate(branch));
+                branch.setP2(Evaluable.ZERO);
             }
         }
 
-        return new EquationSystem(equationTerms, variableUpdates, network);
+        return new EquationSystem(equationTerms, network);
     }
 }

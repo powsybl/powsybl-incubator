@@ -1,0 +1,8 @@
+componentDefaultConfig:
+#    LoadFlowFactory: com.powsybl.loadflow.mock.LoadFlowFactoryMock
+#    LoadFlowFactory: com.powsybl.loadflow.simple.dc.SimpleDcLoadFlowFactory
+   LoadFlowFactory: com.rte_france.powsybl.hades2.Hades2Factory
+
+hades2:
+    homeDir: $HOME/hades2LF
+    debug: false

@@ -72,6 +72,11 @@ public class VoltageLevelHandler implements BaseNode {
     }
 
     @Override
+    public Double getRotationAngle() {
+        return null;
+    }
+
+    @Override
     public boolean isRotated() {
         return false;
     }

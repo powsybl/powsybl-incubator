@@ -21,6 +21,7 @@ import java.util.stream.Stream;
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
+ * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
  */
 public class Node implements BaseNode {
 
@@ -41,7 +42,7 @@ public class Node implements BaseNode {
 
     private final String name;
 
-    private final ComponentType componentType;
+    private ComponentType componentType;
 
     private final boolean fictitious;
 
@@ -96,6 +97,15 @@ public class Node implements BaseNode {
     @Override
     public ComponentType getComponentType() {
         return componentType;
+    }
+
+    public void setComponentType(ComponentType componentType) {
+        this.componentType = componentType;
+    }
+
+    @Override
+    public Double getRotationAngle() {
+        return null;
     }
 
     public boolean isFictitious() {

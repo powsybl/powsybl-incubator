@@ -21,12 +21,15 @@ import java.util.Objects;
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
+ * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
  */
 public class NodeHandler implements BaseNode {
 
     private final Node node;
 
     private ComponentType componentType;
+
+    private Double rotationAngle;
 
     private final List<WireHandler> wireHandlers = new ArrayList<>();
 
@@ -41,10 +44,12 @@ public class NodeHandler implements BaseNode {
 
     private BusCell.Direction direction;
 
-    public NodeHandler(Node node, ComponentType componentType, boolean rotated, GraphMetadata metadata,
+    public NodeHandler(Node node, ComponentType componentType, Double rotationAngle,
+                       boolean rotated, GraphMetadata metadata,
                        String vId, BusCell.Direction direction) {
         this.node = Objects.requireNonNull(node);
         this.componentType = componentType;
+        this.rotationAngle = rotationAngle;
         this.rotated = rotated;
         this.metadata = Objects.requireNonNull(metadata);
         this.vId = Objects.requireNonNull(vId);
@@ -73,6 +78,11 @@ public class NodeHandler implements BaseNode {
     @Override
     public ComponentType getComponentType() {
         return componentType;
+    }
+
+    @Override
+    public Double getRotationAngle() {
+        return rotationAngle;
     }
 
     public void addWire(WireHandler w) {

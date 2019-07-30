@@ -104,6 +104,7 @@ public abstract class AbstractContainerDiagramView extends BorderPane {
     private static void installNodeHandlers(Node node, GraphMetadata metadata, GraphMetadata.NodeMetadata nodeMetadata, Map<String, NodeHandler> nodeHandlers, Map<String, VoltageLevelHandler> vlHandlers) {
         if (!nodeMetadata.isVLabel()) {
             NodeHandler nodeHandler = new NodeHandler(node, nodeMetadata.getComponentType(),
+                                                      nodeMetadata.getRotationAngle(),
                                                       nodeMetadata.isRotated(), metadata,
                                                       nodeMetadata.getVId(),
                                                       nodeMetadata.getDirection());

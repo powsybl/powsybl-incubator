@@ -54,7 +54,7 @@ public class PositionFree implements PositionFinder {
 //        initiateFeederPosition(context);
 
         graph.setMaxBusPosition();
-
+        forceSameOrientationForShuntedCell(graph);
     }
 
     private void indexBusPosition(Context context) {

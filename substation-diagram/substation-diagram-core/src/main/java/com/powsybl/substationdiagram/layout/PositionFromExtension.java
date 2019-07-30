@@ -60,14 +60,4 @@ public class PositionFromExtension implements PositionFinder {
         graph.getCells().stream().filter(cell -> cell.getType() == Cell.CellType.EXTERN).map(ExternCell.class::cast)
                 .forEach(ExternCell::orderFromFeederOrders);
     }
-
-    private void forceSameOrientationForShuntedCell(Graph graph) {
-        for (Cell cell : graph.getCells().stream()
-                .filter(c -> c.getType() == Cell.CellType.SHUNT).collect(Collectors.toList())) {
-            List<Node> shNodes = cell.getNodes().stream()
-                    .filter(node -> node.getType() == Node.NodeType.SHUNT).collect(Collectors.toList());
-            ((ExternCell) shNodes.get(1).getCell()).setDirection(
-                    ((ExternCell) shNodes.get(0).getCell()).getDirection());
-        }
-    }
 }

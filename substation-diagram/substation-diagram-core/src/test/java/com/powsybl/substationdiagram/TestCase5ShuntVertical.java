@@ -9,13 +9,13 @@ package com.powsybl.substationdiagram;
 import com.google.common.jimfs.Configuration;
 import com.google.common.jimfs.Jimfs;
 import com.powsybl.iidm.network.*;
+import com.powsybl.substationdiagram.iidm.extensions.BusbarSectionPosition;
+import com.powsybl.substationdiagram.iidm.extensions.ConnectablePosition;
 import com.powsybl.substationdiagram.layout.BlockOrganizer;
 import com.powsybl.substationdiagram.layout.ImplicitCellDetector;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
 import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayout;
 import com.powsybl.substationdiagram.model.*;
-import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
-import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,7 +51,7 @@ public class TestCase5ShuntVertical extends AbstractTestCase {
     public void setUp() {
         fileSystem = Jimfs.newFileSystem(Configuration.unix());
 
-        Network network = NetworkFactory.create("testCase1", "test");
+        Network network = Network.create("testCase1", "test");
         Substation s = network.newSubstation()
                 .setId("s")
                 .setCountry(Country.FR)

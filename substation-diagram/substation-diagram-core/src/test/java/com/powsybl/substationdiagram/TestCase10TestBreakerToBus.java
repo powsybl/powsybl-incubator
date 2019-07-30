@@ -7,8 +7,8 @@
 package com.powsybl.substationdiagram;
 
 import com.powsybl.iidm.network.*;
-import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
-import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
+import com.powsybl.substationdiagram.iidm.extensions.BusbarSectionPosition;
+import com.powsybl.substationdiagram.iidm.extensions.ConnectablePosition;
 
 /**
  * <PRE>
@@ -29,7 +29,7 @@ public class TestCase10TestBreakerToBus extends AbstractTestCase {
 
     @Override
     void setUp() {
-        Network network = NetworkFactory.create("testCase1", "AbstractTest");
+        Network network = Network.create("testCase1", "AbstractTest");
         Substation s = network.newSubstation()
                 .setId("s")
                 .setCountry(Country.FR)

@@ -45,6 +45,12 @@
             <artifactId>batik-bridge</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.powsybl</groupId>
+            <artifactId>powsybl-substation-diagram-iidm-extensions</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- powsybl-core dependencies -->
         <dependency>
             <groupId>com.powsybl</groupId>
@@ -53,10 +59,6 @@
         <dependency>
             <groupId>com.powsybl</groupId>
             <artifactId>powsybl-iidm-converter-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.rte-france.powsybl</groupId>
-            <artifactId>powsybl-iidm-cvg-extensions</artifactId>
         </dependency>
 
         <!-- Runtime dependencies -->
@@ -86,7 +88,6 @@
         <dependency>
             <groupId>com.google.jimfs</groupId>
             <artifactId>jimfs</artifactId>
-            <version>1.1</version>
             <scope>test</scope>
         </dependency>
 

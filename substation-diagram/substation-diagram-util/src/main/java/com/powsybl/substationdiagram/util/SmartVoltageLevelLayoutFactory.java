@@ -14,13 +14,13 @@ import com.powsybl.iidm.network.Connectable;
 import com.powsybl.iidm.network.TopologyKind;
 import com.powsybl.iidm.network.VoltageLevel;
 import com.powsybl.substationdiagram.cgmes.CgmesVoltageLevelLayoutFactory;
+import com.powsybl.substationdiagram.iidm.extensions.BusbarSectionPosition;
+import com.powsybl.substationdiagram.iidm.extensions.ConnectablePosition;
 import com.powsybl.substationdiagram.layout.PositionFree;
 import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayoutFactory;
 import com.powsybl.substationdiagram.layout.VoltageLevelLayout;
 import com.powsybl.substationdiagram.layout.VoltageLevelLayoutFactory;
 import com.powsybl.substationdiagram.model.Graph;
-import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
-import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>

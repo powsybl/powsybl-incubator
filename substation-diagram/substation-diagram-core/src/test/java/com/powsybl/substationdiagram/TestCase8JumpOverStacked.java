@@ -7,7 +7,7 @@
 package com.powsybl.substationdiagram;
 
 import com.powsybl.iidm.network.*;
-import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
+import com.powsybl.substationdiagram.iidm.extensions.BusbarSectionPosition;
 
 /**
  * <pre>
@@ -29,7 +29,7 @@ public class TestCase8JumpOverStacked extends AbstractTestCase {
 
     @Override
     void setUp() {
-        Network network = NetworkFactory.create("testCase", "test");
+        Network network = Network.create("testCase", "test");
         Substation s = network.newSubstation()
                 .setId("s")
                 .setCountry(Country.FR)

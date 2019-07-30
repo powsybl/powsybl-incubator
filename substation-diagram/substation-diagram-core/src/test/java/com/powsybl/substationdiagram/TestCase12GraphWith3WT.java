@@ -7,28 +7,12 @@
 package com.powsybl.substationdiagram;
 
 import com.google.common.io.ByteStreams;
-import com.powsybl.iidm.network.BusbarSection;
-import com.powsybl.iidm.network.Country;
-import com.powsybl.iidm.network.Generator;
-import com.powsybl.iidm.network.Load;
-import com.powsybl.iidm.network.Network;
-import com.powsybl.iidm.network.NetworkFactory;
-import com.powsybl.iidm.network.ShuntCompensator;
-import com.powsybl.iidm.network.Substation;
-import com.powsybl.iidm.network.SwitchKind;
-import com.powsybl.iidm.network.ThreeWindingsTransformer;
-import com.powsybl.iidm.network.TopologyKind;
-import com.powsybl.iidm.network.TwoWindingsTransformer;
-import com.powsybl.iidm.network.VoltageLevel;
-import com.powsybl.substationdiagram.layout.BlockOrganizer;
-import com.powsybl.substationdiagram.layout.ImplicitCellDetector;
-import com.powsybl.substationdiagram.layout.LayoutParameters;
-import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayout;
-import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayoutFactory;
+import com.powsybl.iidm.network.*;
+import com.powsybl.substationdiagram.iidm.extensions.BusbarSectionPosition;
+import com.powsybl.substationdiagram.iidm.extensions.ConnectablePosition;
+import com.powsybl.substationdiagram.layout.*;
 import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
 import com.powsybl.substationdiagram.model.Graph;
-import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
-import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,7 +38,7 @@ public class TestCase12GraphWith3WT extends AbstractTestCase {
 
     @Before
     public void setUp() {
-        Network network = NetworkFactory.create("testCase11", "test");
+        Network network = Network.create("testCase11", "test");
 
         substation = createSubstation(network, "subst", "subst", Country.FR);
 

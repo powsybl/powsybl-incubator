@@ -7,10 +7,10 @@
 package com.powsybl.substationdiagram;
 
 import com.powsybl.iidm.network.*;
+import com.powsybl.substationdiagram.iidm.extensions.BusbarSectionPosition;
+import com.powsybl.substationdiagram.iidm.extensions.ConnectablePosition;
 import com.powsybl.substationdiagram.layout.ImplicitCellDetector;
 import com.powsybl.substationdiagram.model.Graph;
-import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
-import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
 import org.junit.Before;
 
 import static org.junit.Assert.assertEquals;
@@ -32,7 +32,7 @@ public class TestCase7CellDetectionIssue extends AbstractTestCase {
 
     @Before
     public void setUp() {
-        Network network = NetworkFactory.create("testCase1", "test");
+        Network network = Network.create("testCase1", "test");
         Substation s = network.newSubstation()
                 .setId("s")
                 .setCountry(Country.FR)

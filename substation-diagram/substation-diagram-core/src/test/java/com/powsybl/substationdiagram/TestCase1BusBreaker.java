@@ -61,7 +61,7 @@ public class TestCase1BusBreaker extends AbstractTestCase {
         new ImplicitCellDetector().detectCells(g);
 
         // build blocks
-        assertTrue(new BlockOrganizer().organize(g));
+        new BlockOrganizer().organize(g);
 
         // calculate coordinates
         LayoutParameters layoutParameters = new LayoutParameters()

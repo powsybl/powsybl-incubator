@@ -141,7 +141,7 @@ public class TestCase5ShuntHorizontal extends AbstractTestCase {
         assertEquals("EXTERN[FICT_vl_daFictif, FICT_vl_laFictif, ba, bbs, da, la]", cella.getFullId());
 
         // build blocks
-        assertTrue(new BlockOrganizer().organize(g));
+        new BlockOrganizer().organize(g);
 
         // assert blocks and nodes rotation
         assertEquals(1, ((BusCell) cella).getPrimaryBlocksConnectedToBus().size());

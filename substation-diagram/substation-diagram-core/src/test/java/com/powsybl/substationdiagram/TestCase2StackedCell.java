@@ -119,7 +119,7 @@ public class TestCase2StackedCell extends AbstractTestCase {
         assertEquals("EXTERN[FICT_vl_2, b, bbs1, bbs2, d1, d2, l]", cell.getFullId());
 
         // build blocks
-        assertTrue(new BlockOrganizer().organize(g));
+        new BlockOrganizer().organize(g);
 
         // assert blocks and nodes rotation
         assertEquals(2, ((BusCell) cell).getPrimaryBlocksConnectedToBus().size());

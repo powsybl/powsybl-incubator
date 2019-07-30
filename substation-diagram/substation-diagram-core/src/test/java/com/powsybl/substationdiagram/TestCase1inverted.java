@@ -105,7 +105,7 @@ public class TestCase1inverted extends AbstractTestCase {
         assertEquals(new Position(0, 0), ((BusCell) cell).getMaxBusPosition());
 
         // build blocks
-        assertTrue(new BlockOrganizer().organize(g));
+        new BlockOrganizer().organize(g);
 
         // assert blocks and nodes rotation
         assertNotNull(cell.getRootBlock());

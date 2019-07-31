@@ -76,13 +76,13 @@ public class LayoutToCgmesDlExporterTool implements Tool {
             public Options getOptions() {
                 Options options = new Options();
                 options.addOption(Option.builder().longOpt(INPUT_FILE)
-                        .desc("the input file")
+                        .desc("input file")
                         .hasArg()
                         .argName("INPUT_FILE")
                         .required()
                         .build());
                 options.addOption(Option.builder().longOpt(OUTPUT_DIR)
-                        .desc("the output directory")
+                        .desc("output directory")
                         .hasArg()
                         .argName("OUTPUT_DIR")
                         .required()
@@ -111,8 +111,8 @@ public class LayoutToCgmesDlExporterTool implements Tool {
     @Override
     public void run(CommandLine line, ToolRunningContext context) throws UnsupportedEncodingException {
         ToolOptions toolOptions = new ToolOptions(line, context);
-        Path inputFile = toolOptions.getPath(INPUT_FILE).orElseThrow(() -> new PowsyblException(INPUT_FILE + " option is missing"));
-        Path outputDir = toolOptions.getPath(OUTPUT_DIR).orElseThrow(() -> new PowsyblException(OUTPUT_DIR + " option is missing"));
+        Path inputFile = toolOptions.getPath(INPUT_FILE).orElseThrow(() -> new PowsyblException(INPUT_FILE + " parameter is missing"));
+        Path outputDir = toolOptions.getPath(OUTPUT_DIR).orElseThrow(() -> new PowsyblException(OUTPUT_DIR + " parameter is missing"));
 
         String substationLayout = toolOptions.getValue(SUBSTATION_LAYOUT).orElse(DEFAULT_SUBSTATION_LAYOUT);
         String voltageLayout = toolOptions.getValue(VOLTAGE_LEVEL_LAYOUT).orElse(DEFAULT_VOLTAGE_LAYOUT);

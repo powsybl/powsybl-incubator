@@ -11,6 +11,7 @@ import com.powsybl.iidm.network.Bus;
 import com.powsybl.iidm.network.Network;
 import org.junit.Test;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -24,7 +25,8 @@ public class BusDiagramDataTest extends AbstractNodeDiagramDataTest {
         Network network = Networks.createNetworkWithBus();
         Bus bus = network.getVoltageLevel("VoltageLevel").getBusBreakerView().getBus("Bus");
 
-        NodeDiagramData<Bus> busDiagramData = new NodeDiagramData<>(bus);
+        NodeDiagramData<Bus> busDiagramData = NodeDiagramData.getOrCreateDiagramData(bus);
+        assertNotNull(busDiagramData);
         NodeDiagramData.NodeDiagramDataDetails busDiagramDetails = busDiagramData.new NodeDiagramDataDetails();
 
         busDiagramDetails.setPoint1(new DiagramPoint(0, 10, 1));

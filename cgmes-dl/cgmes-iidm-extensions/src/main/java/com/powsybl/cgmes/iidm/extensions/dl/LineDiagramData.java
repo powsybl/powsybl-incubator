@@ -98,4 +98,20 @@ public class LineDiagramData<T extends Identifiable<T>> extends AbstractExtensio
         return new ArrayList<>(diagramsDetails.keySet());
     }
 
+    public static LineDiagramData<Line> getOrCreateDiagramData(Line line) {
+        LineDiagramData<Line> lineDiagramData = line.getExtension(LineDiagramData.class);
+        if (lineDiagramData == null) {
+            lineDiagramData = new LineDiagramData<>(line);
+        }
+        return lineDiagramData;
+    }
+
+    public static LineDiagramData<DanglingLine> getOrCreateDiagramData(DanglingLine danglingLine) {
+        LineDiagramData<DanglingLine> danglingLineData = danglingLine.getExtension(LineDiagramData.class);
+        if (danglingLineData == null) {
+            danglingLineData = new LineDiagramData<>(danglingLine);
+        }
+        return danglingLineData;
+    }
+
 }

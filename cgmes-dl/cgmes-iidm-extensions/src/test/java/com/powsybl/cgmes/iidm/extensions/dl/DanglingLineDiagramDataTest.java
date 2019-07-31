@@ -6,13 +6,13 @@
  */
 package com.powsybl.cgmes.iidm.extensions.dl;
 
-import org.junit.Test;
-
 import com.powsybl.cgmes.iidm.Networks;
 import com.powsybl.iidm.network.DanglingLine;
 import com.powsybl.iidm.network.Network;
+import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  *
@@ -25,7 +25,8 @@ public class DanglingLineDiagramDataTest extends AbstractLineDiagramDataTest {
         Network network = Networks.createNetworkWithDanglingLine();
         DanglingLine danglingLine = network.getDanglingLine("DanglingLine");
 
-        LineDiagramData<DanglingLine> danglingLineDiagramData = new LineDiagramData<>(danglingLine);
+        LineDiagramData<DanglingLine> danglingLineDiagramData = LineDiagramData.getOrCreateDiagramData(danglingLine);
+        assertNotNull(danglingLineDiagramData);
 
         danglingLineDiagramData.addPoint(DIAGRAM_NAME, new DiagramPoint(10, 0, 2));
         danglingLineDiagramData.addPoint(DIAGRAM_NAME, new DiagramPoint(0, 10, 1));
@@ -43,7 +44,8 @@ public class DanglingLineDiagramDataTest extends AbstractLineDiagramDataTest {
         Network network = Networks.createNetworkWithDanglingLine();
         DanglingLine danglingLine = network.getDanglingLine("DanglingLine");
 
-        LineDiagramData<DanglingLine> danglingLineDiagramData = new LineDiagramData<>(danglingLine);
+        LineDiagramData<DanglingLine> danglingLineDiagramData = LineDiagramData.getOrCreateDiagramData(danglingLine);
+        assertNotNull(danglingLineDiagramData);
 
         danglingLineDiagramData.addPoint(DIAGRAM_NAME, new DiagramPoint(10, 0, 2));
         danglingLineDiagramData.addPoint(DIAGRAM_NAME, new DiagramPoint(0, 10, 1));

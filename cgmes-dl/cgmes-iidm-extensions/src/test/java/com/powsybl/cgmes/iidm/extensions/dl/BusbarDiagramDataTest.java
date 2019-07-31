@@ -6,11 +6,12 @@
  */
 package com.powsybl.cgmes.iidm.extensions.dl;
 
-import org.junit.Test;
-
 import com.powsybl.cgmes.iidm.Networks;
 import com.powsybl.iidm.network.BusbarSection;
 import com.powsybl.iidm.network.Network;
+import org.junit.Test;
+
+import static org.junit.Assert.assertNotNull;
 
 /**
  *
@@ -23,7 +24,8 @@ public class BusbarDiagramDataTest extends AbstractNodeDiagramDataTest {
         Network network = Networks.createNetworkWithBusbar();
         BusbarSection busbar = network.getVoltageLevel("VoltageLevel").getNodeBreakerView().getBusbarSection("Busbar");
 
-        NodeDiagramData<BusbarSection> busbarDiagramData = new NodeDiagramData<>(busbar);
+        NodeDiagramData<BusbarSection> busbarDiagramData = NodeDiagramData.getOrCreateDiagramData(busbar);
+        assertNotNull(busbarDiagramData);
         NodeDiagramData.NodeDiagramDataDetails nodeDetails = busbarDiagramData.new NodeDiagramDataDetails();
         nodeDetails.setPoint2(new DiagramPoint(10, 0, 2));
         nodeDetails.setPoint1(new DiagramPoint(0, 10, 1));

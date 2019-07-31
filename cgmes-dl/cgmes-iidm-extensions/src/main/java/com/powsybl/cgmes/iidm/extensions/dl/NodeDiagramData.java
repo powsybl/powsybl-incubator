@@ -76,4 +76,20 @@ public class NodeDiagramData<T extends Identifiable<T>> extends AbstractExtensio
         return new ArrayList<>(diagramsDetails.keySet());
     }
 
+    public static NodeDiagramData<Bus> getOrCreateDiagramData(Bus bus) {
+        NodeDiagramData<Bus> nodeDiagramData = bus.getExtension(NodeDiagramData.class);
+        if (nodeDiagramData == null) {
+            nodeDiagramData = new NodeDiagramData<>(bus);
+        }
+        return nodeDiagramData;
+    }
+
+    public static NodeDiagramData<BusbarSection> getOrCreateDiagramData(BusbarSection busbar) {
+        NodeDiagramData<BusbarSection> nodeDiagramData = busbar.getExtension(NodeDiagramData.class);
+        if (nodeDiagramData == null) {
+            nodeDiagramData = new NodeDiagramData<>(busbar);
+        }
+        return nodeDiagramData;
+    }
+
 }

@@ -37,38 +37,37 @@ public class DefaultSubstationDiagramInitialValueProvider implements SubstationD
             String nodeId = node.getId();
             switch (node.getComponentType()) {
                 case LINE:
-                case TWO_WINDINGS_TRANSFORMER: {
+                case TWO_WINDINGS_TRANSFORMER:
                     initialValue = getBranchInitialValue(nodeId);
                     break;
-                }
-                case LOAD: {
+
+                case LOAD:
                     initialValue = getLoadInitialValue(network.getLoad(nodeId));
                     break;
-                }
+
                 case INDUCTOR:
-                case CAPACITOR: {
+                case CAPACITOR:
                     initialValue = getInjectionInitialValue(network.getShuntCompensator(nodeId));
                     break;
-                }
-                case GENERATOR: {
+
+                case GENERATOR:
                     initialValue = getInjectionInitialValue(network.getGenerator(nodeId));
                     break;
-                }
-                case STATIC_VAR_COMPENSATOR: {
+
+                case STATIC_VAR_COMPENSATOR:
                     initialValue = getInjectionInitialValue(network.getStaticVarCompensator(nodeId));
                     break;
-                }
-                case VSC_CONVERTER_STATION: {
+
+                case VSC_CONVERTER_STATION:
                     initialValue = getInjectionInitialValue(network.getVscConverterStation(nodeId));
                     break;
-                }
+
                 case BUSBAR_SECTION:
                 case BREAKER:
                 case LOAD_BREAK_SWITCH:
                 case DISCONNECTOR:
-                default: {
+                default:
                     break;
-                }
             }
         }
         return initialValue;

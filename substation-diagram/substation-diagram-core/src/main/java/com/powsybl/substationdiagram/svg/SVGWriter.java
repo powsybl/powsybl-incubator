@@ -762,7 +762,7 @@ public class SVGWriter {
             List<Double> pol = anchorPoints.calculatePolylinePoints(edge.getNode1(), edge.getNode2(),
                                                                     layoutParameters.isDrawStraightWires());
 
-            g.setAttribute("points", pointsListToString(pol));
+            g.setAttribute(POINTS, pointsListToString(pol));
             g.setAttribute(CLASS, SubstationDiagramStyles.WIRE_STYLE_CLASS + "_" + SubstationDiagramStyles.escapeClassName(vId));
             root.appendChild(g);
 
@@ -823,7 +823,7 @@ public class SVGWriter {
                     nbSnakeLinesBottomVL,
                     nbSnakeLinesTopVL);
 
-            g.setAttribute("points", pointsListToString(pol));
+            g.setAttribute(POINTS, pointsListToString(pol));
 
             String vId;
             if (edge.getNode1().getGraph().getVoltageLevel().getNominalV() > edge.getNode2().getGraph().getVoltageLevel().getNominalV()) {
@@ -859,7 +859,7 @@ public class SVGWriter {
 
         return IntStream.range(0, pol.size())
                 .mapToObj(n ->  n % 2 == 0 ? pol.get(n) + layoutParameters.getTranslateX() : pol.get(n) + layoutParameters.getTranslateY())
-                .map(i -> i.toString())
+                .map(Object::toString)
                 .collect(Collectors.joining(","));
     }
 

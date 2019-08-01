@@ -7,24 +7,8 @@
 package com.powsybl.substationdiagram;
 
 import com.google.common.io.ByteStreams;
-import com.powsybl.iidm.network.BusbarSection;
-import com.powsybl.iidm.network.Country;
-import com.powsybl.iidm.network.Generator;
-import com.powsybl.iidm.network.Load;
-import com.powsybl.iidm.network.Network;
-import com.powsybl.iidm.network.NetworkFactory;
-import com.powsybl.iidm.network.ShuntCompensator;
-import com.powsybl.iidm.network.Substation;
-import com.powsybl.iidm.network.SwitchKind;
-import com.powsybl.iidm.network.ThreeWindingsTransformer;
-import com.powsybl.iidm.network.TopologyKind;
-import com.powsybl.iidm.network.TwoWindingsTransformer;
-import com.powsybl.iidm.network.VoltageLevel;
-import com.powsybl.substationdiagram.layout.BlockOrganizer;
-import com.powsybl.substationdiagram.layout.ImplicitCellDetector;
-import com.powsybl.substationdiagram.layout.LayoutParameters;
-import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayout;
-import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayoutFactory;
+import com.powsybl.iidm.network.*;
+import com.powsybl.substationdiagram.layout.*;
 import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
 import com.powsybl.substationdiagram.model.Graph;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
@@ -54,7 +38,7 @@ public class TestCase12GraphWith3WT extends AbstractTestCase {
 
     @Before
     public void setUp() {
-        Network network = NetworkFactory.create("testCase11", "test");
+        network = Network.create("testCase11", "test");
 
         substation = createSubstation(network, "subst", "subst", Country.FR);
 
@@ -431,7 +415,7 @@ public class TestCase12GraphWith3WT extends AbstractTestCase {
         VoltageLevelDiagram diagram = VoltageLevelDiagram.build(vl1, new PositionVoltageLevelLayoutFactory(), false, true);
         Path pathSVG = Paths.get(System.getProperty("user.home"), "vlDiag.svg");
         Path pathMetadata = Paths.get(System.getProperty("user.home"), "vlDiag_metadata.json");
-        diagram.writeSvg(new ResourcesComponentLibrary("/ConvergenceLibrary"), layoutParameters, pathSVG);
+        diagram.writeSvg(new ResourcesComponentLibrary("/ConvergenceLibrary"), layoutParameters, network, pathSVG);
         Assert.assertTrue(Files.exists(pathSVG));
         Assert.assertTrue(Files.exists(pathMetadata));
         try {

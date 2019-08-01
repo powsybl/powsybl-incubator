@@ -46,6 +46,7 @@ public class LayoutParameters {
 
     private double horizontalSnakeLinePadding = 20;
     private double verticalSnakeLinePadding = 25;
+    private double arrowDistance = 20;
 
     private boolean showInductorFor3WT = false;
 
@@ -72,6 +73,7 @@ public class LayoutParameters {
                             @JsonProperty("drawStraightWires") boolean drawStraightWires,
                             @JsonProperty("horizontalSnakeLinePadding") double horizontalSnakeLinePadding,
                             @JsonProperty("verticalSnakeLinePadding") double verticalSnakeLinePadding,
+                            @JsonProperty("arrowDistance") double arrowDistance,
                             @JsonProperty("showInductorFor3WT") boolean showInductorFor3WT) {
         this.translateX = translateX;
         this.translateY = translateY;
@@ -91,6 +93,7 @@ public class LayoutParameters {
         this.drawStraightWires = drawStraightWires;
         this.horizontalSnakeLinePadding = horizontalSnakeLinePadding;
         this.verticalSnakeLinePadding = verticalSnakeLinePadding;
+        this.arrowDistance = arrowDistance;
         this.showInductorFor3WT = showInductorFor3WT;
     }
 
@@ -114,6 +117,7 @@ public class LayoutParameters {
         drawStraightWires = other.drawStraightWires;
         horizontalSnakeLinePadding = other.horizontalSnakeLinePadding;
         verticalSnakeLinePadding = other.verticalSnakeLinePadding;
+        arrowDistance = other.arrowDistance;
         showInductorFor3WT = other.showInductorFor3WT;
     }
 
@@ -276,6 +280,15 @@ public class LayoutParameters {
 
     public LayoutParameters setVerticalSnakeLinePadding(double verticalSnakeLinePadding) {
         this.verticalSnakeLinePadding = verticalSnakeLinePadding;
+        return this;
+    }
+
+    public double getArrowDistance() {
+        return arrowDistance;
+    }
+
+    public LayoutParameters setArrowDistance(double arrowDistance) {
+        this.arrowDistance = arrowDistance;
         return this;
     }
 

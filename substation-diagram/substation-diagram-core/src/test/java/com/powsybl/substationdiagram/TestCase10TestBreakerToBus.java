@@ -6,13 +6,7 @@
  */
 package com.powsybl.substationdiagram;
 
-import com.powsybl.iidm.network.BusbarSection;
-import com.powsybl.iidm.network.Country;
-import com.powsybl.iidm.network.Load;
-import com.powsybl.iidm.network.NetworkFactory;
-import com.powsybl.iidm.network.Substation;
-import com.powsybl.iidm.network.TopologyKind;
-import com.powsybl.iidm.network.VoltageLevel;
+import com.powsybl.iidm.network.*;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
 
@@ -35,7 +29,7 @@ public class TestCase10TestBreakerToBus extends AbstractTestCase {
 
     @Override
     void setUp() {
-        network = NetworkFactory.create("testCase1", "AbstractTest");
+        network = Network.create("testCase1", "AbstractTest");
         Substation s = network.newSubstation()
                 .setId("s")
                 .setCountry(Country.FR)

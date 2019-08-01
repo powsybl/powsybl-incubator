@@ -36,7 +36,7 @@ public class TestCase3Coupling extends AbstractTestCase {
 
     @Before
     public void setUp() {
-        network = NetworkFactory.create("testCase1", "test");
+        network = Network.create("testCase1", "test");
         Substation s = network.newSubstation()
                 .setId("s")
                 .setCountry(Country.FR)

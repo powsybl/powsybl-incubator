@@ -6,22 +6,15 @@
  */
 package com.powsybl.substationdiagram.svg;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
+import com.powsybl.iidm.network.*;
+import com.powsybl.iidm.network.StaticVarCompensator.RegulationMode;
+import com.powsybl.substationdiagram.model.Graph;
+import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.powsybl.iidm.network.BusbarSection;
-import com.powsybl.iidm.network.Country;
-import com.powsybl.iidm.network.Network;
-import com.powsybl.iidm.network.NetworkFactory;
-import com.powsybl.iidm.network.StaticVarCompensator.RegulationMode;
-import com.powsybl.iidm.network.Substation;
-import com.powsybl.iidm.network.TopologyKind;
-import com.powsybl.iidm.network.VoltageLevel;
-import com.powsybl.substationdiagram.model.Graph;
-import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Giovanni Ferrari <giovanni.ferrari at techrain.eu>
@@ -34,7 +27,7 @@ public class InitialValueProviderTest {
 
     @Before
     public void setUp() {
-        network = NetworkFactory.create("testCase1", "test");
+        network = Network.create("testCase1", "test");
         substation = network.newSubstation().setId("s").setCountry(Country.FR).add();
         vl = substation.newVoltageLevel().setId("vl").setTopologyKind(TopologyKind.NODE_BREAKER).setNominalV(400).add();
         VoltageLevel.NodeBreakerView view = vl.getNodeBreakerView().setNodeCount(10);
@@ -74,7 +67,7 @@ public class InitialValueProviderTest {
 
     @Test
     public void test() {
-        Network network2 = NetworkFactory.create("testCase2", "test2");
+        Network network2 = Network.create("testCase2", "test2");
         DefaultSubstationDiagramInitialValueProvider initProvider = new DefaultSubstationDiagramInitialValueProvider(network2);
         Graph g = Graph.create(vl, false, false, false);
         InitialValue init = initProvider.getInitialValue(g.getNode("svc"));

@@ -1,3 +1,9 @@
+/**
+ * Copyright (c) 2019, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 package com.powsybl.substationdiagram.view;
 
 import java.io.InputStream;
@@ -126,7 +132,7 @@ public abstract class AbstractContainerDiagramView extends BorderPane {
     }
 
     private static void setNodeVisibility(Group node, GraphMetadata.NodeMetadata nodeMetadata) {
-        ((Group) node).getChildren().forEach(child -> child.setVisible((nodeMetadata.isOpen() && child.getId().equals("open")) || (!nodeMetadata.isOpen() && child.getId().equals("closed"))));
+        node.getChildren().forEach(child -> child.setVisible((nodeMetadata.isOpen() && child.getId().equals("open")) || (!nodeMetadata.isOpen() && child.getId().equals("closed"))));
     }
 
     private static void installHandlers(Node node, GraphMetadata metadata) {
@@ -143,7 +149,7 @@ public abstract class AbstractContainerDiagramView extends BorderPane {
         }
 
         // resolve voltageLevel handler
-        vlHandlers.values().stream().forEach(v -> v.addNodeHandlers(nodeHandlers.values().stream().collect(Collectors.toList())));
+        vlHandlers.values().forEach(v -> v.addNodeHandlers(nodeHandlers.values().stream().collect(Collectors.toList())));
     }
 
     protected static Group loadSvgAndMetadata(InputStream svgInputStream, InputStream metadataInputStream) {

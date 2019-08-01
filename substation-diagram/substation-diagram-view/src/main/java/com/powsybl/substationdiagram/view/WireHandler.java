@@ -6,14 +6,11 @@
  */
 package com.powsybl.substationdiagram.view;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 import com.google.common.collect.ImmutableList;
 import com.powsybl.substationdiagram.library.ComponentSize;
 import com.powsybl.substationdiagram.library.ComponentType;
 import com.powsybl.substationdiagram.svg.GraphMetadata;
 import com.powsybl.substationdiagram.svg.WireConnection;
-
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -24,6 +21,8 @@ import javafx.scene.transform.Translate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
@@ -193,7 +192,6 @@ public class WireHandler {
         Point2D segment = end.subtract(start);
         Point2D point = start.add(end.subtract(start).multiply(ratio));
         double angle = orientedAngle(new Point2D(0, 1), segment);
-        System.out.println("START=" + start + " END=" + end + " angle=" + angle);
         return new OrientedPosition(point, angle);
     }
 

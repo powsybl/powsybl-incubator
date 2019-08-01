@@ -9,6 +9,7 @@ package com.powsybl.loadflow.simple.network.impl;
 import com.powsybl.iidm.network.DanglingLine;
 import com.powsybl.loadflow.simple.network.AbstractFictitiousBranch;
 import com.powsybl.loadflow.simple.network.LfBus;
+import com.powsybl.loadflow.simple.network.PerUnit;
 import com.powsybl.loadflow.simple.network.PiModel;
 
 import java.util.Objects;
@@ -40,7 +41,7 @@ public class LfDanglingLineBranch extends AbstractFictitiousBranch {
 
     @Override
     public void updateState() {
-        danglingLine.getTerminal().setP(p);
-        danglingLine.getTerminal().setQ(q);
+        danglingLine.getTerminal().setP(p.eval() * PerUnit.SB);
+        danglingLine.getTerminal().setQ(q.eval() * PerUnit.SB);
     }
 }

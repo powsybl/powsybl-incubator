@@ -71,9 +71,4 @@ public class ClosedBranchSide1ActiveFlowEquationTerm extends AbstractClosedBranc
             throw new IllegalStateException("Unknown variable: " + variable);
         }
     }
-
-    @Override
-    public double rhs(Variable variable) {
-        return 0;
-    }
 }

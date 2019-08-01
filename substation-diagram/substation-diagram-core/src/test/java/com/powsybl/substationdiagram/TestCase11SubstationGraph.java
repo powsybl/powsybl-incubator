@@ -37,7 +37,7 @@ public class TestCase11SubstationGraph extends AbstractTestCase {
 
     @Before
     public void setUp() {
-        Network network = Network.create("testCase11", "test");
+        network = Network.create("testCase11", "test");
 
         substation = createSubstation(network, "subst", "subst", Country.FR);
 
@@ -401,7 +401,7 @@ public class TestCase11SubstationGraph extends AbstractTestCase {
         SubstationDiagram diagram = SubstationDiagram.build(substation);
         Path pathSVG = Paths.get(System.getProperty("user.home"), "substDiag.svg");
         Path pathMetadata = Paths.get(System.getProperty("user.home"), "substDiag_metadata.json");
-        diagram.writeSvg(new ResourcesComponentLibrary("/ConvergenceLibrary"), layoutParameters, pathSVG);
+        diagram.writeSvg(new ResourcesComponentLibrary("/ConvergenceLibrary"), layoutParameters, pathSVG, network);
         assertTrue(Files.exists(pathSVG));
         assertTrue(Files.exists(pathMetadata));
         try {

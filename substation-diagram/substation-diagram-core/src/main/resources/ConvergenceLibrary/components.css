@@ -1,7 +1,7 @@
 .BUSBAR_SECTION{stroke:rgb(0,0,255);}
 
 .BREAKER {
-	stroke:rgb(0,0,255);
+    stroke:rgb(0,0,255);
     stroke-width:2;
     fill-opacity:1;
 }

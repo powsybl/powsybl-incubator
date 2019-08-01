@@ -122,7 +122,7 @@ public class WireConnection {
                     double mid = (x1 + x2) / 2;
                     pol.addAll(Arrays.asList(x1, y1, mid, y1, mid, y2, x2, y2));
                 } else {
-                    pol.addAll(Arrays.asList(x2, y2, x2, y1, x1, y1));
+                    pol.addAll(Arrays.asList(x1, y1, x2, y1, x2, y2));
                 }
                 break;
             case NONE:
@@ -130,7 +130,7 @@ public class WireConnection {
                 if (anchorPoint2.getOrientation() == AnchorOrientation.HORIZONTAL) {
                     pol.addAll(Arrays.asList(x1, y1, x1, y2, x2, y2));
                 } else {
-                    pol.addAll(Arrays.asList(x2, y2, x2, y1, x1, y1));
+                    pol.addAll(Arrays.asList(x1, y1, x2, y1, x2, y2));
                 }
                 break;
             default:

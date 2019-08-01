@@ -6,36 +6,18 @@
  */
 package com.powsybl.substationdiagram.cgmes;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Arrays;
-
-import org.junit.Before;
-import org.junit.Test;
-
-import com.powsybl.cgmes.iidm.extensions.dl.CouplingDeviceDiagramData;
-import com.powsybl.cgmes.iidm.extensions.dl.DiagramPoint;
-import com.powsybl.cgmes.iidm.extensions.dl.DiagramTerminal;
-import com.powsybl.cgmes.iidm.extensions.dl.InjectionDiagramData;
-import com.powsybl.cgmes.iidm.extensions.dl.LineDiagramData;
-import com.powsybl.cgmes.iidm.extensions.dl.NodeDiagramData;
-import com.powsybl.iidm.network.Bus;
-import com.powsybl.iidm.network.Country;
-import com.powsybl.iidm.network.DanglingLine;
-import com.powsybl.iidm.network.Load;
-import com.powsybl.iidm.network.Network;
-import com.powsybl.iidm.network.NetworkFactory;
-import com.powsybl.iidm.network.ShuntCompensator;
-import com.powsybl.iidm.network.Substation;
-import com.powsybl.iidm.network.TopologyKind;
-import com.powsybl.iidm.network.TwoWindingsTransformer;
-import com.powsybl.iidm.network.VoltageLevel;
+import com.powsybl.cgmes.iidm.extensions.dl.*;
+import com.powsybl.iidm.network.*;
 import com.powsybl.substationdiagram.library.ComponentType;
 import com.powsybl.substationdiagram.model.BusNode;
 import com.powsybl.substationdiagram.model.Graph;
 import com.powsybl.substationdiagram.model.Node;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.Arrays;
+
+import static org.junit.Assert.*;
 
 /**
  *
@@ -51,7 +33,7 @@ public class BusTopologyTest extends AbstractCgmesVoltageLevelLayoutTest {
     }
 
     private void createNetwork() {
-        Network network = NetworkFactory.create("test", "test");
+        Network network = Network.create("test", "test");
         Substation substation = network.newSubstation()
                 .setId("Substation")
                 .setCountry(Country.FR)

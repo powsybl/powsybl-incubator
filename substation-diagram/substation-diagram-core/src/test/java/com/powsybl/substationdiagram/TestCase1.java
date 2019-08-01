@@ -39,7 +39,7 @@ public class TestCase1 extends AbstractTestCase {
 
     @Before
     public void setUp() {
-        Network network = Network.create("testCase1", "test");
+        network = Network.create("testCase1", "test");
         Substation s = network.newSubstation()
                 .setId("s")
                 .setCountry(Country.FR)
@@ -208,7 +208,8 @@ public class TestCase1 extends AbstractTestCase {
                 .setShowInternalNodes(true)
                 .setScaleFactor(1)
                 .setHorizontalSubstationPadding(50)
-                .setVerticalSubstationPadding(50);
+                .setVerticalSubstationPadding(50)
+                .setArrowDistance(20);
 
         new PositionVoltageLevelLayout(g).run(layoutParameters);
 

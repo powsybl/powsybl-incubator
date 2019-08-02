@@ -656,27 +656,27 @@ public class SVGWriter {
         double dy = y2 - y1;
 
         double angle = Math.atan(dx / dy);
+        if (!Double.isNaN(angle)) {
+            double cosRo = Math.cos(angle);
+            double sinRo = Math.sin(angle);
+            double cdx = componentSize.getWidth() / 2;
+            double cdy = componentSize.getHeight() / 2;
 
-        double cosRo = Math.cos(angle);
-        double sinRo = Math.sin(angle);
-        double cdx = componentSize.getWidth() / 2;
-        double cdy = componentSize.getHeight() / 2;
+            double dist = this.layoutParameters.getArrowDistance();
 
-        double dist = this.layoutParameters.getArrowDistance();
+            double x = x1 + sinRo * (dist + shift);
+            double y = y1 + cosRo * (y1 > y2 ? -(dist + shift) : (dist + shift));
 
-        double x = x1 + sinRo * (dist + shift);
-        double y = y1 + cosRo * (y1 > y2 ? -(dist + shift) : (dist + shift));
+            double e1 = layoutParameters.getTranslateX() - cdx * cosRo + cdy * sinRo + x;
+            double f1 = layoutParameters.getTranslateY() - cdx * sinRo - cdy * cosRo + y;
 
-        double e1 = layoutParameters.getTranslateX() - cdx * cosRo + cdy * sinRo + x;
-        double f1 = layoutParameters.getTranslateY() - cdx * sinRo - cdy * cosRo + y;
-
-        int precision = 4;
-        g.setAttribute(TRANSFORM,
-                       "matrix(" + Precision.round(cosRo, precision) + "," + Precision.round(sinRo, precision)
-                               + "," + Precision.round(-sinRo, precision) + "," + Precision.round(cosRo,
-                                                                                                  precision) + ","
-                               + Precision.round(e1, precision) + "," + Precision.round(f1, precision) + ")");
-
+            int precision = 4;
+            g.setAttribute(TRANSFORM,
+                    "matrix(" + Precision.round(cosRo, precision) + "," + Precision.round(sinRo, precision)
+                            + "," + Precision.round(-sinRo, precision) + "," + Precision.round(cosRo,
+                            precision) + ","
+                            + Precision.round(e1, precision) + "," + Precision.round(f1, precision) + ")");
+        }
     }
 
     private void insertArrowsAndLabels(String wireId, List<Double> points, Element root, Node n, GraphMetadata metadata, SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider) {

@@ -14,11 +14,13 @@ import com.powsybl.iidm.network.VariantManagerConstants;
 import com.powsybl.iidm.network.test.EurostagTutorialExample1Factory;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
+import com.powsybl.loadflow.simple.ac.nr.DefaultAcLoadFlowObserver;
 import com.powsybl.math.matrix.DenseMatrixFactory;
 import org.junit.Before;
 import org.junit.Test;
 
 import static com.powsybl.loadflow.simple.util.LoadFlowAssert.*;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -58,6 +60,7 @@ public class SimpleAcLoadFlowEurostagTutorialExample1Test {
     public void baseCaseTest() {
         LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
         assertTrue(result.isOk());
+        assertEquals("3", result.getMetrics().get("iterations"));
 
         assertVoltageEquals(24.5, genBus);
         assertAngleEquals(0, genBus);
@@ -75,6 +78,26 @@ public class SimpleAcLoadFlowEurostagTutorialExample1Test {
         assertReactivePowerEquals(98.74, line2.getTerminal1());
         assertActivePowerEquals(-300.434, line2.getTerminal2());
         assertReactivePowerEquals(-137.188, line2.getTerminal2());
+    }
+
+    @Test
+    public void dcLfVoltageInitTest() {
+        parameters.setVoltageInitMode(LoadFlowParameters.VoltageInitMode.DC_VALUES);
+        boolean[] stateVectorInitialized = new boolean[1];
+        loadFlow.getAdditionalObservers().add(new DefaultAcLoadFlowObserver() {
+            @Override
+            public void stateVectorInitialized(double[] x) {
+                assertEquals(0, x[1], DELTA_ANGLE);
+                assertEquals(-0.043833, x[3], DELTA_ANGLE);
+                assertEquals(-0.112393, x[5], DELTA_ANGLE);
+                assertEquals(-0.220241, x[7], DELTA_ANGLE);
+                stateVectorInitialized[0] = true;
+            }
+        });
+        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
+        assertTrue(result.isOk());
+        assertEquals("3", result.getMetrics().get("iterations"));
+        assertTrue(stateVectorInitialized[0]);
     }
 
     @Test

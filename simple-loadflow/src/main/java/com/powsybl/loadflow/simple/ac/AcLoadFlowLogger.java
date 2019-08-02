@@ -6,7 +6,7 @@
  */
 package com.powsybl.loadflow.simple.ac;
 
-import com.powsybl.loadflow.simple.ac.macro.DefaultAcLoadFlowObserver;
+import com.powsybl.loadflow.simple.ac.nr.DefaultAcLoadFlowObserver;
 import com.powsybl.loadflow.simple.equations.Equation;
 import com.powsybl.loadflow.simple.equations.EquationSystem;
 import org.slf4j.Logger;
@@ -26,6 +26,11 @@ public class AcLoadFlowLogger extends DefaultAcLoadFlowObserver {
     @Override
     public void beginMacroIteration(int macroIteration, String macroActionName) {
         LOGGER.debug("Macro iteration {} (action={})", macroIteration, macroActionName);
+    }
+
+    @Override
+    public void beforeVoltageInitializerPreparation(Class<?> voltageInitializerClass) {
+        LOGGER.debug("Voltage level initializer: {}", voltageInitializerClass.getSimpleName());
     }
 
     @Override

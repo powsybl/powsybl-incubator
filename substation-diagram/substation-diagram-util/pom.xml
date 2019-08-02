@@ -7,7 +7,7 @@
     <parent>
         <artifactId>powsybl-substation-diagram</artifactId>
         <groupId>com.powsybl</groupId>
-        <version>0.1.0</version>
+        <version>0.1.1</version>
     </parent>
 
     <artifactId>powsybl-substation-diagram-util</artifactId>

@@ -26,7 +26,7 @@ import com.powsybl.triplestore.api.PropertyBags;
  */
 public class SvcDiagramDataImporter extends AbstractInjectionDiagramDataImporter {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ShuntDiagramDataImporter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SvcDiagramDataImporter.class);
 
     public SvcDiagramDataImporter(Network network, Map<String, PropertyBags> terminalsDiagramData) {
         super(network, terminalsDiagramData);

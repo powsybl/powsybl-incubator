@@ -104,12 +104,12 @@ public class SubstationDiagramTool implements Tool {
     }
 
     private void generateSvg(ToolRunningContext context, Path outputDir, ComponentLibrary componentLibrary,
-                             LayoutParameters parameters, VoltageLevelLayoutFactory voltageLevelLayoutFactory, VoltageLevel vl) throws UnsupportedEncodingException {
+                             LayoutParameters parameters, VoltageLevelLayoutFactory voltageLevelLayoutFactory, VoltageLevel vl, Network network) throws UnsupportedEncodingException {
         Path svgFile = outputDir.resolve(URLEncoder.encode(vl.getId(), StandardCharsets.UTF_8.name()) + ".svg");
         context.getOutputStream().println("Generating '" + svgFile + "' (" + vl.getNominalV() + ")");
         try {
             VoltageLevelDiagram.build(vl, voltageLevelLayoutFactory, true, parameters.isShowInductorFor3WT())
-                    .writeSvg(componentLibrary, parameters, svgFile);
+                    .writeSvg(componentLibrary, parameters, network, svgFile);
         } catch (Exception e) {
             e.printStackTrace(context.getErrorStream());
         }
@@ -118,12 +118,12 @@ public class SubstationDiagramTool implements Tool {
     private void generateSvg(ToolRunningContext context, Path outputDir, ComponentLibrary componentLibrary,
                              LayoutParameters parameters, VoltageLevelLayoutFactory voltageLevelLayoutFactory,
                              SubstationLayoutFactory substationLayoutFactory,
-                             Substation s) throws UnsupportedEncodingException {
+                             Substation s, Network network) throws UnsupportedEncodingException {
         Path svgFile = outputDir.resolve(URLEncoder.encode(s.getId(), StandardCharsets.UTF_8.name()) + ".svg");
         context.getOutputStream().println("Generating '" + svgFile + "'");
         try {
             SubstationDiagram.build(s, substationLayoutFactory, voltageLevelLayoutFactory, true)
-                    .writeSvg(componentLibrary, parameters, svgFile);
+                    .writeSvg(componentLibrary, parameters, network, svgFile);
         } catch (Exception e) {
             e.printStackTrace(context.getErrorStream());
         }
@@ -153,10 +153,10 @@ public class SubstationDiagramTool implements Tool {
                         throw new PowsyblException("No voltage level or substation with id : '" + id + "'");
                     } else {  // id is a substation id
                         generateSvg(context, outputDir, componentLibrary, parameters,
-                                    voltageLevelLayoutFactory, substationLayoutFactory, s);
+                                    voltageLevelLayoutFactory, substationLayoutFactory, s, network);
                     }
                 } else {  // id is a voltage level id
-                    generateSvg(context, outputDir, componentLibrary, parameters, voltageLevelLayoutFactory, vl);
+                    generateSvg(context, outputDir, componentLibrary, parameters, voltageLevelLayoutFactory, vl, network);
                 }
             }
         } else {
@@ -172,14 +172,14 @@ public class SubstationDiagramTool implements Tool {
             if (allVoltageLevels) {
                 // export all voltage levels
                 for (VoltageLevel vl : network.getVoltageLevels()) {
-                    generateSvg(context, outputDir, componentLibrary, parameters, voltageLevelLayoutFactory, vl);
+                    generateSvg(context, outputDir, componentLibrary, parameters, voltageLevelLayoutFactory, vl, network);
                 }
             }
             if (allSubstations) {
                 // export all substations
                 for (Substation s : network.getSubstations()) {
                     generateSvg(context, outputDir, componentLibrary, parameters,
-                                voltageLevelLayoutFactory, substationLayoutFactory, s);
+                                voltageLevelLayoutFactory, substationLayoutFactory, s, network);
                 }
             }
         }

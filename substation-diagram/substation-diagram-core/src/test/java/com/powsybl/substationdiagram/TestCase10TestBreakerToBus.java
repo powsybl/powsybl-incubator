@@ -29,7 +29,7 @@ public class TestCase10TestBreakerToBus extends AbstractTestCase {
 
     @Override
     void setUp() {
-        Network network = NetworkFactory.create("testCase1", "AbstractTest");
+        network = Network.create("testCase1", "AbstractTest");
         Substation s = network.newSubstation()
                 .setId("s")
                 .setCountry(Country.FR)

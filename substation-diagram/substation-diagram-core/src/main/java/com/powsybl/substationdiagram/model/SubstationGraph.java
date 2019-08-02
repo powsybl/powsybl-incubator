@@ -6,20 +6,11 @@
  */
 package com.powsybl.substationdiagram.model;
 
-import com.powsybl.iidm.network.Substation;
-import com.powsybl.iidm.network.Terminal;
-import com.powsybl.iidm.network.ThreeWindingsTransformer;
-import com.powsybl.iidm.network.TwoWindingsTransformer;
-import com.powsybl.iidm.network.VoltageLevel;
+import com.powsybl.iidm.network.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * This class builds the connectivity among the voltageLevels of a substation
@@ -33,8 +24,6 @@ public class SubstationGraph {
 
     private Substation substation;
 
-    private final boolean useName;
-
     private final List<Graph> nodes = new ArrayList<>();
 
     private final List<Edge> edges = new ArrayList<>();
@@ -44,9 +33,8 @@ public class SubstationGraph {
     /**
      * Constructor
      */
-    public SubstationGraph(Substation substation, boolean useName) {
+    public SubstationGraph(Substation substation) {
         this.substation = Objects.requireNonNull(substation);
-        this.useName = useName;
     }
 
     public static SubstationGraph create(Substation s) {
@@ -55,7 +43,7 @@ public class SubstationGraph {
 
     public static SubstationGraph create(Substation s, boolean useName) {
         Objects.requireNonNull(s);
-        SubstationGraph g = new SubstationGraph(s, useName);
+        SubstationGraph g = new SubstationGraph(s);
         g.buildSubstationGraph(useName);
         return g;
     }

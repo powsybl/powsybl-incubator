@@ -1,5 +1,17 @@
 {
   "components" : [ {
+    "type" : "ARROW",
+    "id" : null,
+    "anchorPoints" : [ {
+      "x" : 0.0,
+      "y" : 0.0,
+      "orientation" : "VERTICAL"
+    } ],
+    "size" : {
+      "width" : 10.0,
+      "height" : 10.0
+    }
+  }, {
     "type" : "BUSBAR_SECTION",
     "id" : "bbs7",
     "anchorPoints" : [ {
@@ -2330,6 +2342,287 @@
     "straight" : false,
     "snakeLine" : false
   } ],
+  "arrows" : [ {
+    "id" : "vl1_Wire26_ARROW1",
+    "wireId" : "vl1_Wire26",
+    "distance" : 20.0
+  }, {
+    "id" : "vl1_Wire26_ARROW2",
+    "wireId" : "vl1_Wire26",
+    "distance" : 20.0
+  }, {
+    "id" : "vl1_Wire27_ARROW2",
+    "wireId" : "vl1_Wire27",
+    "distance" : 20.0
+  }, {
+    "id" : "vl3_Wire3_ARROW2",
+    "wireId" : "vl3_Wire3",
+    "distance" : 20.0
+  }, {
+    "id" : "vl1_Wire27_ARROW1",
+    "wireId" : "vl1_Wire27",
+    "distance" : 20.0
+  }, {
+    "id" : "vl3_Wire1_ARROW2",
+    "wireId" : "vl3_Wire1",
+    "distance" : 20.0
+  }, {
+    "id" : "vl1_Wire29_ARROW2",
+    "wireId" : "vl1_Wire29",
+    "distance" : 20.0
+  }, {
+    "id" : "vl3_Wire3_ARROW1",
+    "wireId" : "vl3_Wire3",
+    "distance" : 20.0
+  }, {
+    "id" : "vl3_Wire1_ARROW1",
+    "wireId" : "vl3_Wire1",
+    "distance" : 20.0
+  }, {
+    "id" : "vl1_Wire29_ARROW1",
+    "wireId" : "vl1_Wire29",
+    "distance" : 20.0
+  }, {
+    "id" : "vl1_Wire21_ARROW1",
+    "wireId" : "vl1_Wire21",
+    "distance" : 20.0
+  }, {
+    "id" : "vl2_Wire21_ARROW1",
+    "wireId" : "vl2_Wire21",
+    "distance" : 20.0
+  }, {
+    "id" : "vl2_Wire21_ARROW2",
+    "wireId" : "vl2_Wire21",
+    "distance" : 20.0
+  }, {
+    "id" : "vl2_Wire22_ARROW2",
+    "wireId" : "vl2_Wire22",
+    "distance" : 20.0
+  }, {
+    "id" : "vl3_Wire14_ARROW2",
+    "wireId" : "vl3_Wire14",
+    "distance" : 20.0
+  }, {
+    "id" : "vl3_Wire15_ARROW2",
+    "wireId" : "vl3_Wire15",
+    "distance" : 20.0
+  }, {
+    "id" : "vl3_Wire12_ARROW1",
+    "wireId" : "vl3_Wire12",
+    "distance" : 20.0
+  }, {
+    "id" : "vl3_Wire14_ARROW1",
+    "wireId" : "vl3_Wire14",
+    "distance" : 20.0
+  }, {
+    "id" : "vl3_Wire15_ARROW1",
+    "wireId" : "vl3_Wire15",
+    "distance" : 20.0
+  }, {
+    "id" : "vl3_Wire11_ARROW2",
+    "wireId" : "vl3_Wire11",
+    "distance" : 20.0
+  }, {
+    "id" : "vl3_Wire11_ARROW1",
+    "wireId" : "vl3_Wire11",
+    "distance" : 20.0
+  }, {
+    "id" : "vl2_Wire25_ARROW1",
+    "wireId" : "vl2_Wire25",
+    "distance" : 20.0
+  }, {
+    "id" : "vl2_Wire25_ARROW2",
+    "wireId" : "vl2_Wire25",
+    "distance" : 20.0
+  }, {
+    "id" : "vl2_Wire18_ARROW2",
+    "wireId" : "vl2_Wire18",
+    "distance" : 20.0
+  }, {
+    "id" : "vl2_Wire18_ARROW1",
+    "wireId" : "vl2_Wire18",
+    "distance" : 20.0
+  }, {
+    "id" : "vl1_Wire9_ARROW2",
+    "wireId" : "vl1_Wire9",
+    "distance" : 20.0
+  }, {
+    "id" : "vl2_Wire9_ARROW1",
+    "wireId" : "vl2_Wire9",
+    "distance" : 20.0
+  }, {
+    "id" : "vl2_Wire9_ARROW2",
+    "wireId" : "vl2_Wire9",
+    "distance" : 20.0
+  }, {
+    "id" : "vl3_Wire9_ARROW1",
+    "wireId" : "vl3_Wire9",
+    "distance" : 20.0
+  }, {
+    "id" : "vl3_Wire9_ARROW2",
+    "wireId" : "vl3_Wire9",
+    "distance" : 20.0
+  }, {
+    "id" : "vl1_Wire21_ARROW2",
+    "wireId" : "vl1_Wire21",
+    "distance" : 20.0
+  }, {
+    "id" : "vl1_Wire30_ARROW2",
+    "wireId" : "vl1_Wire30",
+    "distance" : 20.0
+  }, {
+    "id" : "vl1_Wire30_ARROW1",
+    "wireId" : "vl1_Wire30",
+    "distance" : 20.0
+  }, {
+    "id" : "vl1_Wire5_ARROW2",
+    "wireId" : "vl1_Wire5",
+    "distance" : 20.0
+  }, {
+    "id" : "vl1_Wire32_ARROW2",
+    "wireId" : "vl1_Wire32",
+    "distance" : 20.0
+  }, {
+    "id" : "vl2_Wire5_ARROW2",
+    "wireId" : "vl2_Wire5",
+    "distance" : 20.0
+  }, {
+    "id" : "vl2_Wire5_ARROW1",
+    "wireId" : "vl2_Wire5",
+    "distance" : 20.0
+  }, {
+    "id" : "vl1_Wire7_ARROW2",
+    "wireId" : "vl1_Wire7",
+    "distance" : 20.0
+  }, {
+    "id" : "vl2_Wire7_ARROW1",
+    "wireId" : "vl2_Wire7",
+    "distance" : 20.0
+  }, {
+    "id" : "vl2_Wire7_ARROW2",
+    "wireId" : "vl2_Wire7",
+    "distance" : 20.0
+  }, {
+    "id" : "vl1_Wire5_ARROW1",
+    "wireId" : "vl1_Wire5",
+    "distance" : 20.0
+  }, {
+    "id" : "vl1_Wire7_ARROW1",
+    "wireId" : "vl1_Wire7",
+    "distance" : 20.0
+  }, {
+    "id" : "vl1_Wire9_ARROW1",
+    "wireId" : "vl1_Wire9",
+    "distance" : 20.0
+  }, {
+    "id" : "vl2_Wire3_ARROW2",
+    "wireId" : "vl2_Wire3",
+    "distance" : 20.0
+  }, {
+    "id" : "vl2_Wire3_ARROW1",
+    "wireId" : "vl2_Wire3",
+    "distance" : 20.0
+  }, {
+    "id" : "vl1_Wire33_ARROW2",
+    "wireId" : "vl1_Wire33",
+    "distance" : 20.0
+  }, {
+    "id" : "vl1_Wire32_ARROW1",
+    "wireId" : "vl1_Wire32",
+    "distance" : 20.0
+  }, {
+    "id" : "vl1_Wire33_ARROW1",
+    "wireId" : "vl1_Wire33",
+    "distance" : 20.0
+  }, {
+    "id" : "vl2_Wire11_ARROW2",
+    "wireId" : "vl2_Wire11",
+    "distance" : 20.0
+  }, {
+    "id" : "vl1_Wire11_ARROW1",
+    "wireId" : "vl1_Wire11",
+    "distance" : 20.0
+  }, {
+    "id" : "vl1_Wire13_ARROW1",
+    "wireId" : "vl1_Wire13",
+    "distance" : 20.0
+  }, {
+    "id" : "vl1_Wire15_ARROW1",
+    "wireId" : "vl1_Wire15",
+    "distance" : 20.0
+  }, {
+    "id" : "vl1_Wire17_ARROW2",
+    "wireId" : "vl1_Wire17",
+    "distance" : 20.0
+  }, {
+    "id" : "vl1_Wire19_ARROW2",
+    "wireId" : "vl1_Wire19",
+    "distance" : 20.0
+  }, {
+    "id" : "vl1_Wire11_ARROW2",
+    "wireId" : "vl1_Wire11",
+    "distance" : 20.0
+  }, {
+    "id" : "vl1_Wire13_ARROW2",
+    "wireId" : "vl1_Wire13",
+    "distance" : 20.0
+  }, {
+    "id" : "vl1_Wire15_ARROW2",
+    "wireId" : "vl1_Wire15",
+    "distance" : 20.0
+  }, {
+    "id" : "vl1_Wire17_ARROW1",
+    "wireId" : "vl1_Wire17",
+    "distance" : 20.0
+  }, {
+    "id" : "vl1_Wire19_ARROW1",
+    "wireId" : "vl1_Wire19",
+    "distance" : 20.0
+  }, {
+    "id" : "vl2_Wire19_ARROW1",
+    "wireId" : "vl2_Wire19",
+    "distance" : 20.0
+  }, {
+    "id" : "vl3_Wire12_ARROW2",
+    "wireId" : "vl3_Wire12",
+    "distance" : 20.0
+  }, {
+    "id" : "vl2_Wire19_ARROW2",
+    "wireId" : "vl2_Wire19",
+    "distance" : 20.0
+  }, {
+    "id" : "vl2_Wire24_ARROW2",
+    "wireId" : "vl2_Wire24",
+    "distance" : 20.0
+  }, {
+    "id" : "vl2_Wire22_ARROW1",
+    "wireId" : "vl2_Wire22",
+    "distance" : 20.0
+  }, {
+    "id" : "vl2_Wire24_ARROW1",
+    "wireId" : "vl2_Wire24",
+    "distance" : 20.0
+  }, {
+    "id" : "vl2_Wire13_ARROW1",
+    "wireId" : "vl2_Wire13",
+    "distance" : 20.0
+  }, {
+    "id" : "vl2_Wire13_ARROW2",
+    "wireId" : "vl2_Wire13",
+    "distance" : 20.0
+  }, {
+    "id" : "vl2_Wire11_ARROW1",
+    "wireId" : "vl2_Wire11",
+    "distance" : 20.0
+  }, {
+    "id" : "vl3_Wire8_ARROW2",
+    "wireId" : "vl3_Wire8",
+    "distance" : 20.0
+  }, {
+    "id" : "vl3_Wire8_ARROW1",
+    "wireId" : "vl3_Wire8",
+    "distance" : 20.0
+  } ],
   "layoutParams" : {
     "translateX" : 20.0,
     "translateY" : 50.0,
@@ -2349,6 +2642,7 @@
     "drawStraightWires" : false,
     "horizontalSnakeLinePadding" : 20.0,
     "verticalSnakeLinePadding" : 25.0,
+    "arrowDistance" : 20.0,
     "showInductorFor3WT" : false,
     "diagramName" : null
   }

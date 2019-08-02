@@ -15,6 +15,7 @@ import com.powsybl.substationdiagram.library.ComponentLibrary;
 import com.powsybl.substationdiagram.library.ComponentType;
 import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
 import com.powsybl.substationdiagram.model.*;
+import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramInitialValueProvider;
 import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramStyleProvider;
 import com.powsybl.substationdiagram.svg.SubstationDiagramStyleProvider;
 import org.apache.commons.lang3.StringUtils;
@@ -107,7 +108,7 @@ public class LayoutToCgmesExtensionsConverter {
              StringWriter metadataWriter = new StringWriter()) {
 
             //apply the specified layout and retrieve the computed graph
-            diagram.writeSvg(convergenceComponentLibrary, lparams, sProvider, svgWriter, metadataWriter);
+            diagram.writeSvg(convergenceComponentLibrary, lparams, new DefaultSubstationDiagramInitialValueProvider(substation.getNetwork()), sProvider, svgWriter, metadataWriter);
             SubstationGraph sgraph = diagram.getGraph();
 
             LayoutInfo subsBoundary = new LayoutInfo(0.0, 0.0);

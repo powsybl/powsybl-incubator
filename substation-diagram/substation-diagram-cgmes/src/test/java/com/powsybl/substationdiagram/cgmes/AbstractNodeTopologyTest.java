@@ -6,27 +6,17 @@
  */
 package com.powsybl.substationdiagram.cgmes;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.Arrays;
-
 import com.powsybl.cgmes.iidm.extensions.dl.*;
-import org.junit.Before;
-import org.junit.Test;
-
-import com.powsybl.iidm.network.BusbarSection;
-import com.powsybl.iidm.network.Country;
-import com.powsybl.iidm.network.Generator;
-import com.powsybl.iidm.network.Line;
-import com.powsybl.iidm.network.Network;
-import com.powsybl.iidm.network.NetworkFactory;
-import com.powsybl.iidm.network.Substation;
-import com.powsybl.iidm.network.Switch;
-import com.powsybl.iidm.network.TopologyKind;
-import com.powsybl.iidm.network.VoltageLevel;
+import com.powsybl.iidm.network.*;
 import com.powsybl.substationdiagram.library.ComponentType;
 import com.powsybl.substationdiagram.model.Graph;
 import com.powsybl.substationdiagram.model.Node;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.Arrays;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  *
@@ -44,7 +34,7 @@ public abstract class AbstractNodeTopologyTest extends AbstractCgmesVoltageLevel
     }
 
     protected void createNetwork() {
-        Network network = NetworkFactory.create("testCase1", "test");
+        Network network = Network.create("testCase1", "test");
         voltageLevel = createFirstVoltageLevel(network, 0, 4, 0, 1, 1, 2, 2, 3);
         voltageLevel.getNodeBreakerView().newInternalConnection()
                 .setNode1(4)
@@ -57,7 +47,7 @@ public abstract class AbstractNodeTopologyTest extends AbstractCgmesVoltageLevel
     }
 
     protected void createNetworkWithInternalConnections() {
-        Network network = NetworkFactory.create("testCase1", "test");
+        Network network = Network.create("testCase1", "test");
         voltageLevelWithInternalConnections = createFirstVoltageLevel(network, 4, 12, 7, 8, 5, 6, 9, 10);
         voltageLevelWithInternalConnections.getNodeBreakerView().newInternalConnection()
                 .setNode1(4)

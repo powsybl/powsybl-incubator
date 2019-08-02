@@ -89,7 +89,7 @@ public class BalanceComputationImpl implements BalanceComputation {
         // Step 1 : Input data validation
         List<String> inputDataViolations = this.listInputDataViolations();
         if (!inputDataViolations.isEmpty()) {
-            inputDataViolations.forEach(error -> LOGGER.error(error));
+            inputDataViolations.forEach(LOGGER::error);
             throw new PowsyblException("The input data for balance computation is not valid");
         }
 
@@ -132,14 +132,13 @@ public class BalanceComputationImpl implements BalanceComputation {
                 network.getVariantManager().setWorkingVariant(workingVariantCopyId);
                 LOGGER.info(" Scaling iteration number {}", iterationCounter);
 
-                Map<NetworkArea, Double> scaleNetworkAreasMap = scaleNetworkAreas(networkAreasResidue, previousScalingMap);
-                previousScalingMap = scaleNetworkAreasMap;
+                previousScalingMap = scaleNetworkAreas(networkAreasResidue, previousScalingMap);
             }
         }
 
         if (result.getStatus() == BalanceComputationResult.Status.SUCCESS) {
             List<String> networkAreasName = networkAreaNetPositionTargetMap.keySet().stream()
-                    .map(networkArea -> networkArea.getName()).collect(Collectors.toList());
+                    .map(NetworkArea::getName).collect(Collectors.toList());
             LOGGER.info(" Network areas : {} are balanced after {} iterations", networkAreasName, result.getIterationCount());
 
         } else {

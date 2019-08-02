@@ -72,7 +72,7 @@ public class AcloadFlowEngine {
             // for each macro action run macro iterations until stabilized
             // macro actions are nested: inner most loop first in the list
             for (MacroAction macroAction : macroActions) {
-                // re-run macro action + newton-raphson until stabilization
+                // re-run macro action + Newton-Raphson until stabilization
                 boolean cont;
                 do {
                     observer.beforeMacroActionRun(macroIteration, macroAction.getName());
@@ -82,22 +82,14 @@ public class AcloadFlowEngine {
                     observer.afterMacroActionRun(macroIteration, macroAction.getName(), cont);
 
                     if (cont) {
-                        int nrIteration = lastNrResult.getIteration();
-
                         observer.beginMacroIteration(macroIteration, macroAction.getName());
 
-                        // restart from previous voltage
+                        // restart Newton-Raphson
                         lastNrResult = newtonRaphson.run(nrParameters);
 
                         observer.endMacroIteration(macroIteration, macroAction.getName());
 
-                        // if newton raphson exit without running any iteration, it means that
-                        // macro action is stabilized, so we pass to next macro action
-                        if (lastNrResult.getIteration() == nrIteration) {
-                            cont = false;
-                        } else {
-                            macroIteration++;
-                        }
+                        macroIteration++;
                     }
                 } while (cont);
             }

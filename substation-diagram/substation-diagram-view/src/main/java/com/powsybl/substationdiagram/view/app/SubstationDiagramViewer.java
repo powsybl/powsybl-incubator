@@ -14,26 +14,16 @@ import com.powsybl.commons.json.JsonUtil;
 import com.powsybl.computation.local.LocalComputationManager;
 import com.powsybl.iidm.import_.ImportConfig;
 import com.powsybl.iidm.import_.Importers;
-import com.powsybl.iidm.network.Container;
-import com.powsybl.iidm.network.ContainerType;
-import com.powsybl.iidm.network.Network;
-import com.powsybl.iidm.network.Substation;
-import com.powsybl.iidm.network.VoltageLevel;
+import com.powsybl.iidm.network.*;
 import com.powsybl.substationdiagram.SubstationDiagram;
 import com.powsybl.substationdiagram.VoltageLevelDiagram;
 import com.powsybl.substationdiagram.cgmes.CgmesVoltageLevelLayoutFactory;
-import com.powsybl.substationdiagram.layout.HorizontalSubstationLayoutFactory;
-import com.powsybl.substationdiagram.layout.LayoutParameters;
-import com.powsybl.substationdiagram.layout.PositionFree;
-import com.powsybl.substationdiagram.layout.PositionFromExtension;
-import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayoutFactory;
-import com.powsybl.substationdiagram.layout.RandomVoltageLevelLayoutFactory;
-import com.powsybl.substationdiagram.layout.SubstationLayoutFactory;
-import com.powsybl.substationdiagram.layout.VerticalSubstationLayoutFactory;
-import com.powsybl.substationdiagram.layout.VoltageLevelLayoutFactory;
+import com.powsybl.substationdiagram.layout.*;
 import com.powsybl.substationdiagram.library.ComponentLibrary;
 import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
+import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramInitialValueProvider;
 import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramStyleProvider;
+import com.powsybl.substationdiagram.svg.SubstationDiagramInitialValueProvider;
 import com.powsybl.substationdiagram.svg.SubstationDiagramStyleProvider;
 import com.powsybl.substationdiagram.util.NominalVoltageSubstationDiagramStyleProvider;
 import com.powsybl.substationdiagram.util.SmartVoltageLevelLayoutFactory;
@@ -56,28 +46,9 @@ import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Side;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.CheckBoxTreeItem;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TitledPane;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTreeCell;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
@@ -87,23 +58,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.io.UncheckedIOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.ToDoubleFunction;
 import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -265,16 +229,17 @@ public class SubstationDiagramViewer extends Application {
             try (StringWriter svgWriter = new StringWriter();
                  StringWriter metadataWriter = new StringWriter()) {
                 SubstationDiagramStyleProvider styleProvider = styles.get(styleComboBox.getSelectionModel().getSelectedItem());
+                SubstationDiagramInitialValueProvider initProvider = new DefaultSubstationDiagramInitialValueProvider(networkProperty.get());
 
                 String dName = getSelectedDiagramName();
                 LayoutParameters diagramLayoutParameters = new LayoutParameters(layoutParameters.get()).setDiagramName(dName);
                 if (c.getContainerType() == ContainerType.VOLTAGE_LEVEL) {
                     VoltageLevelDiagram diagram = VoltageLevelDiagram.build((VoltageLevel) c, getVoltageLevelLayoutFactory(), showNames.isSelected(),
-                                                                            layoutParameters.get().isShowInductorFor3WT());
-                    diagram.writeSvg(getComponentLibrary(), diagramLayoutParameters, styleProvider, svgWriter, metadataWriter);
+                            layoutParameters.get().isShowInductorFor3WT());
+                    diagram.writeSvg(getComponentLibrary(), diagramLayoutParameters, initProvider, styleProvider, svgWriter, metadataWriter);
                 } else if (c.getContainerType() == ContainerType.SUBSTATION) {
                     SubstationDiagram diagram = SubstationDiagram.build((Substation) c, getSubstationLayoutFactory(), getVoltageLevelLayoutFactory(), showNames.isSelected());
-                    diagram.writeSvg(getComponentLibrary(), diagramLayoutParameters, styleProvider, svgWriter, metadataWriter);
+                    diagram.writeSvg(getComponentLibrary(), diagramLayoutParameters, initProvider, styleProvider, svgWriter, metadataWriter);
                 }
 
                 svgWriter.flush();
@@ -530,9 +495,9 @@ public class SubstationDiagramViewer extends Application {
     }
 
     private void addSpinner(String label, double min, double max, double amountToStepBy, int row,
-                            Function<LayoutParameters, Double> initializer,
+                            ToDoubleFunction<LayoutParameters> initializer,
                             BiFunction<LayoutParameters, Double, LayoutParameters> updater) {
-        Spinner<Double> spinner = new Spinner<>(min, max, initializer.apply(layoutParameters.get()), amountToStepBy);
+        Spinner<Double> spinner = new Spinner<>(min, max, initializer.applyAsDouble(layoutParameters.get()), amountToStepBy);
         spinner.setEditable(true);
         spinner.valueProperty().addListener((observable, oldValue, newValue) -> setParameters(updater.apply(layoutParameters.get(), newValue)));
         parametersPane.add(new Label(label), 0, row);
@@ -540,21 +505,21 @@ public class SubstationDiagramViewer extends Application {
     }
 
     private void addCheckBox(String label, int row,
-                             Function<LayoutParameters, Boolean> initializer,
+                             Predicate<LayoutParameters> initializer,
                              BiFunction<LayoutParameters, Boolean, LayoutParameters> updater) {
         CheckBox cb = new CheckBox(label);
-        cb.setSelected(initializer.apply(layoutParameters.get()));
+        cb.setSelected(initializer.test(layoutParameters.get()));
         cb.selectedProperty().addListener((observable, oldValue, newValue) -> setParameters(updater.apply(layoutParameters.get(), newValue)));
         parametersPane.add(cb, 0, row);
     }
 
-    private void initPositionLayoutCheckBox(Function<PositionVoltageLevelLayoutFactory, Boolean> initializer, CheckBox stackCb) {
+    private void initPositionLayoutCheckBox(Predicate<PositionVoltageLevelLayoutFactory> initializer, CheckBox stackCb) {
         VoltageLevelLayoutFactory layoutFactory = getVoltageLevelLayoutFactory();
-        stackCb.setSelected(layoutFactory instanceof PositionVoltageLevelLayoutFactory && initializer.apply((PositionVoltageLevelLayoutFactory) layoutFactory));
+        stackCb.setSelected(layoutFactory instanceof PositionVoltageLevelLayoutFactory && initializer.test((PositionVoltageLevelLayoutFactory) layoutFactory));
         stackCb.setDisable(!(layoutFactory instanceof PositionVoltageLevelLayoutFactory));
     }
 
-    private void addPositionLayoutCheckBox(String label, int rowIndex, Function<PositionVoltageLevelLayoutFactory, Boolean> initializer,
+    private void addPositionLayoutCheckBox(String label, int rowIndex, Predicate<PositionVoltageLevelLayoutFactory> initializer,
                                            BiFunction<PositionVoltageLevelLayoutFactory, Boolean, PositionVoltageLevelLayoutFactory> updater) {
         CheckBox stackCb = new CheckBox(label);
         initPositionLayoutCheckBox(initializer, stackCb);
@@ -650,6 +615,8 @@ public class SubstationDiagramViewer extends Application {
         addCheckBox("Show inductor for three windings transformers", rowIndex, LayoutParameters::isShowInductorFor3WT, LayoutParameters::setShowInductorFor3WT);
         rowIndex += 1;
         addSpinner("Scale factor:", 1, 20, 1, rowIndex, LayoutParameters::getScaleFactor, LayoutParameters::setScaleFactor);
+        rowIndex += 2;
+        addSpinner("Arrows distance:", 10, 800, 5, rowIndex, LayoutParameters::getArrowDistance, LayoutParameters::setArrowDistance);
     }
 
     private void setDiagramsNamesContent(Network network, boolean setValues) {

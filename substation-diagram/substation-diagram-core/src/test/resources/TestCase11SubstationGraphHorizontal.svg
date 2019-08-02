@@ -2,7 +2,7 @@
     <style><![CDATA[.substation-diagram {fill:rgb(255,255,255);stroke-width:1;fill-opacity:0;}.wire_vl1 {stroke:rgb(200,0,0);stroke-width:1;}.grid {stroke:rgb(0,55,0);stroke-width:1;stroke-dasharray:1,10;}.bus_vl1 {stroke:rgb(0,0,0);stroke-width:3;}.component-label {fill:black;color:black;stroke:none;fill-opacity:1;}.substation-diagram {fill:rgb(255,255,255);stroke-width:1;fill-opacity:0;}.wire_vl2 {stroke:rgb(200,0,0);stroke-width:1;}.grid {stroke:rgb(0,55,0);stroke-width:1;stroke-dasharray:1,10;}.bus_vl2 {stroke:rgb(0,0,0);stroke-width:3;}.component-label {fill:black;color:black;stroke:none;fill-opacity:1;}.substation-diagram {fill:rgb(255,255,255);stroke-width:1;fill-opacity:0;}.wire_vl3 {stroke:rgb(200,0,0);stroke-width:1;}.grid {stroke:rgb(0,55,0);stroke-width:1;stroke-dasharray:1,10;}.bus_vl3 {stroke:rgb(0,0,0);stroke-width:3;}.component-label {fill:black;color:black;stroke:none;fill-opacity:1;}.BUSBAR_SECTION{stroke:rgb(0,0,255);}
 
 .BREAKER {
-	stroke:rgb(0,0,255);
+    stroke:rgb(0,0,255);
     stroke-width:2;
     fill-opacity:1;
 }
@@ -27,7 +27,7 @@
 .VSC_CONVERTER_STATION {stroke:rgb(0,0,255);font-size:7.4314661px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;stroke-miterlimit:4;}
 .DANGLING_LINE {stroke:rgb(0,0,0);stroke-width:2;}
 .PHASE_SHIFT_TRANSFORMER {stroke:rgb(0,0,255);stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;}
-.dsect11 .open { visibility: hidden;}.dsect11 .closed { visibility: visible;}.dtrct11 .open { visibility: hidden;}.dtrct11 .closed { visibility: visible;}.dsect12 .open { visibility: hidden;}.dsect12 .closed { visibility: visible;}.dsect21 .open { visibility: hidden;}.dsect21 .closed { visibility: visible;}.dtrct21 .open { visibility: hidden;}.dtrct21 .closed { visibility: visible;}.dsect22 .open { visibility: hidden;}.dsect22 .closed { visibility: visible;}.dload1 .open { visibility: hidden;}.dload1 .closed { visibility: visible;}.bload1 .open { visibility: hidden;}.bload1 .closed { visibility: visible;}.dgen1 .open { visibility: hidden;}.dgen1 .closed { visibility: visible;}.bgen1 .open { visibility: hidden;}.bgen1 .closed { visibility: visible;}.dload2 .open { visibility: hidden;}.dload2 .closed { visibility: visible;}.bload2 .open { visibility: hidden;}.bload2 .closed { visibility: visible;}.dgen2 .open { visibility: hidden;}.dgen2 .closed { visibility: visible;}.bgen2 .open { visibility: hidden;}.bgen2 .closed { visibility: visible;}.dtrf11 .open { visibility: hidden;}.dtrf11 .closed { visibility: visible;}.btrf11 .open { visibility: hidden;}.btrf11 .closed { visibility: visible;}.dtrf12 .open { visibility: hidden;}.dtrf12 .closed { visibility: visible;}.btrf12 .open { visibility: hidden;}.btrf12 .closed { visibility: visible;}.dtrf13 .open { visibility: hidden;}.dtrf13 .closed { visibility: visible;}.btrf13 .open { visibility: hidden;}.btrf13 .closed { visibility: visible;}.dtrf14 .open { visibility: hidden;}.dtrf14 .closed { visibility: visible;}.btrf14 .open { visibility: hidden;}.btrf14 .closed { visibility: visible;}.dtrf15 .open { visibility: hidden;}.dtrf15 .closed { visibility: visible;}.btrf15 .open { visibility: hidden;}.btrf15 .closed { visibility: visible;}.dtrf16 .open { visibility: hidden;}.dtrf16 .closed { visibility: visible;}.btrf16 .open { visibility: hidden;}.btrf16 .closed { visibility: visible;}.dtrf17 .open { visibility: hidden;}.dtrf17 .closed { visibility: visible;}.btrf17 .open { visibility: hidden;}.btrf17 .closed { visibility: visible;}.dtrf18 .open { visibility: hidden;}.dtrf18 .closed { visibility: visible;}.btrf18 .open { visibility: hidden;}.btrf18 .closed { visibility: visible;}.dscpl1 .open { visibility: hidden;}.dscpl1 .closed { visibility: visible;}.ddcpl1 .open { visibility: hidden;}.ddcpl1 .closed { visibility: visible;}.dscpl2 .open { visibility: hidden;}.dscpl2 .closed { visibility: visible;}.dload3 .open { visibility: hidden;}.dload3 .closed { visibility: visible;}.bload3 .open { visibility: hidden;}.bload3 .closed { visibility: visible;}.dgen4 .open { visibility: hidden;}.dgen4 .closed { visibility: visible;}.bgen4 .open { visibility: hidden;}.bgen4 .closed { visibility: visible;}.dtrf21 .open { visibility: hidden;}.dtrf21 .closed { visibility: visible;}.btrf21 .open { visibility: hidden;}.btrf21 .closed { visibility: visible;}.dtrf22 .open { visibility: hidden;}.dtrf22 .closed { visibility: visible;}.btrf22 .open { visibility: hidden;}.btrf22 .closed { visibility: visible;}.dtrf23 .open { visibility: hidden;}.dtrf23 .closed { visibility: visible;}.btrf23 .open { visibility: hidden;}.btrf23 .closed { visibility: visible;}.dtrf24 .open { visibility: hidden;}.dtrf24 .closed { visibility: visible;}.btrf24 .open { visibility: hidden;}.btrf24 .closed { visibility: visible;}.dtrf26 .open { visibility: hidden;}.dtrf26 .closed { visibility: visible;}.btrf26 .open { visibility: hidden;}.btrf26 .closed { visibility: visible;}.dtrf27 .open { visibility: hidden;}.dtrf27 .closed { visibility: visible;}.btrf27 .open { visibility: hidden;}.btrf27 .closed { visibility: visible;}.dtrf28 .open { visibility: hidden;}.dtrf28 .closed { visibility: visible;}.btrf28 .open { visibility: hidden;}.btrf28 .closed { visibility: visible;}.dload4 .open { visibility: hidden;}.dload4 .closed { visibility: visible;}.bload4 .open { visibility: hidden;}.bload4 .closed { visibility: visible;}.dtrf25 .open { visibility: hidden;}.dtrf25 .closed { visibility: visible;}.btrf25 .open { visibility: hidden;}.btrf25 .closed { visibility: visible;}.dtrf36 .open { visibility: hidden;}.dtrf36 .closed { visibility: visible;}.btrf36 .open { visibility: hidden;}.btrf36 .closed { visibility: visible;}.dtrf37 .open { visibility: hidden;}.dtrf37 .closed { visibility: visible;}.btrf37 .open { visibility: hidden;}.btrf37 .closed { visibility: visible;}.dtrf38 .open { visibility: hidden;}.dtrf38 .closed { visibility: visible;}.btrf38 .open { visibility: hidden;}.btrf38 .closed { visibility: visible;}]]></style>
+.ARROW1_load1_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_load1_UP .arrow-down { visibility: hidden;}.ARROW1_load1_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_load1_DOWN .arrow-up { visibility: hidden;}.ARROW2_load1_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_load1_UP .arrow-down { visibility: hidden;}.ARROW2_load1_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_load1_DOWN .arrow-up { visibility: hidden;}.ARROW1_gen1_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_gen1_UP .arrow-down { visibility: hidden;}.ARROW1_gen1_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_gen1_DOWN .arrow-up { visibility: hidden;}.ARROW2_gen1_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_gen1_UP .arrow-down { visibility: hidden;}.ARROW2_gen1_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_gen1_DOWN .arrow-up { visibility: hidden;}.ARROW1_load2_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_load2_UP .arrow-down { visibility: hidden;}.ARROW1_load2_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_load2_DOWN .arrow-up { visibility: hidden;}.ARROW2_load2_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_load2_UP .arrow-down { visibility: hidden;}.ARROW2_load2_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_load2_DOWN .arrow-up { visibility: hidden;}.ARROW1_gen2_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_gen2_UP .arrow-down { visibility: hidden;}.ARROW1_gen2_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_gen2_DOWN .arrow-up { visibility: hidden;}.ARROW2_gen2_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_gen2_UP .arrow-down { visibility: hidden;}.ARROW2_gen2_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_gen2_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf1_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf1_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf1_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf1_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf1_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf1_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf1_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf1_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf2_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf2_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf2_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf2_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf2_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf2_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf2_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf2_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf3_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf3_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf3_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf3_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf3_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf3_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf3_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf3_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf4_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf4_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf4_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf4_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf4_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf4_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf4_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf4_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf5_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf5_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf5_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf5_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf5_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf5_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf5_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf5_ONE_DOWN .arrow-up { visibility: hidden;}.dsect11 .open { visibility: hidden;}.dsect11 .closed { visibility: visible;}.dtrct11 .open { visibility: hidden;}.dtrct11 .closed { visibility: visible;}.dsect12 .open { visibility: hidden;}.dsect12 .closed { visibility: visible;}.dsect21 .open { visibility: hidden;}.dsect21 .closed { visibility: visible;}.dtrct21 .open { visibility: hidden;}.dtrct21 .closed { visibility: visible;}.dsect22 .open { visibility: hidden;}.dsect22 .closed { visibility: visible;}.dload1 .open { visibility: hidden;}.dload1 .closed { visibility: visible;}.bload1 .open { visibility: hidden;}.bload1 .closed { visibility: visible;}.dgen1 .open { visibility: hidden;}.dgen1 .closed { visibility: visible;}.bgen1 .open { visibility: hidden;}.bgen1 .closed { visibility: visible;}.dload2 .open { visibility: hidden;}.dload2 .closed { visibility: visible;}.bload2 .open { visibility: hidden;}.bload2 .closed { visibility: visible;}.dgen2 .open { visibility: hidden;}.dgen2 .closed { visibility: visible;}.bgen2 .open { visibility: hidden;}.bgen2 .closed { visibility: visible;}.dtrf11 .open { visibility: hidden;}.dtrf11 .closed { visibility: visible;}.btrf11 .open { visibility: hidden;}.btrf11 .closed { visibility: visible;}.dtrf12 .open { visibility: hidden;}.dtrf12 .closed { visibility: visible;}.btrf12 .open { visibility: hidden;}.btrf12 .closed { visibility: visible;}.dtrf13 .open { visibility: hidden;}.dtrf13 .closed { visibility: visible;}.btrf13 .open { visibility: hidden;}.btrf13 .closed { visibility: visible;}.dtrf14 .open { visibility: hidden;}.dtrf14 .closed { visibility: visible;}.btrf14 .open { visibility: hidden;}.btrf14 .closed { visibility: visible;}.dtrf15 .open { visibility: hidden;}.dtrf15 .closed { visibility: visible;}.btrf15 .open { visibility: hidden;}.btrf15 .closed { visibility: visible;}.dtrf16 .open { visibility: hidden;}.dtrf16 .closed { visibility: visible;}.btrf16 .open { visibility: hidden;}.btrf16 .closed { visibility: visible;}.dtrf17 .open { visibility: hidden;}.dtrf17 .closed { visibility: visible;}.btrf17 .open { visibility: hidden;}.btrf17 .closed { visibility: visible;}.dtrf18 .open { visibility: hidden;}.dtrf18 .closed { visibility: visible;}.btrf18 .open { visibility: hidden;}.btrf18 .closed { visibility: visible;}.ARROW1_trf6_ONE_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf6_ONE_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf6_ONE_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf6_ONE_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf6_ONE_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf6_ONE_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf6_ONE_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf6_ONE_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf6_ONE_THREE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf6_ONE_THREE_UP .arrow-down { visibility: hidden;}.ARROW1_trf6_ONE_THREE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf6_ONE_THREE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf6_ONE_THREE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf6_ONE_THREE_UP .arrow-down { visibility: hidden;}.ARROW2_trf6_ONE_THREE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf6_ONE_THREE_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf7_ONE_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf7_ONE_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf7_ONE_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf7_ONE_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf7_ONE_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf7_ONE_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf7_ONE_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf7_ONE_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf7_ONE_THREE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf7_ONE_THREE_UP .arrow-down { visibility: hidden;}.ARROW1_trf7_ONE_THREE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf7_ONE_THREE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf7_ONE_THREE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf7_ONE_THREE_UP .arrow-down { visibility: hidden;}.ARROW2_trf7_ONE_THREE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf7_ONE_THREE_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf8_ONE_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf8_ONE_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf8_ONE_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf8_ONE_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf8_ONE_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf8_ONE_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf8_ONE_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf8_ONE_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf8_ONE_THREE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf8_ONE_THREE_UP .arrow-down { visibility: hidden;}.ARROW1_trf8_ONE_THREE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf8_ONE_THREE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf8_ONE_THREE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf8_ONE_THREE_UP .arrow-down { visibility: hidden;}.ARROW2_trf8_ONE_THREE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf8_ONE_THREE_DOWN .arrow-up { visibility: hidden;}.ARROW1_load3_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_load3_UP .arrow-down { visibility: hidden;}.ARROW1_load3_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_load3_DOWN .arrow-up { visibility: hidden;}.ARROW2_load3_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_load3_UP .arrow-down { visibility: hidden;}.ARROW2_load3_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_load3_DOWN .arrow-up { visibility: hidden;}.ARROW1_gen4_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_gen4_UP .arrow-down { visibility: hidden;}.ARROW1_gen4_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_gen4_DOWN .arrow-up { visibility: hidden;}.ARROW2_gen4_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_gen4_UP .arrow-down { visibility: hidden;}.ARROW2_gen4_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_gen4_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf1_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf1_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf1_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf1_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf1_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf1_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf1_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf1_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf2_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf2_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf2_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf2_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf2_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf2_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf2_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf2_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf3_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf3_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf3_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf3_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf3_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf3_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf3_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf3_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf4_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf4_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf4_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf4_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf4_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf4_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf4_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf4_TWO_DOWN .arrow-up { visibility: hidden;}.dscpl1 .open { visibility: hidden;}.dscpl1 .closed { visibility: visible;}.ddcpl1 .open { visibility: hidden;}.ddcpl1 .closed { visibility: visible;}.dscpl2 .open { visibility: hidden;}.dscpl2 .closed { visibility: visible;}.dload3 .open { visibility: hidden;}.dload3 .closed { visibility: visible;}.bload3 .open { visibility: hidden;}.bload3 .closed { visibility: visible;}.dgen4 .open { visibility: hidden;}.dgen4 .closed { visibility: visible;}.bgen4 .open { visibility: hidden;}.bgen4 .closed { visibility: visible;}.dtrf21 .open { visibility: hidden;}.dtrf21 .closed { visibility: visible;}.btrf21 .open { visibility: hidden;}.btrf21 .closed { visibility: visible;}.dtrf22 .open { visibility: hidden;}.dtrf22 .closed { visibility: visible;}.btrf22 .open { visibility: hidden;}.btrf22 .closed { visibility: visible;}.dtrf23 .open { visibility: hidden;}.dtrf23 .closed { visibility: visible;}.btrf23 .open { visibility: hidden;}.btrf23 .closed { visibility: visible;}.dtrf24 .open { visibility: hidden;}.dtrf24 .closed { visibility: visible;}.btrf24 .open { visibility: hidden;}.btrf24 .closed { visibility: visible;}.dtrf26 .open { visibility: hidden;}.dtrf26 .closed { visibility: visible;}.btrf26 .open { visibility: hidden;}.btrf26 .closed { visibility: visible;}.dtrf27 .open { visibility: hidden;}.dtrf27 .closed { visibility: visible;}.btrf27 .open { visibility: hidden;}.btrf27 .closed { visibility: visible;}.dtrf28 .open { visibility: hidden;}.dtrf28 .closed { visibility: visible;}.btrf28 .open { visibility: hidden;}.btrf28 .closed { visibility: visible;}.ARROW1_trf6_TWO_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf6_TWO_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf6_TWO_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf6_TWO_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf6_TWO_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf6_TWO_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf6_TWO_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf6_TWO_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf6_TWO_THREE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf6_TWO_THREE_UP .arrow-down { visibility: hidden;}.ARROW1_trf6_TWO_THREE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf6_TWO_THREE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf6_TWO_THREE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf6_TWO_THREE_UP .arrow-down { visibility: hidden;}.ARROW2_trf6_TWO_THREE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf6_TWO_THREE_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf7_TWO_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf7_TWO_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf7_TWO_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf7_TWO_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf7_TWO_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf7_TWO_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf7_TWO_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf7_TWO_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf7_TWO_THREE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf7_TWO_THREE_UP .arrow-down { visibility: hidden;}.ARROW1_trf7_TWO_THREE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf7_TWO_THREE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf7_TWO_THREE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf7_TWO_THREE_UP .arrow-down { visibility: hidden;}.ARROW2_trf7_TWO_THREE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf7_TWO_THREE_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf8_TWO_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf8_TWO_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf8_TWO_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf8_TWO_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf8_TWO_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf8_TWO_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf8_TWO_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf8_TWO_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf8_TWO_THREE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf8_TWO_THREE_UP .arrow-down { visibility: hidden;}.ARROW1_trf8_TWO_THREE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf8_TWO_THREE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf8_TWO_THREE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf8_TWO_THREE_UP .arrow-down { visibility: hidden;}.ARROW2_trf8_TWO_THREE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf8_TWO_THREE_DOWN .arrow-up { visibility: hidden;}.ARROW1_load4_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_load4_UP .arrow-down { visibility: hidden;}.ARROW1_load4_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_load4_DOWN .arrow-up { visibility: hidden;}.ARROW2_load4_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_load4_UP .arrow-down { visibility: hidden;}.ARROW2_load4_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_load4_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf5_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf5_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf5_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf5_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf5_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf5_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf5_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf5_TWO_DOWN .arrow-up { visibility: hidden;}.dload4 .open { visibility: hidden;}.dload4 .closed { visibility: visible;}.bload4 .open { visibility: hidden;}.bload4 .closed { visibility: visible;}.dtrf25 .open { visibility: hidden;}.dtrf25 .closed { visibility: visible;}.btrf25 .open { visibility: hidden;}.btrf25 .closed { visibility: visible;}.dtrf36 .open { visibility: hidden;}.dtrf36 .closed { visibility: visible;}.btrf36 .open { visibility: hidden;}.btrf36 .closed { visibility: visible;}.dtrf37 .open { visibility: hidden;}.dtrf37 .closed { visibility: visible;}.btrf37 .open { visibility: hidden;}.btrf37 .closed { visibility: visible;}.dtrf38 .open { visibility: hidden;}.dtrf38 .closed { visibility: visible;}.btrf38 .open { visibility: hidden;}.btrf38 .closed { visibility: visible;}.ARROW1_trf6_THREE_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf6_THREE_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf6_THREE_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf6_THREE_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf6_THREE_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf6_THREE_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf6_THREE_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf6_THREE_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf6_THREE_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf6_THREE_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf6_THREE_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf6_THREE_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf6_THREE_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf6_THREE_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf6_THREE_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf6_THREE_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf7_THREE_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf7_THREE_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf7_THREE_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf7_THREE_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf7_THREE_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf7_THREE_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf7_THREE_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf7_THREE_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf7_THREE_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf7_THREE_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf7_THREE_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf7_THREE_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf7_THREE_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf7_THREE_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf7_THREE_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf7_THREE_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf8_THREE_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf8_THREE_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf8_THREE_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf8_THREE_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf8_THREE_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf8_THREE_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf8_THREE_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf8_THREE_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW1_trf8_THREE_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf8_THREE_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf8_THREE_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf8_THREE_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf8_THREE_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf8_THREE_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf8_THREE_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf8_THREE_TWO_DOWN .arrow-up { visibility: hidden;}]]></style>
     <g class="substation-diagram">
         <g id="GRID_vl1">
             <line y2="640.0" x1="50.0" class="grid" x2="50.0" transform="translate(20.0,50.0)" y1="30.0"/>
@@ -486,72 +486,330 @@
         <g class="substation-diagram NODE FICT_vl1_dsect22Fictif" id="FICT_vl1_dsect22Fictif" transform="matrix(0.0,1.0,-1.0,0.0,574.0,381.0)"/>
         <g class="substation-diagram NODE FICT_vl1_dgen2Fictif" id="FICT_vl1_dgen2Fictif" transform="translate(841.0,411.0)"/>
         <g class="substation-diagram NODE FICT_vl1_dtrf14Fictif" id="FICT_vl1_dtrf14Fictif" transform="translate(741.0,411.0)"/>
-        <polyline class="wire_vl1" points="510.0,360.0 520.0,360.0" id="vl1_Wire0"/>
-        <polyline class="wire_vl1" points="570.0,360.0 580.0,360.0" id="vl1_Wire1"/>
-        <polyline class="wire_vl1" points="510.0,385.0 520.0,385.0" id="vl1_Wire2"/>
-        <polyline class="wire_vl1" points="570.0,385.0 580.0,385.0" id="vl1_Wire3"/>
-        <polyline class="wire_vl1" points="95.0,360.0 95.0,360.0" id="vl1_Wire4"/>
-        <polyline class="wire_vl1" points="95.0,84.0 95.0,195.0" id="vl1_Wire5"/>
-        <polyline class="wire_vl1" points="195.0,385.0 195.0,385.0" id="vl1_Wire6"/>
-        <polyline class="wire_vl1" points="195.0,659.0 195.0,550.0" id="vl1_Wire7"/>
-        <polyline class="wire_vl1" points="595.0,360.0 595.0,360.0" id="vl1_Wire8"/>
-        <polyline class="wire_vl1" points="595.0,84.0 595.0,195.0" id="vl1_Wire9"/>
-        <polyline class="wire_vl1" points="845.0,385.0 845.0,385.0" id="vl1_Wire10"/>
-        <polyline class="wire_vl1" points="845.0,659.0 845.0,550.0" id="vl1_Wire11"/>
-        <polyline class="wire_vl1" points="145.0,360.0 145.0,360.0" id="vl1_Wire12"/>
-        <polyline class="wire_vl1" points="145.0,195.0 145.0,84.0" id="vl1_Wire13"/>
-        <polyline class="wire_vl1" points="795.0,360.0 795.0,360.0" id="vl1_Wire14"/>
-        <polyline class="wire_vl1" points="795.0,195.0 795.0,84.0" id="vl1_Wire15"/>
-        <polyline class="wire_vl1" points="245.0,385.0 245.0,385.0" id="vl1_Wire16"/>
-        <polyline class="wire_vl1" points="245.0,550.0 245.0,661.0" id="vl1_Wire17"/>
-        <polyline class="wire_vl1" points="745.0,385.0 745.0,385.0" id="vl1_Wire18"/>
-        <polyline class="wire_vl1" points="745.0,550.0 745.0,661.0" id="vl1_Wire19"/>
-        <polyline class="wire_vl1" points="295.0,360.0 295.0,360.0" id="vl1_Wire20"/>
-        <polyline class="wire_vl1" points="295.0,195.0 295.0,84.0" id="vl1_Wire21"/>
-        <polyline class="wire_vl1" points="370.0,360.0 370.0,360.0" id="vl1_Wire22"/>
-        <polyline class="wire_vl1" points="470.0,385.0 470.0,385.0" id="vl1_Wire23"/>
-        <polyline class="wire_vl1" points="670.0,360.0 670.0,360.0" id="vl1_Wire24"/>
-        <polyline class="wire_vl1" points="370.0,236.66666666666669 370.0,167.33333333333331" id="vl1_Wire25"/>
-        <polyline class="wire_vl1" points="370.0,159.33333333333331 370.0,121.66666666666667 345.0,121.66666666666667 345.0,84.00000000000003" id="vl1_Wire26"/>
-        <polyline class="wire_vl1" points="370.0,159.33333333333331 370.0,121.66666666666667 395.0,121.66666666666667 395.0,84.00000000000003" id="vl1_Wire27"/>
-        <polyline class="wire_vl1" points="470.0,508.3333333333333 470.0,577.6666666666665" id="vl1_Wire28"/>
-        <polyline class="wire_vl1" points="470.0,585.6666666666665 470.0,623.3333333333333 445.0,623.3333333333333 445.0,660.9999999999999" id="vl1_Wire29"/>
-        <polyline class="wire_vl1" points="470.0,585.6666666666665 470.0,623.3333333333333 495.0,623.3333333333333 495.0,660.9999999999999" id="vl1_Wire30"/>
-        <polyline class="wire_vl1" points="670.0,236.66666666666669 670.0,167.33333333333331" id="vl1_Wire31"/>
-        <polyline class="wire_vl1" points="670.0,159.33333333333331 670.0,121.66666666666667 645.0,121.66666666666667 645.0,84.00000000000003" id="vl1_Wire32"/>
-        <polyline class="wire_vl1" points="670.0,159.33333333333331 670.0,121.66666666666667 695.0,121.66666666666667 695.0,84.00000000000003" id="vl1_Wire33"/>
-        <polyline class="wire_vl1" points="535.0,360.0 520.0,360.0" id="vl1_Wire34"/>
-        <polyline class="wire_vl1" points="520.0,360.0 520.0,360.0" id="vl1_Wire35"/>
-        <polyline class="wire_vl1" points="95.0,215.0 95.0,330.0" id="vl1_Wire36"/>
-        <polyline class="wire_vl1" points="95.0,360.0 95.0,330.0" id="vl1_Wire37"/>
-        <polyline class="wire_vl1" points="145.0,215.0 145.0,330.0" id="vl1_Wire38"/>
-        <polyline class="wire_vl1" points="145.0,360.0 145.0,330.0" id="vl1_Wire39"/>
-        <polyline class="wire_vl1" points="295.0,215.0 295.0,330.0" id="vl1_Wire40"/>
-        <polyline class="wire_vl1" points="295.0,360.0 295.0,330.0" id="vl1_Wire41"/>
-        <polyline class="wire_vl1" points="370.0,256.6666666666667 370.0,330.0" id="vl1_Wire42"/>
-        <polyline class="wire_vl1" points="370.0,360.0 370.0,330.0" id="vl1_Wire43"/>
-        <polyline class="wire_vl1" points="555.0,360.0 570.0,360.0" id="vl1_Wire44"/>
-        <polyline class="wire_vl1" points="570.0,360.0 570.0,360.0" id="vl1_Wire45"/>
-        <polyline class="wire_vl1" points="595.0,215.0 595.0,330.0" id="vl1_Wire46"/>
-        <polyline class="wire_vl1" points="595.0,360.0 595.0,330.0" id="vl1_Wire47"/>
-        <polyline class="wire_vl1" points="795.0,215.0 795.0,330.0" id="vl1_Wire48"/>
-        <polyline class="wire_vl1" points="795.0,360.0 795.0,330.0" id="vl1_Wire49"/>
-        <polyline class="wire_vl1" points="670.0,256.6666666666667 670.0,330.0" id="vl1_Wire50"/>
-        <polyline class="wire_vl1" points="670.0,360.0 670.0,330.0" id="vl1_Wire51"/>
-        <polyline class="wire_vl1" points="535.0,385.0 520.0,385.0" id="vl1_Wire52"/>
-        <polyline class="wire_vl1" points="520.0,385.0 520.0,385.0" id="vl1_Wire53"/>
-        <polyline class="wire_vl1" points="195.0,530.0 195.0,415.0" id="vl1_Wire54"/>
-        <polyline class="wire_vl1" points="195.0,385.0 195.0,415.0" id="vl1_Wire55"/>
-        <polyline class="wire_vl1" points="245.0,530.0 245.0,415.0" id="vl1_Wire56"/>
-        <polyline class="wire_vl1" points="245.0,385.0 245.0,415.0" id="vl1_Wire57"/>
-        <polyline class="wire_vl1" points="470.0,488.3333333333333 470.0,415.0" id="vl1_Wire58"/>
-        <polyline class="wire_vl1" points="470.0,385.0 470.0,415.0" id="vl1_Wire59"/>
-        <polyline class="wire_vl1" points="555.0,385.0 570.0,385.0" id="vl1_Wire60"/>
-        <polyline class="wire_vl1" points="570.0,385.0 570.0,385.0" id="vl1_Wire61"/>
-        <polyline class="wire_vl1" points="845.0,530.0 845.0,415.0" id="vl1_Wire62"/>
-        <polyline class="wire_vl1" points="845.0,385.0 845.0,415.0" id="vl1_Wire63"/>
-        <polyline class="wire_vl1" points="745.0,530.0 745.0,415.0" id="vl1_Wire64"/>
-        <polyline class="wire_vl1" points="745.0,385.0 745.0,415.0" id="vl1_Wire65"/>
+        <polyline class="wire_vl1" points="510.0,360.0,520.0,360.0" id="vl1_Wire0"/>
+        <polyline class="wire_vl1" points="570.0,360.0,580.0,360.0" id="vl1_Wire1"/>
+        <polyline class="wire_vl1" points="510.0,385.0,520.0,385.0" id="vl1_Wire2"/>
+        <polyline class="wire_vl1" points="570.0,385.0,580.0,385.0" id="vl1_Wire3"/>
+        <polyline class="wire_vl1" points="95.0,360.0,95.0,360.0" id="vl1_Wire4"/>
+        <polyline class="wire_vl1" points="95.0,84.0,95.0,195.0" id="vl1_Wire5"/>
+        <g class="substation-diagram ARROW1_load1_UP" id="vl1_Wire5_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,90.0,99.0)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+<text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">10</text>
+        </g>
+        <g class="substation-diagram ARROW2_load1_UP" id="vl1_Wire5_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,90.0,119.0)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+<text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">10</text>
+        </g>
+        <polyline class="wire_vl1" points="195.0,385.0,195.0,385.0" id="vl1_Wire6"/>
+        <polyline class="wire_vl1" points="195.0,659.0,195.0,550.0" id="vl1_Wire7"/>
+        <g class="substation-diagram ARROW1_gen1_DOWN" id="vl1_Wire7_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,190.0,634.0)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+<text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
+        </g>
+        <g class="substation-diagram ARROW2_gen1_DOWN" id="vl1_Wire7_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,190.0,614.0)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+<text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
+        </g>
+        <polyline class="wire_vl1" points="595.0,360.0,595.0,360.0" id="vl1_Wire8"/>
+        <polyline class="wire_vl1" points="595.0,84.0,595.0,195.0" id="vl1_Wire9"/>
+        <g class="substation-diagram ARROW1_load2_UP" id="vl1_Wire9_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,590.0,99.0)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+<text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">10</text>
+        </g>
+        <g class="substation-diagram ARROW2_load2_UP" id="vl1_Wire9_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,590.0,119.0)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+<text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">10</text>
+        </g>
+        <polyline class="wire_vl1" points="845.0,385.0,845.0,385.0" id="vl1_Wire10"/>
+        <polyline class="wire_vl1" points="845.0,659.0,845.0,550.0" id="vl1_Wire11"/>
+        <g class="substation-diagram ARROW1_gen2_DOWN" id="vl1_Wire11_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,840.0,634.0)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+<text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
+        </g>
+        <g class="substation-diagram ARROW2_gen2_DOWN" id="vl1_Wire11_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,840.0,614.0)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+<text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
+        </g>
+        <polyline class="wire_vl1" points="145.0,360.0,145.0,360.0" id="vl1_Wire12"/>
+        <polyline class="wire_vl1" points="145.0,195.0,145.0,84.0" id="vl1_Wire13"/>
+        <g class="substation-diagram ARROW1_trf1_ONE_DOWN" id="vl1_Wire13_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,140.0,170.0)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+<text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
+        </g>
+        <g class="substation-diagram ARROW2_trf1_ONE_DOWN" id="vl1_Wire13_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,140.0,150.0)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+<text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
+        </g>
+        <polyline class="wire_vl1" points="795.0,360.0,795.0,360.0" id="vl1_Wire14"/>
+        <polyline class="wire_vl1" points="795.0,195.0,795.0,84.0" id="vl1_Wire15"/>
+        <g class="substation-diagram ARROW1_trf2_ONE_DOWN" id="vl1_Wire15_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,790.0,170.0)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+<text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
+        </g>
+        <g class="substation-diagram ARROW2_trf2_ONE_DOWN" id="vl1_Wire15_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,790.0,150.0)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+<text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
+        </g>
+        <polyline class="wire_vl1" points="245.0,385.0,245.0,385.0" id="vl1_Wire16"/>
+        <polyline class="wire_vl1" points="245.0,550.0,245.0,661.0" id="vl1_Wire17"/>
+        <g class="substation-diagram ARROW1_trf3_ONE_DOWN" id="vl1_Wire17_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,240.0,565.0)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+<text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
+        </g>
+        <g class="substation-diagram ARROW2_trf3_ONE_DOWN" id="vl1_Wire17_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,240.0,585.0)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+<text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
+        </g>
+        <polyline class="wire_vl1" points="745.0,385.0,745.0,385.0" id="vl1_Wire18"/>
+        <polyline class="wire_vl1" points="745.0,550.0,745.0,661.0" id="vl1_Wire19"/>
+        <g class="substation-diagram ARROW1_trf4_ONE_DOWN" id="vl1_Wire19_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,740.0,565.0)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+<text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
+        </g>
+        <g class="substation-diagram ARROW2_trf4_ONE_DOWN" id="vl1_Wire19_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,740.0,585.0)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+<text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
+        </g>
+        <polyline class="wire_vl1" points="295.0,360.0,295.0,360.0" id="vl1_Wire20"/>
+        <polyline class="wire_vl1" points="295.0,195.0,295.0,84.0" id="vl1_Wire21"/>
+        <g class="substation-diagram ARROW1_trf5_ONE_DOWN" id="vl1_Wire21_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,290.0,170.0)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+<text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
+        </g>
+        <g class="substation-diagram ARROW2_trf5_ONE_DOWN" id="vl1_Wire21_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,290.0,150.0)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+<text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
+        </g>
+        <polyline class="wire_vl1" points="370.0,360.0,370.0,360.0" id="vl1_Wire22"/>
+        <polyline class="wire_vl1" points="470.0,385.0,470.0,385.0" id="vl1_Wire23"/>
+        <polyline class="wire_vl1" points="670.0,360.0,670.0,360.0" id="vl1_Wire24"/>
+        <polyline class="wire_vl1" points="370.0,236.66666666666669,370.0,167.33333333333331" id="vl1_Wire25"/>
+        <polyline class="wire_vl1" points="370.0,159.33333333333331,370.0,121.66666666666667,345.0,121.66666666666667,345.0,84.00000000000003" id="vl1_Wire26"/>
+        <g id="vl1_Wire26_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,365.0,134.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <g id="vl1_Wire26_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,365.0,114.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <polyline class="wire_vl1" points="370.0,159.33333333333331,370.0,121.66666666666667,395.0,121.66666666666667,395.0,84.00000000000003" id="vl1_Wire27"/>
+        <g id="vl1_Wire27_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,365.0,134.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <g id="vl1_Wire27_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,365.0,114.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <polyline class="wire_vl1" points="470.0,508.3333333333333,470.0,577.6666666666665" id="vl1_Wire28"/>
+        <polyline class="wire_vl1" points="470.0,585.6666666666665,470.0,623.3333333333333,445.0,623.3333333333333,445.0,660.9999999999999" id="vl1_Wire29"/>
+        <g id="vl1_Wire29_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,465.0,600.6667)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <g id="vl1_Wire29_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,465.0,620.6667)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <polyline class="wire_vl1" points="470.0,585.6666666666665,470.0,623.3333333333333,495.0,623.3333333333333,495.0,660.9999999999999" id="vl1_Wire30"/>
+        <g id="vl1_Wire30_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,465.0,600.6667)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <g id="vl1_Wire30_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,465.0,620.6667)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <polyline class="wire_vl1" points="670.0,236.66666666666669,670.0,167.33333333333331" id="vl1_Wire31"/>
+        <polyline class="wire_vl1" points="670.0,159.33333333333331,670.0,121.66666666666667,645.0,121.66666666666667,645.0,84.00000000000003" id="vl1_Wire32"/>
+        <g id="vl1_Wire32_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,665.0,134.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <g id="vl1_Wire32_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,665.0,114.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <polyline class="wire_vl1" points="670.0,159.33333333333331,670.0,121.66666666666667,695.0,121.66666666666667,695.0,84.00000000000003" id="vl1_Wire33"/>
+        <g id="vl1_Wire33_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,665.0,134.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <g id="vl1_Wire33_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,665.0,114.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <polyline class="wire_vl1" points="535.0,360.0,520.0,360.0" id="vl1_Wire34"/>
+        <polyline class="wire_vl1" points="520.0,360.0,520.0,360.0" id="vl1_Wire35"/>
+        <polyline class="wire_vl1" points="95.0,215.0,95.0,330.0" id="vl1_Wire36"/>
+        <polyline class="wire_vl1" points="95.0,360.0,95.0,330.0" id="vl1_Wire37"/>
+        <polyline class="wire_vl1" points="145.0,215.0,145.0,330.0" id="vl1_Wire38"/>
+        <polyline class="wire_vl1" points="145.0,360.0,145.0,330.0" id="vl1_Wire39"/>
+        <polyline class="wire_vl1" points="295.0,215.0,295.0,330.0" id="vl1_Wire40"/>
+        <polyline class="wire_vl1" points="295.0,360.0,295.0,330.0" id="vl1_Wire41"/>
+        <polyline class="wire_vl1" points="370.0,256.6666666666667,370.0,330.0" id="vl1_Wire42"/>
+        <polyline class="wire_vl1" points="370.0,360.0,370.0,330.0" id="vl1_Wire43"/>
+        <polyline class="wire_vl1" points="555.0,360.0,570.0,360.0" id="vl1_Wire44"/>
+        <polyline class="wire_vl1" points="570.0,360.0,570.0,360.0" id="vl1_Wire45"/>
+        <polyline class="wire_vl1" points="595.0,215.0,595.0,330.0" id="vl1_Wire46"/>
+        <polyline class="wire_vl1" points="595.0,360.0,595.0,330.0" id="vl1_Wire47"/>
+        <polyline class="wire_vl1" points="795.0,215.0,795.0,330.0" id="vl1_Wire48"/>
+        <polyline class="wire_vl1" points="795.0,360.0,795.0,330.0" id="vl1_Wire49"/>
+        <polyline class="wire_vl1" points="670.0,256.6666666666667,670.0,330.0" id="vl1_Wire50"/>
+        <polyline class="wire_vl1" points="670.0,360.0,670.0,330.0" id="vl1_Wire51"/>
+        <polyline class="wire_vl1" points="535.0,385.0,520.0,385.0" id="vl1_Wire52"/>
+        <polyline class="wire_vl1" points="520.0,385.0,520.0,385.0" id="vl1_Wire53"/>
+        <polyline class="wire_vl1" points="195.0,530.0,195.0,415.0" id="vl1_Wire54"/>
+        <polyline class="wire_vl1" points="195.0,385.0,195.0,415.0" id="vl1_Wire55"/>
+        <polyline class="wire_vl1" points="245.0,530.0,245.0,415.0" id="vl1_Wire56"/>
+        <polyline class="wire_vl1" points="245.0,385.0,245.0,415.0" id="vl1_Wire57"/>
+        <polyline class="wire_vl1" points="470.0,488.3333333333333,470.0,415.0" id="vl1_Wire58"/>
+        <polyline class="wire_vl1" points="470.0,385.0,470.0,415.0" id="vl1_Wire59"/>
+        <polyline class="wire_vl1" points="555.0,385.0,570.0,385.0" id="vl1_Wire60"/>
+        <polyline class="wire_vl1" points="570.0,385.0,570.0,385.0" id="vl1_Wire61"/>
+        <polyline class="wire_vl1" points="845.0,530.0,845.0,415.0" id="vl1_Wire62"/>
+        <polyline class="wire_vl1" points="845.0,385.0,845.0,415.0" id="vl1_Wire63"/>
+        <polyline class="wire_vl1" points="745.0,530.0,745.0,415.0" id="vl1_Wire64"/>
+        <polyline class="wire_vl1" points="745.0,385.0,745.0,415.0" id="vl1_Wire65"/>
         <g class="substation-diagram BUSBAR_SECTION bbs5" id="bbs5" transform="translate(1030.0,360.0)">
             <line y2="0" x1="0" class="bus_vl2" x2="680.0" y1="0"/>
             <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs5</text>
@@ -847,54 +1105,258 @@
         <g class="substation-diagram NODE FICT_vl2_dtrf23Fictif" id="FICT_vl2_dtrf23Fictif" transform="translate(1691.0,411.0)"/>
         <g class="substation-diagram NODE FICT_vl2_dtrf26Fictif" id="FICT_vl2_dtrf26Fictif" transform="translate(1466.0,326.0)"/>
         <g class="substation-diagram NODE FICT_vl2_dtrf28Fictif" id="FICT_vl2_dtrf28Fictif" transform="translate(1566.0,411.0)"/>
-        <polyline class="wire_vl2" points="1095.0,360.0 1095.0,360.0" id="vl2_Wire0"/>
-        <polyline class="wire_vl2" points="1045.0,385.0 1045.0,385.0" id="vl2_Wire1"/>
-        <polyline class="wire_vl2" points="1145.0,360.0 1145.0,360.0" id="vl2_Wire2"/>
-        <polyline class="wire_vl2" points="1145.0,84.0 1145.0,195.0" id="vl2_Wire3"/>
-        <polyline class="wire_vl2" points="1245.0,385.0 1245.0,385.0" id="vl2_Wire4"/>
-        <polyline class="wire_vl2" points="1245.0,659.0 1245.0,550.0" id="vl2_Wire5"/>
-        <polyline class="wire_vl2" points="1195.0,360.0 1195.0,360.0" id="vl2_Wire6"/>
-        <polyline class="wire_vl2" points="1195.0,195.0 1195.0,84.0" id="vl2_Wire7"/>
-        <polyline class="wire_vl2" points="1645.0,385.0 1645.0,385.0" id="vl2_Wire8"/>
-        <polyline class="wire_vl2" points="1645.0,550.0 1645.0,661.0" id="vl2_Wire9"/>
-        <polyline class="wire_vl2" points="1695.0,385.0 1695.0,385.0" id="vl2_Wire10"/>
-        <polyline class="wire_vl2" points="1695.0,550.0 1695.0,661.0" id="vl2_Wire11"/>
-        <polyline class="wire_vl2" points="1295.0,360.0 1295.0,360.0" id="vl2_Wire12"/>
-        <polyline class="wire_vl2" points="1295.0,195.0 1295.0,84.0" id="vl2_Wire13"/>
-        <polyline class="wire_vl2" points="1470.0,385.0 1470.0,385.0" id="vl2_Wire14"/>
-        <polyline class="wire_vl2" points="1370.0,360.0 1370.0,360.0" id="vl2_Wire15"/>
-        <polyline class="wire_vl2" points="1570.0,385.0 1570.0,385.0" id="vl2_Wire16"/>
-        <polyline class="wire_vl2" points="1470.0,236.66666666666669 1470.0,167.33333333333331" id="vl2_Wire17"/>
-        <polyline class="wire_vl2" points="1470.0,159.33333333333331 1470.0,121.66666666666667 1445.0,121.66666666666667 1445.0,84.00000000000003" id="vl2_Wire18"/>
-        <polyline class="wire_vl2" points="1470.0,159.33333333333331 1470.0,121.66666666666667 1495.0,121.66666666666667 1495.0,84.00000000000003" id="vl2_Wire19"/>
-        <polyline class="wire_vl2" points="1370.0,236.66666666666669 1370.0,167.33333333333331" id="vl2_Wire20"/>
-        <polyline class="wire_vl2" points="1370.0,159.33333333333331 1370.0,121.66666666666667 1345.0,121.66666666666667 1345.0,84.00000000000003" id="vl2_Wire21"/>
-        <polyline class="wire_vl2" points="1370.0,159.33333333333331 1370.0,121.66666666666667 1395.0,121.66666666666667 1395.0,84.00000000000003" id="vl2_Wire22"/>
-        <polyline class="wire_vl2" points="1570.0,508.3333333333333 1570.0,577.6666666666665" id="vl2_Wire23"/>
-        <polyline class="wire_vl2" points="1570.0,585.6666666666665 1570.0,623.3333333333333 1545.0,623.3333333333333 1545.0,660.9999999999999" id="vl2_Wire24"/>
-        <polyline class="wire_vl2" points="1570.0,585.6666666666665 1570.0,623.3333333333333 1595.0,623.3333333333333 1595.0,660.9999999999999" id="vl2_Wire25"/>
-        <polyline class="wire_vl2" points="1080.0,320.0 1095.0,320.0" id="vl2_Wire26"/>
-        <polyline class="wire_vl2" points="1095.0,360.0 1095.0,320.0" id="vl2_Wire27"/>
-        <polyline class="wire_vl2" points="1145.0,215.0 1145.0,330.0" id="vl2_Wire28"/>
-        <polyline class="wire_vl2" points="1145.0,360.0 1145.0,330.0" id="vl2_Wire29"/>
-        <polyline class="wire_vl2" points="1195.0,215.0 1195.0,330.0" id="vl2_Wire30"/>
-        <polyline class="wire_vl2" points="1195.0,360.0 1195.0,330.0" id="vl2_Wire31"/>
-        <polyline class="wire_vl2" points="1295.0,215.0 1295.0,330.0" id="vl2_Wire32"/>
-        <polyline class="wire_vl2" points="1295.0,360.0 1295.0,330.0" id="vl2_Wire33"/>
-        <polyline class="wire_vl2" points="1370.0,256.6666666666667 1370.0,330.0" id="vl2_Wire34"/>
-        <polyline class="wire_vl2" points="1370.0,360.0 1370.0,330.0" id="vl2_Wire35"/>
-        <polyline class="wire_vl2" points="1060.0,320.0 1045.0,320.0" id="vl2_Wire36"/>
-        <polyline class="wire_vl2" points="1045.0,385.0 1045.0,320.0" id="vl2_Wire37"/>
-        <polyline class="wire_vl2" points="1245.0,530.0 1245.0,415.0" id="vl2_Wire38"/>
-        <polyline class="wire_vl2" points="1245.0,385.0 1245.0,415.0" id="vl2_Wire39"/>
-        <polyline class="wire_vl2" points="1645.0,530.0 1645.0,415.0" id="vl2_Wire40"/>
-        <polyline class="wire_vl2" points="1645.0,385.0 1645.0,415.0" id="vl2_Wire41"/>
-        <polyline class="wire_vl2" points="1695.0,530.0 1695.0,415.0" id="vl2_Wire42"/>
-        <polyline class="wire_vl2" points="1695.0,385.0 1695.0,415.0" id="vl2_Wire43"/>
-        <polyline class="wire_vl2" points="1470.0,256.6666666666667 1470.0,330.0" id="vl2_Wire44"/>
-        <polyline class="wire_vl2" points="1470.0,385.0 1470.0,330.0" id="vl2_Wire45"/>
-        <polyline class="wire_vl2" points="1570.0,488.3333333333333 1570.0,415.0" id="vl2_Wire46"/>
-        <polyline class="wire_vl2" points="1570.0,385.0 1570.0,415.0" id="vl2_Wire47"/>
+        <polyline class="wire_vl2" points="1095.0,360.0,1095.0,360.0" id="vl2_Wire0"/>
+        <polyline class="wire_vl2" points="1045.0,385.0,1045.0,385.0" id="vl2_Wire1"/>
+        <polyline class="wire_vl2" points="1145.0,360.0,1145.0,360.0" id="vl2_Wire2"/>
+        <polyline class="wire_vl2" points="1145.0,84.0,1145.0,195.0" id="vl2_Wire3"/>
+        <g class="substation-diagram ARROW1_load3_UP" id="vl2_Wire3_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,1140.0,99.0)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+<text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">10</text>
+        </g>
+        <g class="substation-diagram ARROW2_load3_UP" id="vl2_Wire3_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,1140.0,119.0)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+<text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">10</text>
+        </g>
+        <polyline class="wire_vl2" points="1245.0,385.0,1245.0,385.0" id="vl2_Wire4"/>
+        <polyline class="wire_vl2" points="1245.0,659.0,1245.0,550.0" id="vl2_Wire5"/>
+        <g class="substation-diagram ARROW1_gen4_DOWN" id="vl2_Wire5_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,1240.0,634.0)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+<text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
+        </g>
+        <g class="substation-diagram ARROW2_gen4_DOWN" id="vl2_Wire5_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,1240.0,614.0)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+<text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
+        </g>
+        <polyline class="wire_vl2" points="1195.0,360.0,1195.0,360.0" id="vl2_Wire6"/>
+        <polyline class="wire_vl2" points="1195.0,195.0,1195.0,84.0" id="vl2_Wire7"/>
+        <g class="substation-diagram ARROW1_trf1_TWO_DOWN" id="vl2_Wire7_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,1190.0,170.0)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+<text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
+        </g>
+        <g class="substation-diagram ARROW2_trf1_TWO_DOWN" id="vl2_Wire7_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,1190.0,150.0)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+<text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
+        </g>
+        <polyline class="wire_vl2" points="1645.0,385.0,1645.0,385.0" id="vl2_Wire8"/>
+        <polyline class="wire_vl2" points="1645.0,550.0,1645.0,661.0" id="vl2_Wire9"/>
+        <g class="substation-diagram ARROW1_trf2_TWO_DOWN" id="vl2_Wire9_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,1640.0,565.0)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+<text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
+        </g>
+        <g class="substation-diagram ARROW2_trf2_TWO_DOWN" id="vl2_Wire9_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,1640.0,585.0)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+<text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
+        </g>
+        <polyline class="wire_vl2" points="1695.0,385.0,1695.0,385.0" id="vl2_Wire10"/>
+        <polyline class="wire_vl2" points="1695.0,550.0,1695.0,661.0" id="vl2_Wire11"/>
+        <g class="substation-diagram ARROW1_trf3_TWO_DOWN" id="vl2_Wire11_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,1690.0,565.0)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+<text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
+        </g>
+        <g class="substation-diagram ARROW2_trf3_TWO_DOWN" id="vl2_Wire11_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,1690.0,585.0)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+<text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
+        </g>
+        <polyline class="wire_vl2" points="1295.0,360.0,1295.0,360.0" id="vl2_Wire12"/>
+        <polyline class="wire_vl2" points="1295.0,195.0,1295.0,84.0" id="vl2_Wire13"/>
+        <g class="substation-diagram ARROW1_trf4_TWO_DOWN" id="vl2_Wire13_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,1290.0,170.0)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+<text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
+        </g>
+        <g class="substation-diagram ARROW2_trf4_TWO_DOWN" id="vl2_Wire13_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,1290.0,150.0)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+<text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
+        </g>
+        <polyline class="wire_vl2" points="1470.0,385.0,1470.0,385.0" id="vl2_Wire14"/>
+        <polyline class="wire_vl2" points="1370.0,360.0,1370.0,360.0" id="vl2_Wire15"/>
+        <polyline class="wire_vl2" points="1570.0,385.0,1570.0,385.0" id="vl2_Wire16"/>
+        <polyline class="wire_vl2" points="1470.0,236.66666666666669,1470.0,167.33333333333331" id="vl2_Wire17"/>
+        <polyline class="wire_vl2" points="1470.0,159.33333333333331,1470.0,121.66666666666667,1445.0,121.66666666666667,1445.0,84.00000000000003" id="vl2_Wire18"/>
+        <g id="vl2_Wire18_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,1465.0,134.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <g id="vl2_Wire18_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,1465.0,114.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <polyline class="wire_vl2" points="1470.0,159.33333333333331,1470.0,121.66666666666667,1495.0,121.66666666666667,1495.0,84.00000000000003" id="vl2_Wire19"/>
+        <g id="vl2_Wire19_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,1465.0,134.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <g id="vl2_Wire19_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,1465.0,114.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <polyline class="wire_vl2" points="1370.0,236.66666666666669,1370.0,167.33333333333331" id="vl2_Wire20"/>
+        <polyline class="wire_vl2" points="1370.0,159.33333333333331,1370.0,121.66666666666667,1345.0,121.66666666666667,1345.0,84.00000000000003" id="vl2_Wire21"/>
+        <g id="vl2_Wire21_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,1365.0,134.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <g id="vl2_Wire21_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,1365.0,114.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <polyline class="wire_vl2" points="1370.0,159.33333333333331,1370.0,121.66666666666667,1395.0,121.66666666666667,1395.0,84.00000000000003" id="vl2_Wire22"/>
+        <g id="vl2_Wire22_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,1365.0,134.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <g id="vl2_Wire22_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,1365.0,114.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <polyline class="wire_vl2" points="1570.0,508.3333333333333,1570.0,577.6666666666665" id="vl2_Wire23"/>
+        <polyline class="wire_vl2" points="1570.0,585.6666666666665,1570.0,623.3333333333333,1545.0,623.3333333333333,1545.0,660.9999999999999" id="vl2_Wire24"/>
+        <g id="vl2_Wire24_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,1565.0,600.6667)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <g id="vl2_Wire24_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,1565.0,620.6667)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <polyline class="wire_vl2" points="1570.0,585.6666666666665,1570.0,623.3333333333333,1595.0,623.3333333333333,1595.0,660.9999999999999" id="vl2_Wire25"/>
+        <g id="vl2_Wire25_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,1565.0,600.6667)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <g id="vl2_Wire25_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,1565.0,620.6667)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <polyline class="wire_vl2" points="1080.0,320.0,1095.0,320.0" id="vl2_Wire26"/>
+        <polyline class="wire_vl2" points="1095.0,360.0,1095.0,320.0" id="vl2_Wire27"/>
+        <polyline class="wire_vl2" points="1145.0,215.0,1145.0,330.0" id="vl2_Wire28"/>
+        <polyline class="wire_vl2" points="1145.0,360.0,1145.0,330.0" id="vl2_Wire29"/>
+        <polyline class="wire_vl2" points="1195.0,215.0,1195.0,330.0" id="vl2_Wire30"/>
+        <polyline class="wire_vl2" points="1195.0,360.0,1195.0,330.0" id="vl2_Wire31"/>
+        <polyline class="wire_vl2" points="1295.0,215.0,1295.0,330.0" id="vl2_Wire32"/>
+        <polyline class="wire_vl2" points="1295.0,360.0,1295.0,330.0" id="vl2_Wire33"/>
+        <polyline class="wire_vl2" points="1370.0,256.6666666666667,1370.0,330.0" id="vl2_Wire34"/>
+        <polyline class="wire_vl2" points="1370.0,360.0,1370.0,330.0" id="vl2_Wire35"/>
+        <polyline class="wire_vl2" points="1060.0,320.0,1045.0,320.0" id="vl2_Wire36"/>
+        <polyline class="wire_vl2" points="1045.0,385.0,1045.0,320.0" id="vl2_Wire37"/>
+        <polyline class="wire_vl2" points="1245.0,530.0,1245.0,415.0" id="vl2_Wire38"/>
+        <polyline class="wire_vl2" points="1245.0,385.0,1245.0,415.0" id="vl2_Wire39"/>
+        <polyline class="wire_vl2" points="1645.0,530.0,1645.0,415.0" id="vl2_Wire40"/>
+        <polyline class="wire_vl2" points="1645.0,385.0,1645.0,415.0" id="vl2_Wire41"/>
+        <polyline class="wire_vl2" points="1695.0,530.0,1695.0,415.0" id="vl2_Wire42"/>
+        <polyline class="wire_vl2" points="1695.0,385.0,1695.0,415.0" id="vl2_Wire43"/>
+        <polyline class="wire_vl2" points="1470.0,256.6666666666667,1470.0,330.0" id="vl2_Wire44"/>
+        <polyline class="wire_vl2" points="1470.0,385.0,1470.0,330.0" id="vl2_Wire45"/>
+        <polyline class="wire_vl2" points="1570.0,488.3333333333333,1570.0,415.0" id="vl2_Wire46"/>
+        <polyline class="wire_vl2" points="1570.0,385.0,1570.0,415.0" id="vl2_Wire47"/>
         <g class="substation-diagram BUSBAR_SECTION bbs7" id="bbs7" transform="translate(1880.0,360.0)">
             <line y2="0" x1="0" class="bus_vl3" x2="380.0" y1="0"/>
             <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs7</text>
@@ -1055,46 +1517,178 @@
         <g class="substation-diagram NODE FICT_vl3_dtrf36Fictif" id="FICT_vl3_dtrf36Fictif" transform="translate(2016.0,326.0)"/>
         <g class="substation-diagram NODE FICT_vl3_dtrf37Fictif" id="FICT_vl3_dtrf37Fictif" transform="translate(2116.0,386.0)"/>
         <g class="substation-diagram NODE FICT_vl3_dtrf38Fictif" id="FICT_vl3_dtrf38Fictif" transform="translate(2216.0,326.0)"/>
-        <polyline class="wire_vl3" points="1895.0,360.0 1895.0,360.0" id="vl3_Wire0"/>
-        <polyline class="wire_vl3" points="1895.0,195.0 1895.0,84.0" id="vl3_Wire1"/>
-        <polyline class="wire_vl3" points="1945.0,360.0 1945.0,360.0" id="vl3_Wire2"/>
-        <polyline class="wire_vl3" points="1945.0,525.0 1945.0,636.0" id="vl3_Wire3"/>
-        <polyline class="wire_vl3" points="2020.0,360.0 2020.0,360.0" id="vl3_Wire4"/>
-        <polyline class="wire_vl3" points="2120.0,360.0 2120.0,360.0" id="vl3_Wire5"/>
-        <polyline class="wire_vl3" points="2220.0,360.0 2220.0,360.0" id="vl3_Wire6"/>
-        <polyline class="wire_vl3" points="2020.0,236.66666666666669 2020.0,167.33333333333331" id="vl3_Wire7"/>
-        <polyline class="wire_vl3" points="2020.0,159.33333333333331 2020.0,121.66666666666667 1995.0,121.66666666666667 1995.0,84.00000000000003" id="vl3_Wire8"/>
-        <polyline class="wire_vl3" points="2020.0,159.33333333333331 2020.0,121.66666666666667 2045.0,121.66666666666667 2045.0,84.00000000000003" id="vl3_Wire9"/>
-        <polyline class="wire_vl3" points="2120.0,483.3333333333333 2120.0,552.6666666666667" id="vl3_Wire10"/>
-        <polyline class="wire_vl3" points="2120.0,560.6666666666667 2120.0,598.3333333333334 2095.0,598.3333333333334 2095.0,636.0" id="vl3_Wire11"/>
-        <polyline class="wire_vl3" points="2120.0,560.6666666666667 2120.0,598.3333333333334 2145.0,598.3333333333334 2145.0,636.0" id="vl3_Wire12"/>
-        <polyline class="wire_vl3" points="2220.0,236.66666666666669 2220.0,167.33333333333331" id="vl3_Wire13"/>
-        <polyline class="wire_vl3" points="2220.0,159.33333333333331 2220.0,121.66666666666667 2195.0,121.66666666666667 2195.0,84.00000000000003" id="vl3_Wire14"/>
-        <polyline class="wire_vl3" points="2220.0,159.33333333333331 2220.0,121.66666666666667 2245.0,121.66666666666667 2245.0,84.00000000000003" id="vl3_Wire15"/>
-        <polyline class="wire_vl3" points="1895.0,215.0 1895.0,330.0" id="vl3_Wire16"/>
-        <polyline class="wire_vl3" points="1895.0,360.0 1895.0,330.0" id="vl3_Wire17"/>
-        <polyline class="wire_vl3" points="1945.0,505.0 1945.0,390.0" id="vl3_Wire18"/>
-        <polyline class="wire_vl3" points="1945.0,360.0 1945.0,390.0" id="vl3_Wire19"/>
-        <polyline class="wire_vl3" points="2020.0,256.6666666666667 2020.0,330.0" id="vl3_Wire20"/>
-        <polyline class="wire_vl3" points="2020.0,360.0 2020.0,330.0" id="vl3_Wire21"/>
-        <polyline class="wire_vl3" points="2120.0,463.3333333333333 2120.0,390.0" id="vl3_Wire22"/>
-        <polyline class="wire_vl3" points="2120.0,360.0 2120.0,390.0" id="vl3_Wire23"/>
-        <polyline class="wire_vl3" points="2220.0,256.6666666666667 2220.0,330.0" id="vl3_Wire24"/>
-        <polyline class="wire_vl3" points="2220.0,360.0 2220.0,330.0" id="vl3_Wire25"/>
-        <polyline class="wire_vl1" points="145.0,80.0 145.0,50.0 1195.0,50.0 1195.0,80.0" id="vl1_vl2_Wire0"/>
-        <polyline class="wire_vl1" points="795.0,80.0 795.0,20.0 990.0,20.0 990.0,695.0 1645.0,695.0 1645.0,665.0" id="vl1_vl2_Wire1"/>
-        <polyline class="wire_vl1" points="245.0,665.0 245.0,725.0 1695.0,725.0 1695.0,665.0" id="vl1_vl2_Wire2"/>
-        <polyline class="wire_vl1" points="745.0,665.0 745.0,755.0 960.0,755.0 960.0,-10.0 1295.0,-10.0 1295.0,80.0" id="vl1_vl2_Wire3"/>
-        <polyline class="wire_vl1" points="295.0,80.0 295.0,-40.0 1840.0,-40.0 1840.0,760.0 1945.0,760.0 1945.0,640.0" id="vl1_vl3_Wire4"/>
-        <polyline class="wire_vl1" points="345.0,80.00000000000003 345.0,-69.99999999999997 1445.0,-69.99999999999997 1445.0,80.00000000000003" id="vl1_vl2_Wire5"/>
-        <polyline class="wire_vl1" points="395.0,80.00000000000003 395.0,-99.99999999999997 1995.0,-99.99999999999997 1995.0,80.00000000000003" id="vl1_vl3_Wire6"/>
-        <polyline class="wire_vl3" points="1495.0,80.00000000000003 1495.0,-129.99999999999997 2045.0,-129.99999999999997 2045.0,80.00000000000003" id="vl2_vl3_Wire7"/>
-        <polyline class="wire_vl1" points="445.0,664.9999999999999 445.0,814.9999999999999 930.0,814.9999999999999 930.0,-159.99999999999997 1345.0,-159.99999999999997 1345.0,80.00000000000003" id="vl1_vl2_Wire8"/>
-        <polyline class="wire_vl1" points="495.0,664.9999999999999 495.0,844.9999999999999 2095.0,844.9999999999999 2095.0,640.0" id="vl1_vl3_Wire9"/>
-        <polyline class="wire_vl3" points="1395.0,80.00000000000003 1395.0,-189.99999999999997 1810.0,-189.99999999999997 1810.0,850.0 2145.0,850.0 2145.0,640.0" id="vl2_vl3_Wire10"/>
-        <polyline class="wire_vl1" points="645.0,80.00000000000003 645.0,-220.0 900.0,-220.0 900.0,904.9999999999999 1545.0,904.9999999999999 1545.0,664.9999999999999" id="vl1_vl2_Wire11"/>
-        <polyline class="wire_vl1" points="695.0,80.00000000000003 695.0,-250.0 2195.0,-250.0 2195.0,80.00000000000003" id="vl1_vl3_Wire12"/>
-        <polyline class="wire_vl3" points="1595.0,664.9999999999999 1595.0,934.9999999999999 1780.0,934.9999999999999 1780.0,-280.0 2245.0,-280.0 2245.0,80.00000000000003" id="vl2_vl3_Wire13"/>
+        <polyline class="wire_vl3" points="1895.0,360.0,1895.0,360.0" id="vl3_Wire0"/>
+        <polyline class="wire_vl3" points="1895.0,195.0,1895.0,84.0" id="vl3_Wire1"/>
+        <g class="substation-diagram ARROW1_load4_UP" id="vl3_Wire1_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,1890.0,170.0)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+<text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">10</text>
+        </g>
+        <g class="substation-diagram ARROW2_load4_UP" id="vl3_Wire1_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,1890.0,150.0)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+<text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">10</text>
+        </g>
+        <polyline class="wire_vl3" points="1945.0,360.0,1945.0,360.0" id="vl3_Wire2"/>
+        <polyline class="wire_vl3" points="1945.0,525.0,1945.0,636.0" id="vl3_Wire3"/>
+        <g class="substation-diagram ARROW1_trf5_TWO_DOWN" id="vl3_Wire3_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,1940.0,540.0)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+<text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
+        </g>
+        <g class="substation-diagram ARROW2_trf5_TWO_DOWN" id="vl3_Wire3_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,1940.0,560.0)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+<text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
+        </g>
+        <polyline class="wire_vl3" points="2020.0,360.0,2020.0,360.0" id="vl3_Wire4"/>
+        <polyline class="wire_vl3" points="2120.0,360.0,2120.0,360.0" id="vl3_Wire5"/>
+        <polyline class="wire_vl3" points="2220.0,360.0,2220.0,360.0" id="vl3_Wire6"/>
+        <polyline class="wire_vl3" points="2020.0,236.66666666666669,2020.0,167.33333333333331" id="vl3_Wire7"/>
+        <polyline class="wire_vl3" points="2020.0,159.33333333333331,2020.0,121.66666666666667,1995.0,121.66666666666667,1995.0,84.00000000000003" id="vl3_Wire8"/>
+        <g id="vl3_Wire8_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,2015.0,134.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <g id="vl3_Wire8_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,2015.0,114.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <polyline class="wire_vl3" points="2020.0,159.33333333333331,2020.0,121.66666666666667,2045.0,121.66666666666667,2045.0,84.00000000000003" id="vl3_Wire9"/>
+        <g id="vl3_Wire9_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,2015.0,134.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <g id="vl3_Wire9_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,2015.0,114.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <polyline class="wire_vl3" points="2120.0,483.3333333333333,2120.0,552.6666666666667" id="vl3_Wire10"/>
+        <polyline class="wire_vl3" points="2120.0,560.6666666666667,2120.0,598.3333333333334,2095.0,598.3333333333334,2095.0,636.0" id="vl3_Wire11"/>
+        <g id="vl3_Wire11_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,2115.0,575.6667)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <g id="vl3_Wire11_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,2115.0,595.6667)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <polyline class="wire_vl3" points="2120.0,560.6666666666667,2120.0,598.3333333333334,2145.0,598.3333333333334,2145.0,636.0" id="vl3_Wire12"/>
+        <g id="vl3_Wire12_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,2115.0,575.6667)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <g id="vl3_Wire12_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,2115.0,595.6667)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <polyline class="wire_vl3" points="2220.0,236.66666666666669,2220.0,167.33333333333331" id="vl3_Wire13"/>
+        <polyline class="wire_vl3" points="2220.0,159.33333333333331,2220.0,121.66666666666667,2195.0,121.66666666666667,2195.0,84.00000000000003" id="vl3_Wire14"/>
+        <g id="vl3_Wire14_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,2215.0,134.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <g id="vl3_Wire14_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,2215.0,114.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <polyline class="wire_vl3" points="2220.0,159.33333333333331,2220.0,121.66666666666667,2245.0,121.66666666666667,2245.0,84.00000000000003" id="vl3_Wire15"/>
+        <g id="vl3_Wire15_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,2215.0,134.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <g id="vl3_Wire15_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,2215.0,114.3333)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+</g>
+        <polyline class="wire_vl3" points="1895.0,215.0,1895.0,330.0" id="vl3_Wire16"/>
+        <polyline class="wire_vl3" points="1895.0,360.0,1895.0,330.0" id="vl3_Wire17"/>
+        <polyline class="wire_vl3" points="1945.0,505.0,1945.0,390.0" id="vl3_Wire18"/>
+        <polyline class="wire_vl3" points="1945.0,360.0,1945.0,390.0" id="vl3_Wire19"/>
+        <polyline class="wire_vl3" points="2020.0,256.6666666666667,2020.0,330.0" id="vl3_Wire20"/>
+        <polyline class="wire_vl3" points="2020.0,360.0,2020.0,330.0" id="vl3_Wire21"/>
+        <polyline class="wire_vl3" points="2120.0,463.3333333333333,2120.0,390.0" id="vl3_Wire22"/>
+        <polyline class="wire_vl3" points="2120.0,360.0,2120.0,390.0" id="vl3_Wire23"/>
+        <polyline class="wire_vl3" points="2220.0,256.6666666666667,2220.0,330.0" id="vl3_Wire24"/>
+        <polyline class="wire_vl3" points="2220.0,360.0,2220.0,330.0" id="vl3_Wire25"/>
+        <polyline class="wire_vl1" points="145.0,80.0,145.0,50.0,1195.0,50.0,1195.0,80.0" id="vl1_vl2_Wire0"/>
+        <polyline class="wire_vl1" points="795.0,80.0,795.0,20.0,990.0,20.0,990.0,695.0,1645.0,695.0,1645.0,665.0" id="vl1_vl2_Wire1"/>
+        <polyline class="wire_vl1" points="245.0,665.0,245.0,725.0,1695.0,725.0,1695.0,665.0" id="vl1_vl2_Wire2"/>
+        <polyline class="wire_vl1" points="745.0,665.0,745.0,755.0,960.0,755.0,960.0,-10.0,1295.0,-10.0,1295.0,80.0" id="vl1_vl2_Wire3"/>
+        <polyline class="wire_vl1" points="295.0,80.0,295.0,-40.0,1840.0,-40.0,1840.0,760.0,1945.0,760.0,1945.0,640.0" id="vl1_vl3_Wire4"/>
+        <polyline class="wire_vl1" points="345.0,80.00000000000003,345.0,-69.99999999999997,1445.0,-69.99999999999997,1445.0,80.00000000000003" id="vl1_vl2_Wire5"/>
+        <polyline class="wire_vl1" points="395.0,80.00000000000003,395.0,-99.99999999999997,1995.0,-99.99999999999997,1995.0,80.00000000000003" id="vl1_vl3_Wire6"/>
+        <polyline class="wire_vl3" points="1495.0,80.00000000000003,1495.0,-129.99999999999997,2045.0,-129.99999999999997,2045.0,80.00000000000003" id="vl2_vl3_Wire7"/>
+        <polyline class="wire_vl1" points="445.0,664.9999999999999,445.0,814.9999999999999,930.0,814.9999999999999,930.0,-159.99999999999997,1345.0,-159.99999999999997,1345.0,80.00000000000003" id="vl1_vl2_Wire8"/>
+        <polyline class="wire_vl1" points="495.0,664.9999999999999,495.0,844.9999999999999,2095.0,844.9999999999999,2095.0,640.0" id="vl1_vl3_Wire9"/>
+        <polyline class="wire_vl3" points="1395.0,80.00000000000003,1395.0,-189.99999999999997,1810.0,-189.99999999999997,1810.0,850.0,2145.0,850.0,2145.0,640.0" id="vl2_vl3_Wire10"/>
+        <polyline class="wire_vl1" points="645.0,80.00000000000003,645.0,-220.0,900.0,-220.0,900.0,904.9999999999999,1545.0,904.9999999999999,1545.0,664.9999999999999" id="vl1_vl2_Wire11"/>
+        <polyline class="wire_vl1" points="695.0,80.00000000000003,695.0,-250.0,2195.0,-250.0,2195.0,80.00000000000003" id="vl1_vl3_Wire12"/>
+        <polyline class="wire_vl3" points="1595.0,664.9999999999999,1595.0,934.9999999999999,1780.0,934.9999999999999,1780.0,-280.0,2245.0,-280.0,2245.0,80.00000000000003" id="vl2_vl3_Wire13"/>
         <g id="LABEL_VL_vl1">
             <text x="50.0" font-size="12" y="50.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">vl1</text>
         </g>

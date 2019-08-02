@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.powsybl.loadflow.simple.ac.macro;
+package com.powsybl.loadflow.simple.ac.nr;
 
 import com.powsybl.loadflow.simple.equations.EquationSystem;
 import com.powsybl.math.matrix.Matrix;
@@ -26,6 +26,21 @@ public class DefaultAcLoadFlowObserver implements AcLoadFlowObserver {
 
     @Override
     public void beginMacroIteration(int macroIteration, String macroActionName) {
+        // empty
+    }
+
+    @Override
+    public void beforeVoltageInitializerPreparation(Class<?> voltageInitializerClass) {
+        // empty
+    }
+
+    @Override
+    public void afterVoltageInitializerPreparation() {
+        // empty
+    }
+
+    @Override
+    public void stateVectorInitialized(double[] x) {
         // empty
     }
 

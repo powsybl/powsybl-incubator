@@ -12,7 +12,7 @@ import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
 import com.powsybl.loadflow.LoadFlowResultImpl;
-import com.powsybl.loadflow.simple.ac.macro.AcLoadFlowObserver;
+import com.powsybl.loadflow.simple.ac.nr.AcLoadFlowObserver;
 import com.powsybl.loadflow.simple.ac.macro.AcLoadFlowResult;
 import com.powsybl.loadflow.simple.ac.macro.AcloadFlowEngine;
 import com.powsybl.loadflow.simple.ac.macro.MacroAction;

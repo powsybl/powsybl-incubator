@@ -7,7 +7,7 @@
 package com.powsybl.loadflow.simple.ac;
 
 import com.google.common.base.Stopwatch;
-import com.powsybl.loadflow.simple.ac.macro.DefaultAcLoadFlowObserver;
+import com.powsybl.loadflow.simple.ac.nr.DefaultAcLoadFlowObserver;
 import com.powsybl.loadflow.simple.equations.EquationSystem;
 import com.powsybl.math.matrix.Matrix;
 import org.slf4j.Logger;
@@ -40,6 +40,17 @@ public class AcLoadFlowProfiler extends DefaultAcLoadFlowObserver {
     public void afterEquationSystemCreation() {
         stopwatch.stop();
         LOGGER.debug("AC equation system created in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
+    }
+
+    @Override
+    public void beforeVoltageInitializerPreparation(Class<?> voltageInitializerClass) {
+        restart(stopwatch);
+    }
+
+    @Override
+    public void afterVoltageInitializerPreparation() {
+        stopwatch.stop();
+        LOGGER.debug("Voltage initializer prepared in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
     }
 
     @Override

@@ -6,7 +6,6 @@
  */
 package com.powsybl.loadflow.simple.ac.nr;
 
-import com.powsybl.loadflow.simple.ac.macro.AcLoadFlowObserver;
 import com.powsybl.loadflow.simple.equations.Vectors;
 import net.jafama.FastMath;
 

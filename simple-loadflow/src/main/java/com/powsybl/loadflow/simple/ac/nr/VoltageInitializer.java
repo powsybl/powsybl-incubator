@@ -8,6 +8,8 @@ package com.powsybl.loadflow.simple.ac.nr;
 
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.simple.network.LfBus;
+import com.powsybl.loadflow.simple.network.LfNetwork;
+import com.powsybl.math.matrix.MatrixFactory;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -20,10 +22,14 @@ public interface VoltageInitializer {
                 return new UniformValueVoltageInitializer();
             case PREVIOUS_VALUES:
                 return new PreviousValueVoltageInitializer();
+            case DC_VALUES:
+                return new DcValueVoltageInitializer();
             default:
                 throw new UnsupportedOperationException("Unsupported voltage init mode: " + parameters.getVoltageInitMode());
         }
     }
+
+    void prepare(LfNetwork network, MatrixFactory matrixFactory);
 
     double getMagnitude(LfBus bus);
 

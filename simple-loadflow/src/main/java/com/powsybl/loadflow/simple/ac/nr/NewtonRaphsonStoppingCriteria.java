@@ -6,8 +6,6 @@
  */
 package com.powsybl.loadflow.simple.ac.nr;
 
-import com.powsybl.loadflow.simple.ac.macro.AcLoadFlowObserver;
-
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */

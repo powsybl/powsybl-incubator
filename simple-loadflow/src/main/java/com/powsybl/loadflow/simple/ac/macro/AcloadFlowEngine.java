@@ -9,6 +9,7 @@ package com.powsybl.loadflow.simple.ac.macro;
 import com.google.common.base.Stopwatch;
 import com.powsybl.loadflow.simple.ac.equations.AcEquationSystem;
 import com.powsybl.loadflow.simple.ac.nr.*;
+import com.powsybl.loadflow.simple.ac.nr.AcLoadFlowObserver;
 import com.powsybl.loadflow.simple.equations.EquationContext;
 import com.powsybl.loadflow.simple.equations.EquationSystem;
 import com.powsybl.loadflow.simple.network.LfNetwork;

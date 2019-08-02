@@ -6,6 +6,8 @@
  */
 package com.powsybl.loadflow.simple.ac.nr;
 
+import com.powsybl.commons.PowsyblException;
+import com.powsybl.loadflow.simple.dc.DcLoadFlowEngine;
 import com.powsybl.loadflow.simple.network.LfBus;
 import com.powsybl.loadflow.simple.network.LfNetwork;
 import com.powsybl.math.matrix.MatrixFactory;
@@ -13,16 +15,18 @@ import com.powsybl.math.matrix.MatrixFactory;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class PreviousValueVoltageInitializer implements VoltageInitializer {
+public class DcValueVoltageInitializer implements VoltageInitializer {
 
     @Override
     public void prepare(LfNetwork network, MatrixFactory matrixFactory) {
-        // nothing to do
+        if (!new DcLoadFlowEngine(network, new UniformValueVoltageInitializer(), matrixFactory).run()) {
+            throw new PowsyblException("DC loadflow failed, impossible to initialize voltage angle from DC values");
+        }
     }
 
     @Override
     public double getMagnitude(LfBus bus) {
-        return bus.getV();
+        return 1;
     }
 
     @Override

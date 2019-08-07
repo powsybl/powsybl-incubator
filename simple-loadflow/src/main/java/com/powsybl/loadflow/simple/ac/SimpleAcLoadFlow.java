@@ -19,7 +19,7 @@ import com.powsybl.loadflow.simple.ac.macro.MacroAction;
 import com.powsybl.loadflow.simple.ac.nr.DefaultNewtonRaphsonStoppingCriteria;
 import com.powsybl.loadflow.simple.ac.nr.NewtonRaphsonStatus;
 import com.powsybl.loadflow.simple.ac.nr.NewtonRaphsonStoppingCriteria;
-import com.powsybl.loadflow.simple.ac.nr.VoltageInitializer;
+import com.powsybl.loadflow.simple.equations.VoltageInitializer;
 import com.powsybl.loadflow.simple.network.LfNetwork;
 import com.powsybl.loadflow.simple.network.SlackBusSelector;
 import com.powsybl.loadflow.simple.network.impl.LfNetworks;

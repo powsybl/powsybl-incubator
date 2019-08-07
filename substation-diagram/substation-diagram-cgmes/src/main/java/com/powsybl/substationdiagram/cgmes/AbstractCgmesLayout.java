@@ -53,7 +53,7 @@ public abstract class AbstractCgmesLayout {
     protected double minY = 0;
     protected boolean rotatedBus = false;
     protected boolean isNodeBreaker = true;
-    protected boolean setTransformersLabel = false;
+    protected boolean fixTransformersLabel = false;
 
     protected void setMin(double x, double y) {
         if (minX == 0 || x < minX) {
@@ -176,20 +176,22 @@ public abstract class AbstractCgmesLayout {
             case PHASE_SHIFT_TRANSFORMER:
                 FeederNode transformerNode = (FeederNode) node;
                 TwoWindingsTransformer transformer = graph.getVoltageLevel().getConnectable(getBranchId(transformerNode.getId()), TwoWindingsTransformer.class);
-                CouplingDeviceDiagramData<TwoWindingsTransformer> transformerDiagramData = transformer != null ? transformer.getExtension(CouplingDeviceDiagramData.class) : null;
-                setCouplingDeviceNodeCoordinates(transformerNode, transformerDiagramData, false);
+                CouplingDeviceDiagramData<TwoWindingsTransformer> transformerDiagramData = null;
                 if (transformer != null) {
+                    transformerDiagramData = transformer.getExtension(CouplingDeviceDiagramData.class);
                     setTransformersLabel(transformerNode, graph.isUseName(), transformer.getName(), transformer.getId());
                 }
+                setCouplingDeviceNodeCoordinates(transformerNode, transformerDiagramData, false);
                 break;
             case THREE_WINDINGS_TRANSFORMER:
                 FeederNode transformer3wNode = (FeederNode) node;
                 ThreeWindingsTransformer transformer3w = graph.getVoltageLevel().getConnectable(getBranchId(transformer3wNode.getId()), ThreeWindingsTransformer.class);
-                ThreeWindingsTransformerDiagramData transformer3wDiagramData = transformer3w != null ? transformer3w.getExtension(ThreeWindingsTransformerDiagramData.class) : null;
-                setThreeWindingsTransformerNodeCoordinates(transformer3wNode, transformer3wDiagramData);
+                ThreeWindingsTransformerDiagramData transformer3wDiagramData = null;
                 if (transformer3w != null) {
+                    transformer3wDiagramData = transformer3w.getExtension(ThreeWindingsTransformerDiagramData.class);
                     setTransformersLabel(transformer3wNode, graph.isUseName(), transformer3w.getName(), transformer3w.getId());
                 }
+                setThreeWindingsTransformerNodeCoordinates(transformer3wNode, transformer3wDiagramData);
                 break;
             default:
                 break;
@@ -197,7 +199,7 @@ public abstract class AbstractCgmesLayout {
     }
 
     protected void setTransformersLabel(FeederNode node, boolean useNames, String name, String id) {
-        if (setTransformersLabel) {
+        if (fixTransformersLabel) {
             String label = useNames ? name : id;
             node.setLabel(label);
         }

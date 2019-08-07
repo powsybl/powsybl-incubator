@@ -37,7 +37,7 @@ public class CgmesSubstationLayout extends AbstractCgmesLayout implements Substa
         for (Graph vlGraph : graph.getNodes()) {
             removeFictitiousNodes(vlGraph);
         }
-        setTransformersLabel = true;
+        fixTransformersLabel = true;
         this.graph = graph;
     }
 

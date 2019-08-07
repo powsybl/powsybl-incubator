@@ -14,7 +14,7 @@ import com.powsybl.substationdiagram.model.SubstationGraph;
 public class HorizontalSubstationLayoutFactory implements SubstationLayoutFactory {
 
     @Override
-    public SubstationLayout create(SubstationGraph graph) {
-        return new HorizontalSubstationLayout(graph);
+    public SubstationLayout create(SubstationGraph graph, VoltageLevelLayoutFactory vLayoutFactory) {
+        return new HorizontalSubstationLayout(graph, vLayoutFactory);
     }
 }

@@ -6,18 +6,37 @@
  */
 package com.powsybl.substationdiagram.cgmes;
 
-import com.powsybl.cgmes.iidm.extensions.dl.*;
-import com.powsybl.iidm.network.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Arrays;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import com.powsybl.cgmes.iidm.extensions.dl.CouplingDeviceDiagramData;
+import com.powsybl.cgmes.iidm.extensions.dl.DiagramPoint;
+import com.powsybl.cgmes.iidm.extensions.dl.DiagramTerminal;
+import com.powsybl.cgmes.iidm.extensions.dl.InjectionDiagramData;
+import com.powsybl.cgmes.iidm.extensions.dl.LineDiagramData;
+import com.powsybl.cgmes.iidm.extensions.dl.NodeDiagramData;
+import com.powsybl.iidm.network.Bus;
+import com.powsybl.iidm.network.Country;
+import com.powsybl.iidm.network.DanglingLine;
+import com.powsybl.iidm.network.Load;
+import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.network.ShuntCompensator;
+import com.powsybl.iidm.network.Substation;
+import com.powsybl.iidm.network.TopologyKind;
+import com.powsybl.iidm.network.TwoWindingsTransformer;
+import com.powsybl.iidm.network.VoltageLevel;
+import com.powsybl.substationdiagram.layout.LayoutParameters;
 import com.powsybl.substationdiagram.library.ComponentType;
 import com.powsybl.substationdiagram.model.BusNode;
 import com.powsybl.substationdiagram.model.Graph;
 import com.powsybl.substationdiagram.model.Node;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.Arrays;
-
-import static org.junit.Assert.*;
+import com.powsybl.substationdiagram.model.SubstationGraph;
 
 /**
  *
@@ -26,6 +45,8 @@ import static org.junit.Assert.*;
 public class BusTopologyTest extends AbstractCgmesVoltageLevelLayoutTest {
 
     private VoltageLevel voltageLevel;
+    private Substation substation;
+    private VoltageLevel voltageLevel2;
 
     @Before
     public void setUp() {
@@ -34,12 +55,12 @@ public class BusTopologyTest extends AbstractCgmesVoltageLevelLayoutTest {
 
     private void createNetwork() {
         Network network = Network.create("test", "test");
-        Substation substation = network.newSubstation()
+        substation = network.newSubstation()
                 .setId("Substation")
                 .setCountry(Country.FR)
                 .add();
         voltageLevel = createFirstVoltageLevel(substation);
-        createSecondVoltageLevel(substation);
+        voltageLevel2 = createSecondVoltageLevel(substation);
         createTransformer(substation);
         addDiagramData(network);
     }
@@ -81,7 +102,7 @@ public class BusTopologyTest extends AbstractCgmesVoltageLevelLayoutTest {
         return voltageLevel1;
     }
 
-    private void createSecondVoltageLevel(Substation substation) {
+    private VoltageLevel createSecondVoltageLevel(Substation substation) {
         VoltageLevel voltageLevel2 = substation.newVoltageLevel()
                 .setId("VoltageLevel2")
                 .setNominalV(400)
@@ -90,6 +111,7 @@ public class BusTopologyTest extends AbstractCgmesVoltageLevelLayoutTest {
         voltageLevel2.getBusBreakerView().newBus()
                 .setId("Bus2")
                 .add();
+        return voltageLevel2;
     }
 
     private void createTransformer(Substation substation) {
@@ -143,11 +165,29 @@ public class BusTopologyTest extends AbstractCgmesVoltageLevelLayoutTest {
         twtDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL2, new DiagramPoint(105, 15, 1));
         twtDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL2, new DiagramPoint(120, 15, 2));
         twt.addExtension(CouplingDeviceDiagramData.class, twtDiagramData);
+
+        Bus bus2 = voltageLevel2.getBusBreakerView().getBus("Bus2");
+        NodeDiagramData<Bus> bus2DiagramData = new NodeDiagramData<>(bus2);
+        bus2DiagramData.setPoint1(new DiagramPoint(120, 10, 1));
+        bus2DiagramData.setPoint2(new DiagramPoint(120, 25, 2));
+        bus2.addExtension(NodeDiagramData.class, bus2DiagramData);
     }
 
     @Test
-    public void test() {
+    public void testVoltageLevelLayout() {
         test(voltageLevel);
+    }
+
+    @Test
+    public void testSubstationLayout() {
+        SubstationGraph graph = SubstationGraph.create(substation);
+        LayoutParameters layoutParameters = new LayoutParameters();
+        layoutParameters.setScaleFactor(2);
+        new CgmesSubstationLayout(graph).run(layoutParameters);
+        checkGraph(graph.getNode(voltageLevel.getId()));
+        checkCoordinates(graph.getNode(voltageLevel.getId()));
+        checkGraphVl2(graph.getNode(voltageLevel2.getId()));
+        checkCoordinatesVl2(graph.getNode(voltageLevel2.getId()));
     }
 
     @Override
@@ -205,6 +245,34 @@ public class BusTopologyTest extends AbstractCgmesVoltageLevelLayoutTest {
         assertEquals(200, graph.getNodes().get(4).getX(), 0);
         assertEquals(20, graph.getNodes().get(4).getY(), 0);
         assertFalse(graph.getNodes().get(4).isRotated());
+    }
+
+    private void checkGraphVl2(Graph graph) {
+        assertEquals(2, graph.getNodes().size());
+
+        assertEquals(Node.NodeType.BUS, graph.getNodes().get(0).getType());
+        assertEquals(Node.NodeType.FEEDER, graph.getNodes().get(1).getType());
+
+        assertEquals("Bus2", graph.getNodes().get(0).getId());
+        assertEquals("Transformer_TWO", graph.getNodes().get(1).getId());
+
+        assertEquals(ComponentType.BUSBAR_SECTION, graph.getNodes().get(0).getComponentType());
+        assertEquals(ComponentType.TWO_WINDINGS_TRANSFORMER, graph.getNodes().get(1).getComponentType());
+
+        assertEquals(1, graph.getNodes().get(0).getAdjacentNodes().size());
+        assertEquals("Transformer_TWO", graph.getNodes().get(0).getAdjacentNodes().get(0).getId());
+        assertEquals(1, graph.getNodes().get(1).getAdjacentNodes().size());
+        assertEquals("Bus2", graph.getNodes().get(1).getAdjacentNodes().get(0).getId());
+    }
+
+    protected void checkCoordinatesVl2(Graph graph) {
+        assertEquals(240, graph.getNodes().get(0).getX(), 0);
+        assertEquals(10, graph.getNodes().get(0).getY(), 0);
+        assertEquals(30, ((BusNode) graph.getNodes().get(0)).getPxWidth(), 0);
+        assertTrue(graph.getNodes().get(0).isRotated());
+        assertEquals(200, graph.getNodes().get(1).getX(), 0);
+        assertEquals(20, graph.getNodes().get(1).getY(), 0);
+        assertFalse(graph.getNodes().get(1).isRotated());
     }
 
 }

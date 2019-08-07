@@ -86,7 +86,7 @@ public class SimpleAcLoadFlow implements LoadFlow {
                                "status", result.getNewtonRaphsonStatus().name());
     }
 
-    static VoltageInitializer getVoltageInitializer(LoadFlowParameters parameters) {
+    private static VoltageInitializer getVoltageInitializer(LoadFlowParameters parameters) {
         switch (parameters.getVoltageInitMode()) {
             case UNIFORM_VALUES:
                 return new UniformValueVoltageInitializer();

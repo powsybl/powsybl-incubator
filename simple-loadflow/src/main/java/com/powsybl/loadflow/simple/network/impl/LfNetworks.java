@@ -20,6 +20,8 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static com.powsybl.loadflow.simple.util.Markers.PERFORMANCE_MARKER;
+
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
@@ -229,7 +231,7 @@ public final class LfNetworks {
                 .collect(Collectors.toList());
 
         stopwatch.stop();
-        LOGGER.debug("LF networks created in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        LOGGER.debug(PERFORMANCE_MARKER, "LF networks created in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
 
         return lfNetworks;
     }
@@ -252,7 +254,7 @@ public final class LfNetworks {
         }
 
         stopwatch.stop();
-        LOGGER.debug("IIDM network reset done in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        LOGGER.debug(PERFORMANCE_MARKER, "IIDM network reset done in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
     }
 
 }

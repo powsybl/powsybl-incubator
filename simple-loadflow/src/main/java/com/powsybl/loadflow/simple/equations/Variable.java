@@ -6,7 +6,6 @@
  */
 package com.powsybl.loadflow.simple.equations;
 
-import com.powsybl.loadflow.simple.ac.nr.VoltageInitializer;
 import com.powsybl.loadflow.simple.network.LfBus;
 import com.powsybl.loadflow.simple.network.LfNetwork;
 

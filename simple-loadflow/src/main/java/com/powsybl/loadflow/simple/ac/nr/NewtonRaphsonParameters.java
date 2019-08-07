@@ -6,6 +6,9 @@
  */
 package com.powsybl.loadflow.simple.ac.nr;
 
+import com.powsybl.loadflow.simple.equations.UniformValueVoltageInitializer;
+import com.powsybl.loadflow.simple.equations.VoltageInitializer;
+
 import java.util.Objects;
 
 /**

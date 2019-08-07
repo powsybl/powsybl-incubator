@@ -6,9 +6,10 @@
  */
 package com.powsybl.loadflow.simple.dc;
 
-import com.powsybl.loadflow.simple.ac.nr.VoltageInitializer;
+import com.google.common.base.Stopwatch;
 import com.powsybl.loadflow.simple.dc.equations.DcEquationSystem;
 import com.powsybl.loadflow.simple.equations.EquationSystem;
+import com.powsybl.loadflow.simple.equations.UniformValueVoltageInitializer;
 import com.powsybl.loadflow.simple.network.LfNetwork;
 import com.powsybl.math.matrix.LUDecomposition;
 import com.powsybl.math.matrix.Matrix;
@@ -18,6 +19,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+
+import static com.powsybl.loadflow.simple.util.Markers.PERFORMANCE_MARKER;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -28,20 +32,19 @@ public class DcLoadFlowEngine {
 
     private final LfNetwork network;
 
-    private final VoltageInitializer voltageInitializer;
-
     private final MatrixFactory matrixFactory;
 
-    public DcLoadFlowEngine(LfNetwork network, VoltageInitializer voltageInitializer, MatrixFactory matrixFactory) {
+    public DcLoadFlowEngine(LfNetwork network, MatrixFactory matrixFactory) {
         this.network = Objects.requireNonNull(network);
-        this.voltageInitializer = Objects.requireNonNull(voltageInitializer);
         this.matrixFactory = Objects.requireNonNull(matrixFactory);
     }
 
     public boolean run() {
+        Stopwatch stopwatch = Stopwatch.createStarted();
+
         EquationSystem equationSystem = DcEquationSystem.create(network);
 
-        double[] x = equationSystem.initStateVector(voltageInitializer);
+        double[] x = equationSystem.initStateVector(new UniformValueVoltageInitializer());
 
         double[] targets = equationSystem.initTargetVector();
 
@@ -63,6 +66,11 @@ public class DcLoadFlowEngine {
 
         equationSystem.updateEquationTerms(dx);
         equationSystem.updateNetwork(dx);
+
+        stopwatch.stop();
+        LOGGER.debug(PERFORMANCE_MARKER, "Dc loadflow ran in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
+
+        LOGGER.info("Dc loadflow complete (status={})", status);
 
         return status;
     }

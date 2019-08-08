@@ -39,29 +39,25 @@ public class LayoutToCgmesExtensionsConverter {
     private static final double OFFSET_MULTIPLIER_X = 2.0;
 
     private final LayoutParameters lparams;
-    private final ComponentLibrary convergenceComponentLibrary;
+    private final ComponentLibrary componentLibrary;
     private final SubstationDiagramStyleProvider sProvider;
     private final SubstationLayoutFactory sFactory;
     private final VoltageLevelLayoutFactory vFactory;
     private final boolean showNames;
 
-    public LayoutToCgmesExtensionsConverter(SubstationLayoutFactory sFactory, VoltageLevelLayoutFactory vFactory, LayoutParameters lparams, ComponentLibrary convergenceComponentLibrary, SubstationDiagramStyleProvider sProvider, boolean showNames) {
+    public LayoutToCgmesExtensionsConverter(SubstationLayoutFactory sFactory, VoltageLevelLayoutFactory vFactory, LayoutParameters lparams, ComponentLibrary componentLibrary, SubstationDiagramStyleProvider sProvider, boolean showNames) {
         this.sFactory = Objects.requireNonNull(sFactory);
         this.vFactory = Objects.requireNonNull(vFactory);
         this.lparams = Objects.requireNonNull(lparams);
-        this.convergenceComponentLibrary = Objects.requireNonNull(convergenceComponentLibrary);
+        this.componentLibrary = Objects.requireNonNull(componentLibrary);
         this.sProvider = Objects.requireNonNull(sProvider);
         this.showNames = showNames;
     }
 
     public LayoutToCgmesExtensionsConverter() {
-        //set a default source layout: PositionVoltageLevelLayout
-        lparams = new LayoutParameters();
-        convergenceComponentLibrary = new ResourcesComponentLibrary("/ConvergenceLibrary");
-        sProvider = new DefaultSubstationDiagramStyleProvider();
-        sFactory = new HorizontalSubstationLayoutFactory();
-        vFactory = new PositionVoltageLevelLayoutFactory(new PositionFree());
-        showNames = true;
+        //default layout: HorizontalSubstationLayout, PositionVoltageLevelLayout (no extensions)
+        this(new HorizontalSubstationLayoutFactory(), new PositionVoltageLevelLayoutFactory(new PositionFree()), new LayoutParameters(),
+                new ResourcesComponentLibrary("/ConvergenceLibrary"), new DefaultSubstationDiagramStyleProvider(), true);
     }
 
     private boolean isLineNode(Node node) {
@@ -108,7 +104,7 @@ public class LayoutToCgmesExtensionsConverter {
              StringWriter metadataWriter = new StringWriter()) {
 
             //apply the specified layout and retrieve the computed graph
-            diagram.writeSvg(convergenceComponentLibrary, lparams, new DefaultSubstationDiagramInitialValueProvider(substation.getNetwork()), sProvider, svgWriter, metadataWriter);
+            diagram.writeSvg(componentLibrary, lparams, new DefaultSubstationDiagramInitialValueProvider(substation.getNetwork()), sProvider, svgWriter, metadataWriter);
             SubstationGraph sgraph = diagram.getGraph();
 
             LayoutInfo subsBoundary = new LayoutInfo(0.0, 0.0);
@@ -282,7 +278,7 @@ public class LayoutToCgmesExtensionsConverter {
         return node.isRotated() ? 90.0 : 0.0;
     }
 
-    private void convertLayout(Network network, Stream<Substation> subsStream, String diagramName) {
+    private void convertLayoutSingleDiagram(Network network, Stream<Substation> subsStream, String diagramName) {
         //creates a single CGMES-DL diagram (named diagramName), where each substation
         NetworkDiagramData.addDiagramName(network, diagramName);
         final double[] xoffset = {0.0};
@@ -293,7 +289,7 @@ public class LayoutToCgmesExtensionsConverter {
         });
     }
 
-    private void convertLayout(Network network, Stream<Substation> subsStream) {
+    private void convertLayoutMultipleDiagrams(Network network, Stream<Substation> subsStream) {
         // creates one CGMES-DL diagram for each substation (where each diagram name is the substation's name)
         subsStream.forEach(s -> {
             String subDiagramName = StringUtils.isEmpty(s.getName()) ? s.getId() : s.getName();
@@ -303,6 +299,20 @@ public class LayoutToCgmesExtensionsConverter {
         });
     }
 
+    /**
+     * Apply the layout to the network, creating one or more CGMES-DL diagrams.
+     * Note that a CGMES-DL diagram refers to a global coordinate system and can include all the network equipments,
+     * whereas layouts are currently created per-substation (or per-voltage), using a coordinate system that is local to
+     * the specific substation/voltage.
+     *
+     * This method creates either a single CGMES-DL diagram (where each substation is placed on a single row, one next to the other),
+     * or multiple CGMES_DL diagrams, one per substation.
+     *
+     * @param network
+     * @param diagramName the diagram's name, if <code>null</code> it creates one CGMES-DL diagram for each substation
+     *                    (where each diagram name is the substation's name). Otherwise it creates a single CGMES-DL diagram
+     *                    (named diagramName).
+     */
     public void convertLayout(Network network, String diagramName) {
         Objects.requireNonNull(network);
         LOG.info("Converting layout {} to IIDM CGMES DL extensions for network: {}", sFactory.getClass(), network.getId());
@@ -314,18 +324,21 @@ public class LayoutToCgmesExtensionsConverter {
         CgmesDLUtils.clearCgmesDl(network);
         CgmesDLUtils.removeIidmCgmesExtensions(network);
 
-        //A CGMES-DL diagram refers to a global coordinate system and  can include all the network equipments.
-        // whereas Layouts are created per-substation (or per-voltage), using a coordinate system that is local to the specific substation.
-        //If diagramName
-        // - is null, this method creates one CGMES-DL diagram for each substation (where each diagram name is the substation's name)
-        // - is not null, creates a single CGMES-DL diagram (named diagramName), where each substation
-        // diagram is placed one a single row, one next to the other.
-
         if (diagramName != null) {
-            convertLayout(network, network.getSubstationStream(), diagramName);
+            convertLayoutSingleDiagram(network, network.getSubstationStream(), diagramName);
         } else {
-            convertLayout(network, network.getSubstationStream());
+            convertLayoutMultipleDiagrams(network, network.getSubstationStream());
         }
+    }
+
+    /**
+     * Apply the layout to the network, creating one CGMES-DL diagrams per substation.
+     *
+     * @param network
+     */
+
+    public void convertLayout(Network network) {
+        convertLayout(network, null);
     }
 
     class LayoutInfo {

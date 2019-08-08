@@ -175,7 +175,7 @@ public class LayoutToCgmesExtensionsTest {
     public void testCgmesDlExtensionsSetNoname() {
         networks.stream().forEach(network -> {
             LayoutToCgmesExtensionsConverter lconv = new LayoutToCgmesExtensionsConverter();
-            lconv.convertLayout(network, null);
+            lconv.convertLayout(network);
             checkExtensionsSet(network);
         });
     }

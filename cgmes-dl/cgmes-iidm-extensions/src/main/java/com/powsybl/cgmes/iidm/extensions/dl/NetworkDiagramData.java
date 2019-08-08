@@ -18,7 +18,7 @@ import java.util.*;
 public final class NetworkDiagramData extends AbstractExtension<Network> {
 
     static final String NAME = "network-diagram-data";
-    Set<String> diagramsNames = new TreeSet<>();
+    private Set<String> diagramsNames = new TreeSet<>();
 
     private NetworkDiagramData() {
     }

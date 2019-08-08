@@ -48,7 +48,7 @@ public class InjectionDiagramData<T extends Injection<T>> extends AbstractExtens
         }
     }
 
-    Map<String, InjectionDiagramDetails> diagramsDetails = new HashMap<>();
+    private Map<String, InjectionDiagramDetails> diagramsDetails = new HashMap<>();
 
     private InjectionDiagramData(T injection) {
         super(injection);

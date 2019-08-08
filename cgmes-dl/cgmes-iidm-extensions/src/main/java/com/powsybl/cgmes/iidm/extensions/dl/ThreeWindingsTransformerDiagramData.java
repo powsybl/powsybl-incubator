@@ -73,7 +73,7 @@ public class ThreeWindingsTransformerDiagramData extends AbstractExtension<Three
         }
     }
 
-    Map<String, ThreeWindingsTransformerDiagramDataDetails> diagramsDetails = new HashMap<>();
+    private Map<String, ThreeWindingsTransformerDiagramDataDetails> diagramsDetails = new HashMap<>();
 
     public ThreeWindingsTransformerDiagramData(ThreeWindingsTransformer transformer) {
         super(transformer);

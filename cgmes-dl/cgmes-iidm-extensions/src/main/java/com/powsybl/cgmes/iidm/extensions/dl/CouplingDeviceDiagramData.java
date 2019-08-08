@@ -69,7 +69,7 @@ public class CouplingDeviceDiagramData<T extends Identifiable<T>> extends Abstra
         }
     }
 
-    Map<String, CouplingDeviceDiagramDetails> diagramsDetails = new HashMap<>();
+    private Map<String, CouplingDeviceDiagramDetails> diagramsDetails = new HashMap<>();
 
     private CouplingDeviceDiagramData(T extendable) {
         super(extendable);

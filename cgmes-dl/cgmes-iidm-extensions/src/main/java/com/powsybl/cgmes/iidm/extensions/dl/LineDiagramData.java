@@ -24,7 +24,7 @@ public class LineDiagramData<T extends Identifiable<T>> extends AbstractExtensio
 
     static final String NAME = "line-diagram-data";
 
-    Map<String, List<DiagramPoint>> diagramsDetails = new HashMap<>();
+    private Map<String, List<DiagramPoint>> diagramsDetails = new HashMap<>();
 
     private LineDiagramData(T line) {
         super(line);

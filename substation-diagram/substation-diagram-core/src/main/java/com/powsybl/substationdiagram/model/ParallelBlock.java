@@ -19,26 +19,11 @@ import java.util.List;
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class ParallelBlock extends AbstractBlock {
-
-    private final List<Block> subBlocks = new ArrayList<>();
+public class ParallelBlock extends AbstractComposedBlock {
 
     public ParallelBlock(List<Block> subBlocks, Cell cell, boolean allowMerge) {
-        this(subBlocks, allowMerge);
-        if (cell != null) {
-            setCell(cell);
-        }
-    }
-
-    public ParallelBlock(List<Block> subBlocks) {
-        this(subBlocks, true);
-    }
-
-    public ParallelBlock(List<Block> subBlocks, boolean allowMerge) {
-        super(Type.PARALLEL);
-        if (subBlocks.isEmpty()) {
-            throw new IllegalArgumentException("Empty block list");
-        }
+        super(Type.PARALLEL, subBlocks, cell);
+        this.subBlocks = new ArrayList<>();
         subBlocks.forEach(child -> {
             if (child.getType() == Type.PARALLEL && allowMerge) {
                 this.subBlocks.addAll(((ParallelBlock) child).getSubBlocks());
@@ -60,54 +45,13 @@ public class ParallelBlock extends AbstractBlock {
         setCardinalityEnd(this.subBlocks.size());
     }
 
-    @Override
-    public Graph getGraph() {
-        return subBlocks.get(0).getGraph();
-    }
-
-    public List<Block> getSubBlocks() {
-        return subBlocks;
-    }
-
-    @Override
-    public boolean isEmbedingNodeType(Node.NodeType type) {
-        return subBlocks.stream().anyMatch(b -> b.isEmbedingNodeType(type));
-    }
-
-    @Override
-    public int getOrder() {
-        return getStartingNode().getType() == Node.NodeType.FEEDER ?
-                ((FeederNode) getStartingNode()).getOrder() : 0;
-    }
-
-    @Override
-    public Node getStartingNode() {
-        return this.subBlocks.get(0).getStartingNode();
-    }
-
-    @Override
-    public Node getEndingNode() {
-        return this.subBlocks.get(0).getEndingNode();
-    }
-
-    @Override
-    public void reverseBlock() {
-        subBlocks.forEach(Block::reverseBlock);
-    }
-
-    @Override
-    public void setOrientation(Orientation orientation) {
-        super.setOrientation(orientation);
-        for (Block sub : subBlocks) {
-            sub.setOrientation(orientation);
-        }
+    public ParallelBlock(List<Block> subBlocks) {
+        this(subBlocks, null, true);
     }
 
     @Override
     public void calculateDimensionAndInternPos() {
-        for (Block subBlock : subBlocks) {
-            subBlock.calculateDimensionAndInternPos();
-        }
+        subBlocks.forEach(Block::calculateDimensionAndInternPos);
         if (getPosition().getOrientation() == Orientation.VERTICAL) {
             getPosition().setVSpan(subBlocks.stream().mapToInt(b -> b.getPosition().getVSpan()).max().orElse(0));
             if (isEmbedingNodeType(Node.NodeType.BUS)) {
@@ -163,6 +107,7 @@ public class ParallelBlock extends AbstractBlock {
             x0 = getCoord().getX() - getCoord().getXSpan() / 2;
             xPxStep = getCoord().getXSpan() / getPosition().getHSpan();
         } else {
+            // Bus Side ParallelBlock for stacked cell
             x0 = getCoord().getX();
             xPxStep = 0;
         }

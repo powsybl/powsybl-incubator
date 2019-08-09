@@ -7,27 +7,17 @@
 package com.powsybl.substationdiagram.model;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.google.common.collect.ImmutableList;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class SerialBlock extends AbstractBlock {
-
-    private Block lowerBlock;
-
-    private Block upperBlock;
-
-    private List<Block> subBlocks;
-
-    private boolean isH2V = false;
+public class SerialBlock extends AbstractComposedBlock {
 
     /**
      * Constructor
@@ -35,123 +25,96 @@ public class SerialBlock extends AbstractBlock {
      * Lower - embedding BusNode if only one of both layout.block embed a BusNode
      * Upper - (as a consequence) can embed a BusNode only if Lower as one
      *
-     * @param block1     one layout.block to chain
-     * @param block2     the other layout.block to chain
-     * @param commonNode the node that is common to block1 and block2
      */
 
+    public SerialBlock(List<Block> blocks, Cell cell) {
+        super(Type.SERIAL, blocks, cell);
+        this.subBlocks = subBlocks;
+
+        for (int i = 0; i < subBlocks.size() - 1; i++) {
+            consistentChaining(subBlocks.get(i), subBlocks.get(i + 1));
+        }
+
+        if (getLowerBlock().isEmbedingNodeType(Node.NodeType.FEEDER)
+                || getUpperBlock().isEmbedingNodeType(Node.NodeType.BUS)) {
+            reverseBlock();
+        }
+
+        for (int i = 0; i < subBlocks.size(); i++) {
+            subBlocks.get(i).getPosition().setHV(0, i);
+        }
+
+        setCardinalityStart(getLowerBlock().getCardinality(getStartingNode()));
+        setCardinalityEnd(getUpperBlock().getCardinality(getEndingNode()));
+    }
+
     public SerialBlock(Block block1,
                        Block block2,
-                       Node commonNode,
                        Cell cell) {
-        this(block1, block2, commonNode);
-        if (cell != null) {
-            setCell(cell);
-        }
+        this(Arrays.asList(block1, block2), cell);
     }
 
     public SerialBlock(Block block1,
-                       Block block2,
-                       Node commonNode) {
-        super(Type.SERIAL);
-        Objects.requireNonNull(block1);
-        Objects.requireNonNull(block2);
-        Objects.requireNonNull(commonNode);
+                       Block block2) {
+        this(Arrays.asList(block1, block2), null);
+    }
 
-        if (block1.isEmbedingNodeType(Node.NodeType.BUS) || block2.isEmbedingNodeType(Node.NodeType.FEEDER)) {
-            upperBlock = block2;
-            lowerBlock = block1;
-        } else {
-            upperBlock = block1;
-            lowerBlock = block2;
+    private void consistentChaining(Block block1, Block block2) {
+        if (block1.getEndingNode() == block2.getStartingNode()) {
+            return;
         }
-
-        upperBlock.getPosition().setHV(0, 1);
-        lowerBlock.getPosition().setHV(0, 0);
-
-        subBlocks = ImmutableList.of(lowerBlock, upperBlock);
-
-        for (Block child : subBlocks) {
-            child.setParentBlock(this);
+        if (block1.getEndingNode() == block2.getEndingNode()) {
+            block2.reverseBlock();
+            return;
         }
-
-        setCardinalityStart(lowerBlock.getCardinalityInverse(commonNode));
-
-        setCardinalityEnd(upperBlock.getCardinalityInverse(commonNode));
-        upperBlock.defineExtremity(commonNode, Extremity.START);
-        lowerBlock.defineExtremity(commonNode, Extremity.END);
-    }
-
-    @Override
-    public Graph getGraph() {
-        return lowerBlock.getGraph();
-    }
-
-    @Override
-    public boolean isEmbedingNodeType(Node.NodeType type) {
-        return lowerBlock.isEmbedingNodeType(type) || upperBlock.isEmbedingNodeType(type);
-    }
-
-    @Override
-    public int getOrder() {
-        return upperBlock.getOrder();
+        if (block1.getStartingNode() == block2.getEndingNode()) {
+            block1.reverseBlock();
+            block2.reverseBlock();
+            return;
+        }
+        if (block1.getStartingNode() == block2.getStartingNode()) {
+            block1.reverseBlock();
+        }
     }
 
     public Block getUpperBlock() {
-        return upperBlock;
+        return subBlocks.get(subBlocks.size() - 1);
     }
 
     public Block getLowerBlock() {
-        return lowerBlock;
+        return subBlocks.get(0);
     }
 
-    @Override
-    public void reverseBlock() {
-        Block temp = lowerBlock;
-        lowerBlock = upperBlock;
-        upperBlock = temp;
-        lowerBlock.reverseBlock();
-        upperBlock.reverseBlock();
-    }
-
-    @Override
-    public Node getStartingNode() {
-        return lowerBlock.getStartingNode();
-    }
-
-    @Override
-    public Node getEndingNode() {
-        return upperBlock.getEndingNode();
-    }
-
-    @Override
-    public void setOrientation(Orientation orientation) {
-        super.setOrientation(orientation);
-        for (Block sub : subBlocks) {
-            sub.setOrientation(orientation);
-        }
+    private boolean isH2V(int i) {
+        return subBlocks.get(i - 1).getPosition().getOrientation() == Orientation.VERTICAL
+                && subBlocks.get(i).getPosition().getOrientation() == Orientation.HORIZONTAL;
     }
 
     @Override
     public void calculateDimensionAndInternPos() {
-        lowerBlock.calculateDimensionAndInternPos();
-        upperBlock.calculateDimensionAndInternPos();
-        Position lPosition = lowerBlock.getPosition();
-        Position uPosition = upperBlock.getPosition();
+        subBlocks.forEach(Block::calculateDimensionAndInternPos);
 
         if (getPosition().getOrientation() == Orientation.VERTICAL) {
-            getPosition().setHSpan(Math.max(uPosition.getHSpan(), lPosition.getHSpan()));
-            getPosition().setVSpan(lPosition.getVSpan() + uPosition.getVSpan());
-            lPosition.setHV(0, 0);
-            uPosition.setHV(0, lPosition.getVSpan());
+            getPosition().setHSpan(subBlocks.stream().mapToInt(block -> block.getPosition().getHSpan()).max().orElse(0));
+            getPosition().setVSpan(subBlocks.stream().mapToInt(block -> block.getPosition().getVSpan()).sum());
+
+            int cumulVSpan = 0;
+            for (Block subBlock : subBlocks) {
+                Position pos = subBlock.getPosition();
+                pos.setHV(0, cumulVSpan);
+                cumulVSpan += pos.getVSpan();
+            }
         } else {
-            isH2V = lPosition.getOrientation() == Orientation.VERTICAL
-                    && uPosition.getOrientation() == Orientation.HORIZONTAL;
-            int h2vShift = isH2V ? 1 : 0;
-            getPosition().setHSpan(uPosition.getHSpan() + lPosition.getHSpan() - h2vShift);
-            getPosition().setVSpan(Math.max(uPosition.getVSpan(), lPosition.getVSpan()));
-            lPosition.setHV(0, 0);
-            uPosition.setHV(lPosition.getHSpan() - h2vShift, 0);
+            getPosition().setVSpan(subBlocks.stream().mapToInt(block -> block.getPosition().getVSpan()).max().orElse(0));
+            getLowerBlock().getPosition().setHV(0, 0);
+
+            int cumulHSpan = getLowerBlock().getPosition().getHSpan();
+            for (int i = 1; i < subBlocks.size(); i++) {
+                cumulHSpan -= isH2V(i) ? 1 : 0;
+                subBlocks.get(i).getPosition().setHV(cumulHSpan, 0);
+                cumulHSpan += subBlocks.get(i).getPosition().getHSpan();
+            }
+            getPosition().setHSpan(cumulHSpan);
         }
     }
 
@@ -179,11 +142,15 @@ public class SerialBlock extends AbstractBlock {
     public void coordHorizontalCase(LayoutParameters layoutParam) {
         double x0 = getCoord().getX() - getCoord().getXSpan() / 2;
         double xPxStep = getCoord().getXSpan() / getPosition().getHSpan();
-        double xTranslateInternalNonFlatCell = isH2V ? layoutParam.getCellWidth() / 2 : 0;
+        double xTranslateInternalNonFlatCell = 0;
 
-        for (Block sub : subBlocks) {
+        for (int i = 0; i < subBlocks.size(); i++) {
+            Block sub = subBlocks.get(i);
+            if (i != 0) {
+                xTranslateInternalNonFlatCell = isH2V(i) ? layoutParam.getCellWidth() / 2 : 0;
+            }
             sub.setX(x0 + (sub.getPosition().getH() + (double) sub.getPosition().getHSpan() / 2) * xPxStep
-                    + ((sub == upperBlock) ? xTranslateInternalNonFlatCell : 0));
+                    + xTranslateInternalNonFlatCell);
             sub.setXSpan(sub.getPosition().getHSpan() * xPxStep);
             sub.setY(getCoord().getY());
             sub.setYSpan(getCoord().getYSpan());

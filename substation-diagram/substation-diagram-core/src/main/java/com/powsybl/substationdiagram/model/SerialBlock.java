@@ -24,12 +24,12 @@ public class SerialBlock extends AbstractComposedBlock {
      * A layout.block chain is oriented in order to have.
      * Lower - embedding BusNode if only one of both layout.block embed a BusNode
      * Upper - (as a consequence) can embed a BusNode only if Lower as one
-     *
      */
 
     public SerialBlock(List<Block> blocks, Cell cell) {
-        super(Type.SERIAL, blocks, cell);
-        this.subBlocks = subBlocks;
+        super(Type.SERIAL, blocks);
+        subBlocks = blocks;
+        setCell(cell);
 
         for (int i = 0; i < subBlocks.size() - 1; i++) {
             consistentChaining(subBlocks.get(i), subBlocks.get(i + 1));

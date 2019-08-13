@@ -135,15 +135,15 @@ public class InternCell extends BusCell {
     }
 
     private int getOneNodeBusHPod(Block b) {
-        Position structuralPos = ((BusNode) b.getStartingNode()).getStructuralPosition();
+        Position structuralPos = ((BusNode) b.getExtremity(Block.Extremity.START)).getStructuralPosition();
         return structuralPos == null ? -1 : structuralPos.getH();
     }
 
     private void identifyConnectedBlocks() {
         getPrimaryBlocksConnectedToBus().forEach(block -> {
-            if (block.getNodes().contains(centralBlock.getStartingNode())) {
+            if (block.getNodes().contains(centralBlock.getExtremity(Block.Extremity.START))) {
                 sideToConnectedBlocks.get(Side.LEFT).add(block);
-            } else if (block.getNodes().contains(centralBlock.getEndingNode())) {
+            } else if (block.getNodes().contains(centralBlock.getExtremity(Block.Extremity.END))) {
                 sideToConnectedBlocks.get(Side.RIGHT).add(block);
             }
         });

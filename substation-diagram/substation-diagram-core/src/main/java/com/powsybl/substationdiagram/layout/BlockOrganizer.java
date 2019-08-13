@@ -93,8 +93,8 @@ public class BlockOrganizer {
                     for (int j = i + 1; j < blocks.size(); j++) {
                         PrimaryBlock block2 = blocks.get(j);
                         if (block2.getNodes().size() == 3
-                                && block1.getEndingNode().equals(block2.getEndingNode())
-                                && !block1.getStartingNode().equals(block2.getStartingNode())) {
+                                && block1.getExtremity(Block.Extremity.END).equals(block2.getExtremity(Block.Extremity.END))
+                                && !block1.getExtremity(Block.Extremity.START).equals(block2.getExtremity(Block.Extremity.START))) {
                             block1.addStackableBlock(block2);
                             block2.addStackableBlock(block1);
                         }

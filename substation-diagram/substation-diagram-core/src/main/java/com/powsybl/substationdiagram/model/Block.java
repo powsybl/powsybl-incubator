@@ -22,15 +22,22 @@ public interface Block {
     }
 
     enum Extremity {
-        START,
-        END
+        START, END, NONE;
+
+        public Extremity flip() {
+            if (this.equals(START)) {
+                return END;
+            }
+            if (this.equals(END)) {
+                return START;
+            }
+            return NONE;
+        }
     }
 
     Graph getGraph();
 
-    Node getStartingNode();
-
-    Node getEndingNode();
+    Node getExtremity(Block.Extremity extremity);
 
     void reverseBlock();
 
@@ -70,10 +77,6 @@ public interface Block {
     void coordHorizontalCase(LayoutParameters layoutParam);
 
     int getCardinality(Node commonNode);
-
-    int getCardinalityInverse(Node commonNode);
-
-    void defineExtremity(Node node, AbstractBlock.Extremity ext);
 
     void setCell(Cell cell);
 

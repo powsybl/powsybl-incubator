@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -35,6 +36,8 @@ public abstract class AbstractBlock implements Block {
 
     private Coord coord;
 
+    private Map<Extremity, Node> extremNodes;
+
     /**
      * Constructor for primary layout.block with the list of nodes corresponding to the
      * layout.block
@@ -46,22 +49,11 @@ public abstract class AbstractBlock implements Block {
     }
 
     @Override
-    public int getCardinalityInverse(Node commonNode) {
-        if (commonNode.equals(getStartingNode())) {
-            return cardinalityEnd;
-        }
-        if (commonNode.equals(getEndingNode())) {
-            return cardinalityStart;
-        }
-        return 0;
-    }
-
-    @Override
     public int getCardinality(Node commonNode) {
-        if (commonNode.equals(getStartingNode())) {
+        if (commonNode.equals(getExtremity(Block.Extremity.START))) {
             return cardinalityStart;
         }
-        if (commonNode.equals(getEndingNode())) {
+        if (commonNode.equals(getExtremity(Block.Extremity.END))) {
             return cardinalityEnd;
         }
         return 0;
@@ -92,21 +84,6 @@ public abstract class AbstractBlock implements Block {
     @Override
     public void setBusNode(BusNode busNode) {
         this.busNode = busNode;
-    }
-
-    @Override
-    public void defineExtremity(Node node, Extremity ext) {
-        if (!node.equals(getExtremityNode(ext))) {
-            reverseBlock();
-        }
-    }
-
-    private Node getExtremityNode(Extremity ext) {
-        if (ext == Extremity.START) {
-            return getStartingNode();
-        } else {
-            return getEndingNode();
-        }
     }
 
     public Cell getCell() {

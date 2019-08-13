@@ -110,8 +110,8 @@ public class TestCase3Coupling extends AbstractTestCase {
         assertTrue(cell.getRootBlock() instanceof ParallelBlock);
         ParallelBlock bp = (ParallelBlock) cell.getRootBlock();
         assertEquals(new Position(0, 1, 2, 1, false, Orientation.VERTICAL), bp.getPosition());
-        assertEquals("bbs2", bp.getStartingNode().getId());
-        assertEquals("FICT_vl_d1Fictif", bp.getEndingNode().getId());
+        assertEquals("bbs2", bp.getExtremity(Block.Extremity.START).getId());
+        assertEquals("FICT_vl_d1Fictif", bp.getExtremity(Block.Extremity.END).getId());
         assertEquals(2, bp.getSubBlocks().size());
 
         assertTrue(bp.getSubBlocks().get(0) instanceof SerialBlock);
@@ -121,7 +121,7 @@ public class TestCase3Coupling extends AbstractTestCase {
 
         assertTrue(bc.getLowerBlock() instanceof PrimaryBlock);
         PrimaryBlock bpyl = (PrimaryBlock) bc.getLowerBlock();
-        assertEquals(Node.NodeType.BUS, bpyl.getStartingNode().getType());
+        assertEquals(Node.NodeType.BUS, bpyl.getExtremity(Block.Extremity.START).getType());
         assertEquals(new Position(0, 0, 1, 0, false, Orientation.VERTICAL), bpyl.getPosition());
 
         assertTrue(bc.getUpperBlock() instanceof PrimaryBlock);

@@ -45,12 +45,12 @@ public class PrimaryBlock extends AbstractBlock {
         this.stackableBlocks = new ArrayList<>();
         this.nodes.addAll(nodes);
         //convention of orientation, to be respected
-        if (getStartingNode().getType() == Node.NodeType.FEEDER
-                || getEndingNode().getType() == Node.NodeType.BUS) {
+        if (getExtremity(Block.Extremity.START).getType() == Node.NodeType.FEEDER
+                || getExtremity(Block.Extremity.END).getType() == Node.NodeType.BUS) {
             reverseBlock();
         }
-        if (getStartingNode().getType() == Node.NodeType.BUS) {
-            setBusNode((BusNode) getStartingNode());
+        if (getExtremity(Block.Extremity.START).getType() == Node.NodeType.BUS) {
+            setBusNode((BusNode) getExtremity(Block.Extremity.START));
         }
         setCardinalityStart(1);
         setCardinalityEnd(1);
@@ -81,19 +81,20 @@ public class PrimaryBlock extends AbstractBlock {
     }
 
     @Override
-    public Node getStartingNode() {
-        return nodes.get(0);
+    public Node getExtremity(Block.Extremity extremity) {
+        if (extremity == Extremity.START) {
+            return nodes.get(0);
+        }
+        if (extremity == Extremity.END) {
+            return nodes.get(nodes.size() - 1);
+        }
+        return null;
     }
 
     @Override
     public int getOrder() {
-        return getStartingNode().getType() == Node.NodeType.FEEDER ?
-                ((FeederNode) getStartingNode()).getOrder() : 0;
-    }
-
-    @Override
-    public Node getEndingNode() {
-        return nodes.get(nodes.size() - 1);
+        return getExtremity(Block.Extremity.START).getType() == Node.NodeType.FEEDER ?
+                ((FeederNode) getExtremity(Block.Extremity.START)).getOrder() : 0;
     }
 
     public void addStackableBlock(PrimaryBlock block) {
@@ -183,10 +184,10 @@ public class PrimaryBlock extends AbstractBlock {
     }
 
     void coordShuntCase() {
-        double x0 = getStartingNode().getX();
-        double x1 = getEndingNode().getX();
-        double y0 = getStartingNode().getY();
-        double y1 = getEndingNode().getY();
+        double x0 = getExtremity(Block.Extremity.START).getX();
+        double x1 = getExtremity(Block.Extremity.END).getX();
+        double y0 = getExtremity(Block.Extremity.START).getY();
+        double y1 = getExtremity(Block.Extremity.END).getY();
         double dx = (x1 - x0) / (nodes.size() - 1);
         double dy = (y1 - y0) / (nodes.size() - 1);
         for (int i = 1; i < nodes.size() - 1; i++) {

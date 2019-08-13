@@ -28,24 +28,13 @@ public class SerialBlock extends AbstractComposedBlock {
 
     public SerialBlock(List<Block> blocks, Cell cell) {
         super(Type.SERIAL, blocks);
-        subBlocks = blocks;
+        subBlocks = new ArrayList<>(blocks);
         setCell(cell);
+        postConstruct();
+    }
 
-        for (int i = 0; i < subBlocks.size() - 1; i++) {
-            consistentChaining(subBlocks.get(i), subBlocks.get(i + 1));
-        }
-
-        if (getLowerBlock().isEmbedingNodeType(Node.NodeType.FEEDER)
-                || getUpperBlock().isEmbedingNodeType(Node.NodeType.BUS)) {
-            reverseBlock();
-        }
-
-        for (int i = 0; i < subBlocks.size(); i++) {
-            subBlocks.get(i).getPosition().setHV(0, i);
-        }
-
-        setCardinalityStart(getLowerBlock().getCardinality(getStartingNode()));
-        setCardinalityEnd(getUpperBlock().getCardinality(getEndingNode()));
+    public SerialBlock(Block block, Cell cell) {
+        this(Collections.singletonList(block), cell);
     }
 
     public SerialBlock(Block block1,
@@ -59,22 +48,67 @@ public class SerialBlock extends AbstractComposedBlock {
         this(Arrays.asList(block1, block2), null);
     }
 
+    private void postConstruct() {
+        for (int i = 0; i < subBlocks.size() - 1; i++) {
+            consistentChaining(subBlocks.get(i), subBlocks.get(i + 1));
+        }
+
+        if (getLowerBlock().isEmbedingNodeType(Node.NodeType.FEEDER)
+                || getUpperBlock().isEmbedingNodeType(Node.NodeType.BUS)) {
+            reverseBlock();
+        }
+
+        for (int i = 0; i < subBlocks.size(); i++) {
+            subBlocks.get(i).getPosition().setHV(0, i);
+        }
+
+        setCardinalityStart(getLowerBlock().getCardinality(getExtremity(Block.Extremity.START)));
+        setCardinalityEnd(getUpperBlock().getCardinality(getExtremity(Block.Extremity.END)));
+    }
+
     private void consistentChaining(Block block1, Block block2) {
-        if (block1.getEndingNode() == block2.getStartingNode()) {
+        if (block1.getExtremity(Block.Extremity.END) == block2.getExtremity(Block.Extremity.START)) {
             return;
         }
-        if (block1.getEndingNode() == block2.getEndingNode()) {
+        if (block1.getExtremity(Block.Extremity.END) == block2.getExtremity(Block.Extremity.END)) {
             block2.reverseBlock();
             return;
         }
-        if (block1.getStartingNode() == block2.getEndingNode()) {
+        if (block1.getExtremity(Block.Extremity.START) == block2.getExtremity(Block.Extremity.END)) {
             block1.reverseBlock();
             block2.reverseBlock();
             return;
         }
-        if (block1.getStartingNode() == block2.getStartingNode()) {
+        if (block1.getExtremity(Block.Extremity.START) == block2.getExtremity(Block.Extremity.START)) {
             block1.reverseBlock();
         }
+    }
+
+    public boolean addSubBlock(Block block) {
+        for (Extremity myExtremity : Extremity.values()) {
+            if (getExtremity(myExtremity) instanceof FictitiousNode) {
+                FictitiousNode commonNode = (FictitiousNode) getExtremity(myExtremity);
+                for (Extremity itsExtremity : Extremity.values()) {
+                    if (commonNode == block.getExtremity(itsExtremity)
+                            && commonNode.getCardinality() == getCardinality(commonNode) + block.getCardinality(commonNode)
+                    ) {
+                        insertBlock(block, myExtremity);
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private void insertBlock(Block block, Extremity myExtremity) {
+        block.setParentBlock(this);
+        if (myExtremity == Extremity.START) {
+            subBlocks.add(0, block);
+        } else {
+            subBlocks.add(block);
+        }
+        postConstruct();
     }
 
     public Block getUpperBlock() {

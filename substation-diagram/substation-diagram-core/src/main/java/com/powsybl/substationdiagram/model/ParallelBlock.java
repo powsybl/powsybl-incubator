@@ -33,11 +33,11 @@ public class ParallelBlock extends AbstractComposedBlock {
         });
         setCell(cell);
 
-        Node node0s = subBlocks.get(0).getStartingNode();
-        Node node0e = subBlocks.get(0).getEndingNode();
+        Node node0s = subBlocks.get(0).getExtremity(Block.Extremity.START);
+        Node node0e = subBlocks.get(0).getExtremity(Block.Extremity.END);
         subBlocks.forEach(b -> {
             b.setParentBlock(this);
-            if (b.getStartingNode() != node0s && b.getEndingNode() != node0e) {
+            if (b.getExtremity(Block.Extremity.START) != node0s && b.getExtremity(Block.Extremity.END) != node0e) {
                 b.reverseBlock();
             }
         });

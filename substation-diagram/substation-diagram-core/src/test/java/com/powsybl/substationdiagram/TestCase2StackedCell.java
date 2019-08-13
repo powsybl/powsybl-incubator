@@ -128,16 +128,16 @@ public class TestCase2StackedCell extends AbstractTestCase {
         SerialBlock bc = (SerialBlock) cell.getRootBlock();
         assertEquals(new Coord(-1, -1), bc.getCoord());
         assertEquals(new Position(0, 0, 1, 2, false, Orientation.VERTICAL), bc.getPosition());
-        assertEquals("bbs1", bc.getStartingNode().getId());
-        assertEquals("l", bc.getEndingNode().getId());
+        assertEquals("bbs1", bc.getExtremity(Block.Extremity.START).getId());
+        assertEquals("l", bc.getExtremity(Block.Extremity.END).getId());
 
         assertTrue(bc.getUpperBlock() instanceof PrimaryBlock);
         PrimaryBlock bpy = (PrimaryBlock) bc.getUpperBlock();
         assertEquals(bc, bpy.getParentBlock());
         assertEquals(new Coord(-1, -1), bpy.getCoord());
         assertEquals(new Position(0, 0, 1, 2, false, Orientation.VERTICAL), bpy.getPosition());
-        assertEquals("FICT_vl_2", bpy.getStartingNode().getId());
-        assertEquals("l", bpy.getEndingNode().getId());
+        assertEquals("FICT_vl_2", bpy.getExtremity(Block.Extremity.START).getId());
+        assertEquals("l", bpy.getExtremity(Block.Extremity.END).getId());
         assertTrue(bpy.getStackableBlocks().isEmpty());
 
         assertTrue(bc.getLowerBlock() instanceof ParallelBlock);
@@ -145,24 +145,24 @@ public class TestCase2StackedCell extends AbstractTestCase {
         assertEquals(bc, bpl.getParentBlock());
         assertEquals(new Position(0, 0, 1, 0, false, Orientation.VERTICAL), bpl.getPosition());
         assertEquals(new Coord(-1, -1), bpl.getCoord());
-        assertEquals("bbs1", bpl.getStartingNode().getId());
-        assertEquals("FICT_vl_2", bpl.getEndingNode().getId());
+        assertEquals("bbs1", bpl.getExtremity(Block.Extremity.START).getId());
+        assertEquals("FICT_vl_2", bpl.getExtremity(Block.Extremity.END).getId());
         assertEquals(2, bpl.getSubBlocks().size());
 
         assertTrue(bpl.getSubBlocks().get(0) instanceof PrimaryBlock);
         PrimaryBlock bpy1 = (PrimaryBlock) bpl.getSubBlocks().get(0);
         assertEquals(new Position(0, 0, 0, 0, false, Orientation.VERTICAL), bpy1.getPosition());
         assertEquals(new Coord(-1, -1), bpy1.getCoord());
-        assertEquals("FICT_vl_2", bpy1.getEndingNode().getId());
-        assertEquals("bbs1", bpy1.getStartingNode().getId());
+        assertEquals("FICT_vl_2", bpy1.getExtremity(Block.Extremity.END).getId());
+        assertEquals("bbs1", bpy1.getExtremity(Block.Extremity.START).getId());
         assertEquals(1, bpy1.getStackableBlocks().size());
 
         assertTrue(bpl.getSubBlocks().get(1) instanceof PrimaryBlock);
         PrimaryBlock bpy2 = (PrimaryBlock) bpl.getSubBlocks().get(1);
         assertEquals(new Position(0, 0, 0, 0, false, Orientation.VERTICAL), bpy2.getPosition());
         assertEquals(new Coord(-1, -1), bpy2.getCoord());
-        assertEquals("FICT_vl_2", bpy2.getEndingNode().getId());
-        assertEquals("bbs2", bpy2.getStartingNode().getId());
+        assertEquals("FICT_vl_2", bpy2.getExtremity(Block.Extremity.END).getId());
+        assertEquals("bbs2", bpy2.getExtremity(Block.Extremity.START).getId());
         assertEquals(1, bpy2.getStackableBlocks().size());
 
         // calculate coordinates

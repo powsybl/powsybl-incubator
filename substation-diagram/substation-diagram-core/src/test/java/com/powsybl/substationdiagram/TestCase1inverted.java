@@ -112,22 +112,22 @@ public class TestCase1inverted extends AbstractTestCase {
         assertTrue(cell.getRootBlock() instanceof SerialBlock);
         SerialBlock bc = (SerialBlock) cell.getRootBlock();
         assertEquals(new Position(0, 0, 1, 2, false, Orientation.VERTICAL), bc.getPosition());
-        assertEquals("bbs", bc.getStartingNode().getId());
-        assertEquals("l", bc.getEndingNode().getId());
+        assertEquals("bbs", bc.getExtremity(Block.Extremity.START).getId());
+        assertEquals("l", bc.getExtremity(Block.Extremity.END).getId());
         assertEquals(1, ((BusCell) cell).getPrimaryBlocksConnectedToBus().size());
 
         assertTrue(bc.getUpperBlock() instanceof PrimaryBlock);
         PrimaryBlock ub = (PrimaryBlock) bc.getUpperBlock();
         assertEquals(new Position(0, 0, 1, 2, false, Orientation.VERTICAL), ub.getPosition());
-        assertEquals("FICT_vl_dFictif", ub.getStartingNode().getId());
-        assertEquals("l", ub.getEndingNode().getId());
+        assertEquals("FICT_vl_dFictif", ub.getExtremity(Block.Extremity.START).getId());
+        assertEquals("l", ub.getExtremity(Block.Extremity.END).getId());
         assertTrue(ub.getStackableBlocks().isEmpty());
 
         assertTrue(bc.getLowerBlock() instanceof PrimaryBlock);
         PrimaryBlock lb = (PrimaryBlock) bc.getLowerBlock();
         assertEquals(new Position(0, 0, 1, 0, false, Orientation.VERTICAL), lb.getPosition());
-        assertEquals("bbs", lb.getStartingNode().getId());
-        assertEquals("FICT_vl_dFictif", lb.getEndingNode().getId());
+        assertEquals("bbs", lb.getExtremity(Block.Extremity.START).getId());
+        assertEquals("FICT_vl_dFictif", lb.getExtremity(Block.Extremity.END).getId());
         assertTrue(lb.getStackableBlocks().isEmpty());
 
         // calculate coordinates

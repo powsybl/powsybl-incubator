@@ -47,18 +47,19 @@ public abstract class AbstractComposedBlock extends AbstractBlock {
 
     @Override
     public int getOrder() {
-        return getEndingNode().getType() == Node.NodeType.FEEDER ?
-                ((FeederNode) getEndingNode()).getOrder() : 0;
+        return getExtremity(Block.Extremity.END).getType() == Node.NodeType.FEEDER ?
+                ((FeederNode) getExtremity(Block.Extremity.END)).getOrder() : 0;
     }
 
     @Override
-    public Node getStartingNode() {
-        return subBlocks.get(0).getStartingNode();
-    }
-
-    @Override
-    public Node getEndingNode() {
-        return subBlocks.get(subBlocks.size() - 1).getEndingNode();
+    public Node getExtremity(Block.Extremity extremity) {
+        if (extremity == Extremity.START) {
+            return subBlocks.get(0).getExtremity(Block.Extremity.START);
+        }
+        if (extremity == Extremity.END) {
+            return subBlocks.get(subBlocks.size() - 1).getExtremity(Block.Extremity.END);
+        }
+        return null;
     }
 
     @Override

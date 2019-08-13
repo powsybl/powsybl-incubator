@@ -82,7 +82,7 @@ public class CellBlockDecomposer {
     private void mergeBlocks(BusCell busCell, List<Block> blocks) {
         // Search all blocks connected to a busbar inside the primary blocks list
         List<PrimaryBlock> blocksConnectedToBusbar = blocks.stream()
-                .filter(b -> b.getStartingNode().getType() == Node.NodeType.BUS)
+                .filter(b -> b.getExtremity(Block.Extremity.START).getType() == Node.NodeType.BUS)
                 .map(PrimaryBlock.class::cast)
                 .collect(Collectors.toList());
 
@@ -120,30 +120,32 @@ public class CellBlockDecomposer {
      * @param cell   current cell
      */
     private boolean searchSerialMerge(List<Block> blocks, Cell cell) {
-        boolean chainEnded = false;
         int i = 0;
-        while (i < blocks.size() && !chainEnded) {
+        boolean identifiedMerge = false;
+
+        while (i < blocks.size()) {
+            List<Block> blockToRemove = new ArrayList<>();
+            boolean chainIdentified = false;
+            Block b1 = blocks.get(i);
+            SerialBlock serialBlock = new SerialBlock(b1, cell);
             for (int j = i + 1; j < blocks.size(); j++) {
-                Block b1 = blocks.get(i);
                 Block b2 = blocks.get(j);
-                LOGGER.trace(" Blocks compared : {} & {}", b1, b2);
-                Node commonNode = identifyCommonNode(b1, b2);
-                LOGGER.trace(" Common node : {}", commonNode);
-                if (commonNode != null
-                        && ((FictitiousNode) commonNode).getCardinality()
-                        == (b1.getCardinality(commonNode) + b2.getCardinality(commonNode))) {
-                    SerialBlock b = new SerialBlock(b1, b2, cell);
-                    blocks.remove(b1);
-                    blocks.remove(b2);
-                    blocks.add(b);
-                    chainEnded = true;
-                    break;
+                if (serialBlock.addSubBlock(b2)) {
+                    chainIdentified = true;
+                    blockToRemove.add(b2);
                 }
+            }
+            if (chainIdentified) {
+                blockToRemove.add(b1);
+                identifiedMerge = true;
+                blocks.removeAll(blockToRemove);
+                blocks.add(i, serialBlock);
             }
             i++;
         }
-        return chainEnded;
+        return identifiedMerge;
     }
+
 
     /**
      * Search possibility to merge some blocks into a parallel layout.block and do the merging
@@ -179,30 +181,6 @@ public class CellBlockDecomposer {
     }
 
     /**
-     * Compare two blocks to see if they can be consecutive
-     *
-     * @param block1 layout.block
-     * @param block2 layout.block
-     * @return the common node between the 2 blocks, null otherwise
-     */
-    private Node identifyCommonNode(Block block1, Block block2) {
-        Node s1 = block1.getStartingNode();
-        Node e1 = block1.getEndingNode();
-        Node s2 = block2.getStartingNode();
-        Node e2 = block2.getEndingNode();
-
-        if ((s1.getType() == Node.NodeType.FICTITIOUS || s1.getType() == Node.NodeType.SHUNT)
-                && (s1.equals(s2) || s1.equals(e2))) {
-            return s1;
-        }
-        if ((e1.getType() == Node.NodeType.FICTITIOUS || e1.getType() == Node.NodeType.SHUNT)
-                && (e1.equals(s2) || e1.equals(e2))) {
-            return e1;
-        }
-        return null;
-    }
-
-    /**
      * Compare two blocks to see if they are parallel
      *
      * @param block1 layout.block
@@ -210,10 +188,10 @@ public class CellBlockDecomposer {
      * @return true if the two blocks are similar : same start and end
      */
     private Node compareBlockParallel(Block block1, Block block2) {
-        Node s1 = block1.getStartingNode();
-        Node e1 = block1.getEndingNode();
-        Node s2 = block2.getStartingNode();
-        Node e2 = block2.getEndingNode();
+        Node s1 = block1.getExtremity(Block.Extremity.START);
+        Node e1 = block1.getExtremity(Block.Extremity.END);
+        Node s2 = block2.getExtremity(Block.Extremity.START);
+        Node e2 = block2.getExtremity(Block.Extremity.END);
 
         if ((s1.checkNodeSimilarity(s2) && e1.checkNodeSimilarity(e2))
                 || (s1.checkNodeSimilarity(e2) && e1.checkNodeSimilarity(s2))) {

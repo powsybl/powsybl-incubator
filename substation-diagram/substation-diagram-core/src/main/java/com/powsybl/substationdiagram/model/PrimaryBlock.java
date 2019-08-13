@@ -49,6 +49,9 @@ public class PrimaryBlock extends AbstractBlock {
                 || getEndingNode().getType() == Node.NodeType.BUS) {
             reverseBlock();
         }
+        if (getStartingNode().getType() == Node.NodeType.BUS) {
+            setBusNode((BusNode) getStartingNode());
+        }
         setCardinalityStart(1);
         setCardinalityEnd(1);
     }

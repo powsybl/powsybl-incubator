@@ -31,6 +31,11 @@ public class UndefinedBlock extends AbstractComposedBlock {
         }
     }
 
+    public UndefinedBlock(List<Block> subBlocks, Cell cell) {
+        this(subBlocks);
+        setCell(cell);
+    }
+
     @Override
     public void calculateDimensionAndInternPos() {
         for (Block block : subBlocks) {

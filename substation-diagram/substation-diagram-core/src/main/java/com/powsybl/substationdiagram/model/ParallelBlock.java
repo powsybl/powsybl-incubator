@@ -22,7 +22,7 @@ import java.util.List;
 public class ParallelBlock extends AbstractComposedBlock {
 
     public ParallelBlock(List<Block> subBlocks, Cell cell, boolean allowMerge) {
-        super(Type.PARALLEL, subBlocks, cell);
+        super(Type.PARALLEL, subBlocks);
         this.subBlocks = new ArrayList<>();
         subBlocks.forEach(child -> {
             if (child.getType() == Type.PARALLEL && allowMerge) {
@@ -31,6 +31,7 @@ public class ParallelBlock extends AbstractComposedBlock {
                 this.subBlocks.add(child);
             }
         });
+        setCell(cell);
 
         Node node0s = subBlocks.get(0).getStartingNode();
         Node node0e = subBlocks.get(0).getEndingNode();

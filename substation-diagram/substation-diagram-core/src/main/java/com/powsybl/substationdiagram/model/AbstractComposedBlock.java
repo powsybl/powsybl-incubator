@@ -21,16 +21,14 @@ public abstract class AbstractComposedBlock extends AbstractBlock {
 
     List<Block> subBlocks;
 
-    AbstractComposedBlock(Type type, List<Block> subBlocks, Cell cell) {
+    AbstractComposedBlock(Type type, List<Block> subBlocks) {
         super(type);
         if (subBlocks.isEmpty()) {
             throw new IllegalArgumentException("Empty block list");
         }
-        this.subBlocks = subBlocks;
         subBlocks.forEach(b -> {
             b.setParentBlock(this);
         });
-        setCell(cell);
     }
 
     @Override

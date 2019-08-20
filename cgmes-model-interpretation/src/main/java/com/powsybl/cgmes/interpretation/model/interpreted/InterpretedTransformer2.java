@@ -8,8 +8,6 @@
 package com.powsybl.cgmes.interpretation.model.interpreted;
 
 import org.apache.commons.math3.complex.Complex;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.powsybl.cgmes.interpretation.model.cgmes.CgmesTapChangerStatus;
 import com.powsybl.cgmes.interpretation.model.cgmes.CgmesTransformer;
@@ -286,5 +284,4 @@ public class InterpretedTransformer2 {
 
     private final BranchAdmittanceMatrix admittanceMatrix;
     private final DetectedBranchModel branchModel;
-    private static final Logger LOG = LoggerFactory.getLogger(InterpretedTransformer2.class);
 }

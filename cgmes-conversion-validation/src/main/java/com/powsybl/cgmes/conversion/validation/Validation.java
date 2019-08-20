@@ -46,14 +46,60 @@ public class Validation {
         ValidationResults results = new ValidationResults(cgmes.name());
         List<InterpretationAlternative> alternatives = InterpretationAlternatives.configured();
         for (InterpretationAlternative alternative : alternatives) {
+
             CgmesConversion conversion = new CgmesConversion(cgmes, alternative);
+
+            LoadFlowParameters localLoadFlowParameters = defineAlternativeLoadflowParameters(
+                config.getLoadFlowParameters(), alternative);
+
             Network network = conversion.convert();
             resetFlows(network);
-            Z0LineChecker z0checker = computeIidmFlows(network, config.getLoadFlowParameters(),
+            Z0LineChecker z0checker = computeIidmFlows(network, localLoadFlowParameters,
                 alternative.isLineRatio0());
             results.validationAlternativeResults.put(alternative, validateAlternative(alternative, network, z0checker));
         }
         return results;
+    }
+
+    private LoadFlowParameters defineAlternativeLoadflowParameters(LoadFlowParameters loadFlowParameters,
+        InterpretationAlternative alternative) {
+
+        LoadFlowParameters copyLoadFlowParameters = loadFlowParameters.copy();
+
+        boolean specificCompatibility = false;
+        switch (alternative.getXfmr2YShunt()) {
+            case END1:
+                specificCompatibility = false;
+                break;
+            case END2:
+                specificCompatibility = false;
+                break;
+            case END1_END2:
+                specificCompatibility = false;
+                break;
+            case SPLIT:
+                specificCompatibility = true;
+                break;
+        }
+
+        boolean splitShuntAdmittanceXfmr3 = false;
+
+        switch (alternative.getXfmr3YShunt()) {
+            case NETWORK_SIDE:
+                splitShuntAdmittanceXfmr3 = false;
+                break;
+            case STAR_BUS_SIDE:
+                splitShuntAdmittanceXfmr3 = false;
+                break;
+            case SPLIT:
+                splitShuntAdmittanceXfmr3 = true;
+                break;
+        }
+
+        copyLoadFlowParameters.setSpecificCompatibility(specificCompatibility);
+        copyLoadFlowParameters.setSplitShuntAdmittanceXfmr3(splitShuntAdmittanceXfmr3);
+
+        return copyLoadFlowParameters;
     }
 
     private Z0LineChecker computeIidmFlows(Network network, LoadFlowParameters lfparams,
@@ -63,6 +109,7 @@ public class Validation {
             LoadFlowResultsCompletionParameters.APPLY_REACTANCE_CORRECTION_DEFAULT,
             LoadFlowResultsCompletionParameters.Z0_THRESHOLD_DIFF_VOLTAGE_ANGLE,
             structuralRatioLineOn);
+
         LoadFlowResultsCompletion lf = new LoadFlowResultsCompletion(p, lfparams);
         try {
             lf.run(network, null);
@@ -115,13 +162,15 @@ public class Validation {
 
             Terminal terminal1 = line.getTerminal(Branch.Side.ONE);
             CgmesFlow cgmesFlow1 = interpretationModel.interpretLine(alternative, line, Branch.Side.ONE);
-            validationAlternativeResults.addTerminalFlow(new TerminalFlow(line.getId(), BranchEndType.LINE_ONE, terminal1.getP(), terminal1.getQ(),
-                cgmesFlow1));
+            validationAlternativeResults.addTerminalFlow(
+                new TerminalFlow(line.getId(), BranchEndType.LINE_ONE, terminal1.getP(), terminal1.getQ(),
+                    cgmesFlow1));
 
             Terminal terminal2 = line.getTerminal(Branch.Side.TWO);
             CgmesFlow cgmesFlow2 = interpretationModel.interpretLine(alternative, line, Branch.Side.TWO);
-            validationAlternativeResults.addTerminalFlow(new TerminalFlow(line.getId(), BranchEndType.LINE_TWO, terminal2.getP(), terminal2.getQ(),
-                cgmesFlow2));
+            validationAlternativeResults.addTerminalFlow(
+                new TerminalFlow(line.getId(), BranchEndType.LINE_TWO, terminal2.getP(), terminal2.getQ(),
+                    cgmesFlow2));
         });
     }
 
@@ -130,8 +179,9 @@ public class Validation {
         network.getDanglingLines().forEach(line -> {
             Terminal terminal = line.getTerminal();
             CgmesFlow cgmesFlow = interpretationModel.interpretDanglingLine(alternative, line);
-            validationAlternativeResults.addTerminalFlow(new TerminalFlow(line.getId(), BranchEndType.LINE_ONE, terminal.getP(), terminal.getQ(),
-                cgmesFlow));
+            validationAlternativeResults.addTerminalFlow(
+                new TerminalFlow(line.getId(), BranchEndType.LINE_ONE, terminal.getP(), terminal.getQ(),
+                    cgmesFlow));
         });
 
     }
@@ -141,13 +191,15 @@ public class Validation {
         network.getTwoWindingsTransformerStream().forEach(transformer -> {
             Terminal terminal1 = transformer.getTerminal(Branch.Side.ONE);
             CgmesFlow cgmesFlow1 = interpretationModel.interpretXfmr2(alternative, transformer, Branch.Side.ONE);
-            validationAlternativeResults.addTerminalFlow(new TerminalFlow(transformer.getId(), BranchEndType.XFMR2_ONE, terminal1.getP(), terminal1.getQ(),
-                cgmesFlow1));
+            validationAlternativeResults.addTerminalFlow(
+                new TerminalFlow(transformer.getId(), BranchEndType.XFMR2_ONE, terminal1.getP(), terminal1.getQ(),
+                    cgmesFlow1));
 
             Terminal terminal2 = transformer.getTerminal(Branch.Side.TWO);
             CgmesFlow cgmesFlow2 = interpretationModel.interpretXfmr2(alternative, transformer, Branch.Side.TWO);
-            validationAlternativeResults.addTerminalFlow(new TerminalFlow(transformer.getId(), BranchEndType.XFMR2_TWO, terminal2.getP(), terminal2.getQ(),
-                cgmesFlow2));
+            validationAlternativeResults.addTerminalFlow(
+                new TerminalFlow(transformer.getId(), BranchEndType.XFMR2_TWO, terminal2.getP(), terminal2.getQ(),
+                    cgmesFlow2));
         });
 
     }
@@ -156,19 +208,25 @@ public class Validation {
         ValidationAlternativeResults validationAlternativeResults) {
         network.getThreeWindingsTransformerStream().forEach(transformer -> {
             Terminal terminal1 = transformer.getTerminal(ThreeWindingsTransformer.Side.ONE);
-            CgmesFlow cgmesFlow1 = interpretationModel.interpretXfmr3(alternative, transformer, ThreeWindingsTransformer.Side.ONE);
-            validationAlternativeResults.addTerminalFlow(new TerminalFlow(transformer.getId(), BranchEndType.XFMR3_ONE, terminal1.getP(), terminal1.getQ(),
-                cgmesFlow1));
+            CgmesFlow cgmesFlow1 = interpretationModel.interpretXfmr3(alternative, transformer,
+                ThreeWindingsTransformer.Side.ONE);
+            validationAlternativeResults.addTerminalFlow(
+                new TerminalFlow(transformer.getId(), BranchEndType.XFMR3_ONE, terminal1.getP(), terminal1.getQ(),
+                    cgmesFlow1));
 
             Terminal terminal2 = transformer.getTerminal(ThreeWindingsTransformer.Side.TWO);
-            CgmesFlow cgmesFlow2 = interpretationModel.interpretXfmr3(alternative, transformer, ThreeWindingsTransformer.Side.TWO);
-            validationAlternativeResults.addTerminalFlow(new TerminalFlow(transformer.getId(), BranchEndType.XFMR3_TWO, terminal2.getP(), terminal2.getQ(),
-                cgmesFlow2));
+            CgmesFlow cgmesFlow2 = interpretationModel.interpretXfmr3(alternative, transformer,
+                ThreeWindingsTransformer.Side.TWO);
+            validationAlternativeResults.addTerminalFlow(
+                new TerminalFlow(transformer.getId(), BranchEndType.XFMR3_TWO, terminal2.getP(), terminal2.getQ(),
+                    cgmesFlow2));
 
             Terminal terminal3 = transformer.getTerminal(ThreeWindingsTransformer.Side.THREE);
-            CgmesFlow cgmesFlow3 = interpretationModel.interpretXfmr3(alternative, transformer, ThreeWindingsTransformer.Side.THREE);
-            validationAlternativeResults.addTerminalFlow(new TerminalFlow(transformer.getId(), BranchEndType.XFMR3_THREE, terminal3.getP(), terminal3.getQ(),
-                cgmesFlow3));
+            CgmesFlow cgmesFlow3 = interpretationModel.interpretXfmr3(alternative, transformer,
+                ThreeWindingsTransformer.Side.THREE);
+            validationAlternativeResults.addTerminalFlow(
+                new TerminalFlow(transformer.getId(), BranchEndType.XFMR3_THREE, terminal3.getP(), terminal3.getQ(),
+                    cgmesFlow3));
         });
     }
 

@@ -52,7 +52,7 @@ public final class CgmesModelConversionFactory {
         for (String name : cds.names()) {
             LOG.info("Reading [{}]", name);
             try (InputStream is = cds.dataSource().newInputStream(name)) {
-                cgmes.read(base, name, is);
+                cgmes.read(is, base, name);
             } catch (IOException e) {
                 String msg = String.format("Reading [%s]", name);
                 LOG.warn(msg);

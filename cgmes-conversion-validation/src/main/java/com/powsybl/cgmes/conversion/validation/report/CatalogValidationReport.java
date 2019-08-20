@@ -14,8 +14,6 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -61,9 +59,9 @@ public class CatalogValidationReport extends AbstractReport {
     }
 
     private void write(Collection<ValidationResults> results) throws IOException {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-        LocalDateTime dateTime = LocalDateTime.now();
-        String formattedDateTime = dateTime.format(formatter);
+//       DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+//       LocalDateTime dateTime = LocalDateTime.now();
+//        String formattedDateTime = dateTime.format(formatter);
         try (BufferedWriter w = Files.newBufferedWriter(
             outputFile("CatalogValidation"), StandardCharsets.UTF_8)) {
             results.forEach(r -> {
@@ -84,10 +82,12 @@ public class CatalogValidationReport extends AbstractReport {
             return validation.exception().getMessage();
         }
 
-        Map<InterpretationAlternative, ValidationAlternativeResults> validationAlternativeResults = validation.validationAlternativeResults();
+        Map<InterpretationAlternative, ValidationAlternativeResults> validationAlternativeResults = validation
+            .validationAlternativeResults();
         Comparator<Map.Entry<InterpretationAlternative, ValidationAlternativeResults>> byFailedCount = (
             Entry<InterpretationAlternative, ValidationAlternativeResults> o1,
-            Entry<InterpretationAlternative, ValidationAlternativeResults> o2) -> Integer.compare(o1.getValue().failedCount(), o2.getValue().failedCount());
+            Entry<InterpretationAlternative, ValidationAlternativeResults> o2) -> Integer
+                .compare(o1.getValue().failedCount(), o2.getValue().failedCount());
 
         Map<InterpretationAlternative, ValidationAlternativeResults> sortedValidationAlternativeResults = validationAlternativeResults
             .entrySet().stream().sorted(byFailedCount.reversed())
@@ -111,7 +111,8 @@ public class CatalogValidationReport extends AbstractReport {
     }
 
     private void conversionValidationReport(InterpretationAlternative alternative,
-        ValidationAlternativeResults validationAlternativeResults, StringBuilder modelReportBuilder) throws IOException {
+        ValidationAlternativeResults validationAlternativeResults, StringBuilder modelReportBuilder)
+        throws IOException {
         header(alternative, modelReportBuilder);
         flow(validationAlternativeResults, modelReportBuilder);
         branchEnd(validationAlternativeResults, modelReportBuilder);
@@ -191,7 +192,8 @@ public class CatalogValidationReport extends AbstractReport {
         try (Writer writer = new StringWriter();
             TableFormatter formatter = factory.create(writer, "BRANCH END", config, columns)) {
             sortedByModelReport.entrySet().stream()
-                .filter(e -> e.getValue().flowError() > ValidationAlternativeResults.FLOW_THRESHOLD).limit(SHOW_BRANCH_ENDS)
+                .filter(e -> e.getValue().flowError() > ValidationAlternativeResults.FLOW_THRESHOLD)
+                .limit(SHOW_BRANCH_ENDS)
                 .forEach(e -> {
                     LOG.debug("{},{},{},{},{}",
                         e.getValue().id(),

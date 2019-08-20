@@ -32,6 +32,7 @@ public class CgmesConversion {
 
     private Conversion.Config configureConversion(InterpretationAlternative alternative) {
         Conversion.Config config = new Conversion.Config();
+        config.reset();
         config.allowUnsupportedTapChangers();
 
         switch (alternative.getXfmr2RatioPhase()) {

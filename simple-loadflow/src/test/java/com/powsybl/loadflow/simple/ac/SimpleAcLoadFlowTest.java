@@ -9,6 +9,7 @@ package com.powsybl.loadflow.simple.ac;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.math.matrix.MatrixFactory;
+import com.powsybl.tools.PowsyblCoreVersion;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -26,7 +27,7 @@ public class SimpleAcLoadFlowTest {
         LoadFlow loadFlow = new SimpleAcLoadFlowFactory(matrixFactory).create(network, null, 0);
         assertTrue(loadFlow instanceof SimpleAcLoadFlow);
         assertEquals("Simple loadflow", loadFlow.getName());
-        assertEquals("1.0", loadFlow.getVersion());
+        assertEquals(new PowsyblCoreVersion().getMavenProjectVersion(), loadFlow.getVersion());
     }
 
     @Test
@@ -47,16 +48,13 @@ public class SimpleAcLoadFlowTest {
         // Constructor with Network
         LoadFlow loadFlow3 = new SimpleAcLoadFlow(network);
         assertNotNull(loadFlow3);
-        assertTrue(loadFlow3 instanceof SimpleAcLoadFlow);
 
         // Constructor with Network and MatrixFactory
         LoadFlow loadFlow4 = new SimpleAcLoadFlow(network, matrixFactory);
         assertNotNull(loadFlow4);
-        assertTrue(loadFlow4 instanceof SimpleAcLoadFlow);
 
         // Static factory method
         LoadFlow loadFlow5 = SimpleAcLoadFlow.create(network);
         assertNotNull(loadFlow5);
-        assertTrue(loadFlow5 instanceof SimpleAcLoadFlow);
     }
 }

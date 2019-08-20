@@ -6,6 +6,8 @@
  */
 package com.powsybl.loadflow.simple.equations;
 
+import com.powsybl.loadflow.simple.util.Evaluable;
+
 import java.util.List;
 
 /**
@@ -13,7 +15,7 @@ import java.util.List;
  *
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public interface EquationTerm {
+public interface EquationTerm extends Evaluable {
 
     /**
      * Get the equation this term is part of.
@@ -46,6 +48,13 @@ public interface EquationTerm {
      * @return value of the partial derivative
      */
     double der(Variable variable);
+
+    /**
+     * Check {@link #rhs(Variable)} can return a value different from zero.
+     *
+     * @return true if {@link #rhs(Variable)} can return a value different from zero, false otherwise
+     */
+    boolean hasRhs();
 
     /**
      * Get part of the partial derivative that has to be moved to right hand side.

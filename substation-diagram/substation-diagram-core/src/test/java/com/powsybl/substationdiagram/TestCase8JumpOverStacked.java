@@ -29,7 +29,7 @@ public class TestCase8JumpOverStacked extends AbstractTestCase {
 
     @Override
     void setUp() {
-        Network network = NetworkFactory.create("testCase", "test");
+        network = Network.create("testCase", "test");
         Substation s = network.newSubstation()
                 .setId("s")
                 .setCountry(Country.FR)

@@ -16,15 +16,15 @@ import java.util.Map;
  */
 public class EquationContext {
 
-    private final Map<Pair<String, EquationType>, Equation> equations = new HashMap<>();
+    private final Map<Pair<Integer, EquationType>, Equation> equations = new HashMap<>();
 
-    private final Map<Pair<String, VariableType>, Variable> variables = new HashMap<>();
+    private final Map<Pair<Integer, VariableType>, Variable> variables = new HashMap<>();
 
-    public Equation getEquation(String id, EquationType type) {
-        return equations.computeIfAbsent(Pair.of(id, type), p -> new Equation(p.getLeft(), p.getRight()));
+    public Equation getEquation(int num, EquationType type) {
+        return equations.computeIfAbsent(Pair.of(num, type), p -> new Equation(p.getLeft(), p.getRight()));
     }
 
-    public Variable getVariable(String id, VariableType type) {
-        return variables.computeIfAbsent(Pair.of(id, type), p -> new Variable(p.getLeft(), p.getRight()));
+    public Variable getVariable(int num, VariableType type) {
+        return variables.computeIfAbsent(Pair.of(num, type), p -> new Variable(p.getLeft(), p.getRight()));
     }
 }

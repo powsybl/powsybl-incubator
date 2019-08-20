@@ -6,27 +6,29 @@
  */
 package com.powsybl.substationdiagram;
 
-import com.powsybl.iidm.network.BusbarSection;
-import com.powsybl.iidm.network.Country;
-import com.powsybl.iidm.network.Generator;
-import com.powsybl.iidm.network.Load;
-import com.powsybl.iidm.network.Network;
-import com.powsybl.iidm.network.NetworkFactory;
-import com.powsybl.iidm.network.Substation;
-import com.powsybl.iidm.network.SwitchKind;
-import com.powsybl.iidm.network.TopologyKind;
-import com.powsybl.iidm.network.TwoWindingsTransformer;
-import com.powsybl.iidm.network.VoltageLevel;
+import com.google.common.io.ByteStreams;
+import com.powsybl.iidm.network.*;
 import com.powsybl.substationdiagram.layout.HorizontalSubstationLayoutFactory;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
 import com.powsybl.substationdiagram.layout.VerticalSubstationLayoutFactory;
+import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
 import com.powsybl.substationdiagram.model.SubstationGraph;
+import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramStyleProvider;
+import com.powsybl.substationdiagram.util.NominalVoltageSubstationDiagramStyleProvider;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
@@ -35,7 +37,7 @@ public class TestCase11SubstationGraph extends AbstractTestCase {
 
     @Before
     public void setUp() {
-        Network network = NetworkFactory.create("testCase11", "test");
+        network = Network.create("testCase11", "test");
 
         substation = createSubstation(network, "subst", "subst", Country.FR);
 
@@ -101,7 +103,7 @@ public class TestCase11SubstationGraph extends AbstractTestCase {
         createSwitch(vl3, "dload4", "dload4", SwitchKind.DISCONNECTOR, false, false, true, 0, 2);
         createSwitch(vl3, "bload4", "bload4", SwitchKind.BREAKER, true, false, true, 2, 1);
 
-        // lines or transformers between voltage levels
+        // two windings transformers between voltage levels
         //
         createSwitch(vl1, "dtrf11", "dtrf11", SwitchKind.DISCONNECTOR, false, false, true, 0, 18);
         createSwitch(vl1, "btrf11", "btrf11", SwitchKind.BREAKER, true, false, true, 18, 19);
@@ -147,6 +149,53 @@ public class TestCase11SubstationGraph extends AbstractTestCase {
                 27, 4, vl1.getId(), vl3.getId(),
                 "trf5", 2, ConnectablePosition.Direction.TOP,
                 "trf5", 1, ConnectablePosition.Direction.BOTTOM);
+
+        // three windings transformers between voltage levels
+        //
+        createSwitch(vl1, "dtrf16", "dtrf16", SwitchKind.DISCONNECTOR, false, false, true, 0, 28);
+        createSwitch(vl1, "btrf16", "btrf16", SwitchKind.BREAKER, true, false, true, 28, 29);
+        createSwitch(vl2, "dtrf26", "dtrf26", SwitchKind.DISCONNECTOR, false, false, true, 1, 16);
+        createSwitch(vl2, "btrf26", "btrf26", SwitchKind.BREAKER, true, false, true, 16, 17);
+        createSwitch(vl3, "dtrf36", "dtrf36", SwitchKind.DISCONNECTOR, false, false, true, 0, 5);
+        createSwitch(vl3, "btrf36", "btrf36", SwitchKind.BREAKER, true, false, true, 5, 6);
+
+        createThreeWindingsTransformer(substation, "trf6", "trf6", vl1.getId(), vl2.getId(), vl3.getId(),
+                                       0.5, 0.5, 0.5, 1., 1., 1., 0.1, 0.1,
+                                       400., 225., 225.,
+                                       29, 17, 6,
+                                       "trf61", 2, ConnectablePosition.Direction.TOP,
+                                       "trf62", 2, ConnectablePosition.Direction.TOP,
+                                       "trf63", 2, ConnectablePosition.Direction.TOP);
+
+        createSwitch(vl1, "dtrf17", "dtrf17", SwitchKind.DISCONNECTOR, false, false, true, 2, 30);
+        createSwitch(vl1, "btrf17", "btrf17", SwitchKind.BREAKER, true, false, true, 30, 31);
+        createSwitch(vl2, "dtrf27", "dtrf27", SwitchKind.DISCONNECTOR, false, false, true, 0, 18);
+        createSwitch(vl2, "btrf27", "btrf27", SwitchKind.BREAKER, true, false, true, 18, 19);
+        createSwitch(vl3, "dtrf37", "dtrf37", SwitchKind.DISCONNECTOR, false, false, true, 0, 7);
+        createSwitch(vl3, "btrf37", "btrf37", SwitchKind.BREAKER, true, false, true, 7, 8);
+
+        createThreeWindingsTransformer(substation, "trf7", "trf7", vl1.getId(), vl2.getId(), vl3.getId(),
+                0.5, 0.5, 0.5, 1., 1., 1., 0.1, 0.1,
+                400., 225., 225.,
+                31, 19, 8,
+                "trf71", 2, ConnectablePosition.Direction.BOTTOM,
+                "trf72", 2, ConnectablePosition.Direction.TOP,
+                "trf73", 2, ConnectablePosition.Direction.BOTTOM);
+
+        createSwitch(vl1, "dtrf18", "dtrf18", SwitchKind.DISCONNECTOR, false, false, true, 1, 32);
+        createSwitch(vl1, "btrf18", "btrf18", SwitchKind.BREAKER, true, false, true, 32, 33);
+        createSwitch(vl2, "dtrf28", "dtrf28", SwitchKind.DISCONNECTOR, false, false, true, 1, 20);
+        createSwitch(vl2, "btrf28", "btrf28", SwitchKind.BREAKER, true, false, true, 20, 21);
+        createSwitch(vl3, "dtrf38", "dtrf38", SwitchKind.DISCONNECTOR, false, false, true, 0, 9);
+        createSwitch(vl3, "btrf38", "btrf38", SwitchKind.BREAKER, true, false, true, 9, 10);
+
+        createThreeWindingsTransformer(substation, "trf8", "trf8", vl1.getId(), vl2.getId(), vl3.getId(),
+                0.5, 0.5, 0.5, 1., 1., 1., 0.1, 0.1,
+                400., 225., 225.,
+                33, 21, 10,
+                "trf81", 2, ConnectablePosition.Direction.TOP,
+                "trf82", 2, ConnectablePosition.Direction.BOTTOM,
+                "trf83", 2, ConnectablePosition.Direction.TOP);
     }
 
     private static Substation createSubstation(Network n, String id, String name, Country country) {
@@ -253,6 +302,52 @@ public class TestCase11SubstationGraph extends AbstractTestCase {
                                null));
     }
 
+    private static void createThreeWindingsTransformer(Substation s, String id, String name,
+                                                       String vl1, String vl2, String vl3,
+                                                       double r1, double r2, double r3,
+                                                       double x1, double x2, double x3,
+                                                       double g1, double b1,
+                                                       double ratedU1, double ratedU2, double ratedU3,
+                                                       int node1, int node2, int node3,
+                                                       String feederName1, int feederOrder1, ConnectablePosition.Direction direction1,
+                                                       String feederName2, int feederOrder2, ConnectablePosition.Direction direction2,
+                                                       String feederName3, int feederOrder3, ConnectablePosition.Direction direction3) {
+        ThreeWindingsTransformer t = s.newThreeWindingsTransformer()
+                .setId(id)
+                .setName(name)
+                .newLeg1()
+                .setR(r1)
+                .setX(x1)
+                .setG(g1)
+                .setB(b1)
+                .setRatedU(ratedU1)
+                .setVoltageLevel(vl1)
+                .setNode(node1)
+                .add()
+                .newLeg2()
+                .setR(r2)
+                .setX(x2)
+                .setRatedU(ratedU2)
+                .setVoltageLevel(vl2)
+                .setNode(node2)
+                .add()
+                .newLeg3()
+                .setR(r3)
+                .setX(x3)
+                .setRatedU(ratedU3)
+                .setVoltageLevel(vl3)
+                .setNode(node3)
+                .add()
+                .add();
+
+        t.addExtension(ConnectablePosition.class,
+                new ConnectablePosition<>(t,
+                        null,
+                        new ConnectablePosition.Feeder(feederName1, feederOrder1, direction1),
+                        new ConnectablePosition.Feeder(feederName2, feederOrder2, direction2),
+                        new ConnectablePosition.Feeder(feederName3, feederOrder3, direction3)));
+    }
+
     @Test
     public void test() {
         LayoutParameters layoutParameters = new LayoutParameters()
@@ -273,22 +368,59 @@ public class TestCase11SubstationGraph extends AbstractTestCase {
                 .setVerticalSubstationPadding(50)
                 .setDrawStraightWires(false)
                 .setHorizontalSnakeLinePadding(30)
-                .setVerticalSnakeLinePadding(30);
+                .setVerticalSnakeLinePadding(30)
+                .setShowInductorFor3WT(false);
 
         // build substation graph
         SubstationGraph g = SubstationGraph.create(substation);
 
         // assert substation graph structure
         assertEquals(3, g.getNodes().size());
-        assertEquals(5, g.getEdges().size());
+        assertEquals(14, g.getEdges().size());
 
-        // write SVG and compare to reference (horizontal layout)
-        compareSvg(g, layoutParameters, "/TestCase11SubstationGraphHorizontal.svg", new HorizontalSubstationLayoutFactory());
+        // write SVG and compare to reference (horizontal layout and defaut style provider)
+        compareSvg(g, layoutParameters, "/TestCase11SubstationGraphHorizontal.svg",
+                   new HorizontalSubstationLayoutFactory(),
+                   new DefaultSubstationDiagramStyleProvider());
 
         // rebuild substation graph
         g = SubstationGraph.create(substation);
 
         // write SVG and compare to reference (vertical layout)
         compareSvg(g, layoutParameters, "/TestCase11SubstationGraphVertical.svg", new VerticalSubstationLayoutFactory());
+
+        // rebuild substation graph
+        g = SubstationGraph.create(substation);
+
+         // write SVG and compare to reference (horizontal layout and nominal voltage style)
+        compareSvg(g, layoutParameters, "/TestCase11SubstationGraphHorizontalNominalVoltageLevel.svg",
+                   new HorizontalSubstationLayoutFactory(),
+                   new NominalVoltageSubstationDiagramStyleProvider());
+
+        // Create substation diagram (svg + metadata files)
+        SubstationDiagram diagram = SubstationDiagram.build(substation);
+        Path pathSVG = Paths.get(System.getProperty("user.home"), "substDiag.svg");
+        Path pathMetadata = Paths.get(System.getProperty("user.home"), "substDiag_metadata.json");
+        diagram.writeSvg(new ResourcesComponentLibrary("/ConvergenceLibrary"), layoutParameters, pathSVG, network);
+        assertTrue(Files.exists(pathSVG));
+        assertTrue(Files.exists(pathMetadata));
+        try {
+            String refSvg = normalizeLineSeparator(new String(ByteStreams.toByteArray(getClass().getResourceAsStream("/substDiag.svg")), StandardCharsets.UTF_8));
+            String svg = normalizeLineSeparator(new String(Files.readAllBytes(pathSVG), StandardCharsets.UTF_8));
+            assertEquals(refSvg, svg);
+            Files.deleteIfExists(pathSVG);
+
+            String refMetadata = normalizeLineSeparator(new String(ByteStreams.toByteArray(getClass().getResourceAsStream("/substDiag_metadata.json")), StandardCharsets.UTF_8));
+            String metadata = normalizeLineSeparator(new String(Files.readAllBytes(pathMetadata), StandardCharsets.UTF_8));
+            assertEquals(refMetadata, metadata);
+            Files.deleteIfExists(pathMetadata);
+
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+
+        LayoutParameters lp2 = new LayoutParameters(layoutParameters);
+        assertEquals(lp2.getCellWidth(), layoutParameters.getCellWidth(), 0.);
+        assertEquals(lp2.getHorizontalSnakeLinePadding(), layoutParameters.getHorizontalSnakeLinePadding(), 0.);
     }
 }

@@ -1,14 +1,16 @@
 # Maven projects
-/cgmes-dl/target
-/cgmes-dl/cgmes-dl-conversion/target/
-/cgmes-dl/cgmes-iidm-extensions/target/
-/cgmes-model-interpretation/target/
-/simple-loadflow/target/
-/substation-diagram/substation-diagram-core/target/
-/substation-diagram/substation-diagram-cgmes/target/
-/substation-diagram/substation-diagram-util/target/
-/substation-diagram/substation-diagram-view/target/
-/target/
+cgmes-dl/cgmes-dl-conversion/target
+cgmes-dl/cgmes-iidm-extensions/target
+cgmes-model-interpretation/target/
+simple-loadflow/target
+substation-diagram/substation-diagram-cgmes/target
+substation-diagram/substation-diagram-core/target
+substation-diagram/substation-diagram-force-layout/target
+substation-diagram/substation-diagram-util/target
+substation-diagram/substation-diagram-view/target
+substation-webviewer
+balances-adjustment/target
+target
 
 # IntelliJ
 /.idea

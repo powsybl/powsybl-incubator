@@ -37,13 +37,16 @@ public class SimpleAcLoadFlowTwoBusNetworkTest {
     @Before
     public void setUp() {
         network = TwoBusNetworkFactory.create();
-        bus1 = network.getBusBreakerView().getBusStream().filter(b -> b.getId().equals("b1")).findFirst().orElseThrow(AssertionError::new);
-        bus2 = network.getBusBreakerView().getBusStream().filter(b -> b.getId().equals("b2")).findFirst().orElseThrow(AssertionError::new);
+        bus1 = network.getBusBreakerView().getBus("b1");
+        bus2 = network.getBusBreakerView().getBus("b2");
         line1 = network.getLine("l12");
 
         loadFlow = new SimpleAcLoadFlow(network, new DenseMatrixFactory());
         parameters = new LoadFlowParameters();
-        parameters.addExtension(SimpleAcLoadFlowParameters.class, new SimpleAcLoadFlowParameters().setSlackBusSelection(SimpleAcLoadFlowParameters.SlackBusSelection.FIRST));
+        SimpleAcLoadFlowParameters parametersExt = new SimpleAcLoadFlowParameters()
+                .setSlackBusSelectionMode(SlackBusSelectionMode.FIRST)
+                .setDistributedSlack(false);
+        this.parameters.addExtension(SimpleAcLoadFlowParameters.class, parametersExt);
     }
 
     @Test
@@ -54,7 +57,7 @@ public class SimpleAcLoadFlowTwoBusNetworkTest {
         assertVoltageEquals(1, bus1);
         assertAngleEquals(0, bus1);
         assertVoltageEquals(0.855, bus2);
-        assertAngleEquals(-13.521852, bus2);
+        assertAngleEquals(-13.520904, bus2);
         assertActivePowerEquals(2, line1.getTerminal1());
         assertReactivePowerEquals(1.683, line1.getTerminal1());
         assertActivePowerEquals(-2, line1.getTerminal2());
@@ -65,11 +68,33 @@ public class SimpleAcLoadFlowTwoBusNetworkTest {
     public void voltageInitModeTest() {
         LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
         assertTrue(result.isOk());
-        assertEquals("4", result.getMetrics().get("iterations"));
+        assertEquals("3", result.getMetrics().get("iterations"));
         // restart loadflow from previous calculated state, it should convergence in zero iteration
         result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters.setVoltageInitMode(LoadFlowParameters.VoltageInitMode.PREVIOUS_VALUES))
                 .join();
         assertTrue(result.isOk());
-        assertEquals("0", result.getMetrics().get("iterations"));
+        assertEquals("1", result.getMetrics().get("iterations"));
+    }
+
+    @Test
+    public void withAnAdditionalBattery() {
+        bus2.getVoltageLevel().newBattery()
+                .setId("bt2")
+                .setBus("b2")
+                .setP0(1)
+                .setQ0(0.1)
+                .setMinP(0)
+                .setMaxP(1)
+                .add();
+        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
+        assertTrue(result.isOk());
+        assertVoltageEquals(1, bus1);
+        assertAngleEquals(0, bus1);
+        assertVoltageEquals(0.784, bus2);
+        assertAngleEquals(-22.455747, bus2);
+        assertActivePowerEquals(2.996, line1.getTerminal1());
+        assertReactivePowerEquals(2.750, line1.getTerminal1());
+        assertActivePowerEquals(-2.996, line1.getTerminal2());
+        assertReactivePowerEquals(-1.096, line1.getTerminal2());
     }
 }

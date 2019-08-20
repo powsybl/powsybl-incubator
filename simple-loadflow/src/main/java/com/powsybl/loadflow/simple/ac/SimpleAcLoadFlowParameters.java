@@ -16,24 +16,30 @@ import java.util.Objects;
  */
 public class SimpleAcLoadFlowParameters extends AbstractExtension<LoadFlowParameters> {
 
-    enum SlackBusSelection {
-        FIRST,
-        MOST_MESHED
-    }
+    private SlackBusSelectionMode slackBusSelectionMode = SlackBusSelectionMode.MOST_MESHED;
 
-    private SlackBusSelection slackBusSelection = SlackBusSelection.MOST_MESHED;
+    private boolean distributedSlack = false;
 
     @Override
     public String getName() {
         return "SimpleLoadFlowParameters";
     }
 
-    public SlackBusSelection getSlackBusSelection() {
-        return slackBusSelection;
+    public SlackBusSelectionMode getSlackBusSelectionMode() {
+        return slackBusSelectionMode;
     }
 
-    public SimpleAcLoadFlowParameters setSlackBusSelection(SlackBusSelection slackBusSelection) {
-        this.slackBusSelection = Objects.requireNonNull(slackBusSelection);
+    public SimpleAcLoadFlowParameters setSlackBusSelectionMode(SlackBusSelectionMode slackBusSelectionMode) {
+        this.slackBusSelectionMode = Objects.requireNonNull(slackBusSelectionMode);
+        return this;
+    }
+
+    public boolean isDistributedSlack() {
+        return distributedSlack;
+    }
+
+    public SimpleAcLoadFlowParameters setDistributedSlack(boolean distributedSlack) {
+        this.distributedSlack = distributedSlack;
         return this;
     }
 }

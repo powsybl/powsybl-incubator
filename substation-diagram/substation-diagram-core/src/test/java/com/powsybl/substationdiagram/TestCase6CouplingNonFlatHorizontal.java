@@ -38,7 +38,7 @@ public class TestCase6CouplingNonFlatHorizontal extends AbstractTestCase {
 
     @Before
     public void setUp() {
-        Network network = NetworkFactory.create("testCase1", "test");
+        network = Network.create("testCase1", "test");
         Substation s = network.newSubstation()
                 .setId("s")
                 .setCountry(Country.FR)
@@ -126,15 +126,15 @@ public class TestCase6CouplingNonFlatHorizontal extends AbstractTestCase {
         Cell cellB = it.next();
         assertEquals("INTERN[FICT_vl_d1Fictif, FICT_vl_d2Fictif, b, bbs1.1, bbs2.2, d1, d2]", cellB.getFullId());
         Cell cellD1 = it.next();
-        assertEquals("INTERNBOUND[bbs1.1, bbs1.2, ds1]", cellD1.getFullId());
+        assertEquals("INTERN[bbs1.1, bbs1.2, ds1]", cellD1.getFullId());
         Cell cellD2 = it.next();
-        assertEquals("INTERNBOUND[bbs2.1, bbs2.2, ds2]", cellD2.getFullId());
+        assertEquals("INTERN[bbs2.1, bbs2.2, ds2]", cellD2.getFullId());
 
         // build blocks
         assertTrue(new BlockOrganizer().organize(g));
 
         // assert blocks and nodes rotation
-        assertEquals(2, cellB.getPrimaryBlocksConnectedToBus().size());
+        assertEquals(2, ((BusCell) cellB).getPrimaryBlocksConnectedToBus().size());
         assertNotNull(cellB.getRootBlock());
         assertTrue(cellB.getRootBlock() instanceof ParallelBlock);
         ParallelBlock bp = (ParallelBlock) cellB.getRootBlock();
@@ -154,7 +154,7 @@ public class TestCase6CouplingNonFlatHorizontal extends AbstractTestCase {
         assertEquals(new Position(0, 0, 1, 1, false, Orientation.HORIZONTAL), bpyu.getPosition());
 
         PrimaryBlock bpy = (PrimaryBlock) bp.getSubBlocks().get(1);
-        assertEquals(new Position(1, 0, 1, 0, true, Orientation.VERTICAL), bpy.getPosition());
+        assertEquals(new Position(2, 0, 1, 0, true, Orientation.VERTICAL), bpy.getPosition());
 
         // calculate coordinates
         LayoutParameters layoutParameters = new LayoutParameters()
@@ -181,7 +181,7 @@ public class TestCase6CouplingNonFlatHorizontal extends AbstractTestCase {
         assertEquals(260, g.getNodes().get(0).getY(), 0);
         assertFalse(g.getNodes().get(0).isRotated());
 
-        assertEquals(60, g.getNodes().get(3).getX(), 0);
+        assertEquals(110, g.getNodes().get(3).getX(), 0);
         assertEquals(285, g.getNodes().get(3).getY(), 0);
         assertFalse(g.getNodes().get(3).isRotated());
 
@@ -193,15 +193,15 @@ public class TestCase6CouplingNonFlatHorizontal extends AbstractTestCase {
         assertEquals(220, g.getNodes().get(9).getY(), 0);
         assertTrue(g.getNodes().get(9).isRotated());
 
-        assertEquals(75, g.getNodes().get(10).getX(), 0);
+        assertEquals(125, g.getNodes().get(10).getX(), 0);
         assertEquals(220, g.getNodes().get(10).getY(), 0);
         assertTrue(g.getNodes().get(10).isRotated());
 
-        assertEquals(50, g.getNodes().get(7).getX(), 0);
+        assertEquals(75, g.getNodes().get(7).getX(), 0);
         assertEquals(260, g.getNodes().get(7).getY(), 0);
         assertTrue(g.getNodes().get(7).isRotated());
 
-        assertEquals(50, g.getNodes().get(8).getX(), 0);
+        assertEquals(75, g.getNodes().get(8).getX(), 0);
         assertEquals(285, g.getNodes().get(8).getY(), 0);
         assertTrue(g.getNodes().get(8).isRotated());
 

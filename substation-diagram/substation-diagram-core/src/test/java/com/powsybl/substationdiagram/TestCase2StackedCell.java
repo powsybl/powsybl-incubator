@@ -40,7 +40,7 @@ public class TestCase2StackedCell extends AbstractTestCase {
 
     @Before
     public void setUp() {
-        Network network = NetworkFactory.create("testCase1", "test");
+        network = Network.create("testCase1", "test");
         Substation s = network.newSubstation()
                 .setId("s")
                 .setCountry(Country.FR)
@@ -113,16 +113,16 @@ public class TestCase2StackedCell extends AbstractTestCase {
         assertEquals(1, g.getCells().size());
         Cell cell = g.getCells().iterator().next();
         assertEquals(Cell.CellType.EXTERN, cell.getType());
-        assertEquals(-1, cell.getOrder());
+        assertEquals(-1, ((ExternCell) cell).getOrder());
         assertEquals(7, cell.getNodes().size());
-        assertEquals(2, cell.getBusNodes().size());
+        assertEquals(2, ((BusCell) cell).getBusNodes().size());
         assertEquals("EXTERN[FICT_vl_2, b, bbs1, bbs2, d1, d2, l]", cell.getFullId());
 
         // build blocks
         assertTrue(new BlockOrganizer().organize(g));
 
         // assert blocks and nodes rotation
-        assertEquals(2, cell.getPrimaryBlocksConnectedToBus().size());
+        assertEquals(2, ((BusCell) cell).getPrimaryBlocksConnectedToBus().size());
         assertNotNull(cell.getRootBlock());
         assertTrue(cell.getRootBlock() instanceof SerialBlock);
         SerialBlock bc = (SerialBlock) cell.getRootBlock();

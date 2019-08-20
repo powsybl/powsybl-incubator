@@ -6,10 +6,10 @@
  */
 package com.powsybl.substationdiagram.model;
 
+import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.Branch;
 import com.powsybl.iidm.network.Injection;
 import com.powsybl.iidm.network.ShuntCompensator;
-import com.powsybl.iidm.network.ThreeWindingsTransformer;
 import com.powsybl.iidm.network.TwoWindingsTransformer;
 import com.powsybl.substationdiagram.library.ComponentType;
 
@@ -25,7 +25,7 @@ public class FeederNode extends Node {
 
     private int order = -1;
 
-    private Cell.Direction direction = Cell.Direction.UNDEFINED;
+    private BusCell.Direction direction = BusCell.Direction.UNDEFINED;
 
     protected FeederNode(String id, String name, ComponentType componentType, boolean fictitious, Graph graph) {
         super(NodeType.FEEDER, id, name, componentType, fictitious, graph);
@@ -83,17 +83,20 @@ public class FeederNode extends Node {
         return new FeederNode(id, name, componentType, false, graph);
     }
 
-    public static FeederNode create(Graph graph, ThreeWindingsTransformer twt, ThreeWindingsTransformer.Side side) {
-        Objects.requireNonNull(graph);
-        Objects.requireNonNull(twt);
-        Objects.requireNonNull(side);
-        String id = twt.getId() + "_" + side.name();
-        String name = twt.getName() + "_" + side.name();
-        return new FeederNode(id, name, ComponentType.THREE_WINDINGS_TRANSFORMER, false, graph);
-    }
-
     public static FeederNode createFictitious(Graph graph, String id) {
         return new FeederNode(id, id, ComponentType.NODE, true, graph);
+    }
+
+    public static FeederNode create(Graph graph, String id, String name, ComponentType componentType) {
+        return new FeederNode(id, name, componentType, false, graph);
+    }
+
+    @Override
+    public void setCell(Cell cell) {
+        if (!(cell instanceof ExternCell)) {
+            throw new PowsyblException("The Cell of a feeder node shall be an ExternCell");
+        }
+        super.setCell(cell);
     }
 
     public int getOrder() {
@@ -104,11 +107,11 @@ public class FeederNode extends Node {
         this.order = order;
     }
 
-    public Cell.Direction getDirection() {
+    public BusCell.Direction getDirection() {
         return direction;
     }
 
-    public void setDirection(Cell.Direction direction) {
+    public void setDirection(BusCell.Direction direction) {
         this.direction = direction;
     }
 }

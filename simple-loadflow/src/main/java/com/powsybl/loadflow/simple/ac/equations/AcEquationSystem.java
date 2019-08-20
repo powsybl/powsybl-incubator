@@ -6,15 +6,15 @@
  */
 package com.powsybl.loadflow.simple.ac.equations;
 
-import com.powsybl.iidm.network.Branch;
-import com.powsybl.iidm.network.Bus;
-import com.powsybl.iidm.network.ShuntCompensator;
 import com.powsybl.loadflow.simple.equations.*;
-import com.powsybl.loadflow.simple.network.BranchCharacteristics;
-import com.powsybl.loadflow.simple.network.NetworkContext;
+import com.powsybl.loadflow.simple.network.LfBranch;
+import com.powsybl.loadflow.simple.network.LfBus;
+import com.powsybl.loadflow.simple.network.LfNetwork;
+import com.powsybl.loadflow.simple.network.LfShunt;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -24,61 +24,61 @@ public final class AcEquationSystem {
     private AcEquationSystem() {
     }
 
-    public static EquationSystem create(NetworkContext networkContext) {
+    public static EquationSystem create(LfNetwork network, EquationContext equationContext) {
+        Objects.requireNonNull(network);
+        Objects.requireNonNull(equationContext);
+
         List<EquationTerm> equationTerms = new ArrayList<>();
-        List<VariableUpdate> variableUpdates = new ArrayList<>();
 
-        EquationContext equationContext = new EquationContext();
-
-        for (Bus bus : networkContext.getBuses()) {
-            if (networkContext.isSlackBus(bus.getId())) {
+        for (LfBus bus : network.getBuses()) {
+            if (bus.isSlack()) {
                 equationTerms.add(new BusPhaseEquationTerm(bus, equationContext));
-                equationContext.getEquation(bus.getId(), EquationType.BUS_P).setPartOfSystem(false);
+                equationContext.getEquation(bus.getNum(), EquationType.BUS_P).setToSolve(false);
             }
-            if (networkContext.isPvBus(bus.getId())) {
+            if (bus.hasVoltageControl()) {
                 equationTerms.add(new BusVoltageEquationTerm(bus, equationContext));
-                equationContext.getEquation(bus.getId(), EquationType.BUS_Q).setPartOfSystem(false);
+                equationContext.getEquation(bus.getNum(), EquationType.BUS_Q).setToSolve(false);
             }
-        }
-
-        for (Branch branch : networkContext.getBranches()) {
-            BranchCharacteristics bc = new BranchCharacteristics(branch);
-            Bus bus1 = branch.getTerminal1().getBusView().getBus();
-            Bus bus2 = branch.getTerminal2().getBusView().getBus();
-            if (bus1 != null && bus2 != null) {
-                ClosedBranchSide1ActiveFlowEquationTerm p1 = new ClosedBranchSide1ActiveFlowEquationTerm(bc, bus1, bus2, equationContext);
-                ClosedBranchSide1ReactiveFlowEquationTerm q1 = new ClosedBranchSide1ReactiveFlowEquationTerm(bc, bus1, bus2, equationContext);
-                ClosedBranchSide2ActiveFlowEquationTerm p2 = new ClosedBranchSide2ActiveFlowEquationTerm(bc, bus1, bus2, equationContext);
-                ClosedBranchSide2ReactiveFlowEquationTerm q2 = new ClosedBranchSide2ReactiveFlowEquationTerm(bc, bus1, bus2, equationContext);
-                equationTerms.add(p1);
-                equationTerms.add(q1);
-                equationTerms.add(p2);
-                equationTerms.add(q2);
-                variableUpdates.add(new ClosedBranchAcFlowUpdate(branch, p1, q1, p2, q2));
-            } else if (bus1 != null) {
-                OpenBranchSide2ActiveFlowEquationTerm p1 = new OpenBranchSide2ActiveFlowEquationTerm(bc, bus1, equationContext);
-                OpenBranchSide2ReactiveFlowEquationTerm q1 = new OpenBranchSide2ReactiveFlowEquationTerm(bc, bus1, equationContext);
-                equationTerms.add(p1);
-                equationTerms.add(q1);
-                variableUpdates.add(new OpenBranchSide2AcFlowUpdate(branch, p1, q1));
-            } else if (bus2 != null) {
-                OpenBranchSide1ActiveFlowEquationTerm p2 = new OpenBranchSide1ActiveFlowEquationTerm(bc, bus2, equationContext);
-                OpenBranchSide1ReactiveFlowEquationTerm q2 = new OpenBranchSide1ReactiveFlowEquationTerm(bc, bus2, equationContext);
-                equationTerms.add(p2);
-                equationTerms.add(q2);
-                variableUpdates.add(new OpenBranchSide1AcFlowUpdate(branch, p2, q2));
-            }
-        }
-
-        for (ShuntCompensator sc : networkContext.getShuntCompensators()) {
-            Bus bus = sc.getTerminal().getBusView().getBus();
-            if (bus != null) {
-                ShuntCompensatorReactiveFlowEquationTerm q = new ShuntCompensatorReactiveFlowEquationTerm(sc, bus, networkContext, equationContext);
+            for (LfShunt shunt : bus.getShunts()) {
+                ShuntCompensatorReactiveFlowEquationTerm q = new ShuntCompensatorReactiveFlowEquationTerm(shunt, bus, network, equationContext);
                 equationTerms.add(q);
-                variableUpdates.add(new ShuntCompensatorReactiveFlowUpdate(sc, q));
+                shunt.setQ(q);
             }
         }
 
-        return new EquationSystem(equationTerms, variableUpdates, networkContext);
+        for (LfBranch branch : network.getBranches()) {
+            LfBus bus1 = branch.getBus1();
+            LfBus bus2 = branch.getBus2();
+            if (bus1 != null && bus2 != null) {
+                ClosedBranchSide1ActiveFlowEquationTerm p1 = new ClosedBranchSide1ActiveFlowEquationTerm(branch, bus1, bus2, equationContext);
+                ClosedBranchSide1ReactiveFlowEquationTerm q1 = new ClosedBranchSide1ReactiveFlowEquationTerm(branch, bus1, bus2, equationContext);
+                ClosedBranchSide2ActiveFlowEquationTerm p2 = new ClosedBranchSide2ActiveFlowEquationTerm(branch, bus1, bus2, equationContext);
+                ClosedBranchSide2ReactiveFlowEquationTerm q2 = new ClosedBranchSide2ReactiveFlowEquationTerm(branch, bus1, bus2, equationContext);
+                equationTerms.add(p1);
+                equationTerms.add(q1);
+                equationTerms.add(p2);
+                equationTerms.add(q2);
+                branch.setP1(p1);
+                branch.setQ1(q1);
+                branch.setP2(p2);
+                branch.setQ2(q2);
+            } else if (bus1 != null) {
+                OpenBranchSide2ActiveFlowEquationTerm p1 = new OpenBranchSide2ActiveFlowEquationTerm(branch, bus1, equationContext);
+                OpenBranchSide2ReactiveFlowEquationTerm q1 = new OpenBranchSide2ReactiveFlowEquationTerm(branch, bus1, equationContext);
+                equationTerms.add(p1);
+                equationTerms.add(q1);
+                branch.setP1(p1);
+                branch.setQ1(q1);
+            } else if (bus2 != null) {
+                OpenBranchSide1ActiveFlowEquationTerm p2 = new OpenBranchSide1ActiveFlowEquationTerm(branch, bus2, equationContext);
+                OpenBranchSide1ReactiveFlowEquationTerm q2 = new OpenBranchSide1ReactiveFlowEquationTerm(branch, bus2, equationContext);
+                equationTerms.add(p2);
+                equationTerms.add(q2);
+                branch.setP2(p2);
+                branch.setQ2(q2);
+            }
+        }
+
+        return new EquationSystem(equationTerms, network);
     }
 }

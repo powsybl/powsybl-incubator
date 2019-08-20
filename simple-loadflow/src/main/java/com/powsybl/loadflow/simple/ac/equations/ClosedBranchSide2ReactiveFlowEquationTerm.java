@@ -6,11 +6,12 @@
  */
 package com.powsybl.loadflow.simple.ac.equations;
 
-import com.powsybl.iidm.network.Bus;
 import com.powsybl.loadflow.simple.equations.EquationContext;
 import com.powsybl.loadflow.simple.equations.EquationType;
 import com.powsybl.loadflow.simple.equations.Variable;
-import com.powsybl.loadflow.simple.network.BranchCharacteristics;
+import com.powsybl.loadflow.simple.network.LfBranch;
+import com.powsybl.loadflow.simple.network.LfBus;
+import net.jafama.FastMath;
 
 import java.util.Objects;
 
@@ -29,8 +30,8 @@ public class ClosedBranchSide2ReactiveFlowEquationTerm extends AbstractClosedBra
 
     private double dq2dph2;
 
-    public ClosedBranchSide2ReactiveFlowEquationTerm(BranchCharacteristics bc, Bus bus1, Bus bus2, EquationContext equationContext) {
-        super(bc, bus1, bus2, equationContext.getEquation(bus2.getId(), EquationType.BUS_Q), equationContext);
+    public ClosedBranchSide2ReactiveFlowEquationTerm(LfBranch branch, LfBus bus1, LfBus bus2, EquationContext equationContext) {
+        super(branch, bus1, bus2, equationContext.getEquation(bus2.getNum(), EquationType.BUS_Q), equationContext);
     }
 
     @Override
@@ -41,8 +42,8 @@ public class ClosedBranchSide2ReactiveFlowEquationTerm extends AbstractClosedBra
         double ph1 = x[ph1Var.getColumn()];
         double ph2 = x[ph2Var.getColumn()];
         double theta = ksi + a1 - a2 + ph1 - ph2;
-        double cosTheta = Math.cos(theta);
-        double sinTheta = Math.sin(theta);
+        double cosTheta = FastMath.cos(theta);
+        double sinTheta = FastMath.sin(theta);
         q2 = r2 * v2 * (-b2 * r2 * v2 - y * r1 * v1 * cosTheta + y * r2 * v2 * cosKsi);
         dq2dv1 = -y * r1 * r2 * v2 * cosTheta;
         dq2dv2 = r2 * (-2 * b2 * r2 * v2 - y * r1 * v1 * cosTheta + 2 * y * r2 * v2 * cosKsi);

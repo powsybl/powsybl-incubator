@@ -6,12 +6,12 @@
  */
 package com.powsybl.loadflow.simple.dc.equations;
 
-import com.powsybl.iidm.network.Bus;
 import com.powsybl.loadflow.simple.equations.Equation;
 import com.powsybl.loadflow.simple.equations.EquationContext;
 import com.powsybl.loadflow.simple.equations.EquationType;
 import com.powsybl.loadflow.simple.equations.Variable;
-import com.powsybl.loadflow.simple.network.BranchCharacteristics;
+import com.powsybl.loadflow.simple.network.LfBranch;
+import com.powsybl.loadflow.simple.network.LfBus;
 
 import java.util.Objects;
 
@@ -22,17 +22,17 @@ public final class ClosedBranchSide2DcFlowEquationTerm extends AbstractClosedBra
 
     private double p2;
 
-    private ClosedBranchSide2DcFlowEquationTerm(BranchCharacteristics bc, Bus bus1, Bus bus2, Equation equation, EquationContext equationContext) {
-        super(bc, bus1, bus2, equation, equationContext);
+    private ClosedBranchSide2DcFlowEquationTerm(LfBranch branch, LfBus bus1, LfBus bus2, Equation equation, EquationContext equationContext) {
+        super(branch, bus1, bus2, equation, equationContext);
     }
 
-    public static ClosedBranchSide2DcFlowEquationTerm create(BranchCharacteristics bc, Bus bus1, Bus bus2, EquationContext equationContext) {
-        Objects.requireNonNull(bc);
+    public static ClosedBranchSide2DcFlowEquationTerm create(LfBranch branch, LfBus bus1, LfBus bus2, EquationContext equationContext) {
+        Objects.requireNonNull(branch);
         Objects.requireNonNull(bus1);
         Objects.requireNonNull(bus2);
         Objects.requireNonNull(equationContext);
-        Equation equation = equationContext.getEquation(bus2.getId(), EquationType.BUS_P);
-        return new ClosedBranchSide2DcFlowEquationTerm(bc, bus1, bus2, equation, equationContext);
+        Equation equation = equationContext.getEquation(bus2.getNum(), EquationType.BUS_P);
+        return new ClosedBranchSide2DcFlowEquationTerm(branch, bus1, bus2, equation, equationContext);
     }
 
     @Override
@@ -40,7 +40,7 @@ public final class ClosedBranchSide2DcFlowEquationTerm extends AbstractClosedBra
         Objects.requireNonNull(x);
         double ph1 = x[ph1Var.getColumn()];
         double ph2 = x[ph2Var.getColumn()];
-        double deltaPhase =  ph2 - ph1 + bc.a2() - bc.a1();
+        double deltaPhase =  ph2 - ph1 + branch.a2() - branch.a1();
         p2 = power * deltaPhase;
     }
 
@@ -65,7 +65,7 @@ public final class ClosedBranchSide2DcFlowEquationTerm extends AbstractClosedBra
     public double rhs(Variable variable) {
         Objects.requireNonNull(variable);
         if (variable.equals(ph2Var)) {
-            return power * (bc.a2() - bc.a1());
+            return power * (branch.a2() - branch.a1());
         }
         return 0;
     }

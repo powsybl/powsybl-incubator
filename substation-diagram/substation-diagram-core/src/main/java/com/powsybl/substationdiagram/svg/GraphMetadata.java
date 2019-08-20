@@ -11,7 +11,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.powsybl.commons.json.JsonUtil;
+import com.powsybl.substationdiagram.layout.LayoutParameters;
 import com.powsybl.substationdiagram.library.*;
+import com.powsybl.substationdiagram.model.BusCell;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -30,25 +32,41 @@ public class GraphMetadata implements AnchorPointProvider {
 
         private final String id;
 
-        private final ComponentType componentType;
+        private ComponentType componentType;
 
         private final boolean rotated;
 
         private final boolean open;
 
+        private final String vId;
+
+        private final BusCell.Direction direction;
+
+        private final boolean vLabel;
+
         @JsonCreator
         public NodeMetadata(@JsonProperty("id") String id,
+                            @JsonProperty("vid") String vId,
                             @JsonProperty("componentType") ComponentType componentType,
                             @JsonProperty("rotated") boolean rotated,
-                            @JsonProperty("open") boolean open) {
+                            @JsonProperty("open") boolean open,
+                            @JsonProperty("direction") BusCell.Direction direction,
+                            @JsonProperty("vlabel") boolean vLabel) {
             this.id = Objects.requireNonNull(id);
-            this.componentType = Objects.requireNonNull(componentType);
+            this.vId = Objects.requireNonNull(vId);
+            this.componentType = componentType;
             this.rotated = Objects.requireNonNull(rotated);
             this.open = Objects.requireNonNull(open);
+            this.direction = direction;
+            this.vLabel = vLabel;
         }
 
         public String getId() {
             return id;
+        }
+
+        public String getVId() {
+            return vId;
         }
 
         public ComponentType getComponentType() {
@@ -62,6 +80,14 @@ public class GraphMetadata implements AnchorPointProvider {
         public boolean isOpen() {
             return open;
         }
+
+        public BusCell.Direction getDirection() {
+            return direction;
+        }
+
+        public boolean isVLabel() {
+            return vLabel;
+        }
     }
 
     public static class WireMetadata {
@@ -74,13 +100,19 @@ public class GraphMetadata implements AnchorPointProvider {
 
         private final boolean straight;
 
+        private final boolean snakeLine;
+
         @JsonCreator
-        public WireMetadata(@JsonProperty("id") String id, @JsonProperty("nodeId1") String nodeId1,
-                            @JsonProperty("nodeId2") String nodeId2, @JsonProperty("straight") boolean straight) {
+        public WireMetadata(@JsonProperty("id") String id,
+                            @JsonProperty("nodeId1") String nodeId1,
+                            @JsonProperty("nodeId2") String nodeId2,
+                            @JsonProperty("straight") boolean straight,
+                            @JsonProperty("snakeline") boolean snakeline) {
             this.id = Objects.requireNonNull(id);
             this.nodeId1 = Objects.requireNonNull(nodeId1);
             this.nodeId2 = Objects.requireNonNull(nodeId2);
             this.straight = straight;
+            this.snakeLine = snakeline;
         }
 
         public String getId() {
@@ -98,6 +130,38 @@ public class GraphMetadata implements AnchorPointProvider {
         public boolean isStraight() {
             return straight;
         }
+
+        public boolean isSnakeLine() {
+            return snakeLine;
+        }
+    }
+
+    public static class ArrowMetadata {
+
+        private final String id;
+
+        private final String wireId;
+
+        private final double distance;
+
+        @JsonCreator
+        public ArrowMetadata(@JsonProperty("id") String id, @JsonProperty("wireId") String wireId1, @JsonProperty("distance") double distance) {
+            this.id = Objects.requireNonNull(id);
+            this.wireId = Objects.requireNonNull(wireId1);
+            this.distance = distance;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public String getWireId() {
+            return wireId;
+        }
+
+        public double getDistance() {
+            return distance;
+        }
     }
 
     private final Map<ComponentType, ComponentMetadata> componentMetadataByType = new EnumMap<>(ComponentType.class);
@@ -108,14 +172,20 @@ public class GraphMetadata implements AnchorPointProvider {
 
     private final Map<String, WireMetadata> wireMetadataMap = new HashMap<>();
 
+    private final LayoutParameters layoutParameters;
+
+    private final Map<String, ArrowMetadata> arrowMetadataMap = new HashMap<>();
+
     public GraphMetadata() {
-        this(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        this(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), new LayoutParameters());
     }
 
     @JsonCreator
     public GraphMetadata(@JsonProperty("components") List<ComponentMetadata> componentMetadataList,
                          @JsonProperty("nodes") List<NodeMetadata> nodeMetadataList,
-                         @JsonProperty("wires") List<WireMetadata> wireMetadataList) {
+                         @JsonProperty("wires") List<WireMetadata> wireMetadataList,
+                         @JsonProperty("arrows") List<ArrowMetadata> arrowMetadataList,
+                         @JsonProperty("layoutParams") LayoutParameters layoutParams) {
         for (ComponentMetadata componentMetadata : componentMetadataList) {
             addComponentMetadata(componentMetadata);
         }
@@ -125,6 +195,10 @@ public class GraphMetadata implements AnchorPointProvider {
         for (WireMetadata wireMetadata : wireMetadataList) {
             addWireMetadata(wireMetadata);
         }
+        for (ArrowMetadata arrowMetadata : arrowMetadataList) {
+            addArrowMetadata(arrowMetadata);
+        }
+        layoutParameters = layoutParams;
     }
 
     public static GraphMetadata parseJson(Path file) {
@@ -184,8 +258,7 @@ public class GraphMetadata implements AnchorPointProvider {
     }
 
     public ComponentMetadata getComponentMetadata(ComponentType componentType) {
-        Objects.requireNonNull(componentType);
-        return componentMetadataByType.get(componentType);
+        return componentType != null ? componentMetadataByType.get(componentType) : null;
     }
 
     @Override
@@ -234,5 +307,26 @@ public class GraphMetadata implements AnchorPointProvider {
     @JsonProperty("wires")
     public List<WireMetadata> getWireMetadata() {
         return ImmutableList.copyOf(wireMetadataMap.values());
+    }
+
+    public void addArrowMetadata(ArrowMetadata metadata) {
+        Objects.requireNonNull(metadata);
+        arrowMetadataMap.put(metadata.getId(), metadata);
+    }
+
+    public ArrowMetadata getArrowMetadata(String id) {
+        Objects.requireNonNull(id);
+        return arrowMetadataMap.get(id);
+    }
+
+    @JsonProperty("arrows")
+    public List<ArrowMetadata> getArrowMetadata() {
+        return ImmutableList.copyOf(arrowMetadataMap.values());
+    }
+
+    @JsonProperty("layoutParams")
+    public LayoutParameters getLayoutParameters() {
+        return layoutParameters;
+
     }
 }

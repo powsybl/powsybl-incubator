@@ -45,7 +45,7 @@
         </metadata>
     </component>
     <component>
-        <fileName>2-windings-transformer.svg</fileName>
+        <fileName>3-windings-transformer.svg</fileName>
         <metadata type="THREE_WINDINGS_TRANSFORMER">
             <size width="13" height="8"/>
             <anchorPoint x="0" y="-4" orientation="VERTICAL"/>
@@ -115,6 +115,13 @@
             <size width="16" height="8"/>
             <anchorPoint x="0" y="-6" orientation="VERTICAL"/>
             <anchorPoint x="0" y="6" orientation="VERTICAL"/>
+        </metadata>
+    </component>
+    <component>
+        <fileName>arrow.svg</fileName>
+        <metadata type="ARROW">
+            <size height="10" width="10"/>
+            <anchorPoint x="0" y="0" orientation="VERTICAL"/>
         </metadata>
     </component>
 </components>

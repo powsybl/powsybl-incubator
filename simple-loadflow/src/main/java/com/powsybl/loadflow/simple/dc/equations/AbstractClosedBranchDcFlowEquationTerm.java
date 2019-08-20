@@ -7,9 +7,9 @@
 package com.powsybl.loadflow.simple.dc.equations;
 
 import com.google.common.collect.ImmutableList;
-import com.powsybl.iidm.network.Bus;
 import com.powsybl.loadflow.simple.equations.*;
-import com.powsybl.loadflow.simple.network.BranchCharacteristics;
+import com.powsybl.loadflow.simple.network.LfBranch;
+import com.powsybl.loadflow.simple.network.LfBus;
 
 import java.util.List;
 import java.util.Objects;
@@ -19,7 +19,7 @@ import java.util.Objects;
  */
 public abstract class AbstractClosedBranchDcFlowEquationTerm implements EquationTerm {
 
-    protected final BranchCharacteristics bc;
+    protected final LfBranch branch;
 
     protected final Variable ph1Var;
 
@@ -31,14 +31,14 @@ public abstract class AbstractClosedBranchDcFlowEquationTerm implements Equation
 
     protected final double power;
 
-    protected AbstractClosedBranchDcFlowEquationTerm(BranchCharacteristics bc, Bus bus1, Bus bus2,
+    protected AbstractClosedBranchDcFlowEquationTerm(LfBranch branch, LfBus bus1, LfBus bus2,
                                                      Equation equation, EquationContext equationContext) {
-        this.bc = Objects.requireNonNull(bc);
+        this.branch = Objects.requireNonNull(branch);
         this.equation = Objects.requireNonNull(equation);
-        ph1Var = equationContext.getVariable(bus1.getId(), VariableType.BUS_PHI);
-        ph2Var = equationContext.getVariable(bus2.getId(), VariableType.BUS_PHI);
+        ph1Var = equationContext.getVariable(bus1.getNum(), VariableType.BUS_PHI);
+        ph2Var = equationContext.getVariable(bus2.getNum(), VariableType.BUS_PHI);
         variables = ImmutableList.of(ph1Var, ph2Var);
-        power =  1 / bc.x() * bc.getBranch().getTerminal1().getVoltageLevel().getNominalV() * bc.r1() * bc.getBranch().getTerminal2().getVoltageLevel().getNominalV() * bc.r2();
+        power =  1 / this.branch.x() * this.branch.r1() * this.branch.r2();
     }
 
     @Override
@@ -49,5 +49,10 @@ public abstract class AbstractClosedBranchDcFlowEquationTerm implements Equation
     @Override
     public List<Variable> getVariables() {
         return variables;
+    }
+
+    @Override
+    public boolean hasRhs() {
+        return true;
     }
 }

@@ -49,13 +49,12 @@ public class PositionVoltageLevelLayout implements VoltageLevelLayout {
     private void calculateCellCoord(Graph graph, LayoutParameters layoutParam) {
         graph.getCells().stream()
                 .filter(cell -> cell.getType() == Cell.CellType.EXTERN
-                        || cell.getType() == Cell.CellType.INTERN
-                        || cell.getType() == Cell.CellType.INTERNBOUND)
+                        || cell.getType() == Cell.CellType.INTERN)
                 .forEach(cell ->
-                                 cell.getRootBlock().calculateCoord(layoutParam));
+                        cell.getRootBlock().calculateCoord(layoutParam));
         graph.getCells().stream()
                 .filter(cell -> cell.getType() == Cell.CellType.SHUNT)
                 .forEach(cell ->
-                                 cell.getRootBlock().calculateCoord(layoutParam));
+                        cell.getRootBlock().calculateCoord(layoutParam));
     }
 }

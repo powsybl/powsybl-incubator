@@ -6,7 +6,12 @@
  */
 package com.powsybl.substationdiagram.layout;
 
-import com.powsybl.substationdiagram.model.*;
+import com.powsybl.substationdiagram.model.Cell;
+import com.powsybl.substationdiagram.model.ExternCell;
+import com.powsybl.substationdiagram.model.Graph;
+import com.powsybl.substationdiagram.model.InternCell;
+import com.powsybl.substationdiagram.model.Node;
+import com.powsybl.substationdiagram.model.ShuntCell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +56,7 @@ public class ImplicitCellDetector implements CellDetector {
     @Override
     public void detectCells(Graph graph) {
         cleaning(graph);
+
         LOGGER.info("Detecting cells...");
 
         List<Node> allocatedNodes = new ArrayList<>();
@@ -64,12 +70,14 @@ public class ImplicitCellDetector implements CellDetector {
         // ****************EXTERN AND SHUNT CELLS******
         stopTypes.add(Node.NodeType.FEEDER);
         genericDetectCell(graph, stopTypes, new ArrayList<>(), false, allocatedNodes);
-        for (Cell cell : graph.getCells().stream()
-                .filter(cell -> cell.getType() == Cell.CellType.UNDEFINED)
+        for (ExternCell cell : graph.getCells().stream()
+
+                .filter(cell -> cell instanceof ExternCell)
+                .map(ExternCell.class::cast)
                 .collect(Collectors.toList())) {
 
             //*****************EXTERN CELL
-            if (!typeExternCellReturnFalseIfShunt(graph, cell)) {
+            if (!isPureExternCell(graph, cell)) {
                 //*****************SHUNT CELL
                 //in that case the cell is splitted into 2 EXTERN Cells and 1 SHUNT CELL
                 detectAndTypeShunt(graph, cell);
@@ -105,28 +113,24 @@ public class ImplicitCellDetector implements CellDetector {
                                    List<Node.NodeType> exclusionTypes,
                                    boolean isCellIntern,
                                    List<Node> allocatedNodes) {
-        graph.getNodeBuses().forEach(bus -> {
-            List<BusNode> visitedBus = new ArrayList<>();
-            visitedBus.add(bus);
-            bus.getAdjacentNodes().forEach(adj -> {
-                List<Node> cellNodes = new ArrayList<>();
-                List<Node> visitedNodes = new ArrayList<>(allocatedNodes);
-                visitedNodes.addAll(visitedBus);
-                boolean searchOK = rDelimitedExploration(adj, typeStops, exclusionTypes, cellNodes, visitedNodes);
-                if (searchOK && !cellNodes.isEmpty()) {
-                    cellNodes.add(adj);
-                    cellNodes.add(bus);
-                    Cell cell = isCellIntern ? new InternCell(graph) : new Cell(graph);
-                    cell.setNodes(cellNodes);
-                    allocatedNodes.addAll(cellNodes);
-                    // remove the BusNodes from allocatedNode for a BusNode can be part of many cells
-                    allocatedNodes.removeAll(
-                            cellNodes.stream()
-                                    .filter(node -> node.getType() == Node.NodeType.BUS)
-                                    .collect(Collectors.toList()));
-                }
-            });
-        });
+        graph.getNodeBuses().forEach(bus -> bus.getAdjacentNodes().forEach(adj -> {
+            List<Node> cellNodes = new ArrayList<>();
+            List<Node> visitedNodes = new ArrayList<>(allocatedNodes);
+            visitedNodes.add(bus);
+            boolean searchOK = rDelimitedExploration(adj, typeStops, exclusionTypes, cellNodes, visitedNodes);
+            if (searchOK && !cellNodes.isEmpty()) {
+                cellNodes.add(adj);
+                cellNodes.add(bus);
+                Cell cell = isCellIntern ? new InternCell(graph) : new ExternCell(graph);
+                cell.setNodes(cellNodes);
+                allocatedNodes.addAll(cellNodes);
+                // remove the BusNodes from allocatedNode for a BusNode can be part of many cells
+                allocatedNodes.removeAll(
+                        cellNodes.stream()
+                                .filter(node -> node.getType() == Node.NodeType.BUS)
+                                .collect(Collectors.toList()));
+            }
+        }));
     }
 
     /**
@@ -170,11 +174,11 @@ public class ImplicitCellDetector implements CellDetector {
     }
 
     /**
-     * set Cell.type to Extern if the cell analysed is an external one, and return true in that case, else false (suspected shunt)
+     * Check if the cell is a pure extern and return true in that case, else false (suspected shunt)
      *
      * @param cell : the cell to analyse
      **/
-    private boolean typeExternCellReturnFalseIfShunt(Graph graph, Cell cell) {
+    private boolean isPureExternCell(Graph graph, ExternCell cell) {
         /*Explore the graph of the candidate cell. Remove successively one node, assess if it splits the graph into n>1 branches
         if so, then check if each component is exclusively reaching FEEDER or exclusively reaching BUS
         And verify you have at least one of them
@@ -185,7 +189,6 @@ public class ImplicitCellDetector implements CellDetector {
             nodes.remove(n);
             List<List<Node>> connexComponents = graph.getConnexComponents(nodes);
             if (checkExternComponents(connexComponents)) {
-                cell.setType(Cell.CellType.EXTERN);
                 return true;
             }
         }
@@ -242,14 +245,13 @@ public class ImplicitCellDetector implements CellDetector {
                         .filter(m -> !m.getType().equals(Node.NodeType.BUS))
                         .collect(Collectors.toList()));
                 n.setType(Node.NodeType.SHUNT);
-                Cell newCell1 = new Cell(graph);
-                newCell1.setType(Cell.CellType.EXTERN);
+                ExternCell newExternCell = new ExternCell(graph);
                 cellNodesExtern1.add(n);
-                newCell1.setNodes(cellNodesExtern1);
+                newExternCell.setNodes(cellNodesExtern1);
 
                 //create the shunt cell
 
-                Cell shuntCell = createShuntCell(graph, n, cellNodesExtern1);
+                ShuntCell shuntCell = createShuntCell(graph, n, cellNodesExtern1);
 
                 // create the 2nd external cell
                 List<Node> cellNodesExtern2 = cell.getNodes().stream()
@@ -263,12 +265,11 @@ public class ImplicitCellDetector implements CellDetector {
                                 cellNodesExtern2::contains))
                         .collect(Collectors.toList()));
 
-                Cell newCell2 = new Cell(graph);
-                newCell2.setType(Cell.CellType.EXTERN);
-                newCell2.setNodes(cellNodesExtern2);
+                ExternCell newExternCell2 = new ExternCell(graph);
+                newExternCell2.setNodes(cellNodesExtern2);
 
                 graph.removeCell(cell);
-                shuntCell.setBridgingCellsFromShuntNodes();
+// TODO                shuntCell.setBridgingCellsFromShuntNodes();
                 break;
             }
         }
@@ -332,7 +333,7 @@ public class ImplicitCellDetector implements CellDetector {
         return (hasBusBranch && hasFeederBranch && hasMixBranch) ? cellNodesExtern : null;
     }
 
-    private Cell createShuntCell(Graph graph, Node n, List<Node> cellNodesExtern1) {
+    private ShuntCell createShuntCell(Graph graph, Node n, List<Node> cellNodesExtern1) {
         List<Node> shuntCellNodes = new ArrayList<>();
         shuntCellNodes.add(n);
         Node currentNode = n.getAdjacentNodes().stream()
@@ -347,10 +348,10 @@ public class ImplicitCellDetector implements CellDetector {
             shuntCellNodes.add(currentNode);
             currentNode.setType(Node.NodeType.SHUNT);
         }
-        Cell shuntCell = new Cell(graph); // the shunt branch is made of the remaining cells + the actual node n
-        shuntCell.setType(Cell.CellType.SHUNT);
+        ShuntCell shuntCell = new ShuntCell(graph); // the shunt branch is made of the remaining cells + the actual node n
         shuntCell.setNodes(shuntCellNodes);
         return shuntCell;
     }
+
 }
 

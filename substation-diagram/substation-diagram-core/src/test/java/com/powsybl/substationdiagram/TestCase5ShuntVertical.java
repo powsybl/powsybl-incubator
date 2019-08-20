@@ -51,7 +51,7 @@ public class TestCase5ShuntVertical extends AbstractTestCase {
     public void setUp() {
         fileSystem = Jimfs.newFileSystem(Configuration.unix());
 
-        Network network = NetworkFactory.create("testCase1", "test");
+        network = Network.create("testCase1", "test");
         Substation s = network.newSubstation()
                 .setId("s")
                 .setCountry(Country.FR)
@@ -157,17 +157,16 @@ public class TestCase5ShuntVertical extends AbstractTestCase {
         assertTrue(new BlockOrganizer().organize(g));
 
         // assert blocks and nodes rotation
-        assertEquals(1, cella.getPrimaryBlocksConnectedToBus().size());
+        assertEquals(1, ((BusCell) cella).getPrimaryBlocksConnectedToBus().size());
         assertNotNull(cella.getRootBlock());
         assertTrue(cella.getRootBlock() instanceof SerialBlock);
         assertEquals(new Position(0, 0, 1, 3, false, Orientation.VERTICAL), cella.getRootBlock().getPosition());
 
-        assertEquals(1, cellb.getPrimaryBlocksConnectedToBus().size());
+        assertEquals(1, ((BusCell) cellb).getPrimaryBlocksConnectedToBus().size());
         assertNotNull(cellb.getRootBlock());
         assertTrue(cellb.getRootBlock() instanceof SerialBlock);
         assertEquals(new Position(1, 0, 1, 2, false, Orientation.VERTICAL), cellb.getRootBlock().getPosition());
 
-        assertEquals(0, cellShunt.getPrimaryBlocksConnectedToBus().size());
         assertNotNull(cellShunt.getRootBlock());
         assertTrue(cellShunt.getRootBlock() instanceof PrimaryBlock);
         assertEquals(new Position(-1, -1, 0, 0, false, Orientation.HORIZONTAL), cellShunt.getRootBlock().getPosition());

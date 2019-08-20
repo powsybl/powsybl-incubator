@@ -6,11 +6,12 @@
  */
 package com.powsybl.loadflow.simple.ac.equations;
 
-import com.powsybl.iidm.network.Bus;
 import com.powsybl.loadflow.simple.equations.EquationContext;
 import com.powsybl.loadflow.simple.equations.EquationType;
 import com.powsybl.loadflow.simple.equations.Variable;
-import com.powsybl.loadflow.simple.network.BranchCharacteristics;
+import com.powsybl.loadflow.simple.network.LfBranch;
+import com.powsybl.loadflow.simple.network.LfBus;
+import net.jafama.FastMath;
 
 import java.util.Objects;
 
@@ -29,8 +30,8 @@ public class ClosedBranchSide2ActiveFlowEquationTerm extends AbstractClosedBranc
 
     private double dp2dph2;
 
-    public ClosedBranchSide2ActiveFlowEquationTerm(BranchCharacteristics bc, Bus bus1, Bus bus2, EquationContext equationContext) {
-        super(bc, bus1, bus2, equationContext.getEquation(bus2.getId(), EquationType.BUS_P), equationContext);
+    public ClosedBranchSide2ActiveFlowEquationTerm(LfBranch branch, LfBus bus1, LfBus bus2, EquationContext equationContext) {
+        super(branch, bus1, bus2, equationContext.getEquation(bus2.getNum(), EquationType.BUS_P), equationContext);
     }
 
     @Override
@@ -41,8 +42,8 @@ public class ClosedBranchSide2ActiveFlowEquationTerm extends AbstractClosedBranc
         double ph1 = x[ph1Var.getColumn()];
         double ph2 = x[ph2Var.getColumn()];
         double theta = ksi + a1 - a2 + ph1 - ph2;
-        double sinTheta = Math.sin(theta);
-        double cosTheta = Math.cos(theta);
+        double sinTheta = FastMath.sin(theta);
+        double cosTheta = FastMath.cos(theta);
         p2 = r2 * v2 * (g2 * r2 * v2 - y * r1 * v1 * sinTheta + y * r2 * v2 * sinKsi);
         dp2dv1 = -y * r1 * r2 * v2 * sinTheta;
         dp2dv2 = r2 * (2 * g2 * r2 * v2 - y * r1 * v1 * sinTheta + 2 * y * r2 * v2 * sinKsi);
@@ -69,10 +70,5 @@ public class ClosedBranchSide2ActiveFlowEquationTerm extends AbstractClosedBranc
         } else {
             throw new IllegalStateException("Unknown variable: " + variable);
         }
-    }
-
-    @Override
-    public double rhs(Variable variable) {
-        return 0;
     }
 }

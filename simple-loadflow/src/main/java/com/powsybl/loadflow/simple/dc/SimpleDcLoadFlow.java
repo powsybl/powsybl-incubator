@@ -6,27 +6,24 @@
  */
 package com.powsybl.loadflow.simple.dc;
 
-import com.google.common.base.Stopwatch;
-import com.powsybl.iidm.network.*;
+import com.powsybl.iidm.network.Network;
 import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
 import com.powsybl.loadflow.LoadFlowResultImpl;
-import com.powsybl.loadflow.simple.dc.equations.DcEquationSystem;
-import com.powsybl.loadflow.simple.equations.EquationSystem;
-import com.powsybl.loadflow.simple.network.NetworkContext;
-import com.powsybl.math.matrix.LUDecomposition;
-import com.powsybl.math.matrix.Matrix;
+import com.powsybl.loadflow.simple.network.FirstSlackBusSelector;
+import com.powsybl.loadflow.simple.network.LfBus;
+import com.powsybl.loadflow.simple.network.LfNetwork;
+import com.powsybl.loadflow.simple.network.impl.LfNetworks;
 import com.powsybl.math.matrix.MatrixFactory;
 import com.powsybl.math.matrix.SparseMatrixFactory;
+import com.powsybl.tools.PowsyblCoreVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -46,6 +43,8 @@ public class SimpleDcLoadFlow implements LoadFlow {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleDcLoadFlow.class);
 
+    private static final String NAME = "Simple DC loadflow";
+
     private final Network network;
 
     private final MatrixFactory matrixFactory;
@@ -63,74 +62,46 @@ public class SimpleDcLoadFlow implements LoadFlow {
         return new SimpleDcLoadFlow(network);
     }
 
-    private static void balance(NetworkContext networkContext) {
+    @Override
+    public String getName() {
+        return NAME;
+    }
+
+    @Override
+    public String getVersion() {
+        return new PowsyblCoreVersion().getMavenProjectVersion();
+    }
+
+    private static void balance(LfNetwork network) {
         double activeGeneration = 0;
         double activeLoad = 0;
-        for (Bus b : networkContext.getBuses()) {
-            for (Generator g : b.getGenerators()) {
-                activeGeneration += g.getTargetP();
-            }
-            for (Load l : b.getLoads()) {
-                activeLoad += l.getP0();
-            }
-            for (DanglingLine dl : b.getDanglingLines()) {
-                activeLoad += dl.getP0();
-            }
+        for (LfBus b : network.getBuses()) {
+            activeGeneration += b.getGenerationTargetP();
+            activeLoad += b.getLoadTargetP();
         }
 
         LOGGER.info("Active generation={} Mw, active load={} Mw", Math.round(activeGeneration), Math.round(activeLoad));
     }
 
     @Override
-    public CompletableFuture<LoadFlowResult> run(String state, LoadFlowParameters loadFlowParameters) {
+    public CompletableFuture<LoadFlowResult> run(String workingStateId, LoadFlowParameters loadFlowParameters) {
+        Objects.requireNonNull(workingStateId);
+        Objects.requireNonNull(loadFlowParameters);
 
-        Stopwatch stopwatch = Stopwatch.createStarted();
+        return CompletableFuture.supplyAsync(() -> {
+            network.getVariantManager().setWorkingVariant(workingStateId);
 
-        network.getVariantManager().setWorkingVariant(state);
+            LfNetwork lfNetwork = LfNetworks.create(network, new FirstSlackBusSelector()).get(0);
 
-        NetworkContext networkContext = NetworkContext.of(network).get(0);
+            balance(lfNetwork);
 
-        balance(networkContext);
+            boolean status = new DcLoadFlowEngine(lfNetwork, matrixFactory)
+                    .run();
 
-        EquationSystem equationSystem = DcEquationSystem.create(networkContext);
+            LfNetworks.resetState(network);
+            lfNetwork.updateState();
 
-        double[] x = equationSystem.initState(loadFlowParameters.getVoltageInitMode());
-
-        double[] targets = equationSystem.getTargets();
-
-        equationSystem.updateEquationTerms(x);
-        Matrix j = equationSystem.buildJacobian(matrixFactory);
-
-        double[] dx = Arrays.copyOf(targets, targets.length);
-
-        boolean status;
-        try {
-            try (LUDecomposition lu = j.decomposeLU()) {
-                lu.solve(dx);
-            }
-            status = true;
-        } catch (Exception e) {
-            status = false;
-            LOGGER.error("Failed to solve linear system for simple DC load flow.", e);
-        }
-
-        networkContext.resetState();
-        equationSystem.updateEquationTerms(dx);
-        equationSystem.updateState(dx);
-
-        stopwatch.stop();
-        LOGGER.info("DC loadflow complete in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
-
-        return CompletableFuture.completedFuture(new LoadFlowResultImpl(status, Collections.emptyMap(), null));
-    }
-
-    @Override
-    public String getName() {
-        return "Simple DC loadflow";
-    }
-
-    @Override
-    public String getVersion() {
-        return "1.0";
+            return new LoadFlowResultImpl(status, Collections.emptyMap(), null);
+        });
     }
 }

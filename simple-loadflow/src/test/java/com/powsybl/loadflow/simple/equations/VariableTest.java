@@ -19,13 +19,13 @@ public class VariableTest {
     @Test
     public void testEquals() {
         new EqualsTester()
-                .addEqualityGroup(new Variable("a", VariableType.BUS_PHI), new Variable("a", VariableType.BUS_PHI))
-                .addEqualityGroup(new Variable("b", VariableType.BUS_V), new Variable("b", VariableType.BUS_V))
+                .addEqualityGroup(new Variable(0, VariableType.BUS_PHI), new Variable(0, VariableType.BUS_PHI))
+                .addEqualityGroup(new Variable(1, VariableType.BUS_V), new Variable(1, VariableType.BUS_V))
                 .testEquals();
     }
 
     @Test
     public void testToString() {
-        assertEquals("Variable(id=a, type=BUS_PHI, column=-1)", new Variable("a", VariableType.BUS_PHI).toString());
+        assertEquals("Variable(num=0, type=BUS_PHI, column=-1)", new Variable(0, VariableType.BUS_PHI).toString());
     }
 }

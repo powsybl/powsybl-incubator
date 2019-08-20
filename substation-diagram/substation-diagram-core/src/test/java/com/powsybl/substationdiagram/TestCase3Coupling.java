@@ -36,7 +36,7 @@ public class TestCase3Coupling extends AbstractTestCase {
 
     @Before
     public void setUp() {
-        Network network = NetworkFactory.create("testCase1", "test");
+        network = Network.create("testCase1", "test");
         Substation s = network.newSubstation()
                 .setId("s")
                 .setCountry(Country.FR)
@@ -98,14 +98,14 @@ public class TestCase3Coupling extends AbstractTestCase {
         Cell cell = g.getCells().iterator().next();
         assertEquals(Cell.CellType.INTERN, cell.getType());
         assertEquals(7, cell.getNodes().size());
-        assertEquals(2, cell.getBusNodes().size());
+        assertEquals(2, ((BusCell) cell).getBusNodes().size());
         assertEquals("INTERN[FICT_vl_d1Fictif, FICT_vl_d2Fictif, b, bbs1, bbs2, d1, d2]", cell.getFullId());
 
         // build blocks
         assertTrue(new BlockOrganizer().organize(g));
 
         // assert blocks and nodes rotation
-        assertEquals(2, cell.getPrimaryBlocksConnectedToBus().size());
+        assertEquals(2, ((BusCell) cell).getPrimaryBlocksConnectedToBus().size());
         assertNotNull(cell.getRootBlock());
         assertTrue(cell.getRootBlock() instanceof ParallelBlock);
         ParallelBlock bp = (ParallelBlock) cell.getRootBlock();

@@ -34,7 +34,7 @@
         <batik.version>1.9</batik.version>
         <jaxb2.basics.version>1.11.1</jaxb2.basics.version>
         <jaxb.api.version>2.2.3</jaxb.api.version>
-
+        <jimfs.version>1.1</jimfs.version>
         <franzxaver.version>0.1</franzxaver.version>
         <rdf4j.version>2.4.4</rdf4j.version>
     </properties>
@@ -132,6 +132,12 @@
             </dependency>
 
             <!-- test dependencies -->
+            <dependency>
+                <groupId>com.google.jimfs</groupId>
+                <artifactId>jimfs</artifactId>
+                <version>${jimfs.version}</version>
+                <scope>test</scope>
+            </dependency>
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>

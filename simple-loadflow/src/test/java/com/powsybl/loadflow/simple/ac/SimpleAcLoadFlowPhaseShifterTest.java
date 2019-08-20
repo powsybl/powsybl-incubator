@@ -37,9 +37,9 @@ public class SimpleAcLoadFlowPhaseShifterTest {
     @Before
     public void setUp() {
         network = PhaseShifterTestCaseFactory.create();
-        bus1 = network.getBusBreakerView().getBusStream().filter(b -> b.getId().equals("B1")).findFirst().orElseThrow(AssertionError::new);
-        bus2 = network.getBusBreakerView().getBusStream().filter(b -> b.getId().equals("B2")).findFirst().orElseThrow(AssertionError::new);
-        bus3 = network.getBusBreakerView().getBusStream().filter(b -> b.getId().equals("B3")).findFirst().orElseThrow(AssertionError::new);
+        bus1 = network.getBusBreakerView().getBus("B1");
+        bus2 = network.getBusBreakerView().getBus("B2");
+        bus3 = network.getBusBreakerView().getBus("B3");
 
         line1 = network.getLine("L1");
         line2 = network.getLine("L2");
@@ -49,7 +49,10 @@ public class SimpleAcLoadFlowPhaseShifterTest {
 
         loadFlow = new SimpleAcLoadFlow(network, new DenseMatrixFactory());
         parameters = new LoadFlowParameters();
-        parameters.addExtension(SimpleAcLoadFlowParameters.class, new SimpleAcLoadFlowParameters().setSlackBusSelection(SimpleAcLoadFlowParameters.SlackBusSelection.FIRST));
+        SimpleAcLoadFlowParameters parametersExt = new SimpleAcLoadFlowParameters()
+                .setSlackBusSelectionMode(SlackBusSelectionMode.FIRST)
+                .setDistributedSlack(false);
+        this.parameters.addExtension(SimpleAcLoadFlowParameters.class, parametersExt);
     }
 
     @Test
@@ -59,18 +62,18 @@ public class SimpleAcLoadFlowPhaseShifterTest {
 
         assertVoltageEquals(400, bus1);
         assertAngleEquals(0, bus1);
-        assertVoltageEquals(385.693, bus2);
-        assertAngleEquals(-3.679206, bus2);
-        assertVoltageEquals(392.644, bus3);
-        assertAngleEquals(-1.806094, bus3);
-        assertActivePowerEquals(50.084, line1.getTerminal1());
-        assertReactivePowerEquals(29.201, line1.getTerminal1());
-        assertActivePowerEquals(-50, line1.getTerminal2());
-        assertReactivePowerEquals(-25, line1.getTerminal2());
-        assertActivePowerEquals(50.042, line2.getTerminal1());
-        assertReactivePowerEquals(27.1, line2.getTerminal1());
-        assertActivePowerEquals(-50, line2.getTerminal2());
-        assertReactivePowerEquals(-25, line2.getTerminal2());
+        assertVoltageEquals(385.698, bus2);
+        assertAngleEquals(-3.679569, bus2);
+        assertVoltageEquals(392.648, bus3);
+        assertAngleEquals(-1.806254, bus3);
+        assertActivePowerEquals(50.089, line1.getTerminal1());
+        assertReactivePowerEquals(29.192, line1.getTerminal1());
+        assertActivePowerEquals(-50.005, line1.getTerminal2());
+        assertReactivePowerEquals(-24.991, line1.getTerminal2());
+        assertActivePowerEquals(50.048, line2.getTerminal1());
+        assertReactivePowerEquals(27.097, line2.getTerminal1());
+        assertActivePowerEquals(-50.006, line2.getTerminal2());
+        assertReactivePowerEquals(-24.996, line2.getTerminal2());
     }
 
     @Test

@@ -6,10 +6,10 @@
  */
 package com.powsybl.loadflow.simple.ac.equations;
 
-import com.powsybl.iidm.network.Bus;
-import com.powsybl.iidm.network.ShuntCompensator;
 import com.powsybl.loadflow.simple.equations.*;
-import com.powsybl.loadflow.simple.network.NetworkContext;
+import com.powsybl.loadflow.simple.network.LfBus;
+import com.powsybl.loadflow.simple.network.LfShunt;
+import com.powsybl.loadflow.simple.network.LfNetwork;
 
 import java.util.Collections;
 import java.util.List;
@@ -19,8 +19,6 @@ import java.util.Objects;
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
 public class ShuntCompensatorReactiveFlowEquationTerm implements EquationTerm {
-
-    private final ShuntCompensator sc;
 
     private final Variable vVar;
 
@@ -34,16 +32,16 @@ public class ShuntCompensatorReactiveFlowEquationTerm implements EquationTerm {
 
     private double dqdv;
 
-    public ShuntCompensatorReactiveFlowEquationTerm(ShuntCompensator sc, Bus bus, NetworkContext networkContext,
+    public ShuntCompensatorReactiveFlowEquationTerm(LfShunt shunt, LfBus bus, LfNetwork network,
                                                     EquationContext equationContext) {
-        this.sc = Objects.requireNonNull(sc);
+        Objects.requireNonNull(shunt);
         Objects.requireNonNull(bus);
-        Objects.requireNonNull(networkContext);
+        Objects.requireNonNull(network);
         Objects.requireNonNull(equationContext);
-        equation = equationContext.getEquation(bus.getId(), EquationType.BUS_Q);
-        vVar = equationContext.getVariable(bus.getId(), VariableType.BUS_V);
+        equation = equationContext.getEquation(bus.getNum(), EquationType.BUS_Q);
+        vVar = equationContext.getVariable(bus.getNum(), VariableType.BUS_V);
         variables = Collections.singletonList(vVar);
-        b = sc.getCurrentB();
+        b = shunt.getB();
     }
 
     @Override
@@ -77,6 +75,11 @@ public class ShuntCompensatorReactiveFlowEquationTerm implements EquationTerm {
         } else {
             throw new IllegalStateException("Unknown variable: " + variable);
         }
+    }
+
+    @Override
+    public boolean hasRhs() {
+        return false;
     }
 
     @Override

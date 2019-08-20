@@ -9,6 +9,7 @@ package com.powsybl.substationdiagram.view;
 import com.powsybl.substationdiagram.library.ComponentSize;
 import com.powsybl.substationdiagram.library.ComponentType;
 import com.powsybl.substationdiagram.model.BaseNode;
+import com.powsybl.substationdiagram.model.BusCell;
 import com.powsybl.substationdiagram.svg.GraphMetadata;
 import javafx.scene.Node;
 
@@ -25,7 +26,7 @@ public class NodeHandler implements BaseNode {
 
     private final Node node;
 
-    private final ComponentType componentType;
+    private ComponentType componentType;
 
     private final List<WireHandler> wireHandlers = new ArrayList<>();
 
@@ -33,14 +34,22 @@ public class NodeHandler implements BaseNode {
 
     private final GraphMetadata metadata;
 
+    private final String vId;
+
     private double mouseX;
     private double mouseY;
 
-    public NodeHandler(Node node, ComponentType componentType, boolean rotated, GraphMetadata metadata) {
+    private BusCell.Direction direction;
+
+    public NodeHandler(Node node, ComponentType componentType, boolean rotated, GraphMetadata metadata,
+                       String vId, BusCell.Direction direction) {
         this.node = Objects.requireNonNull(node);
-        this.componentType = Objects.requireNonNull(componentType);
+        this.componentType = componentType;
         this.rotated = rotated;
         this.metadata = Objects.requireNonNull(metadata);
+        this.vId = Objects.requireNonNull(vId);
+        this.direction = direction;
+
         setDragAndDrop();
     }
 
@@ -53,6 +62,14 @@ public class NodeHandler implements BaseNode {
         return node.getId();
     }
 
+    public String getVId() {
+        return vId;
+    }
+
+    public BusCell.Direction getDirection() {
+        return direction;
+    }
+
     @Override
     public ComponentType getComponentType() {
         return componentType;
@@ -62,6 +79,10 @@ public class NodeHandler implements BaseNode {
         wireHandlers.add(w);
     }
 
+    public List<WireHandler> getWireHandlers() {
+        return wireHandlers;
+    }
+
     @Override
     public boolean isRotated() {
         return rotated;
@@ -69,14 +90,18 @@ public class NodeHandler implements BaseNode {
 
     @Override
     public double getX() {
-        ComponentSize size = metadata.getComponentMetadata(componentType).getSize();
+        ComponentSize size = componentType != null
+                ? metadata.getComponentMetadata(componentType).getSize()
+                : new ComponentSize(0, 0);
         return node.localToParent(node.getLayoutX() + size.getWidth() / 2,
                                   node.getLayoutY() + size.getHeight() / 2).getX();
     }
 
     @Override
     public double getY() {
-        ComponentSize size = metadata.getComponentMetadata(componentType).getSize();
+        ComponentSize size = componentType != null
+                ? metadata.getComponentMetadata(componentType).getSize()
+                : new ComponentSize(0, 0);
         return node.localToParent(node.getLayoutX() + size.getWidth() / 2,
                                   node.getLayoutY() + size.getHeight() / 2).getY();
     }
@@ -89,13 +114,16 @@ public class NodeHandler implements BaseNode {
         });
 
         node.setOnMouseDragged(event -> {
-            node.setTranslateX(event.getSceneX() - mouseX);
-            node.setTranslateY(event.getSceneY() - mouseY);
-            for (WireHandler w : wireHandlers) {
-                w.refresh();
-            }
-
+            translate(event.getSceneX() - mouseX, event.getSceneY() - mouseY);
             event.consume();
         });
+    }
+
+    public void translate(double translateX, double translateY) {
+        node.setTranslateX(translateX);
+        node.setTranslateY(translateY);
+        for (WireHandler w : wireHandlers) {
+            w.refresh();
+        }
     }
 }

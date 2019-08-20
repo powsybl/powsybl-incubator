@@ -7,15 +7,20 @@
 
 package com.powsybl.loadflow.simple.ac;
 
-import com.powsybl.iidm.network.*;
+import com.powsybl.iidm.network.Bus;
+import com.powsybl.iidm.network.Line;
+import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.network.VariantManagerConstants;
 import com.powsybl.iidm.network.test.EurostagTutorialExample1Factory;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
+import com.powsybl.loadflow.simple.ac.nr.DefaultAcLoadFlowObserver;
 import com.powsybl.math.matrix.DenseMatrixFactory;
 import org.junit.Before;
 import org.junit.Test;
 
 import static com.powsybl.loadflow.simple.util.LoadFlowAssert.*;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -36,29 +41,33 @@ public class SimpleAcLoadFlowEurostagTutorialExample1Test {
     @Before
     public void setUp() {
         network = EurostagTutorialExample1Factory.create();
-        genBus = network.getBusBreakerView().getBusStream().filter(b -> b.getId().equals("NGEN")).findFirst().orElseThrow(AssertionError::new);
-        bus1 = network.getBusBreakerView().getBusStream().filter(b -> b.getId().equals("NHV1")).findFirst().orElseThrow(AssertionError::new);
-        bus2 = network.getBusBreakerView().getBusStream().filter(b -> b.getId().equals("NHV2")).findFirst().orElseThrow(AssertionError::new);
-        loadBus = network.getBusBreakerView().getBusStream().filter(b -> b.getId().equals("NLOAD")).findFirst().orElseThrow(AssertionError::new);
+        genBus = network.getBusBreakerView().getBus("NGEN");
+        bus1 = network.getBusBreakerView().getBus("NHV1");
+        bus2 = network.getBusBreakerView().getBus("NHV2");
+        loadBus = network.getBusBreakerView().getBus("NLOAD");
         line1 = network.getLine("NHV1_NHV2_1");
         line2 = network.getLine("NHV1_NHV2_2");
 
         loadFlow = new SimpleAcLoadFlow(network, new DenseMatrixFactory());
         parameters = new LoadFlowParameters();
-        parameters.addExtension(SimpleAcLoadFlowParameters.class, new SimpleAcLoadFlowParameters().setSlackBusSelection(SimpleAcLoadFlowParameters.SlackBusSelection.FIRST));
+        SimpleAcLoadFlowParameters parametersExt = new SimpleAcLoadFlowParameters()
+                .setSlackBusSelectionMode(SlackBusSelectionMode.FIRST)
+                .setDistributedSlack(false);
+        parameters.addExtension(SimpleAcLoadFlowParameters.class, parametersExt);
     }
 
     @Test
     public void baseCaseTest() {
         LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
         assertTrue(result.isOk());
+        assertEquals("3", result.getMetrics().get("iterations"));
 
         assertVoltageEquals(24.5, genBus);
         assertAngleEquals(0, genBus);
         assertVoltageEquals(402.143, bus1);
         assertAngleEquals(-2.325965, bus1);
         assertVoltageEquals(389.953, bus2);
-        assertAngleEquals(-5.832323, bus2);
+        assertAngleEquals(-5.832329, bus2);
         assertVoltageEquals(147.578, loadBus);
         assertAngleEquals(-11.940451, loadBus);
         assertActivePowerEquals(302.444, line1.getTerminal1());
@@ -69,6 +78,26 @@ public class SimpleAcLoadFlowEurostagTutorialExample1Test {
         assertReactivePowerEquals(98.74, line2.getTerminal1());
         assertActivePowerEquals(-300.434, line2.getTerminal2());
         assertReactivePowerEquals(-137.188, line2.getTerminal2());
+    }
+
+    @Test
+    public void dcLfVoltageInitTest() {
+        parameters.setVoltageInitMode(LoadFlowParameters.VoltageInitMode.DC_VALUES);
+        boolean[] stateVectorInitialized = new boolean[1];
+        loadFlow.getAdditionalObservers().add(new DefaultAcLoadFlowObserver() {
+            @Override
+            public void stateVectorInitialized(double[] x) {
+                assertEquals(0, x[1], DELTA_ANGLE);
+                assertEquals(-0.043833, x[3], DELTA_ANGLE);
+                assertEquals(-0.112393, x[5], DELTA_ANGLE);
+                assertEquals(-0.220241, x[7], DELTA_ANGLE);
+                stateVectorInitialized[0] = true;
+            }
+        });
+        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
+        assertTrue(result.isOk());
+        assertEquals("3", result.getMetrics().get("iterations"));
+        assertTrue(stateVectorInitialized[0]);
     }
 
     @Test
@@ -162,9 +191,9 @@ public class SimpleAcLoadFlowEurostagTutorialExample1Test {
         assertTrue(result.isOk());
 
         assertVoltageEquals(152.327, loadBus);
-        assertReactivePowerEquals(52.988, line1.getTerminal1());
-        assertReactivePowerEquals(-95.064, line1.getTerminal2());
-        assertReactivePowerEquals(52.988, line2.getTerminal1());
-        assertReactivePowerEquals(-95.064, line2.getTerminal2());
+        assertReactivePowerEquals(52.987, line1.getTerminal1());
+        assertReactivePowerEquals(-95.063, line1.getTerminal2());
+        assertReactivePowerEquals(52.987, line2.getTerminal1());
+        assertReactivePowerEquals(-95.063, line2.getTerminal2());
     }
 }

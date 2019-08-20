@@ -6,14 +6,7 @@
  */
 package com.powsybl.loadflow.simple.equations;
 
-import com.powsybl.math.matrix.DenseMatrixFactory;
-import com.powsybl.math.matrix.Matrix;
-import org.slf4j.Logger;
-import org.usefultoys.slf4j.LoggerFactory;
-
-import java.io.PrintStream;
-import java.util.List;
-import java.util.Objects;
+import net.jafama.FastMath;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -32,22 +25,11 @@ public final class Vectors {
         }
     }
 
-    public static void log(double[] vector, List<String> names, Logger logger, String name) {
-        Objects.requireNonNull(vector);
-        Objects.requireNonNull(logger);
-        try (PrintStream ps = LoggerFactory.getInfoPrintStream(logger)) {
-            ps.print(name);
-            ps.println("=");
-            Matrix.createFromColumn(vector, new DenseMatrixFactory())
-                    .print(ps, names, null);
-        }
-    }
-
     public static double norm2(double[] vector) {
         double norm = 0;
         for (double v : vector) {
             norm += v * v;
         }
-        return Math.sqrt(norm);
+        return FastMath.sqrt(norm);
     }
 }

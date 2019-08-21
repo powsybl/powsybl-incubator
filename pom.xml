@@ -58,7 +58,7 @@
         <module>cgmes-model-interpretation</module>
 		<module>cgmes-conversion-validation</module>
         <module>base-voltage-color</module>
-    </modules>
+   </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

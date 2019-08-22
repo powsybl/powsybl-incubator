@@ -25,17 +25,17 @@ public class AcLoadFlowLogger extends DefaultAcLoadFlowObserver {
 
     @Override
     public void beginMacroIteration(int macroIteration, String macroActionName) {
-        LOGGER.debug("Macro iteration {} (action={})", macroIteration, macroActionName);
+        LOGGER.debug("Start macro iteration {} (action='{}')", macroIteration, macroActionName);
     }
 
     @Override
     public void beforeVoltageInitializerPreparation(Class<?> voltageInitializerClass) {
-        LOGGER.debug("Voltage level initializer: {}", voltageInitializerClass.getSimpleName());
+        LOGGER.info("Voltage level initializer: {}", voltageInitializerClass.getSimpleName());
     }
 
     @Override
     public void beginIteration(int iteration) {
-        LOGGER.debug("Iteration {}", iteration);
+        LOGGER.debug("Start iteration {}", iteration);
     }
 
     @Override

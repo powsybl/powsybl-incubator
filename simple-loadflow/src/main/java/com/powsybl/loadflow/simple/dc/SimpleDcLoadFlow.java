@@ -6,13 +6,11 @@
  */
 package com.powsybl.loadflow.simple.dc;
 
-import com.google.common.base.Stopwatch;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
 import com.powsybl.loadflow.LoadFlowResultImpl;
-import com.powsybl.loadflow.simple.ac.nr.VoltageInitializer;
 import com.powsybl.loadflow.simple.network.FirstSlackBusSelector;
 import com.powsybl.loadflow.simple.network.LfBus;
 import com.powsybl.loadflow.simple.network.LfNetwork;
@@ -26,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -92,24 +89,17 @@ public class SimpleDcLoadFlow implements LoadFlow {
         Objects.requireNonNull(loadFlowParameters);
 
         return CompletableFuture.supplyAsync(() -> {
-            Stopwatch stopwatch = Stopwatch.createStarted();
-
             network.getVariantManager().setWorkingVariant(workingStateId);
 
             LfNetwork lfNetwork = LfNetworks.create(network, new FirstSlackBusSelector()).get(0);
 
             balance(lfNetwork);
 
-            VoltageInitializer voltageInitializer = VoltageInitializer.getFromParameters(loadFlowParameters);
-
-            boolean status = new DcLoadFlowEngine(lfNetwork, voltageInitializer, matrixFactory)
+            boolean status = new DcLoadFlowEngine(lfNetwork, matrixFactory)
                     .run();
 
             LfNetworks.resetState(network);
             lfNetwork.updateState();
-
-            stopwatch.stop();
-            LOGGER.info("DC loadflow complete in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
 
             return new LoadFlowResultImpl(status, Collections.emptyMap(), null);
         });

@@ -9,9 +9,9 @@ package com.powsybl.loadflow.simple.ac.macro;
 import com.google.common.base.Stopwatch;
 import com.powsybl.loadflow.simple.ac.equations.AcEquationSystem;
 import com.powsybl.loadflow.simple.ac.nr.*;
-import com.powsybl.loadflow.simple.ac.nr.AcLoadFlowObserver;
 import com.powsybl.loadflow.simple.equations.EquationContext;
 import com.powsybl.loadflow.simple.equations.EquationSystem;
+import com.powsybl.loadflow.simple.equations.VoltageInitializer;
 import com.powsybl.loadflow.simple.network.LfNetwork;
 import com.powsybl.loadflow.simple.network.PerUnit;
 import com.powsybl.math.matrix.MatrixFactory;
@@ -21,6 +21,8 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+
+import static com.powsybl.loadflow.simple.util.Markers.PERFORMANCE_MARKER;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -110,8 +112,9 @@ public class AcloadFlowEngine {
         int iterations = lastNrResult.getIteration();
         int macroIterations = macroIteration + 1;
 
-        LOGGER.info("Ac loadflow ran in {} ms (status={}, iterations={}, macroIterations={}, slackBusActivePowerMismatch={})",
-                stopwatch.elapsed(TimeUnit.MILLISECONDS),
+        LOGGER.debug(PERFORMANCE_MARKER, "Ac loadflow ran in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
+
+        LOGGER.info("Ac loadflow complete (status={}, iterations={}, macroIterations={}, slackBusActivePowerMismatch={})",
                 lastNrResult.getStatus(),
                 iterations,
                 macroIterations,

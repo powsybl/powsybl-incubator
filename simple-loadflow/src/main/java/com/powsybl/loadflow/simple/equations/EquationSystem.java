@@ -7,7 +7,6 @@
 package com.powsybl.loadflow.simple.equations;
 
 import com.powsybl.commons.PowsyblException;
-import com.powsybl.loadflow.simple.ac.nr.VoltageInitializer;
 import com.powsybl.loadflow.simple.network.LfNetwork;
 import com.powsybl.math.matrix.Matrix;
 import com.powsybl.math.matrix.MatrixFactory;

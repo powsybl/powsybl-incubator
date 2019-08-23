@@ -29,8 +29,6 @@ public interface AcLoadFlowObserver {
 
     void afterEquationSystemCreation();
 
-    void beginMacroIteration(int macroIteration, String macroActionName);
-
     void beforeVoltageInitializerPreparation(Class<?> voltageInitializerClass);
 
     void afterVoltageInitializerPreparation();
@@ -63,11 +61,13 @@ public interface AcLoadFlowObserver {
 
     void endIteration(int iteration);
 
-    void beforeMacroActionRun(int macroIteration, String macroActionName);
+    void beforeOuterLoopStatusCheck(int outerLoopIteration, String outerLoopName);
 
-    void afterMacroActionRun(int macroIteration, String macroActionName, boolean cont);
+    void afterOuterLoopStatusCheck(int outerLoopIteration, String outerLoopName, boolean stable);
 
-    void endMacroIteration(int macroIteration, String macroActionName);
+    void beforeOuterLoopBody(int outerLoopIteration, String outerLoopName);
+
+    void afterOuterLoopBody(int outerLoopIteration, String outerLoopName);
 
     void beforeNetworkUpdate();
 

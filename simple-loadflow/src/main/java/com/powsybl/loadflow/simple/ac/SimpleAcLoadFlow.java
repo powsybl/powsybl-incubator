@@ -12,9 +12,9 @@ import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
 import com.powsybl.loadflow.LoadFlowResultImpl;
-import com.powsybl.loadflow.simple.ac.macro.AcLoadFlowResult;
-import com.powsybl.loadflow.simple.ac.macro.AcloadFlowEngine;
-import com.powsybl.loadflow.simple.ac.macro.MacroAction;
+import com.powsybl.loadflow.simple.ac.outerloop.AcLoadFlowResult;
+import com.powsybl.loadflow.simple.ac.outerloop.AcloadFlowEngine;
+import com.powsybl.loadflow.simple.ac.outerloop.OuterLoop;
 import com.powsybl.loadflow.simple.ac.nr.*;
 import com.powsybl.loadflow.simple.equations.PreviousValueVoltageInitializer;
 import com.powsybl.loadflow.simple.equations.UniformValueVoltageInitializer;
@@ -118,9 +118,9 @@ public class SimpleAcLoadFlow implements LoadFlow {
 
             NewtonRaphsonStoppingCriteria stoppingCriteria = new DefaultNewtonRaphsonStoppingCriteria();
 
-            List<MacroAction> macroActions = new ArrayList<>();
+            List<OuterLoop> outerLoops = new ArrayList<>();
             if (parametersExt.isDistributedSlack()) {
-                macroActions.add(new DistributedSlackAction());
+                outerLoops.add(new DistributedSlackOuterLoop());
             }
 
             List<LfNetwork> lfNetworks = LfNetworks.create(network, slackBusSelector);
@@ -128,7 +128,7 @@ public class SimpleAcLoadFlow implements LoadFlow {
             // only process main (largest) connected component
             LfNetwork lfNetwork = lfNetworks.get(0);
 
-            AcLoadFlowResult result = new AcloadFlowEngine(lfNetwork, voltageInitializer, stoppingCriteria, macroActions, matrixFactory, getObserver())
+            AcLoadFlowResult result = new AcloadFlowEngine(lfNetwork, voltageInitializer, stoppingCriteria, outerLoops, matrixFactory, getObserver())
                     .run();
 
             // update network state

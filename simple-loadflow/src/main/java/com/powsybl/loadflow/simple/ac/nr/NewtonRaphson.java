@@ -102,7 +102,11 @@ public class NewtonRaphson implements AutoCloseable {
 
             Vectors.minus(fx, targets);
 
-            if (stoppingCriteria.test(fx, observer)) {
+            // test stopping criteria and log norm(fx)
+            NewtonRaphsonStoppingCriteria.TestResult testResult = stoppingCriteria.test(fx);
+            observer.norm(testResult.getNorm());
+
+            if (testResult.isStop()) {
                 return NewtonRaphsonStatus.CONVERGED;
             }
 

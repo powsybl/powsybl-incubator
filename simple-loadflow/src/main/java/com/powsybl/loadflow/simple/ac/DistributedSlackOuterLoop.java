@@ -7,8 +7,9 @@
 package com.powsybl.loadflow.simple.ac;
 
 import com.powsybl.commons.PowsyblException;
-import com.powsybl.loadflow.simple.ac.macro.MacroAction;
-import com.powsybl.loadflow.simple.ac.macro.MacroActionContext;
+import com.powsybl.loadflow.simple.ac.outerloop.OuterLoop;
+import com.powsybl.loadflow.simple.ac.outerloop.OuterLoopContext;
+import com.powsybl.loadflow.simple.ac.outerloop.OuterLoopStatus;
 import com.powsybl.loadflow.simple.network.LfBus;
 import com.powsybl.loadflow.simple.network.LfNetwork;
 import com.powsybl.loadflow.simple.network.PerUnit;
@@ -24,9 +25,9 @@ import static com.powsybl.loadflow.simple.ac.nr.DefaultNewtonRaphsonStoppingCrit
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class DistributedSlackAction implements MacroAction {
+public class DistributedSlackOuterLoop implements OuterLoop {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DistributedSlackAction.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DistributedSlackOuterLoop.class);
 
     /**
      * Slack active power residue epsilon: 10^-5 in p.u => 10^-3 in Mw
@@ -71,8 +72,8 @@ public class DistributedSlackAction implements MacroAction {
     }
 
     @Override
-    public boolean run(MacroActionContext context) {
-        double slackBusActivePowerMismatch = context.getNewtonRaphsonResult().getSlackBusActivePowerMismatch();
+    public OuterLoopStatus check(OuterLoopContext context) {
+        double slackBusActivePowerMismatch = context.getLastNewtonRaphsonResult().getSlackBusActivePowerMismatch();
         if (Math.abs(slackBusActivePowerMismatch) > CONV_EPS_PER_EQ) {
             LfNetwork network = context.getNetwork();
 
@@ -96,12 +97,12 @@ public class DistributedSlackAction implements MacroAction {
                         slackBusActivePowerMismatch * PerUnit.SB, iteration);
             }
 
-            return true;
+            return OuterLoopStatus.UNSTABLE;
         }
 
         LOGGER.debug("Already balanced");
 
-        return false;
+        return OuterLoopStatus.STABLE;
     }
 
     private double run(List<ParticipatingBus> participatingBuses, int iteration, double remainingMismatch) {

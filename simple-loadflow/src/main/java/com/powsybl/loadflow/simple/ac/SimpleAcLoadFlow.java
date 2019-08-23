@@ -12,14 +12,13 @@ import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
 import com.powsybl.loadflow.LoadFlowResultImpl;
-import com.powsybl.loadflow.simple.ac.macro.AcLoadFlowObserver;
 import com.powsybl.loadflow.simple.ac.macro.AcLoadFlowResult;
 import com.powsybl.loadflow.simple.ac.macro.AcloadFlowEngine;
 import com.powsybl.loadflow.simple.ac.macro.MacroAction;
-import com.powsybl.loadflow.simple.ac.nr.DefaultNewtonRaphsonStoppingCriteria;
-import com.powsybl.loadflow.simple.ac.nr.NewtonRaphsonStatus;
-import com.powsybl.loadflow.simple.ac.nr.NewtonRaphsonStoppingCriteria;
-import com.powsybl.loadflow.simple.ac.nr.VoltageInitializer;
+import com.powsybl.loadflow.simple.ac.nr.*;
+import com.powsybl.loadflow.simple.equations.PreviousValueVoltageInitializer;
+import com.powsybl.loadflow.simple.equations.UniformValueVoltageInitializer;
+import com.powsybl.loadflow.simple.equations.VoltageInitializer;
 import com.powsybl.loadflow.simple.network.LfNetwork;
 import com.powsybl.loadflow.simple.network.SlackBusSelector;
 import com.powsybl.loadflow.simple.network.impl.LfNetworks;
@@ -87,6 +86,19 @@ public class SimpleAcLoadFlow implements LoadFlow {
                                "status", result.getNewtonRaphsonStatus().name());
     }
 
+    private static VoltageInitializer getVoltageInitializer(LoadFlowParameters parameters) {
+        switch (parameters.getVoltageInitMode()) {
+            case UNIFORM_VALUES:
+                return new UniformValueVoltageInitializer();
+            case PREVIOUS_VALUES:
+                return new PreviousValueVoltageInitializer();
+            case DC_VALUES:
+                return new DcValueVoltageInitializer();
+            default:
+                throw new UnsupportedOperationException("Unsupported voltage init mode: " + parameters.getVoltageInitMode());
+        }
+    }
+
     @Override
     public CompletableFuture<LoadFlowResult> run(String workingStateId, LoadFlowParameters parameters) {
         Objects.requireNonNull(workingStateId);
@@ -102,7 +114,7 @@ public class SimpleAcLoadFlow implements LoadFlow {
 
             SlackBusSelector slackBusSelector = parametersExt.getSlackBusSelectionMode().getSelector();
 
-            VoltageInitializer voltageInitializer = VoltageInitializer.getFromParameters(parameters);
+            VoltageInitializer voltageInitializer = getVoltageInitializer(parameters);
 
             NewtonRaphsonStoppingCriteria stoppingCriteria = new DefaultNewtonRaphsonStoppingCriteria();
 

@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+import static com.powsybl.loadflow.simple.util.Markers.PERFORMANCE_MARKER;
+
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
@@ -45,7 +47,7 @@ public class LfNetwork {
 
         slackBus = slackBusSelector.select(this.buses);
         slackBus.setSlack(true);
-        LOGGER.debug("Selected slack bus (class={}): {}", slackBusSelector.getClass().getSimpleName(), slackBus.getId());
+        LOGGER.info("Selected slack bus (class={}): {}", slackBusSelector.getClass().getSimpleName(), slackBus.getId());
     }
 
     public List<LfBranch> getBranches() {
@@ -78,7 +80,7 @@ public class LfNetwork {
         }
 
         stopwatch.stop();
-        LOGGER.debug("IIDM network updated in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        LOGGER.debug(PERFORMANCE_MARKER, "IIDM network updated in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
     }
 
     public void writeJson(Path file) {

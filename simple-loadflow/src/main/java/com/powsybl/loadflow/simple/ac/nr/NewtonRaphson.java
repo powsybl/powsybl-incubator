@@ -6,7 +6,6 @@
  */
 package com.powsybl.loadflow.simple.ac.nr;
 
-import com.powsybl.loadflow.simple.ac.macro.AcLoadFlowObserver;
 import com.powsybl.loadflow.simple.equations.*;
 import com.powsybl.loadflow.simple.network.LfBus;
 import com.powsybl.loadflow.simple.network.LfNetwork;
@@ -136,7 +135,17 @@ public class NewtonRaphson implements AutoCloseable {
 
         // initialize state vector
         if (x == null) {
-            x = equationSystem.initStateVector(parameters.getVoltageInitializer());
+            VoltageInitializer voltageInitializer = parameters.getVoltageInitializer();
+
+            observer.beforeVoltageInitializerPreparation(voltageInitializer.getClass());
+
+            voltageInitializer.prepare(network, matrixFactory);
+
+            observer.afterVoltageInitializerPreparation();
+
+            x = equationSystem.initStateVector(voltageInitializer);
+
+            observer.stateVectorInitialized(x);
 
             updateEquationTerms();
         }

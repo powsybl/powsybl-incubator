@@ -4,12 +4,18 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.powsybl.loadflow.simple.ac.nr;
+package com.powsybl.loadflow.simple.util;
+
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public interface NewtonRaphsonStoppingCriteria {
+public final class Markers {
 
-    boolean test(double[] fx, AcLoadFlowObserver observer);
+    public static final Marker PERFORMANCE_MARKER = MarkerFactory.getMarker("PERFORMANCE");
+
+    private Markers() {
+    }
 }

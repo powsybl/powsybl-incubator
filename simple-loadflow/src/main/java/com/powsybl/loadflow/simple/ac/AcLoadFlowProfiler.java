@@ -7,13 +7,15 @@
 package com.powsybl.loadflow.simple.ac;
 
 import com.google.common.base.Stopwatch;
-import com.powsybl.loadflow.simple.ac.macro.DefaultAcLoadFlowObserver;
+import com.powsybl.loadflow.simple.ac.nr.DefaultAcLoadFlowObserver;
 import com.powsybl.loadflow.simple.equations.EquationSystem;
 import com.powsybl.math.matrix.Matrix;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
+
+import static com.powsybl.loadflow.simple.util.Markers.PERFORMANCE_MARKER;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -39,7 +41,18 @@ public class AcLoadFlowProfiler extends DefaultAcLoadFlowObserver {
     @Override
     public void afterEquationSystemCreation() {
         stopwatch.stop();
-        LOGGER.debug("AC equation system created in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        LOGGER.debug(PERFORMANCE_MARKER, "AC equation system created in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
+    }
+
+    @Override
+    public void beforeVoltageInitializerPreparation(Class<?> voltageInitializerClass) {
+        restart(stopwatch);
+    }
+
+    @Override
+    public void afterVoltageInitializerPreparation() {
+        stopwatch.stop();
+        LOGGER.debug(PERFORMANCE_MARKER, "Voltage initializer prepared in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
     }
 
     @Override
@@ -55,7 +68,7 @@ public class AcLoadFlowProfiler extends DefaultAcLoadFlowObserver {
     @Override
     public void afterEquationTermsUpdate(EquationSystem equationSystem, int iteration) {
         stopwatch.stop();
-        LOGGER.debug("Equation terms evaluated at iteration {} in {} ms", iteration, stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        LOGGER.debug(PERFORMANCE_MARKER, "Equation terms evaluated at iteration {} in {} ms", iteration, stopwatch.elapsed(TimeUnit.MILLISECONDS));
     }
 
     @Override
@@ -66,7 +79,7 @@ public class AcLoadFlowProfiler extends DefaultAcLoadFlowObserver {
     @Override
     public void afterEquationVectorUpdate(EquationSystem equationSystem, int iteration) {
         stopwatch.stop();
-        LOGGER.debug("Equation vector updated at iteration {} in {} ms", iteration, stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        LOGGER.debug(PERFORMANCE_MARKER, "Equation vector updated at iteration {} in {} ms", iteration, stopwatch.elapsed(TimeUnit.MILLISECONDS));
     }
 
     @Override
@@ -77,7 +90,7 @@ public class AcLoadFlowProfiler extends DefaultAcLoadFlowObserver {
     @Override
     public void afterJacobianBuild(Matrix j, EquationSystem equationSystem, int iteration) {
         stopwatch.stop();
-        LOGGER.debug("Jacobian built at iteration {} in {} ms", iteration, stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        LOGGER.debug(PERFORMANCE_MARKER, "Jacobian built at iteration {} in {} ms", iteration, stopwatch.elapsed(TimeUnit.MILLISECONDS));
     }
 
     @Override
@@ -88,7 +101,7 @@ public class AcLoadFlowProfiler extends DefaultAcLoadFlowObserver {
     @Override
     public void afterLuDecomposition(int iteration) {
         stopwatch.stop();
-        LOGGER.debug("LU decomposed at iteration {} in {} ms", iteration, stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        LOGGER.debug(PERFORMANCE_MARKER, "LU decomposed at iteration {} in {} ms", iteration, stopwatch.elapsed(TimeUnit.MILLISECONDS));
     }
 
     @Override
@@ -99,13 +112,13 @@ public class AcLoadFlowProfiler extends DefaultAcLoadFlowObserver {
     @Override
     public void afterLuSolve(int iteration) {
         stopwatch.stop();
-        LOGGER.debug("LU solved at iteration {} in {} us", iteration, stopwatch.elapsed(TimeUnit.MICROSECONDS));
+        LOGGER.debug(PERFORMANCE_MARKER, "LU solved at iteration {} in {} us", iteration, stopwatch.elapsed(TimeUnit.MICROSECONDS));
     }
 
     @Override
     public void endIteration(int iteration) {
         iterationStopwatch.stop();
-        LOGGER.debug("Iteration {} complete in {} ms", iteration, iterationStopwatch.elapsed(TimeUnit.MILLISECONDS));
+        LOGGER.debug(PERFORMANCE_MARKER, "Iteration {} complete in {} ms", iteration, iterationStopwatch.elapsed(TimeUnit.MILLISECONDS));
     }
 
     @Override
@@ -116,7 +129,7 @@ public class AcLoadFlowProfiler extends DefaultAcLoadFlowObserver {
     @Override
     public void afterMacroActionRun(int macroIteration, String macroActionName, boolean cont) {
         stopwatch.stop();
-        LOGGER.debug("Macro action '{}' ran in {} us", macroActionName, stopwatch.elapsed(TimeUnit.MICROSECONDS));
+        LOGGER.debug(PERFORMANCE_MARKER, "Macro action '{}' ran in {} us", macroActionName, stopwatch.elapsed(TimeUnit.MICROSECONDS));
     }
 
     @Override
@@ -126,6 +139,6 @@ public class AcLoadFlowProfiler extends DefaultAcLoadFlowObserver {
 
     @Override
     public void afterNetworkUpdate() {
-        LOGGER.debug("Network updated in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        LOGGER.debug(PERFORMANCE_MARKER, "Network updated in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
     }
 }

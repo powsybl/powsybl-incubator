@@ -113,7 +113,7 @@ public class Graph {
         this.showInductorFor3WT = showInductorFor3WT;
     }
 
-    boolean isUseName() {
+    public boolean isUseName() {
         return useName;
     }
 

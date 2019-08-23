@@ -6,58 +6,6 @@
  */
 package com.powsybl.substationdiagram.svg;
 
-import com.powsybl.commons.exceptions.UncheckedTransformerException;
-import com.powsybl.iidm.network.ThreeWindingsTransformer;
-import com.powsybl.iidm.network.TwoWindingsTransformer;
-import com.powsybl.substationdiagram.layout.HorizontalSubstationLayout;
-import com.powsybl.substationdiagram.layout.HorizontalSubstationLayoutFactory;
-import com.powsybl.substationdiagram.layout.LayoutParameters;
-import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayoutFactory;
-import com.powsybl.substationdiagram.layout.SubstationLayout;
-import com.powsybl.substationdiagram.layout.SubstationLayoutFactory;
-import com.powsybl.substationdiagram.layout.VerticalSubstationLayout;
-import com.powsybl.substationdiagram.layout.VoltageLevelLayout;
-import com.powsybl.substationdiagram.layout.VoltageLevelLayoutFactory;
-import com.powsybl.substationdiagram.library.AnchorOrientation;
-import com.powsybl.substationdiagram.library.AnchorPoint;
-import com.powsybl.substationdiagram.library.AnchorPointProvider;
-import com.powsybl.substationdiagram.library.ComponentLibrary;
-import com.powsybl.substationdiagram.library.ComponentMetadata;
-import com.powsybl.substationdiagram.library.ComponentSize;
-import com.powsybl.substationdiagram.library.ComponentType;
-import com.powsybl.substationdiagram.model.BusCell;
-import com.powsybl.substationdiagram.model.BusNode;
-import com.powsybl.substationdiagram.model.Coord;
-import com.powsybl.substationdiagram.model.Edge;
-import com.powsybl.substationdiagram.model.ExternCell;
-import com.powsybl.substationdiagram.model.Feeder2WTNode;
-import com.powsybl.substationdiagram.model.FeederNode;
-import com.powsybl.substationdiagram.model.Fictitious3WTNode;
-import com.powsybl.substationdiagram.model.Graph;
-import com.powsybl.substationdiagram.model.Node;
-import com.powsybl.substationdiagram.model.Side;
-import com.powsybl.substationdiagram.model.SubstationGraph;
-import com.powsybl.substationdiagram.svg.GraphMetadata.ArrowMetadata;
-import com.powsybl.substationdiagram.svg.SubstationDiagramInitialValueProvider.Direction;
-
-import org.apache.batik.anim.dom.SVGOMDocument;
-import org.apache.batik.dom.GenericDOMImplementation;
-import org.apache.commons.math3.util.Precision;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.CDATASection;
-import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Text;
-import org.w3c.dom.svg.SVGElement;
-
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.io.UnsupportedEncodingException;
@@ -75,6 +23,55 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.apache.batik.anim.dom.SVGOMDocument;
+import org.apache.batik.dom.GenericDOMImplementation;
+import org.apache.commons.math3.util.Precision;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.CDATASection;
+import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Text;
+import org.w3c.dom.svg.SVGElement;
+
+import com.powsybl.commons.exceptions.UncheckedTransformerException;
+import com.powsybl.iidm.network.ThreeWindingsTransformer;
+import com.powsybl.iidm.network.TwoWindingsTransformer;
+import com.powsybl.substationdiagram.layout.HorizontalSubstationLayoutFactory;
+import com.powsybl.substationdiagram.layout.LayoutParameters;
+import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayoutFactory;
+import com.powsybl.substationdiagram.layout.SubstationLayout;
+import com.powsybl.substationdiagram.layout.SubstationLayoutFactory;
+import com.powsybl.substationdiagram.layout.VoltageLevelLayoutFactory;
+import com.powsybl.substationdiagram.library.AnchorOrientation;
+import com.powsybl.substationdiagram.library.AnchorPoint;
+import com.powsybl.substationdiagram.library.AnchorPointProvider;
+import com.powsybl.substationdiagram.library.ComponentLibrary;
+import com.powsybl.substationdiagram.library.ComponentMetadata;
+import com.powsybl.substationdiagram.library.ComponentSize;
+import com.powsybl.substationdiagram.library.ComponentType;
+import com.powsybl.substationdiagram.model.BusCell;
+import com.powsybl.substationdiagram.model.BusNode;
+import com.powsybl.substationdiagram.model.Edge;
+import com.powsybl.substationdiagram.model.ExternCell;
+import com.powsybl.substationdiagram.model.Feeder2WTNode;
+import com.powsybl.substationdiagram.model.FeederNode;
+import com.powsybl.substationdiagram.model.Fictitious3WTNode;
+import com.powsybl.substationdiagram.model.Graph;
+import com.powsybl.substationdiagram.model.Node;
+import com.powsybl.substationdiagram.model.Side;
+import com.powsybl.substationdiagram.model.SubstationGraph;
+import com.powsybl.substationdiagram.svg.GraphMetadata.ArrowMetadata;
+import com.powsybl.substationdiagram.svg.SubstationDiagramInitialValueProvider.Direction;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
@@ -285,28 +282,11 @@ public class SVGWriter {
                                      VoltageLevelLayoutFactory vLayoutFactory,  SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider) {
         GraphMetadata metadata = new GraphMetadata();
 
-        SubstationLayout sLayout = sLayoutFactory.create(graph);
+        SubstationLayout sLayout = sLayoutFactory.create(graph, vLayoutFactory);
+        sLayout.run(layoutParameters);
 
         Element root = document.createElement("g");
         root.setAttribute(CLASS, SubstationDiagramStyles.SUBSTATION_STYLE_CLASS);
-
-        double graphX = layoutParameters.getHorizontalSubstationPadding();
-        double graphY = layoutParameters.getVerticalSubstationPadding();
-
-        for (Graph vlGraph : graph.getNodes()) {
-            vlGraph.setX(graphX);
-            vlGraph.setY(graphY);
-
-            // Calculate the objects coordinates inside the voltageLevel graph
-            VoltageLevelLayout vLayout = vLayoutFactory.create(vlGraph);
-            vLayout.run(layoutParameters);
-
-            // Calculate the coordinate of the voltageLevel graph inside the substation graph
-            Coord posVLGraph = sLayout.calculateCoordVoltageLevel(layoutParameters, vlGraph);
-
-            graphX += posVLGraph.getX() + (sLayout instanceof HorizontalSubstationLayout ? layoutParameters.getHorizontalSubstationPadding() : 0);
-            graphY += posVLGraph.getY() + (sLayout instanceof VerticalSubstationLayout ? layoutParameters.getVerticalSubstationPadding() : 0);
-        }
 
         // Drawing grid lines
         if (layoutParameters.isShowGrid()) {

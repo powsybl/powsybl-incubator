@@ -15,8 +15,6 @@ import com.powsybl.commons.datasource.FileDataSource;
 import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.substationdiagram.layout.*;
-import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
-import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramStyleProvider;
 import com.powsybl.tools.Command;
 import com.powsybl.tools.Tool;
 import com.powsybl.tools.ToolOptions;
@@ -129,8 +127,7 @@ public class LayoutToCgmesDlExporterTool implements Tool {
         Network network = Importers.loadNetwork(inputFile);
 
         context.getOutputStream().println("Generating layout for the network ...");
-        ResourcesComponentLibrary componentLibrary = new ResourcesComponentLibrary("/ConvergenceLibrary");
-        LayoutToCgmesExtensionsConverter lTranslator = new LayoutToCgmesExtensionsConverter(sFactory, vFactory, new LayoutParameters(), componentLibrary, new DefaultSubstationDiagramStyleProvider(), true);
+        LayoutToCgmesExtensionsConverter lTranslator = new LayoutToCgmesExtensionsConverter(sFactory, vFactory, new LayoutParameters(), true);
         lTranslator.convertLayout(network, null);
 
         context.getOutputStream().println("Exporting network data (including the DL file) to " + outputDir);

@@ -122,14 +122,14 @@ public class AcLoadFlowProfiler extends DefaultAcLoadFlowObserver {
     }
 
     @Override
-    public void beforeMacroActionRun(int macroIteration, String macroActionName) {
+    public void beforeOuterLoopStatusCheck(int outerLoopIteration, String outerLoopName) {
         restart(stopwatch);
     }
 
     @Override
-    public void afterMacroActionRun(int macroIteration, String macroActionName, boolean cont) {
+    public void afterOuterLoopStatusCheck(int outerLoopIteration, String outerLoopName, boolean stable) {
         stopwatch.stop();
-        LOGGER.debug(PERFORMANCE_MARKER, "Macro action '{}' ran in {} us", macroActionName, stopwatch.elapsed(TimeUnit.MICROSECONDS));
+        LOGGER.debug(PERFORMANCE_MARKER, "Outer loop '{}' check done in {} us", outerLoopName, stopwatch.elapsed(TimeUnit.MICROSECONDS));
     }
 
     @Override

@@ -64,13 +64,13 @@ public class MultipleAcLoadFlowObserver implements AcLoadFlowObserver {
     }
 
     @Override
-    public void beforeEquationTermsUpdate(int iteration) {
-        observers.forEach(o -> o.beforeEquationTermsUpdate(iteration));
+    public void beforeEquationsUpdate(int iteration) {
+        observers.forEach(o -> o.beforeEquationsUpdate(iteration));
     }
 
     @Override
-    public void afterEquationTermsUpdate(EquationSystem equationSystem, int iteration) {
-        observers.forEach(o -> o.afterEquationTermsUpdate(equationSystem, iteration));
+    public void afterEquationsUpdate(EquationSystem equationSystem, int iteration) {
+        observers.forEach(o -> o.afterEquationsUpdate(equationSystem, iteration));
     }
 
     @Override

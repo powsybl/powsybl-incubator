@@ -7,7 +7,6 @@
 package com.powsybl.loadflow.simple.ac.equations;
 
 import com.google.common.collect.ImmutableList;
-import com.powsybl.loadflow.simple.equations.Equation;
 import com.powsybl.loadflow.simple.equations.EquationContext;
 import com.powsybl.loadflow.simple.equations.Variable;
 import com.powsybl.loadflow.simple.equations.VariableType;
@@ -30,20 +29,16 @@ public abstract class AbstractClosedBranchAcFlowEquationTerm extends AbstractBra
 
     protected final Variable ph2Var;
 
-    protected final Equation equation;
-
     protected final List<Variable> variables;
 
     protected final double a1;
 
     protected final double a2;
 
-    protected AbstractClosedBranchAcFlowEquationTerm(LfBranch branch, LfBus bus1, LfBus bus2, Equation equation,
-                                                     EquationContext equationContext) {
+    protected AbstractClosedBranchAcFlowEquationTerm(LfBranch branch, LfBus bus1, LfBus bus2, EquationContext equationContext) {
         super(branch);
         Objects.requireNonNull(bus1);
         Objects.requireNonNull(bus2);
-        this.equation = Objects.requireNonNull(equation);
         v1Var = equationContext.getVariable(bus1.getNum(), VariableType.BUS_V);
         v2Var = equationContext.getVariable(bus2.getNum(), VariableType.BUS_V);
         ph1Var = equationContext.getVariable(bus1.getNum(), VariableType.BUS_PHI);
@@ -51,11 +46,6 @@ public abstract class AbstractClosedBranchAcFlowEquationTerm extends AbstractBra
         variables = ImmutableList.of(v1Var, v2Var, ph1Var, ph2Var);
         a1 = this.branch.a1();
         a2 = this.branch.a2();
-    }
-
-    @Override
-    public Equation getEquation() {
-        return equation;
     }
 
     @Override

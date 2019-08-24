@@ -55,12 +55,12 @@ public class DefaultAcLoadFlowObserver implements AcLoadFlowObserver {
     }
 
     @Override
-    public void beforeEquationTermsUpdate(int iteration) {
+    public void beforeEquationsUpdate(int iteration) {
         // empty
     }
 
     @Override
-    public void afterEquationTermsUpdate(EquationSystem equationSystem, int iteration) {
+    public void afterEquationsUpdate(EquationSystem equationSystem, int iteration) {
         // empty
     }
 

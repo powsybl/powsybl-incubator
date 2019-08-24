@@ -61,14 +61,14 @@ public class AcLoadFlowProfiler extends DefaultAcLoadFlowObserver {
     }
 
     @Override
-    public void beforeEquationTermsUpdate(int iteration) {
+    public void beforeEquationsUpdate(int iteration) {
         restart(stopwatch);
     }
 
     @Override
-    public void afterEquationTermsUpdate(EquationSystem equationSystem, int iteration) {
+    public void afterEquationsUpdate(EquationSystem equationSystem, int iteration) {
         stopwatch.stop();
-        LOGGER.debug(PERFORMANCE_MARKER, "Equation terms evaluated at iteration {} in {} ms", iteration, stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        LOGGER.debug(PERFORMANCE_MARKER, "Equations updated at iteration {} in {} ms", iteration, stopwatch.elapsed(TimeUnit.MILLISECONDS));
     }
 
     @Override

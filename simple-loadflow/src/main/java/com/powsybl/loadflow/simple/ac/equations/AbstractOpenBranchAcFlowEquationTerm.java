@@ -6,7 +6,9 @@
  */
 package com.powsybl.loadflow.simple.ac.equations;
 
-import com.powsybl.loadflow.simple.equations.*;
+import com.powsybl.loadflow.simple.equations.EquationContext;
+import com.powsybl.loadflow.simple.equations.Variable;
+import com.powsybl.loadflow.simple.equations.VariableType;
 import com.powsybl.loadflow.simple.network.LfBranch;
 import com.powsybl.loadflow.simple.network.LfBus;
 
@@ -18,23 +20,15 @@ import java.util.List;
  */
 abstract class AbstractOpenBranchAcFlowEquationTerm extends AbstractBranchAcFlowEquationTerm {
 
-    protected final Equation equation;
-
     protected final List<Variable> variables;
 
     protected double shunt;
 
-    protected AbstractOpenBranchAcFlowEquationTerm(LfBranch branch, EquationType equationType, VariableType variableType,
+    protected AbstractOpenBranchAcFlowEquationTerm(LfBranch branch, VariableType variableType,
                                                    LfBus bus, EquationContext equationContext) {
         super(branch);
-        equation = equationContext.getEquation(bus.getNum(), equationType);
         variables = Collections.singletonList(equationContext.getVariable(bus.getNum(), variableType));
         shunt = (g1 + y * sinKsi) * (g1 + y * sinKsi) + (-b1 + y * cosKsi) * (-b1 + y * cosKsi);
-    }
-
-    @Override
-    public Equation getEquation() {
-        return equation;
     }
 
     @Override

@@ -39,9 +39,9 @@ public interface AcLoadFlowObserver {
 
     void norm(double norm);
 
-    void beforeEquationTermsUpdate(int iteration);
+    void beforeEquationsUpdate(int iteration);
 
-    void afterEquationTermsUpdate(EquationSystem equationSystem, int iteration);
+    void afterEquationsUpdate(EquationSystem equationSystem, int iteration);
 
     void beforeEquationVectorUpdate(int iteration);
 

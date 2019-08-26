@@ -6,16 +6,8 @@
  */
 package com.powsybl.substationdiagram.cgmes;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
 import com.powsybl.cgmes.iidm.extensions.dl.NetworkDiagramData;
 import com.powsybl.iidm.network.Network;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.powsybl.substationdiagram.layout.LayoutParameters;
 import com.powsybl.substationdiagram.layout.SubstationLayout;
 import com.powsybl.substationdiagram.model.BusCell.Direction;
@@ -23,6 +15,13 @@ import com.powsybl.substationdiagram.model.Edge;
 import com.powsybl.substationdiagram.model.Graph;
 import com.powsybl.substationdiagram.model.Side;
 import com.powsybl.substationdiagram.model.SubstationGraph;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  *
@@ -48,23 +47,23 @@ public class CgmesSubstationLayout extends AbstractCgmesLayout implements Substa
         String diagramName = layoutParam.getDiagramName();
         if (diagramName == null) {
             LOG.warn("layout parameter diagramName not set: CGMES-DL layout will not be applied");
-        } else {
-            Network network = graph.getSubstation().getNetwork();
-            if (NetworkDiagramData.containsDiagramName(network, diagramName)) {
-                LOG.info("Applying CGMES-DL layout to network {}, substation {}, diagram name {}", network.getId(), graph.getSubstation().getId(), diagramName);
-                for (Graph vlGraph : graph.getNodes()) {
-                    setNodeCoordinates(vlGraph, diagramName);
-                }
-                for (Graph vlGraph : graph.getNodes()) {
-                    vlGraph.getNodes().forEach(node -> shiftNodeCoordinates(node, layoutParam.getScaleFactor()));
-                }
-                if (layoutParam.getScaleFactor() != 1) {
-                    for (Graph vlGraph : graph.getNodes()) {
-                        vlGraph.getNodes().forEach(node -> scaleNodeCoordinates(node, layoutParam.getScaleFactor()));
-                    }
-                }
-            } else {
-                LOG.warn("diagram name {} not found in network: CGMES-DL layout will not be applied to network {}, substation {}", diagramName, network.getId(), graph.getSubstation().getId());
+            return;
+        }
+        Network network = graph.getSubstation().getNetwork();
+        if (!NetworkDiagramData.containsDiagramName(network, diagramName)) {
+            LOG.warn("diagram name {} not found in network: CGMES-DL layout will not be applied to network {}, substation {}", diagramName, network.getId(), graph.getSubstation().getId());
+            return;
+        }
+        LOG.info("Applying CGMES-DL layout to network {}, substation {}, diagram name {}", network.getId(), graph.getSubstation().getId(), diagramName);
+        for (Graph vlGraph : graph.getNodes()) {
+            setNodeCoordinates(vlGraph, diagramName);
+        }
+        for (Graph vlGraph : graph.getNodes()) {
+            vlGraph.getNodes().forEach(node -> shiftNodeCoordinates(node, layoutParam.getScaleFactor()));
+        }
+        if (layoutParam.getScaleFactor() != 1) {
+            for (Graph vlGraph : graph.getNodes()) {
+                vlGraph.getNodes().forEach(node -> scaleNodeCoordinates(node, layoutParam.getScaleFactor()));
             }
         }
     }

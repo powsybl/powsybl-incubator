@@ -21,11 +21,13 @@ public final class VoltageLevelDiagramView extends AbstractContainerDiagramView 
         super(svgImage);
     }
 
-    public static VoltageLevelDiagramView load(InputStream svgInputStream, InputStream metadataInputStream) {
+    public static VoltageLevelDiagramView load(InputStream svgInputStream,
+                                               InputStream metadataInputStream,
+                                               DisplayVoltageLevel displayVL) {
         Objects.requireNonNull(svgInputStream);
         Objects.requireNonNull(metadataInputStream);
 
-        Group svgImage = loadSvgAndMetadata(svgInputStream, metadataInputStream);
+        Group svgImage = loadSvgAndMetadata(svgInputStream, metadataInputStream, displayVL);
 
         return new VoltageLevelDiagramView(svgImage);
     }

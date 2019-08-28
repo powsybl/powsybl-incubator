@@ -16,8 +16,6 @@ public class Fictitious3WTNode extends FictitiousNode {
 
     private final ThreeWindingsTransformer transformer;
 
-    private Double rotationAngle;
-
     public Fictitious3WTNode(Graph graph, String id, ThreeWindingsTransformer transformer) {
         super(graph, id, ComponentType.THREE_WINDINGS_TRANSFORMER);
         this.transformer = transformer;
@@ -25,14 +23,5 @@ public class Fictitious3WTNode extends FictitiousNode {
 
     public ThreeWindingsTransformer getTransformer() {
         return transformer;
-    }
-
-    @Override
-    public Double getRotationAngle() {
-        return rotationAngle;
-    }
-
-    public void setRotationAngle(Double rotationAngle) {
-        this.rotationAngle = rotationAngle;
     }
 }

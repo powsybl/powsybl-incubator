@@ -149,7 +149,7 @@ public class PrimaryBlock extends AbstractBlock {
             for (Node node : nodes) {
                 node.setX(getCoord().getX());
                 node.setY(y0 - yPxStep * v);
-                node.setRotated(false);
+                node.setRotationAngle(null);
                 v++;
             }
         }
@@ -174,7 +174,7 @@ public class PrimaryBlock extends AbstractBlock {
         for (Node node : nodes) {
             node.setY(getCoord().getY());
             node.setX(x0 + xPxStep * h);
-            node.setRotated(true);
+            node.setRotationAngle(90.);
             h++;
         }
     }
@@ -191,7 +191,7 @@ public class PrimaryBlock extends AbstractBlock {
             node.setX(x0 + i * dx, false, false);
             node.setY(y0 + i * dy, false, false);
             if (dy == 0) {
-                node.setRotated(true);
+                node.setRotationAngle(90.);
             }
         }
     }

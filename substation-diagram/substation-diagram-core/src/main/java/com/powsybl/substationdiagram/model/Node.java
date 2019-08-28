@@ -56,7 +56,7 @@ public class Node implements BaseNode {
 
     private Cell cell;
 
-    private boolean rotated = false;
+    private Double rotationAngle;
 
     private boolean open = false;
 
@@ -105,7 +105,7 @@ public class Node implements BaseNode {
 
     @Override
     public Double getRotationAngle() {
-        return null;
+        return rotationAngle;
     }
 
     public boolean isFictitious() {
@@ -223,11 +223,11 @@ public class Node implements BaseNode {
 
     @Override
     public boolean isRotated() {
-        return rotated;
+        return rotationAngle != null;
     }
 
-    public void setRotated(boolean rotated) {
-        this.rotated = rotated;
+    public void setRotationAngle(Double rotationAngle) {
+        this.rotationAngle = rotationAngle;
     }
 
     public boolean isOpen() {

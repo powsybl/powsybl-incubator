@@ -37,8 +37,6 @@ public class GraphMetadata implements AnchorPointProvider {
 
         private Double rotationAngle;
 
-        private final boolean rotated;
-
         private final boolean open;
 
         private final String vId;
@@ -52,7 +50,6 @@ public class GraphMetadata implements AnchorPointProvider {
                             @JsonProperty("vid") String vId,
                             @JsonProperty("componentType") ComponentType componentType,
                             @JsonProperty("rotationAngle") Double rotationAngle,
-                            @JsonProperty("rotated") boolean rotated,
                             @JsonProperty("open") boolean open,
                             @JsonProperty("direction") BusCell.Direction direction,
                             @JsonProperty("vlabel") boolean vLabel) {
@@ -60,7 +57,6 @@ public class GraphMetadata implements AnchorPointProvider {
             this.vId = Objects.requireNonNull(vId);
             this.componentType = componentType;
             this.rotationAngle = rotationAngle;
-            this.rotated = Objects.requireNonNull(rotated);
             this.open = Objects.requireNonNull(open);
             this.direction = direction;
             this.vLabel = vLabel;
@@ -80,10 +76,6 @@ public class GraphMetadata implements AnchorPointProvider {
 
         public Double getRotationAngle() {
             return rotationAngle;
-        }
-
-        public boolean isRotated() {
-            return rotated;
         }
 
         public boolean isOpen() {

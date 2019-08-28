@@ -33,8 +33,6 @@ public class NodeHandler implements BaseNode {
 
     private final List<WireHandler> wireHandlers = new ArrayList<>();
 
-    private final boolean rotated;
-
     private final GraphMetadata metadata;
 
     private final String vId;
@@ -45,12 +43,11 @@ public class NodeHandler implements BaseNode {
     private BusCell.Direction direction;
 
     public NodeHandler(Node node, ComponentType componentType, Double rotationAngle,
-                       boolean rotated, GraphMetadata metadata,
+                       GraphMetadata metadata,
                        String vId, BusCell.Direction direction) {
         this.node = Objects.requireNonNull(node);
         this.componentType = componentType;
         this.rotationAngle = rotationAngle;
-        this.rotated = rotated;
         this.metadata = Objects.requireNonNull(metadata);
         this.vId = Objects.requireNonNull(vId);
         this.direction = direction;
@@ -95,7 +92,7 @@ public class NodeHandler implements BaseNode {
 
     @Override
     public boolean isRotated() {
-        return rotated;
+        return rotationAngle != null;
     }
 
     @Override

@@ -58,7 +58,7 @@ public class AnchorPoint {
      * Rotate the anchorPoints
      */
     public AnchorPoint rotate(Double rotationAngle) {
-        if (rotationAngle == null || rotationAngle == 90.) {
+        if (rotationAngle == 90.) {
             switch (orientation) {
                 case VERTICAL:
                     return new AnchorPoint(y, x, AnchorOrientation.HORIZONTAL);
@@ -77,7 +77,7 @@ public class AnchorPoint {
     }
 
     public AnchorPoint rotate() {
-        return rotate(null);
+        return rotate(90.);
     }
 
     @Override

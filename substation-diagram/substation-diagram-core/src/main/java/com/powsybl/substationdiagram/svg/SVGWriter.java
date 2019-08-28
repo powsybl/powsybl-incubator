@@ -371,7 +371,6 @@ public class SVGWriter {
                 null,
                 null,
                 false,
-                false,
                 BusCell.Direction.UNDEFINED,
                 false));
 
@@ -417,7 +416,6 @@ public class SVGWriter {
         metadata.addNodeMetadata(
                 new GraphMetadata.NodeMetadata(nodeId, graph.getVoltageLevel().getId(),
                                                node.getComponentType(), node.getRotationAngle(),
-                                               node.isRotated(),
                                                node.isOpen(), direction, false));
         if (node.getType() == Node.NodeType.BUS) {
             metadata.addComponentMetadata(new ComponentMetadata(ComponentType.BUSBAR_SECTION,
@@ -481,7 +479,6 @@ public class SVGWriter {
                 graph.getVoltageLevel().getId(),
                 null,
                 null,
-                false,
                 false,
                 BusCell.Direction.UNDEFINED,
                 true));
@@ -603,8 +600,7 @@ public class SVGWriter {
         if (rotateSVG) {  // SVG element rotation
             ((Element) n).setAttribute(TRANSFORM, "rotate(" + 180 + "," + size.getWidth() / 2 + "," + size.getHeight() / 2 + ")");
             // We store the rotation angle in order to transform correctly the anchor points when further drawing the edges
-            node.setRotated(true);
-            ((Fictitious3WTNode) node).setRotationAngle(180.);
+            node.setRotationAngle(180.);
         }
     }
 

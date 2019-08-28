@@ -24,7 +24,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -393,17 +392,17 @@ public class TestCase12GraphWith3WT extends AbstractTestCase {
         // build voltage level 1 graph
         Graph g1 = Graph.create(vl1, false, true, true);
         new ImplicitCellDetector().detectCells(g1);
-        assertTrue(new BlockOrganizer().organize(g1));
+        new BlockOrganizer().organize(g1);
         new PositionVoltageLevelLayout(g1).run(layoutParameters);
 
         Graph g2 = Graph.create(vl2, false, true, true);
         new ImplicitCellDetector().detectCells(g2);
-        assertTrue(new BlockOrganizer().organize(g2));
+        new BlockOrganizer().organize(g2);
         new PositionVoltageLevelLayout(g2).run(layoutParameters);
 
         Graph g3 = Graph.create(vl3, false, true, false);
         new ImplicitCellDetector().detectCells(g3);
-        assertTrue(new BlockOrganizer().organize(g3));
+        new BlockOrganizer().organize(g3);
         new PositionVoltageLevelLayout(g3).run(layoutParameters);
 
         // write SVG and compare to reference (horizontal layout)

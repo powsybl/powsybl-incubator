@@ -42,8 +42,8 @@ public abstract class AbstractTestCase {
     protected final SubstationDiagramStyleProvider styleProvider = new DefaultSubstationDiagramStyleProvider();
 
     protected static String normalizeLineSeparator(String str) {
-        return str.replace("\r", "");
-//                .replace("\r", "\n");
+        return str.replace("\r\n", "\n")
+                .replace("\r", "\n");
     }
 
     abstract void setUp();

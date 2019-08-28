@@ -112,11 +112,11 @@ public class TestSerialParallelBlock extends AbstractTestCase {
         assertSame(Block.Type.PARALLEL, sb.getUpperBlock().getType());
         ParallelBlock subPB = (ParallelBlock) sb.getUpperBlock();
 
-        assertSame(subSB.getEndingNode(), subPB.getStartingNode());
+        assertSame(subSB.getExtremity(Block.Extremity.END), subPB.getExtremity(Block.Extremity.START));
 
-        assertEquals("bbs", sb.getStartingNode().getId());
-        assertEquals("bbs", subSB.getStartingNode().getId());
-        assertEquals("bbs", subSB.getSubBlocks().get(0).getStartingNode().getId());
+        assertEquals("bbs", sb.getExtremity(Block.Extremity.START).getId());
+        assertEquals("bbs", subSB.getExtremity(Block.Extremity.START).getId());
+        assertEquals("bbs", subSB.getSubBlocks().get(0).getExtremity(Block.Extremity.START).getId());
 
         sb.calculateDimensionAndInternPos();
         assertEquals(0, sb.getPosition().getH());
@@ -184,8 +184,8 @@ public class TestSerialParallelBlock extends AbstractTestCase {
 
         sb.reverseBlock();
 
-        assertEquals("bbs", sb.getEndingNode().getId());
-        assertEquals("bbs", subSB.getEndingNode().getId());
-        assertEquals("bbs", subSB.getSubBlocks().get(1).getEndingNode().getId());
+        assertEquals("bbs", sb.getExtremity(Block.Extremity.END).getId());
+        assertEquals("bbs", subSB.getExtremity(Block.Extremity.END).getId());
+        assertEquals("bbs", subSB.getSubBlocks().get(1).getExtremity(Block.Extremity.END).getId());
     }
 }

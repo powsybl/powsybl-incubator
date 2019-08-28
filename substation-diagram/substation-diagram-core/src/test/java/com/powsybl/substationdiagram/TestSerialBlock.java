@@ -87,10 +87,10 @@ public class TestSerialBlock extends AbstractTestCase {
         assertTrue(sb.getSubBlocks().get(0).isEmbedingNodeType(Node.NodeType.BUS));
         assertTrue(sb.getSubBlocks().get(1).isEmbedingNodeType(Node.NodeType.FEEDER));
 
-        assertEquals("bbs", sb.getSubBlocks().get(0).getStartingNode().getId());
-        assertEquals("FICT_vl_daFictif", sb.getSubBlocks().get(0).getEndingNode().getId());
-        assertEquals("FICT_vl_daFictif", sb.getSubBlocks().get(1).getStartingNode().getId());
-        assertEquals("la", sb.getSubBlocks().get(1).getEndingNode().getId());
+        assertEquals("bbs", sb.getSubBlocks().get(0).getExtremity(Block.Extremity.START).getId());
+        assertEquals("FICT_vl_daFictif", sb.getSubBlocks().get(0).getExtremity(Block.Extremity.END).getId());
+        assertEquals("FICT_vl_daFictif", sb.getSubBlocks().get(1).getExtremity(Block.Extremity.START).getId());
+        assertEquals("la", sb.getSubBlocks().get(1).getExtremity(Block.Extremity.END).getId());
 
         sb.calculateDimensionAndInternPos();
         assertEquals(0, sb.getPosition().getH());
@@ -143,9 +143,9 @@ public class TestSerialBlock extends AbstractTestCase {
 
         sb.reverseBlock();
 
-        assertEquals("bbs", sb.getSubBlocks().get(1).getEndingNode().getId());
-        assertEquals("FICT_vl_daFictif", sb.getSubBlocks().get(1).getStartingNode().getId());
-        assertEquals("FICT_vl_daFictif", sb.getSubBlocks().get(0).getEndingNode().getId());
-        assertEquals("la", sb.getSubBlocks().get(0).getStartingNode().getId());
+        assertEquals("bbs", sb.getSubBlocks().get(1).getExtremity(Block.Extremity.END).getId());
+        assertEquals("FICT_vl_daFictif", sb.getSubBlocks().get(1).getExtremity(Block.Extremity.START).getId());
+        assertEquals("FICT_vl_daFictif", sb.getSubBlocks().get(0).getExtremity(Block.Extremity.END).getId());
+        assertEquals("la", sb.getSubBlocks().get(0).getExtremity(Block.Extremity.START).getId());
     }
 }

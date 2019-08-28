@@ -14,6 +14,9 @@ import com.powsybl.iidm.network.VariantManagerConstants;
 import com.powsybl.iidm.network.extensions.ActivePowerControl;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
+import com.powsybl.loadflow.simple.SimpleLoadFlow;
+import com.powsybl.loadflow.simple.SimpleLoadFlowParameters;
+import com.powsybl.loadflow.simple.SlackBusSelectionMode;
 import com.powsybl.loadflow.simple.network.DistributedSlackNetworkFactory;
 import com.powsybl.math.matrix.DenseMatrixFactory;
 import org.junit.Before;
@@ -40,7 +43,7 @@ public class DistributedSlackTest {
     private Generator g2;
     private Generator g3;
     private Generator g4;
-    private SimpleAcLoadFlow loadFlow;
+    private SimpleLoadFlow loadFlow;
     private LoadFlowParameters parameters;
 
     @Before
@@ -50,12 +53,12 @@ public class DistributedSlackTest {
         g2 = network.getGenerator("g2");
         g3 = network.getGenerator("g3");
         g4 = network.getGenerator("g4");
-        loadFlow = new SimpleAcLoadFlow(network, new DenseMatrixFactory());
+        loadFlow = new SimpleLoadFlow(network, new DenseMatrixFactory());
         parameters = new LoadFlowParameters();
-        SimpleAcLoadFlowParameters parametersExt = new SimpleAcLoadFlowParameters()
+        SimpleLoadFlowParameters parametersExt = new SimpleLoadFlowParameters()
                 .setSlackBusSelectionMode(SlackBusSelectionMode.MOST_MESHED)
                 .setDistributedSlack(true);
-        parameters.addExtension(SimpleAcLoadFlowParameters.class, parametersExt);
+        parameters.addExtension(SimpleLoadFlowParameters.class, parametersExt);
     }
 
     @Test

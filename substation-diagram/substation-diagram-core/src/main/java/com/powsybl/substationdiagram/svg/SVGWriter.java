@@ -46,6 +46,7 @@ import org.w3c.dom.svg.SVGElement;
 import com.powsybl.commons.exceptions.UncheckedTransformerException;
 import com.powsybl.iidm.network.ThreeWindingsTransformer;
 import com.powsybl.iidm.network.TwoWindingsTransformer;
+import com.powsybl.iidm.network.VoltageLevel;
 import com.powsybl.substationdiagram.layout.HorizontalSubstationLayoutFactory;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
 import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayoutFactory;
@@ -77,6 +78,7 @@ import com.powsybl.substationdiagram.svg.SubstationDiagramInitialValueProvider.D
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
+ * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
  */
 public class SVGWriter {
 
@@ -195,6 +197,7 @@ public class SVGWriter {
 
         drawNodes(root, graph, metadata, anchorPointProvider, initProvider, styleProvider);
         drawEdges(root, graph, metadata, anchorPointProvider, initProvider, styleProvider);
+
         // the drawing of the voltageLevel graph label is done at the end in order to
         // facilitate the move of a voltageLevel in the diagram
         drawGraphLabel(root, graph, metadata);
@@ -366,7 +369,7 @@ public class SVGWriter {
         metadata.addNodeMetadata(new GraphMetadata.NodeMetadata(gridId,
                 graph.getVoltageLevel().getId(),
                 null,
-                false,
+                null,
                 false,
                 BusCell.Direction.UNDEFINED,
                 false));
@@ -412,7 +415,7 @@ public class SVGWriter {
     private void setMetadata(GraphMetadata metadata, Node node, String nodeId, Graph graph, BusCell.Direction direction, AnchorPointProvider anchorPointProvider) {
         metadata.addNodeMetadata(
                 new GraphMetadata.NodeMetadata(nodeId, graph.getVoltageLevel().getId(),
-                                               node.getComponentType(), node.isRotated(),
+                                               node.getComponentType(), node.getRotationAngle(),
                                                node.isOpen(), direction, false));
         if (node.getType() == Node.NodeType.BUS) {
             metadata.addComponentMetadata(new ComponentMetadata(ComponentType.BUSBAR_SECTION,
@@ -475,7 +478,7 @@ public class SVGWriter {
         metadata.addNodeMetadata(new GraphMetadata.NodeMetadata(idLabelVoltageLevel,
                 graph.getVoltageLevel().getId(),
                 null,
-                false,
+                null,
                 false,
                 BusCell.Direction.UNDEFINED,
                 true));
@@ -530,36 +533,103 @@ public class SVGWriter {
         SVGOMDocument obj = componentLibrary.getSvgDocument(node.getComponentType());
         transformComponent(node, g);
         if (obj != null && canInsertComponentSVG(node)) {
-            insertComponentSVGIntoDocumentSVG(obj, g, node, styleProvider);
+            insertComponentSVGIntoDocumentSVG(obj, g, node, styleProvider, componentLibrary.getSize(node.getComponentType()));
+        }
+    }
+
+    /*
+     * Handling the transformer SVG part (rotation, colorization)
+     */
+    private void handleTransformerSvgDocument(Node node, SubstationDiagramStyleProvider styleProvider,
+                                              ComponentSize size, org.w3c.dom.Node n) {
+        Optional<String> color = Optional.empty();
+
+        VoltageLevel vl = node.getGraph().getVoltageLevel();
+
+        // We will rotate the 3WT SVG, if cell orientation is BOTTOM
+        boolean rotateSVG = node instanceof Fictitious3WTNode
+                && node.getCell() != null
+                && ((ExternCell) node.getCell()).getDirection() == BusCell.Direction.BOTTOM;
+
+        if (((SVGElement) n).getId().equals("WINDING1")) {  // first winding
+            if (node instanceof Fictitious3WTNode) {
+                ThreeWindingsTransformer.Side otherSide = ThreeWindingsTransformer.Side.ONE;
+
+                if (((Fictitious3WTNode) node).getTransformer().getLeg1().getTerminal().getVoltageLevel() == vl) {
+                    otherSide = !rotateSVG ? ThreeWindingsTransformer.Side.TWO : ThreeWindingsTransformer.Side.THREE;
+                } else if (((Fictitious3WTNode) node).getTransformer().getLeg2().getTerminal().getVoltageLevel() == vl) {
+                    otherSide = !rotateSVG ? ThreeWindingsTransformer.Side.ONE : ThreeWindingsTransformer.Side.THREE;
+                } else if (((Fictitious3WTNode) node).getTransformer().getLeg3().getTerminal().getVoltageLevel() == vl) {
+                    otherSide = !rotateSVG ? ThreeWindingsTransformer.Side.ONE : ThreeWindingsTransformer.Side.TWO;
+                }
+                color = styleProvider.getNode3WTStyle((Fictitious3WTNode) node, otherSide);
+            } else {
+                color = styleProvider.getNode2WTStyle((Feeder2WTNode) node, TwoWindingsTransformer.Side.ONE);
+            }
+        } else if (((SVGElement) n).getId().equals("WINDING2")) {  // second winding
+            if (node instanceof Fictitious3WTNode) {
+                ThreeWindingsTransformer.Side otherSide = ThreeWindingsTransformer.Side.ONE;
+
+                if (((Fictitious3WTNode) node).getTransformer().getLeg1().getTerminal().getVoltageLevel() == vl) {
+                    otherSide = !rotateSVG ? ThreeWindingsTransformer.Side.THREE : ThreeWindingsTransformer.Side.TWO;
+                } else if (((Fictitious3WTNode) node).getTransformer().getLeg2().getTerminal().getVoltageLevel() == vl) {
+                    otherSide = !rotateSVG ? ThreeWindingsTransformer.Side.THREE : ThreeWindingsTransformer.Side.ONE;
+                } else if (((Fictitious3WTNode) node).getTransformer().getLeg3().getTerminal().getVoltageLevel() == vl) {
+                    otherSide = !rotateSVG ? ThreeWindingsTransformer.Side.TWO : ThreeWindingsTransformer.Side.ONE;
+                }
+                color = styleProvider.getNode3WTStyle((Fictitious3WTNode) node, otherSide);
+            } else {
+                color = styleProvider.getNode2WTStyle((Feeder2WTNode) node, TwoWindingsTransformer.Side.TWO);
+            }
+        } else if (((SVGElement) n).getId().equals("WINDING3") && node instanceof Fictitious3WTNode) {  // third winding
+            if (((Fictitious3WTNode) node).getTransformer().getLeg1().getTerminal().getVoltageLevel() == vl) {
+                color = styleProvider.getNode3WTStyle((Fictitious3WTNode) node, ThreeWindingsTransformer.Side.ONE);
+            } else if (((Fictitious3WTNode) node).getTransformer().getLeg2().getTerminal().getVoltageLevel() == vl) {
+                color = styleProvider.getNode3WTStyle((Fictitious3WTNode) node, ThreeWindingsTransformer.Side.TWO);
+            } else if (((Fictitious3WTNode) node).getTransformer().getLeg3().getTerminal().getVoltageLevel() == vl) {
+                color = styleProvider.getNode3WTStyle((Fictitious3WTNode) node, ThreeWindingsTransformer.Side.THREE);
+            }
+        }
+
+        // Setting the stroke color for SVG element
+        if (color.isPresent()) {
+            ((Element) n).removeAttribute(STROKE);
+            ((Element) n).setAttribute(STROKE, color.get());
+        }
+
+        if (rotateSVG) {  // SVG element rotation
+            ((Element) n).setAttribute(TRANSFORM, "rotate(" + 180 + "," + size.getWidth() / 2 + "," + size.getHeight() / 2 + ")");
+            // We store the rotation angle in order to transform correctly the anchor points when further drawing the edges
+            node.setRotationAngle(180.);
+        }
+    }
+
+    /*
+     * Handling the inductor SVG part (colorization)
+     */
+    private void handleInductorSvgDocument(Node node, SubstationDiagramStyleProvider styleProvider, org.w3c.dom.Node n) {
+        Optional<String> color = styleProvider.getColor(((Feeder2WTNode) node).getVlOtherSide());
+
+        if (color.isPresent()) {
+            ((Element) n).removeAttribute(STROKE);
+            ((Element) n).setAttribute(STROKE, color.get());
         }
     }
 
     private void insertComponentSVGIntoDocumentSVG(SVGOMDocument obj, Element g, Node node,
-                                                   SubstationDiagramStyleProvider styleProvider) {
+                                                   SubstationDiagramStyleProvider styleProvider,
+                                                   ComponentSize size) {
         // The following code work correctly considering SVG part describing the component is the first child of "obj" the SVGDocument.
         // If SVG are written otherwise, it will not work correctly.
-        //
         for (int i = 0; i < obj.getChildNodes().item(0).getChildNodes().getLength(); i++) {
             org.w3c.dom.Node n = obj.getChildNodes().item(0).getChildNodes().item(i).cloneNode(true);
 
-            if ((node instanceof Fictitious3WTNode || node instanceof Feeder2WTNode) && n instanceof SVGElement) {
-                Optional<String> color = Optional.empty();
-
-                if (((SVGElement) n).getId().equals("WINDING1")) {
-                    color = node instanceof Fictitious3WTNode
-                            ? styleProvider.getNode3WTStyle((Fictitious3WTNode) node, ThreeWindingsTransformer.Side.ONE)
-                            : styleProvider.getNode2WTStyle((Feeder2WTNode) node, TwoWindingsTransformer.Side.ONE);
-                } else if (((SVGElement) n).getId().equals("WINDING2")) {
-                    color = node instanceof Fictitious3WTNode
-                            ? styleProvider.getNode3WTStyle((Fictitious3WTNode) node, ThreeWindingsTransformer.Side.TWO)
-                            : styleProvider.getNode2WTStyle((Feeder2WTNode) node, TwoWindingsTransformer.Side.TWO);
-                } else if (((SVGElement) n).getId().equals("WINDING3") && node instanceof Fictitious3WTNode) {
-                    color = styleProvider.getNode3WTStyle((Fictitious3WTNode) node, ThreeWindingsTransformer.Side.THREE);
-                }
-
-                if (color.isPresent()) {
-                    ((Element) n).removeAttribute(STROKE);
-                    ((Element) n).setAttribute(STROKE, color.get());
+            if (n instanceof SVGElement) {
+                if (node instanceof Fictitious3WTNode ||
+                        (node instanceof Feeder2WTNode && node.getComponentType() == ComponentType.TWO_WINDINGS_TRANSFORMER))  {
+                    handleTransformerSvgDocument(node, styleProvider, size, n);
+                } else if (node instanceof Feeder2WTNode && node.getComponentType() == ComponentType.INDUCTOR) {
+                    handleInductorSvgDocument(node, styleProvider, n);
                 }
             }
 
@@ -675,7 +745,7 @@ public class SVGWriter {
         if (y1 > y2) {
             insertRotatedComponentSVGIntoDocumentSVG(arr, g1, 180, cd.getSize().getWidth() / 2, cd.getSize().getHeight() / 2);
         } else {
-            insertComponentSVGIntoDocumentSVG(arr, g1, n, styleProvider);
+            insertComponentSVGIntoDocumentSVG(arr, g1, n, styleProvider, componentLibrary.getSize(n.getComponentType()));
         }
         Optional<String> label1 = init.getLabel1();
         if (label1.isPresent()) {
@@ -698,7 +768,7 @@ public class SVGWriter {
         if (y1 > y2) {
             insertRotatedComponentSVGIntoDocumentSVG(arr, g2, 180, 5, 5);
         } else {
-            insertComponentSVGIntoDocumentSVG(arr, g2, n, styleProvider);
+            insertComponentSVGIntoDocumentSVG(arr, g2, n, styleProvider, componentLibrary.getSize(n.getComponentType()));
         }
         Optional<String> label2 = init.getLabel2();
         if (label2.isPresent()) {
@@ -743,7 +813,8 @@ public class SVGWriter {
                                                                     layoutParameters.isDrawStraightWires());
 
             g.setAttribute(POINTS, pointsListToString(pol));
-            g.setAttribute(CLASS, SubstationDiagramStyles.WIRE_STYLE_CLASS + "_" + SubstationDiagramStyles.escapeClassName(vId));
+            g.setAttribute(CLASS, styleProvider.getIdWireStyle(edge));
+
             root.appendChild(g);
 
             try {

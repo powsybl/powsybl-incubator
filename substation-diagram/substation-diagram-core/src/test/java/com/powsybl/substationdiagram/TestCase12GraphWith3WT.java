@@ -11,6 +11,8 @@ import com.powsybl.iidm.network.*;
 import com.powsybl.substationdiagram.layout.*;
 import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
 import com.powsybl.substationdiagram.model.Graph;
+import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramInitialValueProvider;
+import com.powsybl.substationdiagram.util.NominalVoltageSubstationDiagramStyleProvider;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
 import org.junit.Assert;
@@ -95,7 +97,7 @@ public class TestCase12GraphWith3WT extends AbstractTestCase {
 
         // third voltage level
         //
-        vl3 = createVoltageLevel(substation, "vl3", "vl3", TopologyKind.NODE_BREAKER, 225, 50);
+        vl3 = createVoltageLevel(substation, "vl3", "vl3", TopologyKind.NODE_BREAKER, 63, 50);
 
         createBusBarSection(vl3, "bbs7", "bbs7", 0, 1, 1);
 
@@ -414,7 +416,9 @@ public class TestCase12GraphWith3WT extends AbstractTestCase {
         VoltageLevelDiagram diagram = VoltageLevelDiagram.build(vl1, new PositionVoltageLevelLayoutFactory(), false, true);
         Path pathSVG = Paths.get(System.getProperty("user.home"), "vlDiag.svg");
         Path pathMetadata = Paths.get(System.getProperty("user.home"), "vlDiag_metadata.json");
-        diagram.writeSvg(new ResourcesComponentLibrary("/ConvergenceLibrary"), layoutParameters, network, pathSVG);
+        diagram.writeSvg(new ResourcesComponentLibrary("/ConvergenceLibrary"), layoutParameters,
+                         new DefaultSubstationDiagramInitialValueProvider(network),
+                         new NominalVoltageSubstationDiagramStyleProvider(), pathSVG, false);
         Assert.assertTrue(Files.exists(pathSVG));
         Assert.assertTrue(Files.exists(pathMetadata));
         try {

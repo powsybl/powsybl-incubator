@@ -8,6 +8,7 @@ package com.powsybl.loadflow.simple.equations;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,6 +23,10 @@ public class EquationContext {
 
     public Equation getEquation(int num, EquationType type) {
         return equations.computeIfAbsent(Pair.of(num, type), p -> new Equation(p.getLeft(), p.getRight()));
+    }
+
+    public Collection<Equation> getEquations() {
+        return equations.values();
     }
 
     public Variable getVariable(int num, VariableType type) {

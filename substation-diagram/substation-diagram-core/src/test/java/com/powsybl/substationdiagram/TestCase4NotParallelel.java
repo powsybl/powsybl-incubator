@@ -182,7 +182,7 @@ public class TestCase4NotParallelel extends AbstractTestCase {
         assertEquals("INTERN[bbs1.1, bbs1.2, ss1]", cell.getFullId());
 
         // build blocks
-        assertTrue(new BlockOrganizer().organize(g));
+        new BlockOrganizer().organize(g);
 
         // assert blocks and nodes rotation
         assertEquals(2, ((BusCell) cell).getPrimaryBlocksConnectedToBus().size());

@@ -172,26 +172,28 @@ public class LayoutToCgmesExtensionsConverter {
                     case LINE:
                         FeederNode lineNode = (FeederNode) node;
                         Line line = vlGraph.getVoltageLevel().getConnectable(getBranchId(lineNode.getId()), Line.class);
+                        if (line != null) {
+                            LineDiagramData<Line> lineDiagramData = LineDiagramData.getOrCreateDiagramData(line);
+                            int lineSeq = getMaxSeq(lineDiagramData.getPoints(diagramName)) + 1;
+                            DiagramPoint linePoint = offsetPoint.newDiagramPoint(lineNode.getX(), lineNode.getY(), lineSeq);
+                            lineDiagramData.addPoint(diagramName, linePoint);
 
-                        LineDiagramData<Line> lineDiagramData = LineDiagramData.getOrCreateDiagramData(line);
-                        int lineSeq = getMaxSeq(lineDiagramData.getPoints(diagramName)) + 1;
-                        DiagramPoint linePoint = offsetPoint.newDiagramPoint(lineNode.getX(), lineNode.getY(), lineSeq);
-                        lineDiagramData.addPoint(diagramName, linePoint);
-
-                        LOG.debug("setting CGMES DL IIDM extensions for Line {} ({}), new point {}", line.getId(), line.getName(), linePoint);
-                        line.addExtension(LineDiagramData.class, lineDiagramData);
+                            LOG.debug("setting CGMES DL IIDM extensions for Line {} ({}), new point {}", line.getId(), line.getName(), linePoint);
+                            line.addExtension(LineDiagramData.class, lineDiagramData);
+                        }
                         break;
                     case DANGLING_LINE:
                         FeederNode danglingLineNode = (FeederNode) node;
                         DanglingLine danglingLine = vlGraph.getVoltageLevel().getConnectable(danglingLineNode.getId(), DanglingLine.class);
+                        if (danglingLine != null) {
+                            LineDiagramData<DanglingLine> danglingLineDiagramData = LineDiagramData.getOrCreateDiagramData(danglingLine);
+                            int danglingLineSeq = getMaxSeq(danglingLineDiagramData.getPoints(diagramName)) + 1;
+                            DiagramPoint danglingLinePoint = offsetPoint.newDiagramPoint(danglingLineNode.getX(), danglingLineNode.getY(), danglingLineSeq);
+                            danglingLineDiagramData.addPoint(diagramName, danglingLinePoint);
 
-                        LineDiagramData<DanglingLine> danglingLineDiagramData = LineDiagramData.getOrCreateDiagramData(danglingLine);
-                        int danglingLineSeq = getMaxSeq(danglingLineDiagramData.getPoints(diagramName)) + 1;
-                        DiagramPoint danglingLinePoint = offsetPoint.newDiagramPoint(danglingLineNode.getX(), danglingLineNode.getY(), danglingLineSeq);
-                        danglingLineDiagramData.addPoint(diagramName, danglingLinePoint);
-
-                        LOG.debug("setting CGMES DL IIDM extensions for Dangling line {} ({}),  point {}", danglingLine.getId(), danglingLine.getName(), danglingLinePoint);
-                        danglingLine.addExtension(LineDiagramData.class, danglingLineDiagramData);
+                            LOG.debug("setting CGMES DL IIDM extensions for Dangling line {} ({}),  point {}", danglingLine.getId(), danglingLine.getName(), danglingLinePoint);
+                            danglingLine.addExtension(LineDiagramData.class, danglingLineDiagramData);
+                        }
                         break;
                     default:
                         break;

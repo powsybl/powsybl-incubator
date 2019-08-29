@@ -14,6 +14,9 @@ import com.powsybl.iidm.network.VariantManagerConstants;
 import com.powsybl.iidm.network.test.EurostagTutorialExample1Factory;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
+import com.powsybl.loadflow.simple.SimpleLoadFlow;
+import com.powsybl.loadflow.simple.SimpleLoadFlowParameters;
+import com.powsybl.loadflow.simple.SlackBusSelectionMode;
 import com.powsybl.loadflow.simple.ac.nr.DefaultAcLoadFlowObserver;
 import com.powsybl.math.matrix.DenseMatrixFactory;
 import org.junit.Before;
@@ -35,8 +38,9 @@ public class SimpleAcLoadFlowEurostagTutorialExample1Test {
     private Bus loadBus;
     private Line line1;
     private Line line2;
-    private SimpleAcLoadFlow loadFlow;
+    private SimpleLoadFlow loadFlow;
     private LoadFlowParameters parameters;
+    private SimpleLoadFlowParameters parametersExt;
 
     @Before
     public void setUp() {
@@ -48,12 +52,12 @@ public class SimpleAcLoadFlowEurostagTutorialExample1Test {
         line1 = network.getLine("NHV1_NHV2_1");
         line2 = network.getLine("NHV1_NHV2_2");
 
-        loadFlow = new SimpleAcLoadFlow(network, new DenseMatrixFactory());
+        loadFlow = new SimpleLoadFlow(network, new DenseMatrixFactory());
         parameters = new LoadFlowParameters();
-        SimpleAcLoadFlowParameters parametersExt = new SimpleAcLoadFlowParameters()
+        parametersExt = new SimpleLoadFlowParameters()
                 .setSlackBusSelectionMode(SlackBusSelectionMode.FIRST)
                 .setDistributedSlack(false);
-        parameters.addExtension(SimpleAcLoadFlowParameters.class, parametersExt);
+        parameters.addExtension(SimpleLoadFlowParameters.class, parametersExt);
     }
 
     @Test
@@ -84,7 +88,7 @@ public class SimpleAcLoadFlowEurostagTutorialExample1Test {
     public void dcLfVoltageInitTest() {
         parameters.setVoltageInitMode(LoadFlowParameters.VoltageInitMode.DC_VALUES);
         boolean[] stateVectorInitialized = new boolean[1];
-        loadFlow.getAdditionalObservers().add(new DefaultAcLoadFlowObserver() {
+        parametersExt.getAdditionalObservers().add(new DefaultAcLoadFlowObserver() {
             @Override
             public void stateVectorInitialized(double[] x) {
                 assertEquals(0, x[1], DELTA_ANGLE);

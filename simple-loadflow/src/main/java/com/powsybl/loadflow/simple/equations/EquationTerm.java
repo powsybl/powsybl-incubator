@@ -18,12 +18,6 @@ import java.util.List;
 public interface EquationTerm extends Evaluable {
 
     /**
-     * Get the equation this term is part of.
-     * @return the equation this term is part of
-     */
-    Equation getEquation();
-
-    /**
      * Get the list of variable this equation term depends on.
      * @return the list of variable this equation term depends on.
      */

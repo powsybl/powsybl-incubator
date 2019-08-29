@@ -34,9 +34,7 @@ public class InternCell extends BusCell {
 
     public void postPositioningSettings() {
         identifyIfFlat();
-        if (centralBlock != null) {
-            refactorBlocks();
-        }
+        refactorBlocks();
     }
 
     private void identifyIfFlat() {
@@ -56,7 +54,7 @@ public class InternCell extends BusCell {
      * <pre>
      * the organisation of the block shall be
      *     a parallelBlock of - from left to right :
-     *         1 chain block with:
+     *         1 serial block with:
      *             lowerBlock: 1 (parallelBlocks or one primaryBlock) LefttNode to busNodes on the right
      *             upperBlock: 1 central block (with startingNode = leftNode and endingNode = rightNode)
      *         blocks - one or more / whatever type from RightNode to busNodes
@@ -64,9 +62,7 @@ public class InternCell extends BusCell {
      */
     public void rationalizeOrganization() {
         unRavelBlocks();
-        if (centralBlock != null) {
-            refactorBlocks();
-        }
+        refactorBlocks();
     }
 
     private void unRavelBlocks() {
@@ -120,9 +116,11 @@ public class InternCell extends BusCell {
     }
 
     private void refactorBlocks() {
+        if (centralBlock == null) {
+            return;
+        }
         SerialBlock bc = new SerialBlock(sideToBlock.get(Side.LEFT),
-                centralBlock,
-                sideToBlock.get(Side.LEFT).getEndingNode(), this);
+                centralBlock, this);
         ParallelBlock bp = new ParallelBlock(Arrays.asList(bc, sideToBlock.get(Side.RIGHT)), this, false);
         if (getDirection() == Direction.FLAT) {
             bp.setOrientation(Orientation.HORIZONTAL);

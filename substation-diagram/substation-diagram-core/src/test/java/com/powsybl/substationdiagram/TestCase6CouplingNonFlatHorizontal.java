@@ -131,7 +131,7 @@ public class TestCase6CouplingNonFlatHorizontal extends AbstractTestCase {
         assertEquals("INTERN[bbs2.1, bbs2.2, ds2]", cellD2.getFullId());
 
         // build blocks
-        assertTrue(new BlockOrganizer().organize(g));
+        new BlockOrganizer().organize(g);
 
         // assert blocks and nodes rotation
         assertEquals(2, ((BusCell) cellB).getPrimaryBlocksConnectedToBus().size());

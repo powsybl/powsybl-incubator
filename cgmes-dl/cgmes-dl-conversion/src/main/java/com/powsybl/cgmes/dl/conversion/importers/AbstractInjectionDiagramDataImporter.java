@@ -33,12 +33,12 @@ public abstract class AbstractInjectionDiagramDataImporter {
         this.terminalsDiagramData = Objects.requireNonNull(terminalsDiagramData);
     }
 
-    protected void addTerminalPoints(String equipmentId, String equipmentName, InjectionDiagramData<?> diagramData) {
+    protected void addTerminalPoints(String equipmentId, String equipmentName, InjectionDiagramData.InjectionDiagramDetails diagramDetails) {
         String terminalKey = equipmentId + "_1";
         if (terminalsDiagramData.containsKey(terminalKey)) {
             PropertyBags equipmentTerminalsDiagramData = terminalsDiagramData.get(terminalKey);
             equipmentTerminalsDiagramData.forEach(terminalDiagramData ->
-                diagramData.addTerminalPoint(new DiagramPoint(terminalDiagramData.asDouble("x"), terminalDiagramData.asDouble("y"), terminalDiagramData.asInt("seq")))
+                    diagramDetails.addTerminalPoint(new DiagramPoint(terminalDiagramData.asDouble("x"), terminalDiagramData.asDouble("y"), terminalDiagramData.asInt("seq")))
             );
         } else {
             LOG.warn("Cannot find terminal diagram data of equipment {}, name {}", equipmentId, equipmentName);

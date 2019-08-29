@@ -23,17 +23,21 @@ public class TransformerDiagramDataTest extends AbstractCouplingDeviceDiagramDat
         Network network = Networks.createNetworkWithTwoWindingsTransformer();
         TwoWindingsTransformer twt = network.getTwoWindingsTransformer("Transformer");
 
-        CouplingDeviceDiagramData<TwoWindingsTransformer> twtDiagramData = new CouplingDeviceDiagramData<>(twt, new DiagramPoint(20, 10, 0), 90);
-        twtDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL1, new DiagramPoint(15, 10, 2));
-        twtDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL1, new DiagramPoint(0, 10, 1));
-        twtDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL2, new DiagramPoint(25, 10, 1));
-        twtDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL2, new DiagramPoint(40, 10, 2));
+        CouplingDeviceDiagramData<TwoWindingsTransformer> twtDiagramData = new CouplingDeviceDiagramData<>(twt);
+        CouplingDeviceDiagramData.CouplingDeviceDiagramDetails twtDiagramDataDetails = twtDiagramData.new CouplingDeviceDiagramDetails(new DiagramPoint(20, 10, 0), 90);
+
+        twtDiagramDataDetails.addTerminalPoint(DiagramTerminal.TERMINAL1, new DiagramPoint(15, 10, 2));
+        twtDiagramDataDetails.addTerminalPoint(DiagramTerminal.TERMINAL1, new DiagramPoint(0, 10, 1));
+        twtDiagramDataDetails.addTerminalPoint(DiagramTerminal.TERMINAL2, new DiagramPoint(25, 10, 1));
+        twtDiagramDataDetails.addTerminalPoint(DiagramTerminal.TERMINAL2, new DiagramPoint(40, 10, 2));
+
+        twtDiagramData.addData(DIAGRAM_NAME, twtDiagramDataDetails);
         twt.addExtension(CouplingDeviceDiagramData.class, twtDiagramData);
 
         TwoWindingsTransformer twt2 = network.getTwoWindingsTransformer("Transformer");
         CouplingDeviceDiagramData<TwoWindingsTransformer> twtDiagramData2 = twt2.getExtension(CouplingDeviceDiagramData.class);
 
-        checkDiagramData(twtDiagramData2);
+        checkDiagramData(twtDiagramData2, DIAGRAM_NAME);
     }
 
 }

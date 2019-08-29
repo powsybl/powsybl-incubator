@@ -6,14 +6,15 @@
  */
 package com.powsybl.substationdiagram.cgmes;
 
-import java.util.Objects;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.powsybl.cgmes.iidm.extensions.dl.NetworkDiagramData;
+import com.powsybl.iidm.network.Network;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
 import com.powsybl.substationdiagram.layout.VoltageLevelLayout;
 import com.powsybl.substationdiagram.model.Graph;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Objects;
 
 /**
  *
@@ -32,12 +33,22 @@ public class CgmesVoltageLevelLayout extends AbstractCgmesLayout implements Volt
 
     @Override
     public void run(LayoutParameters layoutParam) {
-        LOG.info("Running CGMES Voltage Level Layout on voltage level {}", graph.getVoltageLevel().getId());
-        setNodeCoordinates(graph);
-        graph.getNodes().forEach(node -> shiftNodeCoordinates(node, layoutParam.getScaleFactor()));
-        if (layoutParam.getScaleFactor() != 1) {
-            graph.getNodes().forEach(node -> scaleNodeCoordinates(node, layoutParam.getScaleFactor()));
+        String diagramName = layoutParam.getDiagramName();
+        if (diagramName == null) {
+            LOG.warn("layout parameter diagramName not set: CGMES-DL layout will not be applied");
+        } else {
+            Network network = graph.getVoltageLevel().getSubstation().getNetwork();
+            if (NetworkDiagramData.containsDiagramName(network, diagramName)) {
+                LOG.info("Applying CGMES-DL layout to network {}, voltage level {}, diagram name {}", network.getId(), graph.getVoltageLevel().getId(), diagramName);
+
+                setNodeCoordinates(graph, diagramName);
+                graph.getNodes().forEach(node -> shiftNodeCoordinates(node, layoutParam.getScaleFactor()));
+                if (layoutParam.getScaleFactor() != 1) {
+                    graph.getNodes().forEach(node -> scaleNodeCoordinates(node, layoutParam.getScaleFactor()));
+                }
+            } else {
+                LOG.warn("diagram name {} not found in network: CGMES-DL layout will not be applied to network {}, voltage level {}", diagramName, network.getId(), graph.getVoltageLevel().getId());
+            }
         }
     }
-
 }

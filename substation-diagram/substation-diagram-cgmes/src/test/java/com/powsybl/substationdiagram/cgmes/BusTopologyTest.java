@@ -12,15 +12,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 
+import com.powsybl.cgmes.iidm.extensions.dl.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.powsybl.cgmes.iidm.extensions.dl.CouplingDeviceDiagramData;
-import com.powsybl.cgmes.iidm.extensions.dl.DiagramPoint;
-import com.powsybl.cgmes.iidm.extensions.dl.DiagramTerminal;
-import com.powsybl.cgmes.iidm.extensions.dl.InjectionDiagramData;
-import com.powsybl.cgmes.iidm.extensions.dl.LineDiagramData;
-import com.powsybl.cgmes.iidm.extensions.dl.NodeDiagramData;
 import com.powsybl.iidm.network.Bus;
 import com.powsybl.iidm.network.Country;
 import com.powsybl.iidm.network.DanglingLine;
@@ -147,47 +142,61 @@ public class BusTopologyTest extends AbstractCgmesVoltageLevelLayoutTest {
     private void addDiagramData(Network network) {
         Bus bus = voltageLevel.getBusBreakerView().getBus("Bus1");
         NodeDiagramData<Bus> busDiagramData = new NodeDiagramData<>(bus);
-        busDiagramData.setPoint1(new DiagramPoint(60, 10, 1));
-        busDiagramData.setPoint2(new DiagramPoint(60, 70, 2));
+        NodeDiagramData.NodeDiagramDataDetails diagramDetails = busDiagramData.new NodeDiagramDataDetails();
+        diagramDetails.setPoint1(new DiagramPoint(60, 10, 1));
+        diagramDetails.setPoint2(new DiagramPoint(60, 70, 2));
+        busDiagramData.addData(DIAGRAM_NAME, diagramDetails);
         bus.addExtension(NodeDiagramData.class, busDiagramData);
 
         Load load = network.getLoad("Load");
-        InjectionDiagramData<Load> loadDiagramData = new InjectionDiagramData<>(load, new DiagramPoint(10, 20, 0), 90);
-        loadDiagramData.addTerminalPoint(new DiagramPoint(15, 20, 2));
-        loadDiagramData.addTerminalPoint(new DiagramPoint(60, 20, 1));
+        InjectionDiagramData<Load> loadDiagramData = new InjectionDiagramData<>(load);
+        InjectionDiagramData.InjectionDiagramDetails loadsDiagramDetails = loadDiagramData.new InjectionDiagramDetails(new DiagramPoint(10, 20, 0), 90);
+        loadsDiagramDetails.addTerminalPoint(new DiagramPoint(15, 20, 2));
+        loadsDiagramDetails.addTerminalPoint(new DiagramPoint(60, 20, 1));
+        loadDiagramData.addData(DIAGRAM_NAME, loadsDiagramDetails);
         load.addExtension(InjectionDiagramData.class, loadDiagramData);
 
         ShuntCompensator shunt = network.getShuntCompensator("Shunt");
-        InjectionDiagramData<ShuntCompensator> shuntDiagramData = new InjectionDiagramData<>(shunt, new DiagramPoint(15, 55, 0), 90);
-        shuntDiagramData.addTerminalPoint(new DiagramPoint(20, 55, 1));
-        shuntDiagramData.addTerminalPoint(new DiagramPoint(60, 55, 2));
+        InjectionDiagramData<ShuntCompensator> shuntDiagramData = new InjectionDiagramData<>(shunt);
+        InjectionDiagramData.InjectionDiagramDetails shuntDiagramDetails = shuntDiagramData.new InjectionDiagramDetails(new DiagramPoint(15, 55, 0), 90);
+        shuntDiagramDetails.addTerminalPoint(new DiagramPoint(20, 55, 1));
+        shuntDiagramDetails.addTerminalPoint(new DiagramPoint(60, 55, 2));
+        shuntDiagramData.addData(DIAGRAM_NAME, shuntDiagramDetails);
         shunt.addExtension(InjectionDiagramData.class, shuntDiagramData);
 
         DanglingLine danglingLine = network.getDanglingLine("DanglingLine");
         LineDiagramData<DanglingLine> danglingLineDiagramData = new LineDiagramData<>(danglingLine);
-        danglingLineDiagramData.addPoint(new DiagramPoint(60, 60, 1));
-        danglingLineDiagramData.addPoint(new DiagramPoint(120, 60, 2));
+        danglingLineDiagramData.addPoint(DIAGRAM_NAME, new DiagramPoint(60, 60, 1));
+        danglingLineDiagramData.addPoint(DIAGRAM_NAME, new DiagramPoint(120, 60, 2));
         danglingLine.addExtension(LineDiagramData.class, danglingLineDiagramData);
 
         TwoWindingsTransformer twt = network.getTwoWindingsTransformer("Transformer");
-        CouplingDeviceDiagramData<TwoWindingsTransformer> twtDiagramData = new CouplingDeviceDiagramData<>(twt, new DiagramPoint(100, 15, 0), 90);
-        twtDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL1, new DiagramPoint(95, 15, 1));
-        twtDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL1, new DiagramPoint(60, 15, 2));
-        twtDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL2, new DiagramPoint(105, 15, 1));
-        twtDiagramData.addTerminalPoint(DiagramTerminal.TERMINAL2, new DiagramPoint(120, 15, 2));
+        CouplingDeviceDiagramData<TwoWindingsTransformer> twtDiagramData = new CouplingDeviceDiagramData<>(twt);
+        CouplingDeviceDiagramData.CouplingDeviceDiagramDetails twtDiagramDetails = twtDiagramData.new CouplingDeviceDiagramDetails(new DiagramPoint(100, 15, 0), 90);
+        twtDiagramDetails.addTerminalPoint(DiagramTerminal.TERMINAL1, new DiagramPoint(95, 15, 1));
+        twtDiagramDetails.addTerminalPoint(DiagramTerminal.TERMINAL1, new DiagramPoint(60, 15, 2));
+        twtDiagramDetails.addTerminalPoint(DiagramTerminal.TERMINAL2, new DiagramPoint(105, 15, 1));
+        twtDiagramDetails.addTerminalPoint(DiagramTerminal.TERMINAL2, new DiagramPoint(120, 15, 2));
+        twtDiagramData.addData(DIAGRAM_NAME, twtDiagramDetails);
         twt.addExtension(CouplingDeviceDiagramData.class, twtDiagramData);
 
         Bus bus2 = voltageLevel2.getBusBreakerView().getBus("Bus2");
         NodeDiagramData<Bus> bus2DiagramData = new NodeDiagramData<>(bus2);
-        bus2DiagramData.setPoint1(new DiagramPoint(120, 10, 1));
-        bus2DiagramData.setPoint2(new DiagramPoint(120, 25, 2));
+        NodeDiagramData.NodeDiagramDataDetails diagramDetails2 = bus2DiagramData.new NodeDiagramDataDetails();
+        diagramDetails2.setPoint1(new DiagramPoint(120, 10, 1));
+        diagramDetails2.setPoint2(new DiagramPoint(120, 25, 2));
+        bus2DiagramData.addData(DIAGRAM_NAME, diagramDetails2);
         bus2.addExtension(NodeDiagramData.class, bus2DiagramData);
 
         StaticVarCompensator svc = network.getStaticVarCompensator("Svc");
-        InjectionDiagramData<StaticVarCompensator> svcDiagramData = new InjectionDiagramData<>(svc, new DiagramPoint(140, 15, 0), 270);
-        svcDiagramData.addTerminalPoint(new DiagramPoint(135, 15, 1));
-        svcDiagramData.addTerminalPoint(new DiagramPoint(120, 15, 2));
+        InjectionDiagramData<StaticVarCompensator> svcDiagramData = new InjectionDiagramData<>(svc);
+        InjectionDiagramData.InjectionDiagramDetails svcDiagramDataDetails = svcDiagramData.new InjectionDiagramDetails(new DiagramPoint(140, 15, 0), 270);
+        svcDiagramDataDetails.addTerminalPoint(new DiagramPoint(135, 15, 1));
+        svcDiagramDataDetails.addTerminalPoint(new DiagramPoint(120, 15, 2));
+        svcDiagramData.addData(DIAGRAM_NAME, svcDiagramDataDetails);
         svc.addExtension(InjectionDiagramData.class, svcDiagramData);
+
+        NetworkDiagramData.addDiagramName(network, DIAGRAM_NAME);
     }
 
     @Test
@@ -200,6 +209,7 @@ public class BusTopologyTest extends AbstractCgmesVoltageLevelLayoutTest {
         SubstationGraph graph = SubstationGraph.create(substation);
         LayoutParameters layoutParameters = new LayoutParameters();
         layoutParameters.setScaleFactor(2);
+        layoutParameters.setDiagramName(DIAGRAM_NAME);
         new CgmesSubstationLayout(graph).run(layoutParameters);
         checkGraph(graph.getNode(voltageLevel.getId()));
         checkCoordinates(graph.getNode(voltageLevel.getId()));

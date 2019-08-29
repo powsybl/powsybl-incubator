@@ -12,6 +12,9 @@ import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.VariantManagerConstants;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
+import com.powsybl.loadflow.simple.SimpleLoadFlow;
+import com.powsybl.loadflow.simple.SimpleLoadFlowParameters;
+import com.powsybl.loadflow.simple.SlackBusSelectionMode;
 import com.powsybl.loadflow.simple.network.TwoBusNetworkFactory;
 import com.powsybl.math.matrix.DenseMatrixFactory;
 import org.junit.Before;
@@ -31,7 +34,7 @@ public class SimpleAcLoadFlowTwoBusNetworkTest {
     private Bus bus2;
     private Line line1;
 
-    private SimpleAcLoadFlow loadFlow;
+    private SimpleLoadFlow loadFlow;
     private LoadFlowParameters parameters;
 
     @Before
@@ -41,12 +44,12 @@ public class SimpleAcLoadFlowTwoBusNetworkTest {
         bus2 = network.getBusBreakerView().getBus("b2");
         line1 = network.getLine("l12");
 
-        loadFlow = new SimpleAcLoadFlow(network, new DenseMatrixFactory());
+        loadFlow = new SimpleLoadFlow(network, new DenseMatrixFactory());
         parameters = new LoadFlowParameters();
-        SimpleAcLoadFlowParameters parametersExt = new SimpleAcLoadFlowParameters()
+        SimpleLoadFlowParameters parametersExt = new SimpleLoadFlowParameters()
                 .setSlackBusSelectionMode(SlackBusSelectionMode.FIRST)
                 .setDistributedSlack(false);
-        this.parameters.addExtension(SimpleAcLoadFlowParameters.class, parametersExt);
+        this.parameters.addExtension(SimpleLoadFlowParameters.class, parametersExt);
     }
 
     @Test

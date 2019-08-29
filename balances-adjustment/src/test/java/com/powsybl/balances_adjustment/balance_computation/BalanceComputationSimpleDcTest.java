@@ -15,7 +15,7 @@ import com.powsybl.computation.local.LocalComputationManager;
 import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.*;
 import com.powsybl.loadflow.*;
-import com.powsybl.loadflow.simple.dc.SimpleDcLoadFlowFactory;
+import com.powsybl.loadflow.simple.SimpleLoadFlowFactory;
 import com.powsybl.math.matrix.DenseMatrixFactory;
 import org.junit.Before;
 import org.junit.Test;
@@ -66,7 +66,7 @@ public class BalanceComputationSimpleDcTest {
         parameters = new BalanceComputationParameters();
         balanceComputationFactory = new BalanceComputationFactoryImpl();
 
-        loadFlowFactory = new SimpleDcLoadFlowFactory(new DenseMatrixFactory());
+        loadFlowFactory = new SimpleLoadFlowFactory(new DenseMatrixFactory());
 
         networkAreasScalableMap = new HashMap<>();
         Scalable scalableFR = Scalable.proportional(Arrays.asList(60f, 40f),
@@ -238,12 +238,12 @@ public class BalanceComputationSimpleDcTest {
 
         LoadFlow loadFlow = loadFlowFactory.create(simpleNetwork, computationManager, 1);
         loadFlow.run(initialVariantNew, new LoadFlowParameters()).join();
-        assertEquals(1300, countryAreaFR.getNetPosition(simpleNetwork), 0.);
-        assertEquals(-1300, countryAreaBE.getNetPosition(simpleNetwork), 0.);
+        assertEquals(1300, countryAreaFR.getNetPosition(simpleNetwork), 0.0001);
+        assertEquals(-1300, countryAreaBE.getNetPosition(simpleNetwork), 0.0001);
 
         loadFlow.run(initialState, new LoadFlowParameters()).join();
-        assertEquals(1200, countryAreaFR.getNetPosition(simpleNetwork), 0.);
-        assertEquals(-1200, countryAreaBE.getNetPosition(simpleNetwork), 0.);
+        assertEquals(1200, countryAreaFR.getNetPosition(simpleNetwork), 0.0001);
+        assertEquals(-1200, countryAreaBE.getNetPosition(simpleNetwork), 0.0001);
     }
 
     @Test
@@ -266,12 +266,12 @@ public class BalanceComputationSimpleDcTest {
         LoadFlow loadFlow = loadFlowFactory.create(simpleNetwork, computationManager, 1);
 
         loadFlow.run(initialState, new LoadFlowParameters()).join();
-        assertEquals(1200, countryAreaFR.getNetPosition(simpleNetwork), 0.);
-        assertEquals(-1200, countryAreaBE.getNetPosition(simpleNetwork), 0.);
+        assertEquals(1200, countryAreaFR.getNetPosition(simpleNetwork), 0.0001);
+        assertEquals(-1200, countryAreaBE.getNetPosition(simpleNetwork), 0.0001);
 
         loadFlow.run(initialVariantNew, new LoadFlowParameters()).join();
-        assertEquals(1200, countryAreaFR.getNetPosition(simpleNetwork), 0.);
-        assertEquals(-1200, countryAreaBE.getNetPosition(simpleNetwork), 0.);
+        assertEquals(1200, countryAreaFR.getNetPosition(simpleNetwork), 0.0001);
+        assertEquals(-1200, countryAreaBE.getNetPosition(simpleNetwork), 0.0001);
 
     }
 

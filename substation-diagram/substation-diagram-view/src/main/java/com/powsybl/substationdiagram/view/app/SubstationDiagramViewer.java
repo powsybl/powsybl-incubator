@@ -26,6 +26,7 @@ import com.powsybl.substationdiagram.svg.SubstationDiagramInitialValueProvider;
 import com.powsybl.substationdiagram.svg.SubstationDiagramStyleProvider;
 import com.powsybl.substationdiagram.util.NominalVoltageSubstationDiagramStyleProvider;
 import com.powsybl.substationdiagram.util.SmartVoltageLevelLayoutFactory;
+import com.powsybl.substationdiagram.util.TopologicalStyleProvider;
 import com.powsybl.substationdiagram.view.AbstractContainerDiagramView;
 import com.powsybl.substationdiagram.view.SubstationDiagramView;
 import com.powsybl.substationdiagram.view.VoltageLevelDiagramView;
@@ -95,7 +96,8 @@ public class SubstationDiagramViewer extends Application {
 
     private final Map<String, SubstationDiagramStyleProvider> styles
             = ImmutableMap.of("Default", new DefaultSubstationDiagramStyleProvider(),
-                              "Nominal voltage", new NominalVoltageSubstationDiagramStyleProvider());
+                              "Nominal voltage", new NominalVoltageSubstationDiagramStyleProvider(),
+                              "Topology", new TopologicalStyleProvider());
 
     private final Map<String, SubstationLayoutFactory> substationsLayouts
             = ImmutableMap.of("Horizontal", new HorizontalSubstationLayoutFactory(),

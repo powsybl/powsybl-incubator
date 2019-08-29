@@ -58,10 +58,10 @@ public class DefaultSubstationDiagramStyleProvider implements SubstationDiagramS
             try {
                 StringBuilder style = new StringBuilder();
                 String className = escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name()));
-                style.append(".").append(className)
+                style.append(" .").append(className)
                         .append(" .open { visibility: ").append(node.isOpen() ? "visible;}" : "hidden;}");
 
-                style.append(".").append(className)
+                style.append(" .").append(className)
                         .append(" .closed { visibility: ").append(node.isOpen() ? "hidden;}" : "visible;}");
 
                 return Optional.of(style.toString());

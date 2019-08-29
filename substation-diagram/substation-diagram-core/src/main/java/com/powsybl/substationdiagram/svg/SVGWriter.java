@@ -6,6 +6,43 @@
  */
 package com.powsybl.substationdiagram.svg;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.apache.batik.anim.dom.SVGOMDocument;
+import org.apache.batik.dom.GenericDOMImplementation;
+import org.apache.commons.math3.util.Precision;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.CDATASection;
+import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Text;
+import org.w3c.dom.svg.SVGElement;
+
 import com.powsybl.commons.exceptions.UncheckedTransformerException;
 import com.powsybl.iidm.network.ThreeWindingsTransformer;
 import com.powsybl.iidm.network.TwoWindingsTransformer;
@@ -39,42 +76,6 @@ import com.powsybl.substationdiagram.model.Side;
 import com.powsybl.substationdiagram.model.SubstationGraph;
 import com.powsybl.substationdiagram.svg.GraphMetadata.ArrowMetadata;
 import com.powsybl.substationdiagram.svg.SubstationDiagramInitialValueProvider.Direction;
-
-import org.apache.batik.anim.dom.SVGOMDocument;
-import org.apache.batik.dom.GenericDOMImplementation;
-import org.apache.commons.math3.util.Precision;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.CDATASection;
-import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Text;
-import org.w3c.dom.svg.SVGElement;
-
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
@@ -235,31 +236,6 @@ public class SVGWriter {
 
         Document document = domImpl.createDocument("http://www.w3.org/2000/svg", "svg", null);
 
-        Element style = document.createElement("style");
-
-        StringBuilder graphStyle = new StringBuilder();
-        for (Graph vlGraph : graph.getNodes()) {
-            Optional<String> globalStyle = styleProvider.getGlobalStyle(vlGraph);
-            globalStyle.ifPresent(graphStyle::append);
-        }
-        graphStyle.append(componentLibrary.getStyleSheet());
-
-        for (Graph vlGraph : graph.getNodes()) {
-            vlGraph.getNodes().forEach(n -> {
-                Optional<String> nodeStyle = styleProvider.getNodeStyle(n);
-                nodeStyle.ifPresent(graphStyle::append);
-            });
-            vlGraph.getEdges().forEach(e -> {
-                Optional<String> wireStyle = styleProvider.getWireStyle(e);
-                wireStyle.ifPresent(graphStyle::append);
-            });
-        }
-        CDATASection cd = document.createCDATASection(graphStyle.toString());
-        style.appendChild(cd);
-
-        document.adoptNode(style);
-        document.getDocumentElement().appendChild(style);
-
         GraphMetadata metadata = writegraph(graph, document, sLayoutFactory, vLayoutFactory, initProvider, styleProvider);
 
         try {
@@ -345,6 +321,32 @@ public class SVGWriter {
             drawGraphLabel(root, vlGraph, metadata);
         }
 
+        Element style = document.createElement("style");
+
+        StringBuilder graphStyle = new StringBuilder();
+        for (Graph vlGraph : graph.getNodes()) {
+            Optional<String> globalStyle = styleProvider.getGlobalStyle(vlGraph);
+            globalStyle.ifPresent(graphStyle::append);
+        }
+        graphStyle.append(componentLibrary.getStyleSheet());
+
+        for (Graph vlGraph : graph.getNodes()) {
+            vlGraph.getNodes().forEach(n -> {
+                Optional<String> nodeStyle = styleProvider.getNodeStyle(n);
+                nodeStyle.ifPresent(graphStyle::append);
+            });
+            vlGraph.getEdges().forEach(e -> {
+                Optional<String> wireStyle = styleProvider.getWireStyle(e);
+                wireStyle.ifPresent(graphStyle::append);
+            });
+        }
+
+        CDATASection cd = document.createCDATASection(graphStyle.toString());
+        style.appendChild(cd);
+
+        document.adoptNode(style);
+        document.getDocumentElement().appendChild(style);
+
         document.adoptNode(root);
         document.getDocumentElement().appendChild(root);
 
@@ -402,7 +404,7 @@ public class SVGWriter {
                            SubstationDiagramStyleProvider styleProvider) {
         graph.getNodes().forEach(node -> {
             try {
-                String nodeId = URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name());
+                String nodeId = SubstationDiagramStyles.escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name()));
                 Element g = root.getOwnerDocument().createElement("g");
                 g.setAttribute("id", nodeId);
 
@@ -750,46 +752,47 @@ public class SVGWriter {
      */
     private void drawEdges(Element root, Graph graph, GraphMetadata metadata, AnchorPointProvider anchorPointProvider, SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider) {
         String vId = graph.getVoltageLevel().getId();
-        for (Edge edge : graph.getEdges()) {
-            // for unicity purpose (in substation diagram), we prefix the id of the WireMetadata with the voltageLevel id and "_"
-            String wireId = vId + "_Wire" + graph.getEdges().indexOf(edge);
-            Element g = root.getOwnerDocument().createElement(POLYLINE);
-            g.setAttribute("id", wireId);
+        try {
+            for (Edge edge : graph.getEdges()) {
+                // for unicity purpose (in substation diagram), we prefix the id of the WireMetadata with the voltageLevel id and "_"
+                String wireId = SubstationDiagramStyles.escapeClassName(URLEncoder.encode(vId + "_Wire" + graph.getEdges().indexOf(edge), StandardCharsets.UTF_8.name()));
 
-            WireConnection anchorPoints = WireConnection.searchBetterAnchorPoints(anchorPointProvider, edge.getNode1(), edge.getNode2());
+                Element g = root.getOwnerDocument().createElement(POLYLINE);
+                g.setAttribute("id", wireId);
 
-            // Determine points of the polyline
-            List<Double> pol = anchorPoints.calculatePolylinePoints(edge.getNode1(), edge.getNode2(),
-                                                                    layoutParameters.isDrawStraightWires());
+                WireConnection anchorPoints = WireConnection.searchBetterAnchorPoints(anchorPointProvider, edge.getNode1(), edge.getNode2());
 
-            g.setAttribute(POINTS, pointsListToString(pol));
-            g.setAttribute(CLASS, SubstationDiagramStyles.WIRE_STYLE_CLASS + "_" + SubstationDiagramStyles.escapeClassName(vId));
-            root.appendChild(g);
+                // Determine points of the polyline
+                List<Double> pol = anchorPoints.calculatePolylinePoints(edge.getNode1(), edge.getNode2(),
+                                                                        layoutParameters.isDrawStraightWires());
 
-            try {
+                g.setAttribute(POINTS, pointsListToString(pol));
+                g.setAttribute(CLASS, SubstationDiagramStyles.WIRE_STYLE_CLASS + "_" + SubstationDiagramStyles.escapeClassName(vId));
+                root.appendChild(g);
+
                 metadata.addWireMetadata(new GraphMetadata.WireMetadata(wireId,
-                        URLEncoder.encode(edge.getNode1().getId(), StandardCharsets.UTF_8.name()),
-                        URLEncoder.encode(edge.getNode2().getId(), StandardCharsets.UTF_8.name()),
+                        SubstationDiagramStyles.escapeClassName(URLEncoder.encode(edge.getNode1().getId(), StandardCharsets.UTF_8.name())),
+                        SubstationDiagramStyles.escapeClassName(URLEncoder.encode(edge.getNode2().getId(), StandardCharsets.UTF_8.name())),
                         layoutParameters.isDrawStraightWires(),
                         false));
-            } catch (UnsupportedEncodingException e) {
-                throw new UncheckedIOException(e);
-            }
 
-            if (metadata.getComponentMetadata(ComponentType.ARROW) == null) {
-                metadata.addComponentMetadata(new ComponentMetadata(ComponentType.ARROW,
-                                                                    null,
-                                                                    componentLibrary.getAnchorPoints(ComponentType.ARROW),
-                                                                    componentLibrary.getSize(ComponentType.ARROW)));
-            }
-
-            if (edge.getNode1() instanceof FeederNode) {
-                if (!(edge.getNode2() instanceof FeederNode)) {
-                    insertArrowsAndLabels(wireId, pol, root, edge.getNode1(), metadata, initProvider, styleProvider);
+                if (metadata.getComponentMetadata(ComponentType.ARROW) == null) {
+                    metadata.addComponentMetadata(new ComponentMetadata(ComponentType.ARROW,
+                                                                        null,
+                                                                        componentLibrary.getAnchorPoints(ComponentType.ARROW),
+                                                                        componentLibrary.getSize(ComponentType.ARROW)));
                 }
-            } else if  (edge.getNode2() instanceof FeederNode) {
-                insertArrowsAndLabels(wireId, pol, root, edge.getNode2(), metadata, initProvider, styleProvider);
+
+                if (edge.getNode1() instanceof FeederNode) {
+                    if (!(edge.getNode2() instanceof FeederNode)) {
+                        insertArrowsAndLabels(wireId, pol, root, edge.getNode1(), metadata, initProvider, styleProvider);
+                    }
+                } else if  (edge.getNode2() instanceof FeederNode) {
+                    insertArrowsAndLabels(wireId, pol, root, edge.getNode2(), metadata, initProvider, styleProvider);
+                }
             }
+        } catch (UnsupportedEncodingException e) {
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -809,36 +812,35 @@ public class SVGWriter {
         for (Edge edge : graph.getEdges()) {
             String vId1 = edge.getNode1().getGraph().getVoltageLevel().getId();
             String vId2 = edge.getNode2().getGraph().getVoltageLevel().getId();
-
-            String wireId = vId1 + "_" + vId2 + "_" + "Wire" + graph.getEdges().indexOf(edge);
-            Element g = root.getOwnerDocument().createElement(POLYLINE);
-            g.setAttribute("id", wireId);
-
-            // Determine points of the snakeLine
-            List<Double> pol = sLayout.calculatePolylineSnakeLine(layoutParameters,
-                    edge,
-                    nbSnakeLinesTopBottom,
-                    nbSnakeLinesLeftRight,
-                    nbSnakeLinesBetween,
-                    nbSnakeLinesBottomVL,
-                    nbSnakeLinesTopVL);
-
-            g.setAttribute(POINTS, pointsListToString(pol));
-
-            String vId;
-            if (edge.getNode1().getGraph().getVoltageLevel().getNominalV() > edge.getNode2().getGraph().getVoltageLevel().getNominalV()) {
-                vId = vId1;
-            } else {
-                vId = vId2;
-            }
-
-            g.setAttribute(CLASS, SubstationDiagramStyles.WIRE_STYLE_CLASS + "_" + SubstationDiagramStyles.escapeClassName(vId));
-            root.appendChild(g);
-
             try {
+                String wireId = SubstationDiagramStyles.escapeClassName(URLEncoder.encode(vId1 + "_" + vId2 + "_" + "Wire" + graph.getEdges().indexOf(edge), StandardCharsets.UTF_8.name()));
+                Element g = root.getOwnerDocument().createElement(POLYLINE);
+                g.setAttribute("id", wireId);
+
+                // Determine points of the snakeLine
+                List<Double> pol = sLayout.calculatePolylineSnakeLine(layoutParameters,
+                        edge,
+                        nbSnakeLinesTopBottom,
+                        nbSnakeLinesLeftRight,
+                        nbSnakeLinesBetween,
+                        nbSnakeLinesBottomVL,
+                        nbSnakeLinesTopVL);
+
+                g.setAttribute(POINTS, pointsListToString(pol));
+
+                String vId;
+                if (edge.getNode1().getGraph().getVoltageLevel().getNominalV() > edge.getNode2().getGraph().getVoltageLevel().getNominalV()) {
+                    vId = vId1;
+                } else {
+                    vId = vId2;
+                }
+
+                g.setAttribute(CLASS, SubstationDiagramStyles.WIRE_STYLE_CLASS + "_" + SubstationDiagramStyles.escapeClassName(vId));
+                root.appendChild(g);
+
                 metadata.addWireMetadata(new GraphMetadata.WireMetadata(wireId,
-                        URLEncoder.encode(edge.getNode1().getId(), StandardCharsets.UTF_8.name()),
-                        URLEncoder.encode(edge.getNode2().getId(), StandardCharsets.UTF_8.name()),
+                        SubstationDiagramStyles.escapeClassName(URLEncoder.encode(edge.getNode1().getId(), StandardCharsets.UTF_8.name())),
+                                SubstationDiagramStyles.escapeClassName(URLEncoder.encode(edge.getNode2().getId(), StandardCharsets.UTF_8.name())),
                         layoutParameters.isDrawStraightWires(),
                         true));
             } catch (UnsupportedEncodingException e) {
@@ -851,7 +853,6 @@ public class SVGWriter {
                                                                     componentLibrary.getAnchorPoints(ComponentType.ARROW),
                                                                     componentLibrary.getSize(ComponentType.ARROW)));
             }
-
         }
     }
 

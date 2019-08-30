@@ -10,12 +10,12 @@ import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.Generator;
 import com.powsybl.iidm.network.Line;
 import com.powsybl.iidm.network.Network;
-import com.powsybl.iidm.network.VariantManagerConstants;
 import com.powsybl.iidm.network.extensions.ActivePowerControl;
+import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
-import com.powsybl.loadflow.simple.SimpleLoadFlow;
 import com.powsybl.loadflow.simple.SimpleLoadFlowParameters;
+import com.powsybl.loadflow.simple.SimpleLoadFlowProvider;
 import com.powsybl.loadflow.simple.SlackBusSelectionMode;
 import com.powsybl.loadflow.simple.network.DistributedSlackNetworkFactory;
 import com.powsybl.math.matrix.DenseMatrixFactory;
@@ -43,7 +43,7 @@ public class DistributedSlackTest {
     private Generator g2;
     private Generator g3;
     private Generator g4;
-    private SimpleLoadFlow loadFlow;
+    private LoadFlow.Runner loadFlowRunner;
     private LoadFlowParameters parameters;
 
     @Before
@@ -53,7 +53,7 @@ public class DistributedSlackTest {
         g2 = network.getGenerator("g2");
         g3 = network.getGenerator("g3");
         g4 = network.getGenerator("g4");
-        loadFlow = new SimpleLoadFlow(network, new DenseMatrixFactory());
+        loadFlowRunner = new LoadFlow.Runner(new SimpleLoadFlowProvider(new DenseMatrixFactory()));
         parameters = new LoadFlowParameters();
         SimpleLoadFlowParameters parametersExt = new SimpleLoadFlowParameters()
                 .setSlackBusSelectionMode(SlackBusSelectionMode.MOST_MESHED)
@@ -63,7 +63,7 @@ public class DistributedSlackTest {
 
     @Test
     public void test() {
-        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
+        LoadFlowResult result = loadFlowRunner.run(network, parameters);
         assertTrue(result.isOk());
         assertEquals(-115, g1.getTerminal().getP(), DELTA_POWER);
         assertEquals(-245, g2.getTerminal().getP(), DELTA_POWER);
@@ -84,7 +84,7 @@ public class DistributedSlackTest {
     public void maxTest() {
         // decrease g1 max limit power, so that distributed slack algo reach the g1 max
         g1.setMaxP(105);
-        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
+        LoadFlowResult result = loadFlowRunner.run(network, parameters);
         assertTrue(result.isOk());
         assertEquals(-105, g1.getTerminal().getP(), DELTA_POWER);
         assertEquals(-249.285, g2.getTerminal().getP(), DELTA_POWER);
@@ -97,7 +97,7 @@ public class DistributedSlackTest {
         // increase g1 min limit power and global load so that distributed slack algo reach the g1 min
         g1.setMinP(90);
         network.getLoad("l1").setP0(400);
-        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
+        LoadFlowResult result = loadFlowRunner.run(network, parameters);
         assertTrue(result.isOk());
         assertEquals(-90, g1.getTerminal().getP(), DELTA_POWER);
         assertEquals(-170, g2.getTerminal().getP(), DELTA_POWER);
@@ -113,7 +113,7 @@ public class DistributedSlackTest {
         g4.getExtension(ActivePowerControl.class).setDroop(0);
         exception.expectCause(isA(PowsyblException.class));
         exception.expectMessage("No more generator participating to slack distribution");
-        loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
+        loadFlowRunner.run(network, parameters);
     }
 
     @Test
@@ -121,6 +121,6 @@ public class DistributedSlackTest {
         network.getLoad("l1").setP0(1000);
         exception.expectCause(isA(PowsyblException.class));
         exception.expectMessage("Failed to distribute slack bus active power mismatch");
-        loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
+        loadFlowRunner.run(network, parameters);
     }
 }

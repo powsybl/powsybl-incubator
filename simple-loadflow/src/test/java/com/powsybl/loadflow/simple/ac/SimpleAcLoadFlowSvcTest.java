@@ -7,10 +7,11 @@
 package com.powsybl.loadflow.simple.ac;
 
 import com.powsybl.iidm.network.*;
+import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
-import com.powsybl.loadflow.simple.SimpleLoadFlow;
 import com.powsybl.loadflow.simple.SimpleLoadFlowParameters;
+import com.powsybl.loadflow.simple.SimpleLoadFlowProvider;
 import com.powsybl.loadflow.simple.SlackBusSelectionMode;
 import com.powsybl.math.matrix.DenseMatrixFactory;
 import org.junit.Before;
@@ -38,7 +39,7 @@ public class SimpleAcLoadFlowSvcTest {
     private Line l1;
     private StaticVarCompensator svc1;
 
-    private SimpleLoadFlow loadFlow;
+    private LoadFlow.Runner loadFlowRunner;
 
     private LoadFlowParameters parameters;
 
@@ -110,7 +111,7 @@ public class SimpleAcLoadFlowSvcTest {
     @Before
     public void setUp() {
         network = createNetwork();
-        loadFlow = new SimpleLoadFlow(network, new DenseMatrixFactory());
+        loadFlowRunner = new LoadFlow.Runner(new SimpleLoadFlowProvider(new DenseMatrixFactory()));
         parameters = new LoadFlowParameters();
         SimpleLoadFlowParameters parametersExt = new SimpleLoadFlowParameters()
                 .setSlackBusSelectionMode(SlackBusSelectionMode.MOST_MESHED)
@@ -120,7 +121,7 @@ public class SimpleAcLoadFlowSvcTest {
 
     @Test
     public void test() {
-        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
+        LoadFlowResult result = loadFlowRunner.run(network, parameters);
         assertTrue(result.isOk());
 
         assertVoltageEquals(390, bus1);
@@ -137,7 +138,7 @@ public class SimpleAcLoadFlowSvcTest {
         svc1.setVoltageSetPoint(385)
                 .setRegulationMode(StaticVarCompensator.RegulationMode.VOLTAGE);
 
-        result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
+        result = loadFlowRunner.run(network, parameters);
         assertTrue(result.isOk());
 
         assertVoltageEquals(390, bus1);

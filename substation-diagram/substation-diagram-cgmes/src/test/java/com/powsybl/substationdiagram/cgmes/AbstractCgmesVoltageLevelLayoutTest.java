@@ -21,10 +21,13 @@ import com.powsybl.substationdiagram.model.Node;
  */
 public abstract class AbstractCgmesVoltageLevelLayoutTest {
 
+    protected static final String DIAGRAM_NAME = "default";
+
     protected void test(VoltageLevel vl) {
         Graph graph = Graph.create(vl);
         LayoutParameters layoutParameters = new LayoutParameters();
         layoutParameters.setScaleFactor(2);
+        layoutParameters.setDiagramName(DIAGRAM_NAME);
         new CgmesVoltageLevelLayout(graph).run(layoutParameters);
         checkGraph(graph);
         checkCoordinates(graph);

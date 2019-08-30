@@ -61,14 +61,14 @@ public class AcLoadFlowProfiler extends DefaultAcLoadFlowObserver {
     }
 
     @Override
-    public void beforeEquationTermsUpdate(int iteration) {
+    public void beforeEquationsUpdate(int iteration) {
         restart(stopwatch);
     }
 
     @Override
-    public void afterEquationTermsUpdate(EquationSystem equationSystem, int iteration) {
+    public void afterEquationsUpdate(EquationSystem equationSystem, int iteration) {
         stopwatch.stop();
-        LOGGER.debug(PERFORMANCE_MARKER, "Equation terms evaluated at iteration {} in {} ms", iteration, stopwatch.elapsed(TimeUnit.MILLISECONDS));
+        LOGGER.debug(PERFORMANCE_MARKER, "Equations updated at iteration {} in {} ms", iteration, stopwatch.elapsed(TimeUnit.MILLISECONDS));
     }
 
     @Override
@@ -122,14 +122,14 @@ public class AcLoadFlowProfiler extends DefaultAcLoadFlowObserver {
     }
 
     @Override
-    public void beforeMacroActionRun(int macroIteration, String macroActionName) {
+    public void beforeOuterLoopStatusCheck(int outerLoopIteration, String outerLoopName) {
         restart(stopwatch);
     }
 
     @Override
-    public void afterMacroActionRun(int macroIteration, String macroActionName, boolean cont) {
+    public void afterOuterLoopStatusCheck(int outerLoopIteration, String outerLoopName, boolean stable) {
         stopwatch.stop();
-        LOGGER.debug(PERFORMANCE_MARKER, "Macro action '{}' ran in {} us", macroActionName, stopwatch.elapsed(TimeUnit.MICROSECONDS));
+        LOGGER.debug(PERFORMANCE_MARKER, "Outer loop '{}' check done in {} us", outerLoopName, stopwatch.elapsed(TimeUnit.MICROSECONDS));
     }
 
     @Override

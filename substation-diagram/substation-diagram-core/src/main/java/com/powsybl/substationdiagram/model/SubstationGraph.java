@@ -167,4 +167,9 @@ public class SubstationGraph {
         }
         return false;
     }
+
+    public Substation getSubstation() {
+        return substation;
+    }
+
 }

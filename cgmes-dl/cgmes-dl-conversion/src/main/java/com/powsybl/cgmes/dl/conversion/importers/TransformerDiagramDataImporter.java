@@ -9,13 +9,11 @@ package com.powsybl.cgmes.dl.conversion.importers;
 import java.util.Map;
 import java.util.Objects;
 
+import com.powsybl.cgmes.dl.conversion.CgmesDLModel;
+import com.powsybl.cgmes.iidm.extensions.dl.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.powsybl.cgmes.iidm.extensions.dl.CouplingDeviceDiagramData;
-import com.powsybl.cgmes.iidm.extensions.dl.DiagramPoint;
-import com.powsybl.cgmes.iidm.extensions.dl.DiagramTerminal;
-import com.powsybl.cgmes.iidm.extensions.dl.ThreeWindingsTransformerDiagramData;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.ThreeWindingsTransformer;
 import com.powsybl.iidm.network.TwoWindingsTransformer;
@@ -39,34 +37,38 @@ public class TransformerDiagramDataImporter extends AbstractCouplingDeviceDiagra
         String transformerId = transformersDiagramData.getId("identifiedObject");
         TwoWindingsTransformer transformer = network.getTwoWindingsTransformer(transformerId);
         if (transformer != null) {
-            CouplingDeviceDiagramData<TwoWindingsTransformer> transformerIidmDiagramData = new CouplingDeviceDiagramData<>(transformer,
-                    new DiagramPoint(transformersDiagramData.asDouble("x"), transformersDiagramData.asDouble("y"), transformersDiagramData.asInt("seq")),
+            CouplingDeviceDiagramData<TwoWindingsTransformer> transformerIidmDiagramData = new CouplingDeviceDiagramData<>(transformer);
+            CouplingDeviceDiagramData.CouplingDeviceDiagramDetails diagramDetails = transformerIidmDiagramData.new CouplingDeviceDiagramDetails(new DiagramPoint(transformersDiagramData.asDouble("x"), transformersDiagramData.asDouble("y"), transformersDiagramData.asInt("seq")),
                     transformersDiagramData.asDouble("rotation"));
-            addTerminalPoints(transformerId, transformer.getName(), DiagramTerminal.TERMINAL1, "1", transformerIidmDiagramData);
-            addTerminalPoints(transformerId, transformer.getName(), DiagramTerminal.TERMINAL2, "2", transformerIidmDiagramData);
+            addTerminalPoints(transformerId, transformer.getName(), DiagramTerminal.TERMINAL1, "1", diagramDetails);
+            addTerminalPoints(transformerId, transformer.getName(), DiagramTerminal.TERMINAL2, "2", diagramDetails);
+            transformerIidmDiagramData.addData(transformersDiagramData.get(CgmesDLModel.DIAGRAM_NAME), diagramDetails);
             transformer.addExtension(CouplingDeviceDiagramData.class, transformerIidmDiagramData);
+            NetworkDiagramData.addDiagramName(network, transformersDiagramData.get(CgmesDLModel.DIAGRAM_NAME));
         } else {
             ThreeWindingsTransformer transformer3w = network.getThreeWindingsTransformer(transformerId);
             if (transformer3w != null) {
-                ThreeWindingsTransformerDiagramData transformerIidmDiagramData = new ThreeWindingsTransformerDiagramData(transformer3w,
-                        new DiagramPoint(transformersDiagramData.asDouble("x"), transformersDiagramData.asDouble("y"), transformersDiagramData.asInt("seq")),
+                ThreeWindingsTransformerDiagramData transformerIidmDiagramData = new ThreeWindingsTransformerDiagramData(transformer3w);
+                ThreeWindingsTransformerDiagramData.ThreeWindingsTransformerDiagramDataDetails diagramDetails = transformerIidmDiagramData.new ThreeWindingsTransformerDiagramDataDetails(new DiagramPoint(transformersDiagramData.asDouble("x"), transformersDiagramData.asDouble("y"), transformersDiagramData.asInt("seq")),
                         transformersDiagramData.asDouble("rotation"));
-                addTerminalPoints(transformerId, transformer3w.getName(), DiagramTerminal.TERMINAL1, "1", transformerIidmDiagramData);
-                addTerminalPoints(transformerId, transformer3w.getName(), DiagramTerminal.TERMINAL2, "2", transformerIidmDiagramData);
-                addTerminalPoints(transformerId, transformer3w.getName(), DiagramTerminal.TERMINAL3, "3", transformerIidmDiagramData);
+                addTerminalPoints(transformerId, transformer3w.getName(), DiagramTerminal.TERMINAL1, "1", diagramDetails);
+                addTerminalPoints(transformerId, transformer3w.getName(), DiagramTerminal.TERMINAL2, "2", diagramDetails);
+                addTerminalPoints(transformerId, transformer3w.getName(), DiagramTerminal.TERMINAL3, "3", diagramDetails);
+                transformerIidmDiagramData.addData(transformersDiagramData.get(CgmesDLModel.DIAGRAM_NAME), diagramDetails);
                 transformer3w.addExtension(ThreeWindingsTransformerDiagramData.class, transformerIidmDiagramData);
+                NetworkDiagramData.addDiagramName(network, transformersDiagramData.get(CgmesDLModel.DIAGRAM_NAME));
             } else {
                 LOG.warn("Cannot find transformer {}, name {} in network {}: skipping transformer diagram data", transformerId, transformersDiagramData.get("name"), network.getId());
             }
         }
     }
 
-    private void addTerminalPoints(String transformerId, String transformerName, DiagramTerminal terminal, String terminalSide, ThreeWindingsTransformerDiagramData transformerDiagramData) {
+    private void addTerminalPoints(String transformerId, String transformerName, DiagramTerminal terminal, String terminalSide, ThreeWindingsTransformerDiagramData.ThreeWindingsTransformerDiagramDataDetails diagramDetails) {
         String terminalKey = transformerId + "_" + terminalSide;
         if (terminalsDiagramData.containsKey(terminalKey)) {
             PropertyBags equipmentTerminalsDiagramData = terminalsDiagramData.get(terminalKey);
             equipmentTerminalsDiagramData.forEach(terminalDiagramData ->
-                transformerDiagramData.addTerminalPoint(terminal, new DiagramPoint(terminalDiagramData.asDouble("x"), terminalDiagramData.asDouble("y"), terminalDiagramData.asInt("seq")))
+                diagramDetails.addTerminalPoint(terminal, new DiagramPoint(terminalDiagramData.asDouble("x"), terminalDiagramData.asDouble("y"), terminalDiagramData.asInt("seq")))
             );
         } else {
             LOG.warn("Cannot find terminal diagram data of transformer {}, name {}, terminal {}", transformerId, transformerName, terminal);

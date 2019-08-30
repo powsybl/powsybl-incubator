@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
+ * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
  */
 public class WireConnection {
 
@@ -49,7 +50,7 @@ public class WireConnection {
     private static List<AnchorPoint> getAnchorPoints(AnchorPointProvider anchorPointProvider, BaseNode node) {
         return anchorPointProvider.getAnchorPoints(node.getComponentType(), node.getId())
                 .stream()
-                .map(anchorPoint -> node.isRotated() ? anchorPoint.rotate() : anchorPoint)
+                .map(anchorPoint -> node.isRotated() ? anchorPoint.rotate(node.getRotationAngle()) : anchorPoint)
                 .collect(Collectors.toList());
     }
 

@@ -16,12 +16,10 @@ import java.util.Map;
 /**
  * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
  */
-public class VerticalSubstationLayout implements SubstationLayout {
+public class VerticalSubstationLayout extends AbstractSubstationLayout {
 
-    private SubstationGraph substGraph;
-
-    public VerticalSubstationLayout(SubstationGraph graph) {
-        substGraph = graph;
+    public VerticalSubstationLayout(SubstationGraph graph, VoltageLevelLayoutFactory vLayoutFactory) {
+        super(graph, vLayoutFactory);
     }
 
     /**
@@ -98,7 +96,7 @@ public class VerticalSubstationLayout implements SubstationLayout {
                             x2, y2 + decal2V,
                             x2, y2));
                 } else {  // BOTTOM to TOP
-                    if (!substGraph.graphAdjacents(node1.getGraph(), node2.getGraph())) {
+                    if (!graph.graphAdjacents(node1.getGraph(), node2.getGraph())) {
                         nbSnakeLinesBottomVL.compute(node1.getGraph().getVoltageLevel().getId(), (k, v) -> v + 1);
                         nbSnakeLinesTopVL.compute(node2.getGraph().getVoltageLevel().getId(), (k, v) -> v + 1);
                         nbSnakeLinesLeftRight.compute(Side.RIGHT, (k, v) -> v + 1);
@@ -143,7 +141,7 @@ public class VerticalSubstationLayout implements SubstationLayout {
                             x2, y2 - decal2V,
                             x2, y2));
                 } else {  // TOP to BOTTOM
-                    if (!substGraph.graphAdjacents(node2.getGraph(), node1.getGraph())) {
+                    if (!graph.graphAdjacents(node2.getGraph(), node1.getGraph())) {
                         nbSnakeLinesTopVL.compute(node1.getGraph().getVoltageLevel().getId(), (k, v) -> v + 1);
                         nbSnakeLinesBottomVL.compute(node2.getGraph().getVoltageLevel().getId(), (k, v) -> v + 1);
                         nbSnakeLinesLeftRight.compute(Side.LEFT, (k, v) -> v + 1);
@@ -175,4 +173,15 @@ public class VerticalSubstationLayout implements SubstationLayout {
         }
         return pol;
     }
+
+    @Override
+    protected double getHorizontalSubstationPadding(LayoutParameters layoutParameters) {
+        return 0;
+    }
+
+    @Override
+    protected double getVerticalSubstationPadding(LayoutParameters layoutParameters) {
+        return layoutParameters.getVerticalSubstationPadding();
+    }
+
 }

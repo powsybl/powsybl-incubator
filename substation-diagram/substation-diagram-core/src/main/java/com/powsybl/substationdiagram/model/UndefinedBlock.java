@@ -7,10 +7,8 @@
 
 package com.powsybl.substationdiagram.model;
 
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
@@ -20,12 +18,10 @@ import java.util.Objects;
  *
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class UndefinedBlock extends AbstractBlock {
-
-    private final List<Block> subBlocks;
+public class UndefinedBlock extends AbstractComposedBlock {
 
     public UndefinedBlock(List<Block> subBlocks) {
-        super(Type.UNDEFINED);
+        super(Type.UNDEFINED, subBlocks);
         if (subBlocks.isEmpty()) {
             throw new IllegalArgumentException("Empty block list");
         }
@@ -33,31 +29,6 @@ public class UndefinedBlock extends AbstractBlock {
         for (Block block : subBlocks) {
             block.setParentBlock(this);
         }
-    }
-
-    @Override
-    public Graph getGraph() {
-        return subBlocks.get(0).getGraph();
-    }
-
-    @Override
-    public Node getStartingNode() {
-        return subBlocks.get(0).getStartingNode();
-    }
-
-    @Override
-    public Node getEndingNode() {
-        return subBlocks.get(0).getEndingNode();
-    }
-
-    @Override
-    public void reverseBlock() {
-        // nothing to do
-    }
-
-    @Override
-    public boolean isEmbedingNodeType(Node.NodeType type) {
-        return false;
     }
 
     @Override
@@ -70,11 +41,6 @@ public class UndefinedBlock extends AbstractBlock {
         } else {
             throw new UnsupportedOperationException("Horizontal layout of undefined  block not supported");
         }
-    }
-
-    @Override
-    public int getOrder() {
-        return subBlocks.get(0).getOrder();
     }
 
     @Override
@@ -91,16 +57,6 @@ public class UndefinedBlock extends AbstractBlock {
     @Override
     public void coordHorizontalCase(LayoutParameters layoutParam) {
         throw new UnsupportedOperationException("Horizontal layout of undefined  block not supported");
-    }
-
-    @Override
-    protected void writeJsonContent(JsonGenerator generator) throws IOException {
-        generator.writeFieldName("blocks");
-        generator.writeStartArray();
-        for (Block subBlock : subBlocks) {
-            subBlock.writeJson(generator);
-        }
-        generator.writeEndArray();
     }
 
     @Override

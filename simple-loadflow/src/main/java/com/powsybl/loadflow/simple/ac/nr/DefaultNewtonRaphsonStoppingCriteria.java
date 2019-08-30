@@ -20,10 +20,10 @@ public class DefaultNewtonRaphsonStoppingCriteria implements NewtonRaphsonStoppi
     public static final double CONV_EPS_PER_EQ = Math.pow(10, -4);
 
     @Override
-    public boolean test(double[] fx, AcLoadFlowObserver observer) {
+    public TestResult test(double[] fx) {
         // calculate norm L2 of equations mismatch vector
         double norm = Vectors.norm2(fx);
-        observer.norm(norm);
-        return norm < FastMath.sqrt(CONV_EPS_PER_EQ * CONV_EPS_PER_EQ * fx.length);
+        boolean stop = norm < FastMath.sqrt(CONV_EPS_PER_EQ * CONV_EPS_PER_EQ * fx.length);
+        return new TestResult(stop, norm);
     }
 }

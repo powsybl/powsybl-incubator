@@ -42,6 +42,8 @@ public class CgmesDLModelTest extends AbstractCgmesDLTest {
         setQuery(CgmesDLModel.TRANSFORMER_DIAGRAM_DATA_QUERY_KEY, "TransformerQuery", tranformersPropertyBags);
         setQuery(CgmesDLModel.HVDC_LINE_DIAGRAM_DATA_QUERY_KEY, "HvdcLineQuery", hvdcLinesPropertyBags);
         setQuery(CgmesDLModel.SVC_DIAGRAM_DATA_QUERY_KEY, "SvcLineQuery", svcsPropertyBags);
+        setQuery(CgmesDLModel.TERMINALS_QUERY_KEY, "TerminalsQuery", terminals);
+        setQuery(CgmesDLModel.BUSBAR_NODES_QUERY_KEY, "BusbarNodesQuery", busbarNodes);
         cgmesDLModel = new CgmesDLModel(tripleStore, queryCatalog);
     }
 
@@ -129,6 +131,20 @@ public class CgmesDLModelTest extends AbstractCgmesDLTest {
         assertEquals(svcsPropertyBags, cgmesDLModel.getSvcsDiagramData());
         removeQueryCatalogKey(CgmesDLModel.SVC_DIAGRAM_DATA_QUERY_KEY);
         assertEquals(new PropertyBags(), cgmesDLModel.getSvcsDiagramData());
+    }
+
+    @Test
+    public void getTerminals() {
+        assertEquals(terminals, cgmesDLModel.getTerminals());
+        removeQueryCatalogKey(CgmesDLModel.TERMINALS_QUERY_KEY);
+        assertEquals(new PropertyBags(), cgmesDLModel.getTerminals());
+    }
+
+    @Test
+    public void getBusbarNodes() {
+        assertEquals(busbarNodes, cgmesDLModel.getBusbarNodes());
+        removeQueryCatalogKey(CgmesDLModel.BUSBAR_NODES_QUERY_KEY);
+        assertEquals(new PropertyBags(), cgmesDLModel.getBusbarNodes());
     }
 
 }

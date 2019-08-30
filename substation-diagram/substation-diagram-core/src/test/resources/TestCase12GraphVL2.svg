@@ -87,11 +87,11 @@
 <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf4</text>
         </g>
         <g class="substation-diagram DISCONNECTOR dscpl1" id="dscpl1" transform="translate(136.0,306.0)">
-    <g id="closed">
+    <g class="closed" id="closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
-    <g id="open">
+    <g class="open" id="open">
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
@@ -106,20 +106,20 @@
     </g>
 </g>
         <g class="substation-diagram DISCONNECTOR dscpl2" id="dscpl2" transform="translate(56.0,331.0)">
-    <g id="closed">
+    <g class="closed" id="closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
-    <g id="open">
+    <g class="open" id="open">
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
         <g class="substation-diagram DISCONNECTOR dload3" id="dload3" transform="translate(216.0,306.0)">
-    <g id="closed">
+    <g class="closed" id="closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
-    <g id="open">
+    <g class="open" id="open">
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
@@ -134,11 +134,11 @@
     </g>
 </g>
         <g class="substation-diagram DISCONNECTOR dgen4" id="dgen4" transform="translate(376.0,331.0)">
-    <g id="closed">
+    <g class="closed" id="closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
-    <g id="open">
+    <g class="open" id="open">
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
@@ -153,11 +153,11 @@
     </g>
 </g>
         <g class="substation-diagram DISCONNECTOR dtrf21" id="dtrf21" transform="translate(296.0,306.0)">
-    <g id="closed">
+    <g class="closed" id="closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
-    <g id="open">
+    <g class="open" id="open">
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
@@ -172,11 +172,11 @@
     </g>
 </g>
         <g class="substation-diagram DISCONNECTOR dtrf22" id="dtrf22" transform="translate(1016.0,331.0)">
-    <g id="closed">
+    <g class="closed" id="closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
-    <g id="open">
+    <g class="open" id="open">
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
@@ -191,11 +191,11 @@
     </g>
 </g>
         <g class="substation-diagram DISCONNECTOR dtrf23" id="dtrf23" transform="translate(1096.0,331.0)">
-    <g id="closed">
+    <g class="closed" id="closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
-    <g id="open">
+    <g class="open" id="open">
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
@@ -210,11 +210,11 @@
     </g>
 </g>
         <g class="substation-diagram DISCONNECTOR dtrf24" id="dtrf24" transform="translate(456.0,306.0)">
-    <g id="closed">
+    <g class="closed" id="closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
-    <g id="open">
+    <g class="open" id="open">
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
@@ -229,11 +229,11 @@
     </g>
 </g>
         <g class="substation-diagram DISCONNECTOR dtrf26" id="dtrf26" transform="translate(736.0,331.0)">
-    <g id="closed">
+    <g class="closed" id="closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
-    <g id="open">
+    <g class="open" id="open">
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
@@ -248,11 +248,11 @@
     </g>
 </g>
         <g class="substation-diagram DISCONNECTOR dtrf27" id="dtrf27" transform="translate(576.0,306.0)">
-    <g id="closed">
+    <g class="closed" id="closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
-    <g id="open">
+    <g class="open" id="open">
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
@@ -267,11 +267,11 @@
     </g>
 </g>
         <g class="substation-diagram DISCONNECTOR dtrf28" id="dtrf28" transform="translate(896.0,331.0)">
-    <g id="closed">
+    <g class="closed" id="closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
-    <g id="open">
+    <g class="open" id="open">
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>

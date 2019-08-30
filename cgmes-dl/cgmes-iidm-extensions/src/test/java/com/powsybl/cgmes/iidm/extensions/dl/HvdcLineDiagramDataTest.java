@@ -12,6 +12,8 @@ import com.powsybl.cgmes.iidm.Networks;
 import com.powsybl.iidm.network.HvdcLine;
 import com.powsybl.iidm.network.Network;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  *
  * @author Massimo Ferraro <massimo.ferraro@techrain.eu>
@@ -24,14 +26,34 @@ public class HvdcLineDiagramDataTest extends AbstractLineDiagramDataTest {
         HvdcLine hvdcLine = network.getHvdcLine("HvdcLine");
 
         LineDiagramData<HvdcLine> hvdcLineDiagramData = new LineDiagramData<>(hvdcLine);
-        hvdcLineDiagramData.addPoint(new DiagramPoint(10, 0, 2));
-        hvdcLineDiagramData.addPoint(new DiagramPoint(0, 10, 1));
+        hvdcLineDiagramData.addPoint(DIAGRAM_NAME, new DiagramPoint(10, 0, 2));
+        hvdcLineDiagramData.addPoint(DIAGRAM_NAME, new DiagramPoint(0, 10, 1));
         hvdcLine.addExtension(LineDiagramData.class, hvdcLineDiagramData);
 
         HvdcLine hvdcLine2 = network.getHvdcLine("HvdcLine");
         LineDiagramData<HvdcLine> hvdcLineDiagramData2 = hvdcLine2.getExtension(LineDiagramData.class);
 
-        checkDiagramData(hvdcLineDiagramData2);
+        assertEquals(1, hvdcLineDiagramData2.getDiagramsNames().size());
+        checkDiagramData(hvdcLineDiagramData2, DIAGRAM_NAME);
     }
 
+    @Test
+    public void testMultipleDiagrams() {
+        Network network = Networks.createNetworkWithHvdcLine();
+        HvdcLine hvdcLine = network.getHvdcLine("HvdcLine");
+
+        LineDiagramData<HvdcLine> hvdcLineDiagramData = new LineDiagramData<>(hvdcLine);
+        hvdcLineDiagramData.addPoint(DIAGRAM_NAME, new DiagramPoint(10, 0, 2));
+        hvdcLineDiagramData.addPoint(DIAGRAM_NAME, new DiagramPoint(0, 10, 1));
+        hvdcLineDiagramData.addPoint(DIAGRAM2_NAME, new DiagramPoint(10, 20, 1));
+        hvdcLineDiagramData.addPoint(DIAGRAM2_NAME, new DiagramPoint(20, 10, 2));
+        hvdcLine.addExtension(LineDiagramData.class, hvdcLineDiagramData);
+
+        HvdcLine hvdcLine2 = network.getHvdcLine("HvdcLine");
+        LineDiagramData<HvdcLine> hvdcLineDiagramData2 = hvdcLine2.getExtension(LineDiagramData.class);
+
+        assertEquals(2, hvdcLineDiagramData2.getDiagramsNames().size());
+        checkDiagramData(hvdcLineDiagramData2, DIAGRAM_NAME);
+        checkDiagramData(hvdcLineDiagramData2, DIAGRAM2_NAME);
+    }
 }

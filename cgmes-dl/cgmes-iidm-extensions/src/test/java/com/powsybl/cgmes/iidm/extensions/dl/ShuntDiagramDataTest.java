@@ -23,15 +23,17 @@ public class ShuntDiagramDataTest extends AbstractInjectionDiagramDataTest {
         Network network = Networks.createNetworkWithShuntCompensator();
         ShuntCompensator shunt = network.getShuntCompensator("Shunt");
 
-        InjectionDiagramData<ShuntCompensator> shuntDiagramData = new InjectionDiagramData<>(shunt, new DiagramPoint(20, 10, 0), 90);
-        shuntDiagramData.addTerminalPoint(new DiagramPoint(15, 10, 2));
-        shuntDiagramData.addTerminalPoint(new DiagramPoint(0, 10, 1));
+        InjectionDiagramData<ShuntCompensator> shuntDiagramData = new InjectionDiagramData<>(shunt);
+        InjectionDiagramData.InjectionDiagramDetails diagramDetails = shuntDiagramData.new InjectionDiagramDetails(new DiagramPoint(20, 10, 0), 90);
+        diagramDetails.addTerminalPoint(new DiagramPoint(15, 10, 2));
+        diagramDetails.addTerminalPoint(new DiagramPoint(0, 10, 1));
+        shuntDiagramData.addData(DIAGRAM_NAME, diagramDetails);
         shunt.addExtension(InjectionDiagramData.class, shuntDiagramData);
 
         ShuntCompensator shunt2 = network.getShuntCompensator("Shunt");
         InjectionDiagramData<ShuntCompensator> shuntDiagramData2 = shunt2.getExtension(InjectionDiagramData.class);
 
-        checkDiagramData(shuntDiagramData2);
+        checkDiagramData(shuntDiagramData2, DIAGRAM_NAME);
     }
 
 }

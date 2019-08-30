@@ -6,6 +6,9 @@
  */
 package com.powsybl.substationdiagram.svg;
 
+import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.escapeClassName;
+import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.escapeId;
+
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.io.UnsupportedEncodingException;
@@ -386,11 +389,11 @@ public class SVGWriter {
                            SubstationDiagramStyleProvider styleProvider) {
         graph.getNodes().forEach(node -> {
             try {
-                String nodeId = SubstationDiagramStyles.escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name()));
+                String nodeId = SubstationDiagramStyles.escapeId(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name()));
                 Element g = root.getOwnerDocument().createElement("g");
                 g.setAttribute("id", nodeId);
 
-                g.setAttribute(CLASS, SubstationDiagramStyles.SUBSTATION_STYLE_CLASS + " " + node.getComponentType() + " " + SubstationDiagramStyles.escapeClassName(nodeId));
+                g.setAttribute(CLASS, SubstationDiagramStyles.SUBSTATION_STYLE_CLASS + " " + node.getComponentType() + " " + SubstationDiagramStyles.escapeId(nodeId));
 
                 if (node.getType() == Node.NodeType.BUS) {
                     drawBus((BusNode) node, g);
@@ -499,7 +502,7 @@ public class SVGWriter {
             line.setAttribute("x2", String.valueOf(node.getPxWidth()));
             line.setAttribute("y2", "0");
         }
-        line.setAttribute(CLASS, SubstationDiagramStyles.BUS_STYLE_CLASS + "_" + SubstationDiagramStyles.escapeClassName(node.getGraph().getVoltageLevel().getId()));
+        line.setAttribute(CLASS, SubstationDiagramStyles.BUS_STYLE_CLASS + "_" + escapeClassName(node.getGraph().getVoltageLevel().getId()));
 
         g.appendChild(line);
 
@@ -755,7 +758,7 @@ public class SVGWriter {
         Optional<Direction> dir1 = init.getArrowDirection1();
         if (dir1.isPresent()) {
             try {
-                g1.setAttribute(CLASS, SubstationDiagramStyles.SUBSTATION_STYLE_CLASS + " "  + "ARROW1_" + SubstationDiagramStyles.escapeClassName(URLEncoder.encode(n.getId(), StandardCharsets.UTF_8.name())) + "_" + dir1.get());
+                g1.setAttribute(CLASS, SubstationDiagramStyles.SUBSTATION_STYLE_CLASS + " "  + "ARROW1_" + escapeId(URLEncoder.encode(n.getId(), StandardCharsets.UTF_8.name())) + "_" + dir1.get());
             } catch (UnsupportedEncodingException e) {
                 throw new UncheckedIOException(e);
             }
@@ -778,7 +781,7 @@ public class SVGWriter {
         Optional<Direction> dir2 = init.getArrowDirection2();
         if (dir2.isPresent()) {
             try {
-                g2.setAttribute(CLASS, SubstationDiagramStyles.SUBSTATION_STYLE_CLASS + " "  + "ARROW2_" + SubstationDiagramStyles.escapeClassName(URLEncoder.encode(n.getId(), StandardCharsets.UTF_8.name())) + "_" + dir2.get());
+                g2.setAttribute(CLASS, SubstationDiagramStyles.SUBSTATION_STYLE_CLASS + " "  + "ARROW2_" + escapeClassName(URLEncoder.encode(n.getId(), StandardCharsets.UTF_8.name())) + "_" + dir2.get());
             } catch (UnsupportedEncodingException e) {
                 throw new UncheckedIOException(e);
             }
@@ -804,7 +807,7 @@ public class SVGWriter {
         try {
             for (Edge edge : graph.getEdges()) {
                 // for unicity purpose (in substation diagram), we prefix the id of the WireMetadata with the voltageLevel id and "_"
-                String wireId = SubstationDiagramStyles.escapeClassName(URLEncoder.encode(vId + "_Wire" + graph.getEdges().indexOf(edge), StandardCharsets.UTF_8.name()));
+                String wireId = escapeId(URLEncoder.encode(vId + "_Wire" + graph.getEdges().indexOf(edge), StandardCharsets.UTF_8.name()));
 
                 Element g = root.getOwnerDocument().createElement(POLYLINE);
                 g.setAttribute("id", wireId);
@@ -820,8 +823,8 @@ public class SVGWriter {
                 root.appendChild(g);
 
                 metadata.addWireMetadata(new GraphMetadata.WireMetadata(wireId,
-                        SubstationDiagramStyles.escapeClassName(URLEncoder.encode(edge.getNode1().getId(), StandardCharsets.UTF_8.name())),
-                        SubstationDiagramStyles.escapeClassName(URLEncoder.encode(edge.getNode2().getId(), StandardCharsets.UTF_8.name())),
+                        escapeClassName(URLEncoder.encode(edge.getNode1().getId(), StandardCharsets.UTF_8.name())),
+                        escapeClassName(URLEncoder.encode(edge.getNode2().getId(), StandardCharsets.UTF_8.name())),
                         layoutParameters.isDrawStraightWires(),
                         false));
 
@@ -862,7 +865,7 @@ public class SVGWriter {
             String vId1 = edge.getNode1().getGraph().getVoltageLevel().getId();
             String vId2 = edge.getNode2().getGraph().getVoltageLevel().getId();
             try {
-                String wireId = SubstationDiagramStyles.escapeClassName(URLEncoder.encode(vId1 + "_" + vId2 + "_" + "Wire" + graph.getEdges().indexOf(edge), StandardCharsets.UTF_8.name()));
+                String wireId = escapeId(URLEncoder.encode(vId1 + "_" + vId2 + "_" + "Wire" + graph.getEdges().indexOf(edge), StandardCharsets.UTF_8.name()));
                 Element g = root.getOwnerDocument().createElement(POLYLINE);
                 g.setAttribute("id", wireId);
 
@@ -884,12 +887,12 @@ public class SVGWriter {
                     vId = vId2;
                 }
 
-                g.setAttribute(CLASS, SubstationDiagramStyles.WIRE_STYLE_CLASS + "_" + SubstationDiagramStyles.escapeClassName(vId));
+                g.setAttribute(CLASS, SubstationDiagramStyles.WIRE_STYLE_CLASS + "_" + escapeClassName(vId));
                 root.appendChild(g);
 
                 metadata.addWireMetadata(new GraphMetadata.WireMetadata(wireId,
-                        SubstationDiagramStyles.escapeClassName(URLEncoder.encode(edge.getNode1().getId(), StandardCharsets.UTF_8.name())),
-                                SubstationDiagramStyles.escapeClassName(URLEncoder.encode(edge.getNode2().getId(), StandardCharsets.UTF_8.name())),
+                        escapeClassName(URLEncoder.encode(edge.getNode1().getId(), StandardCharsets.UTF_8.name())),
+                                escapeClassName(URLEncoder.encode(edge.getNode2().getId(), StandardCharsets.UTF_8.name())),
                         layoutParameters.isDrawStraightWires(),
                         true));
             } catch (UnsupportedEncodingException e) {

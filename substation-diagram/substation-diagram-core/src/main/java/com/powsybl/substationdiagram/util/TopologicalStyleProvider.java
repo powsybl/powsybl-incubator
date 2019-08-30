@@ -12,6 +12,7 @@ import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.LABEL_ST
 import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.SUBSTATION_STYLE_CLASS;
 import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.WIRE_STYLE_CLASS;
 import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.escapeClassName;
+import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.escapeId;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -37,6 +38,7 @@ import com.powsybl.iidm.network.ThreeWindingsTransformer;
 import com.powsybl.iidm.network.TopologyVisitor;
 import com.powsybl.iidm.network.TwoWindingsTransformer;
 import com.powsybl.iidm.network.VoltageLevel;
+import com.powsybl.substationdiagram.library.ComponentType;
 import com.powsybl.substationdiagram.model.Edge;
 import com.powsybl.substationdiagram.model.Graph;
 import com.powsybl.substationdiagram.model.Node;
@@ -53,6 +55,7 @@ public class TopologicalStyleProvider extends DefaultSubstationDiagramStyleProvi
 
     private BaseVoltageColor baseVoltageColor;
     private HashMap<String, HashMap<String, Color>> voltageLevelColorMap = new HashMap();
+    private static final String DEFAULT_COLOR = "red";
     private static final String DISCONNECTED_COLOR = "grey";
     private String disconnectedColor;
 
@@ -66,7 +69,10 @@ public class TopologicalStyleProvider extends DefaultSubstationDiagramStyleProvi
                 : DISCONNECTED_COLOR;
     }
 
-    private String getBusColor(String id, VoltageLevel vl) {
+    private String getBusColor(Node node) {
+        String id = node.getId();
+        VoltageLevel vl = node.getGraph().getVoltageLevel();
+
         HashMap<String, Color> colorMap = voltageLevelColorMap.computeIfAbsent(vl.getId(), k -> getColorMap(vl));
 
         Color c = colorMap.get(id);
@@ -74,7 +80,8 @@ public class TopologicalStyleProvider extends DefaultSubstationDiagramStyleProvi
     }
 
     private HashMap<String, Color> getColorMap(VoltageLevel vl) {
-        Color c0 = Color.valueOf(baseVoltageColor.getColor(vl.getNominalV(), "RTE"));
+        String basecolor = baseVoltageColor.getColor(vl.getNominalV(), "RTE");
+        Color c0 = Color.valueOf(basecolor != null ? basecolor : DEFAULT_COLOR);
 
         AtomicDouble idx = new AtomicDouble(0);
         long buses = vl.getBusView().getBusStream().count();
@@ -161,17 +168,17 @@ public class TopologicalStyleProvider extends DefaultSubstationDiagramStyleProvi
     public Optional<String> getNodeStyle(Node node) {
 
         Optional<String> defaultStyle = super.getNodeStyle(node);
-        if (node.getType() == NodeType.SWITCH) {
+        if (node.getType() == NodeType.SWITCH || node.getComponentType() == ComponentType.TWO_WINDINGS_TRANSFORMER) {
             return defaultStyle;
         }
 
         try {
-            String color = getBusColor(node.getId(), node.getGraph().getVoltageLevel());
+            String color = getBusColor(node);
             if (color == null) {
                 color = disconnectedColor;
             }
             return Optional.of(defaultStyle.orElse("") + " #"
-                    + escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())) + " {stroke:"
+                    + escapeId(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())) + " {stroke:"
                     + color + ";stroke-width:1;fill-opacity:0;}");
 
         } catch (UnsupportedEncodingException e) {
@@ -181,44 +188,36 @@ public class TopologicalStyleProvider extends DefaultSubstationDiagramStyleProvi
 
     @Override
     public Optional<String> getWireStyle(Edge edge) {
-        String color = null;
-        String wireId;
 
         try {
-            wireId = SubstationDiagramStyles
-                    .escapeClassName(URLEncoder.encode(
+            String wireId = SubstationDiagramStyles
+                    .escapeId(URLEncoder.encode(
                             edge.getNode1().getGraph().getVoltageLevel().getId() + "_Wire"
                                     + edge.getNode1().getGraph().getEdges().indexOf(edge),
                             StandardCharsets.UTF_8.name()));
+            Node bus = findConnectedBus(edge);
+            String color = bus != null ? getBusColor(bus) : disconnectedColor;
 
-            Node n1 = edge.getNode1();
-            Node n2 = edge.getNode2();
-
-            if (n1.getType() == NodeType.BUS || n2.getType() == NodeType.BUS) {
-                color = n1.getType() == NodeType.BUS ? getBusColor(n1.getId(), n1.getGraph().getVoltageLevel())
-                        : getBusColor(n2.getId(), n2.getGraph().getVoltageLevel());
-                if (color == null) {
-                    color = disconnectedColor;
-                }
-                return Optional.of(" #" + wireId + " {stroke:" + color + ";stroke-width:1;fill-opacity:0;}");
-            } else {
-
-                Node n11 = findConnectedBus(n1, new ArrayList<Node>());
-
-                Node n21 = findConnectedBus(n2, new ArrayList<Node>());
-                if (n11 != null) {
-                    color = getBusColor(n11.getId(), n1.getGraph().getVoltageLevel());
-                }
-                if (n21 != null) {
-                    color = getBusColor(n21.getId(), n2.getGraph().getVoltageLevel());
-                }
-                if (color == null) {
-                    color = disconnectedColor;
-                }
-                return Optional.of(" #" + wireId + " {stroke:" + color + ";stroke-width:1;fill-opacity:0;}");
-            }
+            return Optional.of(" #" + wireId + " {stroke:" + color + ";stroke-width:1;fill-opacity:0;}");
         } catch (UnsupportedEncodingException e) {
             throw new UncheckedIOException(e);
+        }
+    }
+
+    private Node findConnectedBus(Edge edge) {
+        Node n1 = edge.getNode1();
+        if (n1.getType() == NodeType.BUS) {
+            return n1;
+        }
+        Node n2 = edge.getNode2();
+        if (n1.getType() == NodeType.BUS) {
+            return n2;
+        }
+        Node n11 = findConnectedBus(n1, new ArrayList<Node>());
+        if (n11 != null) {
+            return n11;
+        } else {
+            return findConnectedBus(n2, new ArrayList<Node>());
         }
     }
 

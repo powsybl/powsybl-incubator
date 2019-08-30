@@ -165,6 +165,9 @@ public class SubstationDiagramViewer extends Application implements DisplayVolta
 
     private final Button caseLoadingStatus = new Button("  ");
     private final TextField casePathTextField = new TextField();
+    private final TabPane diagramsPane = new TabPane();
+    private Tab tabSelected;
+    private Tab tabChecked;
     private final BorderPane selectedDiagramPane = new BorderPane();
     private final TabPane checkedDiagramsPane = new TabPane();
     private GridPane parametersPane;
@@ -766,10 +769,10 @@ public class SubstationDiagramViewer extends Application implements DisplayVolta
                         .collect(Collectors.toList()));
             }
         });
-        TabPane diagramsPane = new TabPane();
         diagramsPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
-        diagramsPane.getTabs().setAll(new Tab("Selected", selectedDiagramPane),
-                                      new Tab("Checked", checkedDiagramsPane));
+        tabSelected = new Tab("Selected", selectedDiagramPane);
+        tabChecked = new Tab("Checked", checkedDiagramsPane);
+        diagramsPane.getTabs().setAll(tabSelected, tabChecked);
 
         createParametersPane();
 
@@ -982,13 +985,17 @@ public class SubstationDiagramViewer extends Application implements DisplayVolta
     @Override
     public void display(String voltageLevelId) {
         VoltageLevel v = networkProperty.get().getVoltageLevel(voltageLevelId);
-        checkVoltageLevel(v, true);
-        checkvItemTree(voltageLevelId, true);
-        checkedDiagramsPane.getTabs().stream().forEach(tab -> {
-            if (tab.getText().equals(voltageLevelId)) {
-                checkedDiagramsPane.getSelectionModel().select(tab);
-            }
-        });
+        if (diagramsPane.getSelectionModel().getSelectedItem() == tabChecked) {
+            checkVoltageLevel(v, true);
+            checkvItemTree(voltageLevelId, true);
+            checkedDiagramsPane.getTabs().stream().forEach(tab -> {
+                if (tab.getText().equals(voltageLevelId)) {
+                    checkedDiagramsPane.getSelectionModel().select(tab);
+                }
+            });
+        } else if (diagramsPane.getSelectionModel().getSelectedItem() == tabSelected) {
+            selectedDiagramPane.setCenter(new ContainerDiagramPane(v));
+        }
     }
 
     private void checkvItemTree(String id, boolean selected) {

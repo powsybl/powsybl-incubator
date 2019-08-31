@@ -7,10 +7,7 @@
 
 package com.powsybl.loadflow.simple.ac;
 
-import com.powsybl.iidm.network.Bus;
-import com.powsybl.iidm.network.Line;
-import com.powsybl.iidm.network.Network;
-import com.powsybl.iidm.network.VariantManagerConstants;
+import com.powsybl.iidm.network.*;
 import com.powsybl.iidm.network.test.EurostagTutorialExample1Factory;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
@@ -38,6 +35,7 @@ public class SimpleAcLoadFlowEurostagTutorialExample1Test {
     private Bus loadBus;
     private Line line1;
     private Line line2;
+    private Generator gen;
     private SimpleLoadFlow loadFlow;
     private LoadFlowParameters parameters;
     private SimpleLoadFlowParameters parametersExt;
@@ -51,6 +49,7 @@ public class SimpleAcLoadFlowEurostagTutorialExample1Test {
         loadBus = network.getBusBreakerView().getBus("NLOAD");
         line1 = network.getLine("NHV1_NHV2_1");
         line2 = network.getLine("NHV1_NHV2_2");
+        gen = network.getGenerator("GEN");
 
         loadFlow = new SimpleLoadFlow(network, new DenseMatrixFactory());
         parameters = new LoadFlowParameters();
@@ -82,6 +81,9 @@ public class SimpleAcLoadFlowEurostagTutorialExample1Test {
         assertReactivePowerEquals(98.74, line2.getTerminal1());
         assertActivePowerEquals(-300.434, line2.getTerminal2());
         assertReactivePowerEquals(-137.188, line2.getTerminal2());
+
+        // check pv bus reactive power update
+        assertReactivePowerEquals(225.279, gen.getTerminal());
     }
 
     @Test

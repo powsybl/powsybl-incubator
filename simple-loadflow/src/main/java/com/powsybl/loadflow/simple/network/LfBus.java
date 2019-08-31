@@ -53,6 +53,10 @@ public interface LfBus {
 
     void setAngle(double angle);
 
+    double getQ();
+
+    void setQ(double q);
+
     /**
      * Get nominal voltage in Kv.
      * @return nominal voltage in Kv

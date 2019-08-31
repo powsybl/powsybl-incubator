@@ -133,4 +133,14 @@ public class DefaultAcLoadFlowObserver implements AcLoadFlowObserver {
     public void afterNetworkUpdate() {
         // empty
     }
+
+    @Override
+    public void beforePvBusesReactivePowerUpdate() {
+        // empty
+    }
+
+    @Override
+    public void afterPvBusesReactivePowerUpdate() {
+        // empty
+    }
 }

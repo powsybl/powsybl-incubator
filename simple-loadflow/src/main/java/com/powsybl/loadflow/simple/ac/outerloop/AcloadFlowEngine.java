@@ -9,9 +9,8 @@ package com.powsybl.loadflow.simple.ac.outerloop;
 import com.google.common.base.Stopwatch;
 import com.powsybl.loadflow.simple.ac.equations.AcEquationSystem;
 import com.powsybl.loadflow.simple.ac.nr.*;
-import com.powsybl.loadflow.simple.equations.EquationContext;
-import com.powsybl.loadflow.simple.equations.EquationSystem;
-import com.powsybl.loadflow.simple.equations.VoltageInitializer;
+import com.powsybl.loadflow.simple.equations.*;
+import com.powsybl.loadflow.simple.network.LfBus;
 import com.powsybl.loadflow.simple.network.LfNetwork;
 import com.powsybl.math.matrix.MatrixFactory;
 import org.slf4j.Logger;
@@ -52,6 +51,21 @@ public class AcloadFlowEngine {
         this.observer = Objects.requireNonNull(observer);
     }
 
+    private void updatePvBusesReactivePower(NewtonRaphsonResult lastNrResult, EquationContext equationContext) {
+        if (lastNrResult.getStatus() == NewtonRaphsonStatus.CONVERGED) {
+            observer.beforePvBusesReactivePowerUpdate();
+
+            for (LfBus bus : network.getBuses()) {
+                if (bus.hasVoltageControl()) {
+                    Equation q = equationContext.getEquation(bus.getNum(), EquationType.BUS_Q);
+                    bus.setQ(q.eval());
+                }
+            }
+
+            observer.afterPvBusesReactivePowerUpdate();
+        }
+    }
+
     public AcLoadFlowResult run() {
         Stopwatch stopwatch = Stopwatch.createStarted();
 
@@ -70,6 +84,8 @@ public class AcloadFlowEngine {
 
             // initial Newton-Raphson
             lastNrResult = newtonRaphson.run(nrParameters);
+
+            updatePvBusesReactivePower(lastNrResult, equationContext);
 
             // for each outer loop re-run Newton-Raphson until stabilization
             // outer loops are nested: inner most loop first in the list, outer mosy loop last
@@ -90,6 +106,8 @@ public class AcloadFlowEngine {
                         lastNrResult = newtonRaphson.run(nrParameters);
 
                         observer.afterOuterLoopBody(outerLoopIteration, outerLoop.getName());
+
+                        updatePvBusesReactivePower(lastNrResult, equationContext);
 
                         outerLoopIteration++;
                     }

@@ -8,9 +8,9 @@
 package com.powsybl.loadflow.simple.ac;
 
 import com.powsybl.iidm.network.Bus;
+import com.powsybl.iidm.network.Generator;
 import com.powsybl.iidm.network.Line;
 import com.powsybl.iidm.network.Network;
-import com.powsybl.iidm.network.*;
 import com.powsybl.iidm.network.test.EurostagTutorialExample1Factory;
 import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
@@ -41,7 +41,6 @@ public class SimpleAcLoadFlowEurostagTutorialExample1Test {
     private Line line2;
     private LoadFlow.Runner loadFlowRunner;
     private Generator gen;
-    private SimpleLoadFlow loadFlow;
     private LoadFlowParameters parameters;
     private SimpleLoadFlowParameters parametersExt;
 

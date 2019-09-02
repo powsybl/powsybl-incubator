@@ -72,7 +72,11 @@ public class TopologicalStyleTest {
         Path outSvg = tmpDir.resolve("sub.svg");
         Path meta = tmpDir.resolve("meta.json");
 
-        SubstationDiagram.build(substation).writeSvg(componentLibrary, layoutParameters, new DefaultSubstationDiagramInitialValueProvider(network), new TopologicalStyleProvider(), Files.newBufferedWriter(outSvg, StandardCharsets.UTF_8), Files.newBufferedWriter(meta));
+        Path config = tmpDir.resolve("base-voltages.yml");
+
+        Files.copy(getClass().getResourceAsStream("/base-voltages.yml"), config);
+
+        SubstationDiagram.build(substation).writeSvg(componentLibrary, layoutParameters, new DefaultSubstationDiagramInitialValueProvider(network), new TopologicalStyleProvider(config), Files.newBufferedWriter(outSvg, StandardCharsets.UTF_8), Files.newBufferedWriter(meta));
 
         String svgStr = normalizeLineSeparator(new String(Files.readAllBytes(outSvg), StandardCharsets.UTF_8));
 

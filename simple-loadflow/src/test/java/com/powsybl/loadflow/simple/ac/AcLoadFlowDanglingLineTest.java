@@ -21,35 +21,26 @@ import static com.powsybl.loadflow.simple.util.LoadFlowAssert.*;
 import static org.junit.Assert.assertTrue;
 
 /**
- * VSC test case.
- *
- *  g1       ld2               ld3
- *  |         |                 |
- * b1 ------- b2-cs2--------cs3-b3
- *      l12          hvdc23
- *
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class SimpleAcLoadFlowVscTest {
+public class AcLoadFlowDanglingLineTest {
 
     private Network network;
     private Bus bus1;
     private Bus bus2;
-    private Bus bus3;
-    private Line l12;
-    private VscConverterStation cs2;
-    private VscConverterStation cs3;
-    private HvdcLine hvdc23;
+    private DanglingLine dl1;
 
     private LoadFlow.Runner loadFlowRunner;
 
     private LoadFlowParameters parameters;
 
     private Network createNetwork() {
-        Network network = Network.create("vsc", "test");
-
+        Network network = Network.create("dl", "test");
         Substation s1 = network.newSubstation()
                 .setId("S1")
+                .add();
+        Substation s2 = network.newSubstation()
+                .setId("S2")
                 .add();
         VoltageLevel vl1 = s1.newVoltageLevel()
                 .setId("vl1")
@@ -63,15 +54,11 @@ public class SimpleAcLoadFlowVscTest {
                 .setId("g1")
                 .setConnectableBus("b1")
                 .setBus("b1")
-                .setTargetP(102.56)
+                .setTargetP(101.3664)
                 .setTargetV(390)
                 .setMinP(0)
-                .setMaxP(500)
+                .setMaxP(150)
                 .setVoltageRegulatorOn(true)
-                .add();
-
-        Substation s2 = network.newSubstation()
-                .setId("S2")
                 .add();
         VoltageLevel vl2 = s2.newVoltageLevel()
                 .setId("vl2")
@@ -81,53 +68,19 @@ public class SimpleAcLoadFlowVscTest {
         bus2 = vl2.getBusBreakerView().newBus()
                 .setId("b2")
                 .add();
-        vl2.newLoad()
-                .setId("ld2")
+        dl1 = vl2.newDanglingLine()
+                .setId("ld1")
                 .setConnectableBus("b2")
                 .setBus("b2")
-                .setP0(50)
-                .setQ0(10)
+                .setR(0.7)
+                .setX(1)
+                .setG(Math.pow(10, -6))
+                .setB(3 * Math.pow(10, -6))
+                .setP0(101)
+                .setQ0(150)
                 .add();
-        cs2 = vl2.newVscConverterStation()
-                .setId("cs2")
-                .setConnectableBus("b2")
-                .setBus("b2")
-                .setVoltageRegulatorOn(true)
-                .setVoltageSetpoint(385)
-                .setReactivePowerSetpoint(100)
-                .setLossFactor(1.1f)
-                .add();
-
-        Substation s3 = network.newSubstation()
-                .setId("S3")
-                .add();
-        VoltageLevel vl3 = s3.newVoltageLevel()
-                .setId("vl3")
-                .setNominalV(400)
-                .setTopologyKind(TopologyKind.BUS_BREAKER)
-                .add();
-        bus3 = vl3.getBusBreakerView().newBus()
-                .setId("b3")
-                .add();
-        vl3.newLoad()
-                .setId("ld3")
-                .setConnectableBus("b3")
-                .setBus("b3")
-                .setP0(50)
-                .setQ0(10)
-                .add();
-        cs3 = vl3.newVscConverterStation()
-                .setId("cs3")
-                .setConnectableBus("b3")
-                .setBus("b3")
-                .setVoltageRegulatorOn(true)
-                .setVoltageSetpoint(383)
-                .setReactivePowerSetpoint(100)
-                .setLossFactor(1.1f)
-                .add();
-
-        l12 = network.newLine()
-                .setId("l12")
+        network.newLine()
+                .setId("l1")
                 .setVoltageLevel1("vl1")
                 .setBus1("b1")
                 .setVoltageLevel2("vl2")
@@ -139,18 +92,6 @@ public class SimpleAcLoadFlowVscTest {
                 .setB1(0)
                 .setB2(0)
                 .add();
-
-        hvdc23 = network.newHvdcLine()
-                .setId("hvdc23")
-                .setConverterStationId1("cs2")
-                .setConverterStationId2("cs3")
-                .setNominalV(400)
-                .setR(0.1)
-                .setActivePowerSetpoint(50)
-                .setConvertersMode(HvdcLine.ConvertersMode.SIDE_1_INVERTER_SIDE_2_RECTIFIER)
-                .setMaxP(500)
-                .add();
-
         return network;
     }
 
@@ -172,12 +113,9 @@ public class SimpleAcLoadFlowVscTest {
 
         assertVoltageEquals(390, bus1);
         assertAngleEquals(0, bus1);
-        assertVoltageEquals(385, bus2);
-        assertAngleEquals(0.117617, bus2);
-
-        assertActivePowerEquals(102.563, l12.getTerminal1());
-        assertReactivePowerEquals(615.917, l12.getTerminal1());
-        assertActivePowerEquals(-100, l12.getTerminal2());
-        assertReactivePowerEquals(-608.228, l12.getTerminal2());
+        assertVoltageEquals(388.582864, bus2);
+        assertAngleEquals(-0.058277, bus2);
+        assertActivePowerEquals(101.302, dl1.getTerminal());
+        assertReactivePowerEquals(149.763, dl1.getTerminal());
     }
 }

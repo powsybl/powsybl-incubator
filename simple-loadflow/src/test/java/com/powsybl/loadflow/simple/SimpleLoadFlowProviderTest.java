@@ -16,10 +16,10 @@ import static org.junit.Assert.assertEquals;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class SimpleLoadFlowTest {
+public class SimpleLoadFlowProviderTest {
 
     @Test
-    public void metaInfoTest() {
+    public void test() {
         LoadFlowProvider loadFlowProvider = new SimpleLoadFlowProvider(new DenseMatrixFactory());
         assertEquals("SimpleLoadflow", loadFlowProvider.getName());
         assertEquals(new PowsyblCoreVersion().getMavenProjectVersion(), loadFlowProvider.getVersion());

@@ -30,7 +30,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class SimpleAcLoadFlowEurostagTutorialExample1Test {
+public class AcLoadFlowEurostagTutorialExample1Test {
 
     private Network network;
     private Bus genBus;

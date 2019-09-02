@@ -27,7 +27,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class SimpleAcLoadFlowTwoBusNetworkTest {
+public class AcLoadFlowTwoBusNetworkTest {
 
     private Network network;
     private Bus bus1;

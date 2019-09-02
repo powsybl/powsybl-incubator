@@ -385,8 +385,13 @@ public class CgmesModelForInterpretation {
             return;
         }
         String nodeId = t.topologicalNode();
+        if (nodeId == null) {
+            return;
+        }
         CgmesNode node = nodes.get(nodeId);
-
+        if (node == null) {
+            return;
+        }
         double p = t.flow().p();
         if (Double.isNaN(p)) {
             p = 0.0;

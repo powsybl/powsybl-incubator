@@ -141,7 +141,7 @@ public class SubstationDiagramViewer extends Application {
     private final Map<String, SubstationDiagramStyleProvider> styles
             = ImmutableMap.of("Default", new DefaultSubstationDiagramStyleProvider(),
                               "Nominal voltage", new NominalVoltageSubstationDiagramStyleProvider(),
-                              "Topology", new TopologicalStyleProvider());
+                              "Topology", new TopologicalStyleProvider(null));
 
     private final Map<String, SubstationLayoutFactory> substationsLayouts
             = ImmutableMap.of("Horizontal", new HorizontalSubstationLayoutFactory(),

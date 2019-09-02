@@ -60,10 +60,6 @@ public class TopologicalStyleProvider extends DefaultSubstationDiagramStyleProvi
     private static final String DISCONNECTED_COLOR = "grey";
     private String disconnectedColor;
 
-    public TopologicalStyleProvider() {
-        this(null);
-    }
-
     public TopologicalStyleProvider(Path config) {
         try {
             baseVoltageColor = config != null ? new BaseVoltageColor(config) : new BaseVoltageColor();

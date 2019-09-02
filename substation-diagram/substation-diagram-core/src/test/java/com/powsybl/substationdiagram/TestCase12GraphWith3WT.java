@@ -11,6 +11,8 @@ import com.powsybl.iidm.network.*;
 import com.powsybl.substationdiagram.layout.*;
 import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
 import com.powsybl.substationdiagram.model.Graph;
+import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramInitialValueProvider;
+import com.powsybl.substationdiagram.util.NominalVoltageSubstationDiagramStyleProvider;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
 import org.junit.Assert;
@@ -24,7 +26,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -96,7 +97,7 @@ public class TestCase12GraphWith3WT extends AbstractTestCase {
 
         // third voltage level
         //
-        vl3 = createVoltageLevel(substation, "vl3", "vl3", TopologyKind.NODE_BREAKER, 225, 50);
+        vl3 = createVoltageLevel(substation, "vl3", "vl3", TopologyKind.NODE_BREAKER, 63, 50);
 
         createBusBarSection(vl3, "bbs7", "bbs7", 0, 1, 1);
 
@@ -393,17 +394,17 @@ public class TestCase12GraphWith3WT extends AbstractTestCase {
         // build voltage level 1 graph
         Graph g1 = Graph.create(vl1, false, true, true);
         new ImplicitCellDetector().detectCells(g1);
-        assertTrue(new BlockOrganizer().organize(g1));
+        new BlockOrganizer().organize(g1);
         new PositionVoltageLevelLayout(g1).run(layoutParameters);
 
         Graph g2 = Graph.create(vl2, false, true, true);
         new ImplicitCellDetector().detectCells(g2);
-        assertTrue(new BlockOrganizer().organize(g2));
+        new BlockOrganizer().organize(g2);
         new PositionVoltageLevelLayout(g2).run(layoutParameters);
 
         Graph g3 = Graph.create(vl3, false, true, false);
         new ImplicitCellDetector().detectCells(g3);
-        assertTrue(new BlockOrganizer().organize(g3));
+        new BlockOrganizer().organize(g3);
         new PositionVoltageLevelLayout(g3).run(layoutParameters);
 
         // write SVG and compare to reference (horizontal layout)
@@ -415,7 +416,9 @@ public class TestCase12GraphWith3WT extends AbstractTestCase {
         VoltageLevelDiagram diagram = VoltageLevelDiagram.build(vl1, new PositionVoltageLevelLayoutFactory(), false, true);
         Path pathSVG = Paths.get(System.getProperty("user.home"), "vlDiag.svg");
         Path pathMetadata = Paths.get(System.getProperty("user.home"), "vlDiag_metadata.json");
-        diagram.writeSvg(new ResourcesComponentLibrary("/ConvergenceLibrary"), layoutParameters, network, pathSVG);
+        diagram.writeSvg(new ResourcesComponentLibrary("/ConvergenceLibrary"), layoutParameters,
+                         new DefaultSubstationDiagramInitialValueProvider(network),
+                         new NominalVoltageSubstationDiagramStyleProvider(), pathSVG, false);
         Assert.assertTrue(Files.exists(pathSVG));
         Assert.assertTrue(Files.exists(pathMetadata));
         try {

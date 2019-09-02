@@ -113,7 +113,7 @@ public class Graph {
         this.showInductorFor3WT = showInductorFor3WT;
     }
 
-    boolean isUseName() {
+    public boolean isUseName() {
         return useName;
     }
 
@@ -836,13 +836,9 @@ public class Graph {
                         v.getShuntCompensatorStream().forEach(s -> {
                             Bus connectableBusInductor = s.getTerminal().getBusView().getConnectableBus();
                             Bus connectableBus3WT = t.getBusView().getConnectableBus();
-                            if (connectableBusInductor == connectableBus3WT) {
-                                if (s.getbPerSection() < 0
-                                        && infos.get() == null) {  // inductor found
-                                    infos.set(new InfosInductor3WT(s.getId(),
-                                            s.getName(),
-                                            transformer.getSide(t)));
-                                }
+                            if (connectableBusInductor == connectableBus3WT &&
+                                    s.getbPerSection() < 0 && infos.get() == null) {  // inductor found
+                                infos.set(new InfosInductor3WT(s.getId(), s.getName(), transformer.getSide(t)));
                             }
                         });
                     }
@@ -872,7 +868,7 @@ public class Graph {
 
                     if (infosInductor != null) {
                         // We are in a voltage level diagram AND
-                        // We want to show, if we are in the primary voltage level,
+                        // We want to show (if we are not in the tertiary voltage level),
                         // the inductor present in the tertiary voltage level of the 3 windings transformer,
 
                         // We represent the 3 windings transformer like a double feeder cell with :
@@ -883,12 +879,14 @@ public class Graph {
                             // Create a feeder for the inductor
                             String idFeeder1 = infosInductor.getId();
                             String nameFeeder1 = infosInductor.getName();
-                            nfeeder1 = FeederNode.create(Graph.this, idFeeder1, nameFeeder1, ComponentType.INDUCTOR);
+                            nfeeder1 = Feeder2WTNode.create(Graph.this, idFeeder1, nameFeeder1, n3WT.getVL2());
+                            nfeeder1.setComponentType(ComponentType.INDUCTOR);
                         } else {
                             // Create a feeder for the winding to the secondary voltage level
                             String idFeeder1 = n3WT.getId() + "_" + n3WT.getId2();
                             String nameFeeder1 = n3WT.getName() + "_" + n3WT.getName2();
                             nfeeder1 = Feeder2WTNode.create(Graph.this, idFeeder1, nameFeeder1, n3WT.getVL2());
+                            nfeeder1.setComponentType(ComponentType.LINE);
                         }
                         nfeeder1.setOrder(n3WT.getOrder());
                         nfeeder1.setDirection(n3WT.getDirection());
@@ -898,12 +896,14 @@ public class Graph {
                             // Create a feeder for the inductor
                             String idFeeder2 = infosInductor.getId();
                             String nameFeeder2 = infosInductor.getName();
-                            nfeeder2 = FeederNode.create(Graph.this, idFeeder2, nameFeeder2, ComponentType.INDUCTOR);
+                            nfeeder2 = Feeder2WTNode.create(Graph.this, idFeeder2, nameFeeder2, n3WT.getVL3());
+                            nfeeder2.setComponentType(ComponentType.INDUCTOR);
                         } else {
-                            // Create a feeder for the inductor in the tertiary voltage level
+                            // Create a feeder for the winding to the tertiary voltage level
                             String idFeeder2 = n3WT.getId() + "_" + n3WT.getId3();
                             String nameFeeder2 = n3WT.getName() + "_" + n3WT.getName3();
                             nfeeder2 = Feeder2WTNode.create(Graph.this, idFeeder2, nameFeeder2, n3WT.getVL3());
+                            nfeeder2.setComponentType(ComponentType.LINE);
                         }
                         nfeeder2.setOrder(n3WT.getOrder() + 1);
                         nfeeder2.setDirection(n3WT.getDirection());
@@ -917,6 +917,7 @@ public class Graph {
                         String idFeeder1 = n3WT.getId() + "_" + n3WT.getId2();
                         String nameFeeder1 = n3WT.getName() + "_" + n3WT.getName2();
                         nfeeder1 = Feeder2WTNode.create(Graph.this, idFeeder1, nameFeeder1, n3WT.getVL2());
+                        nfeeder1.setComponentType(ComponentType.LINE);
                         nfeeder1.setOrder(n3WT.getOrder());
                         nfeeder1.setDirection(n3WT.getDirection());
                         addNode(nfeeder1);
@@ -925,6 +926,7 @@ public class Graph {
                         String idFeeder2 = n3WT.getId() + "_" + n3WT.getId3();
                         String nameFeeder2 = n3WT.getName() + "_" + n3WT.getName3();
                         nfeeder2 = Feeder2WTNode.create(Graph.this, idFeeder2, nameFeeder2, n3WT.getVL3());
+                        nfeeder2.setComponentType(ComponentType.LINE);
                         nfeeder2.setOrder(n3WT.getOrder() + 1);
                         nfeeder2.setDirection(n3WT.getDirection());
                         addNode(nfeeder2);

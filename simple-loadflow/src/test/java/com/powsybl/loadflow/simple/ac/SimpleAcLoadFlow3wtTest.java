@@ -9,6 +9,9 @@ package com.powsybl.loadflow.simple.ac;
 import com.powsybl.iidm.network.*;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
+import com.powsybl.loadflow.simple.SimpleLoadFlow;
+import com.powsybl.loadflow.simple.SimpleLoadFlowParameters;
+import com.powsybl.loadflow.simple.SlackBusSelectionMode;
 import com.powsybl.math.matrix.DenseMatrixFactory;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +42,7 @@ public class SimpleAcLoadFlow3wtTest {
     private Bus bus3;
     private ThreeWindingsTransformer twt;
 
-    private SimpleAcLoadFlow loadFlow;
+    private SimpleLoadFlow loadFlow;
 
     private LoadFlowParameters parameters;
 
@@ -137,12 +140,12 @@ public class SimpleAcLoadFlow3wtTest {
     @Before
     public void setUp() {
         network = createNetwork();
-        loadFlow = new SimpleAcLoadFlow(network, new DenseMatrixFactory());
+        loadFlow = new SimpleLoadFlow(network, new DenseMatrixFactory());
         parameters = new LoadFlowParameters();
-        SimpleAcLoadFlowParameters parametersExt = new SimpleAcLoadFlowParameters()
+        SimpleLoadFlowParameters parametersExt = new SimpleLoadFlowParameters()
                 .setSlackBusSelectionMode(SlackBusSelectionMode.MOST_MESHED)
                 .setDistributedSlack(false);
-        this.parameters.addExtension(SimpleAcLoadFlowParameters.class, parametersExt);
+        this.parameters.addExtension(SimpleLoadFlowParameters.class, parametersExt);
     }
 
     @Test

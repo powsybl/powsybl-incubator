@@ -23,15 +23,17 @@ public class LoadDiagramDataTest extends AbstractInjectionDiagramDataTest {
         Network network = Networks.createNetworkWithLoad();
         Load load = network.getLoad("Load");
 
-        InjectionDiagramData<Load> loadDiagramData = new InjectionDiagramData<>(load, new DiagramPoint(20, 10, 0), 90);
-        loadDiagramData.addTerminalPoint(new DiagramPoint(15, 10, 2));
-        loadDiagramData.addTerminalPoint(new DiagramPoint(0, 10, 1));
+        InjectionDiagramData<Load> loadDiagramData = new InjectionDiagramData<>(load);
+        InjectionDiagramData.InjectionDiagramDetails diagramDetails = loadDiagramData.new InjectionDiagramDetails(new DiagramPoint(20, 10, 0), 90);
+        diagramDetails.addTerminalPoint(new DiagramPoint(15, 10, 2));
+        diagramDetails.addTerminalPoint(new DiagramPoint(0, 10, 1));
+        loadDiagramData.addData(DIAGRAM_NAME, diagramDetails);
         load.addExtension(InjectionDiagramData.class, loadDiagramData);
 
         Load load2 = network.getLoad("Load");
         InjectionDiagramData loadDiagramData2 = load2.getExtension(InjectionDiagramData.class);
 
-        checkDiagramData(loadDiagramData2);
+        checkDiagramData(loadDiagramData2, DIAGRAM_NAME);
     }
 
 }

@@ -8,6 +8,7 @@ package com.powsybl.cgmes.dl.conversion.importers;
 
 import java.util.Objects;
 
+import com.powsybl.cgmes.iidm.extensions.dl.NetworkDiagramData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,12 +45,19 @@ public class BusDiagramDataImporter {
                 if (busIidmDiagramData == null) {
                     busIidmDiagramData = new NodeDiagramData<>(bus);
                 }
-                if (busDiagramData.asInt("seq") == 1) {
-                    busIidmDiagramData.setPoint1(new DiagramPoint(busDiagramData.asDouble("x"), busDiagramData.asDouble("y"), busDiagramData.asInt("seq")));
-                } else {
-                    busIidmDiagramData.setPoint2(new DiagramPoint(busDiagramData.asDouble("x"), busDiagramData.asDouble("y"), busDiagramData.asInt("seq")));
+                String diagramName = busDiagramData.get("diagramName");
+                NodeDiagramData.NodeDiagramDataDetails diagramDetails = busIidmDiagramData.getData(diagramName);
+                if (diagramDetails == null) {
+                    diagramDetails = busIidmDiagramData.new NodeDiagramDataDetails();
                 }
+                if (busDiagramData.asInt("seq") == 1) {
+                    diagramDetails.setPoint1(new DiagramPoint(busDiagramData.asDouble("x"), busDiagramData.asDouble("y"), busDiagramData.asInt("seq")));
+                } else {
+                    diagramDetails.setPoint2(new DiagramPoint(busDiagramData.asDouble("x"), busDiagramData.asDouble("y"), busDiagramData.asInt("seq")));
+                }
+                busIidmDiagramData.addData(diagramName, diagramDetails);
                 bus.addExtension(NodeDiagramData.class, busIidmDiagramData);
+                NetworkDiagramData.addDiagramName(network, diagramName);
             } else {
                 LOG.warn("Cannot find bus {}, name {} in network {}: skipping bus diagram data", busId, busDiagramData.get("name"), network.getId());
             }

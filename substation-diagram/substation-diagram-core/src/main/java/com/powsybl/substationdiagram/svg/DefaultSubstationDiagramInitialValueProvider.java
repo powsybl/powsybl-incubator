@@ -13,7 +13,11 @@ import com.powsybl.iidm.network.Branch.Side;
 import com.powsybl.iidm.network.Injection;
 import com.powsybl.iidm.network.Load;
 import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.network.ThreeWindingsTransformer;
+import com.powsybl.substationdiagram.library.ComponentType;
+import com.powsybl.substationdiagram.model.Feeder2WTNode;
 import com.powsybl.substationdiagram.model.Node;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author Giovanni Ferrari <giovanni.ferrari at techrain.eu>
@@ -38,7 +42,7 @@ public class DefaultSubstationDiagramInitialValueProvider implements SubstationD
             switch (node.getComponentType()) {
                 case LINE:
                 case TWO_WINDINGS_TRANSFORMER:
-                    initialValue = getBranchInitialValue(nodeId);
+                    initialValue = getBranchInitialValue(node);
                     break;
 
                 case LOAD:
@@ -89,12 +93,35 @@ public class DefaultSubstationDiagramInitialValueProvider implements SubstationD
         }
     }
 
-    private InitialValue getBranchInitialValue(String nodeId) {
-        Branch branch = network.getBranch(nodeId.substring(0, nodeId.length() - 4));
-        if (branch != null) {
-            return new InitialValue(branch, Side.valueOf(nodeId.substring(nodeId.length() - 3)));
+    private InitialValue getBranchInitialValue(Node node) {
+        String nodeId = node.getId();
+        if (node instanceof Feeder2WTNode && node.getComponentType() == ComponentType.LINE) {
+            // special case : branch of threeWindingsTransformer
+            ThreeWindingsTransformer.Side side = ThreeWindingsTransformer.Side.ONE;
+            ThreeWindingsTransformer transformer = null;
+
+            int posSide = StringUtils.lastOrdinalIndexOf(nodeId, "_", 1);
+            if (posSide != -1) {
+                side = ThreeWindingsTransformer.Side.valueOf(nodeId.substring(posSide + 1));
+                posSide = StringUtils.lastOrdinalIndexOf(nodeId, "_", 2);
+                if (posSide != -1) {
+                    String idTransformer = nodeId.substring(0, posSide);
+                    transformer = network.getThreeWindingsTransformer(idTransformer);
+                }
+            }
+
+            if (transformer != null) {
+                return new InitialValue(transformer, side);
+            } else {
+                return new InitialValue(null, null, null, null, null, null);
+            }
         } else {
-            return new InitialValue(null, null, null, null, null, null);
+            Branch branch = network.getBranch(nodeId.substring(0, nodeId.length() - 4));
+            if (branch != null) {
+                return new InitialValue(branch, Side.valueOf(nodeId.substring(nodeId.length() - 3)));
+            } else {
+                return new InitialValue(null, null, null, null, null, null);
+            }
         }
     }
 }

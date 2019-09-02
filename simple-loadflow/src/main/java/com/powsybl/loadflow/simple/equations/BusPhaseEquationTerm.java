@@ -16,6 +16,6 @@ import java.util.Objects;
 public class BusPhaseEquationTerm extends AbstractTargetEquationTerm {
 
     public BusPhaseEquationTerm(LfBus bus, EquationContext equationContext) {
-        super(Objects.requireNonNull(bus).getNum(), EquationType.BUS_PHI, VariableType.BUS_PHI, equationContext);
+        super(Objects.requireNonNull(bus).getNum(), VariableType.BUS_PHI, equationContext);
     }
 }

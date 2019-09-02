@@ -6,6 +6,8 @@
  */
 package com.powsybl.cgmes.iidm.extensions.dl;
 
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -14,19 +16,22 @@ import static org.junit.Assert.assertNotNull;
  * @author Massimo Ferraro <massimo.ferraro@techrain.eu>
  */
 public abstract class AbstractInjectionDiagramDataTest {
+    protected static String DIAGRAM_NAME = "default";
 
-    protected <T> void checkDiagramData(InjectionDiagramData<?> diagramData) {
+    protected <T> void checkDiagramData(InjectionDiagramData<?> diagramData, String diagramName) {
         assertNotNull(diagramData);
-        assertEquals(0, diagramData.getPoint().getSeq(), 0);
-        assertEquals(20, diagramData.getPoint().getX(), 0);
-        assertEquals(10, diagramData.getPoint().getY(), 0);
-        assertEquals(90, diagramData.getRotation(), 0);
-        assertEquals(1, diagramData.getTerminalPoints().get(0).getSeq(), 0);
-        assertEquals(0, diagramData.getTerminalPoints().get(0).getX(), 0);
-        assertEquals(10, diagramData.getTerminalPoints().get(0).getY(), 0);
-        assertEquals(2, diagramData.getTerminalPoints().get(1).getSeq(), 0);
-        assertEquals(15, diagramData.getTerminalPoints().get(1).getX(), 0);
-        assertEquals(10, diagramData.getTerminalPoints().get(1).getY(), 0);
+        InjectionDiagramData.InjectionDiagramDetails diagramDataDetails = diagramData.getData(diagramName);
+        assertEquals(0, diagramDataDetails.getPoint().getSeq(), 0);
+        assertEquals(20, diagramDataDetails.getPoint().getX(), 0);
+        assertEquals(10, diagramDataDetails.getPoint().getY(), 0);
+        assertEquals(90, diagramDataDetails.getRotation(), 0);
+        List<DiagramPoint> points = diagramDataDetails.getTerminalPoints();
+        assertEquals(1, points.get(0).getSeq(), 0);
+        assertEquals(0, points.get(0).getX(), 0);
+        assertEquals(10, points.get(0).getY(), 0);
+        assertEquals(2, points.get(1).getSeq(), 0);
+        assertEquals(15, points.get(1).getX(), 0);
+        assertEquals(10, points.get(1).getY(), 0);
     }
 
 }

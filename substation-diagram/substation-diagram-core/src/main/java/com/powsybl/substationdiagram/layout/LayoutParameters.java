@@ -42,6 +42,8 @@ public class LayoutParameters {
     private double horizontalSubstationPadding = 50;
     private double verticalSubstationPadding = 50;
 
+    private String diagramName = null;
+
     private boolean drawStraightWires = false;
 
     private double horizontalSnakeLinePadding = 20;
@@ -74,7 +76,8 @@ public class LayoutParameters {
                             @JsonProperty("horizontalSnakeLinePadding") double horizontalSnakeLinePadding,
                             @JsonProperty("verticalSnakeLinePadding") double verticalSnakeLinePadding,
                             @JsonProperty("arrowDistance") double arrowDistance,
-                            @JsonProperty("showInductorFor3WT") boolean showInductorFor3WT) {
+                            @JsonProperty("showInductorFor3WT") boolean showInductorFor3WT,
+                            @JsonProperty("diagramName") String diagramName) {
         this.translateX = translateX;
         this.translateY = translateY;
         this.initialXBus = initialXBus;
@@ -95,6 +98,7 @@ public class LayoutParameters {
         this.verticalSnakeLinePadding = verticalSnakeLinePadding;
         this.arrowDistance = arrowDistance;
         this.showInductorFor3WT = showInductorFor3WT;
+        this.diagramName = diagramName;
     }
 
     public LayoutParameters(LayoutParameters other) {
@@ -119,6 +123,7 @@ public class LayoutParameters {
         verticalSnakeLinePadding = other.verticalSnakeLinePadding;
         arrowDistance = other.arrowDistance;
         showInductorFor3WT = other.showInductorFor3WT;
+        diagramName = other.diagramName;
     }
 
     public double getTranslateX() {
@@ -253,6 +258,15 @@ public class LayoutParameters {
 
     public LayoutParameters setVerticalSubstationPadding(double padding) {
         this.verticalSubstationPadding = padding;
+        return this;
+    }
+
+    public String getDiagramName() {
+        return diagramName;
+    }
+
+    public LayoutParameters setDiagramName(String diagramName) {
+        this.diagramName = diagramName;
         return this;
     }
 

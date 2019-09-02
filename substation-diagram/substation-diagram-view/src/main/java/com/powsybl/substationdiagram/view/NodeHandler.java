@@ -21,6 +21,7 @@ import java.util.Objects;
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
+ * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
  */
 public class NodeHandler implements BaseNode {
 
@@ -28,9 +29,9 @@ public class NodeHandler implements BaseNode {
 
     private ComponentType componentType;
 
-    private final List<WireHandler> wireHandlers = new ArrayList<>();
+    private Double rotationAngle;
 
-    private final boolean rotated;
+    private final List<WireHandler> wireHandlers = new ArrayList<>();
 
     private final GraphMetadata metadata;
 
@@ -41,11 +42,12 @@ public class NodeHandler implements BaseNode {
 
     private BusCell.Direction direction;
 
-    public NodeHandler(Node node, ComponentType componentType, boolean rotated, GraphMetadata metadata,
+    public NodeHandler(Node node, ComponentType componentType, Double rotationAngle,
+                       GraphMetadata metadata,
                        String vId, BusCell.Direction direction) {
         this.node = Objects.requireNonNull(node);
         this.componentType = componentType;
-        this.rotated = rotated;
+        this.rotationAngle = rotationAngle;
         this.metadata = Objects.requireNonNull(metadata);
         this.vId = Objects.requireNonNull(vId);
         this.direction = direction;
@@ -75,6 +77,11 @@ public class NodeHandler implements BaseNode {
         return componentType;
     }
 
+    @Override
+    public Double getRotationAngle() {
+        return rotationAngle;
+    }
+
     public void addWire(WireHandler w) {
         wireHandlers.add(w);
     }
@@ -85,7 +92,7 @@ public class NodeHandler implements BaseNode {
 
     @Override
     public boolean isRotated() {
-        return rotated;
+        return rotationAngle != null;
     }
 
     @Override

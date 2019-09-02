@@ -25,7 +25,7 @@ public class DefaultAcLoadFlowObserver implements AcLoadFlowObserver {
     }
 
     @Override
-    public void beginMacroIteration(int macroIteration, String macroActionName) {
+    public void beforeOuterLoopBody(int outerLoopIteration, String outerLoopName) {
         // empty
     }
 
@@ -55,12 +55,12 @@ public class DefaultAcLoadFlowObserver implements AcLoadFlowObserver {
     }
 
     @Override
-    public void beforeEquationTermsUpdate(int iteration) {
+    public void beforeEquationsUpdate(int iteration) {
         // empty
     }
 
     @Override
-    public void afterEquationTermsUpdate(EquationSystem equationSystem, int iteration) {
+    public void afterEquationsUpdate(EquationSystem equationSystem, int iteration) {
         // empty
     }
 
@@ -110,17 +110,17 @@ public class DefaultAcLoadFlowObserver implements AcLoadFlowObserver {
     }
 
     @Override
-    public void beforeMacroActionRun(int macroIteration, String macroActionName) {
+    public void beforeOuterLoopStatusCheck(int outerLoopIteration, String outerLoopName) {
         // empty
     }
 
     @Override
-    public void afterMacroActionRun(int macroIteration, String macroActionName, boolean cont) {
+    public void afterOuterLoopStatusCheck(int outerLoopIteration, String outerLoopName, boolean stable) {
         // empty
     }
 
     @Override
-    public void endMacroIteration(int macroIteration, String macroActionName) {
+    public void afterOuterLoopBody(int outerLoopIteration, String outerLoopName) {
         // empty
     }
 
@@ -131,6 +131,16 @@ public class DefaultAcLoadFlowObserver implements AcLoadFlowObserver {
 
     @Override
     public void afterNetworkUpdate() {
+        // empty
+    }
+
+    @Override
+    public void beforePvBusesReactivePowerUpdate() {
+        // empty
+    }
+
+    @Override
+    public void afterPvBusesReactivePowerUpdate() {
         // empty
     }
 }

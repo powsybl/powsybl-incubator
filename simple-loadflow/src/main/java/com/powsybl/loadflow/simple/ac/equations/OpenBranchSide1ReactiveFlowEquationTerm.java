@@ -7,7 +7,6 @@
 package com.powsybl.loadflow.simple.ac.equations;
 
 import com.powsybl.loadflow.simple.equations.EquationContext;
-import com.powsybl.loadflow.simple.equations.EquationType;
 import com.powsybl.loadflow.simple.equations.Variable;
 import com.powsybl.loadflow.simple.equations.VariableType;
 import com.powsybl.loadflow.simple.network.LfBranch;
@@ -27,7 +26,7 @@ public class OpenBranchSide1ReactiveFlowEquationTerm extends AbstractOpenBranchA
     private double dq2dv2;
 
     public OpenBranchSide1ReactiveFlowEquationTerm(LfBranch branch, LfBus bus2, EquationContext equationContext) {
-        super(branch, EquationType.BUS_Q, VariableType.BUS_V, bus2, equationContext);
+        super(branch, VariableType.BUS_V, bus2, equationContext);
         v2Var = equationContext.getVariable(bus2.getNum(), VariableType.BUS_V);
     }
 

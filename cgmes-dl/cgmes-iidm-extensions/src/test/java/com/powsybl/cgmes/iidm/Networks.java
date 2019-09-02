@@ -442,4 +442,34 @@ public final class Networks {
         return network;
     }
 
+    public static Network createNetworkWithBusbarAndSwitch() {
+        Network network = Network.create("Network", "test");
+        network.setCaseDate(DateTime.parse("2018-01-01T00:30:00.000+01:00"));
+        Substation s = network.newSubstation()
+                .setId("S")
+                .setCountry(Country.FR)
+                .add();
+        VoltageLevel vl = s.newVoltageLevel()
+                .setId("VL")
+                .setNominalV(400.0)
+                .setTopologyKind(TopologyKind.NODE_BREAKER)
+                .add();
+        vl.getNodeBreakerView().setNodeCount(10);
+        vl.getNodeBreakerView().newBusbarSection()
+                .setId("BBS1")
+                .setNode(0)
+                .add();
+        vl.getNodeBreakerView().newBusbarSection()
+                .setId("BBS2")
+                .setNode(1)
+                .add();
+        vl.getNodeBreakerView().newBreaker()
+                .setId("B")
+                .setNode1(0)
+                .setNode2(1)
+                .setOpen(false)
+                .setRetained(true)
+                .add();
+        return network;
+    }
 }

@@ -44,11 +44,11 @@ public class DcLoadFlowEngine {
 
         EquationSystem equationSystem = DcEquationSystem.create(network);
 
-        double[] x = equationSystem.initStateVector(new UniformValueVoltageInitializer());
+        double[] x = equationSystem.createStateVector(new UniformValueVoltageInitializer());
 
-        double[] targets = equationSystem.initTargetVector();
+        double[] targets = equationSystem.createTargetVector();
 
-        equationSystem.updateEquationTerms(x);
+        equationSystem.updateEquations(x);
         Matrix j = equationSystem.buildJacobian(matrixFactory).getMatrix();
 
         double[] dx = Arrays.copyOf(targets, targets.length);
@@ -64,7 +64,7 @@ public class DcLoadFlowEngine {
             LOGGER.error("Failed to solve linear system for simple DC load flow.", e);
         }
 
-        equationSystem.updateEquationTerms(dx);
+        equationSystem.updateEquations(dx);
         equationSystem.updateNetwork(dx);
 
         stopwatch.stop();

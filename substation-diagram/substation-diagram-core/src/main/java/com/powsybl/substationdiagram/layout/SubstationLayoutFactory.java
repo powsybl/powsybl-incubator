@@ -13,5 +13,5 @@ import com.powsybl.substationdiagram.model.SubstationGraph;
  */
 public interface SubstationLayoutFactory {
 
-    SubstationLayout create(SubstationGraph graph);
+    SubstationLayout create(SubstationGraph graph, VoltageLevelLayoutFactory vLayoutFactory);
 }

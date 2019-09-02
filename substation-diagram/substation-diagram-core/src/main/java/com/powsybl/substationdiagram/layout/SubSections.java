@@ -280,7 +280,7 @@ class SubSections {
         Map<InternCell, List<SubSectionIndexes>> cellToIndex = new HashMap<>();
 
         subsectionMap.forEach((ssI, ssh) -> ssh.getInternCells().stream()
-                .filter(c -> c.getCentralBlock() != null)
+//                .filter(c -> c.getCentralBlock() != null)
                 .forEach(c -> {
                     cellToIndex.putIfAbsent(c, new ArrayList<>());
                     cellToIndex.get(c).add(ssI);
@@ -366,13 +366,11 @@ class SubSections {
 
         if (side == Side.UNDEFINED) {
             subsectionMap.putIfAbsent(indexes, new HorizontalSubSection());
-            if (busCell instanceof InternCell) {
+            if (busCell.getType() == Cell.CellType.INTERN) {
                 subsectionMap.get(indexes).add((InternCell) busCell, side);
             } else {
                 subsectionMap.get(indexes).add(busCell);
-                if (busCell.getType() == Cell.CellType.EXTERN) {
-                    indexes.updateOrder(((ExternCell) busCell).getOrder());
-                }
+                indexes.updateOrder(((ExternCell) busCell).getOrder());
             }
         } else {
             Set<SubSectionIndexes> candidateSubsectionIndexes;

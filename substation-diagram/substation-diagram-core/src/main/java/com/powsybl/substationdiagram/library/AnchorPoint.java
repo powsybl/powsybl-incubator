@@ -16,6 +16,7 @@ import java.util.Objects;
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
+ * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
  */
 @XmlJavaTypeAdapter(AnchorPointAdapter.class)
 public class AnchorPoint {
@@ -56,17 +57,27 @@ public class AnchorPoint {
     /**
      * Rotate the anchorPoints
      */
-    public AnchorPoint rotate() {
-        switch (orientation) {
-            case VERTICAL:
-                return new AnchorPoint(y, x, AnchorOrientation.HORIZONTAL);
-            case HORIZONTAL:
-                return new AnchorPoint(y, x, AnchorOrientation.VERTICAL);
-            case NONE:
-                return this;
-            default:
-                throw new AssertionError("Unknown anchor orientation " + orientation);
+    public AnchorPoint rotate(Double rotationAngle) {
+        if (rotationAngle == 90.) {
+            switch (orientation) {
+                case VERTICAL:
+                    return new AnchorPoint(y, x, AnchorOrientation.HORIZONTAL);
+                case HORIZONTAL:
+                    return new AnchorPoint(y, x, AnchorOrientation.VERTICAL);
+                case NONE:
+                    return this;
+                default:
+                    throw new AssertionError("Unknown anchor orientation " + orientation);
+            }
+        } else if (rotationAngle == 180.) {
+            return new AnchorPoint(-x, -y, orientation);
+        } else {
+            return this;
         }
+    }
+
+    public AnchorPoint rotate() {
+        return rotate(90.);
     }
 
     @Override

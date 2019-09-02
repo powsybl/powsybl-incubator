@@ -140,6 +140,18 @@
       "height" : 12.0
     }
   }, {
+    "type" : "LINE",
+    "id" : null,
+    "anchorPoints" : [ {
+      "x" : 0.0,
+      "y" : 0.0,
+      "orientation" : "NONE"
+    } ],
+    "size" : {
+      "width" : 0.0,
+      "height" : 0.0
+    }
+  }, {
     "type" : "LOAD",
     "id" : null,
     "anchorPoints" : [ {
@@ -195,32 +207,28 @@
     "type" : "THREE_WINDINGS_TRANSFORMER",
     "id" : null,
     "anchorPoints" : [ {
-      "x" : 0.0,
+      "x" : -7.0,
       "y" : -4.0,
-      "orientation" : "VERTICAL"
+      "orientation" : "HORIZONTAL"
+    }, {
+      "x" : 7.0,
+      "y" : -4.0,
+      "orientation" : "HORIZONTAL"
     }, {
       "x" : 0.0,
-      "y" : 4.0,
+      "y" : 6.0,
       "orientation" : "VERTICAL"
-    }, {
-      "x" : -6.0,
-      "y" : 0.0,
-      "orientation" : "HORIZONTAL"
-    }, {
-      "x" : 6.0,
-      "y" : 0.0,
-      "orientation" : "HORIZONTAL"
     } ],
     "size" : {
-      "width" : 13.0,
-      "height" : 8.0
+      "width" : 14.0,
+      "height" : 12.0
     }
   } ],
   "nodes" : [ {
     "id" : "dtrct21",
     "vid" : "vl1",
     "componentType" : "BREAKER",
-    "rotated" : true,
+    "rotationAngle" : 90.0,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -228,7 +236,7 @@
     "id" : "trf3_ONE",
     "vid" : "vl1",
     "componentType" : "TWO_WINDINGS_TRANSFORMER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "BOTTOM",
     "vlabel" : false
@@ -236,7 +244,7 @@
     "id" : "FICT_vl1_dtrf15Fictif",
     "vid" : "vl1",
     "componentType" : "NODE",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -244,23 +252,23 @@
     "id" : "trf1_TWO",
     "vid" : "vl2",
     "componentType" : "TWO_WINDINGS_TRANSFORMER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "TOP",
     "vlabel" : false
   }, {
     "id" : "trf6_ONE_THREE",
     "vid" : "vl1",
-    "componentType" : "TWO_WINDINGS_TRANSFORMER",
-    "rotated" : false,
+    "componentType" : "LINE",
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "TOP",
     "vlabel" : false
   }, {
     "id" : "trf7_TWO_THREE",
     "vid" : "vl2",
-    "componentType" : "TWO_WINDINGS_TRANSFORMER",
-    "rotated" : false,
+    "componentType" : "LINE",
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "TOP",
     "vlabel" : false
@@ -268,7 +276,7 @@
     "id" : "FICT_vl1_dtrf12Fictif",
     "vid" : "vl1",
     "componentType" : "NODE",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -276,7 +284,7 @@
     "id" : "btrf22",
     "vid" : "vl2",
     "componentType" : "BREAKER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -284,7 +292,7 @@
     "id" : "dtrf37",
     "vid" : "vl3",
     "componentType" : "DISCONNECTOR",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -292,7 +300,7 @@
     "id" : "btrf23",
     "vid" : "vl2",
     "componentType" : "BREAKER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -300,7 +308,7 @@
     "id" : "dtrf38",
     "vid" : "vl3",
     "componentType" : "DISCONNECTOR",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -308,15 +316,15 @@
     "id" : "btrf21",
     "vid" : "vl2",
     "componentType" : "BREAKER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
   }, {
     "id" : "trf7_THREE_ONE",
     "vid" : "vl3",
-    "componentType" : "TWO_WINDINGS_TRANSFORMER",
-    "rotated" : false,
+    "componentType" : "LINE",
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "BOTTOM",
     "vlabel" : false
@@ -324,7 +332,7 @@
     "id" : "btrf26",
     "vid" : "vl2",
     "componentType" : "BREAKER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -332,7 +340,7 @@
     "id" : "btrf27",
     "vid" : "vl2",
     "componentType" : "BREAKER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -340,7 +348,7 @@
     "id" : "btrf24",
     "vid" : "vl2",
     "componentType" : "BREAKER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -348,7 +356,7 @@
     "id" : "btrf25",
     "vid" : "vl3",
     "componentType" : "BREAKER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -356,15 +364,15 @@
     "id" : "dtrf36",
     "vid" : "vl3",
     "componentType" : "DISCONNECTOR",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
   }, {
     "id" : "trf6_TWO_ONE",
     "vid" : "vl2",
-    "componentType" : "TWO_WINDINGS_TRANSFORMER",
-    "rotated" : false,
+    "componentType" : "LINE",
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "TOP",
     "vlabel" : false
@@ -372,7 +380,7 @@
     "id" : "btrf28",
     "vid" : "vl2",
     "componentType" : "BREAKER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -380,15 +388,15 @@
     "id" : "trf5_ONE",
     "vid" : "vl1",
     "componentType" : "TWO_WINDINGS_TRANSFORMER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "TOP",
     "vlabel" : false
   }, {
     "id" : "trf6_THREE_TWO",
     "vid" : "vl3",
-    "componentType" : "TWO_WINDINGS_TRANSFORMER",
-    "rotated" : false,
+    "componentType" : "LINE",
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "TOP",
     "vlabel" : false
@@ -396,7 +404,7 @@
     "id" : "load3",
     "vid" : "vl2",
     "componentType" : "LOAD",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "TOP",
     "vlabel" : false
@@ -404,7 +412,7 @@
     "id" : "FICT_vl2_dscpl1Fictif",
     "vid" : "vl2",
     "componentType" : "NODE",
-    "rotated" : true,
+    "rotationAngle" : 90.0,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -412,7 +420,7 @@
     "id" : "load2",
     "vid" : "vl1",
     "componentType" : "LOAD",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "TOP",
     "vlabel" : false
@@ -420,7 +428,7 @@
     "id" : "load4",
     "vid" : "vl3",
     "componentType" : "LOAD",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "TOP",
     "vlabel" : false
@@ -428,7 +436,7 @@
     "id" : "FICT_vl3_trf83_fictif",
     "vid" : "vl3",
     "componentType" : "THREE_WINDINGS_TRANSFORMER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -436,7 +444,7 @@
     "id" : "FICT_vl3_dtrf36Fictif",
     "vid" : "vl3",
     "componentType" : "NODE",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -444,15 +452,15 @@
     "id" : "load1",
     "vid" : "vl1",
     "componentType" : "LOAD",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "TOP",
     "vlabel" : false
   }, {
     "id" : "trf8_THREE_ONE",
     "vid" : "vl3",
-    "componentType" : "TWO_WINDINGS_TRANSFORMER",
-    "rotated" : false,
+    "componentType" : "LINE",
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "TOP",
     "vlabel" : false
@@ -460,7 +468,7 @@
     "id" : "FICT_vl1_trf61_fictif",
     "vid" : "vl1",
     "componentType" : "THREE_WINDINGS_TRANSFORMER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -468,7 +476,7 @@
     "id" : "FICT_vl1_dgen2Fictif",
     "vid" : "vl1",
     "componentType" : "NODE",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -476,7 +484,7 @@
     "id" : "dtrf26",
     "vid" : "vl2",
     "componentType" : "DISCONNECTOR",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -484,7 +492,7 @@
     "id" : "dtrf27",
     "vid" : "vl2",
     "componentType" : "DISCONNECTOR",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -492,7 +500,7 @@
     "id" : "dtrf28",
     "vid" : "vl2",
     "componentType" : "DISCONNECTOR",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -500,7 +508,7 @@
     "id" : "dtrf22",
     "vid" : "vl2",
     "componentType" : "DISCONNECTOR",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -508,7 +516,7 @@
     "id" : "btrf37",
     "vid" : "vl3",
     "componentType" : "BREAKER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -516,15 +524,15 @@
     "id" : "dtrf23",
     "vid" : "vl2",
     "componentType" : "DISCONNECTOR",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
   }, {
     "id" : "trf6_TWO_THREE",
     "vid" : "vl2",
-    "componentType" : "TWO_WINDINGS_TRANSFORMER",
-    "rotated" : false,
+    "componentType" : "LINE",
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "TOP",
     "vlabel" : false
@@ -532,7 +540,7 @@
     "id" : "btrf38",
     "vid" : "vl3",
     "componentType" : "BREAKER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -540,7 +548,7 @@
     "id" : "FICT_vl1_dsect22Fictif",
     "vid" : "vl1",
     "componentType" : "NODE",
-    "rotated" : true,
+    "rotationAngle" : 90.0,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -548,7 +556,7 @@
     "id" : "dtrf24",
     "vid" : "vl2",
     "componentType" : "DISCONNECTOR",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -556,7 +564,7 @@
     "id" : "dtrf25",
     "vid" : "vl3",
     "componentType" : "DISCONNECTOR",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -564,15 +572,15 @@
     "id" : "btrf36",
     "vid" : "vl3",
     "componentType" : "BREAKER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
   }, {
     "id" : "trf7_ONE_THREE",
     "vid" : "vl1",
-    "componentType" : "TWO_WINDINGS_TRANSFORMER",
-    "rotated" : false,
+    "componentType" : "LINE",
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "BOTTOM",
     "vlabel" : false
@@ -580,7 +588,7 @@
     "id" : "FICT_vl2_dtrf28Fictif",
     "vid" : "vl2",
     "componentType" : "NODE",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -588,7 +596,7 @@
     "id" : "dtrf21",
     "vid" : "vl2",
     "componentType" : "DISCONNECTOR",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -596,15 +604,15 @@
     "id" : "FICT_vl2_dgen4Fictif",
     "vid" : "vl2",
     "componentType" : "NODE",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
   }, {
     "id" : "trf8_ONE_TWO",
     "vid" : "vl1",
-    "componentType" : "TWO_WINDINGS_TRANSFORMER",
-    "rotated" : false,
+    "componentType" : "LINE",
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "TOP",
     "vlabel" : false
@@ -612,7 +620,7 @@
     "id" : "bbs7",
     "vid" : "vl3",
     "componentType" : "BUSBAR_SECTION",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -620,7 +628,7 @@
     "id" : "bbs5",
     "vid" : "vl2",
     "componentType" : "BUSBAR_SECTION",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -628,7 +636,7 @@
     "id" : "bbs6",
     "vid" : "vl2",
     "componentType" : "BUSBAR_SECTION",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -636,7 +644,7 @@
     "id" : "bbs3",
     "vid" : "vl1",
     "componentType" : "BUSBAR_SECTION",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -644,7 +652,7 @@
     "id" : "bbs4",
     "vid" : "vl1",
     "componentType" : "BUSBAR_SECTION",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -652,7 +660,7 @@
     "id" : "FICT_vl2_dscpl2Fictif",
     "vid" : "vl2",
     "componentType" : "NODE",
-    "rotated" : true,
+    "rotationAngle" : 90.0,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -660,7 +668,7 @@
     "id" : "FICT_vl3_dload4Fictif",
     "vid" : "vl3",
     "componentType" : "NODE",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -668,7 +676,7 @@
     "id" : "FICT_vl1_dtrf17Fictif",
     "vid" : "vl1",
     "componentType" : "NODE",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -676,15 +684,15 @@
     "id" : "trf4_TWO",
     "vid" : "vl2",
     "componentType" : "TWO_WINDINGS_TRANSFORMER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "TOP",
     "vlabel" : false
   }, {
     "id" : "trf7_TWO_ONE",
     "vid" : "vl2",
-    "componentType" : "TWO_WINDINGS_TRANSFORMER",
-    "rotated" : false,
+    "componentType" : "LINE",
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "TOP",
     "vlabel" : false
@@ -692,7 +700,7 @@
     "id" : "dtrct11",
     "vid" : "vl1",
     "componentType" : "BREAKER",
-    "rotated" : true,
+    "rotationAngle" : 90.0,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -700,7 +708,7 @@
     "id" : "LABEL_VL_vl1",
     "vid" : "vl1",
     "componentType" : null,
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : true
@@ -708,7 +716,7 @@
     "id" : "LABEL_VL_vl3",
     "vid" : "vl3",
     "componentType" : null,
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : true
@@ -716,7 +724,7 @@
     "id" : "GRID_vl3",
     "vid" : "vl3",
     "componentType" : null,
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -724,7 +732,7 @@
     "id" : "FICT_vl2_trf82_fictif",
     "vid" : "vl2",
     "componentType" : "THREE_WINDINGS_TRANSFORMER",
-    "rotated" : false,
+    "rotationAngle" : 180.0,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -732,7 +740,7 @@
     "id" : "FICT_vl3_trf73_fictif",
     "vid" : "vl3",
     "componentType" : "THREE_WINDINGS_TRANSFORMER",
-    "rotated" : false,
+    "rotationAngle" : 180.0,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -740,7 +748,7 @@
     "id" : "LABEL_VL_vl2",
     "vid" : "vl2",
     "componentType" : null,
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : true
@@ -748,7 +756,7 @@
     "id" : "GRID_vl2",
     "vid" : "vl2",
     "componentType" : null,
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -756,7 +764,7 @@
     "id" : "GRID_vl1",
     "vid" : "vl1",
     "componentType" : null,
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -764,7 +772,7 @@
     "id" : "FICT_vl2_dtrf26Fictif",
     "vid" : "vl2",
     "componentType" : "NODE",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -772,7 +780,7 @@
     "id" : "FICT_vl1_dtrf11Fictif",
     "vid" : "vl1",
     "componentType" : "NODE",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -780,7 +788,7 @@
     "id" : "bbs1",
     "vid" : "vl1",
     "componentType" : "BUSBAR_SECTION",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -788,15 +796,15 @@
     "id" : "bbs2",
     "vid" : "vl1",
     "componentType" : "BUSBAR_SECTION",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
   }, {
     "id" : "trf8_TWO_THREE",
     "vid" : "vl2",
-    "componentType" : "TWO_WINDINGS_TRANSFORMER",
-    "rotated" : false,
+    "componentType" : "LINE",
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "BOTTOM",
     "vlabel" : false
@@ -804,7 +812,7 @@
     "id" : "btrf11",
     "vid" : "vl1",
     "componentType" : "BREAKER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -812,7 +820,7 @@
     "id" : "btrf12",
     "vid" : "vl1",
     "componentType" : "BREAKER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -820,7 +828,7 @@
     "id" : "btrf15",
     "vid" : "vl1",
     "componentType" : "BREAKER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -828,7 +836,7 @@
     "id" : "FICT_vl1_dsect12Fictif",
     "vid" : "vl1",
     "componentType" : "NODE",
-    "rotated" : true,
+    "rotationAngle" : 90.0,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -836,15 +844,15 @@
     "id" : "btrf16",
     "vid" : "vl1",
     "componentType" : "BREAKER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
   }, {
     "id" : "trf7_THREE_TWO",
     "vid" : "vl3",
-    "componentType" : "TWO_WINDINGS_TRANSFORMER",
-    "rotated" : false,
+    "componentType" : "LINE",
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "BOTTOM",
     "vlabel" : false
@@ -852,7 +860,7 @@
     "id" : "btrf13",
     "vid" : "vl1",
     "componentType" : "BREAKER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -860,7 +868,7 @@
     "id" : "btrf14",
     "vid" : "vl1",
     "componentType" : "BREAKER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -868,7 +876,7 @@
     "id" : "FICT_vl1_dtrf18Fictif",
     "vid" : "vl1",
     "componentType" : "NODE",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -876,7 +884,7 @@
     "id" : "trf2_TWO",
     "vid" : "vl2",
     "componentType" : "TWO_WINDINGS_TRANSFORMER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "BOTTOM",
     "vlabel" : false
@@ -884,7 +892,7 @@
     "id" : "btrf17",
     "vid" : "vl1",
     "componentType" : "BREAKER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -892,7 +900,7 @@
     "id" : "btrf18",
     "vid" : "vl1",
     "componentType" : "BREAKER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -900,7 +908,7 @@
     "id" : "FICT_vl1_dsect11Fictif",
     "vid" : "vl1",
     "componentType" : "NODE",
-    "rotated" : true,
+    "rotationAngle" : 90.0,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -908,7 +916,7 @@
     "id" : "FICT_vl1_dsect21Fictif",
     "vid" : "vl1",
     "componentType" : "NODE",
-    "rotated" : true,
+    "rotationAngle" : 90.0,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -916,7 +924,7 @@
     "id" : "FICT_vl3_dtrf25Fictif",
     "vid" : "vl3",
     "componentType" : "NODE",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -924,7 +932,7 @@
     "id" : "FICT_vl2_dtrf27Fictif",
     "vid" : "vl2",
     "componentType" : "NODE",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -932,7 +940,7 @@
     "id" : "bload1",
     "vid" : "vl1",
     "componentType" : "BREAKER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -940,7 +948,7 @@
     "id" : "bload2",
     "vid" : "vl1",
     "componentType" : "BREAKER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -948,7 +956,7 @@
     "id" : "bload3",
     "vid" : "vl2",
     "componentType" : "BREAKER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -956,7 +964,7 @@
     "id" : "bload4",
     "vid" : "vl3",
     "componentType" : "BREAKER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -964,7 +972,7 @@
     "id" : "FICT_vl2_dtrf24Fictif",
     "vid" : "vl2",
     "componentType" : "NODE",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -972,7 +980,7 @@
     "id" : "trf2_ONE",
     "vid" : "vl1",
     "componentType" : "TWO_WINDINGS_TRANSFORMER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "TOP",
     "vlabel" : false
@@ -980,7 +988,7 @@
     "id" : "FICT_vl1_dload2Fictif",
     "vid" : "vl1",
     "componentType" : "NODE",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -988,7 +996,7 @@
     "id" : "FICT_vl1_dtrf16Fictif",
     "vid" : "vl1",
     "componentType" : "NODE",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -996,7 +1004,7 @@
     "id" : "dscpl2",
     "vid" : "vl2",
     "componentType" : "DISCONNECTOR",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -1004,7 +1012,7 @@
     "id" : "FICT_vl1_trf81_fictif",
     "vid" : "vl1",
     "componentType" : "THREE_WINDINGS_TRANSFORMER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -1012,7 +1020,7 @@
     "id" : "dscpl1",
     "vid" : "vl2",
     "componentType" : "DISCONNECTOR",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -1020,7 +1028,7 @@
     "id" : "ddcpl1",
     "vid" : "vl2",
     "componentType" : "BREAKER",
-    "rotated" : true,
+    "rotationAngle" : 90.0,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -1028,7 +1036,7 @@
     "id" : "FICT_vl2_trf72_fictif",
     "vid" : "vl2",
     "componentType" : "THREE_WINDINGS_TRANSFORMER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -1036,15 +1044,15 @@
     "id" : "FICT_vl2_dtrf21Fictif",
     "vid" : "vl2",
     "componentType" : "NODE",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
   }, {
     "id" : "trf8_TWO_ONE",
     "vid" : "vl2",
-    "componentType" : "TWO_WINDINGS_TRANSFORMER",
-    "rotated" : false,
+    "componentType" : "LINE",
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "BOTTOM",
     "vlabel" : false
@@ -1052,7 +1060,7 @@
     "id" : "FICT_vl1_dtrf13Fictif",
     "vid" : "vl1",
     "componentType" : "NODE",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -1060,7 +1068,7 @@
     "id" : "FICT_vl2_dload3Fictif",
     "vid" : "vl2",
     "componentType" : "NODE",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -1068,15 +1076,15 @@
     "id" : "trf4_ONE",
     "vid" : "vl1",
     "componentType" : "TWO_WINDINGS_TRANSFORMER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "BOTTOM",
     "vlabel" : false
   }, {
     "id" : "trf6_ONE_TWO",
     "vid" : "vl1",
-    "componentType" : "TWO_WINDINGS_TRANSFORMER",
-    "rotated" : false,
+    "componentType" : "LINE",
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "TOP",
     "vlabel" : false
@@ -1084,7 +1092,7 @@
     "id" : "FICT_vl3_trf63_fictif",
     "vid" : "vl3",
     "componentType" : "THREE_WINDINGS_TRANSFORMER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -1092,15 +1100,15 @@
     "id" : "FICT_vl3_dtrf37Fictif",
     "vid" : "vl3",
     "componentType" : "NODE",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
   }, {
     "id" : "trf6_THREE_ONE",
     "vid" : "vl3",
-    "componentType" : "TWO_WINDINGS_TRANSFORMER",
-    "rotated" : false,
+    "componentType" : "LINE",
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "TOP",
     "vlabel" : false
@@ -1108,7 +1116,7 @@
     "id" : "dsect21",
     "vid" : "vl1",
     "componentType" : "DISCONNECTOR",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -1116,7 +1124,7 @@
     "id" : "dsect22",
     "vid" : "vl1",
     "componentType" : "DISCONNECTOR",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -1124,7 +1132,7 @@
     "id" : "trf5_TWO",
     "vid" : "vl3",
     "componentType" : "TWO_WINDINGS_TRANSFORMER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "BOTTOM",
     "vlabel" : false
@@ -1132,7 +1140,7 @@
     "id" : "gen1",
     "vid" : "vl1",
     "componentType" : "GENERATOR",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "BOTTOM",
     "vlabel" : false
@@ -1140,7 +1148,7 @@
     "id" : "bgen2",
     "vid" : "vl1",
     "componentType" : "BREAKER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -1148,7 +1156,7 @@
     "id" : "gen2",
     "vid" : "vl1",
     "componentType" : "GENERATOR",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "BOTTOM",
     "vlabel" : false
@@ -1156,7 +1164,7 @@
     "id" : "FICT_vl1_dgen1Fictif",
     "vid" : "vl1",
     "componentType" : "NODE",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -1164,7 +1172,7 @@
     "id" : "bgen4",
     "vid" : "vl2",
     "componentType" : "BREAKER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -1172,7 +1180,7 @@
     "id" : "FICT_vl2_dtrf22Fictif",
     "vid" : "vl2",
     "componentType" : "NODE",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -1180,7 +1188,7 @@
     "id" : "dtrf15",
     "vid" : "vl1",
     "componentType" : "DISCONNECTOR",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -1188,7 +1196,7 @@
     "id" : "gen4",
     "vid" : "vl2",
     "componentType" : "GENERATOR",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "BOTTOM",
     "vlabel" : false
@@ -1196,7 +1204,7 @@
     "id" : "dtrf16",
     "vid" : "vl1",
     "componentType" : "DISCONNECTOR",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -1204,7 +1212,7 @@
     "id" : "bgen1",
     "vid" : "vl1",
     "componentType" : "BREAKER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -1212,7 +1220,7 @@
     "id" : "dtrf17",
     "vid" : "vl1",
     "componentType" : "DISCONNECTOR",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -1220,7 +1228,7 @@
     "id" : "dtrf18",
     "vid" : "vl1",
     "componentType" : "DISCONNECTOR",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -1228,15 +1236,15 @@
     "id" : "dtrf11",
     "vid" : "vl1",
     "componentType" : "DISCONNECTOR",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
   }, {
     "id" : "trf8_ONE_THREE",
     "vid" : "vl1",
-    "componentType" : "TWO_WINDINGS_TRANSFORMER",
-    "rotated" : false,
+    "componentType" : "LINE",
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "TOP",
     "vlabel" : false
@@ -1244,7 +1252,7 @@
     "id" : "dtrf12",
     "vid" : "vl1",
     "componentType" : "DISCONNECTOR",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -1252,7 +1260,7 @@
     "id" : "dtrf13",
     "vid" : "vl1",
     "componentType" : "DISCONNECTOR",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -1260,7 +1268,7 @@
     "id" : "FICT_vl1_dtrf14Fictif",
     "vid" : "vl1",
     "componentType" : "NODE",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -1268,15 +1276,15 @@
     "id" : "dtrf14",
     "vid" : "vl1",
     "componentType" : "DISCONNECTOR",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
   }, {
     "id" : "trf8_THREE_TWO",
     "vid" : "vl3",
-    "componentType" : "TWO_WINDINGS_TRANSFORMER",
-    "rotated" : false,
+    "componentType" : "LINE",
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "TOP",
     "vlabel" : false
@@ -1284,7 +1292,7 @@
     "id" : "trf3_TWO",
     "vid" : "vl2",
     "componentType" : "TWO_WINDINGS_TRANSFORMER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "BOTTOM",
     "vlabel" : false
@@ -1292,7 +1300,7 @@
     "id" : "dload4",
     "vid" : "vl3",
     "componentType" : "DISCONNECTOR",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -1300,7 +1308,7 @@
     "id" : "dsect12",
     "vid" : "vl1",
     "componentType" : "DISCONNECTOR",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -1308,7 +1316,7 @@
     "id" : "dload2",
     "vid" : "vl1",
     "componentType" : "DISCONNECTOR",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -1316,7 +1324,7 @@
     "id" : "dload3",
     "vid" : "vl2",
     "componentType" : "DISCONNECTOR",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -1324,7 +1332,7 @@
     "id" : "FICT_vl1_dload1Fictif",
     "vid" : "vl1",
     "componentType" : "NODE",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -1332,7 +1340,7 @@
     "id" : "FICT_vl1_trf71_fictif",
     "vid" : "vl1",
     "componentType" : "THREE_WINDINGS_TRANSFORMER",
-    "rotated" : false,
+    "rotationAngle" : 180.0,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -1340,7 +1348,7 @@
     "id" : "trf1_ONE",
     "vid" : "vl1",
     "componentType" : "TWO_WINDINGS_TRANSFORMER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "TOP",
     "vlabel" : false
@@ -1348,7 +1356,7 @@
     "id" : "dsect11",
     "vid" : "vl1",
     "componentType" : "DISCONNECTOR",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -1356,7 +1364,7 @@
     "id" : "dload1",
     "vid" : "vl1",
     "componentType" : "DISCONNECTOR",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -1364,7 +1372,7 @@
     "id" : "FICT_vl2_dtrf23Fictif",
     "vid" : "vl2",
     "componentType" : "NODE",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -1372,7 +1380,7 @@
     "id" : "FICT_vl3_dtrf38Fictif",
     "vid" : "vl3",
     "componentType" : "NODE",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -1380,7 +1388,7 @@
     "id" : "dgen1",
     "vid" : "vl1",
     "componentType" : "DISCONNECTOR",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -1388,7 +1396,7 @@
     "id" : "FICT_vl2_trf62_fictif",
     "vid" : "vl2",
     "componentType" : "THREE_WINDINGS_TRANSFORMER",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -1396,7 +1404,7 @@
     "id" : "dgen2",
     "vid" : "vl1",
     "componentType" : "DISCONNECTOR",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
@@ -1404,15 +1412,15 @@
     "id" : "dgen4",
     "vid" : "vl2",
     "componentType" : "DISCONNECTOR",
-    "rotated" : false,
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
     "vlabel" : false
   }, {
     "id" : "trf7_ONE_TWO",
     "vid" : "vl1",
-    "componentType" : "TWO_WINDINGS_TRANSFORMER",
-    "rotated" : false,
+    "componentType" : "LINE",
+    "rotationAngle" : null,
     "open" : false,
     "direction" : "BOTTOM",
     "vlabel" : false
@@ -2643,6 +2651,7 @@
     "horizontalSnakeLinePadding" : 20.0,
     "verticalSnakeLinePadding" : 25.0,
     "arrowDistance" : 20.0,
-    "showInductorFor3WT" : false
+    "showInductorFor3WT" : false,
+    "diagramName" : null
   }
 }

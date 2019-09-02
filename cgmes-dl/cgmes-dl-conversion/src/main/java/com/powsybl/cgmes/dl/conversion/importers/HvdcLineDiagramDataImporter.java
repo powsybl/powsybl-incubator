@@ -8,6 +8,7 @@ package com.powsybl.cgmes.dl.conversion.importers;
 
 import java.util.Objects;
 
+import com.powsybl.cgmes.iidm.extensions.dl.NetworkDiagramData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,8 +41,10 @@ public class HvdcLineDiagramDataImporter {
             if (hvdcLineIidmDiagramData == null) {
                 hvdcLineIidmDiagramData = new LineDiagramData<>(hvdcLine);
             }
-            hvdcLineIidmDiagramData.addPoint(new DiagramPoint(hvdcLineDiagramData.asDouble("x"), hvdcLineDiagramData.asDouble("y"), hvdcLineDiagramData.asInt("seq")));
+            String diagramName = hvdcLineDiagramData.get("diagramName");
+            hvdcLineIidmDiagramData.addPoint(diagramName, new DiagramPoint(hvdcLineDiagramData.asDouble("x"), hvdcLineDiagramData.asDouble("y"), hvdcLineDiagramData.asInt("seq")));
             hvdcLine.addExtension(LineDiagramData.class, hvdcLineIidmDiagramData);
+            NetworkDiagramData.addDiagramName(network, diagramName);
         } else {
             LOG.warn("Cannot find HVDC line {}, name {} in network {}: skipping HVDC line diagram data", hvdcLineId, hvdcLineDiagramData.get("name"), network.getId());
         }

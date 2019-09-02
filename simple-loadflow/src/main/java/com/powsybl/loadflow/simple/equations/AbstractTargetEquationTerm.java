@@ -14,20 +14,12 @@ import java.util.List;
  */
 public abstract class AbstractTargetEquationTerm implements EquationTerm {
 
-    private final Equation equation;
-
     private final List<Variable> variables;
 
     private double target;
 
-    protected AbstractTargetEquationTerm(int num, EquationType equationType, VariableType variableType, EquationContext context) {
-        this.equation = context.getEquation(num, equationType);
+    protected AbstractTargetEquationTerm(int num, VariableType variableType, EquationContext context) {
         variables = Collections.singletonList(context.getVariable(num, variableType));
-    }
-
-    @Override
-    public Equation getEquation() {
-        return equation;
     }
 
     @Override

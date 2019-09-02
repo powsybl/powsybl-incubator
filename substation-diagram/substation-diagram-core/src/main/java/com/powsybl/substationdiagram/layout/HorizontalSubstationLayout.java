@@ -16,9 +16,10 @@ import java.util.Map;
 /**
  * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
  */
-public class HorizontalSubstationLayout implements SubstationLayout {
+public class HorizontalSubstationLayout extends AbstractSubstationLayout {
 
-    public HorizontalSubstationLayout(SubstationGraph graph) {
+    public HorizontalSubstationLayout(SubstationGraph graph, VoltageLevelLayoutFactory vLayoutFactory) {
+        super(graph, vLayoutFactory);
     }
 
     /**
@@ -158,4 +159,15 @@ public class HorizontalSubstationLayout implements SubstationLayout {
         }
         return pol;
     }
+
+    @Override
+    protected double getHorizontalSubstationPadding(LayoutParameters layoutParameters) {
+        return layoutParameters.getHorizontalSubstationPadding();
+    }
+
+    @Override
+    protected double getVerticalSubstationPadding(LayoutParameters layoutParameters) {
+        return 0;
+    }
+
 }

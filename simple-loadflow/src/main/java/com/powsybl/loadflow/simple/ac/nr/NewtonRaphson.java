@@ -14,7 +14,6 @@ import com.powsybl.math.matrix.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -91,7 +90,7 @@ public class NewtonRaphson implements AutoCloseable {
             Vectors.minus(x, fx);
 
             // evaluate equation terms with new x
-            updateEquationTerms();
+            updateEquations();
 
             // recalculate f(x) with new x
             observer.beforeEquationVectorUpdate(iteration);
@@ -102,7 +101,11 @@ public class NewtonRaphson implements AutoCloseable {
 
             Vectors.minus(fx, targets);
 
-            if (stoppingCriteria.test(fx, observer)) {
+            // test stopping criteria and log norm(fx)
+            NewtonRaphsonStoppingCriteria.TestResult testResult = stoppingCriteria.test(fx);
+            observer.norm(testResult.getNorm());
+
+            if (testResult.isStop()) {
                 return NewtonRaphsonStatus.CONVERGED;
             }
 
@@ -113,21 +116,13 @@ public class NewtonRaphson implements AutoCloseable {
         }
     }
 
-    private double computeSlackBusActivePowerMismatch(EquationContext equationContext, EquationSystem equationSystem) {
-        // find equation terms need to calculate slack bus active power injection
+    private double computeSlackBusActivePowerMismatch(EquationContext equationContext) {
+        // search equation corresponding to slack bus active power injection
         LfBus slackBus = network.getSlackBus();
         Equation slackBusActivePowerEquation = equationContext.getEquation(slackBus.getNum(), EquationType.BUS_P);
-        List<EquationTerm> slackBusActivePowerEquationTerms = equationSystem.getEquationTerms(slackBusActivePowerEquation);
 
-        double p = 0;
-        for (EquationTerm equationTerm : slackBusActivePowerEquationTerms) {
-            p += equationTerm.eval();
-        }
-
-        // slack bus can also have real injection connected
-        p -= slackBus.getTargetP();
-
-        return p;
+        return slackBusActivePowerEquation.eval()
+                - slackBus.getTargetP(); // slack bus can also have real injection connected
     }
 
     public NewtonRaphsonResult run(NewtonRaphsonParameters parameters) {
@@ -143,20 +138,20 @@ public class NewtonRaphson implements AutoCloseable {
 
             observer.afterVoltageInitializerPreparation();
 
-            x = equationSystem.initStateVector(voltageInitializer);
+            x = equationSystem.createStateVector(voltageInitializer);
 
             observer.stateVectorInitialized(x);
 
-            updateEquationTerms();
+            updateEquations();
         }
 
         // initialize target vector
-        double[] targets = equationSystem.initTargetVector();
+        double[] targets = equationSystem.createTargetVector();
 
         // initialize mismatch vector (difference between equation values and targets)
         observer.beforeEquationVectorUpdate(iteration);
 
-        double[] fx = equationSystem.initEquationVector();
+        double[] fx = equationSystem.createEquationVector();
 
         observer.afterEquationVectorUpdate(equationSystem, iteration);
 
@@ -176,17 +171,17 @@ public class NewtonRaphson implements AutoCloseable {
             status = NewtonRaphsonStatus.MAX_ITERATION_REACHED;
         }
 
-        double slackBusActivePowerMismatch = computeSlackBusActivePowerMismatch(equationContext, equationSystem);
+        double slackBusActivePowerMismatch = computeSlackBusActivePowerMismatch(equationContext);
 
         return new NewtonRaphsonResult(status, iteration, x, slackBusActivePowerMismatch);
     }
 
-    private void updateEquationTerms() {
-        observer.beforeEquationTermsUpdate(iteration);
+    private void updateEquations() {
+        observer.beforeEquationsUpdate(iteration);
 
-        equationSystem.updateEquationTerms(x);
+        equationSystem.updateEquations(x);
 
-        observer.afterEquationTermsUpdate(equationSystem, iteration);
+        observer.afterEquationsUpdate(equationSystem, iteration);
     }
 
     @Override

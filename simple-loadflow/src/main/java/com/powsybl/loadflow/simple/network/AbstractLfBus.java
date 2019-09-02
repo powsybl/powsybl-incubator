@@ -19,6 +19,8 @@ public abstract class AbstractLfBus implements LfBus {
 
     protected double angle;
 
+    protected double q = Double.NaN;
+
     protected AbstractLfBus(int num, double v, double angle) {
         this.num = num;
         this.v = v;
@@ -68,5 +70,15 @@ public abstract class AbstractLfBus implements LfBus {
     @Override
     public void setAngle(double angle) {
         this.angle = angle;
+    }
+
+    @Override
+    public double getQ() {
+        return q / PerUnit.SB;
+    }
+
+    @Override
+    public void setQ(double q) {
+        this.q = q * PerUnit.SB;
     }
 }

@@ -6,14 +6,12 @@
  */
 package com.powsybl.loadflow.simple;
 
-import com.powsybl.iidm.network.Network;
-import com.powsybl.loadflow.LoadFlow;
-import com.powsybl.math.matrix.MatrixFactory;
+import com.powsybl.loadflow.LoadFlowProvider;
+import com.powsybl.math.matrix.DenseMatrixFactory;
 import com.powsybl.tools.PowsyblCoreVersion;
 import org.junit.Test;
-import org.mockito.Mockito;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -22,38 +20,8 @@ public class SimpleLoadFlowTest {
 
     @Test
     public void metaInfoTest() {
-        Network network = Mockito.mock(Network.class);
-        MatrixFactory matrixFactory = Mockito.mock(MatrixFactory.class);
-        LoadFlow loadFlow = new SimpleLoadFlowFactory().create(network, null, 0);
-        assertTrue(loadFlow instanceof SimpleLoadFlow);
-        assertEquals("SimpleLoadflow", loadFlow.getName());
-        assertEquals(new PowsyblCoreVersion().getMavenProjectVersion(), loadFlow.getVersion());
-    }
-
-    @Test
-    public void constructionMethodsTest() {
-        Network network = Mockito.mock(Network.class);
-
-        // Factory
-        LoadFlow loadFlow1 = new SimpleLoadFlowFactory().create(network, null, 0);
-        assertNotNull(loadFlow1);
-        assertTrue(loadFlow1 instanceof SimpleLoadFlow);
-
-        // Factory with MatrixFactory
-        LoadFlow loadFlow2 = new SimpleLoadFlowFactory().create(network, null, 0);
-        assertNotNull(loadFlow2);
-        assertTrue(loadFlow2 instanceof SimpleLoadFlow);
-
-        // Constructor with Network
-        LoadFlow loadFlow3 = new SimpleLoadFlow(network);
-        assertNotNull(loadFlow3);
-
-        // Constructor with Network and MatrixFactory
-        LoadFlow loadFlow4 = new SimpleLoadFlow(network);
-        assertNotNull(loadFlow4);
-
-        // Static factory method
-        LoadFlow loadFlow5 = SimpleLoadFlow.create(network);
-        assertNotNull(loadFlow5);
+        LoadFlowProvider loadFlowProvider = new SimpleLoadFlowProvider(new DenseMatrixFactory());
+        assertEquals("SimpleLoadflow", loadFlowProvider.getName());
+        assertEquals(new PowsyblCoreVersion().getMavenProjectVersion(), loadFlowProvider.getVersion());
     }
 }

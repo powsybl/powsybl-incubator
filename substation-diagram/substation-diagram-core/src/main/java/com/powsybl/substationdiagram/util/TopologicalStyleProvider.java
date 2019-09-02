@@ -168,7 +168,7 @@ public class TopologicalStyleProvider extends DefaultSubstationDiagramStyleProvi
     public Optional<String> getNodeStyle(Node node) {
 
         Optional<String> defaultStyle = super.getNodeStyle(node);
-        if (node.getType() == NodeType.SWITCH || node.getComponentType() == ComponentType.TWO_WINDINGS_TRANSFORMER) {
+        if (node.getType() == NodeType.SWITCH || node.getComponentType() == ComponentType.TWO_WINDINGS_TRANSFORMER || node.getComponentType() == ComponentType.THREE_WINDINGS_TRANSFORMER || node.getComponentType() == ComponentType.PHASE_SHIFT_TRANSFORMER) {
             return defaultStyle;
         }
 

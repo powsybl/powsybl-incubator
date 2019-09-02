@@ -51,7 +51,7 @@
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
-        <g class="substation-diagram BREAKER _b" id="b" transform="matrix(0.0,1.0,-1.0,0.0,80.0,260.0)">
+        <g class="substation-diagram BREAKER b" id="b" transform="matrix(0.0,1.0,-1.0,0.0,80.0,260.0)">
     <g class="closed" id="closed">
         <rect x="1" width="18" y="1" height="18"/>
         <line y2="15" x1="10" x2="10" y1="5"/>

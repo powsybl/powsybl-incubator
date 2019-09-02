@@ -61,18 +61,12 @@ public class TopologicalStyleProvider extends DefaultSubstationDiagramStyleProvi
     private String disconnectedColor;
 
     public TopologicalStyleProvider() {
-        try {
-            baseVoltageColor = new BaseVoltageColor();
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-        disconnectedColor = baseVoltageColor.getColor(0, "RTE") != null ? baseVoltageColor.getColor(0, "RTE")
-                : DISCONNECTED_COLOR;
+        this(null);
     }
 
     public TopologicalStyleProvider(Path config) {
         try {
-            baseVoltageColor = new BaseVoltageColor(config);
+            baseVoltageColor = config != null ? new BaseVoltageColor(config) : new BaseVoltageColor();
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

@@ -6,18 +6,60 @@
  */
 package com.powsybl.substationdiagram.view.app;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.ToDoubleFunction;
+import java.util.prefs.Preferences;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
+import com.powsybl.cgmes.iidm.extensions.dl.NetworkDiagramData;
 import com.powsybl.commons.json.JsonUtil;
 import com.powsybl.computation.local.LocalComputationManager;
 import com.powsybl.iidm.import_.ImportConfig;
 import com.powsybl.iidm.import_.Importers;
-import com.powsybl.iidm.network.*;
+import com.powsybl.iidm.network.Container;
+import com.powsybl.iidm.network.ContainerType;
+import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.network.Substation;
+import com.powsybl.iidm.network.VoltageLevel;
 import com.powsybl.substationdiagram.SubstationDiagram;
 import com.powsybl.substationdiagram.VoltageLevelDiagram;
+import com.powsybl.substationdiagram.cgmes.CgmesSubstationLayoutFactory;
 import com.powsybl.substationdiagram.cgmes.CgmesVoltageLevelLayoutFactory;
-import com.powsybl.substationdiagram.layout.*;
+import com.powsybl.substationdiagram.layout.HorizontalSubstationLayoutFactory;
+import com.powsybl.substationdiagram.layout.LayoutParameters;
+import com.powsybl.substationdiagram.layout.PositionFree;
+import com.powsybl.substationdiagram.layout.PositionFromExtension;
+import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayoutFactory;
+import com.powsybl.substationdiagram.layout.RandomVoltageLevelLayoutFactory;
+import com.powsybl.substationdiagram.layout.SubstationLayoutFactory;
+import com.powsybl.substationdiagram.layout.VerticalSubstationLayoutFactory;
+import com.powsybl.substationdiagram.layout.VoltageLevelLayoutFactory;
 import com.powsybl.substationdiagram.library.ComponentLibrary;
 import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
 import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramInitialValueProvider;
@@ -29,6 +71,7 @@ import com.powsybl.substationdiagram.util.SmartVoltageLevelLayoutFactory;
 import com.powsybl.substationdiagram.view.AbstractContainerDiagramView;
 import com.powsybl.substationdiagram.view.SubstationDiagramView;
 import com.powsybl.substationdiagram.view.VoltageLevelDiagramView;
+
 import javafx.application.Application;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -45,32 +88,33 @@ import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Side;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.CheckBoxTreeItem;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.CheckBoxTreeCell;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.ToDoubleFunction;
-import java.util.prefs.Preferences;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
@@ -99,7 +143,8 @@ public class SubstationDiagramViewer extends Application {
 
     private final Map<String, SubstationLayoutFactory> substationsLayouts
             = ImmutableMap.of("Horizontal", new HorizontalSubstationLayoutFactory(),
-                              "Vertical", new VerticalSubstationLayoutFactory());
+                              "Vertical", new VerticalSubstationLayoutFactory(),
+                              "Cgmes", new CgmesSubstationLayoutFactory());
 
     private final ComponentLibrary convergenceComponentLibrary = new ResourcesComponentLibrary("/ConvergenceLibrary");
     private final ComponentLibrary flatDesignComponentLibrary = new ResourcesComponentLibrary("/FlatDesignLibrary");
@@ -140,6 +185,10 @@ public class SubstationDiagramViewer extends Application {
     private final ComboBox<String> svgLibraryComboBox = new ComboBox<>();
 
     private final CheckBox showNames = new CheckBox("Show names");
+
+    private final CheckBox hideSubstations = new CheckBox("Hide substations");
+
+    private final ComboBox<String> diagramNamesComboBox = new ComboBox<>();
 
     private class ContainerDiagramPane extends BorderPane {
         private final ScrollPane flowPane = new ScrollPane();
@@ -216,6 +265,10 @@ public class SubstationDiagramViewer extends Application {
             }
         }
 
+        private String getSelectedDiagramName() {
+            return diagramNamesComboBox.getSelectionModel().getSelectedItem();
+        }
+
         private ContainerDiagramResult createContainerDiagramView(Container c) {
             String svgData;
             String metadataData;
@@ -224,13 +277,15 @@ public class SubstationDiagramViewer extends Application {
                 SubstationDiagramStyleProvider styleProvider = styles.get(styleComboBox.getSelectionModel().getSelectedItem());
                 SubstationDiagramInitialValueProvider initProvider = new DefaultSubstationDiagramInitialValueProvider(networkProperty.get());
 
+                String dName = getSelectedDiagramName();
+                LayoutParameters diagramLayoutParameters = new LayoutParameters(layoutParameters.get()).setDiagramName(dName);
                 if (c.getContainerType() == ContainerType.VOLTAGE_LEVEL) {
                     VoltageLevelDiagram diagram = VoltageLevelDiagram.build((VoltageLevel) c, getVoltageLevelLayoutFactory(), showNames.isSelected(),
                             layoutParameters.get().isShowInductorFor3WT());
-                    diagram.writeSvg(getComponentLibrary(), layoutParameters.get(), initProvider, styleProvider, svgWriter, metadataWriter);
+                    diagram.writeSvg(getComponentLibrary(), diagramLayoutParameters, initProvider, styleProvider, svgWriter, metadataWriter);
                 } else if (c.getContainerType() == ContainerType.SUBSTATION) {
                     SubstationDiagram diagram = SubstationDiagram.build((Substation) c, getSubstationLayoutFactory(), getVoltageLevelLayoutFactory(), showNames.isSelected());
-                    diagram.writeSvg(getComponentLibrary(), layoutParameters.get(), initProvider, styleProvider, svgWriter, metadataWriter);
+                    diagram.writeSvg(getComponentLibrary(), diagramLayoutParameters, initProvider, styleProvider, svgWriter, metadataWriter);
                 }
 
                 svgWriter.flush();
@@ -559,8 +614,17 @@ public class SubstationDiagramViewer extends Application {
         voltageLevelLayoutComboBox.getItems().addAll(voltageLevelsLayouts.keySet());
         voltageLevelLayoutComboBox.getSelectionModel().selectFirst();
         voltageLevelLayoutComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> refreshDiagram());
+
         parametersPane.add(new Label("VoltageLevel Layout:"), 0, rowIndex++);
         parametersPane.add(voltageLevelLayoutComboBox, 0, rowIndex++);
+
+        //CGMES-DL diagrams names list
+        parametersPane.add(new Label("CGMES-DL Diagrams:"), 0, ++rowIndex);
+        parametersPane.add(diagramNamesComboBox, 0, ++rowIndex);
+        diagramNamesComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> refreshDiagram());
+        diagramNamesComboBox.setDisable(true);
+        voltageLevelLayoutComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> setDiagramsNamesContent(networkProperty.get(), false));
+        rowIndex += 1;
 
         addSpinner("Horizontal substation padding:", 50, 300, 5, rowIndex, LayoutParameters::getHorizontalSubstationPadding, LayoutParameters::setHorizontalSubstationPadding);
         rowIndex += 2;
@@ -599,6 +663,20 @@ public class SubstationDiagramViewer extends Application {
         addSpinner("Scale factor:", 1, 20, 1, rowIndex, LayoutParameters::getScaleFactor, LayoutParameters::setScaleFactor);
         rowIndex += 2;
         addSpinner("Arrows distance:", 10, 800, 5, rowIndex, LayoutParameters::getArrowDistance, LayoutParameters::setArrowDistance);
+    }
+
+    private void setDiagramsNamesContent(Network network, boolean setValues) {
+        if (NetworkDiagramData.checkNetworkDiagramData(network)) {
+            if (setValues) {
+                diagramNamesComboBox.getItems().setAll(NetworkDiagramData.getDiagramsNames(network));
+                diagramNamesComboBox.getSelectionModel().clearSelection();
+                diagramNamesComboBox.setValue(null);
+            }
+            diagramNamesComboBox.setDisable(!(getVoltageLevelLayoutFactory() instanceof CgmesVoltageLevelLayoutFactory));
+        } else {
+            diagramNamesComboBox.getItems().clear();
+            diagramNamesComboBox.setDisable(true);
+        }
     }
 
     private void refreshDiagram() {
@@ -670,6 +748,12 @@ public class SubstationDiagramViewer extends Application {
             substationsTree.refresh();
             refreshDiagram();
         });
+
+        hideSubstations.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            initSubstationsTree();
+            substationsTree.refresh();
+        });
+
         filterInput.textProperty().addListener(obs ->
             initSubstationsTree()
         );
@@ -703,8 +787,9 @@ public class SubstationDiagramViewer extends Application {
         voltageLevelToolBar.setVgap(5);
         voltageLevelToolBar.setPadding(new Insets(5, 5, 5, 5));
         voltageLevelToolBar.add(showNames, 0, 0, 2, 1);
-        voltageLevelToolBar.add(filterLabel, 0, 1);
-        voltageLevelToolBar.add(filterInput, 1, 1);
+        voltageLevelToolBar.add(hideSubstations, 0, 1, 2, 1);
+        voltageLevelToolBar.add(filterLabel, 0, 2);
+        voltageLevelToolBar.add(filterInput, 1, 2);
         ColumnConstraints c0 = new ColumnConstraints();
         ColumnConstraints c1 = new ColumnConstraints();
         c1.setHgrow(Priority.ALWAYS);
@@ -798,6 +883,9 @@ public class SubstationDiagramViewer extends Application {
             initSubstationsTree();
             caseLoadingStatus.setStyle("-fx-background-color: green");
             preferences.put(CASE_PATH_PROPERTY, file.toAbsolutePath().toString());
+
+            setDiagramsNamesContent(networkProperty.get(), true);
+
         });
         networkService.setOnFailed(event -> {
             Throwable exception = event.getSource().getException();
@@ -846,7 +934,7 @@ public class SubstationDiagramViewer extends Application {
                 vItem.setSelected(true);
             }
 
-            if (firstVL) {
+            if (firstVL && !hideSubstations.isSelected()) {
                 sItem = new CheckBoxTreeItem<>(s);
                 sItem.setIndependent(true);
                 sItem.setExpanded(true);
@@ -860,7 +948,13 @@ public class SubstationDiagramViewer extends Application {
             }
 
             firstVL = false;
-            sItem.getChildren().add(vItem);
+
+            if (sItem != null) {
+                sItem.getChildren().add(vItem);
+            } else {
+                rootItem.getChildren().add(vItem);
+            }
+
             vItem.selectedProperty().addListener((obs, oldVal, newVal) ->
                     checkVoltageLevel(v, newVal));
         }

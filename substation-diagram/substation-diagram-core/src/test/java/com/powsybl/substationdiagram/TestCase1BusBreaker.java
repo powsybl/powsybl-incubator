@@ -15,8 +15,6 @@ import com.powsybl.substationdiagram.model.Graph;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
-
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
@@ -61,7 +59,7 @@ public class TestCase1BusBreaker extends AbstractTestCase {
         new ImplicitCellDetector().detectCells(g);
 
         // build blocks
-        assertTrue(new BlockOrganizer().organize(g));
+        new BlockOrganizer().organize(g);
 
         // calculate coordinates
         LayoutParameters layoutParameters = new LayoutParameters()

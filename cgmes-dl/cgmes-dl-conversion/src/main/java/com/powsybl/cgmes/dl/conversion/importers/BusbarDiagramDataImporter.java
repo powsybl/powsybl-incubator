@@ -8,6 +8,7 @@ package com.powsybl.cgmes.dl.conversion.importers;
 
 import java.util.Objects;
 
+import com.powsybl.cgmes.iidm.extensions.dl.NetworkDiagramData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,12 +41,19 @@ public class BusbarDiagramDataImporter {
             if (busbarIidmDiagramData == null) {
                 busbarIidmDiagramData = new NodeDiagramData<>(busbar);
             }
-            if (busbarDiagramData.asInt("seq") == 1) {
-                busbarIidmDiagramData.setPoint1(new DiagramPoint(busbarDiagramData.asDouble("x"), busbarDiagramData.asDouble("y"), busbarDiagramData.asInt("seq")));
-            } else {
-                busbarIidmDiagramData.setPoint2(new DiagramPoint(busbarDiagramData.asDouble("x"), busbarDiagramData.asDouble("y"), busbarDiagramData.asInt("seq")));
+            String diagramName = busbarDiagramData.get("diagramName");
+            NodeDiagramData.NodeDiagramDataDetails diagramDetails = busbarIidmDiagramData.getData(diagramName);
+            if (diagramDetails == null) {
+                diagramDetails = busbarIidmDiagramData.new NodeDiagramDataDetails();
             }
+            if (busbarDiagramData.asInt("seq") == 1) {
+                diagramDetails.setPoint1(new DiagramPoint(busbarDiagramData.asDouble("x"), busbarDiagramData.asDouble("y"), busbarDiagramData.asInt("seq")));
+            } else {
+                diagramDetails.setPoint2(new DiagramPoint(busbarDiagramData.asDouble("x"), busbarDiagramData.asDouble("y"), busbarDiagramData.asInt("seq")));
+            }
+            busbarIidmDiagramData.addData(diagramName, diagramDetails);
             busbar.addExtension(NodeDiagramData.class, busbarIidmDiagramData);
+            NetworkDiagramData.addDiagramName(network, diagramName);
         } else {
             LOG.warn("Cannot find busbar {}, name {} in network {}: skipping busbar diagram data", busbarId, busbarDiagramData.get("name"), network.getId());
         }

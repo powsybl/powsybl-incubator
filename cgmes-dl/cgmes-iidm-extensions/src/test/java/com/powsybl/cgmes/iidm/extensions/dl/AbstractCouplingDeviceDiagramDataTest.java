@@ -6,6 +6,8 @@
  */
 package com.powsybl.cgmes.iidm.extensions.dl;
 
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -14,25 +16,29 @@ import static org.junit.Assert.assertNotNull;
  * @author Massimo Ferraro <massimo.ferraro@techrain.eu>
  */
 public abstract class AbstractCouplingDeviceDiagramDataTest {
+    protected static String DIAGRAM_NAME = "default";
 
-    protected <T> void checkDiagramData(CouplingDeviceDiagramData<?> diagramData) {
+    protected <T> void checkDiagramData(CouplingDeviceDiagramData<?> diagramData, String diagramName) {
         assertNotNull(diagramData);
-        assertEquals(0, diagramData.getPoint().getSeq(), 0);
-        assertEquals(20, diagramData.getPoint().getX(), 0);
-        assertEquals(10, diagramData.getPoint().getY(), 0);
-        assertEquals(90, diagramData.getRotation(), 0);
-        assertEquals(1, diagramData.getTerminalPoints(DiagramTerminal.TERMINAL1).get(0).getSeq(), 0);
-        assertEquals(0, diagramData.getTerminalPoints(DiagramTerminal.TERMINAL1).get(0).getX(), 0);
-        assertEquals(10, diagramData.getTerminalPoints(DiagramTerminal.TERMINAL1).get(0).getY(), 0);
-        assertEquals(2, diagramData.getTerminalPoints(DiagramTerminal.TERMINAL1).get(1).getSeq(), 0);
-        assertEquals(15, diagramData.getTerminalPoints(DiagramTerminal.TERMINAL1).get(1).getX(), 0);
-        assertEquals(10, diagramData.getTerminalPoints(DiagramTerminal.TERMINAL1).get(1).getY(), 0);
-        assertEquals(1, diagramData.getTerminalPoints(DiagramTerminal.TERMINAL2).get(0).getSeq(), 0);
-        assertEquals(25, diagramData.getTerminalPoints(DiagramTerminal.TERMINAL2).get(0).getX(), 0);
-        assertEquals(10, diagramData.getTerminalPoints(DiagramTerminal.TERMINAL2).get(0).getY(), 0);
-        assertEquals(2, diagramData.getTerminalPoints(DiagramTerminal.TERMINAL2).get(1).getSeq(), 0);
-        assertEquals(40, diagramData.getTerminalPoints(DiagramTerminal.TERMINAL2).get(1).getX(), 0);
-        assertEquals(10, diagramData.getTerminalPoints(DiagramTerminal.TERMINAL2).get(1).getY(), 0);
+        CouplingDeviceDiagramData.CouplingDeviceDiagramDetails dataDetails = diagramData.getData(diagramName);
+        assertEquals(0, dataDetails.getPoint().getSeq(), 0);
+        assertEquals(20, dataDetails.getPoint().getX(), 0);
+        assertEquals(10, dataDetails.getPoint().getY(), 0);
+        assertEquals(90, dataDetails.getRotation(), 0);
+        List<DiagramPoint> t1Points = dataDetails.getTerminalPoints(DiagramTerminal.TERMINAL1);
+        List<DiagramPoint> t2Points = dataDetails.getTerminalPoints(DiagramTerminal.TERMINAL2);
+        assertEquals(1, t1Points.get(0).getSeq(), 0);
+        assertEquals(0, t1Points.get(0).getX(), 0);
+        assertEquals(10, t1Points.get(0).getY(), 0);
+        assertEquals(2, t1Points.get(1).getSeq(), 0);
+        assertEquals(15, t1Points.get(1).getX(), 0);
+        assertEquals(10, t1Points.get(1).getY(), 0);
+        assertEquals(1, t2Points.get(0).getSeq(), 0);
+        assertEquals(25, t2Points.get(0).getX(), 0);
+        assertEquals(10, t2Points.get(0).getY(), 0);
+        assertEquals(2, t2Points.get(1).getSeq(), 0);
+        assertEquals(40, t2Points.get(1).getX(), 0);
+        assertEquals(10, t2Points.get(1).getY(), 0);
     }
 
 }

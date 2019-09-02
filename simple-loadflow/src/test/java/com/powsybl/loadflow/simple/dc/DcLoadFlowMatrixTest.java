@@ -64,14 +64,14 @@ public class DcLoadFlowMatrixTest {
 
         EquationSystem equationSystem = DcEquationSystem.create(lfNetwork, context);
 
-        double[] x = equationSystem.initStateVector(new UniformValueVoltageInitializer());
+        double[] x = equationSystem.createStateVector(new UniformValueVoltageInitializer());
         try (PrintStream ps = LoggerFactory.getInfoPrintStream(LOGGER)) {
             ps.println("X=");
             Matrix.createFromColumn(x, new DenseMatrixFactory())
                     .print(ps, equationSystem.getColumnNames(), null);
         }
 
-        equationSystem.updateEquationTerms(x);
+        equationSystem.updateEquations(x);
 
         Matrix j = equationSystem.buildJacobian(matrixFactory).getMatrix();
         try (PrintStream ps = LoggerFactory.getInfoPrintStream(LOGGER)) {
@@ -99,7 +99,7 @@ public class DcLoadFlowMatrixTest {
         assertEquals(-55.63344061453968d, j.toDense().get(3, 2), 0d);
         assertEquals(55.63344061453968d, j.toDense().get(3, 3), 0d);
 
-        double[] targets = equationSystem.initTargetVector();
+        double[] targets = equationSystem.createTargetVector();
         try (PrintStream ps = LoggerFactory.getInfoPrintStream(LOGGER)) {
             ps.println("TGT=");
             Matrix.createFromColumn(targets, matrixFactory)

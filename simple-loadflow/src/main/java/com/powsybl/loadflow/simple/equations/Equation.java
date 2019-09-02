@@ -7,13 +7,16 @@
 package com.powsybl.loadflow.simple.equations;
 
 import com.powsybl.loadflow.simple.network.LfNetwork;
+import com.powsybl.loadflow.simple.util.Evaluable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class Equation implements Comparable<Equation> {
+public class Equation implements Evaluable, Comparable<Equation> {
 
     /**
      * Bus or any other equipment id.
@@ -28,6 +31,8 @@ public class Equation implements Comparable<Equation> {
      * true if this equation term is par of an equation that is part of a system to solve, false otherwise
      */
     private boolean toSolve = true;
+
+    private final List<EquationTerm> terms = new ArrayList<>();
 
     Equation(int num, EquationType type) {
         this.num = num;
@@ -58,6 +63,10 @@ public class Equation implements Comparable<Equation> {
         this.toSolve = toSolve;
     }
 
+    public List<EquationTerm> getTerms() {
+        return terms;
+    }
+
     void initTarget(LfNetwork network, double[] targets) {
         switch (type) {
             case BUS_P:
@@ -79,6 +88,34 @@ public class Equation implements Comparable<Equation> {
             default:
                 throw new IllegalStateException("Unknown state variable type "  + type);
         }
+
+        for (EquationTerm term : terms) {
+            if (term.hasRhs()) {
+                for (Variable variable : term.getVariables()) {
+                    targets[row] -= term.rhs(variable);
+                }
+            }
+        }
+    }
+
+    public void update(double[] x) {
+        for (EquationTerm term : terms) {
+            term.update(x);
+        }
+    }
+
+    @Override
+    public double eval() {
+        double value = 0;
+        for (EquationTerm term : terms) {
+            value += term.eval();
+            if (term.hasRhs()) {
+                for (Variable variable : term.getVariables()) {
+                    value -= term.rhs(variable);
+                }
+            }
+        }
+        return value;
     }
 
     @Override

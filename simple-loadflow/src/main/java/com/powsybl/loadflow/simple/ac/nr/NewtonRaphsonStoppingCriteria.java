@@ -11,5 +11,25 @@ package com.powsybl.loadflow.simple.ac.nr;
  */
 public interface NewtonRaphsonStoppingCriteria {
 
-    boolean test(double[] fx, AcLoadFlowObserver observer);
+    class TestResult {
+
+        private final boolean stop;
+
+        private final double norm;
+
+        public TestResult(boolean stop, double norm) {
+            this.stop = stop;
+            this.norm = norm;
+        }
+
+        public boolean isStop() {
+            return stop;
+        }
+
+        public double getNorm() {
+            return norm;
+        }
+    }
+
+    TestResult test(double[] fx);
 }

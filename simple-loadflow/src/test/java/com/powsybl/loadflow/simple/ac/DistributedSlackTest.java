@@ -14,6 +14,9 @@ import com.powsybl.iidm.network.VariantManagerConstants;
 import com.powsybl.iidm.network.extensions.ActivePowerControl;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
+import com.powsybl.loadflow.simple.SimpleLoadFlow;
+import com.powsybl.loadflow.simple.SimpleLoadFlowParameters;
+import com.powsybl.loadflow.simple.SlackBusSelectionMode;
 import com.powsybl.loadflow.simple.network.DistributedSlackNetworkFactory;
 import com.powsybl.math.matrix.DenseMatrixFactory;
 import org.junit.Before;
@@ -21,10 +24,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static com.powsybl.loadflow.simple.util.LoadFlowAssert.DELTA_POWER;
 import static com.powsybl.loadflow.simple.util.LoadFlowAssert.assertActivePowerEquals;
+import static com.powsybl.loadflow.simple.util.LoadFlowAssert.assertReactivePowerEquals;
 import static org.hamcrest.CoreMatchers.isA;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -40,7 +42,7 @@ public class DistributedSlackTest {
     private Generator g2;
     private Generator g3;
     private Generator g4;
-    private SimpleAcLoadFlow loadFlow;
+    private SimpleLoadFlow loadFlow;
     private LoadFlowParameters parameters;
 
     @Before
@@ -50,22 +52,23 @@ public class DistributedSlackTest {
         g2 = network.getGenerator("g2");
         g3 = network.getGenerator("g3");
         g4 = network.getGenerator("g4");
-        loadFlow = new SimpleAcLoadFlow(network, new DenseMatrixFactory());
+        loadFlow = new SimpleLoadFlow(network, new DenseMatrixFactory());
         parameters = new LoadFlowParameters();
-        SimpleAcLoadFlowParameters parametersExt = new SimpleAcLoadFlowParameters()
+        SimpleLoadFlowParameters parametersExt = new SimpleLoadFlowParameters()
                 .setSlackBusSelectionMode(SlackBusSelectionMode.MOST_MESHED)
                 .setDistributedSlack(true);
-        parameters.addExtension(SimpleAcLoadFlowParameters.class, parametersExt);
+        parameters.addExtension(SimpleLoadFlowParameters.class, parametersExt);
     }
 
     @Test
     public void test() {
         LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
         assertTrue(result.isOk());
-        assertEquals(-115, g1.getTerminal().getP(), DELTA_POWER);
-        assertEquals(-245, g2.getTerminal().getP(), DELTA_POWER);
-        assertEquals(-105, g3.getTerminal().getP(), DELTA_POWER);
-        assertEquals(-135, g4.getTerminal().getP(), DELTA_POWER);
+        assertActivePowerEquals(-115, g1.getTerminal());
+        assertActivePowerEquals(-245, g2.getTerminal());
+        assertActivePowerEquals(-105, g3.getTerminal());
+        assertActivePowerEquals(-135, g4.getTerminal());
+        assertReactivePowerEquals(-159.746, g1.getTerminal());
         Line l14 = network.getLine("l14");
         Line l24 = network.getLine("l24");
         Line l34 = network.getLine("l34");
@@ -83,10 +86,10 @@ public class DistributedSlackTest {
         g1.setMaxP(105);
         LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
         assertTrue(result.isOk());
-        assertEquals(-105, g1.getTerminal().getP(), DELTA_POWER);
-        assertEquals(-249.285, g2.getTerminal().getP(), DELTA_POWER);
-        assertEquals(-106.428, g3.getTerminal().getP(), DELTA_POWER);
-        assertEquals(-139.285, g4.getTerminal().getP(), DELTA_POWER);
+        assertActivePowerEquals(-105, g1.getTerminal());
+        assertActivePowerEquals(-249.285, g2.getTerminal());
+        assertActivePowerEquals(-106.428, g3.getTerminal());
+        assertActivePowerEquals(-139.285, g4.getTerminal());
     }
 
     @Test
@@ -96,10 +99,10 @@ public class DistributedSlackTest {
         network.getLoad("l1").setP0(400);
         LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
         assertTrue(result.isOk());
-        assertEquals(-90, g1.getTerminal().getP(), DELTA_POWER);
-        assertEquals(-170, g2.getTerminal().getP(), DELTA_POWER);
-        assertEquals(-80, g3.getTerminal().getP(), DELTA_POWER);
-        assertEquals(-60, g4.getTerminal().getP(), DELTA_POWER);
+        assertActivePowerEquals(-90, g1.getTerminal());
+        assertActivePowerEquals(-170, g2.getTerminal());
+        assertActivePowerEquals(-80, g3.getTerminal());
+        assertActivePowerEquals(-60, g4.getTerminal());
     }
 
     @Test

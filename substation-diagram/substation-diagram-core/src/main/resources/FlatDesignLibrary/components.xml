@@ -39,11 +39,10 @@
     <component>
         <fileName>3-windings-transformer.svg</fileName>
         <metadata type="THREE_WINDINGS_TRANSFORMER">
-            <size width="40" height="25"/>
-            <anchorPoint x="0" y="-12" orientation="VERTICAL"/>
-            <anchorPoint x="0" y="12" orientation="VERTICAL"/>
-            <anchorPoint x="-20" y="0" orientation="HORIZONTAL"/>
-            <anchorPoint x="20" y="0" orientation="HORIZONTAL"/>
+            <size width="28" height="26"/>
+            <anchorPoint x="-14" y="-8" orientation="HORIZONTAL"/>
+            <anchorPoint x="14" y="-8" orientation="HORIZONTAL"/>
+            <anchorPoint x="0" y="13" orientation="VERTICAL"/>
         </metadata>
     </component>
     <component>

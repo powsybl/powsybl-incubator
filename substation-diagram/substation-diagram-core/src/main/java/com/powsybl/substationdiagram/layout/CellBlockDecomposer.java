@@ -90,7 +90,7 @@ public class CellBlockDecomposer {
         // Merge blocks to obtain a hierarchy of blocks
         while (organisedBlocks.size() != 1) {
             boolean merged = searchParallelMerge(organisedBlocks, busCell);
-            merged |= searchChainMerge(organisedBlocks, busCell);
+            merged |= searchSerialMerge(organisedBlocks, busCell);
             if (!merged) {
                 LOGGER.warn("{} busCell, cannot merge any additional blocks, {} blocks remains", busCell.getType(), organisedBlocks.size());
                 Block undefinedBlock = new UndefinedBlock(new ArrayList<>(organisedBlocks));
@@ -117,7 +117,7 @@ public class CellBlockDecomposer {
      * @param blocks list of blocks we can merge
      * @param cell current cell
      */
-    private boolean searchChainMerge(List<Block> blocks, Cell cell) {
+    private boolean searchSerialMerge(List<Block> blocks, Cell cell) {
         boolean chainEnded = false;
         int i = 0;
         while (i < blocks.size() && !chainEnded) {
@@ -130,7 +130,7 @@ public class CellBlockDecomposer {
                 if (commonNode != null
                         && ((FictitiousNode) commonNode).getCardinality()
                         == (b1.getCardinality(commonNode) + b2.getCardinality(commonNode))) {
-                    SerialBlock b = new SerialBlock(b1, b2, commonNode);
+                    SerialBlock b = new SerialBlock(b1, b2);
                     b1.setParentBlock(b);
                     b2.setParentBlock(b);
                     blocks.remove(b1);

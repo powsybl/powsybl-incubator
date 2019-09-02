@@ -9,6 +9,7 @@ package com.powsybl.cgmes.dl.conversion.importers;
 import java.util.Map;
 import java.util.Objects;
 
+import com.powsybl.cgmes.iidm.extensions.dl.NetworkDiagramData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,11 +37,13 @@ public class SvcDiagramDataImporter extends AbstractInjectionDiagramDataImporter
         String svcId = svcDiagramData.getId("identifiedObject");
         StaticVarCompensator svc = network.getStaticVarCompensator(svcId);
         if (svc != null) {
-            InjectionDiagramData<StaticVarCompensator> svcIidmDiagramData = new InjectionDiagramData<>(svc,
-                    new DiagramPoint(svcDiagramData.asDouble("x"), svcDiagramData.asDouble("y"), svcDiagramData.asInt("seq")),
+            InjectionDiagramData<StaticVarCompensator> svcIidmDiagramData = new InjectionDiagramData<>(svc);
+            InjectionDiagramData.InjectionDiagramDetails diagramDetails = svcIidmDiagramData.new InjectionDiagramDetails(new DiagramPoint(svcDiagramData.asDouble("x"), svcDiagramData.asDouble("y"), svcDiagramData.asInt("seq")),
                     svcDiagramData.asDouble("rotation"));
-            addTerminalPoints(svcId, svc.getName(), svcIidmDiagramData);
+            addTerminalPoints(svcId, svc.getName(), diagramDetails);
+            svcIidmDiagramData.addData(svcDiagramData.get("diagramName"), diagramDetails);
             svc.addExtension(InjectionDiagramData.class, svcIidmDiagramData);
+            NetworkDiagramData.addDiagramName(network, svcDiagramData.get("diagramName"));
         } else {
             LOG.warn("Cannot find svc {}, name {} in network {}: skipping svc diagram data", svcId, svcDiagramData.get("name"), network.getId());
         }

@@ -8,14 +8,15 @@
 package com.powsybl.loadflow.simple.ac;
 
 import com.powsybl.iidm.network.Bus;
+import com.powsybl.iidm.network.Generator;
 import com.powsybl.iidm.network.Line;
 import com.powsybl.iidm.network.Network;
-import com.powsybl.iidm.network.VariantManagerConstants;
 import com.powsybl.iidm.network.test.EurostagTutorialExample1Factory;
+import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
-import com.powsybl.loadflow.simple.SimpleLoadFlow;
 import com.powsybl.loadflow.simple.SimpleLoadFlowParameters;
+import com.powsybl.loadflow.simple.SimpleLoadFlowProvider;
 import com.powsybl.loadflow.simple.SlackBusSelectionMode;
 import com.powsybl.loadflow.simple.ac.nr.DefaultAcLoadFlowObserver;
 import com.powsybl.math.matrix.DenseMatrixFactory;
@@ -38,7 +39,8 @@ public class SimpleAcLoadFlowEurostagTutorialExample1Test {
     private Bus loadBus;
     private Line line1;
     private Line line2;
-    private SimpleLoadFlow loadFlow;
+    private LoadFlow.Runner loadFlowRunner;
+    private Generator gen;
     private LoadFlowParameters parameters;
     private SimpleLoadFlowParameters parametersExt;
 
@@ -51,8 +53,9 @@ public class SimpleAcLoadFlowEurostagTutorialExample1Test {
         loadBus = network.getBusBreakerView().getBus("NLOAD");
         line1 = network.getLine("NHV1_NHV2_1");
         line2 = network.getLine("NHV1_NHV2_2");
+        gen = network.getGenerator("GEN");
 
-        loadFlow = new SimpleLoadFlow(network, new DenseMatrixFactory());
+        loadFlowRunner = new LoadFlow.Runner(new SimpleLoadFlowProvider(new DenseMatrixFactory()));
         parameters = new LoadFlowParameters();
         parametersExt = new SimpleLoadFlowParameters()
                 .setSlackBusSelectionMode(SlackBusSelectionMode.FIRST)
@@ -62,7 +65,7 @@ public class SimpleAcLoadFlowEurostagTutorialExample1Test {
 
     @Test
     public void baseCaseTest() {
-        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
+        LoadFlowResult result = loadFlowRunner.run(network, parameters);
         assertTrue(result.isOk());
         assertEquals("3", result.getMetrics().get("iterations"));
 
@@ -82,6 +85,9 @@ public class SimpleAcLoadFlowEurostagTutorialExample1Test {
         assertReactivePowerEquals(98.74, line2.getTerminal1());
         assertActivePowerEquals(-300.434, line2.getTerminal2());
         assertReactivePowerEquals(-137.188, line2.getTerminal2());
+
+        // check pv bus reactive power update
+        assertReactivePowerEquals(225.279, gen.getTerminal());
     }
 
     @Test
@@ -98,7 +104,7 @@ public class SimpleAcLoadFlowEurostagTutorialExample1Test {
                 stateVectorInitialized[0] = true;
             }
         });
-        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
+        LoadFlowResult result = loadFlowRunner.run(network, parameters);
         assertTrue(result.isOk());
         assertEquals("3", result.getMetrics().get("iterations"));
         assertTrue(stateVectorInitialized[0]);
@@ -108,7 +114,7 @@ public class SimpleAcLoadFlowEurostagTutorialExample1Test {
     public void line1Side1DeconnectionTest() {
         line1.getTerminal1().disconnect();
 
-        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
+        LoadFlowResult result = loadFlowRunner.run(network, parameters);
         assertTrue(result.isOk());
 
         assertVoltageEquals(24.5, genBus);
@@ -133,7 +139,7 @@ public class SimpleAcLoadFlowEurostagTutorialExample1Test {
     public void line1Side2DeconnectionTest() {
         line1.getTerminal2().disconnect();
 
-        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
+        LoadFlowResult result = loadFlowRunner.run(network, parameters);
         assertTrue(result.isOk());
 
         assertVoltageEquals(24.5, genBus);
@@ -159,7 +165,7 @@ public class SimpleAcLoadFlowEurostagTutorialExample1Test {
         line1.getTerminal1().disconnect();
         line1.getTerminal2().disconnect();
 
-        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
+        LoadFlowResult result = loadFlowRunner.run(network, parameters);
         assertTrue(result.isOk());
 
         assertVoltageEquals(24.5, genBus);
@@ -191,7 +197,7 @@ public class SimpleAcLoadFlowEurostagTutorialExample1Test {
                 .setCurrentSectionCount(1)
                 .add();
 
-        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
+        LoadFlowResult result = loadFlowRunner.run(network, parameters);
         assertTrue(result.isOk());
 
         assertVoltageEquals(152.327, loadBus);

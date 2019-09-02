@@ -14,7 +14,6 @@ import com.powsybl.iidm.network.Injection;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.VoltageLevel;
 import com.powsybl.loadflow.LoadFlow;
-import com.powsybl.loadflow.LoadFlowFactory;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
 import org.slf4j.Logger;
@@ -57,15 +56,15 @@ public class BalanceComputationImpl implements BalanceComputation {
     private Map<NetworkArea, Scalable> networkAreasScalableMap;
 
     private ComputationManager computationManager;
-    private LoadFlowFactory loadFlowFactory;
+    private LoadFlow.Runner loadFlowRunner;
 
-    public BalanceComputationImpl(Network network, Map<NetworkArea, Double> networkAreaNetPositionTargetMap, Map<NetworkArea, Scalable> networkAreasScalableMap, ComputationManager computationManager, LoadFlowFactory loadFlowFactory) {
+    public BalanceComputationImpl(Network network, Map<NetworkArea, Double> networkAreaNetPositionTargetMap, Map<NetworkArea, Scalable> networkAreasScalableMap, ComputationManager computationManager, LoadFlow.Runner loadFlowRunner) {
 
         this.network = Objects.requireNonNull(network);
         this.networkAreaNetPositionTargetMap = Objects.requireNonNull(networkAreaNetPositionTargetMap);
         this.networkAreasScalableMap = Objects.requireNonNull(networkAreasScalableMap);
         this.computationManager = Objects.requireNonNull(computationManager);
-        this.loadFlowFactory = Objects.requireNonNull(loadFlowFactory);
+        this.loadFlowRunner = Objects.requireNonNull(loadFlowRunner);
 
     }
 
@@ -80,8 +79,6 @@ public class BalanceComputationImpl implements BalanceComputation {
         BalanceComputationResult result = new BalanceComputationResult(BalanceComputationResult.Status.FAILED);
         int iterationCounter = 0;
         Map<NetworkArea, Double> previousScalingMap = new HashMap<>();
-
-        LoadFlow loadFlow = loadFlowFactory.create(network, computationManager, 1);
 
         for (NetworkArea networkArea : networkAreaNetPositionTargetMap.keySet()) {
             previousScalingMap.put(networkArea, 0.);
@@ -105,7 +102,7 @@ public class BalanceComputationImpl implements BalanceComputation {
                 && result.getStatus() == BalanceComputationResult.Status.FAILED) {
 
             // Step 2 : compute Loadflow
-            LoadFlowResult loadFlowResult = runLoadFlow(loadFlow, workingVariantCopyId);
+            LoadFlowResult loadFlowResult = loadFlowRunner.run(network, workingVariantCopyId, computationManager, new LoadFlowParameters());
             if (!loadFlowResult.isOk()) {
                 LOGGER.error("Loadflow on network {} does not converge", network.getId());
                 result = new BalanceComputationResult(BalanceComputationResult.Status.FAILED, iterationCounter);
@@ -121,7 +118,7 @@ public class BalanceComputationImpl implements BalanceComputation {
                 // Change the workingStateId with final scaling
                 network.getVariantManager().setWorkingVariant(workingStateId);
                 scaleBalancedNetwork(previousScalingMap);
-                runLoadFlow(loadFlow, workingStateId);
+                loadFlowRunner.run(network, workingStateId, computationManager, new LoadFlowParameters());
                 result = new BalanceComputationResult(BalanceComputationResult.Status.SUCCESS, iterationCounter, previousScalingMap);
 
             } else {
@@ -149,15 +146,6 @@ public class BalanceComputationImpl implements BalanceComputation {
         network.getVariantManager().setWorkingVariant(initialVariantId);
 
         return CompletableFuture.completedFuture(result);
-    }
-
-    /**
-     * Run <code>LoadFlow</code> on network working state
-     */
-    LoadFlowResult runLoadFlow(LoadFlow loadFlow, String workingStateId) {
-        LoadFlowResult loadFlowResult = loadFlow.run(workingStateId, new LoadFlowParameters()).join();
-        LOGGER.info("Running LoadFlow on {} variant manager id", workingStateId);
-        return loadFlowResult;
     }
 
     /**

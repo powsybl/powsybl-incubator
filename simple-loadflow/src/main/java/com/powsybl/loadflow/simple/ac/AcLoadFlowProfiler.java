@@ -141,4 +141,14 @@ public class AcLoadFlowProfiler extends DefaultAcLoadFlowObserver {
     public void afterNetworkUpdate() {
         LOGGER.debug(PERFORMANCE_MARKER, "Network updated in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
     }
+
+    @Override
+    public void beforePvBusesReactivePowerUpdate() {
+        restart(stopwatch);
+    }
+
+    @Override
+    public void afterPvBusesReactivePowerUpdate() {
+        LOGGER.debug(PERFORMANCE_MARKER, "PV Buses reactive power updated in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
+    }
 }

@@ -14,7 +14,7 @@ import com.powsybl.computation.local.LocalComputationManager;
 import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Country;
 import com.powsybl.iidm.network.Network;
-import com.powsybl.loadflow.LoadFlowFactory;
+import com.powsybl.loadflow.LoadFlow;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -44,7 +44,7 @@ public class InputDataValidationTest {
     private BalanceComputationParameters parameters;
     private BalanceComputationFactory balanceComputationFactory;
     private String workingVariantId;
-    private LoadFlowFactory loadFlowFactory;
+    private LoadFlow.Runner loadFlowRunner;
     private String error = "The input data for balance computation is not valid";
 
     @Before
@@ -60,25 +60,25 @@ public class InputDataValidationTest {
         parameters = new BalanceComputationParameters();
         balanceComputationFactory = new BalanceComputationFactoryImpl();
         workingVariantId = testNetwork1.getVariantManager().getWorkingVariantId();
-        loadFlowFactory = Mockito.mock(LoadFlowFactory.class);
+        loadFlowRunner = Mockito.mock(LoadFlow.Runner.class);
 
     }
 
     @Test(expected = NullPointerException.class)
     public void testNullNetwork() {
-        balanceComputation = balanceComputationFactory.create(networkNull, networkAreaNetPositionTargetMap, networkAreasScalableMap, loadFlowFactory, computationManager, 1);
+        balanceComputation = balanceComputationFactory.create(networkNull, networkAreaNetPositionTargetMap, networkAreasScalableMap, loadFlowRunner, computationManager, 1);
     }
 
     @Test(expected = NullPointerException.class)
     public void testNullNetPositionTargetMap() {
         networkAreasScalableMap = new HashMap<>();
-        balanceComputation = balanceComputationFactory.create(testNetwork1, networkAreaNetPositionTargetMap, networkAreasScalableMap, loadFlowFactory, computationManager, 1);
+        balanceComputation = balanceComputationFactory.create(testNetwork1, networkAreaNetPositionTargetMap, networkAreasScalableMap, loadFlowRunner, computationManager, 1);
     }
 
     @Test(expected = NullPointerException.class)
     public void testNullNetworkAreasScalableMap() {
         networkAreaNetPositionTargetMap = new HashMap<>();
-        balanceComputation = balanceComputationFactory.create(testNetwork1, networkAreaNetPositionTargetMap, networkAreasScalableMap, loadFlowFactory, computationManager, 1);
+        balanceComputation = balanceComputationFactory.create(testNetwork1, networkAreaNetPositionTargetMap, networkAreasScalableMap, loadFlowRunner, computationManager, 1);
     }
 
     @Test
@@ -88,7 +88,7 @@ public class InputDataValidationTest {
         networkAreaNetPositionTargetMap.put(countryAreaFR, 0.);
         networkAreaNetPositionTargetMap.put(countryAreaNotFound, 0.);
 
-        balanceComputation = balanceComputationFactory.create(testNetwork1, networkAreaNetPositionTargetMap, networkAreasScalableMap, loadFlowFactory, computationManager, 1);
+        balanceComputation = balanceComputationFactory.create(testNetwork1, networkAreaNetPositionTargetMap, networkAreasScalableMap, loadFlowRunner, computationManager, 1);
         List<String> listOfViolations = ((BalanceComputationImpl) balanceComputation).listInputDataViolations();
         assertTrue(listOfViolations.contains("The " + countryAreaNotFound + " is not found in the network " + testNetwork1));
 
@@ -109,7 +109,7 @@ public class InputDataValidationTest {
         NetworkArea networkAreaTest = new VoltageLevelsArea(Arrays.asList(testNetwork2.getVoltageLevel("vlFr1A"), testNetwork1.getVoltageLevel("FFR3AA1")));
         networkAreaNetPositionTargetMap.put(networkAreaTest, 0.);
 
-        balanceComputation = balanceComputationFactory.create(testNetwork1, networkAreaNetPositionTargetMap, networkAreasScalableMap, loadFlowFactory, computationManager, 1);
+        balanceComputation = balanceComputationFactory.create(testNetwork1, networkAreaNetPositionTargetMap, networkAreasScalableMap, loadFlowRunner, computationManager, 1);
         List<String> listOfViolations = ((BalanceComputationImpl) balanceComputation).listInputDataViolations();
 
         assertTrue(listOfViolations.contains("The " + countryAreaNotFound + " is not found in the network " + testNetwork1));
@@ -133,7 +133,7 @@ public class InputDataValidationTest {
         Scalable scalable = Mockito.mock(Scalable.class);
         networkAreasScalableMap.put(countryAreaFR, scalable);
 
-        balanceComputation = balanceComputationFactory.create(testNetwork1, networkAreaNetPositionTargetMap, networkAreasScalableMap, loadFlowFactory, computationManager, 1);
+        balanceComputation = balanceComputationFactory.create(testNetwork1, networkAreaNetPositionTargetMap, networkAreasScalableMap, loadFlowRunner, computationManager, 1);
         List<String> listOfViolations = ((BalanceComputationImpl) balanceComputation).listInputDataViolations();
         assertTrue(listOfViolations.contains("The " + countryAreaBE.getName() + " is not defined in the scalable network areas map"));
         assertTrue(listOfViolations.contains("The scalable of " + countryAreaFR + " doesn't contain injections in network"));
@@ -157,7 +157,7 @@ public class InputDataValidationTest {
         Scalable scalableMock = Mockito.mock(Scalable.class);
         networkAreasScalableMap.put(null, scalableMock);
 
-        balanceComputation = balanceComputationFactory.create(testNetwork1, networkAreaNetPositionTargetMap, networkAreasScalableMap, loadFlowFactory, computationManager, 1);
+        balanceComputation = balanceComputationFactory.create(testNetwork1, networkAreaNetPositionTargetMap, networkAreasScalableMap, loadFlowRunner, computationManager, 1);
         List<String> listOfViolations = ((BalanceComputationImpl) balanceComputation).listInputDataViolations();
 
         assertTrue(listOfViolations.contains("The net position target map contains null network areas"));
@@ -187,7 +187,7 @@ public class InputDataValidationTest {
         Scalable proportionalScalable = Scalable.proportional(Arrays.asList(30.f, 70.f), Arrays.asList(generatorScalableFR, generatorScalableWithBranchId));
         networkAreasScalableMap.put(countryAreaBE, proportionalScalable);
 
-        balanceComputation = balanceComputationFactory.create(testNetwork1, networkAreaNetPositionTargetMap, networkAreasScalableMap, loadFlowFactory, computationManager, 1);
+        balanceComputation = balanceComputationFactory.create(testNetwork1, networkAreaNetPositionTargetMap, networkAreasScalableMap, loadFlowRunner, computationManager, 1);
         List<String> listOfViolations = ((BalanceComputationImpl) balanceComputation).listInputDataViolations();
 
         assertTrue(listOfViolations.contains("The scalable of " + countryAreaFR + " doesn't contain injections in network"));
@@ -216,7 +216,7 @@ public class InputDataValidationTest {
         Scalable loadScalableBE = Scalable.onLoad("BBE1AA1 _load");
         networkAreasScalableMap.put(countryAreaBE, loadScalableBE);
 
-        balanceComputation = balanceComputationFactory.create(testNetwork1, networkAreaNetPositionTargetMap, networkAreasScalableMap, loadFlowFactory, computationManager, 1);
+        balanceComputation = balanceComputationFactory.create(testNetwork1, networkAreaNetPositionTargetMap, networkAreasScalableMap, loadFlowRunner, computationManager, 1);
         List<String> listOfViolations = ((BalanceComputationImpl) balanceComputation).listInputDataViolations();
 
         assertTrue(listOfViolations.isEmpty());

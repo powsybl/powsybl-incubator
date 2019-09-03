@@ -69,6 +69,10 @@ public interface AcLoadFlowObserver {
 
     void afterOuterLoopBody(int outerLoopIteration, String outerLoopName);
 
+    void beforePvBusesReactivePowerUpdate();
+
+    void afterPvBusesReactivePowerUpdate();
+
     void beforeNetworkUpdate();
 
     void afterNetworkUpdate();

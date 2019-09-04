@@ -227,6 +227,7 @@
   "nodes" : [ {
     "id" : "dtrct21",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "BREAKER",
     "rotationAngle" : 90.0,
     "open" : false,
@@ -235,6 +236,7 @@
   }, {
     "id" : "FICT_vl1_dsect11Fictif",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "NODE",
     "rotationAngle" : 90.0,
     "open" : false,
@@ -243,6 +245,7 @@
   }, {
     "id" : "FICT_vl1_dsect21Fictif",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "NODE",
     "rotationAngle" : 90.0,
     "open" : false,
@@ -251,6 +254,7 @@
   }, {
     "id" : "bload1",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "BREAKER",
     "rotationAngle" : null,
     "open" : false,
@@ -259,6 +263,7 @@
   }, {
     "id" : "trf3_ONE",
     "vid" : "vl1",
+    "nextVId" : "vl2",
     "componentType" : "TWO_WINDINGS_TRANSFORMER",
     "rotationAngle" : null,
     "open" : false,
@@ -267,6 +272,7 @@
   }, {
     "id" : "bload2",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "BREAKER",
     "rotationAngle" : null,
     "open" : false,
@@ -275,6 +281,7 @@
   }, {
     "id" : "FICT_vl1_dtrf15Fictif",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "NODE",
     "rotationAngle" : null,
     "open" : false,
@@ -283,6 +290,7 @@
   }, {
     "id" : "FICT_vl1_dtrf12Fictif",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "NODE",
     "rotationAngle" : null,
     "open" : false,
@@ -291,6 +299,7 @@
   }, {
     "id" : "trf2_ONE",
     "vid" : "vl1",
+    "nextVId" : "vl2",
     "componentType" : "TWO_WINDINGS_TRANSFORMER",
     "rotationAngle" : null,
     "open" : false,
@@ -299,6 +308,7 @@
   }, {
     "id" : "FICT_vl1_dload2Fictif",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "NODE",
     "rotationAngle" : null,
     "open" : false,
@@ -307,6 +317,7 @@
   }, {
     "id" : "trf5_ONE",
     "vid" : "vl1",
+    "nextVId" : "vl3",
     "componentType" : "TWO_WINDINGS_TRANSFORMER",
     "rotationAngle" : null,
     "open" : false,
@@ -315,6 +326,7 @@
   }, {
     "id" : "FICT_vl1_dtrf16Fictif",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "NODE",
     "rotationAngle" : null,
     "open" : false,
@@ -323,6 +335,7 @@
   }, {
     "id" : "FICT_vl1_trf81_fictif",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "THREE_WINDINGS_TRANSFORMER",
     "rotationAngle" : null,
     "open" : false,
@@ -331,6 +344,7 @@
   }, {
     "id" : "load2",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "LOAD",
     "rotationAngle" : null,
     "open" : false,
@@ -339,6 +353,7 @@
   }, {
     "id" : "load1",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "LOAD",
     "rotationAngle" : null,
     "open" : false,
@@ -347,6 +362,7 @@
   }, {
     "id" : "FICT_vl1_dtrf13Fictif",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "NODE",
     "rotationAngle" : null,
     "open" : false,
@@ -355,6 +371,7 @@
   }, {
     "id" : "FICT_vl1_trf61_fictif",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "THREE_WINDINGS_TRANSFORMER",
     "rotationAngle" : null,
     "open" : false,
@@ -363,6 +380,7 @@
   }, {
     "id" : "FICT_vl1_dgen2Fictif",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "NODE",
     "rotationAngle" : null,
     "open" : false,
@@ -371,6 +389,7 @@
   }, {
     "id" : "trf4_ONE",
     "vid" : "vl1",
+    "nextVId" : "vl2",
     "componentType" : "TWO_WINDINGS_TRANSFORMER",
     "rotationAngle" : null,
     "open" : false,
@@ -379,6 +398,7 @@
   }, {
     "id" : "trf6_ONE_TWO",
     "vid" : "vl1",
+    "nextVId" : "vl2",
     "componentType" : "LINE",
     "rotationAngle" : null,
     "open" : false,
@@ -387,6 +407,7 @@
   }, {
     "id" : "FICT_vl1_dsect22Fictif",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "NODE",
     "rotationAngle" : 90.0,
     "open" : false,
@@ -395,6 +416,7 @@
   }, {
     "id" : "trf8_ONE_TWO",
     "vid" : "vl1",
+    "nextVId" : "vl2",
     "componentType" : "LINE",
     "rotationAngle" : null,
     "open" : false,
@@ -403,6 +425,7 @@
   }, {
     "id" : "dsect21",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "DISCONNECTOR",
     "rotationAngle" : null,
     "open" : false,
@@ -411,6 +434,7 @@
   }, {
     "id" : "dsect22",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "DISCONNECTOR",
     "rotationAngle" : null,
     "open" : false,
@@ -419,6 +443,7 @@
   }, {
     "id" : "bbs3",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "BUSBAR_SECTION",
     "rotationAngle" : null,
     "open" : false,
@@ -427,6 +452,7 @@
   }, {
     "id" : "bbs4",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "BUSBAR_SECTION",
     "rotationAngle" : null,
     "open" : false,
@@ -435,6 +461,7 @@
   }, {
     "id" : "gen1",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "GENERATOR",
     "rotationAngle" : null,
     "open" : false,
@@ -443,6 +470,7 @@
   }, {
     "id" : "bgen2",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "BREAKER",
     "rotationAngle" : null,
     "open" : false,
@@ -451,6 +479,7 @@
   }, {
     "id" : "gen2",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "GENERATOR",
     "rotationAngle" : null,
     "open" : false,
@@ -459,6 +488,7 @@
   }, {
     "id" : "FICT_vl1_dgen1Fictif",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "NODE",
     "rotationAngle" : null,
     "open" : false,
@@ -467,6 +497,7 @@
   }, {
     "id" : "dtrf15",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "DISCONNECTOR",
     "rotationAngle" : null,
     "open" : false,
@@ -475,6 +506,7 @@
   }, {
     "id" : "dtrf16",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "DISCONNECTOR",
     "rotationAngle" : null,
     "open" : false,
@@ -483,6 +515,7 @@
   }, {
     "id" : "bgen1",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "BREAKER",
     "rotationAngle" : null,
     "open" : false,
@@ -491,6 +524,7 @@
   }, {
     "id" : "dtrf17",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "DISCONNECTOR",
     "rotationAngle" : null,
     "open" : false,
@@ -499,6 +533,7 @@
   }, {
     "id" : "dtrf18",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "DISCONNECTOR",
     "rotationAngle" : null,
     "open" : false,
@@ -507,6 +542,7 @@
   }, {
     "id" : "dtrf11",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "DISCONNECTOR",
     "rotationAngle" : null,
     "open" : false,
@@ -515,6 +551,7 @@
   }, {
     "id" : "dtrf12",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "DISCONNECTOR",
     "rotationAngle" : null,
     "open" : false,
@@ -523,6 +560,7 @@
   }, {
     "id" : "dtrf13",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "DISCONNECTOR",
     "rotationAngle" : null,
     "open" : false,
@@ -531,6 +569,7 @@
   }, {
     "id" : "FICT_vl1_dtrf17Fictif",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "NODE",
     "rotationAngle" : null,
     "open" : false,
@@ -539,6 +578,7 @@
   }, {
     "id" : "FICT_vl1_dtrf14Fictif",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "NODE",
     "rotationAngle" : null,
     "open" : false,
@@ -547,6 +587,7 @@
   }, {
     "id" : "dtrf14",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "DISCONNECTOR",
     "rotationAngle" : null,
     "open" : false,
@@ -555,6 +596,7 @@
   }, {
     "id" : "dsect12",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "DISCONNECTOR",
     "rotationAngle" : null,
     "open" : false,
@@ -563,6 +605,7 @@
   }, {
     "id" : "dload2",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "DISCONNECTOR",
     "rotationAngle" : null,
     "open" : false,
@@ -571,6 +614,7 @@
   }, {
     "id" : "dtrct11",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "BREAKER",
     "rotationAngle" : 90.0,
     "open" : false,
@@ -579,6 +623,7 @@
   }, {
     "id" : "FICT_vl1_dload1Fictif",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "NODE",
     "rotationAngle" : null,
     "open" : false,
@@ -587,6 +632,7 @@
   }, {
     "id" : "LABEL_VL_vl1",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : null,
     "rotationAngle" : null,
     "open" : false,
@@ -595,6 +641,7 @@
   }, {
     "id" : "FICT_vl1_trf71_fictif",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "THREE_WINDINGS_TRANSFORMER",
     "rotationAngle" : 180.0,
     "open" : false,
@@ -603,6 +650,7 @@
   }, {
     "id" : "trf1_ONE",
     "vid" : "vl1",
+    "nextVId" : "vl2",
     "componentType" : "TWO_WINDINGS_TRANSFORMER",
     "rotationAngle" : null,
     "open" : false,
@@ -611,6 +659,7 @@
   }, {
     "id" : "self4",
     "vid" : "vl1",
+    "nextVId" : "vl3",
     "componentType" : "INDUCTOR",
     "rotationAngle" : null,
     "open" : false,
@@ -619,6 +668,7 @@
   }, {
     "id" : "GRID_vl1",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : null,
     "rotationAngle" : null,
     "open" : false,
@@ -627,6 +677,7 @@
   }, {
     "id" : "dsect11",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "DISCONNECTOR",
     "rotationAngle" : null,
     "open" : false,
@@ -635,6 +686,7 @@
   }, {
     "id" : "dload1",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "DISCONNECTOR",
     "rotationAngle" : null,
     "open" : false,
@@ -643,6 +695,7 @@
   }, {
     "id" : "FICT_vl1_dtrf11Fictif",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "NODE",
     "rotationAngle" : null,
     "open" : false,
@@ -651,6 +704,7 @@
   }, {
     "id" : "bbs1",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "BUSBAR_SECTION",
     "rotationAngle" : null,
     "open" : false,
@@ -659,6 +713,7 @@
   }, {
     "id" : "bbs2",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "BUSBAR_SECTION",
     "rotationAngle" : null,
     "open" : false,
@@ -667,6 +722,7 @@
   }, {
     "id" : "dgen1",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "DISCONNECTOR",
     "rotationAngle" : null,
     "open" : false,
@@ -675,6 +731,7 @@
   }, {
     "id" : "btrf11",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "BREAKER",
     "rotationAngle" : null,
     "open" : false,
@@ -683,6 +740,7 @@
   }, {
     "id" : "btrf12",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "BREAKER",
     "rotationAngle" : null,
     "open" : false,
@@ -691,6 +749,7 @@
   }, {
     "id" : "dgen2",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "DISCONNECTOR",
     "rotationAngle" : null,
     "open" : false,
@@ -699,6 +758,7 @@
   }, {
     "id" : "btrf15",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "BREAKER",
     "rotationAngle" : null,
     "open" : false,
@@ -707,6 +767,7 @@
   }, {
     "id" : "FICT_vl1_dsect12Fictif",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "NODE",
     "rotationAngle" : 90.0,
     "open" : false,
@@ -715,6 +776,7 @@
   }, {
     "id" : "btrf16",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "BREAKER",
     "rotationAngle" : null,
     "open" : false,
@@ -723,6 +785,7 @@
   }, {
     "id" : "btrf13",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "BREAKER",
     "rotationAngle" : null,
     "open" : false,
@@ -731,6 +794,7 @@
   }, {
     "id" : "btrf14",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "BREAKER",
     "rotationAngle" : null,
     "open" : false,
@@ -739,6 +803,7 @@
   }, {
     "id" : "FICT_vl1_dtrf18Fictif",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "NODE",
     "rotationAngle" : null,
     "open" : false,
@@ -747,6 +812,7 @@
   }, {
     "id" : "btrf17",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "BREAKER",
     "rotationAngle" : null,
     "open" : false,
@@ -755,6 +821,7 @@
   }, {
     "id" : "btrf18",
     "vid" : "vl1",
+    "nextVId" : null,
     "componentType" : "BREAKER",
     "rotationAngle" : null,
     "open" : false,
@@ -763,6 +830,7 @@
   }, {
     "id" : "trf7_ONE_TWO",
     "vid" : "vl1",
+    "nextVId" : "vl2",
     "componentType" : "LINE",
     "rotationAngle" : null,
     "open" : false,

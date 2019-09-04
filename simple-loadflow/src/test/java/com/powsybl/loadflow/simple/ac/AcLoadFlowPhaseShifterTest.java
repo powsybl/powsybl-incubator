@@ -9,10 +9,11 @@ package com.powsybl.loadflow.simple.ac;
 
 import com.powsybl.iidm.network.*;
 import com.powsybl.iidm.network.test.PhaseShifterTestCaseFactory;
+import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
-import com.powsybl.loadflow.simple.SimpleLoadFlow;
 import com.powsybl.loadflow.simple.SimpleLoadFlowParameters;
+import com.powsybl.loadflow.simple.SimpleLoadFlowProvider;
 import com.powsybl.loadflow.simple.SlackBusSelectionMode;
 import com.powsybl.math.matrix.DenseMatrixFactory;
 import org.junit.Before;
@@ -24,7 +25,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class SimpleAcLoadFlowPhaseShifterTest {
+public class AcLoadFlowPhaseShifterTest {
 
     private Network network;
     private Bus bus1;
@@ -34,7 +35,7 @@ public class SimpleAcLoadFlowPhaseShifterTest {
     private Line line2;
     private TwoWindingsTransformer ps1;
 
-    private SimpleLoadFlow loadFlow;
+    private LoadFlow.Runner loadFlowRunner;
     private LoadFlowParameters parameters;
 
     @Before
@@ -50,7 +51,7 @@ public class SimpleAcLoadFlowPhaseShifterTest {
         ps1.getPhaseTapChanger().getStep(0).setAlpha(5);
         ps1.getPhaseTapChanger().getStep(2).setAlpha(5);
 
-        loadFlow = new SimpleLoadFlow(network, new DenseMatrixFactory());
+        loadFlowRunner = new LoadFlow.Runner(new SimpleLoadFlowProvider(new DenseMatrixFactory()));
         parameters = new LoadFlowParameters();
         SimpleLoadFlowParameters parametersExt = new SimpleLoadFlowParameters()
                 .setSlackBusSelectionMode(SlackBusSelectionMode.FIRST)
@@ -60,7 +61,7 @@ public class SimpleAcLoadFlowPhaseShifterTest {
 
     @Test
     public void baseCaseTest() {
-        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
+        LoadFlowResult result = loadFlowRunner.run(network, parameters);
         assertTrue(result.isOk());
 
         assertVoltageEquals(400, bus1);
@@ -83,7 +84,7 @@ public class SimpleAcLoadFlowPhaseShifterTest {
     public void tapPlusOneTest() {
         ps1.getPhaseTapChanger().setTapPosition(2);
 
-        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
+        LoadFlowResult result = loadFlowRunner.run(network, parameters);
         assertTrue(result.isOk());
 
         assertVoltageEquals(400, bus1);

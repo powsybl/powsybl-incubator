@@ -48,7 +48,9 @@ public class LfBusImpl extends AbstractLfBus {
 
     private final List<LfShunt> shunts = new ArrayList<>();
 
-    private final Map<Generator, Double> generators = new HashMap<>();
+    private final Map<Generator, Double> participatingGenerators = new HashMap<>();
+
+    private final List<Generator> generators = new ArrayList<>();
 
     public LfBusImpl(Bus bus, int num, double v, double angle) {
         super(num, v, angle);
@@ -102,6 +104,8 @@ public class LfBusImpl extends AbstractLfBus {
     }
 
     void addGenerator(Generator generator) {
+        generators.add(generator);
+
         initialGenerationTargetP += generator.getTargetP();
         generationTargetP += generator.getTargetP();
         if (generator.isVoltageRegulatorOn()) {
@@ -119,7 +123,7 @@ public class LfBusImpl extends AbstractLfBus {
             if (activePowerControl != null && activePowerControl.isParticipate() && activePowerControl.getDroop() != 0) {
                 double f = generator.getMaxP() / activePowerControl.getDroop();
                 participationFactor += f;
-                generators.put(generator, f);
+                participatingGenerators.put(generator, f);
             }
         }
     }
@@ -244,11 +248,18 @@ public class LfBusImpl extends AbstractLfBus {
 
         // update generator active power proportionally to the participation factor
         if (generationTargetP != initialGenerationTargetP) {
-            for (Map.Entry<Generator, Double> e : generators.entrySet()) {
+            for (Map.Entry<Generator, Double> e : participatingGenerators.entrySet()) {
                 Generator generator = e.getKey();
                 double generatorParticipationFactor = e.getValue();
                 double newTargetP = generator.getTargetP() + (generationTargetP - initialGenerationTargetP) * generatorParticipationFactor / participationFactor;
                 generator.getTerminal().setP(-newTargetP);
+            }
+        }
+
+        // update generator reactive power
+        if (!Double.isNaN(q)) {
+            for (Generator generator : generators) {
+                generator.getTerminal().setQ(q / generators.size());
             }
         }
     }

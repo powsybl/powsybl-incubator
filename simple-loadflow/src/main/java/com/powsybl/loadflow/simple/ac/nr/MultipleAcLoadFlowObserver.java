@@ -142,4 +142,14 @@ public class MultipleAcLoadFlowObserver implements AcLoadFlowObserver {
     public void afterNetworkUpdate() {
         observers.forEach(AcLoadFlowObserver::afterNetworkUpdate);
     }
+
+    @Override
+    public void beforePvBusesReactivePowerUpdate() {
+        observers.forEach(AcLoadFlowObserver::beforePvBusesReactivePowerUpdate);
+    }
+
+    @Override
+    public void afterPvBusesReactivePowerUpdate() {
+        observers.forEach(AcLoadFlowObserver::afterPvBusesReactivePowerUpdate);
+    }
 }

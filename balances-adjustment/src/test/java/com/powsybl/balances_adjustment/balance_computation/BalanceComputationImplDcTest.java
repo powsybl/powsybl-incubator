@@ -7,15 +7,16 @@
 package com.powsybl.balances_adjustment.balance_computation;
 
 import com.powsybl.action.util.Scalable;
-import com.powsybl.balances_adjustment.util.*;
-
+import com.powsybl.balances_adjustment.util.CountryArea;
+import com.powsybl.balances_adjustment.util.CountryAreaTest;
+import com.powsybl.balances_adjustment.util.NetworkArea;
 import com.powsybl.computation.ComputationManager;
 import com.powsybl.computation.local.LocalComputationManager;
 import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Country;
 import com.powsybl.iidm.network.Network;
-import com.powsybl.loadflow.LoadFlowFactory;
-import com.powsybl.loadflow.simple.SimpleLoadFlowFactory;
+import com.powsybl.loadflow.LoadFlow;
+import com.powsybl.loadflow.simple.SimpleLoadFlowProvider;
 import com.powsybl.math.matrix.DenseMatrixFactory;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +40,7 @@ public class BalanceComputationImplDcTest {
 
     private BalanceComputationParameters parameters;
     private BalanceComputationFactory balanceComputationFactory;
-    private LoadFlowFactory loadFlowFactory;
+    private LoadFlow.Runner loadFlowRunner;
     private String newStateId = "NewStateId";
 
     @Before
@@ -54,7 +55,7 @@ public class BalanceComputationImplDcTest {
         parameters = new BalanceComputationParameters();
         balanceComputationFactory = new BalanceComputationFactoryImpl();
 
-        loadFlowFactory = new SimpleLoadFlowFactory(new DenseMatrixFactory());
+        loadFlowRunner = new LoadFlow.Runner(new SimpleLoadFlowProvider(new DenseMatrixFactory()));
 
         networkAreasScalableMap = new HashMap<>();
         Scalable scalableFR = Scalable.proportional(Arrays.asList(60f, 30f, 10f),
@@ -74,7 +75,7 @@ public class BalanceComputationImplDcTest {
         networkAreaNetPositionTargetMap.put(countryAreaFR, 1000.);
         networkAreaNetPositionTargetMap.put(countryAreaBE, 1500.);
 
-        BalanceComputation balanceComputation = balanceComputationFactory.create(testNetwork1, networkAreaNetPositionTargetMap, networkAreasScalableMap, loadFlowFactory, computationManager, 1);
+        BalanceComputation balanceComputation = balanceComputationFactory.create(testNetwork1, networkAreaNetPositionTargetMap, networkAreasScalableMap, loadFlowRunner, computationManager, 1);
 
         BalanceComputationResult result = balanceComputation.run(testNetwork1.getVariantManager().getWorkingVariantId(), parameters).join();
 
@@ -88,7 +89,7 @@ public class BalanceComputationImplDcTest {
         networkAreaNetPositionTargetMap.put(countryAreaFR, 1200.);
         networkAreaNetPositionTargetMap.put(countryAreaBE, 1300.);
 
-        BalanceComputation balanceComputation = balanceComputationFactory.create(testNetwork1, networkAreaNetPositionTargetMap, networkAreasScalableMap, loadFlowFactory, computationManager, 1);
+        BalanceComputation balanceComputation = balanceComputationFactory.create(testNetwork1, networkAreaNetPositionTargetMap, networkAreasScalableMap, loadFlowRunner, computationManager, 1);
 
         BalanceComputationResult result = balanceComputation.run(testNetwork1.getVariantManager().getWorkingVariantId(), parameters).join();
 
@@ -111,7 +112,7 @@ public class BalanceComputationImplDcTest {
 
         networkAreasScalableMap1.put(countryAreaFR, Scalable.proportional(28.f, scalable1, 28f, scalable2, 44.f, scalable3));
 
-        BalanceComputation balanceComputation = balanceComputationFactory.create(testNetwork1, networkAreaNetPositionTargetMap, networkAreasScalableMap1, loadFlowFactory, computationManager, 1);
+        BalanceComputation balanceComputation = balanceComputationFactory.create(testNetwork1, networkAreaNetPositionTargetMap, networkAreasScalableMap1, loadFlowRunner, computationManager, 1);
 
         BalanceComputationResult result = balanceComputation.run(newStateId, parameters).join();
 
@@ -132,7 +133,7 @@ public class BalanceComputationImplDcTest {
         networkAreaNetPositionTargetMap.put(countryAreaFR, 1200.);
         networkAreaNetPositionTargetMap.put(countryAreaBE, 1500.);
 
-        BalanceComputation balanceComputation = balanceComputationFactory.create(testNetwork1, networkAreaNetPositionTargetMap, networkAreasScalableMap, loadFlowFactory, computationManager, 1);
+        BalanceComputation balanceComputation = balanceComputationFactory.create(testNetwork1, networkAreaNetPositionTargetMap, networkAreasScalableMap, loadFlowRunner, computationManager, 1);
 
         BalanceComputationResult result = balanceComputation.run(testNetwork1.getVariantManager().getWorkingVariantId(), parameters).join();
 

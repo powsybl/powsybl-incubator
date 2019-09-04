@@ -1,15 +1,17 @@
 /**
- * Copyright (c) 2019, RTE (http://www.rte-france.com)
+ * Copyright (c) 2018, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 package com.powsybl.loadflow.simple;
 
+import com.google.auto.service.AutoService;
 import com.google.common.collect.ImmutableMap;
+import com.powsybl.computation.ComputationManager;
 import com.powsybl.iidm.network.Network;
-import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
+import com.powsybl.loadflow.LoadFlowProvider;
 import com.powsybl.loadflow.LoadFlowResult;
 import com.powsybl.loadflow.LoadFlowResultImpl;
 import com.powsybl.loadflow.simple.ac.AcLoadFlowLogger;
@@ -41,30 +43,23 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
+ * @author Sylvain Leclerc <sylvain.leclerc at rte-france.com>
  */
-public class SimpleLoadFlow implements LoadFlow {
+@AutoService(LoadFlowProvider.class)
+public class SimpleLoadFlowProvider implements LoadFlowProvider {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleLoadFlow.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleLoadFlowProvider.class);
 
     private static final String NAME = "SimpleLoadflow";
 
-    private final Network network;
-
     private final MatrixFactory matrixFactory;
 
-    public SimpleLoadFlow(Network network) {
-        this.network = Objects.requireNonNull(network);
-        this.matrixFactory = new SparseMatrixFactory();
+    public SimpleLoadFlowProvider() {
+        this(new SparseMatrixFactory());
     }
 
-    public SimpleLoadFlow(Network network, MatrixFactory matrixFactory) {
-        this.network = Objects.requireNonNull(network);
+    public SimpleLoadFlowProvider(MatrixFactory matrixFactory) {
         this.matrixFactory = Objects.requireNonNull(matrixFactory);
-    }
-
-    public static SimpleLoadFlow create(Network network) {
-        return new SimpleLoadFlow(network);
     }
 
     @Override
@@ -87,7 +82,7 @@ public class SimpleLoadFlow implements LoadFlow {
 
     private static ImmutableMap<String, String> createMetrics(AcLoadFlowResult result) {
         return ImmutableMap.of("iterations", Integer.toString(result.getNewtonRaphsonIterations()),
-                               "status", result.getNewtonRaphsonStatus().name());
+                "status", result.getNewtonRaphsonStatus().name());
     }
 
     private static VoltageInitializer getVoltageInitializer(LoadFlowParameters parameters) {
@@ -111,7 +106,7 @@ public class SimpleLoadFlow implements LoadFlow {
         return parametersExt;
     }
 
-    private CompletableFuture<LoadFlowResult> runAc(String workingStateId, LoadFlowParameters parameters, SimpleLoadFlowParameters parametersExt) {
+    private CompletableFuture<LoadFlowResult> runAc(Network network, String workingStateId, LoadFlowParameters parameters, SimpleLoadFlowParameters parametersExt) {
         return CompletableFuture.supplyAsync(() -> {
             network.getVariantManager().setWorkingVariant(workingStateId);
 
@@ -132,7 +127,7 @@ public class SimpleLoadFlow implements LoadFlow {
             LfNetwork lfNetwork = lfNetworks.get(0);
 
             AcLoadFlowResult result = new AcloadFlowEngine(lfNetwork, voltageInitializer, stoppingCriteria, outerLoops,
-                                                           matrixFactory, getObserver(parametersExt))
+                    matrixFactory, getObserver(parametersExt))
                     .run();
 
             // update network state
@@ -154,7 +149,7 @@ public class SimpleLoadFlow implements LoadFlow {
         LOGGER.info("Active generation={} Mw, active load={} Mw", Math.round(activeGeneration), Math.round(activeLoad));
     }
 
-    private CompletableFuture<LoadFlowResult> runDc(String workingStateId, LoadFlowParameters parameters, SimpleLoadFlowParameters parametersExt) {
+    private CompletableFuture<LoadFlowResult> runDc(Network network, String workingStateId) {
         return CompletableFuture.supplyAsync(() -> {
             network.getVariantManager().setWorkingVariant(workingStateId);
 
@@ -173,13 +168,13 @@ public class SimpleLoadFlow implements LoadFlow {
     }
 
     @Override
-    public CompletableFuture<LoadFlowResult> run(String workingStateId, LoadFlowParameters parameters) {
-        Objects.requireNonNull(workingStateId);
+    public CompletableFuture<LoadFlowResult> run(Network network, ComputationManager computationManager, String workingVariantId, LoadFlowParameters parameters) {
+        Objects.requireNonNull(workingVariantId);
         Objects.requireNonNull(parameters);
 
         SimpleLoadFlowParameters parametersExt = getParametersExt(parameters);
 
-        return parametersExt.isDc() ? runDc(workingStateId, parameters, parametersExt)
-                                    : runAc(workingStateId, parameters, parametersExt);
+        return parametersExt.isDc() ? runDc(network, workingVariantId)
+                : runAc(network, workingVariantId, parameters, parametersExt);
     }
 }

@@ -7,7 +7,7 @@
 package com.powsybl.loadflow.simple.network;
 
 import com.powsybl.loadflow.simple.ac.equations.ClosedBranchSide1ActiveFlowEquationTerm;
-import com.powsybl.loadflow.simple.equations.EquationContext;
+import com.powsybl.loadflow.simple.equations.VariableSet;
 import com.powsybl.loadflow.simple.equations.VariableType;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -33,11 +33,11 @@ public class PerUnitTest {
         double vb = 380;
         double zb = 380 * 380 * PerUnit.SB;
 
-        EquationContext equationContext = new EquationContext();
-        equationContext.getVariable(0, VariableType.BUS_V).setColumn(0);
-        equationContext.getVariable(0, VariableType.BUS_PHI).setColumn(1);
-        equationContext.getVariable(1, VariableType.BUS_V).setColumn(2);
-        equationContext.getVariable(1, VariableType.BUS_PHI).setColumn(3);
+        VariableSet variableSet = new VariableSet();
+        variableSet.getVariable(0, VariableType.BUS_V).setColumn(0);
+        variableSet.getVariable(0, VariableType.BUS_PHI).setColumn(1);
+        variableSet.getVariable(1, VariableType.BUS_V).setColumn(2);
+        variableSet.getVariable(1, VariableType.BUS_PHI).setColumn(3);
 
         LfBranch branch = Mockito.mock(LfBranch.class, new RuntimeExceptionAnswer());
         LfBus bus1 = Mockito.mock(LfBus.class, new RuntimeExceptionAnswer());
@@ -55,7 +55,7 @@ public class PerUnitTest {
         Mockito.doReturn(0d).when(branch).a1();
         Mockito.doReturn(0d).when(branch).a2();
 
-        ClosedBranchSide1ActiveFlowEquationTerm p1 = new ClosedBranchSide1ActiveFlowEquationTerm(branch, bus1, bus2, equationContext);
+        ClosedBranchSide1ActiveFlowEquationTerm p1 = new ClosedBranchSide1ActiveFlowEquationTerm(branch, bus1, bus2, variableSet);
         double[] x = new double[4];
         x[0] = 405 / vb;
         x[1] = 0.045;

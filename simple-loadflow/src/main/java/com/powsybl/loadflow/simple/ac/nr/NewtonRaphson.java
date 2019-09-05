@@ -29,8 +29,6 @@ public class NewtonRaphson implements AutoCloseable {
 
     private final AcLoadFlowObserver observer;
 
-    private final EquationContext equationContext;
-
     private final EquationSystem equationSystem;
 
     private final NewtonRaphsonStoppingCriteria stoppingCriteria;
@@ -42,12 +40,10 @@ public class NewtonRaphson implements AutoCloseable {
     private double[] x;
 
     public NewtonRaphson(LfNetwork network, MatrixFactory matrixFactory, AcLoadFlowObserver observer,
-                         EquationContext equationContext, EquationSystem equationSystem,
-                         NewtonRaphsonStoppingCriteria stoppingCriteria) {
+                         EquationSystem equationSystem, NewtonRaphsonStoppingCriteria stoppingCriteria) {
         this.network = Objects.requireNonNull(network);
         this.matrixFactory = Objects.requireNonNull(matrixFactory);
         this.observer = Objects.requireNonNull(observer);
-        this.equationContext = Objects.requireNonNull(equationContext);
         this.equationSystem = Objects.requireNonNull(equationSystem);
         this.stoppingCriteria = Objects.requireNonNull(stoppingCriteria);
     }
@@ -116,10 +112,10 @@ public class NewtonRaphson implements AutoCloseable {
         }
     }
 
-    private double computeSlackBusActivePowerMismatch(EquationContext equationContext) {
+    private double computeSlackBusActivePowerMismatch(EquationSystem equationSystem) {
         // search equation corresponding to slack bus active power injection
         LfBus slackBus = network.getSlackBus();
-        Equation slackBusActivePowerEquation = equationContext.getEquation(slackBus.getNum(), EquationType.BUS_P);
+        Equation slackBusActivePowerEquation = equationSystem.getEquation(slackBus.getNum(), EquationType.BUS_P);
 
         return slackBusActivePowerEquation.eval()
                 - slackBus.getTargetP(); // slack bus can also have real injection connected
@@ -171,7 +167,7 @@ public class NewtonRaphson implements AutoCloseable {
             status = NewtonRaphsonStatus.MAX_ITERATION_REACHED;
         }
 
-        double slackBusActivePowerMismatch = computeSlackBusActivePowerMismatch(equationContext);
+        double slackBusActivePowerMismatch = computeSlackBusActivePowerMismatch(equationSystem);
 
         return new NewtonRaphsonResult(status, iteration, x, slackBusActivePowerMismatch);
     }

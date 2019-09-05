@@ -7,7 +7,7 @@
 package com.powsybl.loadflow.simple.dc.equations;
 
 import com.powsybl.loadflow.simple.equations.BusPhaseEquationTerm;
-import com.powsybl.loadflow.simple.equations.EquationContext;
+import com.powsybl.loadflow.simple.equations.VariableSet;
 import com.powsybl.loadflow.simple.equations.EquationSystem;
 import com.powsybl.loadflow.simple.equations.EquationType;
 import com.powsybl.loadflow.simple.network.LfBranch;
@@ -26,14 +26,16 @@ public final class DcEquationSystem {
     }
 
     public static EquationSystem create(LfNetwork network) {
-        return create(network, new EquationContext());
+        return create(network, new VariableSet());
     }
 
-    public static EquationSystem create(LfNetwork network, EquationContext equationContext) {
+    public static EquationSystem create(LfNetwork network, VariableSet variableSet) {
+        EquationSystem equationSystem = new EquationSystem(network);
+
         for (LfBus bus : network.getBuses()) {
             if (bus.isSlack()) {
-                equationContext.getEquation(bus.getNum(), BUS_PHI).getTerms().add(new BusPhaseEquationTerm(bus, equationContext));
-                equationContext.getEquation(bus.getNum(), EquationType.BUS_P).setToSolve(false);
+                equationSystem.getEquation(bus.getNum(), BUS_PHI).addTerm(new BusPhaseEquationTerm(bus, variableSet));
+                equationSystem.getEquation(bus.getNum(), EquationType.BUS_P).setToSolve(false);
             }
         }
 
@@ -41,10 +43,10 @@ public final class DcEquationSystem {
             LfBus bus1 = branch.getBus1();
             LfBus bus2 = branch.getBus2();
             if (bus1 != null && bus2 != null) {
-                ClosedBranchSide1DcFlowEquationTerm p1 = ClosedBranchSide1DcFlowEquationTerm.create(branch, bus1, bus2, equationContext);
-                ClosedBranchSide2DcFlowEquationTerm p2 = ClosedBranchSide2DcFlowEquationTerm.create(branch, bus1, bus2, equationContext);
-                equationContext.getEquation(bus1.getNum(), EquationType.BUS_P).getTerms().add(p1);
-                equationContext.getEquation(bus2.getNum(), EquationType.BUS_P).getTerms().add(p2);
+                ClosedBranchSide1DcFlowEquationTerm p1 = ClosedBranchSide1DcFlowEquationTerm.create(branch, bus1, bus2, variableSet);
+                ClosedBranchSide2DcFlowEquationTerm p2 = ClosedBranchSide2DcFlowEquationTerm.create(branch, bus1, bus2, variableSet);
+                equationSystem.getEquation(bus1.getNum(), EquationType.BUS_P).addTerm(p1);
+                equationSystem.getEquation(bus2.getNum(), EquationType.BUS_P).addTerm(p2);
                 branch.setP1(p1);
                 branch.setP2(p2);
             } else if (bus1 != null) {
@@ -54,6 +56,6 @@ public final class DcEquationSystem {
             }
         }
 
-        return new EquationSystem(equationContext.getEquations(), network);
+        return equationSystem;
     }
 }

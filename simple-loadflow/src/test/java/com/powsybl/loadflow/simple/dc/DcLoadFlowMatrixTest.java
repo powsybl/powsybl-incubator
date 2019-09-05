@@ -10,7 +10,7 @@ import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.test.EurostagTutorialExample1Factory;
 import com.powsybl.loadflow.simple.equations.UniformValueVoltageInitializer;
 import com.powsybl.loadflow.simple.dc.equations.DcEquationSystem;
-import com.powsybl.loadflow.simple.equations.EquationContext;
+import com.powsybl.loadflow.simple.equations.VariableSet;
 import com.powsybl.loadflow.simple.equations.EquationSystem;
 import com.powsybl.loadflow.simple.equations.EquationType;
 import com.powsybl.loadflow.simple.equations.VariableType;
@@ -56,13 +56,13 @@ public class DcLoadFlowMatrixTest {
 
         LfNetwork lfNetwork = LfNetworks.create(network, new FirstSlackBusSelector()).get(0);
 
-        EquationContext context = new EquationContext();
-        for (LfBus b : lfNetwork.getBuses()) {
-            context.getEquation(b.getNum(), EquationType.BUS_P);
-            context.getVariable(b.getNum(), VariableType.BUS_PHI);
-        }
+        VariableSet variableSet = new VariableSet();
+        EquationSystem equationSystem = DcEquationSystem.create(lfNetwork, variableSet);
 
-        EquationSystem equationSystem = DcEquationSystem.create(lfNetwork, context);
+        for (LfBus b : lfNetwork.getBuses()) {
+            equationSystem.getEquation(b.getNum(), EquationType.BUS_P);
+            variableSet.getVariable(b.getNum(), VariableType.BUS_PHI);
+        }
 
         double[] x = equationSystem.createStateVector(new UniformValueVoltageInitializer());
         try (PrintStream ps = LoggerFactory.getInfoPrintStream(LOGGER)) {
@@ -126,7 +126,7 @@ public class DcLoadFlowMatrixTest {
 
         lfNetwork = LfNetworks.create(network, new FirstSlackBusSelector()).get(0);
 
-        equationSystem = DcEquationSystem.create(lfNetwork, context);
+        equationSystem = DcEquationSystem.create(lfNetwork, variableSet);
 
         j = equationSystem.buildJacobian(matrixFactory).getMatrix();
 

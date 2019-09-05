@@ -25,6 +25,8 @@ public class Equation implements Evaluable, Comparable<Equation> {
 
     private final EquationType type;
 
+    private final EquationSystem equationSystem;
+
     private int row = -1;
 
     /**
@@ -34,9 +36,10 @@ public class Equation implements Evaluable, Comparable<Equation> {
 
     private final List<EquationTerm> terms = new ArrayList<>();
 
-    Equation(int num, EquationType type) {
+    Equation(int num, EquationType type, EquationSystem equationSystem) {
         this.num = num;
         this.type = Objects.requireNonNull(type);
+        this.equationSystem = Objects.requireNonNull(equationSystem);
     }
 
     public int getNum() {
@@ -45,6 +48,10 @@ public class Equation implements Evaluable, Comparable<Equation> {
 
     public EquationType getType() {
         return type;
+    }
+
+    public EquationSystem getEquationSystem() {
+        return equationSystem;
     }
 
     public int getRow() {
@@ -61,6 +68,12 @@ public class Equation implements Evaluable, Comparable<Equation> {
 
     public void setToSolve(boolean toSolve) {
         this.toSolve = toSolve;
+    }
+
+    public Equation addTerm(EquationTerm term) {
+        Objects.requireNonNull(term);
+        terms.add(term);
+        return this;
     }
 
     public List<EquationTerm> getTerms() {

@@ -1376,6 +1376,7 @@
     "verticalSnakeLinePadding" : 25.0,
     "arrowDistance" : 20.0,
     "showInductorFor3WT" : false,
-    "diagramName" : null
+    "diagramName" : null,
+    "alternateFeederLabelsPositioning" : false
   }
 }

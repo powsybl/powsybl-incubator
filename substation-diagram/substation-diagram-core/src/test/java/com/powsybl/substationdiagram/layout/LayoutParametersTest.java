@@ -33,7 +33,8 @@ public class LayoutParametersTest {
                 .setScaleFactor(1)
                 .setHorizontalSubstationPadding(50)
                 .setVerticalSubstationPadding(50)
-                .setArrowDistance(20);
+                .setArrowDistance(20)
+                .setDiagramName("diagram-name");
         LayoutParameters layoutParameters2 = new LayoutParameters(layoutParameters);
 
         assertEquals(layoutParameters.getTranslateX(), layoutParameters2.getTranslateX(), 0);
@@ -52,6 +53,7 @@ public class LayoutParametersTest {
         assertEquals(layoutParameters.getHorizontalSubstationPadding(), layoutParameters2.getHorizontalSubstationPadding(), 0);
         assertEquals(layoutParameters.getVerticalSubstationPadding(), layoutParameters2.getVerticalSubstationPadding(), 0);
         assertEquals(layoutParameters.getArrowDistance(), layoutParameters2.getArrowDistance(), 0);
+        assertEquals(layoutParameters.getDiagramName(), layoutParameters2.getDiagramName());
 
     }
 }

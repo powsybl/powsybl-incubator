@@ -385,6 +385,16 @@ public class SVGWriter {
     private void drawNodes(Element root, Graph graph, GraphMetadata metadata,
                            AnchorPointProvider anchorPointProvider, SubstationDiagramInitialValueProvider initProvider,
                            SubstationDiagramStyleProvider styleProvider) {
+
+        Function<Node, BusCell.Direction> nodeDirection = node ->
+                (node instanceof FeederNode && node.getCell() != null) ? ((ExternCell) node.getCell()).getDirection() : BusCell.Direction.UNDEFINED;
+
+        LabelPositionProcessor labelPositionProcessor = layoutParameters.isAlternateFeederLabelsPositioning()
+                ? new AlternateFeederLabelPositionProcessor(graph.getNodes().stream()
+                .filter(node -> !node.isFictitious() && node instanceof FeederNode)
+                .collect(Collectors.toMap(Function.identity(), nodeDirection::apply)), 3, LABEL_OFFSET, LABEL_OFFSET, FONT_SIZE, componentLibrary)
+                : new DefaultFeederLabelPositionProcessor(LABEL_OFFSET, LABEL_OFFSET, FONT_SIZE, componentLibrary);
+
         graph.getNodes().forEach(node -> {
             try {
                 String nodeId = URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name());
@@ -399,10 +409,10 @@ public class SVGWriter {
                     incorporateComponents(node, g, styleProvider);
                 }
 
-                BusCell.Direction direction = (node instanceof FeederNode && node.getCell() != null) ? ((ExternCell) node.getCell()).getDirection() : BusCell.Direction.UNDEFINED;
+                BusCell.Direction direction = nodeDirection.apply(node);
 
                 if (!node.isFictitious()) {
-                    drawNodeLabel(g, node, initProvider, direction);
+                    drawNodeLabel(g, node, initProvider, direction, labelPositionProcessor);
                 }
                 root.appendChild(g);
 
@@ -439,15 +449,10 @@ public class SVGWriter {
         }
     }
 
-    private void drawNodeLabel(Element g, Node node, SubstationDiagramInitialValueProvider initProvider, BusCell.Direction direction) {
+    private void drawNodeLabel(Element g, Node node, SubstationDiagramInitialValueProvider initProvider, BusCell.Direction direction, LabelPositionProcessor labelPositioner) {
         if (node instanceof FeederNode) {
-            double yShift = -LABEL_OFFSET;
-            if (node.getCell() != null) {
-                yShift = direction == BusCell.Direction.TOP
-                        ? -LABEL_OFFSET
-                        : ((int) (componentLibrary.getSize(node.getComponentType()).getHeight()) + FONT_SIZE + LABEL_OFFSET);
-            }
-            drawLabel(node.getLabel(), node.isRotated(), -LABEL_OFFSET, yShift, g, FONT_SIZE);
+            LabelPositionProcessor.Position position = labelPositioner.compute(node, direction);
+            drawLabel(node.getLabel(), node.isRotated(), position.getX(), position.getY(), g, FONT_SIZE);
         } else if (node instanceof BusNode) {
             InitialValue val = initProvider.getInitialValue(node);
             double d = ((BusNode) node).getPxWidth();

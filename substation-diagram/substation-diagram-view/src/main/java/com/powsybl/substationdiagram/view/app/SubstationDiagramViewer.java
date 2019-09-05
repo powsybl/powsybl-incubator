@@ -657,6 +657,8 @@ public class SubstationDiagramViewer extends Application implements DisplayVolta
         rowIndex += 1;
         addCheckBox("Show inductor for three windings transformers", rowIndex, LayoutParameters::isShowInductorFor3WT, LayoutParameters::setShowInductorFor3WT);
         rowIndex += 1;
+        addCheckBox("Alternate feeder labels position", rowIndex, LayoutParameters::isAlternateFeederLabelsPositioning, LayoutParameters::setAlternateFeederLabelsPositioning);
+        rowIndex += 1;
         addSpinner("Scale factor:", 1, 20, 1, rowIndex, LayoutParameters::getScaleFactor, LayoutParameters::setScaleFactor);
         rowIndex += 2;
         addSpinner("Arrows distance:", 10, 800, 5, rowIndex, LayoutParameters::getArrowDistance, LayoutParameters::setArrowDistance);

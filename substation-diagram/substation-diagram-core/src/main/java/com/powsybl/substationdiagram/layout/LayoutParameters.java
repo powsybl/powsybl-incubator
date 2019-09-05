@@ -52,6 +52,8 @@ public class LayoutParameters {
 
     private boolean showInductorFor3WT = false;
 
+    private boolean alternateFeederLabelsPositioning = false;
+
     @JsonCreator
     public LayoutParameters() {
     }
@@ -77,7 +79,8 @@ public class LayoutParameters {
                             @JsonProperty("verticalSnakeLinePadding") double verticalSnakeLinePadding,
                             @JsonProperty("arrowDistance") double arrowDistance,
                             @JsonProperty("showInductorFor3WT") boolean showInductorFor3WT,
-                            @JsonProperty("diagramName") String diagramName) {
+                            @JsonProperty("diagramName") String diagramName,
+                            @JsonProperty("alternateFeederLabelsPositioning") boolean alternateFeederLabelsPositioning) {
         this.translateX = translateX;
         this.translateY = translateY;
         this.initialXBus = initialXBus;
@@ -99,6 +102,7 @@ public class LayoutParameters {
         this.arrowDistance = arrowDistance;
         this.showInductorFor3WT = showInductorFor3WT;
         this.diagramName = diagramName;
+        this.alternateFeederLabelsPositioning = alternateFeederLabelsPositioning;
     }
 
     public LayoutParameters(LayoutParameters other) {
@@ -124,6 +128,7 @@ public class LayoutParameters {
         arrowDistance = other.arrowDistance;
         showInductorFor3WT = other.showInductorFor3WT;
         diagramName = other.diagramName;
+        alternateFeederLabelsPositioning = other.alternateFeederLabelsPositioning;
     }
 
     public double getTranslateX() {
@@ -312,6 +317,15 @@ public class LayoutParameters {
 
     public LayoutParameters setShowInductorFor3WT(boolean showInductorFor3WT) {
         this.showInductorFor3WT = showInductorFor3WT;
+        return this;
+    }
+
+    public boolean isAlternateFeederLabelsPositioning() {
+        return alternateFeederLabelsPositioning;
+    }
+
+    public LayoutParameters setAlternateFeederLabelsPositioning(boolean alternateFeederLabelsPositioning) {
+        this.alternateFeederLabelsPositioning = alternateFeederLabelsPositioning;
         return this;
     }
 }

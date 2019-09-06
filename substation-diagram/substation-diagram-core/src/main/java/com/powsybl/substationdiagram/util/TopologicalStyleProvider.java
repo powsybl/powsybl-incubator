@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import com.google.common.util.concurrent.AtomicDouble;
 import com.powsybl.basevoltage.BaseVoltageColor;
 import com.powsybl.iidm.network.Branch.Side;
 import com.powsybl.iidm.network.BusbarSection;
@@ -47,7 +47,6 @@ import com.powsybl.substationdiagram.model.Node.NodeType;
 import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramStyleProvider;
 import com.powsybl.substationdiagram.svg.SubstationDiagramStyles;
 
-import javafx.scene.paint.Color;
 
 /**
  * @author Giovanni Ferrari <giovanni.ferrari at techrain.eu>
@@ -55,9 +54,10 @@ import javafx.scene.paint.Color;
 public class TopologicalStyleProvider extends DefaultSubstationDiagramStyleProvider {
 
     private BaseVoltageColor baseVoltageColor;
-    private HashMap<String, HashMap<String, Color>> voltageLevelColorMap = new HashMap();
-    private static final String DEFAULT_COLOR = "red";
-    private static final String DISCONNECTED_COLOR = "grey";
+    private HashMap<String, HashMap<String, RGBColor>> voltageLevelColorMap = new HashMap();
+    private static final String DEFAULT_COLOR = "#FF0000";
+    private static final String DISCONNECTED_COLOR = "#808080";
+    private static final double FACTOR = 0.7;
     private String disconnectedColor;
 
     public TopologicalStyleProvider(Path config) {
@@ -70,32 +70,27 @@ public class TopologicalStyleProvider extends DefaultSubstationDiagramStyleProvi
                 : DISCONNECTED_COLOR;
     }
 
-    private String getBusColor(Node node) {
+    private RGBColor getBusColor(Node node) {
         String id = node.getId();
         VoltageLevel vl = node.getGraph().getVoltageLevel();
-
-        HashMap<String, Color> colorMap = voltageLevelColorMap.computeIfAbsent(vl.getId(), k -> getColorMap(vl));
-
-        Color c = colorMap.get(id);
-        return c != null ? String.format("#%02X%02X%02X", (int) (c.getRed() * 255), (int) (c.getGreen() * 255), (int) (c.getBlue() * 255)) : null;
+        return voltageLevelColorMap.computeIfAbsent(vl.getId(), k -> getColorMap(vl)).get(id);
     }
 
-    private HashMap<String, Color> getColorMap(VoltageLevel vl) {
-        String basecolor = baseVoltageColor.getColor(vl.getNominalV(), "RTE");
-        Color c0 = Color.valueOf(basecolor != null ? basecolor : DEFAULT_COLOR);
+    private HashMap<String, RGBColor> getColorMap(VoltageLevel vl) {
+        String basecolor = baseVoltageColor.getColor(vl.getNominalV(), "RTE") != null ? baseVoltageColor.getColor(vl.getNominalV(), "RTE") : DEFAULT_COLOR;
 
-        AtomicDouble idx = new AtomicDouble(0);
+        AtomicInteger idxColor = new AtomicInteger(0);
         long buses = vl.getBusView().getBusStream().count();
 
-        HashMap<String, Color> colorMap = new HashMap();
-        HashMap<String, Color> busColorMap = new HashMap();
+        HashMap<String, RGBColor> colorMap = new HashMap();
+        HashMap<String, RGBColor> busColorMap = new HashMap();
+
+        RGBColor color = RGBColor.parse(basecolor);
+
+        List<RGBColor> colors = color.getColorGradient((int) buses, FACTOR);
 
         vl.getBusView().getBuses().forEach(b -> {
-
-            idx.getAndAdd(1);
-            double ratio = idx.get() / buses;
-
-            Color c = c0.deriveColor(ratio, ratio, ratio, 1);
+            RGBColor c = colors.get(idxColor.getAndIncrement());
             busColorMap.put(b.getId(), c);
 
             vl.getBusView().getBus(b.getId()).visitConnectedEquipments(new TopologyVisitor() {
@@ -146,7 +141,6 @@ public class TopologicalStyleProvider extends DefaultSubstationDiagramStyleProvi
                 }
             });
         });
-
         return colorMap;
     }
 
@@ -174,10 +168,10 @@ public class TopologicalStyleProvider extends DefaultSubstationDiagramStyleProvi
         }
 
         try {
-            String color = getBusColor(node);
-            if (color == null) {
-                color = disconnectedColor;
-            }
+            RGBColor c = getBusColor(node);
+
+            String color = c != null ? c.toString() : disconnectedColor;
+
             return Optional.of(defaultStyle.orElse("") + " #"
                     + escapeId(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())) + " {stroke:"
                     + color + ";stroke-width:1;fill-opacity:0;}");
@@ -197,7 +191,13 @@ public class TopologicalStyleProvider extends DefaultSubstationDiagramStyleProvi
                                     + edge.getNode1().getGraph().getEdges().indexOf(edge),
                             StandardCharsets.UTF_8.name()));
             Node bus = findConnectedBus(edge);
-            String color = bus != null ? getBusColor(bus) : disconnectedColor;
+            String color = disconnectedColor;
+            if (bus != null) {
+                RGBColor c = getBusColor(bus);
+                if (c != null) {
+                    color = c.toString();
+                }
+            }
 
             return Optional.of(" #" + wireId + " {stroke:" + color + ";stroke-width:1;fill-opacity:0;}");
         } catch (UnsupportedEncodingException e) {

@@ -28,9 +28,9 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author Sylvain Leclerc <sylvain.leclerc at rte-france.com>
  */
-public class SimpleDcLoadFlowTest {
+public class DcLoadFlowTest {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleDcLoadFlowTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DcLoadFlowTest.class);
 
     private LoadFlowParameters parameters;
 

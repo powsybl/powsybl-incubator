@@ -69,6 +69,10 @@ public abstract class AbstractTestCase {
                     .write(graph, new DefaultSubstationDiagramInitialValueProvider(network), styleProvider, writer);
             writer.flush();
 
+//            FileWriter fw = new FileWriter(System.getProperty("user.home") + refSvgName);
+//            fw.write(writer.toString());
+//            fw.close();
+
             String refSvg = normalizeLineSeparator(new String(ByteStreams.toByteArray(getClass().getResourceAsStream(refSvgName)), StandardCharsets.UTF_8));
             String svg = normalizeLineSeparator(writer.toString());
             assertEquals(refSvg, svg);
@@ -82,6 +86,10 @@ public abstract class AbstractTestCase {
             new SVGWriter(componentLibrary, layoutParameters)
                     .write(graph, new DefaultSubstationDiagramInitialValueProvider(network), myStyleProvider, writer);
             writer.flush();
+
+//            FileWriter fw = new FileWriter(System.getProperty("user.home") + refSvgName);
+//            fw.write(writer.toString());
+//            fw.close();
 
             String refSvg = normalizeLineSeparator(new String(ByteStreams.toByteArray(getClass().getResourceAsStream(refSvgName)), StandardCharsets.UTF_8));
             String svg = normalizeLineSeparator(writer.toString());
@@ -99,6 +107,10 @@ public abstract class AbstractTestCase {
                            new PositionVoltageLevelLayoutFactory());
             writer.flush();
 
+//            FileWriter fw = new FileWriter(System.getProperty("user.home") + refSvgName);
+//            fw.write(writer.toString());
+//            fw.close();
+
             String refSvg = normalizeLineSeparator(new String(ByteStreams.toByteArray(getClass().getResourceAsStream(refSvgName)), StandardCharsets.UTF_8));
             String svg = normalizeLineSeparator(writer.toString());
             assertEquals(refSvg, svg);
@@ -114,6 +126,10 @@ public abstract class AbstractTestCase {
                     .write(graph, new DefaultSubstationDiagramInitialValueProvider(network), myStyleProvider, writer, sLayoutFactory,
                     new PositionVoltageLevelLayoutFactory());
             writer.flush();
+
+//            FileWriter fw = new FileWriter(System.getProperty("user.home") + refSvgName);
+//            fw.write(writer.toString());
+//            fw.close();
 
             String refSvg = normalizeLineSeparator(new String(ByteStreams.toByteArray(getClass().getResourceAsStream(refSvgName)), StandardCharsets.UTF_8));
             String svg = normalizeLineSeparator(writer.toString());

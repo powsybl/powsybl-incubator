@@ -30,6 +30,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import com.powsybl.substationdiagram.view.DisplayVoltageLevel;
+import javafx.scene.control.Tooltip;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -122,7 +124,7 @@ import javafx.util.StringConverter;
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class SubstationDiagramViewer extends Application {
+public class SubstationDiagramViewer extends Application implements DisplayVoltageLevel {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubstationDiagramViewer.class);
 
@@ -165,6 +167,9 @@ public class SubstationDiagramViewer extends Application {
 
     private final Button caseLoadingStatus = new Button("  ");
     private final TextField casePathTextField = new TextField();
+    private final TabPane diagramsPane = new TabPane();
+    private Tab tabSelected;
+    private Tab tabChecked;
     private final BorderPane selectedDiagramPane = new BorderPane();
     private final TabPane checkedDiagramsPane = new TabPane();
     private GridPane parametersPane;
@@ -302,9 +307,9 @@ public class SubstationDiagramViewer extends Application {
             try (InputStream svgInputStream = new ByteArrayInputStream(svgData.getBytes(StandardCharsets.UTF_8));
                  InputStream metadataInputStream = new ByteArrayInputStream(metadataData.getBytes(StandardCharsets.UTF_8))) {
                 if (c.getContainerType() == ContainerType.VOLTAGE_LEVEL) {
-                    diagramView = VoltageLevelDiagramView.load(svgInputStream, metadataInputStream);
+                    diagramView = VoltageLevelDiagramView.load(svgInputStream, metadataInputStream, SubstationDiagramViewer.this);
                 } else if (c.getContainerType() == ContainerType.SUBSTATION) {
-                    diagramView = SubstationDiagramView.load(svgInputStream, metadataInputStream);
+                    diagramView = SubstationDiagramView.load(svgInputStream, metadataInputStream, SubstationDiagramViewer.this);
                 } else {
                     throw new AssertionError();
                 }
@@ -477,25 +482,16 @@ public class SubstationDiagramViewer extends Application {
             VoltageLevel vl = networkProperty.get().getVoltageLevel(id);
             if (vl != null) {
                 Tab tab = new Tab(id, new ContainerDiagramPane(vl));
+                tab.setTooltip(new Tooltip(vl.getName()));
                 tab.setOnCloseRequest(event -> {
                     checkedProperty.set(false);
-                    uncheckvItemTree(id);
+                    checkvItemTree(id, false);
                 });
                 checkedDiagramsPane.getTabs().add(tab);
                 checkedDiagramsPane.getSelectionModel().select(tab);
             } else {
                 LOGGER.warn("Voltage level {} not found", id);
             }
-        }
-
-        private void uncheckvItemTree(String id) {
-            substationsTree.getRoot().getChildren().stream().forEach(childS ->
-                    childS.getChildren().stream().forEach(childV -> {
-                        if (childV.getValue().getId().equals(id)) {
-                            ((CheckBoxTreeItem) childV).setSelected(false);
-                        }
-                    })
-            );
         }
     }
 
@@ -509,9 +505,10 @@ public class SubstationDiagramViewer extends Application {
             Substation s = networkProperty.get().getSubstation(id);
             if (s != null) {
                 Tab tab = new Tab(id, new ContainerDiagramPane(s));
+                tab.setTooltip(new Tooltip(s.getName()));
                 tab.setOnCloseRequest(event -> {
                     checkedProperty.set(false);
-                    unchecksItemTree(id);
+                    checksItemTree(id, false);
                 });
                 checkedDiagramsPane.getTabs().add(tab);
                 checkedDiagramsPane.getSelectionModel().select(tab);
@@ -520,10 +517,10 @@ public class SubstationDiagramViewer extends Application {
             }
         }
 
-        private void unchecksItemTree(String id) {
+        private void checksItemTree(String id, boolean selected) {
             substationsTree.getRoot().getChildren().stream().forEach(child -> {
                 if (child.getValue().getId().equals(id)) {
-                    ((CheckBoxTreeItem) child).setSelected(false);
+                    ((CheckBoxTreeItem) child).setSelected(selected);
                 }
             });
         }
@@ -774,10 +771,10 @@ public class SubstationDiagramViewer extends Application {
                         .collect(Collectors.toList()));
             }
         });
-        TabPane diagramsPane = new TabPane();
         diagramsPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
-        diagramsPane.getTabs().setAll(new Tab("Selected", selectedDiagramPane),
-                                      new Tab("Checked", checkedDiagramsPane));
+        tabSelected = new Tab("Selected", selectedDiagramPane);
+        tabChecked = new Tab("Checked", checkedDiagramsPane);
+        diagramsPane.getTabs().setAll(tabSelected, tabChecked);
 
         createParametersPane();
 
@@ -985,5 +982,31 @@ public class SubstationDiagramViewer extends Application {
 
         substationsTree.setRoot(rootItem);
         substationsTree.setShowRoot(false);
+    }
+
+    @Override
+    public void display(String voltageLevelId) {
+        VoltageLevel v = networkProperty.get().getVoltageLevel(voltageLevelId);
+        if (diagramsPane.getSelectionModel().getSelectedItem() == tabChecked) {
+            checkVoltageLevel(v, true);
+            checkvItemTree(voltageLevelId, true);
+            checkedDiagramsPane.getTabs().stream().forEach(tab -> {
+                if (tab.getText().equals(voltageLevelId)) {
+                    checkedDiagramsPane.getSelectionModel().select(tab);
+                }
+            });
+        } else if (diagramsPane.getSelectionModel().getSelectedItem() == tabSelected) {
+            selectedDiagramPane.setCenter(new ContainerDiagramPane(v));
+        }
+    }
+
+    private void checkvItemTree(String id, boolean selected) {
+        substationsTree.getRoot().getChildren().stream().forEach(childS ->
+                childS.getChildren().stream().forEach(childV -> {
+                    if (childV.getValue().getId().equals(id)) {
+                        ((CheckBoxTreeItem) childV).setSelected(selected);
+                    }
+                })
+        );
     }
 }

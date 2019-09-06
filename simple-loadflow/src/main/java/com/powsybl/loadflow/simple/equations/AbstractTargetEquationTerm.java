@@ -18,8 +18,8 @@ public abstract class AbstractTargetEquationTerm implements EquationTerm {
 
     private double target;
 
-    protected AbstractTargetEquationTerm(int num, VariableType variableType, EquationContext context) {
-        variables = Collections.singletonList(context.getVariable(num, variableType));
+    protected AbstractTargetEquationTerm(int num, VariableType variableType, VariableSet variableSet) {
+        variables = Collections.singletonList(variableSet.getVariable(num, variableType));
     }
 
     @Override

@@ -21,21 +21,30 @@ import static com.powsybl.loadflow.simple.util.LoadFlowAssert.*;
 import static org.junit.Assert.assertTrue;
 
 /**
+ * SVC test case.
+ *
+ * g1        ld1
+ * |          |
+ * b1---------b2
+ *      l1    |
+ *           svc1
+ *
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class SimpleAcLoadFlowDanglingLineTest {
+public class AcLoadFlowSvcTest {
 
     private Network network;
     private Bus bus1;
     private Bus bus2;
-    private DanglingLine dl1;
+    private Line l1;
+    private StaticVarCompensator svc1;
 
     private LoadFlow.Runner loadFlowRunner;
 
     private LoadFlowParameters parameters;
 
     private Network createNetwork() {
-        Network network = Network.create("dl", "test");
+        Network network = Network.create("svc", "test");
         Substation s1 = network.newSubstation()
                 .setId("S1")
                 .add();
@@ -68,18 +77,22 @@ public class SimpleAcLoadFlowDanglingLineTest {
         bus2 = vl2.getBusBreakerView().newBus()
                 .setId("b2")
                 .add();
-        dl1 = vl2.newDanglingLine()
+        vl2.newLoad()
                 .setId("ld1")
                 .setConnectableBus("b2")
                 .setBus("b2")
-                .setR(0.7)
-                .setX(1)
-                .setG(Math.pow(10, -6))
-                .setB(3 * Math.pow(10, -6))
                 .setP0(101)
                 .setQ0(150)
                 .add();
-        network.newLine()
+        svc1 = vl2.newStaticVarCompensator()
+                .setId("svc1")
+                .setConnectableBus("b2")
+                .setBus("b2")
+                .setRegulationMode(StaticVarCompensator.RegulationMode.OFF)
+                .setBmin(0)
+                .setBmax(10)
+                .add();
+        l1 = network.newLine()
                 .setId("l1")
                 .setVoltageLevel1("vl1")
                 .setBus1("b1")
@@ -113,9 +126,30 @@ public class SimpleAcLoadFlowDanglingLineTest {
 
         assertVoltageEquals(390, bus1);
         assertAngleEquals(0, bus1);
-        assertVoltageEquals(388.582864, bus2);
-        assertAngleEquals(-0.058277, bus2);
-        assertActivePowerEquals(101.302, dl1.getTerminal());
-        assertReactivePowerEquals(149.763, dl1.getTerminal());
+        assertVoltageEquals(388.581824, bus2);
+        assertAngleEquals(-0.057845, bus2);
+        assertActivePowerEquals(101.216, l1.getTerminal1());
+        assertReactivePowerEquals(150.649, l1.getTerminal1());
+        assertActivePowerEquals(-101, l1.getTerminal2());
+        assertReactivePowerEquals(-150, l1.getTerminal2());
+        assertTrue(Double.isNaN(svc1.getTerminal().getP()));
+        assertTrue(Double.isNaN(svc1.getTerminal().getQ()));
+
+        svc1.setVoltageSetPoint(385)
+                .setRegulationMode(StaticVarCompensator.RegulationMode.VOLTAGE);
+
+        result = loadFlowRunner.run(network, parameters);
+        assertTrue(result.isOk());
+
+        assertVoltageEquals(390, bus1);
+        assertAngleEquals(0, bus1);
+        assertVoltageEquals(385, bus2);
+        assertAngleEquals(0.116345, bus2);
+        assertActivePowerEquals(103.562, l1.getTerminal1());
+        assertReactivePowerEquals(615.582, l1.getTerminal1());
+        assertActivePowerEquals(-101, l1.getTerminal2());
+        assertReactivePowerEquals(-607.897, l1.getTerminal2());
+        assertTrue(Double.isNaN(svc1.getTerminal().getP()));
+        assertTrue(Double.isNaN(svc1.getTerminal().getQ()));
     }
 }

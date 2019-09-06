@@ -35,7 +35,7 @@ import static org.junit.Assert.assertTrue;
  *
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class SimpleAcLoadFlow3wtTest {
+public class AcLoadFlow3wtTest {
 
     private Network network;
     private Bus bus1;

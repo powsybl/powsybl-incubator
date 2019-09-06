@@ -7,13 +7,16 @@
 package com.powsybl.loadflow.simple.equations;
 
 import com.powsybl.loadflow.simple.network.LfNetwork;
+import com.powsybl.loadflow.simple.util.Evaluable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class Equation implements Comparable<Equation> {
+public class Equation implements Evaluable, Comparable<Equation> {
 
     /**
      * Bus or any other equipment id.
@@ -22,6 +25,8 @@ public class Equation implements Comparable<Equation> {
 
     private final EquationType type;
 
+    private final EquationSystem equationSystem;
+
     private int row = -1;
 
     /**
@@ -29,9 +34,12 @@ public class Equation implements Comparable<Equation> {
      */
     private boolean toSolve = true;
 
-    Equation(int num, EquationType type) {
+    private final List<EquationTerm> terms = new ArrayList<>();
+
+    Equation(int num, EquationType type, EquationSystem equationSystem) {
         this.num = num;
         this.type = Objects.requireNonNull(type);
+        this.equationSystem = Objects.requireNonNull(equationSystem);
     }
 
     public int getNum() {
@@ -40,6 +48,10 @@ public class Equation implements Comparable<Equation> {
 
     public EquationType getType() {
         return type;
+    }
+
+    public EquationSystem getEquationSystem() {
+        return equationSystem;
     }
 
     public int getRow() {
@@ -56,6 +68,16 @@ public class Equation implements Comparable<Equation> {
 
     public void setToSolve(boolean toSolve) {
         this.toSolve = toSolve;
+    }
+
+    public Equation addTerm(EquationTerm term) {
+        Objects.requireNonNull(term);
+        terms.add(term);
+        return this;
+    }
+
+    public List<EquationTerm> getTerms() {
+        return terms;
     }
 
     void initTarget(LfNetwork network, double[] targets) {
@@ -79,6 +101,34 @@ public class Equation implements Comparable<Equation> {
             default:
                 throw new IllegalStateException("Unknown state variable type "  + type);
         }
+
+        for (EquationTerm term : terms) {
+            if (term.hasRhs()) {
+                for (Variable variable : term.getVariables()) {
+                    targets[row] -= term.rhs(variable);
+                }
+            }
+        }
+    }
+
+    public void update(double[] x) {
+        for (EquationTerm term : terms) {
+            term.update(x);
+        }
+    }
+
+    @Override
+    public double eval() {
+        double value = 0;
+        for (EquationTerm term : terms) {
+            value += term.eval();
+            if (term.hasRhs()) {
+                for (Variable variable : term.getVariables()) {
+                    value -= term.rhs(variable);
+                }
+            }
+        }
+        return value;
     }
 
     @Override

@@ -10,7 +10,7 @@ import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.test.EurostagTutorialExample1Factory;
 import com.powsybl.loadflow.simple.equations.UniformValueVoltageInitializer;
 import com.powsybl.loadflow.simple.dc.equations.DcEquationSystem;
-import com.powsybl.loadflow.simple.equations.EquationContext;
+import com.powsybl.loadflow.simple.equations.VariableSet;
 import com.powsybl.loadflow.simple.equations.EquationSystem;
 import com.powsybl.loadflow.simple.equations.EquationType;
 import com.powsybl.loadflow.simple.equations.VariableType;
@@ -56,22 +56,22 @@ public class DcLoadFlowMatrixTest {
 
         LfNetwork lfNetwork = LfNetworks.create(network, new FirstSlackBusSelector()).get(0);
 
-        EquationContext context = new EquationContext();
+        VariableSet variableSet = new VariableSet();
+        EquationSystem equationSystem = DcEquationSystem.create(lfNetwork, variableSet);
+
         for (LfBus b : lfNetwork.getBuses()) {
-            context.getEquation(b.getNum(), EquationType.BUS_P);
-            context.getVariable(b.getNum(), VariableType.BUS_PHI);
+            equationSystem.getEquation(b.getNum(), EquationType.BUS_P);
+            variableSet.getVariable(b.getNum(), VariableType.BUS_PHI);
         }
 
-        EquationSystem equationSystem = DcEquationSystem.create(lfNetwork, context);
-
-        double[] x = equationSystem.initStateVector(new UniformValueVoltageInitializer());
+        double[] x = equationSystem.createStateVector(new UniformValueVoltageInitializer());
         try (PrintStream ps = LoggerFactory.getInfoPrintStream(LOGGER)) {
             ps.println("X=");
             Matrix.createFromColumn(x, new DenseMatrixFactory())
                     .print(ps, equationSystem.getColumnNames(), null);
         }
 
-        equationSystem.updateEquationTerms(x);
+        equationSystem.updateEquations(x);
 
         Matrix j = equationSystem.buildJacobian(matrixFactory).getMatrix();
         try (PrintStream ps = LoggerFactory.getInfoPrintStream(LOGGER)) {
@@ -99,7 +99,7 @@ public class DcLoadFlowMatrixTest {
         assertEquals(-55.63344061453968d, j.toDense().get(3, 2), 0d);
         assertEquals(55.63344061453968d, j.toDense().get(3, 3), 0d);
 
-        double[] targets = equationSystem.initTargetVector();
+        double[] targets = equationSystem.createTargetVector();
         try (PrintStream ps = LoggerFactory.getInfoPrintStream(LOGGER)) {
             ps.println("TGT=");
             Matrix.createFromColumn(targets, matrixFactory)
@@ -126,7 +126,7 @@ public class DcLoadFlowMatrixTest {
 
         lfNetwork = LfNetworks.create(network, new FirstSlackBusSelector()).get(0);
 
-        equationSystem = DcEquationSystem.create(lfNetwork, context);
+        equationSystem = DcEquationSystem.create(lfNetwork, variableSet);
 
         j = equationSystem.buildJacobian(matrixFactory).getMatrix();
 

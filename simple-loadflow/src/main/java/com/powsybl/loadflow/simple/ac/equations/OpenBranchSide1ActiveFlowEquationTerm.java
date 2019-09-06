@@ -6,8 +6,7 @@
  */
 package com.powsybl.loadflow.simple.ac.equations;
 
-import com.powsybl.loadflow.simple.equations.EquationContext;
-import com.powsybl.loadflow.simple.equations.EquationType;
+import com.powsybl.loadflow.simple.equations.VariableSet;
 import com.powsybl.loadflow.simple.equations.Variable;
 import com.powsybl.loadflow.simple.equations.VariableType;
 import com.powsybl.loadflow.simple.network.LfBranch;
@@ -26,9 +25,9 @@ public class OpenBranchSide1ActiveFlowEquationTerm extends AbstractOpenBranchAcF
 
     private double dp2dv2;
 
-    public OpenBranchSide1ActiveFlowEquationTerm(LfBranch branch, LfBus bus2, EquationContext equationContext) {
-        super(branch, EquationType.BUS_P, VariableType.BUS_V, bus2, equationContext);
-        v2Var = equationContext.getVariable(bus2.getNum(), VariableType.BUS_V);
+    public OpenBranchSide1ActiveFlowEquationTerm(LfBranch branch, LfBus bus2, VariableSet variableSet) {
+        super(branch, VariableType.BUS_V, bus2, variableSet);
+        v2Var = variableSet.getVariable(bus2.getNum(), VariableType.BUS_V);
     }
 
     @Override

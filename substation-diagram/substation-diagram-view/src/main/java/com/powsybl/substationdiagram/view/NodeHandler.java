@@ -21,6 +21,7 @@ import java.util.Objects;
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
+ * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
  */
 public class NodeHandler implements BaseNode {
 
@@ -28,26 +29,34 @@ public class NodeHandler implements BaseNode {
 
     private ComponentType componentType;
 
-    private final List<WireHandler> wireHandlers = new ArrayList<>();
+    private Double rotationAngle;
 
-    private final boolean rotated;
+    private final List<WireHandler> wireHandlers = new ArrayList<>();
 
     private final GraphMetadata metadata;
 
     private final String vId;
+    private final String nextVId;
 
     private double mouseX;
     private double mouseY;
 
+    private double screenX;
+    private double screenY;
+
     private BusCell.Direction direction;
 
-    public NodeHandler(Node node, ComponentType componentType, boolean rotated, GraphMetadata metadata,
-                       String vId, BusCell.Direction direction) {
+    private DisplayVoltageLevel displayVL;
+
+    public NodeHandler(Node node, ComponentType componentType, Double rotationAngle,
+                       GraphMetadata metadata,
+                       String vId, String nextVId, BusCell.Direction direction) {
         this.node = Objects.requireNonNull(node);
         this.componentType = componentType;
-        this.rotated = rotated;
+        this.rotationAngle = rotationAngle;
         this.metadata = Objects.requireNonNull(metadata);
         this.vId = Objects.requireNonNull(vId);
+        this.nextVId = nextVId;
         this.direction = direction;
 
         setDragAndDrop();
@@ -66,6 +75,10 @@ public class NodeHandler implements BaseNode {
         return vId;
     }
 
+    public String getNextVId() {
+        return nextVId;
+    }
+
     public BusCell.Direction getDirection() {
         return direction;
     }
@@ -73,6 +86,11 @@ public class NodeHandler implements BaseNode {
     @Override
     public ComponentType getComponentType() {
         return componentType;
+    }
+
+    @Override
+    public Double getRotationAngle() {
+        return rotationAngle;
     }
 
     public void addWire(WireHandler w) {
@@ -85,7 +103,11 @@ public class NodeHandler implements BaseNode {
 
     @Override
     public boolean isRotated() {
-        return rotated;
+        return rotationAngle != null;
+    }
+
+    public void setDisplayVL(DisplayVoltageLevel displayVL) {
+        this.displayVL = displayVL;
     }
 
     @Override
@@ -108,6 +130,8 @@ public class NodeHandler implements BaseNode {
 
     public void setDragAndDrop() {
         node.setOnMousePressed(event -> {
+            screenX = event.getScreenX();
+            screenY = event.getScreenY();
             mouseX = event.getSceneX() - node.getTranslateX();
             mouseY = event.getSceneY() - node.getTranslateY();
             event.consume();
@@ -117,6 +141,14 @@ public class NodeHandler implements BaseNode {
             translate(event.getSceneX() - mouseX, event.getSceneY() - mouseY);
             event.consume();
         });
+
+        node.setOnMouseReleased(event -> {
+            if (event.getScreenX() == screenX &&
+                event.getScreenY() == screenY &&
+                    componentType == ComponentType.LINE || componentType == ComponentType.TWO_WINDINGS_TRANSFORMER) {
+                displayNextVoltageLevel();
+            }
+        });
     }
 
     public void translate(double translateX, double translateY) {
@@ -124,6 +156,12 @@ public class NodeHandler implements BaseNode {
         node.setTranslateY(translateY);
         for (WireHandler w : wireHandlers) {
             w.refresh();
+        }
+    }
+
+    private void displayNextVoltageLevel() {
+        if (nextVId != null) {
+            displayVL.display(nextVId);
         }
     }
 }

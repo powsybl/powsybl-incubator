@@ -30,6 +30,7 @@ import static org.junit.Assert.*;
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
+ * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
  */
 public class GraphMetadataTest {
 
@@ -49,8 +50,9 @@ public class GraphMetadataTest {
                                                             "br1",
                                                             ImmutableList.of(new AnchorPoint(5, 4, AnchorOrientation.NONE)),
                                                             new ComponentSize(10, 12)));
-        metadata.addNodeMetadata(new GraphMetadata.NodeMetadata("id1", "vid1", ComponentType.BREAKER, true, false, BusCell.Direction.UNDEFINED, false));
-        metadata.addNodeMetadata(new GraphMetadata.NodeMetadata("id2", "vid2", ComponentType.BUSBAR_SECTION, false, false, BusCell.Direction.UNDEFINED, false));
+
+        metadata.addNodeMetadata(new GraphMetadata.NodeMetadata("id1", "vid1", null, ComponentType.BREAKER, null, false, BusCell.Direction.UNDEFINED, false));
+        metadata.addNodeMetadata(new GraphMetadata.NodeMetadata("id2", "vid2", null, ComponentType.BUSBAR_SECTION, null, false, BusCell.Direction.UNDEFINED, false));
         metadata.addWireMetadata(new GraphMetadata.WireMetadata("id3", "id1", "id2", false, false));
         metadata.addArrowMetadata(new ArrowMetadata("id1", "id3", 20));
 

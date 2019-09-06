@@ -7,8 +7,7 @@
 package com.powsybl.loadflow.simple.ac.equations;
 
 import com.powsybl.loadflow.simple.equations.AbstractTargetEquationTerm;
-import com.powsybl.loadflow.simple.equations.EquationContext;
-import com.powsybl.loadflow.simple.equations.EquationType;
+import com.powsybl.loadflow.simple.equations.VariableSet;
 import com.powsybl.loadflow.simple.equations.VariableType;
 import com.powsybl.loadflow.simple.network.LfBus;
 
@@ -19,7 +18,7 @@ import java.util.Objects;
  */
 public class BusVoltageEquationTerm extends AbstractTargetEquationTerm {
 
-    public BusVoltageEquationTerm(LfBus bus, EquationContext context) {
-        super(Objects.requireNonNull(bus).getNum(), EquationType.BUS_V, VariableType.BUS_V, context);
+    public BusVoltageEquationTerm(LfBus bus, VariableSet context) {
+        super(Objects.requireNonNull(bus).getNum(), VariableType.BUS_V, context);
     }
 }

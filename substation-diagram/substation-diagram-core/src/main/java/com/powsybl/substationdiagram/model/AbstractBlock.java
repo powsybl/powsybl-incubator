@@ -116,6 +116,9 @@ public abstract class AbstractBlock implements Block {
     @Override
     public void setCell(Cell cell) {
         this.cell = cell;
+        if (cell == null) {
+            return;
+        }
         if (cell.getType() == Cell.CellType.SHUNT) {
             setOrientation(Orientation.HORIZONTAL);
         } else {

@@ -34,8 +34,8 @@ public class MultipleAcLoadFlowObserver implements AcLoadFlowObserver {
     }
 
     @Override
-    public void beginMacroIteration(int macroIteration, String macroActionName) {
-        observers.forEach(o -> o.beginMacroIteration(macroIteration, macroActionName));
+    public void beforeOuterLoopBody(int outerLoopIteration, String outerLoopName) {
+        observers.forEach(o -> o.beforeOuterLoopBody(outerLoopIteration, outerLoopName));
     }
 
     @Override
@@ -64,13 +64,13 @@ public class MultipleAcLoadFlowObserver implements AcLoadFlowObserver {
     }
 
     @Override
-    public void beforeEquationTermsUpdate(int iteration) {
-        observers.forEach(o -> o.beforeEquationTermsUpdate(iteration));
+    public void beforeEquationsUpdate(int iteration) {
+        observers.forEach(o -> o.beforeEquationsUpdate(iteration));
     }
 
     @Override
-    public void afterEquationTermsUpdate(EquationSystem equationSystem, int iteration) {
-        observers.forEach(o -> o.afterEquationTermsUpdate(equationSystem, iteration));
+    public void afterEquationsUpdate(EquationSystem equationSystem, int iteration) {
+        observers.forEach(o -> o.afterEquationsUpdate(equationSystem, iteration));
     }
 
     @Override
@@ -119,18 +119,18 @@ public class MultipleAcLoadFlowObserver implements AcLoadFlowObserver {
     }
 
     @Override
-    public void beforeMacroActionRun(int macroIteration, String macroActionName) {
-        observers.forEach(o -> o.beforeMacroActionRun(macroIteration, macroActionName));
+    public void beforeOuterLoopStatusCheck(int outerLoopIteration, String outerLoopName) {
+        observers.forEach(o -> o.beforeOuterLoopStatusCheck(outerLoopIteration, outerLoopName));
     }
 
     @Override
-    public void afterMacroActionRun(int macroIteration, String macroActionName, boolean cont) {
-        observers.forEach(o -> o.afterMacroActionRun(macroIteration, macroActionName, cont));
+    public void afterOuterLoopStatusCheck(int outerLoopIteration, String outerLoopName, boolean cont) {
+        observers.forEach(o -> o.afterOuterLoopStatusCheck(outerLoopIteration, outerLoopName, cont));
     }
 
     @Override
-    public void endMacroIteration(int macroIteration, String macroActionName) {
-        observers.forEach(o -> o.endMacroIteration(macroIteration, macroActionName));
+    public void afterOuterLoopBody(int outerLoopIteration, String outerLoopName) {
+        observers.forEach(o -> o.afterOuterLoopBody(outerLoopIteration, outerLoopName));
     }
 
     @Override
@@ -141,5 +141,15 @@ public class MultipleAcLoadFlowObserver implements AcLoadFlowObserver {
     @Override
     public void afterNetworkUpdate() {
         observers.forEach(AcLoadFlowObserver::afterNetworkUpdate);
+    }
+
+    @Override
+    public void beforePvBusesReactivePowerUpdate() {
+        observers.forEach(AcLoadFlowObserver::beforePvBusesReactivePowerUpdate);
+    }
+
+    @Override
+    public void afterPvBusesReactivePowerUpdate() {
+        observers.forEach(AcLoadFlowObserver::afterPvBusesReactivePowerUpdate);
     }
 }

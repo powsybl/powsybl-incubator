@@ -160,8 +160,7 @@ public class TestCase1 extends AbstractTestCase {
         assertEquals("EXTERN[FICT_vl_dFictif, b, bbs, d, l]", externCell.getFullId());
         assertEquals(new Position(0, 0), externCell.getMaxBusPosition());
 
-        // build blocks
-        assertTrue(new BlockOrganizer().organize(g));
+        new BlockOrganizer().organize(g);
 
         // assert blocks and nodes rotation
         assertNotNull(externCell.getRootBlock());

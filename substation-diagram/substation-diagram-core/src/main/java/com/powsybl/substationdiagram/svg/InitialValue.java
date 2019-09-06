@@ -13,6 +13,7 @@ import com.powsybl.iidm.network.Branch;
 import com.powsybl.iidm.network.Branch.Side;
 import com.powsybl.iidm.network.Injection;
 import com.powsybl.iidm.network.Load;
+import com.powsybl.iidm.network.ThreeWindingsTransformer;
 import com.powsybl.substationdiagram.svg.SubstationDiagramInitialValueProvider.Direction;
 
 /**
@@ -65,6 +66,19 @@ public class InitialValue {
         Objects.requireNonNull(injection);
         double p = injection.getTerminal().getP();
         double q = injection.getTerminal().getQ();
+        label1 = String.valueOf(Math.round(p));
+        label2 = String.valueOf(Math.round(q));
+        label3 = null;
+        label4 = null;
+        direction1 = p > 0 ? Direction.UP : Direction.DOWN;
+        direction2 = q > 0 ? Direction.UP : Direction.DOWN;
+    }
+
+    public InitialValue(ThreeWindingsTransformer transformer, ThreeWindingsTransformer.Side side) {
+        Objects.requireNonNull(transformer);
+        Objects.requireNonNull(side);
+        double p = transformer.getTerminal(side).getP();
+        double q = transformer.getTerminal(side).getQ();
         label1 = String.valueOf(Math.round(p));
         label2 = String.valueOf(Math.round(q));
         label3 = null;

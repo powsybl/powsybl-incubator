@@ -6,10 +6,13 @@
  */
 package com.powsybl.loadflow.simple.ac.equations;
 
-import com.powsybl.loadflow.simple.equations.*;
+import com.powsybl.loadflow.simple.equations.VariableSet;
+import com.powsybl.loadflow.simple.equations.EquationTerm;
+import com.powsybl.loadflow.simple.equations.Variable;
+import com.powsybl.loadflow.simple.equations.VariableType;
 import com.powsybl.loadflow.simple.network.LfBus;
-import com.powsybl.loadflow.simple.network.LfShunt;
 import com.powsybl.loadflow.simple.network.LfNetwork;
+import com.powsybl.loadflow.simple.network.LfShunt;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,8 +25,6 @@ public class ShuntCompensatorReactiveFlowEquationTerm implements EquationTerm {
 
     private final Variable vVar;
 
-    private final Equation equation;
-
     private final List<Variable> variables;
 
     private final double b;
@@ -33,20 +34,14 @@ public class ShuntCompensatorReactiveFlowEquationTerm implements EquationTerm {
     private double dqdv;
 
     public ShuntCompensatorReactiveFlowEquationTerm(LfShunt shunt, LfBus bus, LfNetwork network,
-                                                    EquationContext equationContext) {
+                                                    VariableSet variableSet) {
         Objects.requireNonNull(shunt);
         Objects.requireNonNull(bus);
         Objects.requireNonNull(network);
-        Objects.requireNonNull(equationContext);
-        equation = equationContext.getEquation(bus.getNum(), EquationType.BUS_Q);
-        vVar = equationContext.getVariable(bus.getNum(), VariableType.BUS_V);
+        Objects.requireNonNull(variableSet);
+        vVar = variableSet.getVariable(bus.getNum(), VariableType.BUS_V);
         variables = Collections.singletonList(vVar);
         b = shunt.getB();
-    }
-
-    @Override
-    public Equation getEquation() {
-        return equation;
     }
 
     @Override

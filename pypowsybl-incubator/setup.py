@@ -96,7 +96,8 @@ setup(
                                      'powsybl-substation-diagram-core-1.0.0-SNAPSHOT.jar',
                                      'powsybl-substation-diagram-util-1.0.0-SNAPSHOT.jar',
                                      'powsybl-substation-diagram-view-1.0.0-SNAPSHOT.jar',
-                                     'xml-apis-ext-1.3.04.jar']
+                                     'xml-apis-ext-1.3.04.jar',
+                                     'jafama-2.3.1.jar']
     },
     classifiers=[
         "Development Status :: 4 - Beta",

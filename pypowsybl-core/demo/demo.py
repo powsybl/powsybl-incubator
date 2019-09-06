@@ -13,11 +13,8 @@ from jpype.types import*
 jpype.startJVM(jpype.getDefaultJVMPath(), "-ea", convertStrings=False)
 
 # imports powsybl classes (java)
-from java.util import Properties
 from java.nio.file import Path, Paths
-from com.powsybl.loadflow import LoadFlow, LoadFlowFactory, LoadFlowResult, LoadFlowParameters
-from com.powsybl.commons.config import ComponentDefaultConfig
-from com.powsybl.computation.local import LocalComputationManager
+from com.powsybl.loadflow import LoadFlow, LoadFlowResult, LoadFlowParameters
 from com.powsybl.iidm.export import Exporters
 from java.io import File
 pimport = jpype.JPackage('com.powsybl.iidm.import_')
@@ -40,10 +37,9 @@ network = pimport.Importers.loadNetwork(Paths.get(xiidmExample))
 dumpLinesFlow(network,"Flow on lines for network: {} - PRE-LOADFLOW".format(network.getId()))
 
 # run a loadflow
-# no references to any LF implementation is defined here, the LF to use is declared in the configuration
-print("\nRunning a LF, network {}".format(network.getId))
-loadFlow = ComponentDefaultConfig.load().newFactoryImpl(LoadFlowFactory).create(network, LocalComputationManager.getDefault(), 0)
-result = loadFlow.run(network.getVariantManager().getWorkingVariantId(), LoadFlowParameters.load()).join()
+# no references to any LF implementation is defined here, the LF to use is either a default one or declared in the configuration
+print("\nRunning a LF, network {}".format(network.getId()))
+result = LoadFlow.run(network, LoadFlowParameters.load())
 print("Loadflow result = isOK: {}, metrics: {}\n".format(result.isOk(), result.getMetrics()))
 
 # dump the network's lines flow, after running a loadflow

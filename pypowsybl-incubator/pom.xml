@@ -29,6 +29,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>net.jafama</groupId>
+            <artifactId>jafama</artifactId>
+        </dependency>
+        <dependency>
             <groupId>xml-apis</groupId>
             <artifactId>xml-apis-ext</artifactId>
             <version>1.3.04</version>

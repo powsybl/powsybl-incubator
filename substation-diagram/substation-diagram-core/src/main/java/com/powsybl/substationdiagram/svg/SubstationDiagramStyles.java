@@ -32,6 +32,12 @@ public final class SubstationDiagramStyles {
         if (temp.length() < 2) {
             temp = StringUtils.leftPad(temp, 2, "_");
         }
+        return escapeId(temp);
+    }
+
+    public static String escapeId(String input) {
+        Objects.requireNonNull(input);
+        String temp = input;
         // class name cannot start with a digit
         temp = Character.isDigit(temp.charAt(0)) ? "d" + temp : temp;
         // class name cannot begin with two hyphens or a hyphen followed by a digit

@@ -44,7 +44,11 @@
             <groupId>org.apache.xmlgraphics</groupId>
             <artifactId>batik-bridge</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>com.powsybl</groupId>
+            <artifactId>powsybl-base-voltage-color</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- powsybl-core dependencies -->
         <dependency>
             <groupId>com.powsybl</groupId>

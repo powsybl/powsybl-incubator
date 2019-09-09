@@ -36,7 +36,7 @@ public class EquationSystem {
 
             // index derivatives per variable then per equation
             for (Equation equation : equations.values()) {
-                if (equation.isToSolve()) {
+                if (equation.isActive()) {
                     sortedEquationsToSolve.add(equation);
                     for (EquationTerm equationTerm : equation.getTerms()) {
                         for (Variable variable : equationTerm.getVariables()) {
@@ -78,6 +78,8 @@ public class EquationSystem {
 
     private final EquationCache equationCache = new EquationCache();
 
+    private final List<EquationSystemListener> listeners = new ArrayList<>();
+
     public EquationSystem(LfNetwork network) {
         this.network = Objects.requireNonNull(network);
     }
@@ -95,6 +97,7 @@ public class EquationSystem {
     private Equation createEquation(Pair<Integer, EquationType> p) {
         Equation equation = new Equation(p.getLeft(), p.getRight(), EquationSystem.this);
         equations.put(p, equation);
+        notifyListeners(equation, EquationEventType.EQUATION_CREATED);
         return equation;
     }
 
@@ -161,5 +164,16 @@ public class EquationSystem {
         for (Variable v : getSortedVariablesToFind().navigableKeySet()) {
             v.updateState(network, x);
         }
+    }
+
+    public void addListener(EquationSystemListener listener) {
+        Objects.requireNonNull(listener);
+        listeners.add(listener);
+    }
+
+    void notifyListeners(Equation equation, EquationEventType eventType) {
+        Objects.requireNonNull(equation);
+        Objects.requireNonNull(eventType);
+        listeners.forEach(listener -> listener.equationListChanged(equation, eventType));
     }
 }

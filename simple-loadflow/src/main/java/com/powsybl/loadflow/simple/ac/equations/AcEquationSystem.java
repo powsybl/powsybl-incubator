@@ -40,11 +40,11 @@ public final class AcEquationSystem {
         for (LfBus bus : network.getBuses()) {
             if (bus.isSlack()) {
                 equationSystem.getEquation(bus.getNum(), BUS_PHI).addTerm(new BusPhaseEquationTerm(bus, variableSet));
-                equationSystem.getEquation(bus.getNum(), BUS_P).setToSolve(false);
+                equationSystem.getEquation(bus.getNum(), BUS_P).setActive(false);
             }
             if (bus.hasVoltageControl()) {
                 equationSystem.getEquation(bus.getNum(), BUS_V).addTerm(new BusVoltageEquationTerm(bus, variableSet));
-                equationSystem.getEquation(bus.getNum(), BUS_Q).setToSolve(false);
+                equationSystem.getEquation(bus.getNum(), BUS_Q).setActive(false);
             }
             for (LfShunt shunt : bus.getShunts()) {
                 ShuntCompensatorReactiveFlowEquationTerm q = new ShuntCompensatorReactiveFlowEquationTerm(shunt, bus, network, variableSet);

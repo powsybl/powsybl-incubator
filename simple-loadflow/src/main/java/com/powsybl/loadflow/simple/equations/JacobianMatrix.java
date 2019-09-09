@@ -50,7 +50,7 @@ public class JacobianMatrix {
 
     private LUDecomposition lu;
 
-    public JacobianMatrix(Matrix matrix, List<PartialDerivative> partialDerivatives) {
+    JacobianMatrix(Matrix matrix, List<PartialDerivative> partialDerivatives) {
         this.matrix = Objects.requireNonNull(matrix);
         this.partialDerivatives = Objects.requireNonNull(partialDerivatives);
     }

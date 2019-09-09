@@ -174,7 +174,7 @@ public class Graph {
 
         @Override
         public void visitLine(Line line, Line.Side side) {
-            addFeeder(FeederNode.create(Graph.this, line, side), line.getTerminal(side));
+            addFeeder(FeederLineNode.create(Graph.this, line, side), line.getTerminal(side));
         }
 
         @Override

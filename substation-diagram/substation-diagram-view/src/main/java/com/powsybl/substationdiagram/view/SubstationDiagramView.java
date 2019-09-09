@@ -24,11 +24,13 @@ public final class SubstationDiagramView extends AbstractContainerDiagramView {
         super(svgImage);
     }
 
-    public static SubstationDiagramView load(InputStream svgInputStream, InputStream metadataInputStream) {
+    public static SubstationDiagramView load(InputStream svgInputStream,
+                                             InputStream metadataInputStream,
+                                             DisplayVoltageLevel displayVL) {
         Objects.requireNonNull(svgInputStream);
         Objects.requireNonNull(metadataInputStream);
 
-        Group svgImage = loadSvgAndMetadata(svgInputStream, metadataInputStream);
+        Group svgImage = loadSvgAndMetadata(svgInputStream, metadataInputStream, displayVL);
 
         return new SubstationDiagramView(svgImage);
     }

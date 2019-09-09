@@ -34,6 +34,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import com.powsybl.substationdiagram.model.FeederBranchNode;
 import org.apache.batik.anim.dom.SVGOMDocument;
 import org.apache.batik.dom.GenericDOMImplementation;
 import org.apache.commons.math3.util.Precision;
@@ -374,6 +375,7 @@ public class SVGWriter {
                 graph.getVoltageLevel().getId(),
                 null,
                 null,
+                null,
                 false,
                 BusCell.Direction.UNDEFINED,
                 false));
@@ -417,8 +419,13 @@ public class SVGWriter {
     }
 
     private void setMetadata(GraphMetadata metadata, Node node, String nodeId, Graph graph, BusCell.Direction direction, AnchorPointProvider anchorPointProvider) {
+        String nextVId = null;
+        if (node instanceof FeederBranchNode) {
+            nextVId = ((FeederBranchNode) node).getVlOtherSide().getId();
+        }
+
         metadata.addNodeMetadata(
-                new GraphMetadata.NodeMetadata(nodeId, graph.getVoltageLevel().getId(),
+                new GraphMetadata.NodeMetadata(nodeId, graph.getVoltageLevel().getId(), nextVId,
                                                node.getComponentType(), node.getRotationAngle(),
                                                node.isOpen(), direction, false));
         if (node.getType() == Node.NodeType.BUS) {
@@ -476,11 +483,15 @@ public class SVGWriter {
         Element gLabel = root.getOwnerDocument().createElement("g");
         gLabel.setAttribute("id", idLabelVoltageLevel);
 
-        drawLabel(graph.getVoltageLevel().getId(), false, graph.getX(), graph.getY(), gLabel, FONT_VOLTAGE_LEVEL_LABEL_SIZE);
+        drawLabel(graph.isUseName()
+                     ? graph.getVoltageLevel().getName()
+                     : graph.getVoltageLevel().getId(),
+                  false, graph.getX(), graph.getY(), gLabel, FONT_VOLTAGE_LEVEL_LABEL_SIZE);
         root.appendChild(gLabel);
 
         metadata.addNodeMetadata(new GraphMetadata.NodeMetadata(idLabelVoltageLevel,
                 graph.getVoltageLevel().getId(),
+                null,
                 null,
                 null,
                 false,

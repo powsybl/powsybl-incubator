@@ -8,6 +8,7 @@ package com.powsybl.loadflow.simple.equations;
 
 import com.google.common.testing.EqualsTester;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import static org.junit.Assert.assertEquals;
 
@@ -18,14 +19,16 @@ public class EquationTest {
 
     @Test
     public void testEquals() {
+        EquationSystem equationSystem = Mockito.mock(EquationSystem.class);
         new EqualsTester()
-                .addEqualityGroup(new Equation(0, EquationType.BUS_P), new Equation(0, EquationType.BUS_P))
-                .addEqualityGroup(new Equation(1, EquationType.BUS_Q), new Equation(1, EquationType.BUS_Q))
+                .addEqualityGroup(new Equation(0, EquationType.BUS_P, equationSystem), new Equation(0, EquationType.BUS_P, equationSystem))
+                .addEqualityGroup(new Equation(1, EquationType.BUS_Q, equationSystem), new Equation(1, EquationType.BUS_Q, equationSystem))
                 .testEquals();
     }
 
     @Test
     public void testToString() {
-        assertEquals("Equation(num=0, type=BUS_P, row=-1)", new Equation(0, EquationType.BUS_P).toString());
+        EquationSystem equationSystem = Mockito.mock(EquationSystem.class);
+        assertEquals("Equation(num=0, type=BUS_P, row=-1)", new Equation(0, EquationType.BUS_P, equationSystem).toString());
     }
 }

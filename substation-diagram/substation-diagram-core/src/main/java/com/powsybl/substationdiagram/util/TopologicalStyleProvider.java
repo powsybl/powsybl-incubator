@@ -66,8 +66,7 @@ public class TopologicalStyleProvider extends DefaultSubstationDiagramStyleProvi
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-        disconnectedColor = baseVoltageColor.getColor(0, "RTE") != null ? baseVoltageColor.getColor(0, "RTE")
-                : DISCONNECTED_COLOR;
+        disconnectedColor = getBaseColor(0, "RTE", DISCONNECTED_COLOR);
     }
 
     private RGBColor getBusColor(Node node) {
@@ -77,7 +76,7 @@ public class TopologicalStyleProvider extends DefaultSubstationDiagramStyleProvi
     }
 
     private HashMap<String, RGBColor> getColorMap(VoltageLevel vl) {
-        String basecolor = baseVoltageColor.getColor(vl.getNominalV(), "RTE") != null ? baseVoltageColor.getColor(vl.getNominalV(), "RTE") : DEFAULT_COLOR;
+        String basecolor = getBaseColor(vl.getNominalV(), "RTE", DEFAULT_COLOR);
 
         AtomicInteger idxColor = new AtomicInteger(0);
         long buses = vl.getBusView().getBusStream().count();
@@ -142,6 +141,11 @@ public class TopologicalStyleProvider extends DefaultSubstationDiagramStyleProvi
             });
         });
         return colorMap;
+    }
+
+    private String getBaseColor(double v, String profile, String defaultColor) {
+        return baseVoltageColor.getColor(v, profile) != null ? baseVoltageColor.getColor(v, profile) : defaultColor;
+
     }
 
     @Override

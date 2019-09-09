@@ -16,13 +16,13 @@ public class TestRGBColor {
         RGBColor color = RGBColor.parse(red);
         assertEquals(red, color.toString());
         assertEquals(new RGBColor(255, 0, 0), color);
-        assertEquals(color.getRed(), 255);
-        assertEquals(color.getGreen(), 0);
-        assertEquals(color.getBlue(), 0);
+        assertEquals(255, color.getRed());
+        assertEquals(0, color.getGreen());
+        assertEquals(0, color.getBlue());
         double factor = 0.7d;
         List<RGBColor> gradient = color.getColorGradient(3, factor);
-        assertEquals(gradient.size(), 3);
-        assertEquals(gradient.get(0), color.getBrighter(factor));
-        assertEquals(gradient.get(2).toString(), "#CB0000");
+        assertEquals(3, gradient.size());
+        assertEquals(color.getBrighter(factor), gradient.get(0));
+        assertEquals("#CB0000", gradient.get(2).toString());
     }
 }

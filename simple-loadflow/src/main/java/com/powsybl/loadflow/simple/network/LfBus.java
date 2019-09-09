@@ -7,6 +7,7 @@
 package com.powsybl.loadflow.simple.network;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -23,6 +24,8 @@ public interface LfBus {
 
     boolean hasVoltageControl();
 
+    void setVoltageControl(boolean voltageControl);
+
     double getTargetP();
 
     double getTargetQ();
@@ -36,6 +39,8 @@ public interface LfBus {
     void setGenerationTargetP(double generationTargetP);
 
     double getGenerationTargetQ();
+
+    void setGenerationTargetQ(double generationTargetQ);
 
     double getTargetV();
 
@@ -64,6 +69,8 @@ public interface LfBus {
     double getNominalV();
 
     List<LfShunt> getShunts();
+
+    Optional<LfReactiveDiagram> getReactiveDiagram();
 
     int getNeighbors();
 

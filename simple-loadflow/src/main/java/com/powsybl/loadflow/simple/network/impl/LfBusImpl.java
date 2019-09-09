@@ -10,6 +10,7 @@ import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.*;
 import com.powsybl.iidm.network.extensions.ActivePowerControl;
 import com.powsybl.loadflow.simple.network.AbstractLfBus;
+import com.powsybl.loadflow.simple.network.LfReactiveDiagram;
 import com.powsybl.loadflow.simple.network.LfShunt;
 import com.powsybl.loadflow.simple.network.PerUnit;
 
@@ -34,6 +35,8 @@ public class LfBusImpl extends AbstractLfBus {
 
     private double generationTargetP = 0;
 
+    private double initialGenerationTargetQ = 0;
+
     private double generationTargetQ = 0;
 
     private double minP = Double.NaN;
@@ -51,6 +54,8 @@ public class LfBusImpl extends AbstractLfBus {
     private final Map<Generator, Double> participatingGenerators = new HashMap<>();
 
     private final List<Generator> generators = new ArrayList<>();
+
+    private LfReactiveDiagram reactiveDiagram;
 
     public LfBusImpl(Bus bus, int num, double v, double angle) {
         super(num, v, angle);
@@ -71,6 +76,11 @@ public class LfBusImpl extends AbstractLfBus {
     @Override
     public boolean hasVoltageControl() {
         return voltageControl;
+    }
+
+    @Override
+    public void setVoltageControl(boolean voltageControl) {
+        this.voltageControl = voltageControl;
     }
 
     private void checkTargetV(double targetV) {
@@ -106,16 +116,23 @@ public class LfBusImpl extends AbstractLfBus {
     void addGenerator(Generator generator) {
         generators.add(generator);
 
-        initialGenerationTargetP += generator.getTargetP();
         generationTargetP += generator.getTargetP();
+        initialGenerationTargetP = generationTargetP;
         if (generator.isVoltageRegulatorOn()) {
             checkTargetV(generator.getTargetV());
             targetV = generator.getTargetV();
             voltageControl = true;
         } else {
             generationTargetQ += generator.getTargetQ();
+            initialGenerationTargetQ = generationTargetQ;
         }
         setActivePowerLimits(generator.getMinP(), generator.getMaxP());
+
+        if (reactiveDiagram == null) {
+            reactiveDiagram = new LfReactiveDiagramImpl(generator.getReactiveLimits());
+        } else {
+            reactiveDiagram = LfReactiveDiagram.merge(reactiveDiagram, new LfReactiveDiagramImpl(generator.getReactiveLimits()));
+        }
 
         // get participation factor from extension
         if (Math.abs(generator.getTargetP()) > 0) {
@@ -142,16 +159,24 @@ public class LfBusImpl extends AbstractLfBus {
         double targetP = line.getConverterStation1() == vscCs && line.getConvertersMode() == HvdcLine.ConvertersMode.SIDE_1_RECTIFIER_SIDE_2_INVERTER
                 ? line.getActivePowerSetpoint()
                 : -line.getActivePowerSetpoint();
-        initialGenerationTargetP += targetP;
         generationTargetP += targetP;
+        initialGenerationTargetP = generationTargetP;
         if (vscCs.isVoltageRegulatorOn()) {
             checkTargetV(vscCs.getVoltageSetpoint());
             targetV = vscCs.getVoltageSetpoint();
             voltageControl = true;
         } else {
             generationTargetQ += vscCs.getReactivePowerSetpoint();
+            initialGenerationTargetQ = generationTargetQ;
         }
+
         setActivePowerLimits(-line.getMaxP(), line.getMaxP());
+
+        if (reactiveDiagram == null) {
+            reactiveDiagram = new LfReactiveDiagramImpl(vscCs.getReactiveLimits());
+        } else {
+            reactiveDiagram = LfReactiveDiagram.merge(reactiveDiagram, new LfReactiveDiagramImpl(vscCs.getReactiveLimits()));
+        }
     }
 
     void addShuntCompensator(ShuntCompensator sc) {
@@ -171,6 +196,11 @@ public class LfBusImpl extends AbstractLfBus {
     @Override
     public double getGenerationTargetQ() {
         return generationTargetQ / PerUnit.SB;
+    }
+
+    @Override
+    public void setGenerationTargetQ(double generationTargetQ) {
+        this.generationTargetQ = generationTargetQ * PerUnit.SB;
     }
 
     @Override
@@ -243,6 +273,11 @@ public class LfBusImpl extends AbstractLfBus {
     }
 
     @Override
+    public Optional<LfReactiveDiagram> getReactiveDiagram() {
+        return Optional.ofNullable(reactiveDiagram);
+    }
+
+    @Override
     public void updateState() {
         bus.setV(v).setAngle(angle);
 
@@ -257,9 +292,15 @@ public class LfBusImpl extends AbstractLfBus {
         }
 
         // update generator reactive power
-        if (!Double.isNaN(q)) {
+        if (voltageControl) {
             for (Generator generator : generators) {
                 generator.getTerminal().setQ(q / generators.size());
+            }
+        } else {
+            if (generationTargetQ != initialGenerationTargetQ) {
+                for (Generator generator : generators) {
+                    generator.getTerminal().setQ(generationTargetQ / generators.size());
+                }
             }
         }
     }

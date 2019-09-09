@@ -35,7 +35,7 @@ public class NewtonRaphson implements AutoCloseable {
 
     private int iteration = 0;
 
-    private Jacobian j;
+    private JacobianMatrix j;
 
     private double[] x;
 
@@ -56,7 +56,7 @@ public class NewtonRaphson implements AutoCloseable {
             observer.beforeJacobianBuild(iteration);
 
             if (j == null) {
-                j = equationSystem.buildJacobian(matrixFactory);
+                j = JacobianMatrix.create(equationSystem, matrixFactory);
             } else {
                 j.update();
             }

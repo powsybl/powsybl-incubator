@@ -8,14 +8,14 @@ package com.powsybl.loadflow.simple.equations;
 
 import com.powsybl.math.matrix.LUDecomposition;
 import com.powsybl.math.matrix.Matrix;
+import com.powsybl.math.matrix.MatrixFactory;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class Jacobian {
+public class JacobianMatrix {
 
     static final class PartialDerivative {
 
@@ -50,9 +50,37 @@ public class Jacobian {
 
     private LUDecomposition lu;
 
-    public Jacobian(Matrix matrix, List<PartialDerivative> partialDerivatives) {
+    public JacobianMatrix(Matrix matrix, List<PartialDerivative> partialDerivatives) {
         this.matrix = Objects.requireNonNull(matrix);
         this.partialDerivatives = Objects.requireNonNull(partialDerivatives);
+    }
+
+    public static JacobianMatrix create(EquationSystem equationSystem, MatrixFactory matrixFactory) {
+        Objects.requireNonNull(equationSystem);
+        Objects.requireNonNull(matrixFactory);
+
+        int rowCount = equationSystem.getSortedEquationsToSolve().size();
+        int columnCount = equationSystem.getSortedVariablesToFind().size();
+
+        int estimatedNonZeroValueCount = rowCount * 3;
+        Matrix j = matrixFactory.create(rowCount, columnCount, estimatedNonZeroValueCount);
+        List<JacobianMatrix.PartialDerivative> partialDerivatives = new ArrayList<>(estimatedNonZeroValueCount);
+
+        for (Map.Entry<Variable, NavigableMap<Equation, List<EquationTerm>>> e : equationSystem.getSortedVariablesToFind().entrySet()) {
+            Variable var = e.getKey();
+            int column = var.getColumn();
+            for (Map.Entry<Equation, List<EquationTerm>> e2 : e.getValue().entrySet()) {
+                Equation eq = e2.getKey();
+                int row = eq.getRow();
+                for (EquationTerm equationTerm : e2.getValue()) {
+                    double value = equationTerm.der(var);
+                    Matrix.Element element = j.addAndGetElement(row, column, value);
+                    partialDerivatives.add(new JacobianMatrix.PartialDerivative(equationTerm, element, var));
+                }
+            }
+        }
+
+        return new JacobianMatrix(j, partialDerivatives);
     }
 
     public Matrix getMatrix() {

@@ -129,7 +129,7 @@ public class AcLoadFlowProfiler extends DefaultAcLoadFlowObserver {
     @Override
     public void afterOuterLoopStatusCheck(int outerLoopIteration, String outerLoopName, boolean stable) {
         stopwatch.stop();
-        LOGGER.debug(PERFORMANCE_MARKER, "Outer loop '{}' check done in {} us", outerLoopName, stopwatch.elapsed(TimeUnit.MICROSECONDS));
+        LOGGER.debug(PERFORMANCE_MARKER, "Outer loop '{}' check done in {} ms", outerLoopName, stopwatch.elapsed(TimeUnit.MILLISECONDS));
     }
 
     @Override

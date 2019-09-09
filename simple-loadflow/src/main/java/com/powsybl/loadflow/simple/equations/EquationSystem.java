@@ -7,8 +7,6 @@
 package com.powsybl.loadflow.simple.equations;
 
 import com.powsybl.loadflow.simple.network.LfNetwork;
-import com.powsybl.math.matrix.Matrix;
-import com.powsybl.math.matrix.MatrixFactory;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
@@ -21,9 +19,9 @@ public class EquationSystem {
 
     private final LfNetwork network;
 
-    private class EquationIndex {
+    private final Map<Pair<Integer, EquationType>, Equation> equations = new HashMap<>();
 
-        private final Map<Pair<Integer, EquationType>, Equation> equations = new HashMap<>();
+    private class EquationCache {
 
         private boolean invalide = false;
 
@@ -63,24 +61,8 @@ public class EquationSystem {
             invalide = false;
         }
 
-        private Equation getEquation(int num, EquationType type) {
-            Pair<Integer, EquationType> p = Pair.of(num, type);
-            Equation equation = equations.get(p);
-            if (equation == null) {
-                equation = createEquation(p);
-                invalide = true;
-            }
-            return equation;
-        }
-
-        private Equation createEquation(Pair<Integer, EquationType> p) {
-            Equation equation = new Equation(p.getLeft(), p.getRight(), EquationSystem.this);
-            equations.put(p, equation);
-            return equation;
-        }
-
-        private Collection<Equation> getEquations() {
-            return equations.values();
+        void invalidate() {
+            invalide = true;
         }
 
         private NavigableSet<Equation> getSortedEquationsToSolve() {
@@ -94,109 +76,90 @@ public class EquationSystem {
         }
     }
 
-    private final EquationIndex index = new EquationIndex();
+    private final EquationCache equationCache = new EquationCache();
 
     public EquationSystem(LfNetwork network) {
         this.network = Objects.requireNonNull(network);
     }
 
     public Equation getEquation(int num, EquationType type) {
-        return index.getEquation(num, type);
+        Pair<Integer, EquationType> p = Pair.of(num, type);
+        Equation equation = equations.get(p);
+        if (equation == null) {
+            equation = createEquation(p);
+            equationCache.invalidate();
+        }
+        return equation;
     }
 
-    public Collection<Equation> getEquations() {
-        return index.getEquations();
+    private Equation createEquation(Pair<Integer, EquationType> p) {
+        Equation equation = new Equation(p.getLeft(), p.getRight(), EquationSystem.this);
+        equations.put(p, equation);
+        return equation;
     }
 
-    public SortedSet<Equation> getEquationsToSolve() {
-        return index.getSortedEquationsToSolve();
+    public SortedSet<Equation> getSortedEquationsToSolve() {
+        return equationCache.getSortedEquationsToSolve();
     }
 
-    public SortedSet<Variable> getVariablesToFind() {
-        return index.getSortedVariablesToFind().navigableKeySet();
+    public NavigableMap<Variable, NavigableMap<Equation, List<EquationTerm>>> getSortedVariablesToFind() {
+        return equationCache.getSortedVariablesToFind();
     }
 
     public List<String> getRowNames() {
-        return getEquationsToSolve().stream()
+        return getSortedEquationsToSolve().stream()
                 .map(eq -> network.getBus(eq.getNum()).getId() + "/" + eq.getType())
                 .collect(Collectors.toList());
     }
 
     public List<String> getColumnNames() {
-        return getVariablesToFind().stream()
+        return getSortedVariablesToFind().navigableKeySet().stream()
                 .map(v -> network.getBus(v.getNum()).getId() + "/" + v.getType())
                 .collect(Collectors.toList());
     }
 
     public double[] createStateVector(VoltageInitializer initializer) {
-        double[] x = new double[getVariablesToFind().size()];
-        for (Variable v : getVariablesToFind()) {
+        double[] x = new double[getSortedVariablesToFind().size()];
+        for (Variable v : getSortedVariablesToFind().navigableKeySet()) {
             v.initState(initializer, network, x);
         }
         return x;
     }
 
     public double[] createTargetVector() {
-        double[] targets = new double[index.getSortedEquationsToSolve().size()];
-        for (Equation equation : index.getSortedEquationsToSolve()) {
+        double[] targets = new double[equationCache.getSortedEquationsToSolve().size()];
+        for (Equation equation : equationCache.getSortedEquationsToSolve()) {
             equation.initTarget(network, targets);
         }
         return targets;
     }
 
     public double[] createEquationVector() {
-        double[] fx = new double[index.getSortedEquationsToSolve().size()];
+        double[] fx = new double[equationCache.getSortedEquationsToSolve().size()];
         updateEquationVector(fx);
         return fx;
     }
 
     public void updateEquationVector(double[] fx) {
-        if (fx.length != index.getSortedEquationsToSolve().size()) {
+        if (fx.length != equationCache.getSortedEquationsToSolve().size()) {
             throw new IllegalArgumentException("Bad equation vector length: " + fx.length);
         }
         Arrays.fill(fx, 0);
-        for (Equation equation : index.getSortedEquationsToSolve()) {
+        for (Equation equation : equationCache.getSortedEquationsToSolve()) {
             fx[equation.getRow()] = equation.eval();
         }
     }
 
     public void updateEquations(double[] x) {
-        for (Equation equation : index.getEquations()) {
+        for (Equation equation : equations.values()) {
             equation.update(x);
         }
     }
 
     public void updateNetwork(double[] x) {
         // update state variable
-        for (Variable v : getVariablesToFind()) {
+        for (Variable v : getSortedVariablesToFind().navigableKeySet()) {
             v.updateState(network, x);
         }
-    }
-
-    public Jacobian buildJacobian(MatrixFactory matrixFactory) {
-        Objects.requireNonNull(matrixFactory);
-
-        int rowCount = index.getSortedEquationsToSolve().size();
-        int columnCount = index.getSortedVariablesToFind().size();
-
-        int estimatedNonZeroValueCount = rowCount * 3;
-        Matrix j = matrixFactory.create(rowCount, columnCount, estimatedNonZeroValueCount);
-        List<Jacobian.PartialDerivative> partialDerivatives = new ArrayList<>(estimatedNonZeroValueCount);
-
-        for (Map.Entry<Variable, NavigableMap<Equation, List<EquationTerm>>> e : index.getSortedVariablesToFind().entrySet()) {
-            Variable var = e.getKey();
-            int column = var.getColumn();
-            for (Map.Entry<Equation, List<EquationTerm>> e2 : e.getValue().entrySet()) {
-                Equation eq = e2.getKey();
-                int row = eq.getRow();
-                for (EquationTerm equationTerm : e2.getValue()) {
-                    double value = equationTerm.der(var);
-                    Matrix.Element element = j.addAndGetElement(row, column, value);
-                    partialDerivatives.add(new Jacobian.PartialDerivative(equationTerm, element, var));
-                }
-            }
-        }
-
-        return new Jacobian(j, partialDerivatives);
     }
 }

@@ -62,6 +62,8 @@ public class AcloadFlowEngine {
                 if (bus.hasVoltageControl()) {
                     Equation q = equationSystem.getEquation(bus.getNum(), EquationType.BUS_Q);
                     bus.setQ(q.eval());
+                } else {
+                    bus.setQ(Double.NaN);
                 }
             }
 

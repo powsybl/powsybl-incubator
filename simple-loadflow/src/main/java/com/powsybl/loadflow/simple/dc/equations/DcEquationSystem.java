@@ -35,7 +35,7 @@ public final class DcEquationSystem {
         for (LfBus bus : network.getBuses()) {
             if (bus.isSlack()) {
                 equationSystem.getEquation(bus.getNum(), BUS_PHI).addTerm(new BusPhaseEquationTerm(bus, variableSet));
-                equationSystem.getEquation(bus.getNum(), EquationType.BUS_P).setToSolve(false);
+                equationSystem.getEquation(bus.getNum(), EquationType.BUS_P).setActive(false);
             }
         }
 

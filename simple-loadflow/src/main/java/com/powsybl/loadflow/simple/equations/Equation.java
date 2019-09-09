@@ -30,9 +30,9 @@ public class Equation implements Evaluable, Comparable<Equation> {
     private int row = -1;
 
     /**
-     * true if this equation term is par of an equation that is part of a system to solve, false otherwise
+     * true if this equation term active, false otherwise
      */
-    private boolean toSolve = true;
+    private boolean active = true;
 
     private final List<EquationTerm> terms = new ArrayList<>();
 
@@ -62,12 +62,15 @@ public class Equation implements Evaluable, Comparable<Equation> {
         this.row = row;
     }
 
-    public boolean isToSolve() {
-        return toSolve;
+    public boolean isActive() {
+        return active;
     }
 
-    public void setToSolve(boolean toSolve) {
-        this.toSolve = toSolve;
+    public void setActive(boolean active) {
+        if (active != this.active) {
+            this.active = active;
+            equationSystem.notifyListeners(this, active ? EquationEventType.EQUATION_ACTIVATED : EquationEventType.EQUATION_DEACTIVATED);
+        }
     }
 
     public Equation addTerm(EquationTerm term) {

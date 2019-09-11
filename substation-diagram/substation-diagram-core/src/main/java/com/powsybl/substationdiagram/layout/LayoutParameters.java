@@ -55,6 +55,7 @@ public class LayoutParameters {
     private boolean shiftFeedersPosition = false;
 
     private double scaleShiftFeedersPosition = 1;
+    private boolean avoidSVGComponentsDuplication = false;
 
     @JsonCreator
     public LayoutParameters() {
@@ -83,7 +84,8 @@ public class LayoutParameters {
                             @JsonProperty("showInductorFor3WT") boolean showInductorFor3WT,
                             @JsonProperty("diagramName") String diagramName,
                             @JsonProperty("shiftFeedersPosition") boolean shiftFeedersPosition,
-                            @JsonProperty("scaleShiftFeedersPosition") double scaleShiftFeedersPosition) {
+                            @JsonProperty("scaleShiftFeedersPosition") double scaleShiftFeedersPosition,
+                            @JsonProperty("avoidSVGComponentsDuplication") boolean avoidSVGComponentsDuplication) {
         this.translateX = translateX;
         this.translateY = translateY;
         this.initialXBus = initialXBus;
@@ -107,6 +109,7 @@ public class LayoutParameters {
         this.diagramName = diagramName;
         this.shiftFeedersPosition = shiftFeedersPosition;
         this.scaleShiftFeedersPosition = scaleShiftFeedersPosition;
+        this.avoidSVGComponentsDuplication = avoidSVGComponentsDuplication;
     }
 
     public LayoutParameters(LayoutParameters other) {
@@ -134,6 +137,7 @@ public class LayoutParameters {
         diagramName = other.diagramName;
         shiftFeedersPosition = other.shiftFeedersPosition;
         scaleShiftFeedersPosition = other.scaleShiftFeedersPosition;
+        avoidSVGComponentsDuplication = other.avoidSVGComponentsDuplication;
     }
 
     public double getTranslateX() {
@@ -343,4 +347,12 @@ public class LayoutParameters {
         return this;
     }
 
+    public boolean isAvoidSVGComponentsDuplication() {
+        return avoidSVGComponentsDuplication;
+    }
+
+    public LayoutParameters setAvoidSVGComponentsDuplication(boolean avoidSVGComponentsDuplication) {
+        this.avoidSVGComponentsDuplication = avoidSVGComponentsDuplication;
+        return this;
+    }
 }

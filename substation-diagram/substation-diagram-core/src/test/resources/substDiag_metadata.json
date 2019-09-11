@@ -2872,6 +2872,7 @@
     "showInductorFor3WT" : false,
     "diagramName" : null,
     "shiftFeedersPosition" : false,
-    "scaleShiftFeedersPosition" : 1.0
+    "scaleShiftFeedersPosition" : 1.0,
+    "avoidSVGComponentsDuplication" : false
   }
 }

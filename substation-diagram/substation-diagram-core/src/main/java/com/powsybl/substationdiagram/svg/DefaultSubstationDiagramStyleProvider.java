@@ -17,6 +17,8 @@ import java.io.UncheckedIOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -54,9 +56,9 @@ public class DefaultSubstationDiagramStyleProvider implements SubstationDiagramS
     }
 
     @Override
-    public Optional<String> getNodeStyle(Node node) {
+    public Optional<String> getNodeStyle(Node node, boolean avoidSVGComponentsDuplication) {
         Objects.requireNonNull(node);
-        if (node.getType() == Node.NodeType.SWITCH) {
+        if (node.getType() == Node.NodeType.SWITCH && !avoidSVGComponentsDuplication) {
             try {
                 StringBuilder style = new StringBuilder();
                 String className = escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name()));
@@ -71,7 +73,7 @@ public class DefaultSubstationDiagramStyleProvider implements SubstationDiagramS
                 throw new UncheckedIOException(e);
             }
         }
-        if (node instanceof FeederNode) {
+        if (node instanceof FeederNode && !avoidSVGComponentsDuplication) {
             try {
                 StringBuilder style = new StringBuilder();
                 style.append(ARROW1).append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
@@ -125,5 +127,14 @@ public class DefaultSubstationDiagramStyleProvider implements SubstationDiagramS
     @Override
     public Optional<String> getColor(VoltageLevel vl) {
         return Optional.empty();
+    }
+
+    @Override
+    public Map<String, String> getAttributesArrow(int num) {
+        Map<String, String> ret = new HashMap<>();
+        ret.put("stroke", num == 1 ? "black" : "blue");
+        ret.put("fill", num == 1 ? "black" : "blue");
+        ret.put("fill-opacity", "1");
+        return ret;
     }
 }

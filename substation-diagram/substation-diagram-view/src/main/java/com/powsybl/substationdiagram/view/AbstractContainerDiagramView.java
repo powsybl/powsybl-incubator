@@ -102,6 +102,10 @@ public abstract class AbstractContainerDiagramView extends BorderPane {
                                         Map<String, NodeHandler> nodeHandlers,
                                         Map<String, VoltageLevelHandler> vlHandlers,
                                         DisplayVoltageLevel displayVL) {
+        if (node == null) {
+            return;
+        }
+
         if (!StringUtils.isEmpty(node.getId())) {
             GraphMetadata.NodeMetadata nodeMetadata = metadata.getNodeMetadata(node.getId());
             if (nodeMetadata != null) {
@@ -166,7 +170,9 @@ public abstract class AbstractContainerDiagramView extends BorderPane {
     }
 
     private static void setNodeVisibility(Group node, GraphMetadata.NodeMetadata nodeMetadata) {
-        node.getChildren().forEach(child -> child.setVisible((nodeMetadata.isOpen() && child.getId().equals("open")) || (!nodeMetadata.isOpen() && child.getId().equals("closed"))));
+        node.getChildren().forEach(child ->
+                child.setVisible((nodeMetadata.isOpen() && child.getId().endsWith("open"))
+                        || (!nodeMetadata.isOpen() && child.getId().endsWith("closed"))));
     }
 
     private static void installHandlers(Node node, GraphMetadata metadata,
@@ -191,7 +197,13 @@ public abstract class AbstractContainerDiagramView extends BorderPane {
                                               InputStream metadataInputStream,
                                               DisplayVoltageLevel displayVL) {
         // convert svg file to JavaFX components
-        Group svgImage = new SvgLoader().loadSvg(svgInputStream);
+        Group svgImage = null;
+        try {
+            svgImage = new SvgLoader().loadSvg(svgInputStream);
+        } catch (Exception e) {
+            // to feed the content of the 'SVG' and 'Metadata' tab, even if the
+            // svg diagram cannot be loaded by svg loader
+        }
 
         // load metadata
         GraphMetadata metadata = GraphMetadata.parseJson(metadataInputStream);

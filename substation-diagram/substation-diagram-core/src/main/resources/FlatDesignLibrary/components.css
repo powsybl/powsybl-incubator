@@ -8,7 +8,7 @@
 #circle44 {fill:#276767;}
 
  .BREAKER {
-	fill:#008080;fill-opacity:1;stroke-width:0.41314608
+	fill:#008080;fill-opacity:1;stroke:#008080;stroke-width:3;
 }
 #rect1181 {fill:#008080;fill-opacity:1;stroke-width:1.0016712;}
 #path1183 {opacity:0.5;vector-effect:none;fill:#4d4d4d;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;}
@@ -29,7 +29,7 @@
 
 
 .DISCONNECTOR {
-	fill:#008080;fill-opacity:1;stroke-width:0.40066847;
+	fill:#008080;fill-opacity:1;stroke:#008080;stroke-width:3;
 }
 .GENERATOR{
 	fill:#008080;stroke-width:1.29108143;fill-opacity:1;

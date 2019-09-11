@@ -155,7 +155,8 @@ public class LfBusImpl extends AbstractLfBus {
         }
     }
 
-    void addVscConverterStation(VscConverterStation vscCs, HvdcLine line) {
+    void addVscConverterStation(VscConverterStation vscCs) {
+        HvdcLine line = vscCs.getHvdcLine();
         double targetP = line.getConverterStation1() == vscCs && line.getConvertersMode() == HvdcLine.ConvertersMode.SIDE_1_RECTIFIER_SIDE_2_INVERTER
                 ? line.getActivePowerSetpoint()
                 : -line.getActivePowerSetpoint();

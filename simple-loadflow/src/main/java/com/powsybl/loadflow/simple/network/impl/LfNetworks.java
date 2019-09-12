@@ -43,7 +43,7 @@ public final class LfNetworks {
     private LfNetworks() {
     }
 
-    private static List<LfBus> createBuses(List<Bus> buses, Map<HvdcConverterStation, HvdcLine> hvdcLines, CreationContext creationContext) {
+    private static List<LfBus> createBuses(List<Bus> buses, CreationContext creationContext) {
         List<LfBus> lfBuses = new ArrayList<>(buses.size());
         int[] generatorCount = new int[1];
 
@@ -112,18 +112,13 @@ public final class LfNetworks {
                 public void visitHvdcConverterStation(HvdcConverterStation<?> converterStation) {
                     switch (converterStation.getHvdcType()) {
                         case VSC:
-                            visitVscConverterStation((VscConverterStation) converterStation);
+                            lfBus.addVscConverterStation((VscConverterStation) converterStation);
                             break;
                         case LCC:
                             throw new UnsupportedOperationException("TODO: LCC");
                         default:
                             throw new IllegalStateException("Unknown HVDC converter station type: " + converterStation.getHvdcType());
                     }
-                }
-
-                private void visitVscConverterStation(VscConverterStation vscCs) {
-                    HvdcLine line = hvdcLines.get(vscCs);
-                    lfBus.addVscConverterStation(vscCs, line);
                 }
             });
         }
@@ -196,10 +191,9 @@ public final class LfNetworks {
         return lfBus;
     }
 
-    private static LfNetwork create(List<Bus> buses, SlackBusSelector slackBusSelector,
-                                    Map<HvdcConverterStation, HvdcLine> hvdcLines) {
+    private static LfNetwork create(List<Bus> buses, SlackBusSelector slackBusSelector) {
         CreationContext creationContext = new CreationContext();
-        List<LfBus> lfBuses = createBuses(buses, hvdcLines, creationContext);
+        List<LfBus> lfBuses = createBuses(buses, creationContext);
         List<LfBranch> lfBranches = createBranches(lfBuses, creationContext);
         return new LfNetwork(lfBuses, lfBranches, slackBusSelector);
     }
@@ -218,16 +212,9 @@ public final class LfNetworks {
             }
         }
 
-        // hack because there is no way to get HVDC line from converter station
-        Map<HvdcConverterStation, HvdcLine> hvdcLines = new HashMap<>();
-        for (HvdcLine line : network.getHvdcLines()) {
-            hvdcLines.put(line.getConverterStation1(), line);
-            hvdcLines.put(line.getConverterStation2(), line);
-        }
-
         List<LfNetwork> lfNetworks = buseByCc.entrySet().stream()
                 .filter(e -> e.getKey() == ComponentConstants.MAIN_NUM)
-                .map(e -> create(e.getValue(), slackBusSelector, hvdcLines))
+                .map(e -> create(e.getValue(), slackBusSelector))
                 .collect(Collectors.toList());
 
         stopwatch.stop();

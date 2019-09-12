@@ -36,7 +36,7 @@ public class SubstationGraph {
 
     private final List<Graph> nodes = new ArrayList<>();
 
-    private final List<Edge> edges = new ArrayList<>();
+    private final List<TwtEdge> edges = new ArrayList<>();
 
     private final Map<String, Graph> nodesById = new HashMap<>();
 
@@ -93,7 +93,7 @@ public class SubstationGraph {
             Node n1 = g1.getNode(id1);
             Node n2 = g2.getNode(id2);
 
-            addEdge(n1, n2);
+            addEdge(transfo.getId(), n1, n2);
         }
 
         // Three windings transformer
@@ -129,9 +129,9 @@ public class SubstationGraph {
             Node n31 = g3.getNode(id31);
             Node n32 = g3.getNode(id32);
 
-            addEdge(n12, n21);
-            addEdge(n13, n31);
-            addEdge(n23, n32);
+            addEdge(transfo.getId(), n12, n21);
+            addEdge(transfo.getId(), n13, n31);
+            addEdge(transfo.getId(), n23, n32);
         }
     }
 
@@ -145,8 +145,8 @@ public class SubstationGraph {
         return nodesById.get(id);
     }
 
-    public void addEdge(Node n1, Node n2) {
-        Edge sl = new Edge(n1, n2);
+    public void addEdge(String twtId, Node n1, Node n2) {
+        TwtEdge sl = new TwtEdge(twtId, n1, n2);
         edges.add(sl);
     }
 
@@ -154,7 +154,7 @@ public class SubstationGraph {
         return new ArrayList<>(nodes);
     }
 
-    public List<Edge> getEdges() {
+    public List<TwtEdge> getEdges() {
         return new ArrayList<>(edges);
     }
 

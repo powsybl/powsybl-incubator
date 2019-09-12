@@ -6,22 +6,17 @@
  */
 package com.powsybl.substationdiagram.cgmes;
 
+import java.util.Objects;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.powsybl.cgmes.iidm.extensions.dl.NetworkDiagramData;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
 import com.powsybl.substationdiagram.layout.SubstationLayout;
-import com.powsybl.substationdiagram.model.BusCell.Direction;
-import com.powsybl.substationdiagram.model.Edge;
 import com.powsybl.substationdiagram.model.Graph;
-import com.powsybl.substationdiagram.model.Side;
 import com.powsybl.substationdiagram.model.SubstationGraph;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 /**
  *
@@ -66,14 +61,6 @@ public class CgmesSubstationLayout extends AbstractCgmesLayout implements Substa
                 vlGraph.getNodes().forEach(node -> scaleNodeCoordinates(node, layoutParam.getScaleFactor()));
             }
         }
-    }
-
-    @Override
-    public List<Double> calculatePolylineSnakeLine(LayoutParameters layoutParam, Edge edge,
-            Map<Direction, Integer> nbSnakeLinesTopBottom, Map<Side, Integer> nbSnakeLinesLeftRight,
-            Map<String, Integer> nbSnakeLinesBetween, Map<String, Integer> nbSnakeLinesBottomVL,
-            Map<String, Integer> nbSnakeLinesTopVL) {
-        return Collections.emptyList();
     }
 
 }

@@ -18,12 +18,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -34,7 +31,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import com.powsybl.substationdiagram.model.FeederBranchNode;
 import org.apache.batik.anim.dom.SVGOMDocument;
 import org.apache.batik.dom.GenericDOMImplementation;
 import org.apache.commons.math3.util.Precision;
@@ -51,12 +47,7 @@ import com.powsybl.commons.exceptions.UncheckedTransformerException;
 import com.powsybl.iidm.network.ThreeWindingsTransformer;
 import com.powsybl.iidm.network.TwoWindingsTransformer;
 import com.powsybl.iidm.network.VoltageLevel;
-import com.powsybl.substationdiagram.layout.HorizontalSubstationLayoutFactory;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
-import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayoutFactory;
-import com.powsybl.substationdiagram.layout.SubstationLayout;
-import com.powsybl.substationdiagram.layout.SubstationLayoutFactory;
-import com.powsybl.substationdiagram.layout.VoltageLevelLayoutFactory;
 import com.powsybl.substationdiagram.library.AnchorOrientation;
 import com.powsybl.substationdiagram.library.AnchorPoint;
 import com.powsybl.substationdiagram.library.AnchorPointProvider;
@@ -69,12 +60,13 @@ import com.powsybl.substationdiagram.model.BusNode;
 import com.powsybl.substationdiagram.model.Edge;
 import com.powsybl.substationdiagram.model.ExternCell;
 import com.powsybl.substationdiagram.model.Feeder2WTNode;
+import com.powsybl.substationdiagram.model.FeederBranchNode;
 import com.powsybl.substationdiagram.model.FeederNode;
 import com.powsybl.substationdiagram.model.Fictitious3WTNode;
 import com.powsybl.substationdiagram.model.Graph;
 import com.powsybl.substationdiagram.model.Node;
-import com.powsybl.substationdiagram.model.Side;
 import com.powsybl.substationdiagram.model.SubstationGraph;
+import com.powsybl.substationdiagram.model.TwtEdge;
 import com.powsybl.substationdiagram.svg.GraphMetadata.ArrowMetadata;
 import com.powsybl.substationdiagram.svg.SubstationDiagramInitialValueProvider.Direction;
 
@@ -220,7 +212,7 @@ public class SVGWriter {
     public GraphMetadata write(SubstationGraph graph, SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider,
                                Path svgFile) {
         try (Writer writer = Files.newBufferedWriter(svgFile)) {
-            return write(graph, initProvider, styleProvider, writer, new HorizontalSubstationLayoutFactory(), new PositionVoltageLevelLayoutFactory());
+            return write(graph, initProvider, styleProvider, writer);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -233,13 +225,12 @@ public class SVGWriter {
      * @param writer writer
      */
     public GraphMetadata write(SubstationGraph graph, SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider,
-                               Writer writer, SubstationLayoutFactory sLayoutFactory,
-                               VoltageLevelLayoutFactory vLayoutFactory) {
+                               Writer writer) {
         DOMImplementation domImpl = GenericDOMImplementation.getDOMImplementation();
 
         Document document = domImpl.createDocument("http://www.w3.org/2000/svg", "svg", null);
 
-        GraphMetadata metadata = writegraph(graph, document, sLayoutFactory, vLayoutFactory, initProvider, styleProvider);
+        GraphMetadata metadata = writegraph(graph, document, initProvider, styleProvider);
 
         try {
             DOMSource source = new DOMSource(document);
@@ -259,13 +250,9 @@ public class SVGWriter {
     /**
      * Create the SVGDocument corresponding to the substation graph
      */
-    private GraphMetadata writegraph(SubstationGraph graph,
-                                     Document document, SubstationLayoutFactory sLayoutFactory,
-                                     VoltageLevelLayoutFactory vLayoutFactory,  SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider) {
+    private GraphMetadata writegraph(SubstationGraph graph, Document document, SubstationDiagramInitialValueProvider initProvider,
+                                     SubstationDiagramStyleProvider styleProvider) {
         GraphMetadata metadata = new GraphMetadata();
-
-        SubstationLayout sLayout = sLayoutFactory.create(graph, vLayoutFactory);
-        sLayout.run(layoutParameters);
 
         Element root = document.createElement("g");
         root.setAttribute(CLASS, SubstationDiagramStyles.SUBSTATION_STYLE_CLASS);
@@ -299,7 +286,7 @@ public class SVGWriter {
             drawEdges(root, vlGraph, metadata, anchorPointProvider, initProvider, styleProvider);
         }
 
-        drawSnakeLines(root, graph, metadata, sLayout);
+        drawSnakeLines(root, graph, metadata);
 
         // the drawing of the voltageLevel graph labels is done at the end in order to
         // facilitate the move of a voltageLevel in the diagram
@@ -862,17 +849,9 @@ public class SVGWriter {
     /*
      * Drawing the substation graph edges (snakelines between voltageLevel diagram)
      */
-    private void drawSnakeLines(Element root, SubstationGraph graph, GraphMetadata metadata,
-                                SubstationLayout sLayout) {
+    private void drawSnakeLines(Element root, SubstationGraph graph, GraphMetadata metadata) {
 
-        Map<BusCell.Direction, Integer> nbSnakeLinesTopBottom = EnumSet.allOf(BusCell.Direction.class).stream().collect(Collectors.toMap(Function.identity(), v -> 0));
-        Map<String, Integer> nbSnakeLinesBetween = graph.getNodes().stream().collect(Collectors.toMap(g -> g.getVoltageLevel().getId(), v -> 0));
-
-        Map<Side, Integer> nbSnakeLinesLeftRight = EnumSet.allOf(Side.class).stream().collect(Collectors.toMap(Function.identity(), v -> 0));
-        Map<String, Integer> nbSnakeLinesBottomVL = graph.getNodes().stream().collect(Collectors.toMap(g -> g.getVoltageLevel().getId(), v -> 0));
-        Map<String, Integer> nbSnakeLinesTopVL = graph.getNodes().stream().collect(Collectors.toMap(g -> g.getVoltageLevel().getId(), v -> 0));
-
-        for (Edge edge : graph.getEdges()) {
+        for (TwtEdge edge : graph.getEdges()) {
             String vId1 = edge.getNode1().getGraph().getVoltageLevel().getId();
             String vId2 = edge.getNode2().getGraph().getVoltageLevel().getId();
             try {
@@ -880,14 +859,8 @@ public class SVGWriter {
                 Element g = root.getOwnerDocument().createElement(POLYLINE);
                 g.setAttribute("id", wireId);
 
-                // Determine points of the snakeLine
-                List<Double> pol = sLayout.calculatePolylineSnakeLine(layoutParameters,
-                        edge,
-                        nbSnakeLinesTopBottom,
-                        nbSnakeLinesLeftRight,
-                        nbSnakeLinesBetween,
-                        nbSnakeLinesBottomVL,
-                        nbSnakeLinesTopVL);
+                // Get points of the snakeLine
+                List<Double> pol = edge.getSnakeLine();
 
                 g.setAttribute(POINTS, pointsListToString(pol));
 

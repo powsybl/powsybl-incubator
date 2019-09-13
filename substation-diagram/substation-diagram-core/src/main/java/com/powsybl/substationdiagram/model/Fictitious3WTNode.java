@@ -7,7 +7,8 @@
 package com.powsybl.substationdiagram.model;
 
 import com.powsybl.iidm.network.ThreeWindingsTransformer;
-import com.powsybl.substationdiagram.library.ComponentType;
+
+import static com.powsybl.substationdiagram.library.ComponentTypeName.THREE_WINDINGS_TRANSFORMER;
 
 /**
  * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
@@ -17,7 +18,7 @@ public class Fictitious3WTNode extends FictitiousNode {
     private final ThreeWindingsTransformer transformer;
 
     public Fictitious3WTNode(Graph graph, String id, ThreeWindingsTransformer transformer) {
-        super(graph, id, ComponentType.THREE_WINDINGS_TRANSFORMER);
+        super(graph, id, THREE_WINDINGS_TRANSFORMER);
         this.transformer = transformer;
     }
 

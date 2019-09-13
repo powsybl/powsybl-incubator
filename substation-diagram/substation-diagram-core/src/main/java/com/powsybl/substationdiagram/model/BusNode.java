@@ -10,9 +10,10 @@ import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.Bus;
 import com.powsybl.iidm.network.BusbarSection;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
-import com.powsybl.substationdiagram.library.ComponentType;
 
 import java.util.Objects;
+
+import static com.powsybl.substationdiagram.library.ComponentTypeName.BUSBAR_SECTION;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
@@ -28,7 +29,7 @@ public class BusNode extends Node {
     private Position position = new Position(-1, -1);
 
     protected BusNode(String id, String name, boolean fictitious, Graph graph) {
-        super(NodeType.BUS, id, name, ComponentType.BUSBAR_SECTION, fictitious, graph);
+        super(NodeType.BUS, id, name, BUSBAR_SECTION, fictitious, graph);
     }
 
     public static BusNode create(Graph graph, BusbarSection busbarSection) {

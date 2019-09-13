@@ -11,9 +11,24 @@ import com.powsybl.iidm.network.ThreeWindingsTransformer;
 import com.powsybl.iidm.network.TwoWindingsTransformer;
 import com.powsybl.iidm.network.VoltageLevel;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
-import com.powsybl.substationdiagram.library.*;
+import com.powsybl.substationdiagram.library.AnchorOrientation;
+import com.powsybl.substationdiagram.library.AnchorPoint;
+import com.powsybl.substationdiagram.library.AnchorPointProvider;
+import com.powsybl.substationdiagram.library.ComponentLibrary;
+import com.powsybl.substationdiagram.library.ComponentMetadata;
+import com.powsybl.substationdiagram.library.ComponentSize;
+import com.powsybl.substationdiagram.model.BusCell;
+import com.powsybl.substationdiagram.model.BusNode;
+import com.powsybl.substationdiagram.model.Edge;
+import com.powsybl.substationdiagram.model.ExternCell;
+import com.powsybl.substationdiagram.model.Feeder2WTNode;
+import com.powsybl.substationdiagram.model.FeederBranchNode;
+import com.powsybl.substationdiagram.model.FeederNode;
+import com.powsybl.substationdiagram.model.Fictitious3WTNode;
+import com.powsybl.substationdiagram.model.Graph;
 import com.powsybl.substationdiagram.model.Node;
-import com.powsybl.substationdiagram.model.*;
+import com.powsybl.substationdiagram.model.SubstationGraph;
+import com.powsybl.substationdiagram.model.TwtEdge;
 import com.powsybl.substationdiagram.svg.GraphMetadata.ArrowMetadata;
 import com.powsybl.substationdiagram.svg.SubstationDiagramInitialValueProvider.Direction;
 import org.apache.batik.anim.dom.SVGOMDocument;
@@ -21,7 +36,11 @@ import org.apache.batik.dom.GenericDOMImplementation;
 import org.apache.commons.math3.util.Precision;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.*;
+import org.w3c.dom.CDATASection;
+import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Text;
 import org.w3c.dom.svg.SVGElement;
 
 import javax.xml.transform.OutputKeys;
@@ -45,6 +64,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static com.powsybl.substationdiagram.library.ComponentTypeName.ARROW;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.BUSBAR_SECTION;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.INDUCTOR;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.THREE_WINDINGS_TRANSFORMER;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.TWO_WINDINGS_TRANSFORMER;
 import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.escapeClassName;
 import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.escapeId;
 
@@ -154,7 +178,7 @@ public class SVGWriter {
         }
 
         AnchorPointProvider anchorPointProvider = (type, id) -> {
-            if (type == ComponentType.BUSBAR_SECTION) {
+            if (type.equals(BUSBAR_SECTION)) {
                 BusNode busbarSectionNode = (BusNode) graph.getNode(id);
                 List<AnchorPoint> result = new ArrayList<>();
                 result.add(new AnchorPoint(0, 0, AnchorOrientation.HORIZONTAL));
@@ -245,7 +269,7 @@ public class SVGWriter {
         // Drawing the voltageLevels
         for (Graph vlGraph : graph.getNodes()) {
             AnchorPointProvider anchorPointProvider = (type, id) -> {
-                if (type == ComponentType.BUSBAR_SECTION) {
+                if (type.equals(BUSBAR_SECTION)) {
                     BusNode busbarSectionNode = (BusNode) vlGraph.getNode(id);
                     List<AnchorPoint> result = new ArrayList<>();
                     result.add(new AnchorPoint(0, 0, AnchorOrientation.HORIZONTAL));
@@ -427,9 +451,9 @@ public class SVGWriter {
                         node.getComponentType(), node.getRotationAngle(),
                         node.isOpen(), direction, false));
         if (node.getType() == Node.NodeType.BUS) {
-            metadata.addComponentMetadata(new ComponentMetadata(ComponentType.BUSBAR_SECTION,
+            metadata.addComponentMetadata(new ComponentMetadata(BUSBAR_SECTION,
                     nodeId,
-                    anchorPointProvider.getAnchorPoints(ComponentType.BUSBAR_SECTION, node.getId()),
+                    anchorPointProvider.getAnchorPoints(BUSBAR_SECTION, node.getId()),
                     new ComponentSize(0, 0)));
         } else {
             if (metadata.getComponentMetadata(node.getComponentType()) == null) {
@@ -539,7 +563,7 @@ public class SVGWriter {
     private boolean canInsertComponentSVG(Node node) {
         return layoutParameters.isShowInternalNodes() ||
                 ((!node.isFictitious() && node.getType() != Node.NodeType.SHUNT) ||
-                        (node.isFictitious() && node.getComponentType() == ComponentType.THREE_WINDINGS_TRANSFORMER));
+                        (node.isFictitious() && node.getComponentType().equals(THREE_WINDINGS_TRANSFORMER)));
     }
 
     private void incorporateComponents(Node node, Element g, SubstationDiagramStyleProvider styleProvider) {
@@ -639,9 +663,9 @@ public class SVGWriter {
 
             if (n instanceof SVGElement) {
                 if (node instanceof Fictitious3WTNode ||
-                        (node instanceof Feeder2WTNode && node.getComponentType() == ComponentType.TWO_WINDINGS_TRANSFORMER)) {
+                        (node instanceof Feeder2WTNode && node.getComponentType().equals(TWO_WINDINGS_TRANSFORMER)))  {
                     handleTransformerSvgDocument(node, styleProvider, size, n);
-                } else if (node instanceof Feeder2WTNode && node.getComponentType() == ComponentType.INDUCTOR) {
+                } else if (node instanceof Feeder2WTNode && node.getComponentType().equals(INDUCTOR)) {
                     handleInductorSvgDocument(node, styleProvider, n);
                 }
             }
@@ -744,14 +768,14 @@ public class SVGWriter {
 
     private void insertArrowsAndLabels(String wireId, List<Double> points, Element root, Node n, GraphMetadata metadata, SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider) {
         InitialValue init = initProvider.getInitialValue(n);
-        ComponentMetadata cd = metadata.getComponentMetadata(ComponentType.ARROW);
+        ComponentMetadata cd = metadata.getComponentMetadata(ARROW);
 
         double shX = cd.getSize().getWidth() + LABEL_OFFSET;
         double shY = cd.getSize().getHeight() - LABEL_OFFSET + (double) FONT_SIZE / 2;
 
         Element g1 = root.getOwnerDocument().createElement("g");
         g1.setAttribute("id", wireId + "_ARROW1");
-        SVGOMDocument arr = componentLibrary.getSvgDocument(ComponentType.ARROW);
+        SVGOMDocument arr = componentLibrary.getSvgDocument(ARROW);
         transformArrow(points, cd.getSize(), 0, g1);
         double y1 = points.get(1);
         double y2 = points.get(3);
@@ -837,11 +861,11 @@ public class SVGWriter {
                         layoutParameters.isDrawStraightWires(),
                         false));
 
-                if (metadata.getComponentMetadata(ComponentType.ARROW) == null) {
-                    metadata.addComponentMetadata(new ComponentMetadata(ComponentType.ARROW,
+                if (metadata.getComponentMetadata(ARROW) == null) {
+                    metadata.addComponentMetadata(new ComponentMetadata(ARROW,
                                                                         null,
-                                                                        componentLibrary.getAnchorPoints(ComponentType.ARROW),
-                                                                        componentLibrary.getSize(ComponentType.ARROW)));
+                                                                        componentLibrary.getAnchorPoints(ARROW),
+                                                                        componentLibrary.getSize(ARROW)));
                 }
 
                 if (edge.getNode1() instanceof FeederNode) {
@@ -894,11 +918,11 @@ public class SVGWriter {
                 throw new UncheckedIOException(e);
             }
 
-            if (metadata.getComponentMetadata(ComponentType.ARROW) == null) {
-                metadata.addComponentMetadata(new ComponentMetadata(ComponentType.ARROW,
+            if (metadata.getComponentMetadata(ARROW) == null) {
+                metadata.addComponentMetadata(new ComponentMetadata(ARROW,
                                                                     null,
-                                                                    componentLibrary.getAnchorPoints(ComponentType.ARROW),
-                                                                    componentLibrary.getSize(ComponentType.ARROW)));
+                                                                    componentLibrary.getAnchorPoints(ARROW),
+                                                                    componentLibrary.getSize(ARROW)));
             }
         }
     }

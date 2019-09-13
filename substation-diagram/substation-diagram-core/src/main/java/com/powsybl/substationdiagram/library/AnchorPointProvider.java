@@ -15,5 +15,5 @@ import java.util.List;
  */
 public interface AnchorPointProvider {
 
-    List<AnchorPoint> getAnchorPoints(ComponentType type, String id);
+    List<AnchorPoint> getAnchorPoints(String type, String id);
 }

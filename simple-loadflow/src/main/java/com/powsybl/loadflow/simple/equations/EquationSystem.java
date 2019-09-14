@@ -21,7 +21,7 @@ public class EquationSystem {
 
     private final Map<Pair<Integer, EquationType>, Equation> equations = new HashMap<>();
 
-    private class EquationCache {
+    private class EquationCache implements EquationSystemListener {
 
         private boolean invalide = false;
 
@@ -33,6 +33,9 @@ public class EquationSystem {
             if (!invalide) {
                 return;
             }
+
+            sortedEquationsToSolve.clear();
+            sortedVariablesToFind.clear();
 
             // index derivatives per variable then per equation
             for (Equation equation : equations.values()) {
@@ -61,7 +64,8 @@ public class EquationSystem {
             invalide = false;
         }
 
-        void invalidate() {
+        @Override
+        public void equationListChanged(Equation equation, EquationEventType eventType) {
             invalide = true;
         }
 
@@ -82,6 +86,7 @@ public class EquationSystem {
 
     public EquationSystem(LfNetwork network) {
         this.network = Objects.requireNonNull(network);
+        addListener(equationCache);
     }
 
     public Equation getEquation(int num, EquationType type) {
@@ -89,7 +94,6 @@ public class EquationSystem {
         Equation equation = equations.get(p);
         if (equation == null) {
             equation = createEquation(p);
-            equationCache.invalidate();
         }
         return equation;
     }

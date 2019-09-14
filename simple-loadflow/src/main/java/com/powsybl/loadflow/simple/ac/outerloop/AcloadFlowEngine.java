@@ -99,7 +99,7 @@ public class AcloadFlowEngine {
                     observer.beforeOuterLoopStatusCheck(outerLoopIteration, outerLoop.getName());
 
                     // check outer loop status
-                    outerLoopStatus = outerLoop.check(new OuterLoopContext(outerLoopIteration, network, lastNrResult));
+                    outerLoopStatus = outerLoop.check(new OuterLoopContext(outerLoopIteration, network, equationSystem, lastNrResult));
 
                     observer.afterOuterLoopStatusCheck(outerLoopIteration, outerLoop.getName(), outerLoopStatus == OuterLoopStatus.STABLE);
 

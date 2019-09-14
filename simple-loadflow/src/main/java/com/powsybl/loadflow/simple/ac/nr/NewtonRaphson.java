@@ -46,6 +46,15 @@ public class NewtonRaphson implements AutoCloseable {
         this.observer = Objects.requireNonNull(observer);
         this.equationSystem = Objects.requireNonNull(equationSystem);
         this.stoppingCriteria = Objects.requireNonNull(stoppingCriteria);
+        equationSystem.addListener((equation, eventType) -> {
+            switch (eventType) {
+                case EQUATION_CREATED:
+                case EQUATION_ACTIVATED:
+                case EQUATION_DEACTIVATED:
+                    j = null;
+                    break;
+            }
+        });
     }
 
     private NewtonRaphsonStatus runIteration(double[] fx, double[] targets) {

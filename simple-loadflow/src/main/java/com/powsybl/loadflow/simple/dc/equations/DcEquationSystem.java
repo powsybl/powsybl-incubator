@@ -34,8 +34,8 @@ public final class DcEquationSystem {
 
         for (LfBus bus : network.getBuses()) {
             if (bus.isSlack()) {
-                equationSystem.getEquation(bus.getNum(), BUS_PHI).addTerm(new BusPhaseEquationTerm(bus, variableSet));
-                equationSystem.getEquation(bus.getNum(), EquationType.BUS_P).setActive(false);
+                equationSystem.createEquation(bus.getNum(), BUS_PHI).addTerm(new BusPhaseEquationTerm(bus, variableSet));
+                equationSystem.createEquation(bus.getNum(), EquationType.BUS_P).setActive(false);
             }
         }
 
@@ -45,8 +45,8 @@ public final class DcEquationSystem {
             if (bus1 != null && bus2 != null) {
                 ClosedBranchSide1DcFlowEquationTerm p1 = ClosedBranchSide1DcFlowEquationTerm.create(branch, bus1, bus2, variableSet);
                 ClosedBranchSide2DcFlowEquationTerm p2 = ClosedBranchSide2DcFlowEquationTerm.create(branch, bus1, bus2, variableSet);
-                equationSystem.getEquation(bus1.getNum(), EquationType.BUS_P).addTerm(p1);
-                equationSystem.getEquation(bus2.getNum(), EquationType.BUS_P).addTerm(p2);
+                equationSystem.createEquation(bus1.getNum(), EquationType.BUS_P).addTerm(p1);
+                equationSystem.createEquation(bus2.getNum(), EquationType.BUS_P).addTerm(p2);
                 branch.setP1(p1);
                 branch.setP2(p2);
             } else if (bus1 != null) {

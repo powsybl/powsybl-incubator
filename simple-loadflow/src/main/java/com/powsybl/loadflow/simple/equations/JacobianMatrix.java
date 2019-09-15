@@ -6,6 +6,7 @@
  */
 package com.powsybl.loadflow.simple.equations;
 
+import com.powsybl.commons.PowsyblException;
 import com.powsybl.math.matrix.LUDecomposition;
 import com.powsybl.math.matrix.Matrix;
 import com.powsybl.math.matrix.MatrixFactory;
@@ -61,6 +62,10 @@ public class JacobianMatrix {
 
         int rowCount = equationSystem.getSortedEquationsToSolve().size();
         int columnCount = equationSystem.getSortedVariablesToFind().size();
+        if (rowCount != columnCount) {
+            throw new PowsyblException("Expected to have same number of equations (" + rowCount
+                    + ") and variables (" + columnCount + ")");
+        }
 
         int estimatedNonZeroValueCount = rowCount * 3;
         Matrix j = matrixFactory.create(rowCount, columnCount, estimatedNonZeroValueCount);

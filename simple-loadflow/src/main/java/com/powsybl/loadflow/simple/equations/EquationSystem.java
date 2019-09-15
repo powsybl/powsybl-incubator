@@ -89,16 +89,16 @@ public class EquationSystem {
         addListener(equationCache);
     }
 
-    public Equation getEquation(int num, EquationType type) {
+    public Equation createEquation(int num, EquationType type) {
         Pair<Integer, EquationType> p = Pair.of(num, type);
         Equation equation = equations.get(p);
         if (equation == null) {
-            equation = createEquation(p);
+            equation = addEquation(p);
         }
         return equation;
     }
 
-    private Equation createEquation(Pair<Integer, EquationType> p) {
+    private Equation addEquation(Pair<Integer, EquationType> p) {
         Equation equation = new Equation(p.getLeft(), p.getRight(), EquationSystem.this);
         equations.put(p, equation);
         notifyListeners(equation, EquationEventType.EQUATION_CREATED);

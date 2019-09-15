@@ -37,8 +37,6 @@ public class NewtonRaphson implements AutoCloseable {
 
     private JacobianMatrix j;
 
-    private double[] x;
-
     public NewtonRaphson(LfNetwork network, MatrixFactory matrixFactory, AcLoadFlowObserver observer,
                          EquationSystem equationSystem, NewtonRaphsonStoppingCriteria stoppingCriteria) {
         this.network = Objects.requireNonNull(network);
@@ -57,7 +55,7 @@ public class NewtonRaphson implements AutoCloseable {
         });
     }
 
-    private NewtonRaphsonStatus runIteration(double[] fx, double[] targets) {
+    private NewtonRaphsonStatus runIteration(double[] fx, double[] targets, double[] x) {
         observer.beginIteration(iteration);
 
         try {
@@ -95,7 +93,7 @@ public class NewtonRaphson implements AutoCloseable {
             Vectors.minus(x, fx);
 
             // evaluate equation terms with new x
-            updateEquations();
+            updateEquations(x);
 
             // recalculate f(x) with new x
             observer.beforeEquationVectorUpdate(iteration);
@@ -124,7 +122,7 @@ public class NewtonRaphson implements AutoCloseable {
     private double computeSlackBusActivePowerMismatch(EquationSystem equationSystem) {
         // search equation corresponding to slack bus active power injection
         LfBus slackBus = network.getSlackBus();
-        Equation slackBusActivePowerEquation = equationSystem.getEquation(slackBus.getNum(), EquationType.BUS_P);
+        Equation slackBusActivePowerEquation = equationSystem.createEquation(slackBus.getNum(), EquationType.BUS_P);
 
         return slackBusActivePowerEquation.eval()
                 - slackBus.getTargetP(); // slack bus can also have real injection connected
@@ -134,21 +132,20 @@ public class NewtonRaphson implements AutoCloseable {
         Objects.requireNonNull(parameters);
 
         // initialize state vector
-        if (x == null) {
-            VoltageInitializer voltageInitializer = parameters.getVoltageInitializer();
+        VoltageInitializer voltageInitializer = iteration == 0 ? parameters.getVoltageInitializer()
+                                                               : new PreviousValueVoltageInitializer();
 
-            observer.beforeVoltageInitializerPreparation(voltageInitializer.getClass());
+        observer.beforeVoltageInitializerPreparation(voltageInitializer.getClass());
 
-            voltageInitializer.prepare(network, matrixFactory);
+        voltageInitializer.prepare(network, matrixFactory);
 
-            observer.afterVoltageInitializerPreparation();
+        observer.afterVoltageInitializerPreparation();
 
-            x = equationSystem.createStateVector(voltageInitializer);
+        double[] x = equationSystem.createStateVector(voltageInitializer);
 
-            observer.stateVectorInitialized(x);
+        observer.stateVectorInitialized(x);
 
-            updateEquations();
-        }
+        updateEquations(x);
 
         // initialize target vector
         double[] targets = equationSystem.createTargetVector();
@@ -165,7 +162,7 @@ public class NewtonRaphson implements AutoCloseable {
         // start iterations
         NewtonRaphsonStatus status = NewtonRaphsonStatus.NO_CALCULATION;
         while (iteration <= parameters.getMaxIteration()) {
-            NewtonRaphsonStatus newStatus = runIteration(fx, targets);
+            NewtonRaphsonStatus newStatus = runIteration(fx, targets, x);
             if (newStatus != null) {
                 status = newStatus;
                 break;
@@ -178,10 +175,19 @@ public class NewtonRaphson implements AutoCloseable {
 
         double slackBusActivePowerMismatch = computeSlackBusActivePowerMismatch(equationSystem);
 
-        return new NewtonRaphsonResult(status, iteration, x, slackBusActivePowerMismatch);
+        // update network state variable
+        if (status == NewtonRaphsonStatus.CONVERGED) {
+            observer.beforeNetworkUpdate();
+
+            equationSystem.updateNetwork(x);
+
+            observer.afterNetworkUpdate();
+        }
+
+        return new NewtonRaphsonResult(status, iteration, slackBusActivePowerMismatch);
     }
 
-    private void updateEquations() {
+    private void updateEquations(double[]x) {
         observer.beforeEquationsUpdate(iteration);
 
         equationSystem.updateEquations(x);
@@ -191,6 +197,8 @@ public class NewtonRaphson implements AutoCloseable {
 
     @Override
     public void close() {
-        j.cleanLU();
+        if (j != null) {
+            j.cleanLU();
+        }
     }
 }

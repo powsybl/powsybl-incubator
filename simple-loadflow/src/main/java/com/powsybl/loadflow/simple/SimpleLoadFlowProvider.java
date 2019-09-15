@@ -118,11 +118,11 @@ public class SimpleLoadFlowProvider implements LoadFlowProvider {
             NewtonRaphsonStoppingCriteria stoppingCriteria = new DefaultNewtonRaphsonStoppingCriteria();
 
             List<OuterLoop> outerLoops = new ArrayList<>();
-            if (parametersExt.hasReactiveLimits()) {
-                outerLoops.add(new ReactiveLimitsOuterLoop());
-            }
             if (parametersExt.isDistributedSlack()) {
                 outerLoops.add(new DistributedSlackOuterLoop());
+            }
+            if (parametersExt.hasReactiveLimits()) {
+                outerLoops.add(new ReactiveLimitsOuterLoop());
             }
 
             List<LfNetwork> lfNetworks = LfNetworks.create(network, slackBusSelector);

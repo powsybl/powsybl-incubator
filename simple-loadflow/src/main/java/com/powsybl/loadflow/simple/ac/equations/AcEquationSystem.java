@@ -7,9 +7,9 @@
 package com.powsybl.loadflow.simple.ac.equations;
 
 import com.powsybl.loadflow.simple.equations.BusPhaseEquationTerm;
-import com.powsybl.loadflow.simple.equations.VariableSet;
 import com.powsybl.loadflow.simple.equations.EquationSystem;
 import com.powsybl.loadflow.simple.equations.EquationType;
+import com.powsybl.loadflow.simple.equations.VariableSet;
 import com.powsybl.loadflow.simple.network.LfBranch;
 import com.powsybl.loadflow.simple.network.LfBus;
 import com.powsybl.loadflow.simple.network.LfNetwork;

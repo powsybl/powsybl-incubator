@@ -7,15 +7,15 @@
 package com.powsybl.loadflow.simple.dc.equations;
 
 import com.powsybl.loadflow.simple.equations.BusPhaseEquationTerm;
-import com.powsybl.loadflow.simple.equations.VariableSet;
 import com.powsybl.loadflow.simple.equations.EquationSystem;
 import com.powsybl.loadflow.simple.equations.EquationType;
+import com.powsybl.loadflow.simple.equations.VariableSet;
 import com.powsybl.loadflow.simple.network.LfBranch;
 import com.powsybl.loadflow.simple.network.LfBus;
 import com.powsybl.loadflow.simple.network.LfNetwork;
-import com.powsybl.loadflow.simple.util.Evaluable;
 
 import static com.powsybl.loadflow.simple.equations.EquationType.BUS_PHI;
+import static com.powsybl.loadflow.simple.util.EvaluableConstants.ZERO;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -50,9 +50,9 @@ public final class DcEquationSystem {
                 branch.setP1(p1);
                 branch.setP2(p2);
             } else if (bus1 != null) {
-                branch.setP1(Evaluable.ZERO);
+                branch.setP1(ZERO);
             } else if (bus2 != null) {
-                branch.setP2(Evaluable.ZERO);
+                branch.setP2(ZERO);
             }
         }
 

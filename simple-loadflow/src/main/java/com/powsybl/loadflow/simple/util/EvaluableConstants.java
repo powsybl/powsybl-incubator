@@ -9,7 +9,12 @@ package com.powsybl.loadflow.simple.util;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public interface Evaluable {
+public final class EvaluableConstants {
 
-    double eval();
+    public static final Evaluable NAN = () -> Double.NaN;
+
+    public static final Evaluable ZERO = () -> 0;
+
+    private EvaluableConstants() {
+    }
 }

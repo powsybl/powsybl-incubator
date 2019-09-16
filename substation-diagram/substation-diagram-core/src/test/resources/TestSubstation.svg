@@ -33,13 +33,13 @@
             <line y2="0" x1="0" class="bus_vl" x2="30.0" y1="0"/>
             <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs</text>
         </g>
-        <g class="substation-diagram LOAD _l" id="l" transform="translate(87.0,75.5)">
+        <g class="substation-diagram LOAD l" id="l" transform="translate(87.0,75.5)">
     <rect height="9" width="16"/>
     <line y2="9" x1="0" x2="16" y1="0"/>
     <line y2="9" x1="16" x2="0" y1="0"/>
 <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">l</text>
         </g>
-        <g class="substation-diagram DISCONNECTOR _d" id="d" transform="translate(91.0,356.0)">
+        <g class="substation-diagram DISCONNECTOR d" id="d" transform="translate(91.0,356.0)">
     <g class="closed" id="closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
@@ -48,7 +48,7 @@
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
-        <g class="substation-diagram BREAKER _b" id="b" transform="translate(85.0,195.0)">
+        <g class="substation-diagram BREAKER b" id="b" transform="translate(85.0,195.0)">
     <g class="closed" id="closed">
         <rect x="1" width="18" y="1" height="18"/>
         <line y2="15" x1="10" x2="10" y1="5"/>
@@ -61,7 +61,7 @@
         <g class="substation-diagram NODE FICT_vl_dFictif" id="FICT_vl_dFictif" transform="translate(91.0,326.0)"/>
         <polyline class="wire_vl" points="95.0,360.0,95.0,360.0" id="vl_Wire0"/>
         <polyline class="wire_vl" points="95.0,195.0,95.0,84.0" id="vl_Wire1"/>
-        <g class="substation-diagram ARROW1__l_UP" id="vl_Wire1_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,90.0,170.0)">
+        <g class="substation-diagram ARROW1_l_UP" id="vl_Wire1_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,90.0,170.0)">
      <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
         <polygon points="5,0 10,10 0,10"/>
      </g>

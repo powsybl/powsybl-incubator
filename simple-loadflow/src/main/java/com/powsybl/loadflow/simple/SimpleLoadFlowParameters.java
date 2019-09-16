@@ -23,6 +23,8 @@ public class SimpleLoadFlowParameters extends AbstractExtension<LoadFlowParamete
 
     private boolean distributedSlack = false;
 
+    private boolean reactiveLimits = false;
+
     private boolean dc = false;
 
     private final List<AcLoadFlowObserver> additionalObservers = new ArrayList<>();
@@ -47,6 +49,15 @@ public class SimpleLoadFlowParameters extends AbstractExtension<LoadFlowParamete
 
     public SimpleLoadFlowParameters setDistributedSlack(boolean distributedSlack) {
         this.distributedSlack = distributedSlack;
+        return this;
+    }
+
+    public boolean hasReactiveLimits() {
+        return reactiveLimits;
+    }
+
+    public SimpleLoadFlowParameters setReactiveLimits(boolean reactiveLimits) {
+        this.reactiveLimits = reactiveLimits;
         return this;
     }
 

@@ -62,6 +62,12 @@
         <!-- Test dependencies -->
         <dependency>
             <groupId>com.powsybl</groupId>
+            <artifactId>powsybl-config-test</artifactId>
+            <version>${powsyblcore.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.powsybl</groupId>
             <artifactId>powsybl-ucte-converter</artifactId>
             <version>${powsyblcore.version}</version>
             <scope>test</scope>

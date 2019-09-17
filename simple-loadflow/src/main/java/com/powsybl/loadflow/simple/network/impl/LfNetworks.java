@@ -63,12 +63,12 @@ public final class LfNetworks {
                 }
 
                 @Override
-                public void visitLine(Line line, Line.Side side) {
+                public void visitLine(Line line, Branch.Side side) {
                     visitBranch(line);
                 }
 
                 @Override
-                public void visitTwoWindingsTransformer(TwoWindingsTransformer transformer, TwoWindingsTransformer.Side side) {
+                public void visitTwoWindingsTransformer(TwoWindingsTransformer transformer, Branch.Side side) {
                     visitBranch(transformer);
                 }
 

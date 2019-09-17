@@ -60,7 +60,7 @@ public class AcloadFlowEngine {
 
             for (LfBus bus : network.getBuses()) {
                 if (bus.hasVoltageControl()) {
-                    Equation q = equationSystem.getEquation(bus.getNum(), EquationType.BUS_Q);
+                    Equation q = equationSystem.createEquation(bus.getNum(), EquationType.BUS_Q);
                     bus.setQ(q.eval());
                 } else {
                     bus.setQ(Double.NaN);
@@ -99,7 +99,7 @@ public class AcloadFlowEngine {
                     observer.beforeOuterLoopStatusCheck(outerLoopIteration, outerLoop.getName());
 
                     // check outer loop status
-                    outerLoopStatus = outerLoop.check(new OuterLoopContext(outerLoopIteration, network, lastNrResult));
+                    outerLoopStatus = outerLoop.check(new OuterLoopContext(outerLoopIteration, network, equationSystem, lastNrResult));
 
                     observer.afterOuterLoopStatusCheck(outerLoopIteration, outerLoop.getName(), outerLoopStatus == OuterLoopStatus.STABLE);
 
@@ -116,15 +116,6 @@ public class AcloadFlowEngine {
                         outerLoopIteration++;
                     }
                 } while (outerLoopStatus == OuterLoopStatus.UNSTABLE);
-            }
-
-            // update network state variable
-            if (lastNrResult.getStatus() == NewtonRaphsonStatus.CONVERGED) {
-                observer.beforeNetworkUpdate();
-
-                equationSystem.updateNetwork(lastNrResult.getX());
-
-                observer.afterNetworkUpdate();
             }
         }
 

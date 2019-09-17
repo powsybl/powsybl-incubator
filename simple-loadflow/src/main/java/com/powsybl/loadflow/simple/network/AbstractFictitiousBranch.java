@@ -10,14 +10,16 @@ import com.powsybl.loadflow.simple.util.Evaluable;
 
 import java.util.Objects;
 
+import static com.powsybl.loadflow.simple.util.EvaluableConstants.NAN;
+
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
 public abstract class AbstractFictitiousBranch extends AbstractLfBranch {
 
-    protected Evaluable p = Evaluable.NAN;
+    protected Evaluable p = NAN;
 
-    protected Evaluable q = Evaluable.NAN;
+    protected Evaluable q = NAN;
 
     protected AbstractFictitiousBranch(LfBus bus1, LfBus bus2, PiModel piModel, double nominalV1, double nominalV2) {
         super(bus1, bus2, piModel, nominalV1, nominalV2);

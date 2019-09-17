@@ -7,6 +7,7 @@
 package com.powsybl.loadflow.simple.ac.outerloop;
 
 import com.powsybl.loadflow.simple.ac.nr.NewtonRaphsonResult;
+import com.powsybl.loadflow.simple.equations.EquationSystem;
 import com.powsybl.loadflow.simple.network.LfNetwork;
 
 import java.util.Objects;
@@ -20,11 +21,14 @@ public class OuterLoopContext {
 
     private final LfNetwork network;
 
+    private final EquationSystem equationSystem;
+
     private final NewtonRaphsonResult lastNewtonRaphsonResult;
 
-    OuterLoopContext(int iteration, LfNetwork network, NewtonRaphsonResult lastNewtonRaphsonResult) {
+    OuterLoopContext(int iteration, LfNetwork network, EquationSystem equationSystem, NewtonRaphsonResult lastNewtonRaphsonResult) {
         this.iteration = iteration;
         this.network = Objects.requireNonNull(network);
+        this.equationSystem = Objects.requireNonNull(equationSystem);
         this.lastNewtonRaphsonResult = Objects.requireNonNull(lastNewtonRaphsonResult);
     }
 
@@ -34,6 +38,10 @@ public class OuterLoopContext {
 
     public LfNetwork getNetwork() {
         return network;
+    }
+
+    public EquationSystem getEquationSystem() {
+        return equationSystem;
     }
 
     public NewtonRaphsonResult getLastNewtonRaphsonResult() {

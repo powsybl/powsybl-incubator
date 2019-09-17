@@ -10,10 +10,15 @@ import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.Branch;
 import com.powsybl.iidm.network.Line;
 import com.powsybl.iidm.network.TwoWindingsTransformer;
-import com.powsybl.loadflow.simple.network.*;
+import com.powsybl.loadflow.simple.network.AbstractLfBranch;
+import com.powsybl.loadflow.simple.network.LfBus;
+import com.powsybl.loadflow.simple.network.PerUnit;
+import com.powsybl.loadflow.simple.network.PiModel;
 import com.powsybl.loadflow.simple.util.Evaluable;
 
 import java.util.Objects;
+
+import static com.powsybl.loadflow.simple.util.EvaluableConstants.NAN;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -22,13 +27,13 @@ public class LfBranchImpl extends AbstractLfBranch {
 
     private final Branch branch;
 
-    private Evaluable p1 = Evaluable.NAN;
+    private Evaluable p1 = NAN;
 
-    private Evaluable p2 = Evaluable.NAN;
+    private Evaluable p2 = NAN;
 
-    private Evaluable q1 = Evaluable.NAN;
+    private Evaluable q1 = NAN;
 
-    private Evaluable q2 = Evaluable.NAN;
+    private Evaluable q2 = NAN;
 
     protected LfBranchImpl(LfBus bus1, LfBus bus2, PiModel piModel, Branch branch) {
         super(bus1, bus2, piModel, branch.getTerminal1().getVoltageLevel().getNominalV(), branch.getTerminal2().getVoltageLevel().getNominalV());

@@ -44,22 +44,30 @@ public class EquationSystemTest {
         VariableSet variableSet = new VariableSet();
         assertTrue(equations.isEmpty());
         assertTrue(eventTypes.isEmpty());
-        equationSystem.getEquation(bus.getNum(), EquationType.BUS_V).addTerm(new BusPhaseEquationTerm(bus, variableSet));
+        assertTrue(equationSystem.getSortedEquationsToSolve().isEmpty());
+
+        equationSystem.createEquation(bus.getNum(), EquationType.BUS_V).addTerm(new BusPhaseEquationTerm(bus, variableSet));
         assertEquals(1, equations.size());
         assertEquals(1, eventTypes.size());
         assertEquals(EquationEventType.EQUATION_CREATED, eventTypes.get(0));
+        assertEquals(1, equationSystem.getSortedEquationsToSolve().size());
+
         clearEvents();
-        equationSystem.getEquation(bus.getNum(), EquationType.BUS_V).setActive(true);
+        equationSystem.createEquation(bus.getNum(), EquationType.BUS_V).setActive(true);
         assertTrue(equations.isEmpty());
         assertTrue(eventTypes.isEmpty());
-        equationSystem.getEquation(bus.getNum(), EquationType.BUS_V).setActive(false);
+
+        equationSystem.createEquation(bus.getNum(), EquationType.BUS_V).setActive(false);
         assertEquals(1, equations.size());
         assertEquals(1, eventTypes.size());
         assertEquals(EquationEventType.EQUATION_DEACTIVATED, eventTypes.get(0));
+        assertTrue(equationSystem.getSortedEquationsToSolve().isEmpty());
+
         clearEvents();
-        equationSystem.getEquation(bus.getNum(), EquationType.BUS_V).setActive(true);
+        equationSystem.createEquation(bus.getNum(), EquationType.BUS_V).setActive(true);
         assertEquals(1, equations.size());
         assertEquals(1, eventTypes.size());
         assertEquals(EquationEventType.EQUATION_ACTIVATED, eventTypes.get(0));
+        assertEquals(1, equationSystem.getSortedEquationsToSolve().size());
     }
 }

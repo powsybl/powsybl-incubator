@@ -13,7 +13,6 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- *
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  */
 public abstract class AbstractComposedBlock extends AbstractBlock {
@@ -51,13 +50,14 @@ public abstract class AbstractComposedBlock extends AbstractBlock {
     }
 
     @Override
-    public Node getStartingNode() {
-        return subBlocks.get(0).getStartingNode();
-    }
-
-    @Override
-    public Node getEndingNode() {
-        return subBlocks.get(subBlocks.size() - 1).getEndingNode();
+    public Node getExtremityNode(Extremity extremity) {
+        if (extremity == Extremity.START) {
+            return subBlocks.get(0).getExtremityNode(Extremity.START);
+        }
+        if (extremity == Extremity.END) {
+            return subBlocks.get(subBlocks.size() - 1).getExtremityNode(Extremity.END);
+        }
+        return null;
     }
 
     @Override

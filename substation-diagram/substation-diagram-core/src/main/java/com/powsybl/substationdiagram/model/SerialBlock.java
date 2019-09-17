@@ -44,8 +44,8 @@ public class SerialBlock extends AbstractComposedBlock {
             subBlocks.get(i).getPosition().setHV(0, i);
         }
 
-        setCardinalityStart(getLowerBlock().getCardinality(getStartingNode()));
-        setCardinalityEnd(getUpperBlock().getCardinality(getEndingNode()));
+        setCardinality(Extremity.START, getLowerBlock().getCardinality(Extremity.START));
+        setCardinality(Extremity.END, getUpperBlock().getCardinality(Extremity.END));
     }
 
     public SerialBlock(Block block1,

@@ -42,8 +42,8 @@ public class ParallelBlock extends AbstractComposedBlock {
             }
         });
 
-        setCardinalityStart(this.subBlocks.size());
-        setCardinalityEnd(this.subBlocks.size());
+        setCardinality(Extremity.START, this.subBlocks.size());
+        setCardinality(Extremity.END, this.subBlocks.size());
     }
 
     public ParallelBlock(List<Block> subBlocks) {

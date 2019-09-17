@@ -28,6 +28,10 @@ public interface Block {
 
     Graph getGraph();
 
+    Node getExtremityNode(Extremity extremity);
+
+    Extremity getExtremity(Node node);
+
     Node getStartingNode();
 
     Node getEndingNode();
@@ -69,11 +73,11 @@ public interface Block {
 
     void coordHorizontalCase(LayoutParameters layoutParam);
 
+    void setCardinality(Extremity extremity, int i);
+
+    int getCardinality(Extremity extremity);
+
     int getCardinality(Node commonNode);
-
-    int getCardinalityInverse(Node commonNode);
-
-    void defineExtremity(Node node, AbstractBlock.Extremity ext);
 
     void setCell(Cell cell);
 

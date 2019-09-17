@@ -51,7 +51,7 @@ public class ReactiveLimitsOuterLoop implements OuterLoop {
             if (diagram != null) {
                 if (bus.hasVoltageControl()) { // PV bus
                     double p = bus.getGenerationTargetP();
-                    double q = bus.getQ() - bus.getLoadTargetQ();
+                    double q = bus.getQ() + bus.getLoadTargetQ();
                     double minQ = diagram.getMinQ(p);
                     double maxQ = diagram.getMaxQ(p);
                     if (q < minQ) {

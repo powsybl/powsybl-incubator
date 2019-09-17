@@ -16,16 +16,10 @@ import java.util.Objects;
  */
 public class TwtEdge extends Edge {
 
-    private final String twtId;
     private List<Double> snakeLine = new ArrayList<>();
 
-    public TwtEdge(String twtId, Node node1, Node node2) {
+    public TwtEdge(Node node1, Node node2) {
         super(node1, node2);
-        this.twtId = Objects.requireNonNull(twtId);
-    }
-
-    public String getTwtId() {
-        return twtId;
     }
 
     public List<Double> getSnakeLine() {

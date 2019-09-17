@@ -11,6 +11,7 @@ import com.powsybl.iidm.network.Substation;
 import com.powsybl.substationdiagram.layout.HorizontalSubstationLayoutFactory;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
 import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayoutFactory;
+import com.powsybl.substationdiagram.layout.SubstationLayout;
 import com.powsybl.substationdiagram.layout.SubstationLayoutFactory;
 import com.powsybl.substationdiagram.layout.VoltageLevelLayoutFactory;
 import com.powsybl.substationdiagram.library.ComponentLibrary;
@@ -41,15 +42,11 @@ public final class SubstationDiagram {
 
     private final SubstationGraph graph;
 
-    private final SubstationLayoutFactory sLayoutFactory;
+    private final SubstationLayout layout;
 
-    private final VoltageLevelLayoutFactory vLayoutFactory;
-
-    private SubstationDiagram(SubstationGraph graph, SubstationLayoutFactory sLayoutFactory,
-                              VoltageLevelLayoutFactory vLayoutFactory) {
+    private SubstationDiagram(SubstationGraph graph, SubstationLayout layout) {
         this.graph = Objects.requireNonNull(graph);
-        this.sLayoutFactory = Objects.requireNonNull(sLayoutFactory);
-        this.vLayoutFactory = Objects.requireNonNull(vLayoutFactory);
+        this.layout = Objects.requireNonNull(layout);
     }
 
     public static SubstationDiagram build(Substation s) {
@@ -64,7 +61,9 @@ public final class SubstationDiagram {
 
         SubstationGraph graph = SubstationGraph.create(s, useName);
 
-        return new SubstationDiagram(graph, sLayoutFactory, vLayoutFactory);
+        SubstationLayout layout = sLayoutFactory.create(graph, vLayoutFactory);
+
+        return new SubstationDiagram(graph, layout);
     }
 
     public void writeSvg(ComponentLibrary componentLibrary, LayoutParameters layoutParameters, Network network, Path svgFile) {
@@ -99,11 +98,13 @@ public final class SubstationDiagram {
         Objects.requireNonNull(svgWriter);
         Objects.requireNonNull(metadataWriter);
 
+        layout.run(layoutParameters);
+
         // write SVG file
         LOGGER.info("Writing SVG and JSON metadata files...");
 
         GraphMetadata metadata = new SVGWriter(componentLibrary, layoutParameters)
-                .write(graph, initProvider, styleProvider, svgWriter, sLayoutFactory, vLayoutFactory);
+                .write(graph, initProvider, styleProvider, svgWriter);
 
         // write metadata file
         metadata.writeJson(metadataWriter);

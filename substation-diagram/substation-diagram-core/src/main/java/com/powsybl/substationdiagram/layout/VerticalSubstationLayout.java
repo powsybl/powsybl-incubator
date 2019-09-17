@@ -26,7 +26,7 @@ public class VerticalSubstationLayout extends AbstractSubstationLayout {
      * Calculate relative coordinate of voltageLevels in the substation
      */
     @Override
-    public Coord calculateCoordVoltageLevel(LayoutParameters layoutParam, Graph vlGraph) {
+    protected Coord calculateCoordVoltageLevel(LayoutParameters layoutParam, Graph vlGraph) {
         int maxV = vlGraph.getNodeBuses().stream()
                 .mapToInt(nodeBus -> nodeBus.getPosition().getV() + nodeBus.getPosition().getVSpan())
                 .max().orElse(0);
@@ -41,7 +41,8 @@ public class VerticalSubstationLayout extends AbstractSubstationLayout {
     /*
      * Calculate polyline points of a snakeLine in the substation graph
      */
-    public List<Double> calculatePolylineSnakeLine(LayoutParameters layoutParam,
+    @Override
+    protected List<Double> calculatePolylineSnakeLine(LayoutParameters layoutParam,
                                                    Edge edge,
                                                    Map<BusCell.Direction, Integer> nbSnakeLinesTopBottom,
                                                    Map<Side, Integer> nbSnakeLinesLeftRight,

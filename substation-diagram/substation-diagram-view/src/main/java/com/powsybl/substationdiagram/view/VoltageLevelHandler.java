@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.powsybl.substationdiagram.view.app;
+package com.powsybl.substationdiagram.view;
 
 import com.powsybl.substationdiagram.layout.HorizontalSubstationLayout;
 import com.powsybl.substationdiagram.layout.InfoCalcPoints;
@@ -15,17 +15,10 @@ import com.powsybl.substationdiagram.model.BaseNode;
 import com.powsybl.substationdiagram.model.BusCell;
 import com.powsybl.substationdiagram.model.Coord;
 import com.powsybl.substationdiagram.svg.GraphMetadata;
-import com.powsybl.substationdiagram.view.NodeHandler;
-import com.powsybl.substationdiagram.view.WireHandler;
 import javafx.scene.Node;
 import javafx.scene.shape.Polyline;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 

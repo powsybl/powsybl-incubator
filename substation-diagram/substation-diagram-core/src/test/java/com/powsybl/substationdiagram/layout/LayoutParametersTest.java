@@ -34,7 +34,8 @@ public class LayoutParametersTest {
                 .setHorizontalSubstationPadding(50)
                 .setVerticalSubstationPadding(50)
                 .setArrowDistance(20)
-                .setDiagramName("diagram-name");
+                .setDiagramName("diagram-name")
+                .setShiftFeedersPosition(false);
         LayoutParameters layoutParameters2 = new LayoutParameters(layoutParameters);
 
         assertEquals(layoutParameters.getTranslateX(), layoutParameters2.getTranslateX(), 0);
@@ -54,6 +55,7 @@ public class LayoutParametersTest {
         assertEquals(layoutParameters.getVerticalSubstationPadding(), layoutParameters2.getVerticalSubstationPadding(), 0);
         assertEquals(layoutParameters.getArrowDistance(), layoutParameters2.getArrowDistance(), 0);
         assertEquals(layoutParameters.getDiagramName(), layoutParameters2.getDiagramName());
+        assertEquals(layoutParameters.isShiftFeedersPosition(), layoutParameters2.isShiftFeedersPosition());
 
     }
 }

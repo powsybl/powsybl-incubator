@@ -19,7 +19,7 @@ import org.junit.Test;
 /**
  * @author Christian Biasuzzi <christian.biasuzzi@techrain.eu>
  */
-public class TestAlternateLabelPositionProcessor extends AbstractTestCase {
+public class TestShiftFeedersPosition extends AbstractTestCase {
 
     @Before
     public void setUp() {
@@ -162,13 +162,13 @@ public class TestAlternateLabelPositionProcessor extends AbstractTestCase {
         SubstationGraph g = SubstationGraph.create(substation);
 
         // write SVG and compare to reference (horizontal layout and defaut style provider)
-        compareSvg(g, layoutParameters, "/TestDefaultLabelPositions.svg",
+        compareSvg(g, layoutParameters, "/TestDefaultFeedersPosition.svg",
                 new HorizontalSubstationLayoutFactory(),
                 new DefaultSubstationDiagramStyleProvider());
 
-        // re-build substation graph, write SVG using the alternate feeder label positioner and compare to reference (same layout providers)
+        // re-build substation graph, write SVG using the shifted feeders positioner and compare to reference (same layout providers)
         g = SubstationGraph.create(substation);
-        compareSvg(g, layoutParameters.setAlternateFeederLabelsPositioning(true), "/TestAlternateLabelPositions.svg",
+        compareSvg(g, layoutParameters.setShiftFeedersPosition(true), "/TestShiftFeedersPosition.svg",
                 new HorizontalSubstationLayoutFactory(),
                 new DefaultSubstationDiagramStyleProvider());
     }
@@ -190,12 +190,12 @@ public class TestAlternateLabelPositionProcessor extends AbstractTestCase {
         // build substation graph
         SubstationGraph g = SubstationGraph.create(substation);
         // write SVG and compare to reference (with a fake VL layout)
-        compareSvg(g, layoutParameters, "/TestDefaultLabelPositions2.svg",
+        compareSvg(g, layoutParameters, "/TestDefaultFeedersPosition2.svg",
                 new HorizontalSubstationLayoutFactory(), fakeVoltageLevelLayoutFactory);
 
-        // re-build substation graph, write SVG using the alternate feeder label positioner (same output as before expected)
+        // re-build substation graph, write SVG using the shifted feeders positioner (same output as before expected)
         g = SubstationGraph.create(substation);
-        compareSvg(g, layoutParameters.setAlternateFeederLabelsPositioning(true), "/TestDefaultLabelPositions2.svg",
+        compareSvg(g, layoutParameters.setShiftFeedersPosition(true), "/TestDefaultFeedersPosition2.svg",
                 new HorizontalSubstationLayoutFactory(), fakeVoltageLevelLayoutFactory);
     }
 }

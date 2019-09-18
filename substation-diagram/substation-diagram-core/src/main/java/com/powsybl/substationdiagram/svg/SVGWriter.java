@@ -198,7 +198,7 @@ public class SVGWriter {
             return componentLibrary.getAnchorPoints(type);
         };
 
-        if (layoutParameters.isAlternateFeederLabelsPositioning()) {
+        if (layoutParameters.isShiftFeedersPosition()) {
             shiftFeedersPosition(graph);
         }
 
@@ -299,7 +299,7 @@ public class SVGWriter {
                 }
             };
 
-            if (layoutParameters.isAlternateFeederLabelsPositioning()) {
+            if (layoutParameters.isShiftFeedersPosition()) {
                 shiftFeedersPosition(vlGraph);
             }
 

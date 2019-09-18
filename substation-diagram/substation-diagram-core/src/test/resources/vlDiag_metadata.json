@@ -1377,6 +1377,6 @@
     "arrowDistance" : 20.0,
     "showInductorFor3WT" : false,
     "diagramName" : null,
-    "alternateFeederLabelsPositioning" : false
+    "shiftFeedersPosition" : false
   }
 }

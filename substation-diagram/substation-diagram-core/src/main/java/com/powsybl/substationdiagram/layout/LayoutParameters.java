@@ -52,7 +52,7 @@ public class LayoutParameters {
 
     private boolean showInductorFor3WT = false;
 
-    private boolean alternateFeederLabelsPositioning = false;
+    private boolean shiftFeedersPosition = false;
 
     @JsonCreator
     public LayoutParameters() {
@@ -80,7 +80,7 @@ public class LayoutParameters {
                             @JsonProperty("arrowDistance") double arrowDistance,
                             @JsonProperty("showInductorFor3WT") boolean showInductorFor3WT,
                             @JsonProperty("diagramName") String diagramName,
-                            @JsonProperty("alternateFeederLabelsPositioning") boolean alternateFeederLabelsPositioning) {
+                            @JsonProperty("shiftFeedersPosition") boolean shiftFeedersPosition) {
         this.translateX = translateX;
         this.translateY = translateY;
         this.initialXBus = initialXBus;
@@ -102,7 +102,7 @@ public class LayoutParameters {
         this.arrowDistance = arrowDistance;
         this.showInductorFor3WT = showInductorFor3WT;
         this.diagramName = diagramName;
-        this.alternateFeederLabelsPositioning = alternateFeederLabelsPositioning;
+        this.shiftFeedersPosition = shiftFeedersPosition;
     }
 
     public LayoutParameters(LayoutParameters other) {
@@ -128,7 +128,7 @@ public class LayoutParameters {
         arrowDistance = other.arrowDistance;
         showInductorFor3WT = other.showInductorFor3WT;
         diagramName = other.diagramName;
-        alternateFeederLabelsPositioning = other.alternateFeederLabelsPositioning;
+        shiftFeedersPosition = other.shiftFeedersPosition;
     }
 
     public double getTranslateX() {
@@ -320,12 +320,12 @@ public class LayoutParameters {
         return this;
     }
 
-    public boolean isAlternateFeederLabelsPositioning() {
-        return alternateFeederLabelsPositioning;
+    public boolean isShiftFeedersPosition() {
+        return shiftFeedersPosition;
     }
 
-    public LayoutParameters setAlternateFeederLabelsPositioning(boolean alternateFeederLabelsPositioning) {
-        this.alternateFeederLabelsPositioning = alternateFeederLabelsPositioning;
+    public LayoutParameters setShiftFeedersPosition(boolean shiftFeedersPosition) {
+        this.shiftFeedersPosition = shiftFeedersPosition;
         return this;
     }
 }

@@ -15,13 +15,9 @@ import java.util.Objects;
 /**
  * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
  */
-public class Feeder2WTNode extends FeederNode {
-
-    private VoltageLevel vlOtherSide;
-
+public class Feeder2WTNode extends FeederBranchNode {
     protected Feeder2WTNode(String id, String name, ComponentType componentType, boolean fictitious, Graph graph, VoltageLevel vlOtherSide) {
-        super(id, name, componentType, fictitious, graph);
-        this.vlOtherSide = vlOtherSide;
+        super(id, name, componentType, fictitious, graph, vlOtherSide);
     }
 
     public static FeederNode create(Graph graph, TwoWindingsTransformer branch, TwoWindingsTransformer.Side side) {
@@ -48,9 +44,5 @@ public class Feeder2WTNode extends FeederNode {
         Objects.requireNonNull(graph);
         Objects.requireNonNull(vlOtherSide);
         return new Feeder2WTNode(id, name, ComponentType.TWO_WINDINGS_TRANSFORMER, false, graph, vlOtherSide);
-    }
-
-    public VoltageLevel getVlOtherSide() {
-        return vlOtherSide;
     }
 }

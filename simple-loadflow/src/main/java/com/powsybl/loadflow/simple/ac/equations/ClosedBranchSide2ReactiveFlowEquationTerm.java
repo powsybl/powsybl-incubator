@@ -6,7 +6,7 @@
  */
 package com.powsybl.loadflow.simple.ac.equations;
 
-import com.powsybl.loadflow.simple.equations.EquationContext;
+import com.powsybl.loadflow.simple.equations.VariableSet;
 import com.powsybl.loadflow.simple.equations.Variable;
 import com.powsybl.loadflow.simple.network.LfBranch;
 import com.powsybl.loadflow.simple.network.LfBus;
@@ -29,8 +29,8 @@ public class ClosedBranchSide2ReactiveFlowEquationTerm extends AbstractClosedBra
 
     private double dq2dph2;
 
-    public ClosedBranchSide2ReactiveFlowEquationTerm(LfBranch branch, LfBus bus1, LfBus bus2, EquationContext equationContext) {
-        super(branch, bus1, bus2, equationContext);
+    public ClosedBranchSide2ReactiveFlowEquationTerm(LfBranch branch, LfBus bus1, LfBus bus2, VariableSet variableSet) {
+        super(branch, bus1, bus2, variableSet);
     }
 
     @Override

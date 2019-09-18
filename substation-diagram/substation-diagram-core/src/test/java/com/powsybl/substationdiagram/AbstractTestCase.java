@@ -18,8 +18,6 @@ import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.Substation;
 import com.powsybl.iidm.network.VoltageLevel;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
-import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayoutFactory;
-import com.powsybl.substationdiagram.layout.SubstationLayoutFactory;
 import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
 import com.powsybl.substationdiagram.model.Graph;
 import com.powsybl.substationdiagram.model.SubstationGraph;
@@ -69,6 +67,10 @@ public abstract class AbstractTestCase {
                     .write(graph, new DefaultSubstationDiagramInitialValueProvider(network), styleProvider, writer);
             writer.flush();
 
+//            FileWriter fw = new FileWriter(System.getProperty("user.home") + refSvgName);
+//            fw.write(writer.toString());
+//            fw.close();
+
             String refSvg = normalizeLineSeparator(new String(ByteStreams.toByteArray(getClass().getResourceAsStream(refSvgName)), StandardCharsets.UTF_8));
             String svg = normalizeLineSeparator(writer.toString());
             assertEquals(refSvg, svg);
@@ -83,21 +85,9 @@ public abstract class AbstractTestCase {
                     .write(graph, new DefaultSubstationDiagramInitialValueProvider(network), myStyleProvider, writer);
             writer.flush();
 
-            String refSvg = normalizeLineSeparator(new String(ByteStreams.toByteArray(getClass().getResourceAsStream(refSvgName)), StandardCharsets.UTF_8));
-            String svg = normalizeLineSeparator(writer.toString());
-            assertEquals(refSvg, svg);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-    }
-
-    public void compareSvg(SubstationGraph graph, LayoutParameters layoutParameters,
-                           String refSvgName, SubstationLayoutFactory sLayoutFactory) {
-        try (StringWriter writer = new StringWriter()) {
-            new SVGWriter(componentLibrary, layoutParameters)
-                    .write(graph, new DefaultSubstationDiagramInitialValueProvider(network), styleProvider, writer, sLayoutFactory,
-                           new PositionVoltageLevelLayoutFactory());
-            writer.flush();
+//            FileWriter fw = new FileWriter(System.getProperty("user.home") + refSvgName);
+//            fw.write(writer.toString());
+//            fw.close();
 
             String refSvg = normalizeLineSeparator(new String(ByteStreams.toByteArray(getClass().getResourceAsStream(refSvgName)), StandardCharsets.UTF_8));
             String svg = normalizeLineSeparator(writer.toString());
@@ -107,13 +97,34 @@ public abstract class AbstractTestCase {
         }
     }
 
-    public void compareSvg(SubstationGraph graph, LayoutParameters layoutParameters,
-            String refSvgName, SubstationLayoutFactory sLayoutFactory,  SubstationDiagramStyleProvider myStyleProvider) {
+    public void compareSvg(SubstationGraph graph, LayoutParameters layoutParameters, String refSvgName) {
         try (StringWriter writer = new StringWriter()) {
             new SVGWriter(componentLibrary, layoutParameters)
-                    .write(graph, new DefaultSubstationDiagramInitialValueProvider(network), myStyleProvider, writer, sLayoutFactory,
-                    new PositionVoltageLevelLayoutFactory());
+                    .write(graph, new DefaultSubstationDiagramInitialValueProvider(network), styleProvider, writer);
             writer.flush();
+
+//            FileWriter fw = new FileWriter(System.getProperty("user.home") + refSvgName);
+//            fw.write(writer.toString());
+//            fw.close();
+
+            String refSvg = normalizeLineSeparator(new String(ByteStreams.toByteArray(getClass().getResourceAsStream(refSvgName)), StandardCharsets.UTF_8));
+            String svg = normalizeLineSeparator(writer.toString());
+            assertEquals(refSvg, svg);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    public void compareSvg(SubstationGraph graph, LayoutParameters layoutParameters,
+                           String refSvgName, SubstationDiagramStyleProvider myStyleProvider) {
+        try (StringWriter writer = new StringWriter()) {
+            new SVGWriter(componentLibrary, layoutParameters)
+                    .write(graph, new DefaultSubstationDiagramInitialValueProvider(network), myStyleProvider, writer);
+            writer.flush();
+
+//            FileWriter fw = new FileWriter(System.getProperty("user.home") + refSvgName);
+//            fw.write(writer.toString());
+//            fw.close();
 
             String refSvg = normalizeLineSeparator(new String(ByteStreams.toByteArray(getClass().getResourceAsStream(refSvgName)), StandardCharsets.UTF_8));
             String svg = normalizeLineSeparator(writer.toString());

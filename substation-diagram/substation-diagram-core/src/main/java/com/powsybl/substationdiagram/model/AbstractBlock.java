@@ -10,6 +10,8 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
 
 import java.io.IOException;
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -21,9 +23,7 @@ public abstract class AbstractBlock implements Block {
 
     protected final Type type;
 
-    private int cardinalityStart;
-
-    private int cardinalityEnd;
+    private Map<Extremity, Integer> cardinality;
 
     private Block parentBlock;
 
@@ -40,39 +40,48 @@ public abstract class AbstractBlock implements Block {
      * layout.block
      */
     AbstractBlock(Type type) {
+        cardinality = new EnumMap<>(Extremity.class);
+        cardinality.put(Extremity.START, 0);
+        cardinality.put(Extremity.END, 0);
         this.type = Objects.requireNonNull(type);
         position = new Position(-1, -1);
         coord = new Coord(-1, -1);
     }
 
     @Override
-    public int getCardinalityInverse(Node commonNode) {
-        if (commonNode.equals(getStartingNode())) {
-            return cardinalityEnd;
-        }
-        if (commonNode.equals(getEndingNode())) {
-            return cardinalityStart;
-        }
-        return 0;
+    public Node getStartingNode() {
+        return getExtremityNode(Extremity.START);
     }
 
     @Override
-    public int getCardinality(Node commonNode) {
-        if (commonNode.equals(getStartingNode())) {
-            return cardinalityStart;
-        }
-        if (commonNode.equals(getEndingNode())) {
-            return cardinalityEnd;
-        }
-        return 0;
+    public Node getEndingNode() {
+        return getExtremityNode(Extremity.END);
     }
 
-    void setCardinalityStart(int cardinalityStart) {
-        this.cardinalityStart = cardinalityStart;
+    @Override
+    public Extremity getExtremity(Node node) {
+        if (node.equals(getExtremityNode(Extremity.START))) {
+            return Extremity.START;
+        }
+        if (node.equals(getExtremityNode(Extremity.END))) {
+            return Extremity.END;
+        }
+        return null;
     }
 
-    void setCardinalityEnd(int cardinalityEnd) {
-        this.cardinalityEnd = cardinalityEnd;
+    @Override
+    public int getCardinality(Node node) {
+        return getCardinality(getExtremity(node));
+    }
+
+    @Override
+    public int getCardinality(Extremity extremity) {
+        return cardinality.get(extremity);
+    }
+
+    @Override
+    public void setCardinality(Extremity extremity, int i) {
+        cardinality.put(extremity, i);
     }
 
     public Block getParentBlock() {
@@ -92,21 +101,6 @@ public abstract class AbstractBlock implements Block {
     @Override
     public void setBusNode(BusNode busNode) {
         this.busNode = busNode;
-    }
-
-    @Override
-    public void defineExtremity(Node node, Extremity ext) {
-        if (!node.equals(getExtremityNode(ext))) {
-            reverseBlock();
-        }
-    }
-
-    private Node getExtremityNode(Extremity ext) {
-        if (ext == Extremity.START) {
-            return getStartingNode();
-        } else {
-            return getEndingNode();
-        }
     }
 
     public Cell getCell() {

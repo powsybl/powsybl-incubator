@@ -6,15 +6,24 @@
  */
 package com.powsybl.substationdiagram.layout;
 
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.powsybl.commons.PowsyblException;
 import com.powsybl.substationdiagram.model.BusCell;
+import com.powsybl.substationdiagram.model.BusCell.Direction;
 import com.powsybl.substationdiagram.model.Coord;
+import com.powsybl.substationdiagram.model.Edge;
 import com.powsybl.substationdiagram.model.ExternCell;
 import com.powsybl.substationdiagram.model.Graph;
 import com.powsybl.substationdiagram.model.Node;
+import com.powsybl.substationdiagram.model.Side;
 import com.powsybl.substationdiagram.model.SubstationGraph;
+import com.powsybl.substationdiagram.model.TwtEdge;
 
 /**
  * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
@@ -49,6 +58,24 @@ public abstract class AbstractSubstationLayout implements SubstationLayout {
             graphX += posVLGraph.getX() + getHorizontalSubstationPadding(layoutParameters);
             graphY += posVLGraph.getY() + getVerticalSubstationPadding(layoutParameters);
         }
+
+        // Determine points of the snakeLine
+        Map<BusCell.Direction, Integer> nbSnakeLinesTopBottom = EnumSet.allOf(BusCell.Direction.class).stream().collect(Collectors.toMap(Function.identity(), v -> 0));
+        Map<String, Integer> nbSnakeLinesBetween = graph.getNodes().stream().collect(Collectors.toMap(g -> g.getVoltageLevel().getId(), v -> 0));
+        Map<Side, Integer> nbSnakeLinesLeftRight = EnumSet.allOf(Side.class).stream().collect(Collectors.toMap(Function.identity(), v -> 0));
+        Map<String, Integer> nbSnakeLinesBottomVL = graph.getNodes().stream().collect(Collectors.toMap(g -> g.getVoltageLevel().getId(), v -> 0));
+        Map<String, Integer> nbSnakeLinesTopVL = graph.getNodes().stream().collect(Collectors.toMap(g -> g.getVoltageLevel().getId(), v -> 0));
+
+        for (TwtEdge edge : graph.getEdges()) {
+            List<Double> pol = calculatePolylineSnakeLine(layoutParameters,
+                    edge,
+                    nbSnakeLinesTopBottom,
+                    nbSnakeLinesLeftRight,
+                    nbSnakeLinesBetween,
+                    nbSnakeLinesBottomVL,
+                    nbSnakeLinesTopVL);
+            edge.setSnakeLine(pol);
+        }
     }
 
     protected abstract Coord calculateCoordVoltageLevel(LayoutParameters layoutParameters, Graph vlGraph);
@@ -56,6 +83,11 @@ public abstract class AbstractSubstationLayout implements SubstationLayout {
     protected abstract double getHorizontalSubstationPadding(LayoutParameters layoutParameters);
 
     protected abstract double getVerticalSubstationPadding(LayoutParameters layoutParameters);
+
+    protected abstract List<Double> calculatePolylineSnakeLine(LayoutParameters layoutParameters, Edge edge,
+            Map<Direction, Integer> nbSnakeLinesTopBottom, Map<Side, Integer> nbSnakeLinesLeftRight,
+            Map<String, Integer> nbSnakeLinesBetween, Map<String, Integer> nbSnakeLinesBottomVL,
+            Map<String, Integer> nbSnakeLinesTopVL);
 
     protected BusCell.Direction getNodeDirection(Node node, int nb) {
         if (node.getType() != Node.NodeType.FEEDER) {

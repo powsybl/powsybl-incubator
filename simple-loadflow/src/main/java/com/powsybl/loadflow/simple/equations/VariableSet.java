@@ -8,26 +8,15 @@ package com.powsybl.loadflow.simple.equations;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class EquationContext {
-
-    private final Map<Pair<Integer, EquationType>, Equation> equations = new HashMap<>();
+public class VariableSet {
 
     private final Map<Pair<Integer, VariableType>, Variable> variables = new HashMap<>();
-
-    public Equation getEquation(int num, EquationType type) {
-        return equations.computeIfAbsent(Pair.of(num, type), p -> new Equation(p.getLeft(), p.getRight()));
-    }
-
-    public Collection<Equation> getEquations() {
-        return equations.values();
-    }
 
     public Variable getVariable(int num, VariableType type) {
         return variables.computeIfAbsent(Pair.of(num, type), p -> new Variable(p.getLeft(), p.getRight()));

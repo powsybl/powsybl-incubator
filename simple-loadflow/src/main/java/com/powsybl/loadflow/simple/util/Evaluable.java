@@ -11,9 +11,5 @@ package com.powsybl.loadflow.simple.util;
  */
 public interface Evaluable {
 
-    Evaluable NAN = () -> Double.NaN;
-
-    Evaluable ZERO = () -> 0;
-
     double eval();
 }

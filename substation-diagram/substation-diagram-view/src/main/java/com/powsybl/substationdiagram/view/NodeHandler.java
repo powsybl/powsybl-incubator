@@ -36,20 +36,27 @@ public class NodeHandler implements BaseNode {
     private final GraphMetadata metadata;
 
     private final String vId;
+    private final String nextVId;
 
     private double mouseX;
     private double mouseY;
 
+    private double screenX;
+    private double screenY;
+
     private BusCell.Direction direction;
+
+    private DisplayVoltageLevel displayVL;
 
     public NodeHandler(Node node, ComponentType componentType, Double rotationAngle,
                        GraphMetadata metadata,
-                       String vId, BusCell.Direction direction) {
+                       String vId, String nextVId, BusCell.Direction direction) {
         this.node = Objects.requireNonNull(node);
         this.componentType = componentType;
         this.rotationAngle = rotationAngle;
         this.metadata = Objects.requireNonNull(metadata);
         this.vId = Objects.requireNonNull(vId);
+        this.nextVId = nextVId;
         this.direction = direction;
 
         setDragAndDrop();
@@ -66,6 +73,10 @@ public class NodeHandler implements BaseNode {
 
     public String getVId() {
         return vId;
+    }
+
+    public String getNextVId() {
+        return nextVId;
     }
 
     public BusCell.Direction getDirection() {
@@ -95,6 +106,10 @@ public class NodeHandler implements BaseNode {
         return rotationAngle != null;
     }
 
+    public void setDisplayVL(DisplayVoltageLevel displayVL) {
+        this.displayVL = displayVL;
+    }
+
     @Override
     public double getX() {
         ComponentSize size = componentType != null
@@ -115,6 +130,8 @@ public class NodeHandler implements BaseNode {
 
     public void setDragAndDrop() {
         node.setOnMousePressed(event -> {
+            screenX = event.getScreenX();
+            screenY = event.getScreenY();
             mouseX = event.getSceneX() - node.getTranslateX();
             mouseY = event.getSceneY() - node.getTranslateY();
             event.consume();
@@ -124,6 +141,14 @@ public class NodeHandler implements BaseNode {
             translate(event.getSceneX() - mouseX, event.getSceneY() - mouseY);
             event.consume();
         });
+
+        node.setOnMouseReleased(event -> {
+            if (event.getScreenX() == screenX &&
+                event.getScreenY() == screenY &&
+                    componentType == ComponentType.LINE || componentType == ComponentType.TWO_WINDINGS_TRANSFORMER) {
+                displayNextVoltageLevel();
+            }
+        });
     }
 
     public void translate(double translateX, double translateY) {
@@ -131,6 +156,12 @@ public class NodeHandler implements BaseNode {
         node.setTranslateY(translateY);
         for (WireHandler w : wireHandlers) {
             w.refresh();
+        }
+    }
+
+    private void displayNextVoltageLevel() {
+        if (nextVId != null) {
+            displayVL.display(nextVId);
         }
     }
 }

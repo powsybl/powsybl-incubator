@@ -9,11 +9,11 @@ package com.powsybl.loadflow.simple.ac;
 import com.powsybl.iidm.network.Bus;
 import com.powsybl.iidm.network.Line;
 import com.powsybl.iidm.network.Network;
-import com.powsybl.iidm.network.VariantManagerConstants;
+import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
-import com.powsybl.loadflow.simple.SimpleLoadFlow;
 import com.powsybl.loadflow.simple.SimpleLoadFlowParameters;
+import com.powsybl.loadflow.simple.SimpleLoadFlowProvider;
 import com.powsybl.loadflow.simple.SlackBusSelectionMode;
 import com.powsybl.loadflow.simple.network.TwoBusNetworkFactory;
 import com.powsybl.math.matrix.DenseMatrixFactory;
@@ -27,14 +27,14 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class SimpleAcLoadFlowTwoBusNetworkTest {
+public class AcLoadFlowTwoBusNetworkTest {
 
     private Network network;
     private Bus bus1;
     private Bus bus2;
     private Line line1;
 
-    private SimpleLoadFlow loadFlow;
+    private LoadFlow.Runner loadFlowRunner;
     private LoadFlowParameters parameters;
 
     @Before
@@ -44,7 +44,7 @@ public class SimpleAcLoadFlowTwoBusNetworkTest {
         bus2 = network.getBusBreakerView().getBus("b2");
         line1 = network.getLine("l12");
 
-        loadFlow = new SimpleLoadFlow(network, new DenseMatrixFactory());
+        loadFlowRunner = new LoadFlow.Runner(new SimpleLoadFlowProvider(new DenseMatrixFactory()));
         parameters = new LoadFlowParameters();
         SimpleLoadFlowParameters parametersExt = new SimpleLoadFlowParameters()
                 .setSlackBusSelectionMode(SlackBusSelectionMode.FIRST)
@@ -54,7 +54,7 @@ public class SimpleAcLoadFlowTwoBusNetworkTest {
 
     @Test
     public void baseCaseTest() {
-        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
+        LoadFlowResult result = loadFlowRunner.run(network, parameters);
         assertTrue(result.isOk());
 
         assertVoltageEquals(1, bus1);
@@ -69,12 +69,11 @@ public class SimpleAcLoadFlowTwoBusNetworkTest {
 
     @Test
     public void voltageInitModeTest() {
-        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
+        LoadFlowResult result = loadFlowRunner.run(network, parameters);
         assertTrue(result.isOk());
         assertEquals("3", result.getMetrics().get("iterations"));
         // restart loadflow from previous calculated state, it should convergence in zero iteration
-        result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters.setVoltageInitMode(LoadFlowParameters.VoltageInitMode.PREVIOUS_VALUES))
-                .join();
+        result = loadFlowRunner.run(network, parameters.setVoltageInitMode(LoadFlowParameters.VoltageInitMode.PREVIOUS_VALUES));
         assertTrue(result.isOk());
         assertEquals("1", result.getMetrics().get("iterations"));
     }
@@ -89,7 +88,7 @@ public class SimpleAcLoadFlowTwoBusNetworkTest {
                 .setMinP(0)
                 .setMaxP(1)
                 .add();
-        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
+        LoadFlowResult result = loadFlowRunner.run(network, parameters);
         assertTrue(result.isOk());
         assertVoltageEquals(1, bus1);
         assertAngleEquals(0, bus1);

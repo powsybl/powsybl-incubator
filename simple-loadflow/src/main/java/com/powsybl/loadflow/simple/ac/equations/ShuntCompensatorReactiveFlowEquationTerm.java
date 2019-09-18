@@ -6,7 +6,7 @@
  */
 package com.powsybl.loadflow.simple.ac.equations;
 
-import com.powsybl.loadflow.simple.equations.EquationContext;
+import com.powsybl.loadflow.simple.equations.VariableSet;
 import com.powsybl.loadflow.simple.equations.EquationTerm;
 import com.powsybl.loadflow.simple.equations.Variable;
 import com.powsybl.loadflow.simple.equations.VariableType;
@@ -34,12 +34,12 @@ public class ShuntCompensatorReactiveFlowEquationTerm implements EquationTerm {
     private double dqdv;
 
     public ShuntCompensatorReactiveFlowEquationTerm(LfShunt shunt, LfBus bus, LfNetwork network,
-                                                    EquationContext equationContext) {
+                                                    VariableSet variableSet) {
         Objects.requireNonNull(shunt);
         Objects.requireNonNull(bus);
         Objects.requireNonNull(network);
-        Objects.requireNonNull(equationContext);
-        vVar = equationContext.getVariable(bus.getNum(), VariableType.BUS_V);
+        Objects.requireNonNull(variableSet);
+        vVar = variableSet.getVariable(bus.getNum(), VariableType.BUS_V);
         variables = Collections.singletonList(vVar);
         b = shunt.getB();
     }

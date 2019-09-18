@@ -9,7 +9,10 @@ package com.powsybl.loadflow.simple.ac.outerloop;
 import com.google.common.base.Stopwatch;
 import com.powsybl.loadflow.simple.ac.equations.AcEquationSystem;
 import com.powsybl.loadflow.simple.ac.nr.*;
-import com.powsybl.loadflow.simple.equations.*;
+import com.powsybl.loadflow.simple.equations.Equation;
+import com.powsybl.loadflow.simple.equations.EquationSystem;
+import com.powsybl.loadflow.simple.equations.EquationType;
+import com.powsybl.loadflow.simple.equations.VoltageInitializer;
 import com.powsybl.loadflow.simple.network.LfBus;
 import com.powsybl.loadflow.simple.network.LfNetwork;
 import com.powsybl.math.matrix.MatrixFactory;
@@ -51,14 +54,16 @@ public class AcloadFlowEngine {
         this.observer = Objects.requireNonNull(observer);
     }
 
-    private void updatePvBusesReactivePower(NewtonRaphsonResult lastNrResult, EquationContext equationContext) {
+    private void updatePvBusesReactivePower(NewtonRaphsonResult lastNrResult, EquationSystem equationSystem) {
         if (lastNrResult.getStatus() == NewtonRaphsonStatus.CONVERGED) {
             observer.beforePvBusesReactivePowerUpdate();
 
             for (LfBus bus : network.getBuses()) {
                 if (bus.hasVoltageControl()) {
-                    Equation q = equationContext.getEquation(bus.getNum(), EquationType.BUS_Q);
+                    Equation q = equationSystem.createEquation(bus.getNum(), EquationType.BUS_Q);
                     bus.setQ(q.eval());
+                } else {
+                    bus.setQ(Double.NaN);
                 }
             }
 
@@ -71,21 +76,20 @@ public class AcloadFlowEngine {
 
         observer.beforeEquationSystemCreation();
 
-        EquationContext equationContext = new EquationContext();
-        EquationSystem equationSystem = AcEquationSystem.create(network, equationContext);
+        EquationSystem equationSystem = AcEquationSystem.create(network);
 
         observer.afterEquationSystemCreation();
 
         NewtonRaphsonResult lastNrResult;
         int outerLoopIteration = 0;
-        try (NewtonRaphson newtonRaphson = new NewtonRaphson(network, matrixFactory, observer, equationContext, equationSystem, stoppingCriteria)) {
+        try (NewtonRaphson newtonRaphson = new NewtonRaphson(network, matrixFactory, observer, equationSystem, stoppingCriteria)) {
 
             NewtonRaphsonParameters nrParameters = new NewtonRaphsonParameters().setVoltageInitializer(voltageInitializer);
 
             // initial Newton-Raphson
             lastNrResult = newtonRaphson.run(nrParameters);
 
-            updatePvBusesReactivePower(lastNrResult, equationContext);
+            updatePvBusesReactivePower(lastNrResult, equationSystem);
 
             // for each outer loop re-run Newton-Raphson until stabilization
             // outer loops are nested: inner most loop first in the list, outer mosy loop last
@@ -95,7 +99,7 @@ public class AcloadFlowEngine {
                     observer.beforeOuterLoopStatusCheck(outerLoopIteration, outerLoop.getName());
 
                     // check outer loop status
-                    outerLoopStatus = outerLoop.check(new OuterLoopContext(outerLoopIteration, network, lastNrResult));
+                    outerLoopStatus = outerLoop.check(new OuterLoopContext(outerLoopIteration, network, equationSystem, lastNrResult));
 
                     observer.afterOuterLoopStatusCheck(outerLoopIteration, outerLoop.getName(), outerLoopStatus == OuterLoopStatus.STABLE);
 
@@ -107,20 +111,11 @@ public class AcloadFlowEngine {
 
                         observer.afterOuterLoopBody(outerLoopIteration, outerLoop.getName());
 
-                        updatePvBusesReactivePower(lastNrResult, equationContext);
+                        updatePvBusesReactivePower(lastNrResult, equationSystem);
 
                         outerLoopIteration++;
                     }
                 } while (outerLoopStatus == OuterLoopStatus.UNSTABLE);
-            }
-
-            // update network state variable
-            if (lastNrResult.getStatus() == NewtonRaphsonStatus.CONVERGED) {
-                observer.beforeNetworkUpdate();
-
-                equationSystem.updateNetwork(lastNrResult.getX());
-
-                observer.afterNetworkUpdate();
             }
         }
 

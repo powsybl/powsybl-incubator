@@ -6,11 +6,21 @@
  */
 package com.powsybl.substationdiagram.model;
 
-import com.powsybl.iidm.network.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import com.powsybl.iidm.network.Substation;
+import com.powsybl.iidm.network.Terminal;
+import com.powsybl.iidm.network.ThreeWindingsTransformer;
+import com.powsybl.iidm.network.TwoWindingsTransformer;
+import com.powsybl.iidm.network.VoltageLevel;
 
 /**
  * This class builds the connectivity among the voltageLevels of a substation
@@ -26,7 +36,7 @@ public class SubstationGraph {
 
     private final List<Graph> nodes = new ArrayList<>();
 
-    private final List<Edge> edges = new ArrayList<>();
+    private final List<TwtEdge> edges = new ArrayList<>();
 
     private final Map<String, Graph> nodesById = new HashMap<>();
 
@@ -136,7 +146,7 @@ public class SubstationGraph {
     }
 
     public void addEdge(Node n1, Node n2) {
-        Edge sl = new Edge(n1, n2);
+        TwtEdge sl = new TwtEdge(n1, n2);
         edges.add(sl);
     }
 
@@ -144,7 +154,7 @@ public class SubstationGraph {
         return new ArrayList<>(nodes);
     }
 
-    public List<Edge> getEdges() {
+    public List<TwtEdge> getEdges() {
         return new ArrayList<>(edges);
     }
 

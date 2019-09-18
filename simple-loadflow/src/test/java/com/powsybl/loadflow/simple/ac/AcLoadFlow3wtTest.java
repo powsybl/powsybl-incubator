@@ -7,10 +7,11 @@
 package com.powsybl.loadflow.simple.ac;
 
 import com.powsybl.iidm.network.*;
+import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
-import com.powsybl.loadflow.simple.SimpleLoadFlow;
 import com.powsybl.loadflow.simple.SimpleLoadFlowParameters;
+import com.powsybl.loadflow.simple.SimpleLoadFlowProvider;
 import com.powsybl.loadflow.simple.SlackBusSelectionMode;
 import com.powsybl.math.matrix.DenseMatrixFactory;
 import org.junit.Before;
@@ -34,7 +35,7 @@ import static org.junit.Assert.assertTrue;
  *
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class SimpleAcLoadFlow3wtTest {
+public class AcLoadFlow3wtTest {
 
     private Network network;
     private Bus bus1;
@@ -42,7 +43,7 @@ public class SimpleAcLoadFlow3wtTest {
     private Bus bus3;
     private ThreeWindingsTransformer twt;
 
-    private SimpleLoadFlow loadFlow;
+    private LoadFlow.Runner loadFlowRunner;
 
     private LoadFlowParameters parameters;
 
@@ -140,7 +141,7 @@ public class SimpleAcLoadFlow3wtTest {
     @Before
     public void setUp() {
         network = createNetwork();
-        loadFlow = new SimpleLoadFlow(network, new DenseMatrixFactory());
+        loadFlowRunner = new LoadFlow.Runner(new SimpleLoadFlowProvider(new DenseMatrixFactory()));
         parameters = new LoadFlowParameters();
         SimpleLoadFlowParameters parametersExt = new SimpleLoadFlowParameters()
                 .setSlackBusSelectionMode(SlackBusSelectionMode.MOST_MESHED)
@@ -150,7 +151,7 @@ public class SimpleAcLoadFlow3wtTest {
 
     @Test
     public void test() {
-        LoadFlowResult result = loadFlow.run(VariantManagerConstants.INITIAL_VARIANT_ID, parameters).join();
+        LoadFlowResult result = loadFlowRunner.run(network, parameters);
         assertTrue(result.isOk());
 
         assertVoltageEquals(405, bus1);

@@ -148,10 +148,10 @@ public class TestCase12GraphWith3WT extends AbstractTestCase {
 
         createSwitch(vl1, "dtrf15", "dtrf15", SwitchKind.DISCONNECTOR, false, false, true, 0, 26);
         createSwitch(vl1, "btrf15", "btrf15", SwitchKind.BREAKER, true, false, true, 26, 27);
-        createSwitch(vl3, "dtrf25", "dtrf25", SwitchKind.DISCONNECTOR, false, false, true, 0, 3);
-        createSwitch(vl3, "btrf25", "btrf25", SwitchKind.BREAKER, true, false, true, 3, 4);
+        createSwitch(vl3, "dtrf25", "dtrf25", SwitchKind.DISCONNECTOR, false, false, true, 0, 5);
+        createSwitch(vl3, "btrf25", "btrf25", SwitchKind.BREAKER, true, false, true, 5, 6);
         createTwoWindingsTransformer(substation, "trf5", "trf5", 2.0, 14.745, 0.0, 3.2E-5, 400.0, 225.0,
-                27, 4, vl1.getId(), vl3.getId(),
+                27, 6, vl1.getId(), vl3.getId(),
                 "trf5", 2, ConnectablePosition.Direction.TOP,
                 "trf5", 1, ConnectablePosition.Direction.BOTTOM);
 
@@ -161,13 +161,13 @@ public class TestCase12GraphWith3WT extends AbstractTestCase {
         createSwitch(vl1, "btrf16", "btrf16", SwitchKind.BREAKER, true, false, true, 28, 29);
         createSwitch(vl2, "dtrf26", "dtrf26", SwitchKind.DISCONNECTOR, false, false, true, 1, 16);
         createSwitch(vl2, "btrf26", "btrf26", SwitchKind.BREAKER, true, false, true, 16, 17);
-        createSwitch(vl3, "dtrf36", "dtrf36", SwitchKind.DISCONNECTOR, false, false, true, 0, 5);
-        createSwitch(vl3, "btrf36", "btrf36", SwitchKind.BREAKER, true, false, true, 5, 6);
+        createSwitch(vl3, "dtrf36", "dtrf36", SwitchKind.DISCONNECTOR, false, false, true, 0, 7);
+        createSwitch(vl3, "btrf36", "btrf36", SwitchKind.BREAKER, true, false, true, 7, 8);
 
         createThreeWindingsTransformer(substation, "trf6", "trf6", vl1.getId(), vl2.getId(), vl3.getId(),
                                        0.5, 0.5, 0.5, 1., 1., 1., 0.1, 0.1,
                                        400., 225., 225.,
-                                       29, 17, 6,
+                                       29, 17, 8,
                                        "trf61", 2, ConnectablePosition.Direction.TOP,
                                        "trf62", 2, ConnectablePosition.Direction.TOP,
                                        "trf63", 2, ConnectablePosition.Direction.TOP);
@@ -176,13 +176,13 @@ public class TestCase12GraphWith3WT extends AbstractTestCase {
         createSwitch(vl1, "btrf17", "btrf17", SwitchKind.BREAKER, true, false, true, 30, 31);
         createSwitch(vl2, "dtrf27", "dtrf27", SwitchKind.DISCONNECTOR, false, false, true, 0, 18);
         createSwitch(vl2, "btrf27", "btrf27", SwitchKind.BREAKER, true, false, true, 18, 19);
-        createSwitch(vl3, "dtrf37", "dtrf37", SwitchKind.DISCONNECTOR, false, false, true, 0, 7);
-        createSwitch(vl3, "btrf37", "btrf37", SwitchKind.BREAKER, true, false, true, 7, 8);
+        createSwitch(vl3, "dtrf37", "dtrf37", SwitchKind.DISCONNECTOR, false, false, true, 0, 9);
+        createSwitch(vl3, "btrf37", "btrf37", SwitchKind.BREAKER, true, false, true, 9, 10);
 
         createThreeWindingsTransformer(substation, "trf7", "trf7", vl1.getId(), vl2.getId(), vl3.getId(),
                 0.5, 0.5, 0.5, 1., 1., 1., 0.1, 0.1,
                 400., 225., 225.,
-                31, 19, 8,
+                31, 19, 10,
                 "trf71", 2, ConnectablePosition.Direction.BOTTOM,
                 "trf72", 2, ConnectablePosition.Direction.TOP,
                 "trf73", 2, ConnectablePosition.Direction.BOTTOM);
@@ -191,16 +191,26 @@ public class TestCase12GraphWith3WT extends AbstractTestCase {
         createSwitch(vl1, "btrf18", "btrf18", SwitchKind.BREAKER, true, false, true, 32, 33);
         createSwitch(vl2, "dtrf28", "dtrf28", SwitchKind.DISCONNECTOR, false, false, true, 1, 20);
         createSwitch(vl2, "btrf28", "btrf28", SwitchKind.BREAKER, true, false, true, 20, 21);
-        createSwitch(vl3, "dtrf38", "dtrf38", SwitchKind.DISCONNECTOR, false, false, true, 0, 9);
-        createSwitch(vl3, "btrf38", "btrf38", SwitchKind.BREAKER, true, false, true, 9, 10);
+        createSwitch(vl3, "dtrf38", "dtrf38", SwitchKind.DISCONNECTOR, false, false, true, 0, 11);
+        createSwitch(vl3, "btrf38", "btrf38", SwitchKind.BREAKER, true, false, true, 11, 12);
 
         createThreeWindingsTransformer(substation, "trf8", "trf8", vl1.getId(), vl2.getId(), vl3.getId(),
                 0.5, 0.5, 0.5, 1., 1., 1., 0.1, 0.1,
                 400., 225., 225.,
-                33, 21, 10,
+                33, 21, 12,
                 "trf81", 2, ConnectablePosition.Direction.TOP,
                 "trf82", 2, ConnectablePosition.Direction.BOTTOM,
                 "trf83", 2, ConnectablePosition.Direction.TOP);
+
+        createShunt(vl3, "self5", "self5", "self5", 2, ConnectablePosition.Direction.BOTTOM, 13, -1, 1, 1);
+        createSwitch(vl3, "dself5", "dself5", SwitchKind.DISCONNECTOR, false, false, true, 0, 14);
+        createSwitch(vl3, "bself5", "bself5", SwitchKind.BREAKER, true, false, true, 14, 13);
+
+        createBusBarSection(vl3, "bbs8", "bbs8", 15, 1, 2);
+
+        createShunt(vl3, "self6", "self6", "self6", 3, ConnectablePosition.Direction.BOTTOM, 16, 1, 1, 1);
+        createSwitch(vl3, "dself6", "dself6", SwitchKind.DISCONNECTOR, false, false, true, 15, 17);
+        createSwitch(vl3, "bself6", "bself6", SwitchKind.BREAKER, true, false, true, 17, 16);
     }
 
     private static Substation createSubstation(Network n, String id, String name, Country country) {

@@ -6,19 +6,8 @@
  */
 package com.powsybl.substationdiagram;
 
-import com.google.common.io.ByteStreams;
-import com.powsybl.iidm.network.*;
-import com.powsybl.substationdiagram.layout.HorizontalSubstationLayoutFactory;
-import com.powsybl.substationdiagram.layout.LayoutParameters;
-import com.powsybl.substationdiagram.layout.VerticalSubstationLayoutFactory;
-import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
-import com.powsybl.substationdiagram.model.SubstationGraph;
-import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramStyleProvider;
-import com.powsybl.substationdiagram.util.NominalVoltageSubstationDiagramStyleProvider;
-import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
-import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -27,8 +16,32 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
+
+import com.google.common.io.ByteStreams;
+import com.powsybl.iidm.network.BusbarSection;
+import com.powsybl.iidm.network.Country;
+import com.powsybl.iidm.network.Generator;
+import com.powsybl.iidm.network.Line;
+import com.powsybl.iidm.network.Load;
+import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.network.Substation;
+import com.powsybl.iidm.network.SwitchKind;
+import com.powsybl.iidm.network.ThreeWindingsTransformer;
+import com.powsybl.iidm.network.TopologyKind;
+import com.powsybl.iidm.network.TwoWindingsTransformer;
+import com.powsybl.iidm.network.VoltageLevel;
+import com.powsybl.substationdiagram.layout.HorizontalSubstationLayoutFactory;
+import com.powsybl.substationdiagram.layout.LayoutParameters;
+import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayoutFactory;
+import com.powsybl.substationdiagram.layout.VerticalSubstationLayoutFactory;
+import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
+import com.powsybl.substationdiagram.model.SubstationGraph;
+import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramStyleProvider;
+import com.powsybl.substationdiagram.util.NominalVoltageSubstationDiagramStyleProvider;
+import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
+import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
 
 /**
  * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
@@ -196,6 +209,22 @@ public class TestCase11SubstationGraph extends AbstractTestCase {
                 "trf81", 2, ConnectablePosition.Direction.TOP,
                 "trf82", 2, ConnectablePosition.Direction.BOTTOM,
                 "trf83", 2, ConnectablePosition.Direction.TOP);
+
+        // Creation of another substation, another voltageLevel and a line between the two substations
+        //
+        Substation substation2 = createSubstation(network, "subst2", "subst2", Country.FR);
+        VoltageLevel vlSubst2 = createVoltageLevel(substation2, "vlSubst2", "vlSubst2", TopologyKind.NODE_BREAKER, 400, 50);
+
+        createBusBarSection(vlSubst2, "bbs1_2", "bbs1_2", 0, 1, 1);
+
+        createSwitch(vl1, "dline11_2", "dline11_2", SwitchKind.DISCONNECTOR, false, false, true, 0, 34);
+        createSwitch(vl1, "bline11_2", "bline11_2", SwitchKind.BREAKER, true, false, true, 34, 35);
+        createSwitch(vlSubst2, "dline21_2", "dline21_2", SwitchKind.DISCONNECTOR, false, false, true, 0, 1);
+        createSwitch(vlSubst2, "bline21_2", "bline21_2", SwitchKind.BREAKER, true, false, true, 1, 2);
+        createLine(network, "line1", "line1", 2.0, 14.745, 1.0, 1.0, 1.0, 1.0,
+                   35, 2, vl1.getId(), vlSubst2.getId(),
+                   "line1", 3, ConnectablePosition.Direction.TOP,
+                   "line1", 1, ConnectablePosition.Direction.TOP);
     }
 
     private static Substation createSubstation(Network n, String id, String name, Country country) {
@@ -348,6 +377,37 @@ public class TestCase11SubstationGraph extends AbstractTestCase {
                         new ConnectablePosition.Feeder(feederName3, feederOrder3, direction3)));
     }
 
+    private static void createLine(Network network,
+                                   String id, String name,
+                                   double r, double x,
+                                   double g1, double b1,
+                                   double g2, double b2,
+                                   int node1, int node2,
+                                   String idVoltageLevel1, String idVoltageLevel2,
+                                   String feederName1, int feederOrder1, ConnectablePosition.Direction direction1,
+                                   String feederName2, int feederOrder2, ConnectablePosition.Direction direction2) {
+        Line line = network.newLine()
+                .setId(id)
+                .setName(name)
+                .setR(r)
+                .setX(x)
+                .setG1(g1)
+                .setB1(b1)
+                .setG2(g2)
+                .setB2(b2)
+                .setNode1(node1)
+                .setVoltageLevel1(idVoltageLevel1)
+                .setNode2(node2)
+                .setVoltageLevel2(idVoltageLevel2)
+                .add();
+        line.addExtension(ConnectablePosition.class,
+                new ConnectablePosition<>(line,
+                        null,
+                        new ConnectablePosition.Feeder(feederName1, feederOrder1, direction1),
+                        new ConnectablePosition.Feeder(feederName2, feederOrder2, direction2),
+                        null));
+    }
+
     @Test
     public void test() {
         LayoutParameters layoutParameters = new LayoutParameters()
@@ -379,22 +439,23 @@ public class TestCase11SubstationGraph extends AbstractTestCase {
         assertEquals(14, g.getEdges().size());
 
         // write SVG and compare to reference (horizontal layout and defaut style provider)
+        new HorizontalSubstationLayoutFactory().create(g, new PositionVoltageLevelLayoutFactory()).run(layoutParameters);
         compareSvg(g, layoutParameters, "/TestCase11SubstationGraphHorizontal.svg",
-                   new HorizontalSubstationLayoutFactory(),
                    new DefaultSubstationDiagramStyleProvider());
 
         // rebuild substation graph
         g = SubstationGraph.create(substation);
 
         // write SVG and compare to reference (vertical layout)
-        compareSvg(g, layoutParameters, "/TestCase11SubstationGraphVertical.svg", new VerticalSubstationLayoutFactory());
+        new VerticalSubstationLayoutFactory().create(g, new PositionVoltageLevelLayoutFactory()).run(layoutParameters);
+        compareSvg(g, layoutParameters, "/TestCase11SubstationGraphVertical.svg");
 
         // rebuild substation graph
         g = SubstationGraph.create(substation);
 
          // write SVG and compare to reference (horizontal layout and nominal voltage style)
+        new HorizontalSubstationLayoutFactory().create(g, new PositionVoltageLevelLayoutFactory()).run(layoutParameters);
         compareSvg(g, layoutParameters, "/TestCase11SubstationGraphHorizontalNominalVoltageLevel.svg",
-                   new HorizontalSubstationLayoutFactory(),
                    new NominalVoltageSubstationDiagramStyleProvider());
 
         // Create substation diagram (svg + metadata files)

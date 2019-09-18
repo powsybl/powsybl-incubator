@@ -12,6 +12,7 @@ import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.LABEL_ST
 import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.SUBSTATION_STYLE_CLASS;
 import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.WIRE_STYLE_CLASS;
 import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.escapeClassName;
+import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.escapeId;
 
 import java.io.UncheckedIOException;
 import java.io.UnsupportedEncodingException;
@@ -80,7 +81,7 @@ public class NominalVoltageSubstationDiagramStyleProvider extends DefaultSubstat
             if (node.getType() == Node.NodeType.SWITCH) {
                 return defaultStyle;
             } else {
-                return Optional.of(defaultStyle.orElse("") + " ." + escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())) + " {stroke:" + color + ";stroke-width:1;fill-opacity:0;}");
+                return Optional.of(defaultStyle.orElse("") + " ." + escapeId(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())) + " {stroke:" + color + ";stroke-width:1;fill-opacity:0;}");
             }
         } catch (UnsupportedEncodingException e) {
             throw new UncheckedIOException(e);

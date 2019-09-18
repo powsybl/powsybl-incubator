@@ -10,7 +10,7 @@ import com.powsybl.action.util.Scalable;
 import com.powsybl.balances_adjustment.util.NetworkArea;
 import com.powsybl.computation.ComputationManager;
 import com.powsybl.iidm.network.Network;
-import com.powsybl.loadflow.LoadFlowFactory;
+import com.powsybl.loadflow.LoadFlow;
 
 import java.util.Map;
 
@@ -21,7 +21,7 @@ import java.util.Map;
 public class BalanceComputationFactoryImpl implements BalanceComputationFactory {
 
     @Override
-    public BalanceComputation create(Network network, Map<NetworkArea, Double> networkAreaNetPositionTargetMap, Map<NetworkArea, Scalable> networkAreasScalable, LoadFlowFactory loadFlowFactory, ComputationManager computationManager, int priority) {
-        return new BalanceComputationImpl(network, networkAreaNetPositionTargetMap, networkAreasScalable, computationManager, loadFlowFactory);
+    public BalanceComputation create(Network network, Map<NetworkArea, Double> networkAreaNetPositionTargetMap, Map<NetworkArea, Scalable> networkAreasScalable, LoadFlow.Runner loadFlowRunner, ComputationManager computationManager, int priority) {
+        return new BalanceComputationImpl(network, networkAreaNetPositionTargetMap, networkAreasScalable, computationManager, loadFlowRunner);
     }
 }

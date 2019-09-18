@@ -29,10 +29,10 @@ public abstract class AbstractClosedBranchDcFlowEquationTerm implements Equation
 
     protected final double power;
 
-    protected AbstractClosedBranchDcFlowEquationTerm(LfBranch branch, LfBus bus1, LfBus bus2, EquationContext equationContext) {
+    protected AbstractClosedBranchDcFlowEquationTerm(LfBranch branch, LfBus bus1, LfBus bus2, VariableSet variableSet) {
         this.branch = Objects.requireNonNull(branch);
-        ph1Var = equationContext.getVariable(bus1.getNum(), VariableType.BUS_PHI);
-        ph2Var = equationContext.getVariable(bus2.getNum(), VariableType.BUS_PHI);
+        ph1Var = variableSet.getVariable(bus1.getNum(), VariableType.BUS_PHI);
+        ph2Var = variableSet.getVariable(bus2.getNum(), VariableType.BUS_PHI);
         variables = ImmutableList.of(ph1Var, ph2Var);
         power =  1 / this.branch.x() * this.branch.r1() * this.branch.r2();
     }

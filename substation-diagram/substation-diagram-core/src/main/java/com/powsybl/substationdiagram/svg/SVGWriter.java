@@ -17,15 +17,11 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -102,6 +98,9 @@ public class SVGWriter {
     private final ComponentLibrary componentLibrary;
 
     private final LayoutParameters layoutParameters;
+
+    Function<Node, BusCell.Direction> nodeDirection = node ->
+            (node instanceof FeederNode && node.getCell() != null) ? ((ExternCell) node.getCell()).getDirection() : BusCell.Direction.UNDEFINED;
 
     public SVGWriter(ComponentLibrary componentLibrary, LayoutParameters layoutParameters) {
         this.componentLibrary = Objects.requireNonNull(componentLibrary);
@@ -199,6 +198,10 @@ public class SVGWriter {
             return componentLibrary.getAnchorPoints(type);
         };
 
+        if (layoutParameters.isAlternateFeederLabelsPositioning()) {
+            shiftFeedersPosition(graph);
+        }
+
         drawNodes(root, graph, metadata, anchorPointProvider, initProvider, styleProvider);
         drawEdges(root, graph, metadata, anchorPointProvider, initProvider, styleProvider);
 
@@ -295,6 +298,11 @@ public class SVGWriter {
                     return componentLibrary.getAnchorPoints(type);
                 }
             };
+
+            if (layoutParameters.isAlternateFeederLabelsPositioning()) {
+                shiftFeedersPosition(vlGraph);
+            }
+
             drawNodes(root, vlGraph, metadata, anchorPointProvider, initProvider, styleProvider);
             drawEdges(root, vlGraph, metadata, anchorPointProvider, initProvider, styleProvider);
         }
@@ -390,15 +398,6 @@ public class SVGWriter {
                            AnchorPointProvider anchorPointProvider, SubstationDiagramInitialValueProvider initProvider,
                            SubstationDiagramStyleProvider styleProvider) {
 
-        Function<Node, BusCell.Direction> nodeDirection = node ->
-                (node instanceof FeederNode && node.getCell() != null) ? ((ExternCell) node.getCell()).getDirection() : BusCell.Direction.UNDEFINED;
-
-        LabelPositionProcessor labelPositionProcessor = layoutParameters.isAlternateFeederLabelsPositioning()
-                ? new AlternateFeederLabelPositionProcessor(graph.getNodes().stream()
-                .filter(node -> !node.isFictitious() && node instanceof FeederNode)
-                .collect(Collectors.toMap(Function.identity(), nodeDirection::apply)), 3, LABEL_OFFSET, LABEL_OFFSET, FONT_SIZE, componentLibrary)
-                : new DefaultFeederLabelPositionProcessor(LABEL_OFFSET, LABEL_OFFSET, FONT_SIZE, componentLibrary);
-
         graph.getNodes().forEach(node -> {
             try {
                 String nodeId = SubstationDiagramStyles.escapeId(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name()));
@@ -416,7 +415,7 @@ public class SVGWriter {
                 BusCell.Direction direction = nodeDirection.apply(node);
 
                 if (!node.isFictitious()) {
-                    drawNodeLabel(g, node, initProvider, direction, labelPositionProcessor);
+                    drawNodeLabel(g, node, initProvider, direction);
                 }
                 root.appendChild(g);
 
@@ -453,10 +452,15 @@ public class SVGWriter {
         }
     }
 
-    private void drawNodeLabel(Element g, Node node, SubstationDiagramInitialValueProvider initProvider, BusCell.Direction direction, LabelPositionProcessor labelPositioner) {
+    private void drawNodeLabel(Element g, Node node, SubstationDiagramInitialValueProvider initProvider, BusCell.Direction direction) {
         if (node instanceof FeederNode) {
-            LabelPositionProcessor.Position position = labelPositioner.compute(node, direction);
-            drawLabel(node.getLabel(), node.isRotated(), position.getX(), position.getY(), g, FONT_SIZE);
+            double yShift = -LABEL_OFFSET;
+            if (node.getCell() != null) {
+                yShift = direction == BusCell.Direction.TOP
+                        ? -LABEL_OFFSET
+                        : ((int) (componentLibrary.getSize(node.getComponentType()).getHeight()) + FONT_SIZE + LABEL_OFFSET);
+            }
+            drawLabel(node.getLabel(), node.isRotated(), -LABEL_OFFSET, yShift, g, FONT_SIZE);
         } else if (node instanceof BusNode) {
             InitialValue val = initProvider.getInitialValue(node);
             double d = ((BusNode) node).getPxWidth();
@@ -932,4 +936,27 @@ public class SVGWriter {
                 .collect(Collectors.joining(","));
     }
 
+    /**
+     * Adjust feeders height, positioning them on a descending/ascending ramp
+     * (depending on their BusCell direction)
+     */
+    private void shiftFeedersPosition(Graph graph) {
+        List<Node> orderedFeederNodes = graph.getNodes().stream()
+                .filter(node -> !node.isFictitious() && node instanceof FeederNode && node.getCell() != null)
+                .sorted(Comparator.comparing(Node::getX))
+                .collect(Collectors.toList());
+        Map<BusCell.Direction, Double> mapLev = new EnumMap<>(BusCell.Direction.class);
+        Stream.of(BusCell.Direction.values()).forEach(direction -> {
+            mapLev.put(direction, 0.0);
+        });
+
+        for (Node node : orderedFeederNodes) {
+            BusCell.Direction direction = nodeDirection.apply(node);
+            int componentHeight = (int) (componentLibrary.getSize(node.getComponentType()).getHeight());
+            double oldY = node.getY() - graph.getY();
+            double newY = mapLev.get(direction) + FONT_SIZE + (componentHeight == 0 ? LABEL_OFFSET : componentHeight);
+            node.setY(oldY + ((direction == BusCell.Direction.TOP) ? 1 : -1) * newY);
+            mapLev.put(direction, newY);
+        }
+    }
 }

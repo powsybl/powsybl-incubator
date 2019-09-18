@@ -612,7 +612,7 @@ public abstract class AbstractSubstationDiagramViewer extends Application implem
         rowIndex += 1;
         addCheckBox("Show inductor for three windings transformers", rowIndex, LayoutParameters::isShowInductorFor3WT, LayoutParameters::setShowInductorFor3WT);
         rowIndex += 1;
-        addCheckBox("Alternate feeder labels position", rowIndex, LayoutParameters::isAlternateFeederLabelsPositioning, LayoutParameters::setAlternateFeederLabelsPositioning);
+        addCheckBox("Shift feeders height position", rowIndex, LayoutParameters::isAlternateFeederLabelsPositioning, LayoutParameters::setAlternateFeederLabelsPositioning);
         rowIndex += 1;
         addSpinner("Scale factor:", 1, 20, 1, rowIndex, LayoutParameters::getScaleFactor, LayoutParameters::setScaleFactor);
         rowIndex += 2;

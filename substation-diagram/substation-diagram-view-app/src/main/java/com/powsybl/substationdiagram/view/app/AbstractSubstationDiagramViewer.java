@@ -86,8 +86,6 @@ public abstract class AbstractSubstationDiagramViewer extends Application implem
     private  static final String SELECTED_VOLTAGE_LEVEL_IDS_PROPERTY = "selectedVoltageLevelIds";
     private  static final String SELECTED_SUBSTATION_IDS_PROPERTY = "selectedSubstationIds";
 
-    private static final String CASE_PATH_PROPERTY = "casePath";
-
     private final Map<String, VoltageLevelLayoutFactory> voltageLevelsLayouts
             = ImmutableMap.of("Smart", new SmartVoltageLevelLayoutFactory(),
                               "Auto extensions", new PositionVoltageLevelLayoutFactory(new PositionFromExtension()),
@@ -477,10 +475,6 @@ public abstract class AbstractSubstationDiagramViewer extends Application implem
                 }
             });
         }
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 
     private VoltageLevelLayoutFactory getVoltageLevelLayoutFactory() {

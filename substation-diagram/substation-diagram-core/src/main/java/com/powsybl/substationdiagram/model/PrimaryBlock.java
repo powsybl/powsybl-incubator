@@ -49,8 +49,8 @@ public class PrimaryBlock extends AbstractBlock {
                 || getEndingNode().getType() == Node.NodeType.BUS) {
             reverseBlock();
         }
-        setCardinalityStart(1);
-        setCardinalityEnd(1);
+        setCardinality(Extremity.START, 1);
+        setCardinality(Extremity.END, 1);
     }
 
     public PrimaryBlock(List<Node> nodes, Cell cell) {
@@ -78,19 +78,20 @@ public class PrimaryBlock extends AbstractBlock {
     }
 
     @Override
-    public Node getStartingNode() {
-        return nodes.get(0);
+    public Node getExtremityNode(Extremity extremity) {
+        if (extremity == Extremity.START) {
+            return nodes.get(0);
+        }
+        if (extremity == Extremity.END) {
+            return nodes.get(nodes.size() - 1);
+        }
+        return null;
     }
 
     @Override
     public int getOrder() {
         return getStartingNode().getType() == Node.NodeType.FEEDER ?
                 ((FeederNode) getStartingNode()).getOrder() : 0;
-    }
-
-    @Override
-    public Node getEndingNode() {
-        return nodes.get(nodes.size() - 1);
     }
 
     public void addStackableBlock(PrimaryBlock block) {

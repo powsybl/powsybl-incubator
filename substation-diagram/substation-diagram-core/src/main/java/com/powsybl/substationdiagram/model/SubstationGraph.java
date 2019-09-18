@@ -36,7 +36,7 @@ public class SubstationGraph {
 
     private final List<Graph> nodes = new ArrayList<>();
 
-    private final List<Edge> edges = new ArrayList<>();
+    private final List<TwtEdge> edges = new ArrayList<>();
 
     private final Map<String, Graph> nodesById = new HashMap<>();
 
@@ -146,7 +146,7 @@ public class SubstationGraph {
     }
 
     public void addEdge(Node n1, Node n2) {
-        Edge sl = new Edge(n1, n2);
+        TwtEdge sl = new TwtEdge(n1, n2);
         edges.add(sl);
     }
 
@@ -154,7 +154,7 @@ public class SubstationGraph {
         return new ArrayList<>(nodes);
     }
 
-    public List<Edge> getEdges() {
+    public List<TwtEdge> getEdges() {
         return new ArrayList<>(edges);
     }
 

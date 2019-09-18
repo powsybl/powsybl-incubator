@@ -18,9 +18,6 @@ import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.Substation;
 import com.powsybl.iidm.network.VoltageLevel;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
-import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayoutFactory;
-import com.powsybl.substationdiagram.layout.SubstationLayoutFactory;
-import com.powsybl.substationdiagram.layout.VoltageLevelLayoutFactory;
 import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
 import com.powsybl.substationdiagram.model.Graph;
 import com.powsybl.substationdiagram.model.SubstationGraph;
@@ -100,17 +97,10 @@ public abstract class AbstractTestCase {
         }
     }
 
-    public void compareSvg(SubstationGraph graph, LayoutParameters layoutParameters,
-                           String refSvgName, SubstationLayoutFactory sLayoutFactory) {
-        compareSvg(graph, layoutParameters, refSvgName, sLayoutFactory, new PositionVoltageLevelLayoutFactory());
-    }
-
-    public void compareSvg(SubstationGraph graph, LayoutParameters layoutParameters,
-                           String refSvgName, SubstationLayoutFactory sLayoutFactory, VoltageLevelLayoutFactory voltageLevelLayoutFactory) {
+    public void compareSvg(SubstationGraph graph, LayoutParameters layoutParameters, String refSvgName) {
         try (StringWriter writer = new StringWriter()) {
             new SVGWriter(componentLibrary, layoutParameters)
-                    .write(graph, new DefaultSubstationDiagramInitialValueProvider(network), styleProvider, writer, sLayoutFactory,
-                           voltageLevelLayoutFactory);
+                    .write(graph, new DefaultSubstationDiagramInitialValueProvider(network), styleProvider, writer);
             writer.flush();
 
 //            FileWriter fw = new FileWriter(System.getProperty("user.home") + refSvgName);
@@ -126,11 +116,10 @@ public abstract class AbstractTestCase {
     }
 
     public void compareSvg(SubstationGraph graph, LayoutParameters layoutParameters,
-            String refSvgName, SubstationLayoutFactory sLayoutFactory,  SubstationDiagramStyleProvider myStyleProvider) {
+                           String refSvgName, SubstationDiagramStyleProvider myStyleProvider) {
         try (StringWriter writer = new StringWriter()) {
             new SVGWriter(componentLibrary, layoutParameters)
-                    .write(graph, new DefaultSubstationDiagramInitialValueProvider(network), myStyleProvider, writer, sLayoutFactory,
-                    new PositionVoltageLevelLayoutFactory());
+                    .write(graph, new DefaultSubstationDiagramInitialValueProvider(network), myStyleProvider, writer);
             writer.flush();
 
 //            FileWriter fw = new FileWriter(System.getProperty("user.home") + refSvgName);

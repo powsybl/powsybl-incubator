@@ -162,15 +162,13 @@ public class TestShiftFeedersPosition extends AbstractTestCase {
         SubstationGraph g = SubstationGraph.create(substation);
 
         // write SVG and compare to reference (horizontal layout and defaut style provider)
-        compareSvg(g, layoutParameters, "/TestDefaultFeedersPosition.svg",
-                new HorizontalSubstationLayoutFactory(),
-                new DefaultSubstationDiagramStyleProvider());
+        new HorizontalSubstationLayoutFactory().create(g, new PositionVoltageLevelLayoutFactory()).run(layoutParameters);
+        compareSvg(g, layoutParameters, "/TestDefaultFeedersPosition.svg", new DefaultSubstationDiagramStyleProvider());
 
         // re-build substation graph, write SVG using the shifted feeders positioner and compare to reference (same layout providers)
         g = SubstationGraph.create(substation);
-        compareSvg(g, layoutParameters.setShiftFeedersPosition(true), "/TestShiftFeedersPosition.svg",
-                new HorizontalSubstationLayoutFactory(),
-                new DefaultSubstationDiagramStyleProvider());
+        new HorizontalSubstationLayoutFactory().create(g, new PositionVoltageLevelLayoutFactory()).run(layoutParameters);
+        compareSvg(g, layoutParameters.setShiftFeedersPosition(true), "/TestShiftFeedersPosition.svg", new DefaultSubstationDiagramStyleProvider());
     }
 
     @Test
@@ -189,13 +187,13 @@ public class TestShiftFeedersPosition extends AbstractTestCase {
 
         // build substation graph
         SubstationGraph g = SubstationGraph.create(substation);
+        new HorizontalSubstationLayoutFactory().create(g, fakeVoltageLevelLayoutFactory).run(layoutParameters);
         // write SVG and compare to reference (with a fake VL layout)
-        compareSvg(g, layoutParameters, "/TestDefaultFeedersPosition2.svg",
-                new HorizontalSubstationLayoutFactory(), fakeVoltageLevelLayoutFactory);
+        compareSvg(g, layoutParameters, "/TestDefaultFeedersPosition2.svg", new DefaultSubstationDiagramStyleProvider());
 
         // re-build substation graph, write SVG using the shifted feeders positioner (same output as before expected)
         g = SubstationGraph.create(substation);
-        compareSvg(g, layoutParameters.setShiftFeedersPosition(true), "/TestDefaultFeedersPosition2.svg",
-                new HorizontalSubstationLayoutFactory(), fakeVoltageLevelLayoutFactory);
+        new HorizontalSubstationLayoutFactory().create(g, fakeVoltageLevelLayoutFactory).run(layoutParameters);
+        compareSvg(g, layoutParameters.setShiftFeedersPosition(true), "/TestDefaultFeedersPosition2.svg", new DefaultSubstationDiagramStyleProvider());
     }
 }

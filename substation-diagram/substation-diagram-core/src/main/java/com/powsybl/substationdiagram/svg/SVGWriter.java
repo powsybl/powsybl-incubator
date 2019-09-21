@@ -261,7 +261,7 @@ public class SVGWriter {
      */
     private GraphMetadata writegraph(SubstationGraph graph,
                                      Document document, SubstationLayoutFactory sLayoutFactory,
-                                     VoltageLevelLayoutFactory vLayoutFactory,  SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider) {
+                                     VoltageLevelLayoutFactory vLayoutFactory, SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider) {
         GraphMetadata metadata = new GraphMetadata();
 
         SubstationLayout sLayout = sLayoutFactory.create(graph, vLayoutFactory);
@@ -348,29 +348,33 @@ public class SVGWriter {
                 .max().orElse(0);
         int maxV = graph.getNodeBuses().stream()
                 .mapToInt(nodeBus -> nodeBus.getPosition().getV())
-                .max().orElse(0);
+                .max().orElse(1) - 1;
 
         Element gridRoot = document.createElement("g");
         String gridId = "GRID_" + graph.getVoltageLevel().getId();
         gridRoot.setAttribute("id", gridId);
+        gridRoot.setAttribute(TRANSFORM,
+                TRANSLATE + "(" + layoutParameters.getTranslateX() + "," + layoutParameters.getTranslateY() + ")");
+        // vertical lines
         for (int i = 0; i < maxH + 1; i++) {
-            Element line = document.createElement("line");
-            line.setAttribute("x1",
-                    Double.toString(layoutParameters.getInitialXBus() + i * layoutParameters.getCellWidth() + graph.getX()));
-            line.setAttribute("x2",
-                    Double.toString(layoutParameters.getInitialXBus() + i * layoutParameters.getCellWidth() + graph.getX()));
-            line.setAttribute("y1",
-                    Double.toString(layoutParameters.getInitialYBus() - layoutParameters.getStackHeight()
-                            - layoutParameters.getExternCellHeight() + graph.getY()));
-            line.setAttribute("y2", Double.toString(
-                    layoutParameters.getInitialYBus() + layoutParameters.getStackHeight() + layoutParameters.getExternCellHeight()
-                            + layoutParameters.getVerticalSpaceBus() * maxV + graph.getY()));
-            line.setAttribute(CLASS, SubstationDiagramStyles.GRID_STYLE_CLASS);
-
-            line.setAttribute(TRANSFORM,
-                    TRANSLATE + "(" + layoutParameters.getTranslateX() + "," + layoutParameters.getTranslateY() + ")");
-            gridRoot.appendChild(line);
+            gridRoot.appendChild(drawGridVerticalLine(document, graph, maxV,
+                    graph.getX() + layoutParameters.getInitialXBus() + i * layoutParameters.getCellWidth()));
         }
+
+        // StackHeight Horizontal lines
+        gridRoot.appendChild(drawGridHorizontalLine(document, graph, maxH,
+                graph.getY() + layoutParameters.getInitialYBus() - layoutParameters.getStackHeight()));
+        gridRoot.appendChild(drawGridHorizontalLine(document, graph, maxH,
+                graph.getY() + layoutParameters.getInitialYBus() + layoutParameters.getStackHeight()
+                        + layoutParameters.getVerticalSpaceBus() * maxV));
+
+        // internCellHeight Horizontal lines
+        gridRoot.appendChild(drawGridHorizontalLine(document, graph, maxH,
+                graph.getY() + layoutParameters.getInitialYBus() - layoutParameters.getInternCellHeight()));
+        gridRoot.appendChild(drawGridHorizontalLine(document, graph, maxH,
+                graph.getY() + layoutParameters.getInitialYBus() + layoutParameters.getInternCellHeight()
+                        + layoutParameters.getVerticalSpaceBus() * maxV));
+
         metadata.addNodeMetadata(new GraphMetadata.NodeMetadata(gridId,
                 graph.getVoltageLevel().getId(),
                 null,
@@ -382,6 +386,32 @@ public class SVGWriter {
 
         return gridRoot;
     }
+
+    private Element drawGridHorizontalLine(Document document, Graph graph, int maxH, double y) {
+        return drawGridLine(document,
+                layoutParameters.getInitialXBus() + graph.getX(), y,
+                layoutParameters.getInitialXBus() + maxH * layoutParameters.getCellWidth() + graph.getX(), y);
+    }
+
+    private Element drawGridVerticalLine(Document document, Graph graph, int maxV, double x) {
+        return drawGridLine(document,
+                x, layoutParameters.getInitialYBus()
+                        - layoutParameters.getStackHeight() - layoutParameters.getExternCellHeight() + graph.getY(),
+                x, layoutParameters.getInitialYBus()
+                        + layoutParameters.getStackHeight() + layoutParameters.getExternCellHeight()
+                        + layoutParameters.getVerticalSpaceBus() * maxV + graph.getY());
+    }
+
+    private Element drawGridLine(Document document, double x1, double y1, double x2, double y2) {
+        Element line = document.createElement("line");
+        line.setAttribute("x1", Double.toString(x1));
+        line.setAttribute("x2", Double.toString(x2));
+        line.setAttribute("y1", Double.toString(y1));
+        line.setAttribute("y2", Double.toString(y2));
+        line.setAttribute(CLASS, SubstationDiagramStyles.GRID_STYLE_CLASS);
+        return line;
+    }
+
 
     /*
      * Drawing the voltageLevel graph nodes
@@ -426,8 +456,8 @@ public class SVGWriter {
 
         metadata.addNodeMetadata(
                 new GraphMetadata.NodeMetadata(nodeId, graph.getVoltageLevel().getId(), nextVId,
-                                               node.getComponentType(), node.getRotationAngle(),
-                                               node.isOpen(), direction, false));
+                        node.getComponentType(), node.getRotationAngle(),
+                        node.isOpen(), direction, false));
         if (node.getType() == Node.NodeType.BUS) {
             metadata.addComponentMetadata(new ComponentMetadata(ComponentType.BUSBAR_SECTION,
                     nodeId,
@@ -461,7 +491,7 @@ public class SVGWriter {
             }
             Optional<String> label2 = val.getLabel2();
             if (label2.isPresent()) {
-                drawLabel(label2.get(), false,  d - LABEL_OFFSET, -LABEL_OFFSET, g, FONT_SIZE);
+                drawLabel(label2.get(), false, d - LABEL_OFFSET, -LABEL_OFFSET, g, FONT_SIZE);
             }
             Optional<String> label3 = val.getLabel3();
             if (label3.isPresent()) {
@@ -484,9 +514,9 @@ public class SVGWriter {
         gLabel.setAttribute("id", idLabelVoltageLevel);
 
         drawLabel(graph.isUseName()
-                     ? graph.getVoltageLevel().getName()
-                     : graph.getVoltageLevel().getId(),
-                  false, graph.getX(), graph.getY(), gLabel, FONT_VOLTAGE_LEVEL_LABEL_SIZE);
+                        ? graph.getVoltageLevel().getName()
+                        : graph.getVoltageLevel().getId(),
+                false, graph.getX(), graph.getY(), gLabel, FONT_VOLTAGE_LEVEL_LABEL_SIZE);
         root.appendChild(gLabel);
 
         metadata.addNodeMetadata(new GraphMetadata.NodeMetadata(idLabelVoltageLevel,
@@ -641,7 +671,7 @@ public class SVGWriter {
 
             if (n instanceof SVGElement) {
                 if (node instanceof Fictitious3WTNode ||
-                        (node instanceof Feeder2WTNode && node.getComponentType() == ComponentType.TWO_WINDINGS_TRANSFORMER))  {
+                        (node instanceof Feeder2WTNode && node.getComponentType() == ComponentType.TWO_WINDINGS_TRANSFORMER)) {
                     handleTransformerSvgDocument(node, styleProvider, size, n);
                 } else if (node instanceof Feeder2WTNode && node.getComponentType() == ComponentType.INDUCTOR) {
                     handleInductorSvgDocument(node, styleProvider, n);
@@ -748,7 +778,7 @@ public class SVGWriter {
         InitialValue init = initProvider.getInitialValue(n);
         ComponentMetadata cd = metadata.getComponentMetadata(ComponentType.ARROW);
 
-        double shX = cd.getSize().getWidth()  + LABEL_OFFSET;
+        double shX = cd.getSize().getWidth() + LABEL_OFFSET;
         double shY = cd.getSize().getHeight() - LABEL_OFFSET + (double) FONT_SIZE / 2;
 
         Element g1 = root.getOwnerDocument().createElement("g");
@@ -769,7 +799,7 @@ public class SVGWriter {
         Optional<Direction> dir1 = init.getArrowDirection1();
         if (dir1.isPresent()) {
             try {
-                g1.setAttribute(CLASS, SubstationDiagramStyles.SUBSTATION_STYLE_CLASS + " "  + "ARROW1_" + escapeId(URLEncoder.encode(n.getId(), StandardCharsets.UTF_8.name())) + "_" + dir1.get());
+                g1.setAttribute(CLASS, SubstationDiagramStyles.SUBSTATION_STYLE_CLASS + " " + "ARROW1_" + escapeId(URLEncoder.encode(n.getId(), StandardCharsets.UTF_8.name())) + "_" + dir1.get());
             } catch (UnsupportedEncodingException e) {
                 throw new UncheckedIOException(e);
             }
@@ -792,7 +822,7 @@ public class SVGWriter {
         Optional<Direction> dir2 = init.getArrowDirection2();
         if (dir2.isPresent()) {
             try {
-                g2.setAttribute(CLASS, SubstationDiagramStyles.SUBSTATION_STYLE_CLASS + " "  + "ARROW2_" + escapeClassName(URLEncoder.encode(n.getId(), StandardCharsets.UTF_8.name())) + "_" + dir2.get());
+                g2.setAttribute(CLASS, SubstationDiagramStyles.SUBSTATION_STYLE_CLASS + " " + "ARROW2_" + escapeClassName(URLEncoder.encode(n.getId(), StandardCharsets.UTF_8.name())) + "_" + dir2.get());
             } catch (UnsupportedEncodingException e) {
                 throw new UncheckedIOException(e);
             }
@@ -827,7 +857,7 @@ public class SVGWriter {
 
                 // Determine points of the polyline
                 List<Double> pol = anchorPoints.calculatePolylinePoints(edge.getNode1(), edge.getNode2(),
-                                                                        layoutParameters.isDrawStraightWires());
+                        layoutParameters.isDrawStraightWires());
 
                 g.setAttribute(POINTS, pointsListToString(pol));
                 g.setAttribute(CLASS, styleProvider.getIdWireStyle(edge));
@@ -841,16 +871,16 @@ public class SVGWriter {
 
                 if (metadata.getComponentMetadata(ComponentType.ARROW) == null) {
                     metadata.addComponentMetadata(new ComponentMetadata(ComponentType.ARROW,
-                                                                        null,
-                                                                        componentLibrary.getAnchorPoints(ComponentType.ARROW),
-                                                                        componentLibrary.getSize(ComponentType.ARROW)));
+                            null,
+                            componentLibrary.getAnchorPoints(ComponentType.ARROW),
+                            componentLibrary.getSize(ComponentType.ARROW)));
                 }
 
                 if (edge.getNode1() instanceof FeederNode) {
                     if (!(edge.getNode2() instanceof FeederNode)) {
                         insertArrowsAndLabels(wireId, pol, root, edge.getNode1(), metadata, initProvider, styleProvider);
                     }
-                } else if  (edge.getNode2() instanceof FeederNode) {
+                } else if (edge.getNode2() instanceof FeederNode) {
                     insertArrowsAndLabels(wireId, pol, root, edge.getNode2(), metadata, initProvider, styleProvider);
                 }
             }
@@ -903,7 +933,7 @@ public class SVGWriter {
 
                 metadata.addWireMetadata(new GraphMetadata.WireMetadata(wireId,
                         escapeClassName(URLEncoder.encode(edge.getNode1().getId(), StandardCharsets.UTF_8.name())),
-                                escapeClassName(URLEncoder.encode(edge.getNode2().getId(), StandardCharsets.UTF_8.name())),
+                        escapeClassName(URLEncoder.encode(edge.getNode2().getId(), StandardCharsets.UTF_8.name())),
                         layoutParameters.isDrawStraightWires(),
                         true));
             } catch (UnsupportedEncodingException e) {
@@ -912,9 +942,9 @@ public class SVGWriter {
 
             if (metadata.getComponentMetadata(ComponentType.ARROW) == null) {
                 metadata.addComponentMetadata(new ComponentMetadata(ComponentType.ARROW,
-                                                                    null,
-                                                                    componentLibrary.getAnchorPoints(ComponentType.ARROW),
-                                                                    componentLibrary.getSize(ComponentType.ARROW)));
+                        null,
+                        componentLibrary.getAnchorPoints(ComponentType.ARROW),
+                        componentLibrary.getSize(ComponentType.ARROW)));
             }
         }
     }
@@ -922,7 +952,7 @@ public class SVGWriter {
     private String pointsListToString(List<Double> pol) {
 
         return IntStream.range(0, pol.size())
-                .mapToObj(n ->  n % 2 == 0 ? pol.get(n) + layoutParameters.getTranslateX() : pol.get(n) + layoutParameters.getTranslateY())
+                .mapToObj(n -> n % 2 == 0 ? pol.get(n) + layoutParameters.getTranslateX() : pol.get(n) + layoutParameters.getTranslateY())
                 .map(Object::toString)
                 .collect(Collectors.joining(","));
     }

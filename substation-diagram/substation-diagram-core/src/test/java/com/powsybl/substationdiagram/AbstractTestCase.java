@@ -8,6 +8,7 @@ package com.powsybl.substationdiagram;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UncheckedIOException;
@@ -107,9 +108,9 @@ public abstract class AbstractTestCase {
                            new PositionVoltageLevelLayoutFactory());
             writer.flush();
 
-//            FileWriter fw = new FileWriter(System.getProperty("user.home") + refSvgName);
-//            fw.write(writer.toString());
-//            fw.close();
+            FileWriter fw = new FileWriter(System.getProperty("user.home") + refSvgName);
+            fw.write(writer.toString());
+            fw.close();
 
             String refSvg = normalizeLineSeparator(new String(ByteStreams.toByteArray(getClass().getResourceAsStream(refSvgName)), StandardCharsets.UTF_8));
             String svg = normalizeLineSeparator(writer.toString());

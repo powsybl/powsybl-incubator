@@ -105,10 +105,10 @@ public class TestCase3Coupling extends AbstractTestCase {
         new BlockOrganizer().organize(g);
 
         // assert blocks and nodes rotation
-        assertEquals(2, ((BusCell) cell).getPrimaryBlocksConnectedToBus().size());
+        assertEquals(2, ((BusCell) cell).getPrimaryLegBlocks().size());
         assertNotNull(cell.getRootBlock());
-        assertTrue(cell.getRootBlock() instanceof ParallelBlock);
-        ParallelBlock bp = (ParallelBlock) cell.getRootBlock();
+        assertTrue(cell.getRootBlock() instanceof BodyParallelBlock);
+        BodyParallelBlock bp = (BodyParallelBlock) cell.getRootBlock();
         assertEquals(new Position(0, 1, 2, 1, false, Orientation.VERTICAL), bp.getPosition());
         assertEquals("bbs2", bp.getStartingNode().getId());
         assertEquals("FICT_vl_d1Fictif", bp.getEndingNode().getId());
@@ -119,13 +119,13 @@ public class TestCase3Coupling extends AbstractTestCase {
         SerialBlock bc = (SerialBlock) bp.getSubBlocks().get(0);
         assertEquals(new Position(0, 0, 1, 1, false, Orientation.HORIZONTAL), bc.getPosition());
 
-        assertTrue(bc.getLowerBlock() instanceof PrimaryBlock);
-        PrimaryBlock bpyl = (PrimaryBlock) bc.getLowerBlock();
+        assertTrue(bc.getLowerBlock() instanceof BodyPrimaryBlock);
+        BodyPrimaryBlock bpyl = (BodyPrimaryBlock) bc.getLowerBlock();
         assertEquals(Node.NodeType.BUS, bpyl.getStartingNode().getType());
         assertEquals(new Position(0, 0, 1, 0, false, Orientation.VERTICAL), bpyl.getPosition());
 
-        assertTrue(bc.getUpperBlock() instanceof PrimaryBlock);
-        PrimaryBlock bpyu = (PrimaryBlock) bc.getUpperBlock();
+        assertTrue(bc.getUpperBlock() instanceof BodyPrimaryBlock);
+        BodyPrimaryBlock bpyu = (BodyPrimaryBlock) bc.getUpperBlock();
         assertEquals(Node.NodeType.SWITCH, bpyu.getNodes().get(1).getType());
         assertEquals(new Position(0, 0, 1, 1, false, Orientation.HORIZONTAL), bpyu.getPosition());
 

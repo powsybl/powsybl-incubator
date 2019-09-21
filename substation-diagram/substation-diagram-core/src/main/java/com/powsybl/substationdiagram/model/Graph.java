@@ -590,7 +590,7 @@ public class Graph {
 
     public Stream<BusCell> getBusCells() {
         return cells.stream()
-                .filter(cell -> cell instanceof BusCell && !((BusCell) cell).getPrimaryBlocksConnectedToBus().isEmpty())
+                .filter(cell -> cell instanceof BusCell && !((BusCell) cell).getPrimaryLegBlocks().isEmpty())
                 .map(BusCell.class::cast);
     }
 

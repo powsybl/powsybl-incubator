@@ -7,62 +7,32 @@
 package com.powsybl.substationdiagram.model;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class BusCell extends Cell {
+public interface BusCell extends Cell {
 
     public enum Direction {
         TOP, BOTTOM, FLAT, UNDEFINED
     }
 
-    private Direction direction = Direction.UNDEFINED;
+    public List<BusNode> getBusNodes();
 
-    private List<PrimaryBlock> primaryBlocksConnectedToBus = new ArrayList<>();
+    public void blocksSetting(Block rootBlock, List<LegPrimaryBlock> primaryBlocksConnectedToBus);
 
-    protected BusCell(Graph graph, CellType type) {
-        super(graph, type);
-    }
+    public List<LegPrimaryBlock> getPrimaryLegBlocks();
 
-    public List<BusNode> getBusNodes() {
-        return nodes.stream()
-                .filter(n -> n.getType() == Node.NodeType.BUS)
-                .map(BusNode.class::cast)
-                .collect(Collectors.toList());
-    }
+    public void blockSizing();
 
-    public void blocksSetting(Block rootBlock, List<PrimaryBlock> primaryBlocksConnectedToBus) {
-        setRootBlock(rootBlock);
-        this.primaryBlocksConnectedToBus = new ArrayList<>(primaryBlocksConnectedToBus);
-    }
+    public int newHPosition(int hPosition);
 
-    public List<PrimaryBlock> getPrimaryBlocksConnectedToBus() {
-        return new ArrayList<>(primaryBlocksConnectedToBus);
-    }
+    public Direction getDirection();
 
-    public Direction getDirection() {
-        return direction;
-    }
+    public void setDirection(Direction direction);
 
-    public void setDirection(Direction direction) {
-        this.direction = direction;
-    }
-
-    public Position getMaxBusPosition() {
-        return graph.getMaxBusStructuralPosition();
-    }
-
-    public Position getRootPosition() {
-        return getRootBlock().getPosition();
-    }
-
-    @Override
-    public String toString() {
-        return "Cell(type=" + getType() + ", direction=" + direction + ", nodes=" + nodes + ")";
-    }
+    public Position getMaxBusPosition();
 
 }

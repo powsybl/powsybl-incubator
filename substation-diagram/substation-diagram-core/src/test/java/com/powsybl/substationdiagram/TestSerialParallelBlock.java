@@ -110,7 +110,7 @@ public class TestSerialParallelBlock extends AbstractTestCase {
         assertSame(Block.Type.SERIAL, sb.getLowerBlock().getType());
         SerialBlock subSB = (SerialBlock) sb.getLowerBlock();
         assertSame(Block.Type.PARALLEL, sb.getUpperBlock().getType());
-        ParallelBlock subPB = (ParallelBlock) sb.getUpperBlock();
+        BodyParallelBlock subPB = (BodyParallelBlock) sb.getUpperBlock();
 
         assertSame(subSB.getEndingNode(), subPB.getStartingNode());
 
@@ -118,7 +118,7 @@ public class TestSerialParallelBlock extends AbstractTestCase {
         assertEquals("bbs", subSB.getStartingNode().getId());
         assertEquals("bbs", subSB.getSubBlocks().get(0).getStartingNode().getId());
 
-        sb.calculateDimensionAndInternPos();
+        sb.sizing();
         assertEquals(0, sb.getPosition().getH());
         assertEquals(0, sb.getPosition().getV());
         assertEquals(2, sb.getPosition().getHSpan());

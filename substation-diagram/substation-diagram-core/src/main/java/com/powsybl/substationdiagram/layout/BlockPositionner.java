@@ -90,10 +90,10 @@ public class BlockPositionner {
                                         Side side, List<InternCell> nonFlatCellsToClose) {
         int hPosRes = hPos;
         List<InternCell> cells = hSs.getSideInternCells(side).stream()
-                .filter(InternCell::isFlat)
+                .filter(internCell -> !internCell.isFlat())
                 .sorted(Comparator.comparingInt(c -> -nonFlatCellsToClose.indexOf(c)))
                 .collect(Collectors.toList());
-        Side legSide = side == Side.RIGHT ? Side.LEFT : Side.RIGHT;
+        Side legSide = side.getFlip();
         for (InternCell cell : cells) {
             hPosRes = cell.newHPosition(hPosRes, legSide);
         }
@@ -202,7 +202,7 @@ public class BlockPositionner {
                 lane.incompatibilities.keySet()
                         .forEach(c -> {
                             c.setDirection(j == 0 ? BusCell.Direction.TOP : BusCell.Direction.BOTTOM);
-                            c.getRootPosition().setV(newV);
+                            c.getBodyBlock().getPosition().setV(newV);
                         });
                 i++;
             }

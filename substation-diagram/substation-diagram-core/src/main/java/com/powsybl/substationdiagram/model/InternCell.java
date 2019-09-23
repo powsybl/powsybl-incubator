@@ -29,7 +29,6 @@ public class InternCell extends AbstractBusCell {
     }
 
     public void organizeBlocks() {
-        // TODO : case of an internCell with no body ( (parallel n*(bus.switch)).legNode)
         legs = new EnumMap<>(Side.class);
         List<LegBlock> candidateLegs = searchLegs();
         if (getRootBlock().getType() == Block.Type.SERIAL && candidateLegs.size() == 2) {
@@ -38,6 +37,8 @@ public class InternCell extends AbstractBusCell {
             assignLeg(serialRootBlock, candidateLegs.get(1));
             body = serialRootBlock.extractBody(new ArrayList<>(legs.values()));
             body.setOrientation(Orientation.HORIZONTAL);
+        } else if (getRootBlock() instanceof LegParralelBlock) {
+            legs.put(Side.UNDEFINED, (LegParralelBlock) getRootBlock());
         } else {
             throw new PowsyblException("InternCell pattern not recognized");
         }
@@ -100,6 +101,10 @@ public class InternCell extends AbstractBusCell {
         return getDirection() == Direction.FLAT;
     }
 
+    public boolean isUniLeg() {
+        return legs.containsKey(Side.UNDEFINED);
+    }
+
     public void reverseCell() {
         body.reverseBlock();
         if (legs.get(Side.LEFT) != null) {
@@ -116,23 +121,30 @@ public class InternCell extends AbstractBusCell {
     @Override
     public void blockSizing() {
         legs.values().forEach(Block::sizing);
-        body.sizing();
+        if (!isUniLeg()) {
+            body.sizing();
+        }
     }
 
     @Override
     public int newHPosition(int hPosition) {
         int h = hPosition;
-        legs.get(Side.LEFT).getPosition().setH(h);
-        h += legs.get(Side.LEFT).getPosition().getHSpan();
-        if (isFlat()) {
-            body.getPosition().setHV(h, legs.get(Side.LEFT).getBusNodes().get(0).getStructuralPosition().getV());
+        if (isUniLeg()) {
+            legs.get(Side.UNDEFINED).getPosition().setH(h);
+            h += legs.get(Side.UNDEFINED).getPosition().getHSpan();
         } else {
-            h -= 1;
-            body.getPosition().setHV(h, 1);
+            legs.get(Side.LEFT).getPosition().setH(h);
+            h += legs.get(Side.LEFT).getPosition().getHSpan();
+            if (isFlat()) {
+                body.getPosition().setHV(h, legs.get(Side.LEFT).getBusNodes().get(0).getStructuralPosition().getV());
+            } else {
+                h -= 1;
+                body.getPosition().setHV(h, 1);
+            }
+            h += body.getPosition().getHSpan();
+            legs.get(Side.RIGHT).getPosition().setH(h);
+            h += legs.get(Side.RIGHT).getPosition().getHSpan();
         }
-        h += body.getPosition().getHSpan();
-        legs.get(Side.RIGHT).getPosition().setH(h);
-        h += legs.get(Side.RIGHT).getPosition().getHSpan();
         return h;
     }
 
@@ -157,7 +169,9 @@ public class InternCell extends AbstractBusCell {
     @Override
     public void calculateCoord(LayoutParameters layoutParam) {
         legs.values().forEach(lb -> lb.calculateRootCoord(layoutParam));
-        body.calculateRootCoord(layoutParam);
+        if (!isUniLeg()) {
+            body.calculateRootCoord(layoutParam);
+        }
     }
 
     public Block getSideToLeg(Side side) {
@@ -170,10 +184,5 @@ public class InternCell extends AbstractBusCell {
 
     public Block getBodyBlock() {
         return body;
-    }
-
-    //TODO : to be removed
-    public Position getRootPosition() {
-        return getRootBlock().getPosition();
     }
 }

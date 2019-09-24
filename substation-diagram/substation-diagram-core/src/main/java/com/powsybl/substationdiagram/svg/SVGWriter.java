@@ -292,7 +292,10 @@ public class SVGWriter {
             });
         }
 
-        CDATASection cd = document.createCDATASection(graphStyle.toString());
+        String cssStr = graphStyle.toString()
+                .replace("\r\n", "\n") // workaround for https://bugs.openjdk.java.net/browse/JDK-8133452
+                .replace("\r", "\n");
+        CDATASection cd = document.createCDATASection(cssStr);
         style.appendChild(cd);
 
         document.adoptNode(style);

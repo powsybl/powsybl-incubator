@@ -11,29 +11,17 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.powsybl</groupId>
         <artifactId>powsybl-incubator</artifactId>
+        <groupId>com.powsybl</groupId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>ieee-cdf-model</artifactId>
-    <name>IEEE CDF model</name>
+    <packaging>pom</packaging>
+    <artifactId>powsybl-ieee-cdf</artifactId>
+    <name>IEEE CDF</name>
 
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.powsybl</groupId>
-            <artifactId>powsybl-commons</artifactId>
-            <version>${powsyblcore.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.ancientprogramming.fixedformat4j</groupId>
-            <artifactId>fixedformat4j</artifactId>
-            <version>1.2.2</version>
-        </dependency>
-    </dependencies>
+    <modules>
+        <module>ieee-cdf-model</module>
+    </modules>
 
 </project>

@@ -6,6 +6,7 @@ cgmes-gl/target
 cgmes-gl/cgmes-gl-conversion/target
 cgmes-gl/cgmes-gl-iidm-extensions/target
 loadflow/simple-loadflow/target
+ieee-cdf/ieee-cdf-model/target
 simple-loadflow/target
 substation-diagram/substation-diagram-cgmes/target
 substation-diagram/substation-diagram-core/target

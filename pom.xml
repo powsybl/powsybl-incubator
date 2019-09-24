@@ -51,7 +51,7 @@
 
     <modules>
         <module>balances-adjustment</module>
-        <module>ieee-cdf-model</module>
+        <module>ieee-cdf</module>
         <module>simple-loadflow</module>
         <module>substation-diagram</module>
         <module>cgmes-dl</module>

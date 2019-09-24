@@ -22,6 +22,7 @@
 
     <modules>
         <module>ieee-cdf-model</module>
+        <module>ieee-cdf-converter</module>
     </modules>
 
 </project>

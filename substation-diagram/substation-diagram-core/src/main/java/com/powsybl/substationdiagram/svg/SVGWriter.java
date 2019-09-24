@@ -6,9 +6,30 @@
  */
 package com.powsybl.substationdiagram.svg;
 
-import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.escapeClassName;
-import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.escapeId;
+import com.powsybl.commons.exceptions.UncheckedTransformerException;
+import com.powsybl.iidm.network.ThreeWindingsTransformer;
+import com.powsybl.iidm.network.TwoWindingsTransformer;
+import com.powsybl.iidm.network.VoltageLevel;
+import com.powsybl.substationdiagram.layout.LayoutParameters;
+import com.powsybl.substationdiagram.library.*;
+import com.powsybl.substationdiagram.model.Node;
+import com.powsybl.substationdiagram.model.*;
+import com.powsybl.substationdiagram.svg.GraphMetadata.ArrowMetadata;
+import com.powsybl.substationdiagram.svg.SubstationDiagramInitialValueProvider.Direction;
+import org.apache.batik.anim.dom.SVGOMDocument;
+import org.apache.batik.dom.GenericDOMImplementation;
+import org.apache.commons.math3.util.Precision;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.*;
+import org.w3c.dom.svg.SVGElement;
 
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.io.UnsupportedEncodingException;
@@ -24,51 +45,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
-import org.apache.batik.anim.dom.SVGOMDocument;
-import org.apache.batik.dom.GenericDOMImplementation;
-import org.apache.commons.math3.util.Precision;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.CDATASection;
-import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Text;
-import org.w3c.dom.svg.SVGElement;
-
-import com.powsybl.commons.exceptions.UncheckedTransformerException;
-import com.powsybl.iidm.network.ThreeWindingsTransformer;
-import com.powsybl.iidm.network.TwoWindingsTransformer;
-import com.powsybl.iidm.network.VoltageLevel;
-import com.powsybl.substationdiagram.layout.LayoutParameters;
-import com.powsybl.substationdiagram.library.AnchorOrientation;
-import com.powsybl.substationdiagram.library.AnchorPoint;
-import com.powsybl.substationdiagram.library.AnchorPointProvider;
-import com.powsybl.substationdiagram.library.ComponentLibrary;
-import com.powsybl.substationdiagram.library.ComponentMetadata;
-import com.powsybl.substationdiagram.library.ComponentSize;
-import com.powsybl.substationdiagram.library.ComponentType;
-import com.powsybl.substationdiagram.model.BusCell;
-import com.powsybl.substationdiagram.model.BusNode;
-import com.powsybl.substationdiagram.model.Edge;
-import com.powsybl.substationdiagram.model.ExternCell;
-import com.powsybl.substationdiagram.model.Feeder2WTNode;
-import com.powsybl.substationdiagram.model.FeederBranchNode;
-import com.powsybl.substationdiagram.model.FeederNode;
-import com.powsybl.substationdiagram.model.Fictitious3WTNode;
-import com.powsybl.substationdiagram.model.Graph;
-import com.powsybl.substationdiagram.model.Node;
-import com.powsybl.substationdiagram.model.SubstationGraph;
-import com.powsybl.substationdiagram.model.TwtEdge;
-import com.powsybl.substationdiagram.svg.GraphMetadata.ArrowMetadata;
-import com.powsybl.substationdiagram.svg.SubstationDiagramInitialValueProvider.Direction;
+import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.escapeClassName;
+import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.escapeId;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>

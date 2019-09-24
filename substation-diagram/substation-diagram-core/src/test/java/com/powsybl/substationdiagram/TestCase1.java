@@ -152,7 +152,7 @@ public class TestCase1 extends AbstractTestCase {
         assertEquals(Cell.CellType.EXTERN, externCell.getType());
         assertEquals(-1, externCell.getOrder());
         assertEquals(5, externCell.getNodes().size());
-        assertTrue(externCell.getPrimaryBlocksConnectedToBus().isEmpty());
+        assertTrue(externCell.getPrimaryLegBlocks().isEmpty());
         assertEquals(1, externCell.getBusNodes().size());
         assertEquals("bbs", externCell.getBusNodes().get(0).getId());
         assertNull(externCell.getRootBlock());
@@ -169,17 +169,17 @@ public class TestCase1 extends AbstractTestCase {
         assertEquals(new Position(0, 0, 1, 2, false, Orientation.VERTICAL), bc.getPosition());
         assertEquals("bbs", bc.getStartingNode().getId());
         assertEquals("l", bc.getEndingNode().getId());
-        assertEquals(1, externCell.getPrimaryBlocksConnectedToBus().size());
+        assertEquals(1, externCell.getPrimaryLegBlocks().size());
 
-        assertTrue(bc.getUpperBlock() instanceof PrimaryBlock);
-        PrimaryBlock ub = (PrimaryBlock) bc.getUpperBlock();
+        assertTrue(bc.getUpperBlock() instanceof BodyPrimaryBlock);
+        BodyPrimaryBlock ub = (BodyPrimaryBlock) bc.getUpperBlock();
         assertEquals(new Position(0, 0, 1, 2, false, Orientation.VERTICAL), ub.getPosition());
         assertEquals("FICT_vl_dFictif", ub.getStartingNode().getId());
         assertEquals("l", ub.getEndingNode().getId());
         assertTrue(ub.getStackableBlocks().isEmpty());
 
-        assertTrue(bc.getLowerBlock() instanceof PrimaryBlock);
-        PrimaryBlock lb = (PrimaryBlock) bc.getLowerBlock();
+        assertTrue(bc.getLowerBlock() instanceof LegPrimaryBlock);
+        LegPrimaryBlock lb = (LegPrimaryBlock) bc.getLowerBlock();
         assertEquals(new Position(0, 0, 1, 0, false, Orientation.VERTICAL), lb.getPosition());
         assertEquals("bbs", lb.getStartingNode().getId());
         assertEquals("FICT_vl_dFictif", lb.getEndingNode().getId());

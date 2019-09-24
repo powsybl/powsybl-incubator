@@ -17,35 +17,34 @@ import java.util.*;
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-
 public interface Cell {
-    public enum CellType {
+    enum CellType {
         INTERN, EXTERN, SHUNT
     }
 
-    public void addNodes(Collection<Node> nodesToAdd);
+    void addNodes(Collection<Node> nodesToAdd);
 
-    public List<Node> getNodes();
+    List<Node> getNodes();
 
-    public void removeAllNodes(List<Node> nodeToRemove);
+    void removeAllNodes(List<Node> nodeToRemove);
 
-    public void setNodes(List<Node> nodes);
+    void setNodes(List<Node> nodes);
 
-    public void setType(CellType type);
+    void setType(CellType type);
 
-    public CellType getType();
+    CellType getType();
 
-    public Block getRootBlock();
+    Block getRootBlock();
 
-    public void setRootBlock(Block rootBlock);
+    void setRootBlock(Block rootBlock);
 
-    public int getNumber();
+    int getNumber();
 
-    public void calculateCoord(LayoutParameters layoutParam);
+    void calculateCoord(LayoutParameters layoutParam);
 
-    public void writeJson(JsonGenerator generator) throws IOException;
+    void writeJson(JsonGenerator generator) throws IOException;
 
-    public String getFullId();
+    String getFullId();
 
-    public Graph getGraph();
+    Graph getGraph();
 }

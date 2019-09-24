@@ -76,7 +76,7 @@ public interface Block {
      */
     void calculateCoord(LayoutParameters layoutParam);
 
-    public void calculateRootCoord(LayoutParameters layoutParam);
+    void calculateRootCoord(LayoutParameters layoutParam);
 
     int getOrder();
 

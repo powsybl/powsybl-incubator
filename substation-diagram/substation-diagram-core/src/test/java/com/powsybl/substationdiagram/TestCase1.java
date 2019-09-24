@@ -178,8 +178,8 @@ public class TestCase1 extends AbstractTestCase {
         assertEquals("l", ub.getEndingNode().getId());
         assertTrue(ub.getStackableBlocks().isEmpty());
 
-        assertTrue(bc.getLowerBlock() instanceof BodyPrimaryBlock);
-        BodyPrimaryBlock lb = (BodyPrimaryBlock) bc.getLowerBlock();
+        assertTrue(bc.getLowerBlock() instanceof LegPrimaryBlock);
+        LegPrimaryBlock lb = (LegPrimaryBlock) bc.getLowerBlock();
         assertEquals(new Position(0, 0, 1, 0, false, Orientation.VERTICAL), lb.getPosition());
         assertEquals("bbs", lb.getStartingNode().getId());
         assertEquals("FICT_vl_dFictif", lb.getEndingNode().getId());

@@ -143,8 +143,8 @@ public class TestSerialBlock extends AbstractTestCase {
 
         sb.reverseBlock();
 
-        assertEquals("bbs", sb.getSubBlocks().get(1).getEndingNode().getId());
-        assertEquals("FICT_vl_daFictif", sb.getSubBlocks().get(1).getStartingNode().getId());
+        assertEquals("FICT_vl_daFictif", sb.getSubBlocks().get(1).getEndingNode().getId());
+        assertEquals("bbs", sb.getSubBlocks().get(1).getStartingNode().getId());
         assertEquals("FICT_vl_daFictif", sb.getSubBlocks().get(0).getEndingNode().getId());
         assertEquals("la", sb.getSubBlocks().get(0).getStartingNode().getId());
     }

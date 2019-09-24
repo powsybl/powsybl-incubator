@@ -7,12 +7,13 @@
 package com.powsybl.substationdiagram.model;
 
 import java.util.List;
+
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-
 public interface ComposedBlock extends Block {
-    public List<Block> getSubBlocks();
+
+    List<Block> getSubBlocks();
 }

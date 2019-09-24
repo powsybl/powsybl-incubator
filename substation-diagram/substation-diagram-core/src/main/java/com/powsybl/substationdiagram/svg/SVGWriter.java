@@ -479,9 +479,9 @@ public class SVGWriter {
         gLabel.setAttribute("id", idLabelVoltageLevel);
 
         drawLabel(graph.isUseName()
-                        ? graph.getVoltageLevel().getName()
-                        : graph.getVoltageLevel().getId(),
-                false, graph.getX(), graph.getY(), gLabel, FONT_VOLTAGE_LEVEL_LABEL_SIZE);
+                     ? graph.getVoltageLevel().getName()
+                     : graph.getVoltageLevel().getId(),
+                  false, graph.getX(), graph.getY(), gLabel, FONT_VOLTAGE_LEVEL_LABEL_SIZE);
         root.appendChild(gLabel);
 
         metadata.addNodeMetadata(new GraphMetadata.NodeMetadata(idLabelVoltageLevel,
@@ -822,7 +822,7 @@ public class SVGWriter {
 
                 // Determine points of the polyline
                 List<Double> pol = anchorPoints.calculatePolylinePoints(edge.getNode1(), edge.getNode2(),
-                        layoutParameters.isDrawStraightWires());
+                                                                        layoutParameters.isDrawStraightWires());
 
                 g.setAttribute(POINTS, pointsListToString(pol));
                 g.setAttribute(CLASS, styleProvider.getIdWireStyle(edge));
@@ -836,9 +836,9 @@ public class SVGWriter {
 
                 if (metadata.getComponentMetadata(ComponentType.ARROW) == null) {
                     metadata.addComponentMetadata(new ComponentMetadata(ComponentType.ARROW,
-                            null,
-                            componentLibrary.getAnchorPoints(ComponentType.ARROW),
-                            componentLibrary.getSize(ComponentType.ARROW)));
+                                                                        null,
+                                                                        componentLibrary.getAnchorPoints(ComponentType.ARROW),
+                                                                        componentLibrary.getSize(ComponentType.ARROW)));
                 }
 
                 if (edge.getNode1() instanceof FeederNode) {
@@ -893,9 +893,9 @@ public class SVGWriter {
 
             if (metadata.getComponentMetadata(ComponentType.ARROW) == null) {
                 metadata.addComponentMetadata(new ComponentMetadata(ComponentType.ARROW,
-                        null,
-                        componentLibrary.getAnchorPoints(ComponentType.ARROW),
-                        componentLibrary.getSize(ComponentType.ARROW)));
+                                                                    null,
+                                                                    componentLibrary.getAnchorPoints(ComponentType.ARROW),
+                                                                    componentLibrary.getSize(ComponentType.ARROW)));
             }
         }
     }

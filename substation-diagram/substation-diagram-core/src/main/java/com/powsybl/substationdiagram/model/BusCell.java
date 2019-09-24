@@ -15,24 +15,24 @@ import java.util.*;
  */
 public interface BusCell extends Cell {
 
-    public enum Direction {
+    enum Direction {
         TOP, BOTTOM, FLAT, UNDEFINED
     }
 
-    public List<BusNode> getBusNodes();
+    List<BusNode> getBusNodes();
 
-    public void blocksSetting(Block rootBlock, List<LegPrimaryBlock> primaryBlocksConnectedToBus);
+    void blocksSetting(Block rootBlock, List<LegPrimaryBlock> primaryBlocksConnectedToBus);
 
-    public List<LegPrimaryBlock> getPrimaryLegBlocks();
+    List<LegPrimaryBlock> getPrimaryLegBlocks();
 
-    public void blockSizing();
+    void blockSizing();
 
-    public int newHPosition(int hPosition);
+    int newHPosition(int hPosition);
 
-    public Direction getDirection();
+    Direction getDirection();
 
-    public void setDirection(Direction direction);
+    void setDirection(Direction direction);
 
-    public Position getMaxBusPosition();
+    Position getMaxBusPosition();
 
 }

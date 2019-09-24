@@ -105,6 +105,6 @@ public abstract class AbstractPrimaryBlock extends AbstractBlock implements Prim
 
     @Override
     public String toString() {
-        return "BodyPrimaryBlock(nodes=" + nodes + ")";
+        return "PrimaryBlock(nodes=" + nodes + ")";
     }
 }

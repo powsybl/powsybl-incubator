@@ -18,7 +18,6 @@ import java.util.List;
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-
 public class LegPrimaryBlock extends AbstractPrimaryBlock implements LegBlock {
 
     public LegPrimaryBlock(List<Node> nodes, Cell cell) {

@@ -187,8 +187,8 @@ public class TestCase4NotParallelel extends AbstractTestCase {
         // assert blocks and nodes rotation
         assertEquals(2, ((BusCell) cell).getPrimaryLegBlocks().size());
         assertNotNull(cell.getRootBlock());
-        assertTrue(cell.getRootBlock() instanceof BodyParallelBlock);
-        assertEquals(new Position(1, 1, 1, 1, false, Orientation.HORIZONTAL), cell.getRootBlock().getPosition());
+        assertTrue(cell.getRootBlock() instanceof SerialBlock);
+        assertEquals(new Position(-1, -1, 0, 0, false, Orientation.HORIZONTAL), cell.getRootBlock().getPosition());
 
         cell = it.next();
         assertTrue(cell.getRootBlock() instanceof SerialBlock);
@@ -199,7 +199,7 @@ public class TestCase4NotParallelel extends AbstractTestCase {
         BodyPrimaryBlock byu = (BodyPrimaryBlock) bc.getUpperBlock();
         assertEquals(new Position(0, 0, 1, 2, false, Orientation.VERTICAL), byu.getPosition());
 
-        BodyParallelBlock bpl = (BodyParallelBlock) bc.getLowerBlock();
+        LegParralelBlock bpl = (LegParralelBlock) bc.getLowerBlock();
         assertEquals(new Position(0, 0, 1, 0, false, Orientation.VERTICAL), bpl.getPosition());
 
         cell = it.next();
@@ -211,7 +211,7 @@ public class TestCase4NotParallelel extends AbstractTestCase {
         byu = (BodyPrimaryBlock) bc.getUpperBlock();
         assertEquals(new Position(0, 0, 1, 2, false, Orientation.VERTICAL), byu.getPosition());
 
-        bpl = (BodyParallelBlock) bc.getLowerBlock();
+        bpl = (LegParralelBlock) bc.getLowerBlock();
         assertEquals(new Position(0, 0, 1, 0, false, Orientation.VERTICAL), bpl.getPosition());
 
         cell = it.next();

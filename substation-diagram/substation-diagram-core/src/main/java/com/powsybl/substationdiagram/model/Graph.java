@@ -99,7 +99,7 @@ public class Graph {
     private double y = 0;
 
     private final boolean forVoltageLevelDiagram;  // true if voltageLevel diagram
-    // false if substation diagram
+                                                   // false if substation diagram
 
     private final boolean showInductorFor3WT;
 

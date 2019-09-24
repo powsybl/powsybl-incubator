@@ -6,14 +6,6 @@
  */
 package com.powsybl.substationdiagram;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.UncheckedIOException;
-import java.nio.charset.StandardCharsets;
-
 import com.google.common.io.ByteStreams;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.Substation;
@@ -26,6 +18,13 @@ import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramInitialValuePro
 import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramStyleProvider;
 import com.powsybl.substationdiagram.svg.SVGWriter;
 import com.powsybl.substationdiagram.svg.SubstationDiagramStyleProvider;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
@@ -104,9 +103,9 @@ public abstract class AbstractTestCase {
                     .write(graph, new DefaultSubstationDiagramInitialValueProvider(network), styleProvider, writer);
             writer.flush();
 
-            FileWriter fw = new FileWriter(System.getProperty("user.home") + refSvgName);
-            fw.write(writer.toString());
-            fw.close();
+//            FileWriter fw = new FileWriter(System.getProperty("user.home") + refSvgName);
+//            fw.write(writer.toString());
+//            fw.close();
 
             String refSvg = normalizeLineSeparator(new String(ByteStreams.toByteArray(getClass().getResourceAsStream(refSvgName)), StandardCharsets.UTF_8));
             String svg = normalizeLineSeparator(writer.toString());

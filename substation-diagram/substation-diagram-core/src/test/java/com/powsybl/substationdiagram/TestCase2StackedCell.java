@@ -140,8 +140,8 @@ public class TestCase2StackedCell extends AbstractTestCase {
         assertEquals("l", bpy.getEndingNode().getId());
         assertTrue(bpy.getStackableBlocks().isEmpty());
 
-        assertTrue(bc.getLowerBlock() instanceof BodyParallelBlock);
-        BodyParallelBlock bpl = (BodyParallelBlock) bc.getLowerBlock();
+        assertTrue(bc.getLowerBlock() instanceof LegParralelBlock);
+        LegParralelBlock bpl = (LegParralelBlock) bc.getLowerBlock();
         assertEquals(bc, bpl.getParentBlock());
         assertEquals(new Position(0, 0, 1, 0, false, Orientation.VERTICAL), bpl.getPosition());
         assertEquals(new Coord(-1, -1), bpl.getCoord());
@@ -149,16 +149,17 @@ public class TestCase2StackedCell extends AbstractTestCase {
         assertEquals("FICT_vl_2", bpl.getEndingNode().getId());
         assertEquals(2, bpl.getSubBlocks().size());
 
-        assertTrue(bpl.getSubBlocks().get(0) instanceof BodyPrimaryBlock);
-        BodyPrimaryBlock bpy1 = (BodyPrimaryBlock) bpl.getSubBlocks().get(0);
+        assertTrue(bpl.getSubBlocks().get(0) instanceof LegPrimaryBlock);
+        LegPrimaryBlock bpy1 = (LegPrimaryBlock) bpl.getSubBlocks().get(0);
         assertEquals(new Position(0, 0, 0, 0, false, Orientation.VERTICAL), bpy1.getPosition());
         assertEquals(new Coord(-1, -1), bpy1.getCoord());
         assertEquals("FICT_vl_2", bpy1.getEndingNode().getId());
         assertEquals("bbs1", bpy1.getStartingNode().getId());
         assertEquals(1, bpy1.getStackableBlocks().size());
 
-        assertTrue(bpl.getSubBlocks().get(1) instanceof BodyPrimaryBlock);
-        BodyPrimaryBlock bpy2 = (BodyPrimaryBlock) bpl.getSubBlocks().get(1);
+        System.out.println(bpl.getSubBlocks().get(1).getClass());
+        assertTrue(bpl.getSubBlocks().get(1) instanceof LegPrimaryBlock);
+        LegPrimaryBlock bpy2 = (LegPrimaryBlock) bpl.getSubBlocks().get(1);
         assertEquals(new Position(0, 0, 0, 0, false, Orientation.VERTICAL), bpy2.getPosition());
         assertEquals(new Coord(-1, -1), bpy2.getCoord());
         assertEquals("FICT_vl_2", bpy2.getEndingNode().getId());

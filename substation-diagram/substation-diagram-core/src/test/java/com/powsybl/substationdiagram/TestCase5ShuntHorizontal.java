@@ -144,18 +144,18 @@ public class TestCase5ShuntHorizontal extends AbstractTestCase {
         new BlockOrganizer().organize(g);
 
         // assert blocks and nodes rotation
-        assertEquals(1, ((BusCell) cella).getPrimaryBlocksConnectedToBus().size());
+        assertEquals(1, ((BusCell) cella).getPrimaryLegBlocks().size());
         assertNotNull(cella.getRootBlock());
         assertTrue(cella.getRootBlock() instanceof SerialBlock);
         assertEquals(new Position(0, 0, 1, 3, false, Orientation.VERTICAL), cella.getRootBlock().getPosition());
 
-        assertEquals(1, ((BusCell) cellb).getPrimaryBlocksConnectedToBus().size());
+        assertEquals(1, ((BusCell) cellb).getPrimaryLegBlocks().size());
         assertNotNull(cellb.getRootBlock());
         assertTrue(cellb.getRootBlock() instanceof SerialBlock);
         assertEquals(new Position(1, 0, 1, 3, false, Orientation.VERTICAL), cellb.getRootBlock().getPosition());
 
         assertNotNull(cellShunt.getRootBlock());
-        assertTrue(cellShunt.getRootBlock() instanceof PrimaryBlock);
+        assertTrue(cellShunt.getRootBlock() instanceof BodyPrimaryBlock);
         assertEquals(new Position(-1, -1, 0, 0, false, Orientation.HORIZONTAL), cellShunt.getRootBlock().getPosition());
 
         // calculate coordinates

@@ -136,8 +136,14 @@ public class PositionFree implements PositionFinder {
                 .map(InternCell.class::cast)
                 .collect(Collectors.toList());
 
-        structuringInternCells.forEach(c -> addBusNodeSet(c.getSideBusNodes(Side.LEFT), context));
-        structuringInternCells.forEach(c -> addBusNodeSet(c.getSideBusNodes(Side.RIGHT), context));
+        structuringInternCells.forEach(c -> {
+            if (c.isUniLeg()) {
+                addBusNodeSet(c.getSideBusNodes(Side.UNDEFINED), context);
+            } else {
+                addBusNodeSet(c.getSideBusNodes(Side.LEFT), context);
+                addBusNodeSet(c.getSideBusNodes(Side.RIGHT), context);
+            }
+        });
 
         List<InternCell> verticalCells = structuringInternCells.stream()
                 .filter(internCell ->

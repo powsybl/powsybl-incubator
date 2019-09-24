@@ -6,19 +6,29 @@
  */
 package com.powsybl.substationdiagram.model;
 
+import com.powsybl.commons.PowsyblException;
+import com.powsybl.substationdiagram.layout.LayoutParameters;
+
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class ShuntCell extends Cell {
+public class ShuntCell extends AbstractCell {
     public ShuntCell(Graph graph) {
         super(graph, CellType.SHUNT);
+    }
+
+    public void calculateCoord(LayoutParameters layoutParam) {
+        if (getRootBlock() instanceof BodyPrimaryBlock) {
+            ((BodyPrimaryBlock) getRootBlock()).coordShuntCase();
+        } else {
+            throw new PowsyblException("ShuntCell can only be composed of a single BodyPrimaryBlock");
+        }
     }
 
     @Override
     public String toString() {
         return "ShuntCell(" + nodes + " )";
     }
-
 }

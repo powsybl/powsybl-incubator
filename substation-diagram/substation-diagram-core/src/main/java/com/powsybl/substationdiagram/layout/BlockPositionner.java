@@ -12,7 +12,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- *
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  */
 public class BlockPositionner {
@@ -23,7 +22,6 @@ public class BlockPositionner {
         int hSpace = 0;
         int maxV = graph.getMaxBusStructuralPosition().getV();
         List<InternCell> nonFlatCellsToClose = new ArrayList<>();
-        PosNWidth posNWidth;
 
         int[] previousIndexes = new int[maxV];
         graph.getNodeBuses().forEach(nodeBus -> nodeBus.getPosition().setV(nodeBus.getStructuralPosition().getV()));
@@ -38,26 +36,25 @@ public class BlockPositionner {
                     updateNodeBusPos(graph, vPos, hPos, 0, ssIndexes, Side.RIGHT);
                 }
             }
-            hPos = placeHorizontalInternCell(hPos, prevHPos, hSs, Side.LEFT, nonFlatCellsToClose).pos;
-            hPos = placeVerticalCoupling(hPos, hSs);
-            hPos = placeExternCell(hPos, hSs.getExternCells());
-
-            posNWidth = placeHorizontalInternCell(hPos, prevHPos, hSs, Side.RIGHT, nonFlatCellsToClose);
-            hPos = posNWidth.pos;
-            hSpace = posNWidth.width;
-
+            hPos = placeNonFlatInternCells(hPos, hSs, Side.LEFT, nonFlatCellsToClose);
+            hPos = placeVerticalCells(hPos, new ArrayList<>(hSs.getSideInternCells(Side.UNDEFINED)));
+            hPos = placeVerticalCells(hPos, hSs.getExternCells().stream()
+                    .sorted(Comparator.comparingInt(ExternCell::getOrder))
+                    .collect(Collectors.toList()));
+            hPos = placeNonFlatInternCells(hPos, hSs, Side.RIGHT, nonFlatCellsToClose);
             if (hPos == prevHPos) {
                 hPos++;
             }
-
+            hSpace = placeFlatInternCells(hPos, hSs.getSideInternCells(Side.RIGHT).stream()
+                    .filter(InternCell::isFlat)
+                    .collect(Collectors.toList())) - hPos;
+            hPos += hSpace;
             prevHPos = hPos;
             previousIndexes = ssIndexes;
-
         }
         for (int vPos = 0; vPos < maxV; vPos++) {
             updateNodeBusPos(graph, vPos, hPos, hSpace, previousIndexes, Side.LEFT);
         }
-
         manageInternCellOverlaps(graph);
     }
 
@@ -72,98 +69,48 @@ public class BlockPositionner {
         }
     }
 
-    private int placeExternCell(int hPos, Set<ExternCell> externCells) {
-        int hPos2 = hPos;
-        for (Cell cell : externCells) {
-            Position rootPosition = cell.getRootBlock().getPosition();
-            rootPosition.setHV(hPos2, 0);
-            hPos2 += rootPosition.getHSpan();
-
-        }
-        return hPos2;
-    }
-
-    private int placeVerticalCoupling(int hPos, SubSections.HorizontalSubSection hSs) {
-        int hPos2 = hPos;
-        for (InternCell cell : hSs.getSideInternCells(Side.UNDEFINED)) {
-            cell.getRootBlock().getPosition().setH(hPos2);
-            hPos2 += cell.getRootBlock().getPosition().getHSpan();
-        }
-        return hPos2;
-    }
-
-    private PosNWidth placeHorizontalInternCell(int hPos,
-                                                int prevHPos,
-                                                SubSections.HorizontalSubSection hSs,
-                                                Side side, List<InternCell> nonFlatCellsToClose) {
+    private int placeVerticalCells(int hPos, Collection<BusCell> busCells) {
         int hPosRes = hPos;
-        Set<InternCell> cells = hSs.getSideInternCells(side);
-        List<InternCell> nonFlatCells = cells.stream()
-                .filter(cellIntern -> cellIntern.getDirection() != BusCell.Direction.FLAT).distinct()
+        for (BusCell cell : busCells) {
+            hPosRes = cell.newHPosition(hPosRes);
+        }
+        return hPosRes;
+    }
+
+    private int placeFlatInternCells(int hPos, List<InternCell> cells) {
+        int hPosRes = hPos;
+        for (BusCell cell : cells) {
+            hPosRes = Math.max(hPosRes, cell.newHPosition(hPos));
+        }
+        return hPosRes;
+    }
+
+    private int placeNonFlatInternCells(int hPos,
+                                        SubSections.HorizontalSubSection hSs,
+                                        Side side, List<InternCell> nonFlatCellsToClose) {
+        int hPosRes = hPos;
+        List<InternCell> cells = hSs.getSideInternCells(side).stream()
+                .filter(internCell -> !internCell.isFlat())
                 .sorted(Comparator.comparingInt(c -> -nonFlatCellsToClose.indexOf(c)))
                 .collect(Collectors.toList());
+        Side legSide = side.getFlip();
+        for (InternCell cell : cells) {
+            hPosRes = cell.newHPosition(hPosRes, legSide);
+        }
         if (side == Side.RIGHT) {
-            hPosRes = openHorizontalNonFlatCell(hPosRes, nonFlatCells);
-            nonFlatCellsToClose.addAll(nonFlatCells);
+            nonFlatCellsToClose.addAll(cells);
         } else {
-            hPosRes = closeHorizontalNonFlatCell(hPosRes, nonFlatCells);
-            nonFlatCellsToClose.removeAll(nonFlatCells);
-        }
-        cells.removeAll(nonFlatCells);
-        int shift = 0;
-        for (InternCell cell : cells) {
-            if (side == Side.RIGHT) {
-                if (prevHPos == hPosRes) {
-                    hPosRes++;
-                }
-                Position position = cell.getRootBlock().getPosition();
-                position.setHV(hPosRes, cell.getBusNodes().get(0).getStructuralPosition().getV());
-                shift = Math.max(position.getHSpan(), shift);
-            }
-        }
-
-        return new PosNWidth(hPosRes + shift, shift);
-    }
-
-    private int openHorizontalNonFlatCell(int hPos, List<InternCell> cells) {
-        int hPosRes = hPos;
-        for (InternCell cell : cells) {
-            Position rootPosition = cell.getRootBlock().getPosition();
-            rootPosition.setHV(hPosRes, 0);
-            hPosRes += rootPosition.getHSpan() - cell.getSideToBlock(Side.RIGHT).getPosition().getHSpan();
+            nonFlatCellsToClose.removeAll(cells);
         }
         return hPosRes;
     }
 
-    private int closeHorizontalNonFlatCell(int hPos, List<InternCell> cells) {
-        int hPosRes = hPos;
-        for (InternCell cell : cells) {
-            Block rightBlock = cell.getSideToBlock(Side.RIGHT);
-            if (rightBlock != null) {
-                rightBlock.getPosition().setH(hPosRes);
-                rightBlock.getPosition().setAbsolute(true);
-                hPosRes += rightBlock.getPosition().getHSpan();
-            }
-        }
-        return hPosRes;
-    }
-
-    class PosNWidth {
-        int pos;
-        int width;
-
-        PosNWidth(int pos, int width) {
-            this.pos = pos;
-            this.width = width;
-        }
-    }
-
-    public void manageInternCellOverlaps(Graph graph) {
+    private void manageInternCellOverlaps(Graph graph) {
         List<InternCell> cellsToHandle = graph.getCells().stream()
                 .filter(cell -> cell.getType() == Cell.CellType.INTERN)
                 .map(InternCell.class::cast)
                 .filter(internCell -> internCell.getDirection() != BusCell.Direction.FLAT
-                        && internCell.getCentralBlock() != null)
+                        && internCell.getBodyBlock() != null)
                 .collect(Collectors.toList());
         Lane lane = new Lane(cellsToHandle);
         lane.run();
@@ -255,7 +202,7 @@ public class BlockPositionner {
                 lane.incompatibilities.keySet()
                         .forEach(c -> {
                             c.setDirection(j == 0 ? BusCell.Direction.TOP : BusCell.Direction.BOTTOM);
-                            c.getRootPosition().setV(newV);
+                            c.getBodyBlock().getPosition().setV(newV);
                         });
                 i++;
             }
@@ -272,6 +219,5 @@ public class BlockPositionner {
         public int size() {
             return incompatibilities.size();
         }
-
     }
 }

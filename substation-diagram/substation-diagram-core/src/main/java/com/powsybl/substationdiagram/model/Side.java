@@ -14,5 +14,12 @@ package com.powsybl.substationdiagram.model;
 public enum Side {
     UNDEFINED,
     LEFT,
-    RIGHT
+    RIGHT;
+
+    public Side getFlip() {
+        if (this == UNDEFINED) {
+            return UNDEFINED;
+        }
+        return this == Side.RIGHT ? Side.LEFT : Side.RIGHT;
+    }
 }

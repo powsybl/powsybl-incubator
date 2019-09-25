@@ -45,8 +45,4 @@ public class Components {
             throw new UncheckedJaxbException(e);
         }
     }
-
-    public static void main(String[] args) {
-        load("/ConvergenceLibrary");
-    }
 }

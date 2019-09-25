@@ -105,20 +105,18 @@ public class TestSerialParallelBlock extends AbstractTestCase {
         assertTrue(sb.getLowerBlock().isEmbedingNodeType(Node.NodeType.BUS));
         assertTrue(sb.getUpperBlock().isEmbedingNodeType(Node.NodeType.FEEDER));
         assertTrue(sb.getSubBlocks().get(0).isEmbedingNodeType(Node.NodeType.BUS));
-        assertTrue(sb.getSubBlocks().get(1).isEmbedingNodeType(Node.NodeType.FEEDER));
+        assertTrue(sb.getSubBlocks().get(1).isEmbedingNodeType(Node.NodeType.SWITCH));
 
-        assertSame(Block.Type.SERIAL, sb.getLowerBlock().getType());
-        SerialBlock subSB = (SerialBlock) sb.getLowerBlock();
+        assertSame(Block.Type.PRIMARY, sb.getLowerBlock().getType());
+        LegPrimaryBlock subSB = (LegPrimaryBlock) sb.getLowerBlock();
         assertSame(Block.Type.PARALLEL, sb.getUpperBlock().getType());
-        ParallelBlock subPB = (ParallelBlock) sb.getUpperBlock();
-
-        assertSame(subSB.getEndingNode(), subPB.getStartingNode());
+        BodyParallelBlock subPB = (BodyParallelBlock) sb.getUpperBlock();
 
         assertEquals("bbs", sb.getStartingNode().getId());
         assertEquals("bbs", subSB.getStartingNode().getId());
-        assertEquals("bbs", subSB.getSubBlocks().get(0).getStartingNode().getId());
+        assertEquals("FICT_vl_2", subPB.getSubBlocks().get(0).getStartingNode().getId());
 
-        sb.calculateDimensionAndInternPos();
+        sb.sizing();
         assertEquals(0, sb.getPosition().getH());
         assertEquals(0, sb.getPosition().getV());
         assertEquals(2, sb.getPosition().getHSpan());
@@ -127,17 +125,17 @@ public class TestSerialParallelBlock extends AbstractTestCase {
         assertEquals(0, subSB.getPosition().getH());
         assertEquals(0, subSB.getPosition().getV());
         assertEquals(1, subSB.getPosition().getHSpan());
-        assertEquals(2, subSB.getPosition().getVSpan());
+        assertEquals(0, subSB.getPosition().getVSpan());
 
-        assertEquals(0, subSB.getSubBlocks().get(0).getPosition().getH());
-        assertEquals(0, subSB.getSubBlocks().get(0).getPosition().getV());
-        assertEquals(1, subSB.getSubBlocks().get(0).getPosition().getHSpan());
-        assertEquals(0, subSB.getSubBlocks().get(0).getPosition().getVSpan());
+        assertEquals(0, subPB.getSubBlocks().get(0).getPosition().getH());
+        assertEquals(0, subPB.getSubBlocks().get(0).getPosition().getV());
+        assertEquals(1, subPB.getSubBlocks().get(0).getPosition().getHSpan());
+        assertEquals(2, subPB.getSubBlocks().get(0).getPosition().getVSpan());
 
-        assertEquals(0, subSB.getSubBlocks().get(1).getPosition().getH());
-        assertEquals(0, subSB.getSubBlocks().get(1).getPosition().getV());
-        assertEquals(1, subSB.getSubBlocks().get(1).getPosition().getHSpan());
-        assertEquals(2, subSB.getSubBlocks().get(1).getPosition().getVSpan());
+        assertEquals(1, subPB.getSubBlocks().get(1).getPosition().getH());
+        assertEquals(0, subPB.getSubBlocks().get(1).getPosition().getV());
+        assertEquals(1, subPB.getSubBlocks().get(1).getPosition().getHSpan());
+        assertEquals(2, subPB.getSubBlocks().get(1).getPosition().getVSpan());
 
         LayoutParameters layoutParameters = new LayoutParameters()
                 .setTranslateX(20)
@@ -172,20 +170,20 @@ public class TestSerialParallelBlock extends AbstractTestCase {
         assertEquals(50, subSB.getCoord().getXSpan(), 0);
         assertEquals(200, subSB.getCoord().getYSpan(), 0);
 
-        assertEquals(-15, subSB.getSubBlocks().get(0).getCoord().getX(), 0);
-        assertEquals(120, subSB.getSubBlocks().get(0).getCoord().getY(), 0);
-        assertEquals(50, subSB.getSubBlocks().get(0).getCoord().getXSpan(), 0);
-        assertEquals(0, subSB.getSubBlocks().get(0).getCoord().getYSpan(), 0);
+        assertEquals(-15, subPB.getSubBlocks().get(0).getCoord().getX(), 0);
+        assertEquals(20, subPB.getSubBlocks().get(0).getCoord().getY(), 0);
+        assertEquals(50, subPB.getSubBlocks().get(0).getCoord().getXSpan(), 0);
+        assertEquals(200, subPB.getSubBlocks().get(0).getCoord().getYSpan(), 0);
 
-        assertEquals(-15, subSB.getSubBlocks().get(1).getCoord().getX(), 0);
-        assertEquals(20, subSB.getSubBlocks().get(1).getCoord().getY(), 0);
-        assertEquals(50, subSB.getSubBlocks().get(1).getCoord().getXSpan(), 0);
-        assertEquals(200, subSB.getSubBlocks().get(1).getCoord().getYSpan(), 0);
+        assertEquals(35, subPB.getSubBlocks().get(1).getCoord().getX(), 0);
+        assertEquals(20, subPB.getSubBlocks().get(1).getCoord().getY(), 0);
+        assertEquals(50, subPB.getSubBlocks().get(1).getCoord().getXSpan(), 0);
+        assertEquals(200, subPB.getSubBlocks().get(1).getCoord().getYSpan(), 0);
 
         sb.reverseBlock();
 
-        assertEquals("bbs", sb.getEndingNode().getId());
-        assertEquals("bbs", subSB.getEndingNode().getId());
-        assertEquals("bbs", subSB.getSubBlocks().get(1).getEndingNode().getId());
+        assertEquals("FICT_vl_daFictif", sb.getEndingNode().getId());
+        assertEquals("FICT_vl_daFictif", subSB.getEndingNode().getId());
+        assertEquals("FICT_vl_2", subPB.getSubBlocks().get(1).getEndingNode().getId());
     }
 }

@@ -185,10 +185,10 @@ public class TestCase4NotParallelel extends AbstractTestCase {
         new BlockOrganizer().organize(g);
 
         // assert blocks and nodes rotation
-        assertEquals(2, ((BusCell) cell).getPrimaryBlocksConnectedToBus().size());
+        assertEquals(2, ((BusCell) cell).getPrimaryLegBlocks().size());
         assertNotNull(cell.getRootBlock());
-        assertTrue(cell.getRootBlock() instanceof ParallelBlock);
-        assertEquals(new Position(1, 1, 1, 1, false, Orientation.HORIZONTAL), cell.getRootBlock().getPosition());
+        assertTrue(cell.getRootBlock() instanceof SerialBlock);
+        assertEquals(new Position(-1, -1, 0, 0, false, Orientation.HORIZONTAL), cell.getRootBlock().getPosition());
 
         cell = it.next();
         assertTrue(cell.getRootBlock() instanceof SerialBlock);
@@ -196,10 +196,10 @@ public class TestCase4NotParallelel extends AbstractTestCase {
         SerialBlock bc = (SerialBlock) cell.getRootBlock();
         assertEquals(new Position(0, 0, 1, 2, false, Orientation.VERTICAL), bc.getPosition());
 
-        PrimaryBlock byu = (PrimaryBlock) bc.getUpperBlock();
+        BodyPrimaryBlock byu = (BodyPrimaryBlock) bc.getUpperBlock();
         assertEquals(new Position(0, 0, 1, 2, false, Orientation.VERTICAL), byu.getPosition());
 
-        ParallelBlock bpl = (ParallelBlock) bc.getLowerBlock();
+        LegParralelBlock bpl = (LegParralelBlock) bc.getLowerBlock();
         assertEquals(new Position(0, 0, 1, 0, false, Orientation.VERTICAL), bpl.getPosition());
 
         cell = it.next();
@@ -208,10 +208,10 @@ public class TestCase4NotParallelel extends AbstractTestCase {
         bc = (SerialBlock) cell.getRootBlock();
         assertEquals(new Position(2, 0, 1, 2, false, Orientation.VERTICAL), bc.getPosition());
 
-        byu = (PrimaryBlock) bc.getUpperBlock();
+        byu = (BodyPrimaryBlock) bc.getUpperBlock();
         assertEquals(new Position(0, 0, 1, 2, false, Orientation.VERTICAL), byu.getPosition());
 
-        bpl = (ParallelBlock) bc.getLowerBlock();
+        bpl = (LegParralelBlock) bc.getLowerBlock();
         assertEquals(new Position(0, 0, 1, 0, false, Orientation.VERTICAL), bpl.getPosition());
 
         cell = it.next();

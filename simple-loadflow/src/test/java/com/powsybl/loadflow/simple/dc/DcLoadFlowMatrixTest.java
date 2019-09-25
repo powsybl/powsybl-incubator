@@ -8,12 +8,8 @@ package com.powsybl.loadflow.simple.dc;
 
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.test.EurostagTutorialExample1Factory;
-import com.powsybl.loadflow.simple.equations.UniformValueVoltageInitializer;
 import com.powsybl.loadflow.simple.dc.equations.DcEquationSystem;
-import com.powsybl.loadflow.simple.equations.VariableSet;
-import com.powsybl.loadflow.simple.equations.EquationSystem;
-import com.powsybl.loadflow.simple.equations.EquationType;
-import com.powsybl.loadflow.simple.equations.VariableType;
+import com.powsybl.loadflow.simple.equations.*;
 import com.powsybl.loadflow.simple.network.FirstSlackBusSelector;
 import com.powsybl.loadflow.simple.network.LfBus;
 import com.powsybl.loadflow.simple.network.LfNetwork;
@@ -60,7 +56,7 @@ public class DcLoadFlowMatrixTest {
         EquationSystem equationSystem = DcEquationSystem.create(lfNetwork, variableSet);
 
         for (LfBus b : lfNetwork.getBuses()) {
-            equationSystem.getEquation(b.getNum(), EquationType.BUS_P);
+            equationSystem.createEquation(b.getNum(), EquationType.BUS_P);
             variableSet.getVariable(b.getNum(), VariableType.BUS_PHI);
         }
 
@@ -73,7 +69,7 @@ public class DcLoadFlowMatrixTest {
 
         equationSystem.updateEquations(x);
 
-        Matrix j = equationSystem.buildJacobian(matrixFactory).getMatrix();
+        Matrix j = JacobianMatrix.create(equationSystem, matrixFactory).getMatrix();
         try (PrintStream ps = LoggerFactory.getInfoPrintStream(LOGGER)) {
             ps.println("J=");
             j.print(ps, equationSystem.getRowNames(), equationSystem.getColumnNames());
@@ -128,7 +124,7 @@ public class DcLoadFlowMatrixTest {
 
         equationSystem = DcEquationSystem.create(lfNetwork, variableSet);
 
-        j = equationSystem.buildJacobian(matrixFactory).getMatrix();
+        j = JacobianMatrix.create(equationSystem, matrixFactory).getMatrix();
 
         dx = Arrays.copyOf(targets, targets.length);
         try (LUDecomposition lu = j.decomposeLU()) {

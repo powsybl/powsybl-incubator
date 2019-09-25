@@ -6,62 +6,17 @@
  */
 package com.powsybl.substationdiagram.view.app;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.io.UncheckedIOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.ToDoubleFunction;
-import java.util.prefs.Preferences;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import com.powsybl.substationdiagram.view.DisplayVoltageLevel;
-import javafx.scene.control.Tooltip;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import com.powsybl.cgmes.iidm.extensions.dl.NetworkDiagramData;
 import com.powsybl.commons.json.JsonUtil;
-import com.powsybl.computation.local.LocalComputationManager;
-import com.powsybl.iidm.import_.ImportConfig;
-import com.powsybl.iidm.import_.Importers;
-import com.powsybl.iidm.network.Container;
-import com.powsybl.iidm.network.ContainerType;
-import com.powsybl.iidm.network.Network;
-import com.powsybl.iidm.network.Substation;
-import com.powsybl.iidm.network.VoltageLevel;
+import com.powsybl.iidm.network.*;
 import com.powsybl.substationdiagram.SubstationDiagram;
 import com.powsybl.substationdiagram.VoltageLevelDiagram;
 import com.powsybl.substationdiagram.cgmes.CgmesSubstationLayoutFactory;
 import com.powsybl.substationdiagram.cgmes.CgmesVoltageLevelLayoutFactory;
-import com.powsybl.substationdiagram.layout.HorizontalSubstationLayoutFactory;
-import com.powsybl.substationdiagram.layout.LayoutParameters;
-import com.powsybl.substationdiagram.layout.PositionFree;
-import com.powsybl.substationdiagram.layout.PositionFromExtension;
-import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayoutFactory;
-import com.powsybl.substationdiagram.layout.RandomVoltageLevelLayoutFactory;
-import com.powsybl.substationdiagram.layout.SubstationLayoutFactory;
-import com.powsybl.substationdiagram.layout.VerticalSubstationLayoutFactory;
-import com.powsybl.substationdiagram.layout.VoltageLevelLayoutFactory;
+import com.powsybl.substationdiagram.layout.*;
 import com.powsybl.substationdiagram.library.ComponentLibrary;
 import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
 import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramInitialValueProvider;
@@ -70,10 +25,11 @@ import com.powsybl.substationdiagram.svg.SubstationDiagramInitialValueProvider;
 import com.powsybl.substationdiagram.svg.SubstationDiagramStyleProvider;
 import com.powsybl.substationdiagram.util.NominalVoltageSubstationDiagramStyleProvider;
 import com.powsybl.substationdiagram.util.SmartVoltageLevelLayoutFactory;
+import com.powsybl.substationdiagram.util.TopologicalStyleProvider;
 import com.powsybl.substationdiagram.view.AbstractContainerDiagramView;
+import com.powsybl.substationdiagram.view.DisplayVoltageLevel;
 import com.powsybl.substationdiagram.view.SubstationDiagramView;
 import com.powsybl.substationdiagram.view.VoltageLevelDiagramView;
-
 import javafx.application.Application;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -89,48 +45,46 @@ import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Side;
+import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.CheckBoxTreeItem;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TitledPane;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTreeCell;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.ToDoubleFunction;
+import java.util.prefs.Preferences;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class SubstationDiagramViewer extends Application implements DisplayVoltageLevel {
+public abstract class AbstractSubstationDiagramViewer extends Application implements DisplayVoltageLevel {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SubstationDiagramViewer.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractSubstationDiagramViewer.class);
 
     private  static final String SELECTED_VOLTAGE_LEVEL_IDS_PROPERTY = "selectedVoltageLevelIds";
     private  static final String SELECTED_SUBSTATION_IDS_PROPERTY = "selectedSubstationIds";
-
-    private static final String CASE_PATH_PROPERTY = "casePath";
 
     private final Map<String, VoltageLevelLayoutFactory> voltageLevelsLayouts
             = ImmutableMap.of("Smart", new SmartVoltageLevelLayoutFactory(),
@@ -141,7 +95,8 @@ public class SubstationDiagramViewer extends Application implements DisplayVolta
 
     private final Map<String, SubstationDiagramStyleProvider> styles
             = ImmutableMap.of("Default", new DefaultSubstationDiagramStyleProvider(),
-                              "Nominal voltage", new NominalVoltageSubstationDiagramStyleProvider());
+                              "Nominal voltage", new NominalVoltageSubstationDiagramStyleProvider(),
+                              "Topology", new TopologicalStyleProvider(null));
 
     private final Map<String, SubstationLayoutFactory> substationsLayouts
             = ImmutableMap.of("Horizontal", new HorizontalSubstationLayoutFactory(),
@@ -163,8 +118,6 @@ public class SubstationDiagramViewer extends Application implements DisplayVolta
 
     private final TreeView<Container> substationsTree = new TreeView<>();
 
-    private final Button caseLoadingStatus = new Button("  ");
-    private final TextField casePathTextField = new TextField();
     private final TabPane diagramsPane = new TabPane();
     private Tab tabSelected;
     private Tab tabChecked;
@@ -177,11 +130,11 @@ public class SubstationDiagramViewer extends Application implements DisplayVolta
     private final ObjectProperty<LayoutParameters> layoutParameters = new SimpleObjectProperty<>(new LayoutParameters()
             .setShowGrid(true));
 
-    private final Preferences preferences = Preferences.userNodeForPackage(VoltageLevelDiagramView.class);
+    protected final Preferences preferences = Preferences.userNodeForPackage(VoltageLevelDiagramView.class);
 
     private final ObjectMapper objectMapper = JsonUtil.createObjectMapper();
 
-    private final ComboBox<String> voltageLevelLayoutComboBox = new ComboBox<>();
+    protected final ComboBox<String> voltageLevelLayoutComboBox = new ComboBox<>();
 
     private final ComboBox<String> substationLayoutComboBox = new ComboBox<>();
 
@@ -305,9 +258,9 @@ public class SubstationDiagramViewer extends Application implements DisplayVolta
             try (InputStream svgInputStream = new ByteArrayInputStream(svgData.getBytes(StandardCharsets.UTF_8));
                  InputStream metadataInputStream = new ByteArrayInputStream(metadataData.getBytes(StandardCharsets.UTF_8))) {
                 if (c.getContainerType() == ContainerType.VOLTAGE_LEVEL) {
-                    diagramView = VoltageLevelDiagramView.load(svgInputStream, metadataInputStream, SubstationDiagramViewer.this);
+                    diagramView = VoltageLevelDiagramView.load(svgInputStream, metadataInputStream, AbstractSubstationDiagramViewer.this);
                 } else if (c.getContainerType() == ContainerType.SUBSTATION) {
-                    diagramView = SubstationDiagramView.load(svgInputStream, metadataInputStream, SubstationDiagramViewer.this);
+                    diagramView = SubstationDiagramView.load(svgInputStream, metadataInputStream, AbstractSubstationDiagramViewer.this);
                 } else {
                     throw new AssertionError();
                 }
@@ -524,10 +477,6 @@ public class SubstationDiagramViewer extends Application implements DisplayVolta
         }
     }
 
-    public static void main(String[] args) {
-        launch(args);
-    }
-
     private VoltageLevelLayoutFactory getVoltageLevelLayoutFactory() {
         String selectedItem = voltageLevelLayoutComboBox.getSelectionModel().getSelectedItem();
         return voltageLevelsLayouts.get(selectedItem);
@@ -663,7 +612,7 @@ public class SubstationDiagramViewer extends Application implements DisplayVolta
     }
 
     private void setDiagramsNamesContent(Network network, boolean setValues) {
-        if (NetworkDiagramData.checkNetworkDiagramData(network)) {
+        if (network != null && NetworkDiagramData.checkNetworkDiagramData(network)) {
             if (setValues) {
                 diagramNamesComboBox.getItems().setAll(NetworkDiagramData.getDiagramsNames(network));
                 diagramNamesComboBox.getSelectionModel().clearSelection();
@@ -797,19 +746,7 @@ public class SubstationDiagramViewer extends Application implements DisplayVolta
         SplitPane splitPane = new SplitPane(voltageLevelPane, diagramsPane, new ScrollPane(parametersPane));
         splitPane.setDividerPositions(0.2, 0.7, 0.1);
 
-        caseLoadingStatus.setStyle("-fx-background-color: red");
-        casePathTextField.setEditable(false);
-        Button caseButton = new Button("...");
-        caseButton.setOnAction(event -> {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Open case File");
-            File file = fileChooser.showOpenDialog(primaryStage);
-            if (file != null) {
-                loadNetwork(file.toPath());
-            }
-        });
-        HBox.setHgrow(casePathTextField, Priority.ALWAYS);
-        HBox casePane = new HBox(3, caseLoadingStatus, casePathTextField, caseButton);
+        Node casePane = createCasePane(primaryStage);
         BorderPane.setMargin(casePane, new Insets(3, 3, 3, 3));
         BorderPane mainPane = new BorderPane();
         mainPane.setCenter(splitPane);
@@ -846,10 +783,7 @@ public class SubstationDiagramViewer extends Application implements DisplayVolta
         });
 
         // case reloading
-        String casePathPropertyValue = preferences.get(CASE_PATH_PROPERTY, null);
-        if (casePathPropertyValue != null) {
-            loadNetwork(Paths.get(casePathPropertyValue));
-        }
+        loadNetworkFromPreferences();
 
         Scene scene = new Scene(mainPane, 1000, 800);
         primaryStage.setTitle("Substation diagram viewer");
@@ -857,41 +791,10 @@ public class SubstationDiagramViewer extends Application implements DisplayVolta
         primaryStage.show();
     }
 
-    private void loadNetwork(Path file) {
-        Service<Network> networkService = new Service<Network>() {
-            @Override
-            protected Task<Network> createTask() {
-                return new Task<Network>() {
-                    @Override
-                    protected Network call() {
-                        Properties properties = new Properties();
-                        properties.put("iidm.import.cgmes.post-processors", "cgmesDLImport");
-                        return Importers.loadNetwork(file, LocalComputationManager.getDefault(), new ImportConfig(), properties);
-                    }
-                };
-            }
-        };
-        networkService.setOnRunning(event -> {
-            caseLoadingStatus.setStyle("-fx-background-color: yellow");
-            casePathTextField.setText(file.toAbsolutePath().toString());
-        });
-        networkService.setOnSucceeded(event -> {
-            networkProperty.setValue((Network) event.getSource().getValue());
-            initSubstationsTree();
-            caseLoadingStatus.setStyle("-fx-background-color: green");
-            preferences.put(CASE_PATH_PROPERTY, file.toAbsolutePath().toString());
-
-            setDiagramsNamesContent(networkProperty.get(), true);
-
-        });
-        networkService.setOnFailed(event -> {
-            Throwable exception = event.getSource().getException();
-            LOGGER.error(exception.toString(), exception);
-            casePathTextField.setText("");
-            caseLoadingStatus.setStyle("-fx-background-color: red");
-        });
-        networkService.start();
+    protected void loadNetworkFromPreferences() {
     }
+
+    protected abstract Node createCasePane(Stage primaryStage);
 
     /*
         check/uncheck a voltageLevel in the substations tree
@@ -1006,5 +909,11 @@ public class SubstationDiagramViewer extends Application implements DisplayVolta
                     }
                 })
         );
+    }
+
+    protected void setNetwork(Network network) {
+        networkProperty.setValue(network);
+        initSubstationsTree();
+        setDiagramsNamesContent(network, true);
     }
 }

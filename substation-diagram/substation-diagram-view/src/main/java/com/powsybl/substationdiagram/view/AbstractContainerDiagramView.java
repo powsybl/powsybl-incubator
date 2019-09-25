@@ -6,26 +6,23 @@
  */
 package com.powsybl.substationdiagram.view;
 
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import afester.javafx.svg.SvgLoader;
 import com.powsybl.commons.PowsyblException;
 import com.powsybl.substationdiagram.library.ComponentType;
 import com.powsybl.substationdiagram.svg.GraphMetadata;
-import com.powsybl.substationdiagram.view.app.VoltageLevelHandler;
-
-import afester.javafx.svg.SvgLoader;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.shape.Polyline;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author Franck Lecuyer <franck.lecuyer at rte-france.com>

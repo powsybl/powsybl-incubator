@@ -17,6 +17,7 @@ import com.powsybl.loadflow.LoadFlowResultImpl;
 import com.powsybl.loadflow.simple.ac.AcLoadFlowLogger;
 import com.powsybl.loadflow.simple.ac.AcLoadFlowProfiler;
 import com.powsybl.loadflow.simple.ac.DistributedSlackOuterLoop;
+import com.powsybl.loadflow.simple.ac.ReactiveLimitsOuterLoop;
 import com.powsybl.loadflow.simple.ac.nr.*;
 import com.powsybl.loadflow.simple.ac.outerloop.AcLoadFlowResult;
 import com.powsybl.loadflow.simple.ac.outerloop.AcloadFlowEngine;
@@ -119,6 +120,9 @@ public class SimpleLoadFlowProvider implements LoadFlowProvider {
             List<OuterLoop> outerLoops = new ArrayList<>();
             if (parametersExt.isDistributedSlack()) {
                 outerLoops.add(new DistributedSlackOuterLoop());
+            }
+            if (parametersExt.hasReactiveLimits()) {
+                outerLoops.add(new ReactiveLimitsOuterLoop());
             }
 
             List<LfNetwork> lfNetworks = LfNetworks.create(network, slackBusSelector);

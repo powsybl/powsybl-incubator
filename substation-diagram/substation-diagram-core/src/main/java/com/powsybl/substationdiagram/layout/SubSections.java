@@ -279,8 +279,7 @@ class SubSections {
     private void checkInternCellOrientation() {
         Map<InternCell, List<SubSectionIndexes>> cellToIndex = new HashMap<>();
 
-        subsectionMap.forEach((ssI, ssh) -> ssh.getInternCells().stream()
-//                .filter(c -> c.getCentralBlock() != null)
+        subsectionMap.forEach((ssI, ssh) -> ssh.getInternCells()
                 .forEach(c -> {
                     cellToIndex.putIfAbsent(c, new ArrayList<>());
                     cellToIndex.get(c).add(ssI);

@@ -9,10 +9,10 @@ package com.powsybl.loadflow.simple.dc;
 import com.google.common.base.Stopwatch;
 import com.powsybl.loadflow.simple.dc.equations.DcEquationSystem;
 import com.powsybl.loadflow.simple.equations.EquationSystem;
+import com.powsybl.loadflow.simple.equations.JacobianMatrix;
 import com.powsybl.loadflow.simple.equations.UniformValueVoltageInitializer;
 import com.powsybl.loadflow.simple.network.LfNetwork;
 import com.powsybl.math.matrix.LUDecomposition;
-import com.powsybl.math.matrix.Matrix;
 import com.powsybl.math.matrix.MatrixFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,29 +49,31 @@ public class DcLoadFlowEngine {
         double[] targets = equationSystem.createTargetVector();
 
         equationSystem.updateEquations(x);
-        Matrix j = equationSystem.buildJacobian(matrixFactory).getMatrix();
-
-        double[] dx = Arrays.copyOf(targets, targets.length);
-
-        boolean status;
+        JacobianMatrix j = JacobianMatrix.create(equationSystem, matrixFactory);
         try {
-            try (LUDecomposition lu = j.decomposeLU()) {
+            double[] dx = Arrays.copyOf(targets, targets.length);
+
+            boolean status;
+            try {
+                LUDecomposition lu = j.decomposeLU();
                 lu.solve(dx);
+                status = true;
+            } catch (Exception e) {
+                status = false;
+                LOGGER.error("Failed to solve linear system for simple DC load flow.", e);
             }
-            status = true;
-        } catch (Exception e) {
-            status = false;
-            LOGGER.error("Failed to solve linear system for simple DC load flow.", e);
+
+            equationSystem.updateEquations(dx);
+            equationSystem.updateNetwork(dx);
+
+            stopwatch.stop();
+            LOGGER.debug(PERFORMANCE_MARKER, "Dc loadflow ran in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
+
+            LOGGER.info("Dc loadflow complete (status={})", status);
+
+            return status;
+        } finally {
+            j.cleanLU();
         }
-
-        equationSystem.updateEquations(dx);
-        equationSystem.updateNetwork(dx);
-
-        stopwatch.stop();
-        LOGGER.debug(PERFORMANCE_MARKER, "Dc loadflow ran in {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
-
-        LOGGER.info("Dc loadflow complete (status={})", status);
-
-        return status;
     }
 }

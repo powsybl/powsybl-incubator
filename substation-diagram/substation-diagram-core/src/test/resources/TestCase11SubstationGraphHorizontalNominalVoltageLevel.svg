@@ -27,55 +27,67 @@
 .VSC_CONVERTER_STATION {stroke:rgb(0,0,255);font-size:7.4314661px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;stroke-miterlimit:4;}
 .DANGLING_LINE {stroke:rgb(0,0,0);stroke-width:2;}
 .PHASE_SHIFT_TRANSFORMER {stroke:rgb(0,0,255);stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;}
- .bbs1 {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;} .bbs2 {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;} .bbs3 {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;} .bbs4 {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.ARROW1_load1_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_load1_UP .arrow-down { visibility: hidden;}.ARROW1_load1_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_load1_DOWN .arrow-up { visibility: hidden;}.ARROW2_load1_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_load1_UP .arrow-down { visibility: hidden;}.ARROW2_load1_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_load1_DOWN .arrow-up { visibility: hidden;} .load1 {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.ARROW1_gen1_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_gen1_UP .arrow-down { visibility: hidden;}.ARROW1_gen1_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_gen1_DOWN .arrow-up { visibility: hidden;}.ARROW2_gen1_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_gen1_UP .arrow-down { visibility: hidden;}.ARROW2_gen1_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_gen1_DOWN .arrow-up { visibility: hidden;} .gen1 {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.ARROW1_load2_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_load2_UP .arrow-down { visibility: hidden;}.ARROW1_load2_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_load2_DOWN .arrow-up { visibility: hidden;}.ARROW2_load2_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_load2_UP .arrow-down { visibility: hidden;}.ARROW2_load2_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_load2_DOWN .arrow-up { visibility: hidden;} .load2 {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.ARROW1_gen2_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_gen2_UP .arrow-down { visibility: hidden;}.ARROW1_gen2_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_gen2_DOWN .arrow-up { visibility: hidden;}.ARROW2_gen2_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_gen2_UP .arrow-down { visibility: hidden;}.ARROW2_gen2_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_gen2_DOWN .arrow-up { visibility: hidden;} .gen2 {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.ARROW1_trf1_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf1_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf1_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf1_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf1_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf1_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf1_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf1_ONE_DOWN .arrow-up { visibility: hidden;} .trf1_ONE {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.ARROW1_trf2_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf2_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf2_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf2_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf2_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf2_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf2_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf2_ONE_DOWN .arrow-up { visibility: hidden;} .trf2_ONE {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.ARROW1_trf3_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf3_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf3_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf3_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf3_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf3_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf3_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf3_ONE_DOWN .arrow-up { visibility: hidden;} .trf3_ONE {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.ARROW1_trf4_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf4_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf4_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf4_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf4_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf4_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf4_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf4_ONE_DOWN .arrow-up { visibility: hidden;} .trf4_ONE {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.ARROW1_trf5_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf5_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf5_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf5_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf5_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf5_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf5_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf5_ONE_DOWN .arrow-up { visibility: hidden;} .trf5_ONE {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.ARROW1_line1_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_line1_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_line1_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_line1_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_line1_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_line1_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_line1_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_line1_ONE_DOWN .arrow-up { visibility: hidden;} .line1_ONE {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;} .FICT_vl1_14 {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.dsect11 .open { visibility: hidden;}.dsect11 .closed { visibility: visible;} .FICT_vl1_15 {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.dtrct11 .open { visibility: hidden;}.dtrct11 .closed { visibility: visible;}.dsect12 .open { visibility: hidden;}.dsect12 .closed { visibility: visible;} .FICT_vl1_16 {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.dsect21 .open { visibility: hidden;}.dsect21 .closed { visibility: visible;} .FICT_vl1_17 {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.dtrct21 .open { visibility: hidden;}.dtrct21 .closed { visibility: visible;}.dsect22 .open { visibility: hidden;}.dsect22 .closed { visibility: visible;} .FICT_vl1_5 {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.dload1 .open { visibility: hidden;}.dload1 .closed { visibility: visible;}.bload1 .open { visibility: hidden;}.bload1 .closed { visibility: visible;} .FICT_vl1_7 {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.dgen1 .open { visibility: hidden;}.dgen1 .closed { visibility: visible;}.bgen1 .open { visibility: hidden;}.bgen1 .closed { visibility: visible;} .FICT_vl1_9 {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.dload2 .open { visibility: hidden;}.dload2 .closed { visibility: visible;}.bload2 .open { visibility: hidden;}.bload2 .closed { visibility: visible;} .FICT_vl1_11 {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.dgen2 .open { visibility: hidden;}.dgen2 .closed { visibility: visible;}.bgen2 .open { visibility: hidden;}.bgen2 .closed { visibility: visible;} .FICT_vl1_18 {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.dtrf11 .open { visibility: hidden;}.dtrf11 .closed { visibility: visible;}.btrf11 .open { visibility: hidden;}.btrf11 .closed { visibility: visible;} .FICT_vl1_20 {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.dtrf12 .open { visibility: hidden;}.dtrf12 .closed { visibility: visible;}.btrf12 .open { visibility: hidden;}.btrf12 .closed { visibility: visible;} .FICT_vl1_22 {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.dtrf13 .open { visibility: hidden;}.dtrf13 .closed { visibility: visible;}.btrf13 .open { visibility: hidden;}.btrf13 .closed { visibility: visible;} .FICT_vl1_24 {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.dtrf14 .open { visibility: hidden;}.dtrf14 .closed { visibility: visible;}.btrf14 .open { visibility: hidden;}.btrf14 .closed { visibility: visible;} .FICT_vl1_26 {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.dtrf15 .open { visibility: hidden;}.dtrf15 .closed { visibility: visible;}.btrf15 .open { visibility: hidden;}.btrf15 .closed { visibility: visible;} .FICT_vl1_28 {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.dtrf16 .open { visibility: hidden;}.dtrf16 .closed { visibility: visible;}.btrf16 .open { visibility: hidden;}.btrf16 .closed { visibility: visible;} .FICT_vl1_30 {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.dtrf17 .open { visibility: hidden;}.dtrf17 .closed { visibility: visible;}.btrf17 .open { visibility: hidden;}.btrf17 .closed { visibility: visible;} .FICT_vl1_32 {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.dtrf18 .open { visibility: hidden;}.dtrf18 .closed { visibility: visible;}.btrf18 .open { visibility: hidden;}.btrf18 .closed { visibility: visible;} .FICT_vl1_34 {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.dline11_2 .open { visibility: hidden;}.dline11_2 .closed { visibility: visible;}.bline11_2 .open { visibility: hidden;}.bline11_2 .closed { visibility: visible;} .FICT_vl1_trf61_fictif {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.ARROW1_trf6_ONE_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf6_ONE_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf6_ONE_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf6_ONE_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf6_ONE_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf6_ONE_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf6_ONE_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf6_ONE_TWO_DOWN .arrow-up { visibility: hidden;} .trf6_ONE_TWO {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.ARROW1_trf6_ONE_THREE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf6_ONE_THREE_UP .arrow-down { visibility: hidden;}.ARROW1_trf6_ONE_THREE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf6_ONE_THREE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf6_ONE_THREE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf6_ONE_THREE_UP .arrow-down { visibility: hidden;}.ARROW2_trf6_ONE_THREE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf6_ONE_THREE_DOWN .arrow-up { visibility: hidden;} .trf6_ONE_THREE {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;} .FICT_vl1_trf71_fictif {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.ARROW1_trf7_ONE_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf7_ONE_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf7_ONE_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf7_ONE_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf7_ONE_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf7_ONE_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf7_ONE_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf7_ONE_TWO_DOWN .arrow-up { visibility: hidden;} .trf7_ONE_TWO {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.ARROW1_trf7_ONE_THREE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf7_ONE_THREE_UP .arrow-down { visibility: hidden;}.ARROW1_trf7_ONE_THREE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf7_ONE_THREE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf7_ONE_THREE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf7_ONE_THREE_UP .arrow-down { visibility: hidden;}.ARROW2_trf7_ONE_THREE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf7_ONE_THREE_DOWN .arrow-up { visibility: hidden;} .trf7_ONE_THREE {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;} .FICT_vl1_trf81_fictif {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.ARROW1_trf8_ONE_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf8_ONE_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf8_ONE_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf8_ONE_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf8_ONE_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf8_ONE_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf8_ONE_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf8_ONE_TWO_DOWN .arrow-up { visibility: hidden;} .trf8_ONE_TWO {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.ARROW1_trf8_ONE_THREE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf8_ONE_THREE_UP .arrow-down { visibility: hidden;}.ARROW1_trf8_ONE_THREE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf8_ONE_THREE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf8_ONE_THREE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf8_ONE_THREE_UP .arrow-down { visibility: hidden;}.ARROW2_trf8_ONE_THREE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf8_ONE_THREE_DOWN .arrow-up { visibility: hidden;} .trf8_ONE_THREE {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.wire_vl2 {stroke:rgb(34, 139, 34);stroke-width:1;}.wire_vl3 {stroke:rgb(34, 139, 34);stroke-width:1;}.wire_vl2 {stroke:rgb(34, 139, 34);stroke-width:1;}.wire_vl3 {stroke:rgb(34, 139, 34);stroke-width:1;}.wire_vl2 {stroke:rgb(34, 139, 34);stroke-width:1;}.wire_vl3 {stroke:rgb(34, 139, 34);stroke-width:1;} .bbs5 {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;} .bbs6 {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ARROW1_load3_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_load3_UP .arrow-down { visibility: hidden;}.ARROW1_load3_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_load3_DOWN .arrow-up { visibility: hidden;}.ARROW2_load3_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_load3_UP .arrow-down { visibility: hidden;}.ARROW2_load3_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_load3_DOWN .arrow-up { visibility: hidden;} .load3 {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ARROW1_gen4_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_gen4_UP .arrow-down { visibility: hidden;}.ARROW1_gen4_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_gen4_DOWN .arrow-up { visibility: hidden;}.ARROW2_gen4_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_gen4_UP .arrow-down { visibility: hidden;}.ARROW2_gen4_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_gen4_DOWN .arrow-up { visibility: hidden;} .gen4 {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ARROW1_trf1_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf1_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf1_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf1_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf1_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf1_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf1_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf1_TWO_DOWN .arrow-up { visibility: hidden;} .trf1_TWO {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ARROW1_trf2_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf2_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf2_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf2_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf2_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf2_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf2_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf2_TWO_DOWN .arrow-up { visibility: hidden;} .trf2_TWO {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ARROW1_trf3_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf3_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf3_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf3_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf3_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf3_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf3_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf3_TWO_DOWN .arrow-up { visibility: hidden;} .trf3_TWO {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ARROW1_trf4_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf4_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf4_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf4_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf4_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf4_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf4_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf4_TWO_DOWN .arrow-up { visibility: hidden;} .trf4_TWO {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;} .FICT_vl2_6 {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.dscpl1 .open { visibility: hidden;}.dscpl1 .closed { visibility: visible;} .FICT_vl2_7 {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ddcpl1 .open { visibility: hidden;}.ddcpl1 .closed { visibility: visible;}.dscpl2 .open { visibility: hidden;}.dscpl2 .closed { visibility: visible;} .FICT_vl2_3 {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.dload3 .open { visibility: hidden;}.dload3 .closed { visibility: visible;}.bload3 .open { visibility: hidden;}.bload3 .closed { visibility: visible;} .FICT_vl2_5 {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.dgen4 .open { visibility: hidden;}.dgen4 .closed { visibility: visible;}.bgen4 .open { visibility: hidden;}.bgen4 .closed { visibility: visible;} .FICT_vl2_8 {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.dtrf21 .open { visibility: hidden;}.dtrf21 .closed { visibility: visible;}.btrf21 .open { visibility: hidden;}.btrf21 .closed { visibility: visible;} .FICT_vl2_10 {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.dtrf22 .open { visibility: hidden;}.dtrf22 .closed { visibility: visible;}.btrf22 .open { visibility: hidden;}.btrf22 .closed { visibility: visible;} .FICT_vl2_12 {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.dtrf23 .open { visibility: hidden;}.dtrf23 .closed { visibility: visible;}.btrf23 .open { visibility: hidden;}.btrf23 .closed { visibility: visible;} .FICT_vl2_14 {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.dtrf24 .open { visibility: hidden;}.dtrf24 .closed { visibility: visible;}.btrf24 .open { visibility: hidden;}.btrf24 .closed { visibility: visible;} .FICT_vl2_16 {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.dtrf26 .open { visibility: hidden;}.dtrf26 .closed { visibility: visible;}.btrf26 .open { visibility: hidden;}.btrf26 .closed { visibility: visible;} .FICT_vl2_18 {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.dtrf27 .open { visibility: hidden;}.dtrf27 .closed { visibility: visible;}.btrf27 .open { visibility: hidden;}.btrf27 .closed { visibility: visible;} .FICT_vl2_20 {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.dtrf28 .open { visibility: hidden;}.dtrf28 .closed { visibility: visible;}.btrf28 .open { visibility: hidden;}.btrf28 .closed { visibility: visible;} .FICT_vl2_trf62_fictif {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ARROW1_trf6_TWO_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf6_TWO_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf6_TWO_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf6_TWO_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf6_TWO_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf6_TWO_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf6_TWO_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf6_TWO_ONE_DOWN .arrow-up { visibility: hidden;} .trf6_TWO_ONE {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ARROW1_trf6_TWO_THREE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf6_TWO_THREE_UP .arrow-down { visibility: hidden;}.ARROW1_trf6_TWO_THREE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf6_TWO_THREE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf6_TWO_THREE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf6_TWO_THREE_UP .arrow-down { visibility: hidden;}.ARROW2_trf6_TWO_THREE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf6_TWO_THREE_DOWN .arrow-up { visibility: hidden;} .trf6_TWO_THREE {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;} .FICT_vl2_trf72_fictif {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ARROW1_trf7_TWO_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf7_TWO_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf7_TWO_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf7_TWO_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf7_TWO_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf7_TWO_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf7_TWO_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf7_TWO_ONE_DOWN .arrow-up { visibility: hidden;} .trf7_TWO_ONE {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ARROW1_trf7_TWO_THREE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf7_TWO_THREE_UP .arrow-down { visibility: hidden;}.ARROW1_trf7_TWO_THREE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf7_TWO_THREE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf7_TWO_THREE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf7_TWO_THREE_UP .arrow-down { visibility: hidden;}.ARROW2_trf7_TWO_THREE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf7_TWO_THREE_DOWN .arrow-up { visibility: hidden;} .trf7_TWO_THREE {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;} .FICT_vl2_trf82_fictif {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ARROW1_trf8_TWO_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf8_TWO_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf8_TWO_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf8_TWO_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf8_TWO_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf8_TWO_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf8_TWO_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf8_TWO_ONE_DOWN .arrow-up { visibility: hidden;} .trf8_TWO_ONE {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ARROW1_trf8_TWO_THREE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf8_TWO_THREE_UP .arrow-down { visibility: hidden;}.ARROW1_trf8_TWO_THREE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf8_TWO_THREE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf8_TWO_THREE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf8_TWO_THREE_UP .arrow-down { visibility: hidden;}.ARROW2_trf8_TWO_THREE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf8_TWO_THREE_DOWN .arrow-up { visibility: hidden;} .trf8_TWO_THREE {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.wire_vl1 {stroke:rgb(255, 0, 0);stroke-width:1;}.wire_vl3 {stroke:rgb(34, 139, 34);stroke-width:1;}.wire_vl1 {stroke:rgb(255, 0, 0);stroke-width:1;}.wire_vl3 {stroke:rgb(34, 139, 34);stroke-width:1;}.wire_vl1 {stroke:rgb(255, 0, 0);stroke-width:1;}.wire_vl3 {stroke:rgb(34, 139, 34);stroke-width:1;} .bbs7 {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ARROW1_load4_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_load4_UP .arrow-down { visibility: hidden;}.ARROW1_load4_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_load4_DOWN .arrow-up { visibility: hidden;}.ARROW2_load4_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_load4_UP .arrow-down { visibility: hidden;}.ARROW2_load4_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_load4_DOWN .arrow-up { visibility: hidden;} .load4 {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ARROW1_trf5_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf5_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf5_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf5_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf5_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf5_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf5_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf5_TWO_DOWN .arrow-up { visibility: hidden;} .trf5_TWO {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;} .FICT_vl3_2 {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.dload4 .open { visibility: hidden;}.dload4 .closed { visibility: visible;}.bload4 .open { visibility: hidden;}.bload4 .closed { visibility: visible;} .FICT_vl3_3 {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.dtrf25 .open { visibility: hidden;}.dtrf25 .closed { visibility: visible;}.btrf25 .open { visibility: hidden;}.btrf25 .closed { visibility: visible;} .FICT_vl3_5 {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.dtrf36 .open { visibility: hidden;}.dtrf36 .closed { visibility: visible;}.btrf36 .open { visibility: hidden;}.btrf36 .closed { visibility: visible;} .FICT_vl3_7 {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.dtrf37 .open { visibility: hidden;}.dtrf37 .closed { visibility: visible;}.btrf37 .open { visibility: hidden;}.btrf37 .closed { visibility: visible;} .FICT_vl3_9 {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.dtrf38 .open { visibility: hidden;}.dtrf38 .closed { visibility: visible;}.btrf38 .open { visibility: hidden;}.btrf38 .closed { visibility: visible;} .FICT_vl3_trf63_fictif {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ARROW1_trf6_THREE_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf6_THREE_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf6_THREE_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf6_THREE_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf6_THREE_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf6_THREE_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf6_THREE_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf6_THREE_ONE_DOWN .arrow-up { visibility: hidden;} .trf6_THREE_ONE {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ARROW1_trf6_THREE_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf6_THREE_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf6_THREE_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf6_THREE_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf6_THREE_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf6_THREE_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf6_THREE_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf6_THREE_TWO_DOWN .arrow-up { visibility: hidden;} .trf6_THREE_TWO {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;} .FICT_vl3_trf73_fictif {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ARROW1_trf7_THREE_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf7_THREE_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf7_THREE_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf7_THREE_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf7_THREE_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf7_THREE_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf7_THREE_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf7_THREE_ONE_DOWN .arrow-up { visibility: hidden;} .trf7_THREE_ONE {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ARROW1_trf7_THREE_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf7_THREE_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf7_THREE_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf7_THREE_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf7_THREE_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf7_THREE_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf7_THREE_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf7_THREE_TWO_DOWN .arrow-up { visibility: hidden;} .trf7_THREE_TWO {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;} .FICT_vl3_trf83_fictif {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ARROW1_trf8_THREE_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf8_THREE_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf8_THREE_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf8_THREE_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf8_THREE_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf8_THREE_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf8_THREE_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf8_THREE_ONE_DOWN .arrow-up { visibility: hidden;} .trf8_THREE_ONE {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ARROW1_trf8_THREE_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf8_THREE_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf8_THREE_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf8_THREE_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf8_THREE_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf8_THREE_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf8_THREE_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf8_THREE_TWO_DOWN .arrow-up { visibility: hidden;} .trf8_THREE_TWO {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.wire_vl1 {stroke:rgb(255, 0, 0);stroke-width:1;}.wire_vl2 {stroke:rgb(34, 139, 34);stroke-width:1;}.wire_vl1 {stroke:rgb(255, 0, 0);stroke-width:1;}.wire_vl2 {stroke:rgb(34, 139, 34);stroke-width:1;}.wire_vl1 {stroke:rgb(255, 0, 0);stroke-width:1;}.wire_vl2 {stroke:rgb(34, 139, 34);stroke-width:1;}]]></style>
+ .bbs1 {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;} .bbs2 {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;} .bbs3 {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;} .bbs4 {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.ARROW1_load1_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_load1_UP .arrow-down { visibility: hidden;}.ARROW1_load1_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_load1_DOWN .arrow-up { visibility: hidden;}.ARROW2_load1_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_load1_UP .arrow-down { visibility: hidden;}.ARROW2_load1_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_load1_DOWN .arrow-up { visibility: hidden;} .load1 {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.ARROW1_gen1_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_gen1_UP .arrow-down { visibility: hidden;}.ARROW1_gen1_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_gen1_DOWN .arrow-up { visibility: hidden;}.ARROW2_gen1_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_gen1_UP .arrow-down { visibility: hidden;}.ARROW2_gen1_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_gen1_DOWN .arrow-up { visibility: hidden;} .gen1 {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.ARROW1_load2_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_load2_UP .arrow-down { visibility: hidden;}.ARROW1_load2_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_load2_DOWN .arrow-up { visibility: hidden;}.ARROW2_load2_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_load2_UP .arrow-down { visibility: hidden;}.ARROW2_load2_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_load2_DOWN .arrow-up { visibility: hidden;} .load2 {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.ARROW1_gen2_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_gen2_UP .arrow-down { visibility: hidden;}.ARROW1_gen2_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_gen2_DOWN .arrow-up { visibility: hidden;}.ARROW2_gen2_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_gen2_UP .arrow-down { visibility: hidden;}.ARROW2_gen2_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_gen2_DOWN .arrow-up { visibility: hidden;} .gen2 {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.ARROW1_trf1_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf1_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf1_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf1_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf1_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf1_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf1_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf1_ONE_DOWN .arrow-up { visibility: hidden;} .trf1_ONE {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.ARROW1_trf2_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf2_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf2_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf2_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf2_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf2_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf2_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf2_ONE_DOWN .arrow-up { visibility: hidden;} .trf2_ONE {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.ARROW1_trf3_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf3_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf3_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf3_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf3_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf3_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf3_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf3_ONE_DOWN .arrow-up { visibility: hidden;} .trf3_ONE {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.ARROW1_trf4_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf4_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf4_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf4_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf4_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf4_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf4_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf4_ONE_DOWN .arrow-up { visibility: hidden;} .trf4_ONE {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.ARROW1_trf5_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf5_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf5_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf5_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf5_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf5_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf5_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf5_ONE_DOWN .arrow-up { visibility: hidden;} .trf5_ONE {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.ARROW1_line1_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_line1_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_line1_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_line1_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_line1_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_line1_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_line1_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_line1_ONE_DOWN .arrow-up { visibility: hidden;} .line1_ONE {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.dsect11 .open { visibility: hidden;}.dsect11 .closed { visibility: visible;}.dtrct11 .open { visibility: hidden;}.dtrct11 .closed { visibility: visible;}.dsect12 .open { visibility: hidden;}.dsect12 .closed { visibility: visible;}.dsect21 .open { visibility: hidden;}.dsect21 .closed { visibility: visible;}.dtrct21 .open { visibility: hidden;}.dtrct21 .closed { visibility: visible;}.dsect22 .open { visibility: hidden;}.dsect22 .closed { visibility: visible;}.dload1 .open { visibility: hidden;}.dload1 .closed { visibility: visible;}.bload1 .open { visibility: hidden;}.bload1 .closed { visibility: visible;}.dgen1 .open { visibility: hidden;}.dgen1 .closed { visibility: visible;}.bgen1 .open { visibility: hidden;}.bgen1 .closed { visibility: visible;}.dload2 .open { visibility: hidden;}.dload2 .closed { visibility: visible;}.bload2 .open { visibility: hidden;}.bload2 .closed { visibility: visible;}.dgen2 .open { visibility: hidden;}.dgen2 .closed { visibility: visible;}.bgen2 .open { visibility: hidden;}.bgen2 .closed { visibility: visible;}.dtrf11 .open { visibility: hidden;}.dtrf11 .closed { visibility: visible;}.btrf11 .open { visibility: hidden;}.btrf11 .closed { visibility: visible;}.dtrf12 .open { visibility: hidden;}.dtrf12 .closed { visibility: visible;}.btrf12 .open { visibility: hidden;}.btrf12 .closed { visibility: visible;}.dtrf13 .open { visibility: hidden;}.dtrf13 .closed { visibility: visible;}.btrf13 .open { visibility: hidden;}.btrf13 .closed { visibility: visible;}.dtrf14 .open { visibility: hidden;}.dtrf14 .closed { visibility: visible;}.btrf14 .open { visibility: hidden;}.btrf14 .closed { visibility: visible;}.dtrf15 .open { visibility: hidden;}.dtrf15 .closed { visibility: visible;}.btrf15 .open { visibility: hidden;}.btrf15 .closed { visibility: visible;}.dtrf16 .open { visibility: hidden;}.dtrf16 .closed { visibility: visible;}.btrf16 .open { visibility: hidden;}.btrf16 .closed { visibility: visible;}.dtrf17 .open { visibility: hidden;}.dtrf17 .closed { visibility: visible;}.btrf17 .open { visibility: hidden;}.btrf17 .closed { visibility: visible;}.dtrf18 .open { visibility: hidden;}.dtrf18 .closed { visibility: visible;}.btrf18 .open { visibility: hidden;}.btrf18 .closed { visibility: visible;}.dline11_2 .open { visibility: hidden;}.dline11_2 .closed { visibility: visible;}.bline11_2 .open { visibility: hidden;}.bline11_2 .closed { visibility: visible;} .FICT_vl1_trf61_fictif {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.ARROW1_trf6_ONE_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf6_ONE_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf6_ONE_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf6_ONE_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf6_ONE_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf6_ONE_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf6_ONE_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf6_ONE_TWO_DOWN .arrow-up { visibility: hidden;} .trf6_ONE_TWO {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.ARROW1_trf6_ONE_THREE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf6_ONE_THREE_UP .arrow-down { visibility: hidden;}.ARROW1_trf6_ONE_THREE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf6_ONE_THREE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf6_ONE_THREE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf6_ONE_THREE_UP .arrow-down { visibility: hidden;}.ARROW2_trf6_ONE_THREE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf6_ONE_THREE_DOWN .arrow-up { visibility: hidden;} .trf6_ONE_THREE {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;} .FICT_vl1_trf71_fictif {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.ARROW1_trf7_ONE_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf7_ONE_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf7_ONE_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf7_ONE_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf7_ONE_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf7_ONE_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf7_ONE_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf7_ONE_TWO_DOWN .arrow-up { visibility: hidden;} .trf7_ONE_TWO {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.ARROW1_trf7_ONE_THREE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf7_ONE_THREE_UP .arrow-down { visibility: hidden;}.ARROW1_trf7_ONE_THREE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf7_ONE_THREE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf7_ONE_THREE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf7_ONE_THREE_UP .arrow-down { visibility: hidden;}.ARROW2_trf7_ONE_THREE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf7_ONE_THREE_DOWN .arrow-up { visibility: hidden;} .trf7_ONE_THREE {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;} .FICT_vl1_trf81_fictif {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.ARROW1_trf8_ONE_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf8_ONE_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf8_ONE_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf8_ONE_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf8_ONE_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf8_ONE_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf8_ONE_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf8_ONE_TWO_DOWN .arrow-up { visibility: hidden;} .trf8_ONE_TWO {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.ARROW1_trf8_ONE_THREE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf8_ONE_THREE_UP .arrow-down { visibility: hidden;}.ARROW1_trf8_ONE_THREE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf8_ONE_THREE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf8_ONE_THREE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf8_ONE_THREE_UP .arrow-down { visibility: hidden;}.ARROW2_trf8_ONE_THREE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf8_ONE_THREE_DOWN .arrow-up { visibility: hidden;} .trf8_ONE_THREE {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;} .FICT_vl1_dsect11Fictif {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;} .FICT_vl1_dload1Fictif {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;} .FICT_vl1_dtrf11Fictif {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;} .FICT_vl1_dtrf15Fictif {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;} .FICT_vl1_dtrf16Fictif {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;} .FICT_vl1_dline11_2Fictif {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;} .FICT_vl1_dsect12Fictif {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;} .FICT_vl1_dload2Fictif {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;} .FICT_vl1_dtrf12Fictif {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;} .FICT_vl1_dtrf18Fictif {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;} .FICT_vl1_dsect21Fictif {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;} .FICT_vl1_dgen1Fictif {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;} .FICT_vl1_dtrf13Fictif {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;} .FICT_vl1_dtrf17Fictif {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;} .FICT_vl1_dsect22Fictif {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;} .FICT_vl1_dgen2Fictif {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;} .FICT_vl1_dtrf14Fictif {stroke:rgb(255, 0, 0);stroke-width:1;fill-opacity:0;}.wire_vl2 {stroke:rgb(34, 139, 34);stroke-width:1;}.wire_vl3 {stroke:rgb(34, 139, 34);stroke-width:1;}.wire_vl2 {stroke:rgb(34, 139, 34);stroke-width:1;}.wire_vl3 {stroke:rgb(34, 139, 34);stroke-width:1;}.wire_vl2 {stroke:rgb(34, 139, 34);stroke-width:1;}.wire_vl3 {stroke:rgb(34, 139, 34);stroke-width:1;} .bbs5 {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;} .bbs6 {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ARROW1_load3_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_load3_UP .arrow-down { visibility: hidden;}.ARROW1_load3_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_load3_DOWN .arrow-up { visibility: hidden;}.ARROW2_load3_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_load3_UP .arrow-down { visibility: hidden;}.ARROW2_load3_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_load3_DOWN .arrow-up { visibility: hidden;} .load3 {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ARROW1_gen4_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_gen4_UP .arrow-down { visibility: hidden;}.ARROW1_gen4_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_gen4_DOWN .arrow-up { visibility: hidden;}.ARROW2_gen4_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_gen4_UP .arrow-down { visibility: hidden;}.ARROW2_gen4_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_gen4_DOWN .arrow-up { visibility: hidden;} .gen4 {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ARROW1_trf1_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf1_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf1_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf1_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf1_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf1_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf1_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf1_TWO_DOWN .arrow-up { visibility: hidden;} .trf1_TWO {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ARROW1_trf2_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf2_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf2_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf2_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf2_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf2_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf2_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf2_TWO_DOWN .arrow-up { visibility: hidden;} .trf2_TWO {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ARROW1_trf3_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf3_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf3_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf3_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf3_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf3_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf3_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf3_TWO_DOWN .arrow-up { visibility: hidden;} .trf3_TWO {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ARROW1_trf4_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf4_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf4_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf4_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf4_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf4_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf4_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf4_TWO_DOWN .arrow-up { visibility: hidden;} .trf4_TWO {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.dscpl1 .open { visibility: hidden;}.dscpl1 .closed { visibility: visible;}.ddcpl1 .open { visibility: hidden;}.ddcpl1 .closed { visibility: visible;}.dscpl2 .open { visibility: hidden;}.dscpl2 .closed { visibility: visible;}.dload3 .open { visibility: hidden;}.dload3 .closed { visibility: visible;}.bload3 .open { visibility: hidden;}.bload3 .closed { visibility: visible;}.dgen4 .open { visibility: hidden;}.dgen4 .closed { visibility: visible;}.bgen4 .open { visibility: hidden;}.bgen4 .closed { visibility: visible;}.dtrf21 .open { visibility: hidden;}.dtrf21 .closed { visibility: visible;}.btrf21 .open { visibility: hidden;}.btrf21 .closed { visibility: visible;}.dtrf22 .open { visibility: hidden;}.dtrf22 .closed { visibility: visible;}.btrf22 .open { visibility: hidden;}.btrf22 .closed { visibility: visible;}.dtrf23 .open { visibility: hidden;}.dtrf23 .closed { visibility: visible;}.btrf23 .open { visibility: hidden;}.btrf23 .closed { visibility: visible;}.dtrf24 .open { visibility: hidden;}.dtrf24 .closed { visibility: visible;}.btrf24 .open { visibility: hidden;}.btrf24 .closed { visibility: visible;}.dtrf26 .open { visibility: hidden;}.dtrf26 .closed { visibility: visible;}.btrf26 .open { visibility: hidden;}.btrf26 .closed { visibility: visible;}.dtrf27 .open { visibility: hidden;}.dtrf27 .closed { visibility: visible;}.btrf27 .open { visibility: hidden;}.btrf27 .closed { visibility: visible;}.dtrf28 .open { visibility: hidden;}.dtrf28 .closed { visibility: visible;}.btrf28 .open { visibility: hidden;}.btrf28 .closed { visibility: visible;} .FICT_vl2_trf62_fictif {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ARROW1_trf6_TWO_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf6_TWO_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf6_TWO_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf6_TWO_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf6_TWO_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf6_TWO_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf6_TWO_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf6_TWO_ONE_DOWN .arrow-up { visibility: hidden;} .trf6_TWO_ONE {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ARROW1_trf6_TWO_THREE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf6_TWO_THREE_UP .arrow-down { visibility: hidden;}.ARROW1_trf6_TWO_THREE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf6_TWO_THREE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf6_TWO_THREE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf6_TWO_THREE_UP .arrow-down { visibility: hidden;}.ARROW2_trf6_TWO_THREE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf6_TWO_THREE_DOWN .arrow-up { visibility: hidden;} .trf6_TWO_THREE {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;} .FICT_vl2_trf72_fictif {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ARROW1_trf7_TWO_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf7_TWO_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf7_TWO_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf7_TWO_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf7_TWO_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf7_TWO_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf7_TWO_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf7_TWO_ONE_DOWN .arrow-up { visibility: hidden;} .trf7_TWO_ONE {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ARROW1_trf7_TWO_THREE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf7_TWO_THREE_UP .arrow-down { visibility: hidden;}.ARROW1_trf7_TWO_THREE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf7_TWO_THREE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf7_TWO_THREE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf7_TWO_THREE_UP .arrow-down { visibility: hidden;}.ARROW2_trf7_TWO_THREE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf7_TWO_THREE_DOWN .arrow-up { visibility: hidden;} .trf7_TWO_THREE {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;} .FICT_vl2_trf82_fictif {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ARROW1_trf8_TWO_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf8_TWO_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf8_TWO_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf8_TWO_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf8_TWO_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf8_TWO_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf8_TWO_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf8_TWO_ONE_DOWN .arrow-up { visibility: hidden;} .trf8_TWO_ONE {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ARROW1_trf8_TWO_THREE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf8_TWO_THREE_UP .arrow-down { visibility: hidden;}.ARROW1_trf8_TWO_THREE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf8_TWO_THREE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf8_TWO_THREE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf8_TWO_THREE_UP .arrow-down { visibility: hidden;}.ARROW2_trf8_TWO_THREE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf8_TWO_THREE_DOWN .arrow-up { visibility: hidden;} .trf8_TWO_THREE {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;} .FICT_vl2_dscpl1Fictif {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;} .FICT_vl2_dload3Fictif {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;} .FICT_vl2_dtrf21Fictif {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;} .FICT_vl2_dtrf24Fictif {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;} .FICT_vl2_dtrf27Fictif {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;} .FICT_vl2_dscpl2Fictif {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;} .FICT_vl2_dgen4Fictif {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;} .FICT_vl2_dtrf22Fictif {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;} .FICT_vl2_dtrf23Fictif {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;} .FICT_vl2_dtrf26Fictif {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;} .FICT_vl2_dtrf28Fictif {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.wire_vl1 {stroke:rgb(255, 0, 0);stroke-width:1;}.wire_vl3 {stroke:rgb(34, 139, 34);stroke-width:1;}.wire_vl1 {stroke:rgb(255, 0, 0);stroke-width:1;}.wire_vl3 {stroke:rgb(34, 139, 34);stroke-width:1;}.wire_vl1 {stroke:rgb(255, 0, 0);stroke-width:1;}.wire_vl3 {stroke:rgb(34, 139, 34);stroke-width:1;} .bbs7 {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ARROW1_load4_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_load4_UP .arrow-down { visibility: hidden;}.ARROW1_load4_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_load4_DOWN .arrow-up { visibility: hidden;}.ARROW2_load4_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_load4_UP .arrow-down { visibility: hidden;}.ARROW2_load4_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_load4_DOWN .arrow-up { visibility: hidden;} .load4 {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ARROW1_trf5_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf5_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf5_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf5_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf5_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf5_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf5_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf5_TWO_DOWN .arrow-up { visibility: hidden;} .trf5_TWO {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.dload4 .open { visibility: hidden;}.dload4 .closed { visibility: visible;}.bload4 .open { visibility: hidden;}.bload4 .closed { visibility: visible;}.dtrf25 .open { visibility: hidden;}.dtrf25 .closed { visibility: visible;}.btrf25 .open { visibility: hidden;}.btrf25 .closed { visibility: visible;}.dtrf36 .open { visibility: hidden;}.dtrf36 .closed { visibility: visible;}.btrf36 .open { visibility: hidden;}.btrf36 .closed { visibility: visible;}.dtrf37 .open { visibility: hidden;}.dtrf37 .closed { visibility: visible;}.btrf37 .open { visibility: hidden;}.btrf37 .closed { visibility: visible;}.dtrf38 .open { visibility: hidden;}.dtrf38 .closed { visibility: visible;}.btrf38 .open { visibility: hidden;}.btrf38 .closed { visibility: visible;} .FICT_vl3_trf63_fictif {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ARROW1_trf6_THREE_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf6_THREE_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf6_THREE_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf6_THREE_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf6_THREE_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf6_THREE_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf6_THREE_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf6_THREE_ONE_DOWN .arrow-up { visibility: hidden;} .trf6_THREE_ONE {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ARROW1_trf6_THREE_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf6_THREE_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf6_THREE_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf6_THREE_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf6_THREE_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf6_THREE_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf6_THREE_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf6_THREE_TWO_DOWN .arrow-up { visibility: hidden;} .trf6_THREE_TWO {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;} .FICT_vl3_trf73_fictif {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ARROW1_trf7_THREE_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf7_THREE_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf7_THREE_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf7_THREE_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf7_THREE_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf7_THREE_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf7_THREE_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf7_THREE_ONE_DOWN .arrow-up { visibility: hidden;} .trf7_THREE_ONE {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ARROW1_trf7_THREE_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf7_THREE_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf7_THREE_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf7_THREE_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf7_THREE_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf7_THREE_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf7_THREE_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf7_THREE_TWO_DOWN .arrow-up { visibility: hidden;} .trf7_THREE_TWO {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;} .FICT_vl3_trf83_fictif {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ARROW1_trf8_THREE_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf8_THREE_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_trf8_THREE_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf8_THREE_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf8_THREE_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf8_THREE_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_trf8_THREE_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf8_THREE_ONE_DOWN .arrow-up { visibility: hidden;} .trf8_THREE_ONE {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.ARROW1_trf8_THREE_TWO_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_trf8_THREE_TWO_UP .arrow-down { visibility: hidden;}.ARROW1_trf8_THREE_TWO_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_trf8_THREE_TWO_DOWN .arrow-up { visibility: hidden;}.ARROW2_trf8_THREE_TWO_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_trf8_THREE_TWO_UP .arrow-down { visibility: hidden;}.ARROW2_trf8_THREE_TWO_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_trf8_THREE_TWO_DOWN .arrow-up { visibility: hidden;} .trf8_THREE_TWO {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;} .FICT_vl3_dload4Fictif {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;} .FICT_vl3_dtrf25Fictif {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;} .FICT_vl3_dtrf36Fictif {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;} .FICT_vl3_dtrf37Fictif {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;} .FICT_vl3_dtrf38Fictif {stroke:rgb(34, 139, 34);stroke-width:1;fill-opacity:0;}.wire_vl1 {stroke:rgb(255, 0, 0);stroke-width:1;}.wire_vl2 {stroke:rgb(34, 139, 34);stroke-width:1;}.wire_vl1 {stroke:rgb(255, 0, 0);stroke-width:1;}.wire_vl2 {stroke:rgb(34, 139, 34);stroke-width:1;}.wire_vl1 {stroke:rgb(255, 0, 0);stroke-width:1;}.wire_vl2 {stroke:rgb(34, 139, 34);stroke-width:1;}]]></style>
     <g class="substation-diagram">
-        <g id="GRID_vl1">
-            <line y2="640.0" x1="50.0" class="grid" x2="50.0" transform="translate(20.0,50.0)" y1="30.0"/>
-            <line y2="640.0" x1="100.0" class="grid" x2="100.0" transform="translate(20.0,50.0)" y1="30.0"/>
-            <line y2="640.0" x1="150.0" class="grid" x2="150.0" transform="translate(20.0,50.0)" y1="30.0"/>
-            <line y2="640.0" x1="200.0" class="grid" x2="200.0" transform="translate(20.0,50.0)" y1="30.0"/>
-            <line y2="640.0" x1="250.0" class="grid" x2="250.0" transform="translate(20.0,50.0)" y1="30.0"/>
-            <line y2="640.0" x1="300.0" class="grid" x2="300.0" transform="translate(20.0,50.0)" y1="30.0"/>
-            <line y2="640.0" x1="350.0" class="grid" x2="350.0" transform="translate(20.0,50.0)" y1="30.0"/>
-            <line y2="640.0" x1="400.0" class="grid" x2="400.0" transform="translate(20.0,50.0)" y1="30.0"/>
-            <line y2="640.0" x1="450.0" class="grid" x2="450.0" transform="translate(20.0,50.0)" y1="30.0"/>
-            <line y2="640.0" x1="500.0" class="grid" x2="500.0" transform="translate(20.0,50.0)" y1="30.0"/>
-            <line y2="640.0" x1="550.0" class="grid" x2="550.0" transform="translate(20.0,50.0)" y1="30.0"/>
-            <line y2="640.0" x1="600.0" class="grid" x2="600.0" transform="translate(20.0,50.0)" y1="30.0"/>
-            <line y2="640.0" x1="650.0" class="grid" x2="650.0" transform="translate(20.0,50.0)" y1="30.0"/>
-            <line y2="640.0" x1="700.0" class="grid" x2="700.0" transform="translate(20.0,50.0)" y1="30.0"/>
-            <line y2="640.0" x1="750.0" class="grid" x2="750.0" transform="translate(20.0,50.0)" y1="30.0"/>
-            <line y2="640.0" x1="800.0" class="grid" x2="800.0" transform="translate(20.0,50.0)" y1="30.0"/>
-            <line y2="640.0" x1="850.0" class="grid" x2="850.0" transform="translate(20.0,50.0)" y1="30.0"/>
-            <line y2="640.0" x1="900.0" class="grid" x2="900.0" transform="translate(20.0,50.0)" y1="30.0"/>
+        <g id="GRID_vl1" transform="translate(20.0,50.0)">
+            <line y2="615.0" x1="50.0" class="grid" x2="50.0" y1="30.0"/>
+            <line y2="615.0" x1="100.0" class="grid" x2="100.0" y1="30.0"/>
+            <line y2="615.0" x1="150.0" class="grid" x2="150.0" y1="30.0"/>
+            <line y2="615.0" x1="200.0" class="grid" x2="200.0" y1="30.0"/>
+            <line y2="615.0" x1="250.0" class="grid" x2="250.0" y1="30.0"/>
+            <line y2="615.0" x1="300.0" class="grid" x2="300.0" y1="30.0"/>
+            <line y2="615.0" x1="350.0" class="grid" x2="350.0" y1="30.0"/>
+            <line y2="615.0" x1="400.0" class="grid" x2="400.0" y1="30.0"/>
+            <line y2="615.0" x1="450.0" class="grid" x2="450.0" y1="30.0"/>
+            <line y2="615.0" x1="500.0" class="grid" x2="500.0" y1="30.0"/>
+            <line y2="615.0" x1="550.0" class="grid" x2="550.0" y1="30.0"/>
+            <line y2="615.0" x1="600.0" class="grid" x2="600.0" y1="30.0"/>
+            <line y2="615.0" x1="650.0" class="grid" x2="650.0" y1="30.0"/>
+            <line y2="615.0" x1="700.0" class="grid" x2="700.0" y1="30.0"/>
+            <line y2="615.0" x1="750.0" class="grid" x2="750.0" y1="30.0"/>
+            <line y2="615.0" x1="800.0" class="grid" x2="800.0" y1="30.0"/>
+            <line y2="615.0" x1="850.0" class="grid" x2="850.0" y1="30.0"/>
+            <line y2="615.0" x1="900.0" class="grid" x2="900.0" y1="30.0"/>
+            <line y2="280.0" x1="50.0" class="grid" x2="900.0" y1="280.0"/>
+            <line y2="365.0" x1="50.0" class="grid" x2="900.0" y1="365.0"/>
+            <line y2="270.0" x1="50.0" class="grid" x2="900.0" y1="270.0"/>
+            <line y2="375.0" x1="50.0" class="grid" x2="900.0" y1="375.0"/>
         </g>
-        <g id="GRID_vl2">
-            <line y2="640.0" x1="1050.0" class="grid" x2="1050.0" transform="translate(20.0,50.0)" y1="30.0"/>
-            <line y2="640.0" x1="1100.0" class="grid" x2="1100.0" transform="translate(20.0,50.0)" y1="30.0"/>
-            <line y2="640.0" x1="1150.0" class="grid" x2="1150.0" transform="translate(20.0,50.0)" y1="30.0"/>
-            <line y2="640.0" x1="1200.0" class="grid" x2="1200.0" transform="translate(20.0,50.0)" y1="30.0"/>
-            <line y2="640.0" x1="1250.0" class="grid" x2="1250.0" transform="translate(20.0,50.0)" y1="30.0"/>
-            <line y2="640.0" x1="1300.0" class="grid" x2="1300.0" transform="translate(20.0,50.0)" y1="30.0"/>
-            <line y2="640.0" x1="1350.0" class="grid" x2="1350.0" transform="translate(20.0,50.0)" y1="30.0"/>
-            <line y2="640.0" x1="1400.0" class="grid" x2="1400.0" transform="translate(20.0,50.0)" y1="30.0"/>
-            <line y2="640.0" x1="1450.0" class="grid" x2="1450.0" transform="translate(20.0,50.0)" y1="30.0"/>
-            <line y2="640.0" x1="1500.0" class="grid" x2="1500.0" transform="translate(20.0,50.0)" y1="30.0"/>
-            <line y2="640.0" x1="1550.0" class="grid" x2="1550.0" transform="translate(20.0,50.0)" y1="30.0"/>
-            <line y2="640.0" x1="1600.0" class="grid" x2="1600.0" transform="translate(20.0,50.0)" y1="30.0"/>
-            <line y2="640.0" x1="1650.0" class="grid" x2="1650.0" transform="translate(20.0,50.0)" y1="30.0"/>
-            <line y2="640.0" x1="1700.0" class="grid" x2="1700.0" transform="translate(20.0,50.0)" y1="30.0"/>
-            <line y2="640.0" x1="1750.0" class="grid" x2="1750.0" transform="translate(20.0,50.0)" y1="30.0"/>
+        <g id="GRID_vl2" transform="translate(20.0,50.0)">
+            <line y2="615.0" x1="1050.0" class="grid" x2="1050.0" y1="30.0"/>
+            <line y2="615.0" x1="1100.0" class="grid" x2="1100.0" y1="30.0"/>
+            <line y2="615.0" x1="1150.0" class="grid" x2="1150.0" y1="30.0"/>
+            <line y2="615.0" x1="1200.0" class="grid" x2="1200.0" y1="30.0"/>
+            <line y2="615.0" x1="1250.0" class="grid" x2="1250.0" y1="30.0"/>
+            <line y2="615.0" x1="1300.0" class="grid" x2="1300.0" y1="30.0"/>
+            <line y2="615.0" x1="1350.0" class="grid" x2="1350.0" y1="30.0"/>
+            <line y2="615.0" x1="1400.0" class="grid" x2="1400.0" y1="30.0"/>
+            <line y2="615.0" x1="1450.0" class="grid" x2="1450.0" y1="30.0"/>
+            <line y2="615.0" x1="1500.0" class="grid" x2="1500.0" y1="30.0"/>
+            <line y2="615.0" x1="1550.0" class="grid" x2="1550.0" y1="30.0"/>
+            <line y2="615.0" x1="1600.0" class="grid" x2="1600.0" y1="30.0"/>
+            <line y2="615.0" x1="1650.0" class="grid" x2="1650.0" y1="30.0"/>
+            <line y2="615.0" x1="1700.0" class="grid" x2="1700.0" y1="30.0"/>
+            <line y2="615.0" x1="1750.0" class="grid" x2="1750.0" y1="30.0"/>
+            <line y2="280.0" x1="1050.0" class="grid" x2="1750.0" y1="280.0"/>
+            <line y2="365.0" x1="1050.0" class="grid" x2="1750.0" y1="365.0"/>
+            <line y2="270.0" x1="1050.0" class="grid" x2="1750.0" y1="270.0"/>
+            <line y2="375.0" x1="1050.0" class="grid" x2="1750.0" y1="375.0"/>
         </g>
-        <g id="GRID_vl3">
-            <line y2="615.0" x1="1900.0" class="grid" x2="1900.0" transform="translate(20.0,50.0)" y1="30.0"/>
-            <line y2="615.0" x1="1950.0" class="grid" x2="1950.0" transform="translate(20.0,50.0)" y1="30.0"/>
-            <line y2="615.0" x1="2000.0" class="grid" x2="2000.0" transform="translate(20.0,50.0)" y1="30.0"/>
-            <line y2="615.0" x1="2050.0" class="grid" x2="2050.0" transform="translate(20.0,50.0)" y1="30.0"/>
-            <line y2="615.0" x1="2100.0" class="grid" x2="2100.0" transform="translate(20.0,50.0)" y1="30.0"/>
-            <line y2="615.0" x1="2150.0" class="grid" x2="2150.0" transform="translate(20.0,50.0)" y1="30.0"/>
-            <line y2="615.0" x1="2200.0" class="grid" x2="2200.0" transform="translate(20.0,50.0)" y1="30.0"/>
-            <line y2="615.0" x1="2250.0" class="grid" x2="2250.0" transform="translate(20.0,50.0)" y1="30.0"/>
-            <line y2="615.0" x1="2300.0" class="grid" x2="2300.0" transform="translate(20.0,50.0)" y1="30.0"/>
+        <g id="GRID_vl3" transform="translate(20.0,50.0)">
+            <line y2="590.0" x1="1900.0" class="grid" x2="1900.0" y1="30.0"/>
+            <line y2="590.0" x1="1950.0" class="grid" x2="1950.0" y1="30.0"/>
+            <line y2="590.0" x1="2000.0" class="grid" x2="2000.0" y1="30.0"/>
+            <line y2="590.0" x1="2050.0" class="grid" x2="2050.0" y1="30.0"/>
+            <line y2="590.0" x1="2100.0" class="grid" x2="2100.0" y1="30.0"/>
+            <line y2="590.0" x1="2150.0" class="grid" x2="2150.0" y1="30.0"/>
+            <line y2="590.0" x1="2200.0" class="grid" x2="2200.0" y1="30.0"/>
+            <line y2="590.0" x1="2250.0" class="grid" x2="2250.0" y1="30.0"/>
+            <line y2="590.0" x1="2300.0" class="grid" x2="2300.0" y1="30.0"/>
+            <line y2="280.0" x1="1900.0" class="grid" x2="2300.0" y1="280.0"/>
+            <line y2="340.0" x1="1900.0" class="grid" x2="2300.0" y1="340.0"/>
+            <line y2="270.0" x1="1900.0" class="grid" x2="2300.0" y1="270.0"/>
+            <line y2="350.0" x1="1900.0" class="grid" x2="2300.0" y1="350.0"/>
         </g>
         <g class="substation-diagram BUSBAR_SECTION bbs1" id="bbs1" transform="translate(80.0,360.0)">
             <line y2="0" x1="0" class="bus_vl1" x2="480.0" y1="0"/>
@@ -453,10 +465,10 @@
     <circle r="4" id="WINDING2" cx="10" cy="4" stroke="rgb(34, 139, 34)"/>
     <circle r="4" id="WINDING3" cx="7" cy="8" stroke="rgb(255, 0, 0)"/>
 </g>
-        <g class="substation-diagram LINE trf6_ONE_TWO" id="trf6_ONE_TWO" transform="translate(345.0,80.00000000000003)">
+        <g class="substation-diagram LINE trf6_ONE_TWO" id="trf6_ONE_TWO" transform="translate(395.0,80.00000000000003)">
             <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf6_ONE_TWO</text>
         </g>
-        <g class="substation-diagram LINE trf6_ONE_THREE" id="trf6_ONE_THREE" transform="translate(395.0,80.00000000000003)">
+        <g class="substation-diagram LINE trf6_ONE_THREE" id="trf6_ONE_THREE" transform="translate(345.0,80.00000000000003)">
             <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf6_ONE_THREE</text>
         </g>
         <g class="substation-diagram THREE_WINDINGS_TRANSFORMER FICT_vl1_trf71_fictif" id="FICT_vl1_trf71_fictif" transform="translate(463.0,575.6666666666665)">
@@ -464,10 +476,10 @@
     <circle r="4" id="WINDING2" cx="10" transform="rotate(180,7.0,6.0)" cy="4" stroke="rgb(34, 139, 34)"/>
     <circle r="4" id="WINDING3" cx="7" transform="rotate(180,7.0,6.0)" cy="8" stroke="rgb(255, 0, 0)"/>
 </g>
-        <g class="substation-diagram LINE trf7_ONE_TWO" id="trf7_ONE_TWO" transform="translate(445.0,664.9999999999999)">
+        <g class="substation-diagram LINE trf7_ONE_TWO" id="trf7_ONE_TWO" transform="translate(495.0,664.9999999999999)">
             <text x="-5.0" font-size="8" y="13.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf7_ONE_TWO</text>
         </g>
-        <g class="substation-diagram LINE trf7_ONE_THREE" id="trf7_ONE_THREE" transform="translate(495.0,664.9999999999999)">
+        <g class="substation-diagram LINE trf7_ONE_THREE" id="trf7_ONE_THREE" transform="translate(445.0,664.9999999999999)">
             <text x="-5.0" font-size="8" y="13.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf7_ONE_THREE</text>
         </g>
         <g class="substation-diagram THREE_WINDINGS_TRANSFORMER FICT_vl1_trf81_fictif" id="FICT_vl1_trf81_fictif" transform="translate(713.0,157.33333333333331)">
@@ -475,10 +487,10 @@
     <circle r="4" id="WINDING2" cx="10" cy="4" stroke="rgb(34, 139, 34)"/>
     <circle r="4" id="WINDING3" cx="7" cy="8" stroke="rgb(255, 0, 0)"/>
 </g>
-        <g class="substation-diagram LINE trf8_ONE_TWO" id="trf8_ONE_TWO" transform="translate(695.0,80.00000000000003)">
+        <g class="substation-diagram LINE trf8_ONE_TWO" id="trf8_ONE_TWO" transform="translate(745.0,80.00000000000003)">
             <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf8_ONE_TWO</text>
         </g>
-        <g class="substation-diagram LINE trf8_ONE_THREE" id="trf8_ONE_THREE" transform="translate(745.0,80.00000000000003)">
+        <g class="substation-diagram LINE trf8_ONE_THREE" id="trf8_ONE_THREE" transform="translate(695.0,80.00000000000003)">
             <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf8_ONE_THREE</text>
         </g>
         <g class="substation-diagram NODE FICT_vl1_dsect11Fictif" id="FICT_vl1_dsect11Fictif" transform="matrix(0.0,1.0,-1.0,0.0,574.0,356.0)"/>
@@ -706,8 +718,8 @@
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
         <polyline class="wire_vl1" points="370.0,236.66666666666669,370.0,169.33333333333331" id="vl1_Wire27"/>
-        <polyline class="wire_vl2" points="363.0,159.33333333333331,345.0,159.33333333333331,345.0,80.00000000000003" id="vl1_Wire28"/>
-        <g class="substation-diagram ARROW1_trf6_ONE_TWO_DOWN" id="vl1_Wire28_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,340.0,134.3333)">
+        <polyline class="wire_vl2" points="377.0,159.33333333333331,395.0,159.33333333333331,395.0,80.00000000000003" id="vl1_Wire28"/>
+        <g class="substation-diagram ARROW1_trf6_ONE_TWO_DOWN" id="vl1_Wire28_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,390.0,134.3333)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -716,7 +728,7 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <g class="substation-diagram ARROW2_trf6_ONE_TWO_DOWN" id="vl1_Wire28_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,340.0,114.3333)">
+        <g class="substation-diagram ARROW2_trf6_ONE_TWO_DOWN" id="vl1_Wire28_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,390.0,114.3333)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -725,8 +737,8 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <polyline class="wire_vl3" points="377.0,159.33333333333331,395.0,159.33333333333331,395.0,80.00000000000003" id="vl1_Wire29"/>
-        <g class="substation-diagram ARROW1_trf6_ONE_THREE_DOWN" id="vl1_Wire29_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,390.0,134.3333)">
+        <polyline class="wire_vl3" points="363.0,159.33333333333331,345.0,159.33333333333331,345.0,80.00000000000003" id="vl1_Wire29"/>
+        <g class="substation-diagram ARROW1_trf6_ONE_THREE_DOWN" id="vl1_Wire29_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,340.0,134.3333)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -735,7 +747,7 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <g class="substation-diagram ARROW2_trf6_ONE_THREE_DOWN" id="vl1_Wire29_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,390.0,114.3333)">
+        <g class="substation-diagram ARROW2_trf6_ONE_THREE_DOWN" id="vl1_Wire29_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,340.0,114.3333)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -745,8 +757,8 @@
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
         <polyline class="wire_vl1" points="470.0,508.3333333333333,470.0,575.6666666666665" id="vl1_Wire30"/>
-        <polyline class="wire_vl2" points="463.0,585.6666666666665,445.0,585.6666666666665,445.0,664.9999999999999" id="vl1_Wire31"/>
-        <g class="substation-diagram ARROW1_trf7_ONE_TWO_DOWN" id="vl1_Wire31_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,440.0,600.6667)">
+        <polyline class="wire_vl2" points="477.0,585.6666666666665,495.0,585.6666666666665,495.0,664.9999999999999" id="vl1_Wire31"/>
+        <g class="substation-diagram ARROW1_trf7_ONE_TWO_DOWN" id="vl1_Wire31_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,490.0,600.6667)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -755,7 +767,7 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <g class="substation-diagram ARROW2_trf7_ONE_TWO_DOWN" id="vl1_Wire31_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,440.0,620.6667)">
+        <g class="substation-diagram ARROW2_trf7_ONE_TWO_DOWN" id="vl1_Wire31_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,490.0,620.6667)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -764,8 +776,8 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <polyline class="wire_vl3" points="477.0,585.6666666666665,495.0,585.6666666666665,495.0,664.9999999999999" id="vl1_Wire32"/>
-        <g class="substation-diagram ARROW1_trf7_ONE_THREE_DOWN" id="vl1_Wire32_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,490.0,600.6667)">
+        <polyline class="wire_vl3" points="463.0,585.6666666666665,445.0,585.6666666666665,445.0,664.9999999999999" id="vl1_Wire32"/>
+        <g class="substation-diagram ARROW1_trf7_ONE_THREE_DOWN" id="vl1_Wire32_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,440.0,600.6667)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -774,7 +786,7 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <g class="substation-diagram ARROW2_trf7_ONE_THREE_DOWN" id="vl1_Wire32_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,490.0,620.6667)">
+        <g class="substation-diagram ARROW2_trf7_ONE_THREE_DOWN" id="vl1_Wire32_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,440.0,620.6667)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -784,8 +796,8 @@
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
         <polyline class="wire_vl1" points="720.0,236.66666666666669,720.0,169.33333333333331" id="vl1_Wire33"/>
-        <polyline class="wire_vl2" points="713.0,159.33333333333331,695.0,159.33333333333331,695.0,80.00000000000003" id="vl1_Wire34"/>
-        <g class="substation-diagram ARROW1_trf8_ONE_TWO_DOWN" id="vl1_Wire34_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,690.0,134.3333)">
+        <polyline class="wire_vl2" points="727.0,159.33333333333331,745.0,159.33333333333331,745.0,80.00000000000003" id="vl1_Wire34"/>
+        <g class="substation-diagram ARROW1_trf8_ONE_TWO_DOWN" id="vl1_Wire34_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,740.0,134.3333)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -794,7 +806,7 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <g class="substation-diagram ARROW2_trf8_ONE_TWO_DOWN" id="vl1_Wire34_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,690.0,114.3333)">
+        <g class="substation-diagram ARROW2_trf8_ONE_TWO_DOWN" id="vl1_Wire34_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,740.0,114.3333)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -803,8 +815,8 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <polyline class="wire_vl3" points="727.0,159.33333333333331,745.0,159.33333333333331,745.0,80.00000000000003" id="vl1_Wire35"/>
-        <g class="substation-diagram ARROW1_trf8_ONE_THREE_DOWN" id="vl1_Wire35_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,740.0,134.3333)">
+        <polyline class="wire_vl3" points="713.0,159.33333333333331,695.0,159.33333333333331,695.0,80.00000000000003" id="vl1_Wire35"/>
+        <g class="substation-diagram ARROW1_trf8_ONE_THREE_DOWN" id="vl1_Wire35_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,690.0,134.3333)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -813,7 +825,7 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <g class="substation-diagram ARROW2_trf8_ONE_THREE_DOWN" id="vl1_Wire35_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,740.0,114.3333)">
+        <g class="substation-diagram ARROW2_trf8_ONE_THREE_DOWN" id="vl1_Wire35_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,690.0,114.3333)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -896,7 +908,7 @@
     <circle r="4" id="WINDING2" cx="9" cy="4" stroke="rgb(255, 0, 0)"/>
 <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf4</text>
         </g>
-        <g class="substation-diagram DISCONNECTOR dscpl1" id="dscpl1" transform="translate(1141.0,356.0)">
+        <g class="substation-diagram DISCONNECTOR dscpl1" id="dscpl1" transform="translate(1091.0,356.0)">
     <g class="closed" id="closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
@@ -915,7 +927,7 @@
         <line y2="10" x1="5" x2="15" y1="10"/>
     </g>
 </g>
-        <g class="substation-diagram DISCONNECTOR dscpl2" id="dscpl2" transform="translate(1091.0,381.0)">
+        <g class="substation-diagram DISCONNECTOR dscpl2" id="dscpl2" transform="translate(1141.0,381.0)">
     <g class="closed" id="closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
@@ -1100,10 +1112,10 @@
     <circle r="4" id="WINDING2" cx="10" cy="4" stroke="rgb(34, 139, 34)"/>
     <circle r="4" id="WINDING3" cx="7" cy="8" stroke="rgb(34, 139, 34)"/>
 </g>
-        <g class="substation-diagram LINE trf6_TWO_ONE" id="trf6_TWO_ONE" transform="translate(1495.0,80.00000000000003)">
+        <g class="substation-diagram LINE trf6_TWO_ONE" id="trf6_TWO_ONE" transform="translate(1545.0,80.00000000000003)">
             <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf6_TWO_ONE</text>
         </g>
-        <g class="substation-diagram LINE trf6_TWO_THREE" id="trf6_TWO_THREE" transform="translate(1545.0,80.00000000000003)">
+        <g class="substation-diagram LINE trf6_TWO_THREE" id="trf6_TWO_THREE" transform="translate(1495.0,80.00000000000003)">
             <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf6_TWO_THREE</text>
         </g>
         <g class="substation-diagram THREE_WINDINGS_TRANSFORMER FICT_vl2_trf72_fictif" id="FICT_vl2_trf72_fictif" transform="translate(1413.0,157.33333333333331)">
@@ -1111,10 +1123,10 @@
     <circle r="4" id="WINDING2" cx="10" cy="4" stroke="rgb(34, 139, 34)"/>
     <circle r="4" id="WINDING3" cx="7" cy="8" stroke="rgb(34, 139, 34)"/>
 </g>
-        <g class="substation-diagram LINE trf7_TWO_ONE" id="trf7_TWO_ONE" transform="translate(1395.0,80.00000000000003)">
+        <g class="substation-diagram LINE trf7_TWO_ONE" id="trf7_TWO_ONE" transform="translate(1445.0,80.00000000000003)">
             <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf7_TWO_ONE</text>
         </g>
-        <g class="substation-diagram LINE trf7_TWO_THREE" id="trf7_TWO_THREE" transform="translate(1445.0,80.00000000000003)">
+        <g class="substation-diagram LINE trf7_TWO_THREE" id="trf7_TWO_THREE" transform="translate(1395.0,80.00000000000003)">
             <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf7_TWO_THREE</text>
         </g>
         <g class="substation-diagram THREE_WINDINGS_TRANSFORMER FICT_vl2_trf82_fictif" id="FICT_vl2_trf82_fictif" transform="translate(1613.0,575.6666666666665)">
@@ -1122,25 +1134,25 @@
     <circle r="4" id="WINDING2" cx="10" transform="rotate(180,7.0,6.0)" cy="4" stroke="rgb(255, 0, 0)"/>
     <circle r="4" id="WINDING3" cx="7" transform="rotate(180,7.0,6.0)" cy="8" stroke="rgb(34, 139, 34)"/>
 </g>
-        <g class="substation-diagram LINE trf8_TWO_ONE" id="trf8_TWO_ONE" transform="translate(1595.0,664.9999999999999)">
+        <g class="substation-diagram LINE trf8_TWO_ONE" id="trf8_TWO_ONE" transform="translate(1645.0,664.9999999999999)">
             <text x="-5.0" font-size="8" y="13.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf8_TWO_ONE</text>
         </g>
-        <g class="substation-diagram LINE trf8_TWO_THREE" id="trf8_TWO_THREE" transform="translate(1645.0,664.9999999999999)">
+        <g class="substation-diagram LINE trf8_TWO_THREE" id="trf8_TWO_THREE" transform="translate(1595.0,664.9999999999999)">
             <text x="-5.0" font-size="8" y="13.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf8_TWO_THREE</text>
         </g>
-        <g class="substation-diagram NODE FICT_vl2_dscpl1Fictif" id="FICT_vl2_dscpl1Fictif" transform="matrix(0.0,1.0,-1.0,0.0,1149.0,316.0)"/>
+        <g class="substation-diagram NODE FICT_vl2_dscpl1Fictif" id="FICT_vl2_dscpl1Fictif" transform="matrix(0.0,1.0,-1.0,0.0,1099.0,316.0)"/>
         <g class="substation-diagram NODE FICT_vl2_dload3Fictif" id="FICT_vl2_dload3Fictif" transform="translate(1191.0,326.0)"/>
         <g class="substation-diagram NODE FICT_vl2_dtrf21Fictif" id="FICT_vl2_dtrf21Fictif" transform="translate(1241.0,326.0)"/>
         <g class="substation-diagram NODE FICT_vl2_dtrf24Fictif" id="FICT_vl2_dtrf24Fictif" transform="translate(1341.0,326.0)"/>
         <g class="substation-diagram NODE FICT_vl2_dtrf27Fictif" id="FICT_vl2_dtrf27Fictif" transform="translate(1416.0,326.0)"/>
-        <g class="substation-diagram NODE FICT_vl2_dscpl2Fictif" id="FICT_vl2_dscpl2Fictif" transform="matrix(0.0,1.0,-1.0,0.0,1099.0,316.0)"/>
+        <g class="substation-diagram NODE FICT_vl2_dscpl2Fictif" id="FICT_vl2_dscpl2Fictif" transform="matrix(0.0,1.0,-1.0,0.0,1149.0,316.0)"/>
         <g class="substation-diagram NODE FICT_vl2_dgen4Fictif" id="FICT_vl2_dgen4Fictif" transform="translate(1291.0,411.0)"/>
         <g class="substation-diagram NODE FICT_vl2_dtrf22Fictif" id="FICT_vl2_dtrf22Fictif" transform="translate(1691.0,411.0)"/>
         <g class="substation-diagram NODE FICT_vl2_dtrf23Fictif" id="FICT_vl2_dtrf23Fictif" transform="translate(1741.0,411.0)"/>
         <g class="substation-diagram NODE FICT_vl2_dtrf26Fictif" id="FICT_vl2_dtrf26Fictif" transform="translate(1516.0,326.0)"/>
         <g class="substation-diagram NODE FICT_vl2_dtrf28Fictif" id="FICT_vl2_dtrf28Fictif" transform="translate(1616.0,411.0)"/>
-        <polyline class="wire_vl2" points="1145.0,360.0,1145.0,360.0" id="vl2_Wire0"/>
-        <polyline class="wire_vl2" points="1095.0,385.0,1095.0,385.0" id="vl2_Wire1"/>
+        <polyline class="wire_vl2" points="1095.0,360.0,1095.0,360.0" id="vl2_Wire0"/>
+        <polyline class="wire_vl2" points="1145.0,385.0,1145.0,385.0" id="vl2_Wire1"/>
         <polyline class="wire_vl2" points="1195.0,360.0,1195.0,360.0" id="vl2_Wire2"/>
         <polyline class="wire_vl2" points="1195.0,84.0,1195.0,195.0" id="vl2_Wire3"/>
         <g class="substation-diagram ARROW1_load3_UP" id="vl2_Wire3_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,1190.0,99.0)">
@@ -1265,8 +1277,8 @@
         <polyline class="wire_vl2" points="1420.0,360.0,1420.0,360.0" id="vl2_Wire15"/>
         <polyline class="wire_vl2" points="1620.0,385.0,1620.0,385.0" id="vl2_Wire16"/>
         <polyline class="wire_vl2" points="1520.0,236.66666666666669,1520.0,169.33333333333331" id="vl2_Wire17"/>
-        <polyline class="wire_vl1" points="1513.0,159.33333333333331,1495.0,159.33333333333331,1495.0,80.00000000000003" id="vl2_Wire18"/>
-        <g class="substation-diagram ARROW1_trf6_TWO_ONE_DOWN" id="vl2_Wire18_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,1490.0,134.3333)">
+        <polyline class="wire_vl1" points="1527.0,159.33333333333331,1545.0,159.33333333333331,1545.0,80.00000000000003" id="vl2_Wire18"/>
+        <g class="substation-diagram ARROW1_trf6_TWO_ONE_DOWN" id="vl2_Wire18_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,1540.0,134.3333)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -1275,7 +1287,7 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <g class="substation-diagram ARROW2_trf6_TWO_ONE_DOWN" id="vl2_Wire18_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,1490.0,114.3333)">
+        <g class="substation-diagram ARROW2_trf6_TWO_ONE_DOWN" id="vl2_Wire18_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,1540.0,114.3333)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -1284,8 +1296,8 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <polyline class="wire_vl3" points="1527.0,159.33333333333331,1545.0,159.33333333333331,1545.0,80.00000000000003" id="vl2_Wire19"/>
-        <g class="substation-diagram ARROW1_trf6_TWO_THREE_DOWN" id="vl2_Wire19_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,1540.0,134.3333)">
+        <polyline class="wire_vl3" points="1513.0,159.33333333333331,1495.0,159.33333333333331,1495.0,80.00000000000003" id="vl2_Wire19"/>
+        <g class="substation-diagram ARROW1_trf6_TWO_THREE_DOWN" id="vl2_Wire19_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,1490.0,134.3333)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -1294,7 +1306,7 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <g class="substation-diagram ARROW2_trf6_TWO_THREE_DOWN" id="vl2_Wire19_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,1540.0,114.3333)">
+        <g class="substation-diagram ARROW2_trf6_TWO_THREE_DOWN" id="vl2_Wire19_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,1490.0,114.3333)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -1304,8 +1316,8 @@
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
         <polyline class="wire_vl2" points="1420.0,236.66666666666669,1420.0,169.33333333333331" id="vl2_Wire20"/>
-        <polyline class="wire_vl1" points="1413.0,159.33333333333331,1395.0,159.33333333333331,1395.0,80.00000000000003" id="vl2_Wire21"/>
-        <g class="substation-diagram ARROW1_trf7_TWO_ONE_DOWN" id="vl2_Wire21_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,1390.0,134.3333)">
+        <polyline class="wire_vl1" points="1427.0,159.33333333333331,1445.0,159.33333333333331,1445.0,80.00000000000003" id="vl2_Wire21"/>
+        <g class="substation-diagram ARROW1_trf7_TWO_ONE_DOWN" id="vl2_Wire21_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,1440.0,134.3333)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -1314,7 +1326,7 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <g class="substation-diagram ARROW2_trf7_TWO_ONE_DOWN" id="vl2_Wire21_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,1390.0,114.3333)">
+        <g class="substation-diagram ARROW2_trf7_TWO_ONE_DOWN" id="vl2_Wire21_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,1440.0,114.3333)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -1323,8 +1335,8 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <polyline class="wire_vl3" points="1427.0,159.33333333333331,1445.0,159.33333333333331,1445.0,80.00000000000003" id="vl2_Wire22"/>
-        <g class="substation-diagram ARROW1_trf7_TWO_THREE_DOWN" id="vl2_Wire22_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,1440.0,134.3333)">
+        <polyline class="wire_vl3" points="1413.0,159.33333333333331,1395.0,159.33333333333331,1395.0,80.00000000000003" id="vl2_Wire22"/>
+        <g class="substation-diagram ARROW1_trf7_TWO_THREE_DOWN" id="vl2_Wire22_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,1390.0,134.3333)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -1333,7 +1345,7 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <g class="substation-diagram ARROW2_trf7_TWO_THREE_DOWN" id="vl2_Wire22_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,1440.0,114.3333)">
+        <g class="substation-diagram ARROW2_trf7_TWO_THREE_DOWN" id="vl2_Wire22_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,1390.0,114.3333)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -1343,8 +1355,8 @@
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
         <polyline class="wire_vl2" points="1620.0,508.3333333333333,1620.0,575.6666666666665" id="vl2_Wire23"/>
-        <polyline class="wire_vl1" points="1613.0,585.6666666666665,1595.0,585.6666666666665,1595.0,664.9999999999999" id="vl2_Wire24"/>
-        <g class="substation-diagram ARROW1_trf8_TWO_ONE_DOWN" id="vl2_Wire24_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,1590.0,600.6667)">
+        <polyline class="wire_vl1" points="1627.0,585.6666666666665,1645.0,585.6666666666665,1645.0,664.9999999999999" id="vl2_Wire24"/>
+        <g class="substation-diagram ARROW1_trf8_TWO_ONE_DOWN" id="vl2_Wire24_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,1640.0,600.6667)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -1353,7 +1365,7 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <g class="substation-diagram ARROW2_trf8_TWO_ONE_DOWN" id="vl2_Wire24_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,1590.0,620.6667)">
+        <g class="substation-diagram ARROW2_trf8_TWO_ONE_DOWN" id="vl2_Wire24_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,1640.0,620.6667)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -1362,8 +1374,8 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <polyline class="wire_vl3" points="1627.0,585.6666666666665,1645.0,585.6666666666665,1645.0,664.9999999999999" id="vl2_Wire25"/>
-        <g class="substation-diagram ARROW1_trf8_TWO_THREE_DOWN" id="vl2_Wire25_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,1640.0,600.6667)">
+        <polyline class="wire_vl3" points="1613.0,585.6666666666665,1595.0,585.6666666666665,1595.0,664.9999999999999" id="vl2_Wire25"/>
+        <g class="substation-diagram ARROW1_trf8_TWO_THREE_DOWN" id="vl2_Wire25_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,1590.0,600.6667)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -1372,7 +1384,7 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <g class="substation-diagram ARROW2_trf8_TWO_THREE_DOWN" id="vl2_Wire25_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,1640.0,620.6667)">
+        <g class="substation-diagram ARROW2_trf8_TWO_THREE_DOWN" id="vl2_Wire25_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,1590.0,620.6667)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -1381,8 +1393,8 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <polyline class="wire_vl2" points="1130.0,320.0,1145.0,320.0" id="vl2_Wire26"/>
-        <polyline class="wire_vl2" points="1145.0,360.0,1145.0,320.0" id="vl2_Wire27"/>
+        <polyline class="wire_vl2" points="1110.0,320.0,1095.0,320.0" id="vl2_Wire26"/>
+        <polyline class="wire_vl2" points="1095.0,360.0,1095.0,320.0" id="vl2_Wire27"/>
         <polyline class="wire_vl2" points="1195.0,215.0,1195.0,330.0" id="vl2_Wire28"/>
         <polyline class="wire_vl2" points="1195.0,360.0,1195.0,330.0" id="vl2_Wire29"/>
         <polyline class="wire_vl2" points="1245.0,215.0,1245.0,330.0" id="vl2_Wire30"/>
@@ -1391,8 +1403,8 @@
         <polyline class="wire_vl2" points="1345.0,360.0,1345.0,330.0" id="vl2_Wire33"/>
         <polyline class="wire_vl2" points="1420.0,256.6666666666667,1420.0,330.0" id="vl2_Wire34"/>
         <polyline class="wire_vl2" points="1420.0,360.0,1420.0,330.0" id="vl2_Wire35"/>
-        <polyline class="wire_vl2" points="1110.0,320.0,1095.0,320.0" id="vl2_Wire36"/>
-        <polyline class="wire_vl2" points="1095.0,385.0,1095.0,320.0" id="vl2_Wire37"/>
+        <polyline class="wire_vl2" points="1130.0,320.0,1145.0,320.0" id="vl2_Wire36"/>
+        <polyline class="wire_vl2" points="1145.0,385.0,1145.0,320.0" id="vl2_Wire37"/>
         <polyline class="wire_vl2" points="1295.0,530.0,1295.0,415.0" id="vl2_Wire38"/>
         <polyline class="wire_vl2" points="1295.0,385.0,1295.0,415.0" id="vl2_Wire39"/>
         <polyline class="wire_vl2" points="1695.0,530.0,1695.0,415.0" id="vl2_Wire40"/>
@@ -1518,10 +1530,10 @@
     <circle r="4" id="WINDING2" cx="10" cy="4" stroke="rgb(34, 139, 34)"/>
     <circle r="4" id="WINDING3" cx="7" cy="8" stroke="rgb(34, 139, 34)"/>
 </g>
-        <g class="substation-diagram LINE trf6_THREE_ONE" id="trf6_THREE_ONE" transform="translate(2045.0,80.00000000000003)">
+        <g class="substation-diagram LINE trf6_THREE_ONE" id="trf6_THREE_ONE" transform="translate(2095.0,80.00000000000003)">
             <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf6_THREE_ONE</text>
         </g>
-        <g class="substation-diagram LINE trf6_THREE_TWO" id="trf6_THREE_TWO" transform="translate(2095.0,80.00000000000003)">
+        <g class="substation-diagram LINE trf6_THREE_TWO" id="trf6_THREE_TWO" transform="translate(2045.0,80.00000000000003)">
             <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf6_THREE_TWO</text>
         </g>
         <g class="substation-diagram THREE_WINDINGS_TRANSFORMER FICT_vl3_trf73_fictif" id="FICT_vl3_trf73_fictif" transform="translate(2163.0,550.6666666666667)">
@@ -1529,10 +1541,10 @@
     <circle r="4" id="WINDING2" cx="10" transform="rotate(180,7.0,6.0)" cy="4" stroke="rgb(255, 0, 0)"/>
     <circle r="4" id="WINDING3" cx="7" transform="rotate(180,7.0,6.0)" cy="8" stroke="rgb(34, 139, 34)"/>
 </g>
-        <g class="substation-diagram LINE trf7_THREE_ONE" id="trf7_THREE_ONE" transform="translate(2145.0,640.0)">
+        <g class="substation-diagram LINE trf7_THREE_ONE" id="trf7_THREE_ONE" transform="translate(2195.0,640.0)">
             <text x="-5.0" font-size="8" y="13.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf7_THREE_ONE</text>
         </g>
-        <g class="substation-diagram LINE trf7_THREE_TWO" id="trf7_THREE_TWO" transform="translate(2195.0,640.0)">
+        <g class="substation-diagram LINE trf7_THREE_TWO" id="trf7_THREE_TWO" transform="translate(2145.0,640.0)">
             <text x="-5.0" font-size="8" y="13.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf7_THREE_TWO</text>
         </g>
         <g class="substation-diagram THREE_WINDINGS_TRANSFORMER FICT_vl3_trf83_fictif" id="FICT_vl3_trf83_fictif" transform="translate(2263.0,157.33333333333331)">
@@ -1540,10 +1552,10 @@
     <circle r="4" id="WINDING2" cx="10" cy="4" stroke="rgb(34, 139, 34)"/>
     <circle r="4" id="WINDING3" cx="7" cy="8" stroke="rgb(34, 139, 34)"/>
 </g>
-        <g class="substation-diagram LINE trf8_THREE_ONE" id="trf8_THREE_ONE" transform="translate(2245.0,80.00000000000003)">
+        <g class="substation-diagram LINE trf8_THREE_ONE" id="trf8_THREE_ONE" transform="translate(2295.0,80.00000000000003)">
             <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf8_THREE_ONE</text>
         </g>
-        <g class="substation-diagram LINE trf8_THREE_TWO" id="trf8_THREE_TWO" transform="translate(2295.0,80.00000000000003)">
+        <g class="substation-diagram LINE trf8_THREE_TWO" id="trf8_THREE_TWO" transform="translate(2245.0,80.00000000000003)">
             <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf8_THREE_TWO</text>
         </g>
         <g class="substation-diagram NODE FICT_vl3_dload4Fictif" id="FICT_vl3_dload4Fictif" transform="translate(1941.0,326.0)"/>
@@ -1595,8 +1607,8 @@
         <polyline class="wire_vl3" points="2170.0,360.0,2170.0,360.0" id="vl3_Wire5"/>
         <polyline class="wire_vl3" points="2270.0,360.0,2270.0,360.0" id="vl3_Wire6"/>
         <polyline class="wire_vl3" points="2070.0,236.66666666666669,2070.0,169.33333333333331" id="vl3_Wire7"/>
-        <polyline class="wire_vl1" points="2063.0,159.33333333333331,2045.0,159.33333333333331,2045.0,80.00000000000003" id="vl3_Wire8"/>
-        <g class="substation-diagram ARROW1_trf6_THREE_ONE_DOWN" id="vl3_Wire8_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,2040.0,134.3333)">
+        <polyline class="wire_vl1" points="2077.0,159.33333333333331,2095.0,159.33333333333331,2095.0,80.00000000000003" id="vl3_Wire8"/>
+        <g class="substation-diagram ARROW1_trf6_THREE_ONE_DOWN" id="vl3_Wire8_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,2090.0,134.3333)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -1605,7 +1617,7 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <g class="substation-diagram ARROW2_trf6_THREE_ONE_DOWN" id="vl3_Wire8_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,2040.0,114.3333)">
+        <g class="substation-diagram ARROW2_trf6_THREE_ONE_DOWN" id="vl3_Wire8_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,2090.0,114.3333)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -1614,8 +1626,8 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <polyline class="wire_vl2" points="2077.0,159.33333333333331,2095.0,159.33333333333331,2095.0,80.00000000000003" id="vl3_Wire9"/>
-        <g class="substation-diagram ARROW1_trf6_THREE_TWO_DOWN" id="vl3_Wire9_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,2090.0,134.3333)">
+        <polyline class="wire_vl2" points="2063.0,159.33333333333331,2045.0,159.33333333333331,2045.0,80.00000000000003" id="vl3_Wire9"/>
+        <g class="substation-diagram ARROW1_trf6_THREE_TWO_DOWN" id="vl3_Wire9_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,2040.0,134.3333)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -1624,7 +1636,7 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <g class="substation-diagram ARROW2_trf6_THREE_TWO_DOWN" id="vl3_Wire9_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,2090.0,114.3333)">
+        <g class="substation-diagram ARROW2_trf6_THREE_TWO_DOWN" id="vl3_Wire9_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,2040.0,114.3333)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -1634,8 +1646,8 @@
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
         <polyline class="wire_vl3" points="2170.0,483.3333333333333,2170.0,550.6666666666667" id="vl3_Wire10"/>
-        <polyline class="wire_vl1" points="2163.0,560.6666666666667,2145.0,560.6666666666667,2145.0,640.0" id="vl3_Wire11"/>
-        <g class="substation-diagram ARROW1_trf7_THREE_ONE_DOWN" id="vl3_Wire11_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,2140.0,575.6667)">
+        <polyline class="wire_vl1" points="2177.0,560.6666666666667,2195.0,560.6666666666667,2195.0,640.0" id="vl3_Wire11"/>
+        <g class="substation-diagram ARROW1_trf7_THREE_ONE_DOWN" id="vl3_Wire11_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,2190.0,575.6667)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -1644,7 +1656,7 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <g class="substation-diagram ARROW2_trf7_THREE_ONE_DOWN" id="vl3_Wire11_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,2140.0,595.6667)">
+        <g class="substation-diagram ARROW2_trf7_THREE_ONE_DOWN" id="vl3_Wire11_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,2190.0,595.6667)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -1653,8 +1665,8 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <polyline class="wire_vl2" points="2177.0,560.6666666666667,2195.0,560.6666666666667,2195.0,640.0" id="vl3_Wire12"/>
-        <g class="substation-diagram ARROW1_trf7_THREE_TWO_DOWN" id="vl3_Wire12_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,2190.0,575.6667)">
+        <polyline class="wire_vl2" points="2163.0,560.6666666666667,2145.0,560.6666666666667,2145.0,640.0" id="vl3_Wire12"/>
+        <g class="substation-diagram ARROW1_trf7_THREE_TWO_DOWN" id="vl3_Wire12_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,2140.0,575.6667)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -1663,7 +1675,7 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <g class="substation-diagram ARROW2_trf7_THREE_TWO_DOWN" id="vl3_Wire12_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,2190.0,595.6667)">
+        <g class="substation-diagram ARROW2_trf7_THREE_TWO_DOWN" id="vl3_Wire12_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,2140.0,595.6667)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -1673,8 +1685,8 @@
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
         <polyline class="wire_vl3" points="2270.0,236.66666666666669,2270.0,169.33333333333331" id="vl3_Wire13"/>
-        <polyline class="wire_vl1" points="2263.0,159.33333333333331,2245.0,159.33333333333331,2245.0,80.00000000000003" id="vl3_Wire14"/>
-        <g class="substation-diagram ARROW1_trf8_THREE_ONE_DOWN" id="vl3_Wire14_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,2240.0,134.3333)">
+        <polyline class="wire_vl1" points="2277.0,159.33333333333331,2295.0,159.33333333333331,2295.0,80.00000000000003" id="vl3_Wire14"/>
+        <g class="substation-diagram ARROW1_trf8_THREE_ONE_DOWN" id="vl3_Wire14_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,2290.0,134.3333)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -1683,7 +1695,7 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <g class="substation-diagram ARROW2_trf8_THREE_ONE_DOWN" id="vl3_Wire14_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,2240.0,114.3333)">
+        <g class="substation-diagram ARROW2_trf8_THREE_ONE_DOWN" id="vl3_Wire14_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,2290.0,114.3333)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -1692,8 +1704,8 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <polyline class="wire_vl2" points="2277.0,159.33333333333331,2295.0,159.33333333333331,2295.0,80.00000000000003" id="vl3_Wire15"/>
-        <g class="substation-diagram ARROW1_trf8_THREE_TWO_DOWN" id="vl3_Wire15_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,2290.0,134.3333)">
+        <polyline class="wire_vl2" points="2263.0,159.33333333333331,2245.0,159.33333333333331,2245.0,80.00000000000003" id="vl3_Wire15"/>
+        <g class="substation-diagram ARROW1_trf8_THREE_TWO_DOWN" id="vl3_Wire15_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,2240.0,134.3333)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -1702,7 +1714,7 @@
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
-        <g class="substation-diagram ARROW2_trf8_THREE_TWO_DOWN" id="vl3_Wire15_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,2290.0,114.3333)">
+        <g class="substation-diagram ARROW2_trf8_THREE_TWO_DOWN" id="vl3_Wire15_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,2240.0,114.3333)">
      <g class="arrow-up" id="arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
@@ -1726,15 +1738,15 @@
         <polyline class="wire_vl1" points="245.0,665.0,245.0,725.0,1745.0,725.0,1745.0,665.0" id="vl1_vl2_Wire2"/>
         <polyline class="wire_vl1" points="795.0,665.0,795.0,755.0,1010.0,755.0,1010.0,-10.0,1345.0,-10.0,1345.0,80.0" id="vl1_vl2_Wire3"/>
         <polyline class="wire_vl1" points="295.0,80.0,295.0,-40.0,1890.0,-40.0,1890.0,760.0,1995.0,760.0,1995.0,640.0" id="vl1_vl3_Wire4"/>
-        <polyline class="wire_vl1" points="345.0,80.00000000000003,345.0,-69.99999999999997,1495.0,-69.99999999999997,1495.0,80.00000000000003" id="vl1_vl2_Wire5"/>
-        <polyline class="wire_vl1" points="395.0,80.00000000000003,395.0,-99.99999999999997,2045.0,-99.99999999999997,2045.0,80.00000000000003" id="vl1_vl3_Wire6"/>
-        <polyline class="wire_vl3" points="1545.0,80.00000000000003,1545.0,-129.99999999999997,2095.0,-129.99999999999997,2095.0,80.00000000000003" id="vl2_vl3_Wire7"/>
-        <polyline class="wire_vl1" points="445.0,664.9999999999999,445.0,814.9999999999999,980.0,814.9999999999999,980.0,-159.99999999999997,1395.0,-159.99999999999997,1395.0,80.00000000000003" id="vl1_vl2_Wire8"/>
-        <polyline class="wire_vl1" points="495.0,664.9999999999999,495.0,844.9999999999999,2145.0,844.9999999999999,2145.0,640.0" id="vl1_vl3_Wire9"/>
-        <polyline class="wire_vl3" points="1445.0,80.00000000000003,1445.0,-189.99999999999997,1860.0,-189.99999999999997,1860.0,850.0,2195.0,850.0,2195.0,640.0" id="vl2_vl3_Wire10"/>
-        <polyline class="wire_vl1" points="695.0,80.00000000000003,695.0,-220.0,950.0,-220.0,950.0,904.9999999999999,1595.0,904.9999999999999,1595.0,664.9999999999999" id="vl1_vl2_Wire11"/>
-        <polyline class="wire_vl1" points="745.0,80.00000000000003,745.0,-250.0,2245.0,-250.0,2245.0,80.00000000000003" id="vl1_vl3_Wire12"/>
-        <polyline class="wire_vl3" points="1645.0,664.9999999999999,1645.0,934.9999999999999,1830.0,934.9999999999999,1830.0,-280.0,2295.0,-280.0,2295.0,80.00000000000003" id="vl2_vl3_Wire13"/>
+        <polyline class="wire_vl1" points="395.0,80.00000000000003,395.0,-69.99999999999997,1545.0,-69.99999999999997,1545.0,80.00000000000003" id="vl1_vl2_Wire5"/>
+        <polyline class="wire_vl1" points="345.0,80.00000000000003,345.0,-99.99999999999997,2095.0,-99.99999999999997,2095.0,80.00000000000003" id="vl1_vl3_Wire6"/>
+        <polyline class="wire_vl3" points="1495.0,80.00000000000003,1495.0,-129.99999999999997,2045.0,-129.99999999999997,2045.0,80.00000000000003" id="vl2_vl3_Wire7"/>
+        <polyline class="wire_vl1" points="495.0,664.9999999999999,495.0,814.9999999999999,980.0,814.9999999999999,980.0,-159.99999999999997,1445.0,-159.99999999999997,1445.0,80.00000000000003" id="vl1_vl2_Wire8"/>
+        <polyline class="wire_vl1" points="445.0,664.9999999999999,445.0,844.9999999999999,2195.0,844.9999999999999,2195.0,640.0" id="vl1_vl3_Wire9"/>
+        <polyline class="wire_vl3" points="1395.0,80.00000000000003,1395.0,-189.99999999999997,1860.0,-189.99999999999997,1860.0,850.0,2145.0,850.0,2145.0,640.0" id="vl2_vl3_Wire10"/>
+        <polyline class="wire_vl1" points="745.0,80.00000000000003,745.0,-220.0,950.0,-220.0,950.0,904.9999999999999,1645.0,904.9999999999999,1645.0,664.9999999999999" id="vl1_vl2_Wire11"/>
+        <polyline class="wire_vl1" points="695.0,80.00000000000003,695.0,-250.0,2295.0,-250.0,2295.0,80.00000000000003" id="vl1_vl3_Wire12"/>
+        <polyline class="wire_vl3" points="1595.0,664.9999999999999,1595.0,934.9999999999999,1830.0,934.9999999999999,1830.0,-280.0,2245.0,-280.0,2245.0,80.00000000000003" id="vl2_vl3_Wire13"/>
         <g id="LABEL_VL_vl1">
             <text x="50.0" font-size="12" y="50.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">vl1</text>
         </g>

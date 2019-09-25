@@ -8,6 +8,7 @@ package com.powsybl.loadflow.simple.network;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -21,6 +22,11 @@ public abstract class AbstractFictitiousLfBus extends AbstractLfBus {
     @Override
     public boolean hasVoltageControl() {
         return false;
+    }
+
+    @Override
+    public void setVoltageControl(boolean voltageControl) {
+        throw new IllegalStateException("Cannot change fictitious bus voltage control status");
     }
 
     @Override
@@ -49,6 +55,11 @@ public abstract class AbstractFictitiousLfBus extends AbstractLfBus {
     }
 
     @Override
+    public void setGenerationTargetQ(double generationTargetQ) {
+        throw new IllegalStateException("Cannot change fictitious bus generation");
+    }
+
+    @Override
     public double getMinP() {
         return Double.NaN;
     }
@@ -71,6 +82,11 @@ public abstract class AbstractFictitiousLfBus extends AbstractLfBus {
     @Override
     public List<LfShunt> getShunts() {
         return Collections.emptyList();
+    }
+
+    @Override
+    public Optional<LfReactiveDiagram> getReactiveDiagram() {
+        return Optional.empty();
     }
 
     @Override

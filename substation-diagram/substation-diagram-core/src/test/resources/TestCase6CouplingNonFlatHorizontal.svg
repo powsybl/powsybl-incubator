@@ -29,25 +29,29 @@
 .PHASE_SHIFT_TRANSFORMER {stroke:rgb(0,0,255);stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;}
 .d1 .open { visibility: hidden;}.d1 .closed { visibility: visible;}._b .open { visibility: hidden;}._b .closed { visibility: visible;}.d2 .open { visibility: hidden;}.d2 .closed { visibility: visible;}.ds1 .open { visibility: hidden;}.ds1 .closed { visibility: visible;}.ds2 .open { visibility: hidden;}.ds2 .closed { visibility: visible;}.ds1fSwitch0 .open { visibility: hidden;}.ds1fSwitch0 .closed { visibility: visible;}.ds1fSwitch1 .open { visibility: hidden;}.ds1fSwitch1 .closed { visibility: visible;}.ds2fSwitch0 .open { visibility: hidden;}.ds2fSwitch0 .closed { visibility: visible;}.ds2fSwitch1 .open { visibility: hidden;}.ds2fSwitch1 .closed { visibility: visible;}]]></style>
     <g class="substation-diagram">
-        <g id="GRID_vl">
-            <line y2="590.0" x1="0.0" class="grid" x2="0.0" transform="translate(20.0,50.0)" y1="-20.0"/>
-            <line y2="590.0" x1="50.0" class="grid" x2="50.0" transform="translate(20.0,50.0)" y1="-20.0"/>
-            <line y2="590.0" x1="100.0" class="grid" x2="100.0" transform="translate(20.0,50.0)" y1="-20.0"/>
-            <line y2="590.0" x1="150.0" class="grid" x2="150.0" transform="translate(20.0,50.0)" y1="-20.0"/>
+        <g id="GRID_vl" transform="translate(20.0,50.0)">
+            <line y2="565.0" x1="0.0" class="grid" x2="0.0" y1="-20.0"/>
+            <line y2="565.0" x1="50.0" class="grid" x2="50.0" y1="-20.0"/>
+            <line y2="565.0" x1="100.0" class="grid" x2="100.0" y1="-20.0"/>
+            <line y2="565.0" x1="150.0" class="grid" x2="150.0" y1="-20.0"/>
+            <line y2="230.0" x1="0.0" class="grid" x2="150.0" y1="230.0"/>
+            <line y2="315.0" x1="0.0" class="grid" x2="150.0" y1="315.0"/>
+            <line y2="220.0" x1="0.0" class="grid" x2="150.0" y1="220.0"/>
+            <line y2="325.0" x1="0.0" class="grid" x2="150.0" y1="325.0"/>
         </g>
-        <g class="substation-diagram BUSBAR_SECTION bbs1_1" id="bbs1.1" transform="translate(30.0,310.0)">
+        <g class="substation-diagram BUSBAR_SECTION bbs1_1" id="bbs1_1" transform="translate(30.0,310.0)">
             <line y2="0" x1="0" class="bus_vl" x2="30.0" y1="0"/>
             <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs1.1</text>
         </g>
-        <g class="substation-diagram BUSBAR_SECTION bbs1_2" id="bbs1.2" transform="translate(130.0,310.0)">
+        <g class="substation-diagram BUSBAR_SECTION bbs1_2" id="bbs1_2" transform="translate(130.0,310.0)">
             <line y2="0" x1="0" class="bus_vl" x2="30.0" y1="0"/>
             <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs1.2</text>
         </g>
-        <g class="substation-diagram BUSBAR_SECTION bbs2_1" id="bbs2.1" transform="translate(30.0,335.0)">
+        <g class="substation-diagram BUSBAR_SECTION bbs2_1" id="bbs2_1" transform="translate(30.0,335.0)">
             <line y2="0" x1="0" class="bus_vl" x2="30.0" y1="0"/>
             <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs2.1</text>
         </g>
-        <g class="substation-diagram BUSBAR_SECTION bbs2_2" id="bbs2.2" transform="translate(130.0,335.0)">
+        <g class="substation-diagram BUSBAR_SECTION bbs2_2" id="bbs2_2" transform="translate(130.0,335.0)">
             <line y2="0" x1="0" class="bus_vl" x2="30.0" y1="0"/>
             <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs2.2</text>
         </g>
@@ -60,7 +64,7 @@
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
-        <g class="substation-diagram BREAKER _b" id="b" transform="matrix(0.0,1.0,-1.0,0.0,80.0,260.0)">
+        <g class="substation-diagram BREAKER b" id="b" transform="matrix(0.0,1.0,-1.0,0.0,80.0,260.0)">
     <g class="closed" id="closed">
         <rect x="1" width="18" y="1" height="18"/>
         <line y2="15" x1="10" x2="10" y1="5"/>

@@ -21,6 +21,7 @@ public class Position {
     private int hSpan;
     private int vSpan;
 
+    //TODO remove absolute
     private boolean absolute;
 
     private Orientation orientation;
@@ -85,15 +86,6 @@ public class Position {
 
     public Position setVSpan(int vSpan) {
         this.vSpan = vSpan;
-        return this;
-    }
-
-    public boolean isAbsolute() {
-        return absolute;
-    }
-
-    public Position setAbsolute(boolean absolute) {
-        this.absolute = absolute;
         return this;
     }
 

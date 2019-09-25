@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  */
-public abstract class AbstractComposedBlock extends AbstractBlock {
+public abstract class AbstractComposedBlock extends AbstractBlock implements ComposedBlock {
 
     List<Block> subBlocks;
 
@@ -24,9 +24,7 @@ public abstract class AbstractComposedBlock extends AbstractBlock {
         if (subBlocks.isEmpty()) {
             throw new IllegalArgumentException("Empty block list");
         }
-        subBlocks.forEach(b -> {
-            b.setParentBlock(this);
-        });
+        subBlocks.forEach(b -> b.setParentBlock(this));
     }
 
     @Override
@@ -45,8 +43,8 @@ public abstract class AbstractComposedBlock extends AbstractBlock {
 
     @Override
     public int getOrder() {
-        return getEndingNode().getType() == Node.NodeType.FEEDER ?
-                ((FeederNode) getEndingNode()).getOrder() : 0;
+        return getExtremityNode(Block.Extremity.END).getType() == Node.NodeType.FEEDER ?
+                ((FeederNode) getExtremityNode(Block.Extremity.END)).getOrder() : 0;
     }
 
     @Override
@@ -84,6 +82,6 @@ public abstract class AbstractComposedBlock extends AbstractBlock {
 
     @Override
     public String toString() {
-        return "ParallelBlock(subBlocks=" + subBlocks + ")";
+        return "BodyParallelBlock(subBlocks=" + subBlocks + ")";
     }
 }

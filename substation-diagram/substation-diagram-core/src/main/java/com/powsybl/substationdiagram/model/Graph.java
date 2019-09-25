@@ -590,7 +590,7 @@ public class Graph {
 
     public Stream<BusCell> getBusCells() {
         return cells.stream()
-                .filter(cell -> cell instanceof BusCell && !((BusCell) cell).getPrimaryBlocksConnectedToBus().isEmpty())
+                .filter(cell -> cell instanceof BusCell && !((BusCell) cell).getPrimaryLegBlocks().isEmpty())
                 .map(BusCell.class::cast);
     }
 
@@ -648,20 +648,14 @@ public class Graph {
         getNodeBuses().forEach(nodeBus -> nodeBus.getAdjacentNodes().stream()
                 .filter(node -> node.getType() == Node.NodeType.SWITCH
                         && ((SwitchNode) node).getKind() != SwitchKind.DISCONNECTOR)
-                .forEach(nodeSwitch -> addDoubleNode(nodeBus, (SwitchNode) nodeSwitch, "")));
+                .forEach(nodeSwitch -> addDoubleNode(nodeBus, nodeSwitch, "")));
     }
 
     //the first element shouldn't be a Feeder
     public void extendFeederConnectedToBus() {
         getNodeBuses().forEach(nodeBus -> nodeBus.getAdjacentNodes().stream()
                 .filter(node -> node.getType() == Node.NodeType.FEEDER)
-                .forEach(feeder -> {
-                    removeEdge(nodeBus, feeder);
-                    FictitiousNode fn = new FictitiousNode(this, feeder.getLabel() + "_fictif");
-                    addNode(fn);
-                    addEdge(nodeBus, fn);
-                    addEdge(feeder, fn);
-                }));
+                .forEach(feeder -> addDoubleNode(nodeBus, feeder, "")));
     }
 
     public void extendSwitchBetweenBus(SwitchNode nodeSwitch) {
@@ -670,15 +664,15 @@ public class Graph {
         addDoubleNode((BusNode) copyAdj.get(1), nodeSwitch, "1");
     }
 
-    private void addDoubleNode(BusNode busNode, SwitchNode nodeSwitch, String suffix) {
-        removeEdge(busNode, nodeSwitch);
-        SwitchNode fNodeToBus = SwitchNode.createFictitious(Graph.this, nodeSwitch.getId() + "fSwitch" + suffix, nodeSwitch.isOpen());
+    private void addDoubleNode(BusNode busNode, Node node, String suffix) {
+        removeEdge(busNode, node);
+        SwitchNode fNodeToBus = SwitchNode.createFictitious(Graph.this, node.getId() + "fSwitch" + suffix, node.isOpen());
         addNode(fNodeToBus);
-        FictitiousNode fNodeToSw = new FictitiousNode(Graph.this, nodeSwitch.getId() + "fNode" + suffix);
+        FictitiousNode fNodeToSw = new FictitiousNode(Graph.this, node.getId() + "fNode" + suffix);
         addNode(fNodeToSw);
         addEdge(busNode, fNodeToBus);
         addEdge(fNodeToBus, fNodeToSw);
-        addEdge(fNodeToSw, nodeSwitch);
+        addEdge(fNodeToSw, node);
     }
 
     private void substitueNode(Node nodeOrigin, Node newNode) {

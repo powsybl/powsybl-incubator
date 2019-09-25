@@ -10,8 +10,14 @@ import java.util.List;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
+ * @author Nicolas Duchene
+ * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public interface PrimaryBlock extends Block {
+interface LegBlock extends Block {
 
-    List<Node> getNodes();
+    default FictitiousNode getLegNode() {
+        return (FictitiousNode) getExtremityNode(Extremity.END);
+    }
+
+    List<BusNode> getBusNodes();
 }

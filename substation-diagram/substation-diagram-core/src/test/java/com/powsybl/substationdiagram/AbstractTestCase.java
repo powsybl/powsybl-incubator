@@ -6,13 +6,6 @@
  */
 package com.powsybl.substationdiagram;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.UncheckedIOException;
-import java.nio.charset.StandardCharsets;
-
 import com.google.common.io.ByteStreams;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.Substation;
@@ -25,6 +18,13 @@ import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramInitialValuePro
 import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramStyleProvider;
 import com.powsybl.substationdiagram.svg.SVGWriter;
 import com.powsybl.substationdiagram.svg.SubstationDiagramStyleProvider;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>

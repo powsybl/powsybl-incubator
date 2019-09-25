@@ -6,35 +6,82 @@
  */
 package com.powsybl.substationdiagram.model;
 
+import com.powsybl.commons.PowsyblException;
+import com.powsybl.substationdiagram.layout.LayoutParameters;
+
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class InternCell extends BusCell {
+public class InternCell extends AbstractBusCell {
 
-    private Block centralBlock;
-
-    private Map<Side, Block> sideToBlock;
-
-    private Map<Side, List<PrimaryBlock>> sideToConnectedBlocks;
+    private Map<Side, LegBlock> legs;
+    private Block body;
+    private int hSpan;
+    private static Side BODYSIDE = Side.LEFT;
 
     public InternCell(Graph graph) {
         super(graph, CellType.INTERN);
-        centralBlock = null;
-        sideToConnectedBlocks = new EnumMap<>(Side.class);
-        sideToConnectedBlocks.put(Side.RIGHT, new ArrayList<>());
-        sideToConnectedBlocks.put(Side.LEFT, new ArrayList<>());
-        sideToBlock = new EnumMap<>(Side.class);
         setDirection(Direction.TOP);
+    }
+
+    public void organizeBlocks() {
+        legs = new EnumMap<>(Side.class);
+        List<LegBlock> candidateLegs = searchLegs();
+        if (getRootBlock().getType() == Block.Type.SERIAL && candidateLegs.size() == 2) {
+            SerialBlock serialRootBlock = (SerialBlock) getRootBlock();
+            assignLeg(serialRootBlock, candidateLegs.get(0));
+            assignLeg(serialRootBlock, candidateLegs.get(1));
+            body = serialRootBlock.extractBody(new ArrayList<>(legs.values()));
+            body.setOrientation(Orientation.HORIZONTAL);
+        } else if (getRootBlock() instanceof LegParralelBlock) {
+            legs.put(Side.UNDEFINED, (LegParralelBlock) getRootBlock());
+        } else {
+            throw new PowsyblException("InternCell pattern not recognized");
+        }
+    }
+
+    private void assignLeg(SerialBlock sb, LegBlock candidateLeg) {
+        Block.Extremity extremity = sb.whichExtremity(candidateLeg);
+        if (extremity != Block.Extremity.NONE) {
+            legs.put(extremityToSide(extremity), candidateLeg);
+        } else {
+            throw new PowsyblException("Unable to identify legs of internCell");
+        }
+    }
+
+    private Side extremityToSide(Block.Extremity extremity) {
+        if (extremity == Block.Extremity.START) {
+            return Side.LEFT;
+        }
+        if (extremity == Block.Extremity.END) {
+            return Side.RIGHT;
+        }
+        return Side.UNDEFINED;
+    }
+
+    private List<LegBlock> searchLegs() {
+        List<LegBlock> candidateLegs = new ArrayList<>();
+        List<LegPrimaryBlock> plbCopy = new ArrayList<>(getPrimaryLegBlocks());
+        while (!plbCopy.isEmpty()) {
+            LegPrimaryBlock lpb = plbCopy.get(0);
+            Block parentBlock = lpb.getParentBlock();
+            if (parentBlock instanceof LegParralelBlock) {
+                candidateLegs.add((LegBlock) parentBlock);
+                plbCopy.removeAll(((LegParralelBlock) parentBlock).subBlocks);
+            } else {
+                candidateLegs.add(lpb);
+                plbCopy.remove(lpb);
+            }
+        }
+        return candidateLegs;
     }
 
     public void postPositioningSettings() {
         identifyIfFlat();
-        refactorBlocks();
     }
 
     private void identifyIfFlat() {
@@ -50,134 +97,92 @@ public class InternCell extends BusCell {
         }
     }
 
-    /**
-     * <pre>
-     * the organisation of the block shall be
-     *     a parallelBlock of - from left to right :
-     *         1 serial block with:
-     *             lowerBlock: 1 (parallelBlocks or one primaryBlock) LefttNode to busNodes on the right
-     *             upperBlock: 1 central block (with startingNode = leftNode and endingNode = rightNode)
-     *         blocks - one or more / whatever type from RightNode to busNodes
-     * </pre>
-     */
-    public void rationalizeOrganization() {
-        unRavelBlocks();
-        refactorBlocks();
+    public boolean isFlat() {
+        return getDirection() == Direction.FLAT;
     }
 
-    private void unRavelBlocks() {
-        Block legBlock1 = null;
-        Block legBlock2;
-        List<Block> blocksToParalellize = new ArrayList<>();
-/*
-         Usually the rootBlock becomes a parallel block in an internCell considering
-         - a BusNode is always becoming a startingNode
-         - the merging process
-         then the block that is a serial one is the one having the central block, the others constituting another "leg"
-
-         One exception : it can be a serial block in case of a "one leg" intern cell on a single bus
-
-*/
-        if (getRootBlock().getType() == Block.Type.PARALLEL) {
-            for (Block block : ((ParallelBlock) getRootBlock()).getSubBlocks()) {
-                if (block instanceof SerialBlock && centralBlock == null) {
-                    SerialBlock bc = (SerialBlock) block;
-                    centralBlock = bc.getUpperBlock();
-                    legBlock1 = bc.getLowerBlock();
-                } else {
-                    blocksToParalellize.add(block);
-                }
-            }
-            if (blocksToParalellize.size() == 1) {
-                legBlock2 = blocksToParalellize.get(0);
-            } else {
-                legBlock2 = new ParallelBlock(blocksToParalellize, this, true);
-            }
-        } else {
-            legBlock2 = getRootBlock();
-        }
-
-        if (centralBlock == null) {
-            // case of a one leg internCell.
-            sideToBlock.put(Side.LEFT, legBlock2);
-        } else if (legBlock1 != null) {
-            fillInSideToBlock(legBlock1, legBlock2);
-        }
-    }
-
-    private void fillInSideToBlock(Block block1, Block block2) {
-        if (getOneNodeBusHPod(block1) > getOneNodeBusHPod(block2)) {
-            sideToBlock.put(Side.LEFT, block2);
-            sideToBlock.put(Side.RIGHT, block1);
-        } else {
-            sideToBlock.put(Side.LEFT, block1);
-            sideToBlock.put(Side.RIGHT, block2);
-        }
-    }
-
-    private void refactorBlocks() {
-        if (centralBlock == null) {
-            return;
-        }
-        SerialBlock bc = new SerialBlock(sideToBlock.get(Side.LEFT),
-                centralBlock, this);
-        ParallelBlock bp = new ParallelBlock(Arrays.asList(bc, sideToBlock.get(Side.RIGHT)), this, false);
-        if (getDirection() == Direction.FLAT) {
-            bp.setOrientation(Orientation.HORIZONTAL);
-        } else {
-            bp.setOrientation(Orientation.VERTICAL);
-            bc.setOrientation(Orientation.HORIZONTAL);
-            bc.getLowerBlock().setOrientation(Orientation.VERTICAL);
-        }
-
-        blocksSetting(bp, getPrimaryBlocksConnectedToBus());
-        identifyConnectedBlocks();
-    }
-
-    private int getOneNodeBusHPod(Block b) {
-        Position structuralPos = ((BusNode) b.getStartingNode()).getStructuralPosition();
-        return structuralPos == null ? -1 : structuralPos.getH();
-    }
-
-    private void identifyConnectedBlocks() {
-        getPrimaryBlocksConnectedToBus().forEach(block -> {
-            if (block.getNodes().contains(centralBlock.getStartingNode())) {
-                sideToConnectedBlocks.get(Side.LEFT).add(block);
-            } else if (block.getNodes().contains(centralBlock.getEndingNode())) {
-                sideToConnectedBlocks.get(Side.RIGHT).add(block);
-            }
-        });
+    public boolean isUniLeg() {
+        return legs.containsKey(Side.UNDEFINED);
     }
 
     public void reverseCell() {
-        Block swap = sideToBlock.get(Side.LEFT);
-        sideToBlock.put(Side.LEFT, sideToBlock.get(Side.RIGHT));
-        sideToBlock.put(Side.RIGHT, swap);
-        refactorBlocks();
+        body.reverseBlock();
+        if (legs.get(Side.LEFT) != null) {
+            LegBlock tmp = legs.get(Side.LEFT);
+            legs.put(Side.LEFT, legs.get(Side.RIGHT));
+            legs.put(Side.RIGHT, tmp);
+        }
     }
 
     public int getSideHPos(Side side) {
-        if (side == Side.LEFT) {
-            return getRootBlock().getPosition().getH();
-        }
-        Position rightBlockPos = getSideToBlock(Side.RIGHT).getPosition();
-        if (rightBlockPos.isAbsolute()) {
-            return rightBlockPos.getH();
-        }
-        return getRootBlock().getPosition().getH() + rightBlockPos.getH();
+        return getSideToLeg(side).getPosition().getH();
     }
 
-    public Block getSideToBlock(Side side) {
-        return sideToBlock.get(side);
+    @Override
+    public void blockSizing() {
+        legs.values().forEach(Block::sizing);
+        if (!isUniLeg()) {
+            body.sizing();
+        }
+    }
+
+    @Override
+    public int newHPosition(int hPosition) {
+        int h = hPosition;
+        if (isUniLeg()) {
+            legs.get(Side.UNDEFINED).getPosition().setH(h);
+            h += legs.get(Side.UNDEFINED).getPosition().getHSpan();
+        } else {
+            legs.get(Side.LEFT).getPosition().setH(h);
+            h += legs.get(Side.LEFT).getPosition().getHSpan();
+            if (isFlat()) {
+                body.getPosition().setHV(h, legs.get(Side.LEFT).getBusNodes().get(0).getStructuralPosition().getV());
+            } else {
+                h -= 1;
+                body.getPosition().setHV(h, 1);
+            }
+            h += body.getPosition().getHSpan();
+            legs.get(Side.RIGHT).getPosition().setH(h);
+            h += legs.get(Side.RIGHT).getPosition().getHSpan();
+        }
+        return h;
+    }
+
+    public int newHPosition(int hPosition, Side side) {
+        int h = hPosition;
+        if (side == Side.LEFT) {
+            legs.get(Side.LEFT).getPosition().setH(h);
+            h += legs.get(Side.LEFT).getPosition().getHSpan();
+        }
+        if (side == BODYSIDE) {
+            h -= 1;
+            body.getPosition().setHV(h, 1);
+            h += body.getPosition().getHSpan();
+        }
+        if (side == Side.RIGHT) {
+            legs.get(Side.RIGHT).getPosition().setH(h);
+            h += legs.get(Side.RIGHT).getPosition().getHSpan();
+        }
+        return h;
+    }
+
+    @Override
+    public void calculateCoord(LayoutParameters layoutParam) {
+        legs.values().forEach(lb -> lb.calculateRootCoord(layoutParam));
+        if (!isUniLeg()) {
+            body.calculateRootCoord(layoutParam);
+        }
+    }
+
+    public Block getSideToLeg(Side side) {
+        return legs.get(side);
     }
 
     public List<BusNode> getSideBusNodes(Side side) {
-        return sideToConnectedBlocks.get(side).stream()
-                .map(PrimaryBlock::getBusNode)
-                .collect(Collectors.toList());
+        return legs.get(side).getBusNodes();
     }
 
-    public Block getCentralBlock() {
-        return centralBlock;
+    public Block getBodyBlock() {
+        return body;
     }
 }

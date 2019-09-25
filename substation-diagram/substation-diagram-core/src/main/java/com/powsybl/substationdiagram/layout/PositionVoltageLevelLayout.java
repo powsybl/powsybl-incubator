@@ -50,11 +50,9 @@ public class PositionVoltageLevelLayout implements VoltageLevelLayout {
         graph.getCells().stream()
                 .filter(cell -> cell.getType() == Cell.CellType.EXTERN
                         || cell.getType() == Cell.CellType.INTERN)
-                .forEach(cell ->
-                        cell.getRootBlock().calculateCoord(layoutParam));
+                .forEach(cell -> cell.calculateCoord(layoutParam));
         graph.getCells().stream()
                 .filter(cell -> cell.getType() == Cell.CellType.SHUNT)
-                .forEach(cell ->
-                        cell.getRootBlock().calculateCoord(layoutParam));
+                .forEach(cell -> cell.calculateCoord(layoutParam));
     }
 }

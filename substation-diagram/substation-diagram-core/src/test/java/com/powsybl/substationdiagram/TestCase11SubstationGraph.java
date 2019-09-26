@@ -39,6 +39,7 @@ import com.powsybl.substationdiagram.layout.VerticalSubstationLayoutFactory;
 import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
 import com.powsybl.substationdiagram.model.SubstationGraph;
 import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramStyleProvider;
+import com.powsybl.substationdiagram.svg.SVGWriter;
 import com.powsybl.substationdiagram.util.NominalVoltageSubstationDiagramStyleProvider;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
@@ -462,7 +463,7 @@ public class TestCase11SubstationGraph extends AbstractTestCase {
         SubstationDiagram diagram = SubstationDiagram.build(substation);
         Path pathSVG = Paths.get(System.getProperty("user.home"), "substDiag.svg");
         Path pathMetadata = Paths.get(System.getProperty("user.home"), "substDiag_metadata.json");
-        diagram.writeSvg(new ResourcesComponentLibrary("/ConvergenceLibrary"), layoutParameters, pathSVG, network);
+        diagram.writeSvg(new SVGWriter(new ResourcesComponentLibrary("/ConvergenceLibrary"), layoutParameters), pathSVG, network);
         assertTrue(Files.exists(pathSVG));
         assertTrue(Files.exists(pathMetadata));
         try {

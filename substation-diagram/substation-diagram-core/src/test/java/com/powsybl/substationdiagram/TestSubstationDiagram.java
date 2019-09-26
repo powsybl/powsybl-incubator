@@ -13,6 +13,8 @@ import com.powsybl.iidm.network.*;
 import com.powsybl.substationdiagram.layout.*;
 import com.powsybl.substationdiagram.library.ComponentLibrary;
 import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
+import com.powsybl.substationdiagram.svg.SVGWriter;
+import com.powsybl.substationdiagram.svg.SVGWriterInterface;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
 import org.junit.Before;
@@ -75,6 +77,24 @@ public class TestSubstationDiagram extends AbstractTestCase {
         Path outSvg = tmpDir.resolve("sub.svg");
 
         SubstationDiagram.build(substation).writeSvg(componentLibrary, layoutParameters, network, outSvg);
+        String svgStr = normalizeLineSeparator(new String(Files.readAllBytes(outSvg), StandardCharsets.UTF_8));
+
+        String refSvg = normalizeLineSeparator(
+                new String(ByteStreams.toByteArray(getClass().getResourceAsStream("/TestSubstation.svg")),
+                        StandardCharsets.UTF_8));
+        assertEquals(refSvg, svgStr);
+    }
+
+    @Test
+    public void testWriter() throws IOException {
+        ComponentLibrary componentLibrary = new ResourcesComponentLibrary("/ConvergenceLibrary");
+        LayoutParameters layoutParameters = new LayoutParameters();
+
+        SVGWriterInterface writer = new SVGWriter(componentLibrary, layoutParameters);
+
+        Path outSvg = tmpDir.resolve("sub.svg");
+
+        SubstationDiagram.build(substation).writeSvg(writer, network, outSvg);
         String svgStr = normalizeLineSeparator(new String(Files.readAllBytes(outSvg), StandardCharsets.UTF_8));
 
         String refSvg = normalizeLineSeparator(

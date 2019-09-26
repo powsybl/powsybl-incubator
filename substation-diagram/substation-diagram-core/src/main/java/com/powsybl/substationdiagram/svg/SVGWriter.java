@@ -54,24 +54,24 @@ import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.escapeId
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
  */
-public class SVGWriter {
+public class SVGWriter implements SVGWriterInterface {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SVGWriter.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(SVGWriter.class);
 
-    private static final String CLASS = "class";
-    private static final String TRANSFORM = "transform";
-    private static final String TRANSLATE = "translate";
-    private static final int FONT_SIZE = 8;
-    private static final String FONT_FAMILY = "Verdana";
-    private static final double LABEL_OFFSET = 5d;
-    private static final int FONT_VOLTAGE_LEVEL_LABEL_SIZE = 12;
-    private static final String POLYLINE = "polyline";
-    private static final String POINTS = "points";
-    private static final String STROKE = "stroke";
+    protected static final String CLASS = "class";
+    protected static final String TRANSFORM = "transform";
+    protected static final String TRANSLATE = "translate";
+    protected static final int FONT_SIZE = 8;
+    protected static final String FONT_FAMILY = "Verdana";
+    protected static final double LABEL_OFFSET = 5d;
+    protected static final int FONT_VOLTAGE_LEVEL_LABEL_SIZE = 12;
+    protected static final String POLYLINE = "polyline";
+    protected static final String POINTS = "points";
+    protected static final String STROKE = "stroke";
 
-    private final ComponentLibrary componentLibrary;
+    protected final ComponentLibrary componentLibrary;
 
-    private final LayoutParameters layoutParameters;
+    protected final LayoutParameters layoutParameters;
 
     public SVGWriter(ComponentLibrary componentLibrary, LayoutParameters layoutParameters) {
         this.componentLibrary = Objects.requireNonNull(componentLibrary);
@@ -84,6 +84,7 @@ public class SVGWriter {
      * @param graph   graph
      * @param svgFile file
      */
+    @Override
     public GraphMetadata write(Graph graph, SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider, Path svgFile) {
         try (Writer writer = Files.newBufferedWriter(svgFile)) {
             return write(graph, initProvider, styleProvider, writer);
@@ -98,6 +99,7 @@ public class SVGWriter {
      * @param graph  graph
      * @param writer writer
      */
+    @Override
     public GraphMetadata write(Graph graph, SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider, Writer writer) {
         DOMImplementation domImpl = GenericDOMImplementation.getDOMImplementation();
 
@@ -143,7 +145,7 @@ public class SVGWriter {
     /**
      * Create the SVGDocument corresponding to the graph
      */
-    private GraphMetadata writegraph(Graph graph, Document document, SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider) {
+    protected GraphMetadata writegraph(Graph graph, Document document, SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider) {
         GraphMetadata metadata = new GraphMetadata();
 
         Element root = document.createElement("g");
@@ -187,6 +189,7 @@ public class SVGWriter {
      * @param graph   substation graph
      * @param svgFile file
      */
+    @Override
     public GraphMetadata write(SubstationGraph graph, SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider,
                                Path svgFile) {
         try (Writer writer = Files.newBufferedWriter(svgFile)) {
@@ -202,6 +205,7 @@ public class SVGWriter {
      * @param graph  substation graph
      * @param writer writer
      */
+    @Override
     public GraphMetadata write(SubstationGraph graph, SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider,
                                Writer writer) {
         DOMImplementation domImpl = GenericDOMImplementation.getDOMImplementation();
@@ -225,10 +229,15 @@ public class SVGWriter {
         return metadata;
     }
 
+    @Override
+    public LayoutParameters getLayoutParameters() {
+        return layoutParameters;
+    }
+
     /**
      * Create the SVGDocument corresponding to the substation graph
      */
-    private GraphMetadata writegraph(SubstationGraph graph, Document document, SubstationDiagramInitialValueProvider initProvider,
+    protected GraphMetadata writegraph(SubstationGraph graph, Document document, SubstationDiagramInitialValueProvider initProvider,
                                      SubstationDiagramStyleProvider styleProvider) {
         GraphMetadata metadata = new GraphMetadata();
 
@@ -310,7 +319,7 @@ public class SVGWriter {
     /*
      * Drawing the grid lines (if required)
      */
-    private Element drawGrid(Graph graph, Document document, GraphMetadata metadata) {
+    protected Element drawGrid(Graph graph, Document document, GraphMetadata metadata) {
         int maxH = graph.getNodeBuses().stream()
                 .mapToInt(nodeBus -> nodeBus.getPosition().getH() + nodeBus.getPosition().getHSpan())
                 .max().orElse(0);
@@ -355,13 +364,13 @@ public class SVGWriter {
         return gridRoot;
     }
 
-    private Element drawGridHorizontalLine(Document document, Graph graph, int maxH, double y) {
+    protected Element drawGridHorizontalLine(Document document, Graph graph, int maxH, double y) {
         return drawGridLine(document,
                 layoutParameters.getInitialXBus() + graph.getX(), y,
                 layoutParameters.getInitialXBus() + maxH * layoutParameters.getCellWidth() + graph.getX(), y);
     }
 
-    private Element drawGridVerticalLine(Document document, Graph graph, int maxV, double x) {
+    protected Element drawGridVerticalLine(Document document, Graph graph, int maxV, double x) {
         return drawGridLine(document,
                 x, layoutParameters.getInitialYBus()
                         - layoutParameters.getStackHeight() - layoutParameters.getExternCellHeight() + graph.getY(),
@@ -370,7 +379,7 @@ public class SVGWriter {
                         + layoutParameters.getVerticalSpaceBus() * maxV + graph.getY());
     }
 
-    private Element drawGridLine(Document document, double x1, double y1, double x2, double y2) {
+    protected Element drawGridLine(Document document, double x1, double y1, double x2, double y2) {
         Element line = document.createElement("line");
         line.setAttribute("x1", Double.toString(x1));
         line.setAttribute("x2", Double.toString(x2));
@@ -384,7 +393,7 @@ public class SVGWriter {
     /*
      * Drawing the voltageLevel graph nodes
      */
-    private void drawNodes(Element root, Graph graph, GraphMetadata metadata,
+    protected void drawNodes(Element root, Graph graph, GraphMetadata metadata,
                            AnchorPointProvider anchorPointProvider, SubstationDiagramInitialValueProvider initProvider,
                            SubstationDiagramStyleProvider styleProvider) {
         graph.getNodes().forEach(node -> {
@@ -416,7 +425,7 @@ public class SVGWriter {
         });
     }
 
-    private void setMetadata(GraphMetadata metadata, Node node, String nodeId, Graph graph, BusCell.Direction direction, AnchorPointProvider anchorPointProvider) {
+    protected void setMetadata(GraphMetadata metadata, Node node, String nodeId, Graph graph, BusCell.Direction direction, AnchorPointProvider anchorPointProvider) {
         String nextVId = null;
         if (node instanceof FeederBranchNode) {
             nextVId = ((FeederBranchNode) node).getVlOtherSide().getId();
@@ -441,7 +450,7 @@ public class SVGWriter {
         }
     }
 
-    private void drawNodeLabel(Element g, Node node, SubstationDiagramInitialValueProvider initProvider, BusCell.Direction direction) {
+    protected void drawNodeLabel(Element g, Node node, SubstationDiagramInitialValueProvider initProvider, BusCell.Direction direction) {
         if (node instanceof FeederNode) {
             double yShift = -LABEL_OFFSET;
             if (node.getCell() != null) {
@@ -475,7 +484,7 @@ public class SVGWriter {
     /*
      * Drawing the graph label
      */
-    private void drawGraphLabel(Element root, Graph graph, GraphMetadata metadata) {
+    protected void drawGraphLabel(Element root, Graph graph, GraphMetadata metadata) {
         // drawing the label of the voltageLevel
         String idLabelVoltageLevel = "LABEL_VL_" + graph.getVoltageLevel().getId();
         Element gLabel = root.getOwnerDocument().createElement("g");
@@ -500,7 +509,7 @@ public class SVGWriter {
     /*
      * Drawing the voltageLevel graph busbar sections
      */
-    private void drawBus(BusNode node, Element g) {
+    protected void drawBus(BusNode node, Element g) {
         Element line = g.getOwnerDocument().createElement("line");
         line.setAttribute("x1", "0");
         line.setAttribute("y1", "0");
@@ -522,7 +531,7 @@ public class SVGWriter {
     /*
      * Drawing the voltageLevel graph busbar section names and feeder names
      */
-    private void drawLabel(String str, boolean rotated, double xShift, double yShift, Element g,
+    protected void drawLabel(String str, boolean rotated, double xShift, double yShift, Element g,
                            int fontSize) {
         Element label = g.getOwnerDocument().createElement("text");
         label.setAttribute("x", String.valueOf(xShift));
@@ -536,13 +545,13 @@ public class SVGWriter {
         g.appendChild(label);
     }
 
-    private boolean canInsertComponentSVG(Node node) {
+    protected boolean canInsertComponentSVG(Node node) {
         return layoutParameters.isShowInternalNodes() ||
                 ((!node.isFictitious() && node.getType() != Node.NodeType.SHUNT) ||
                         (node.isFictitious() && node.getComponentType() == ComponentType.THREE_WINDINGS_TRANSFORMER));
     }
 
-    private void incorporateComponents(Node node, Element g, SubstationDiagramStyleProvider styleProvider) {
+    protected void incorporateComponents(Node node, Element g, SubstationDiagramStyleProvider styleProvider) {
         SVGOMDocument obj = componentLibrary.getSvgDocument(node.getComponentType());
         transformComponent(node, g);
         if (obj != null && canInsertComponentSVG(node)) {
@@ -553,7 +562,7 @@ public class SVGWriter {
     /*
      * Handling the transformer SVG part (rotation, colorization)
      */
-    private void handleTransformerSvgDocument(Node node, SubstationDiagramStyleProvider styleProvider,
+    protected void handleTransformerSvgDocument(Node node, SubstationDiagramStyleProvider styleProvider,
                                               ComponentSize size, org.w3c.dom.Node n) {
         Optional<String> color = Optional.empty();
 
@@ -620,7 +629,7 @@ public class SVGWriter {
     /*
      * Handling the inductor SVG part (colorization)
      */
-    private void handleInductorSvgDocument(Node node, SubstationDiagramStyleProvider styleProvider, org.w3c.dom.Node n) {
+    protected void handleInductorSvgDocument(Node node, SubstationDiagramStyleProvider styleProvider, org.w3c.dom.Node n) {
         Optional<String> color = styleProvider.getColor(((Feeder2WTNode) node).getVlOtherSide());
 
         if (color.isPresent()) {
@@ -629,7 +638,7 @@ public class SVGWriter {
         }
     }
 
-    private void insertComponentSVGIntoDocumentSVG(SVGOMDocument obj, Element g, Node node,
+    protected void insertComponentSVGIntoDocumentSVG(SVGOMDocument obj, Element g, Node node,
                                                    SubstationDiagramStyleProvider styleProvider,
                                                    ComponentSize size) {
         // The following code work correctly considering SVG part describing the component is the first child of "obj" the SVGDocument.
@@ -651,7 +660,7 @@ public class SVGWriter {
         }
     }
 
-    private void insertRotatedComponentSVGIntoDocumentSVG(SVGOMDocument obj, Element g, double angle, double cx, double cy) {
+    protected void insertRotatedComponentSVGIntoDocumentSVG(SVGOMDocument obj, Element g, double angle, double cx, double cy) {
         // The following code work correctly considering SVG part describing the component is the first child of "obj" the SVGDocument.
         // If SVG are written otherwise, it will not work correctly.
 
@@ -666,7 +675,7 @@ public class SVGWriter {
         }
     }
 
-    private void transformComponent(Node node, Element g) {
+    protected void transformComponent(Node node, Element g) {
         ComponentSize componentSize = componentLibrary.getSize(node.getComponentType());
 
         if (!node.isRotated()) {
@@ -698,7 +707,7 @@ public class SVGWriter {
                         + Precision.round(e1, precision) + "," + Precision.round(f1, precision) + ")");
     }
 
-    private void transformArrow(List<Double> points, ComponentSize componentSize, double shift, Element g) {
+    protected void transformArrow(List<Double> points, ComponentSize componentSize, double shift, Element g) {
 
         double x1 = points.get(0);
         double y1 = points.get(1);
@@ -742,7 +751,7 @@ public class SVGWriter {
         }
     }
 
-    private void insertArrowsAndLabels(String wireId, List<Double> points, Element root, Node n, GraphMetadata metadata, SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider) {
+    protected void insertArrowsAndLabels(String wireId, List<Double> points, Element root, Node n, GraphMetadata metadata, SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider) {
         InitialValue init = initProvider.getInitialValue(n);
         ComponentMetadata cd = metadata.getComponentMetadata(ComponentType.ARROW);
 
@@ -811,7 +820,7 @@ public class SVGWriter {
     /*
      * Drawing the voltageLevel graph edges
      */
-    private void drawEdges(Element root, Graph graph, GraphMetadata metadata, AnchorPointProvider anchorPointProvider, SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider) {
+    protected void drawEdges(Element root, Graph graph, GraphMetadata metadata, AnchorPointProvider anchorPointProvider, SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider) {
         String vId = graph.getVoltageLevel().getId();
         try {
             for (Edge edge : graph.getEdges()) {
@@ -860,7 +869,7 @@ public class SVGWriter {
     /*
      * Drawing the substation graph edges (snakelines between voltageLevel diagram)
      */
-    private void drawSnakeLines(Element root, SubstationGraph graph, GraphMetadata metadata) {
+    protected void drawSnakeLines(Element root, SubstationGraph graph, GraphMetadata metadata) {
 
         for (TwtEdge edge : graph.getEdges()) {
             String vId1 = edge.getNode1().getGraph().getVoltageLevel().getId();
@@ -903,7 +912,7 @@ public class SVGWriter {
         }
     }
 
-    private String pointsListToString(List<Double> pol) {
+    protected String pointsListToString(List<Double> pol) {
 
         return IntStream.range(0, pol.size())
                 .mapToObj(n -> n % 2 == 0 ? pol.get(n) + layoutParameters.getTranslateX() : pol.get(n) + layoutParameters.getTranslateY())

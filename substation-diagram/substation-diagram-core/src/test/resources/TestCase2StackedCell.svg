@@ -39,17 +39,17 @@
         </g>
         <g class="substation-diagram BUSBAR_SECTION bbs1" id="bbs1" transform="translate(30.0,310.0)">
             <line y2="0" x1="0" class="bus_vl" x2="30.0" y1="0"/>
-            <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs1</text>
+            <text x="-5.0" font-size="8" y="-5.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="bbs1_NW_LABEL">bbs1</text>
         </g>
         <g class="substation-diagram BUSBAR_SECTION bbs2" id="bbs2" transform="translate(30.0,335.0)">
             <line y2="0" x1="0" class="bus_vl" x2="30.0" y1="0"/>
-            <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs2</text>
+            <text x="-5.0" font-size="8" y="-5.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="bbs2_NW_LABEL">bbs2</text>
         </g>
         <g class="substation-diagram LOAD l" id="l" transform="translate(37.0,25.5)">
     <rect height="9" width="16"/>
     <line y2="9" x1="0" x2="16" y1="0"/>
     <line y2="9" x1="16" x2="0" y1="0"/>
-<text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">l</text>
+<text x="-5.0" font-size="8" y="-5.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="l_N_LABEL">l</text>
         </g>
         <g class="substation-diagram NODE FICT_vl_2" id="FICT_vl_2" transform="translate(41.0,276.0)">
     <circle r="4" cx="4" cy="4"/>

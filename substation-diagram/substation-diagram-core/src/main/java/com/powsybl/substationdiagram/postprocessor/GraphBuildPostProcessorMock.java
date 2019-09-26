@@ -16,8 +16,8 @@ import java.util.Objects;
  * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
  */
 @AutoService(GraphBuildPostProcessor.class)
-public class GraphBuildPostProcessorStub implements GraphBuildPostProcessor {
-    private static final String ID = "PostProcessorStub";
+public class GraphBuildPostProcessorMock implements GraphBuildPostProcessor {
+    private static final String ID = "PostProcessorMock";
 
     public String getId() {
         return ID;
@@ -26,6 +26,6 @@ public class GraphBuildPostProcessorStub implements GraphBuildPostProcessor {
     public void addNode(Graph graph) {
         Objects.requireNonNull(graph);
 
-        // this stub does nothing
+        // this mock does nothing
     }
 }

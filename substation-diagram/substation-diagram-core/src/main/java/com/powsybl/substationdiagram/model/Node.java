@@ -7,7 +7,6 @@
 package com.powsybl.substationdiagram.model;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.powsybl.substationdiagram.library.ComponentType;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
@@ -42,7 +41,7 @@ public class Node implements BaseNode {
 
     private final String name;
 
-    private ComponentType componentType;
+    private String componentType;
 
     private final boolean fictitious;
 
@@ -67,7 +66,7 @@ public class Node implements BaseNode {
     /**
      * Constructor
      */
-    protected Node(NodeType type, String id, String name, ComponentType componentType, boolean fictitious, Graph graph) {
+    protected Node(NodeType type, String id, String name, String componentType, boolean fictitious, Graph graph) {
         this.type = Objects.requireNonNull(type);
         this.name = name;
         this.componentType = Objects.requireNonNull(componentType);
@@ -95,11 +94,11 @@ public class Node implements BaseNode {
     }
 
     @Override
-    public ComponentType getComponentType() {
+    public String getComponentType() {
         return componentType;
     }
 
-    public void setComponentType(ComponentType componentType) {
+    public void setComponentType(String componentType) {
         this.componentType = componentType;
     }
 

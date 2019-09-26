@@ -10,7 +10,6 @@ import com.powsybl.cgmes.dl.conversion.CgmesDLUtils;
 import com.powsybl.cgmes.iidm.extensions.dl.*;
 import com.powsybl.iidm.network.*;
 import com.powsybl.substationdiagram.layout.*;
-import com.powsybl.substationdiagram.library.ComponentType;
 import com.powsybl.substationdiagram.model.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -19,6 +18,12 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static com.powsybl.substationdiagram.library.ComponentTypeName.DANGLING_LINE;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.LINE;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.THREE_WINDINGS_TRANSFORMER;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.TWO_WINDINGS_TRANSFORMER;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.VSC_CONVERTER_STATION;
 
 /**
  * @author Christian Biasuzzi <christian.biasuzzi@techrain.eu>
@@ -46,7 +51,7 @@ public class LayoutToCgmesExtensionsConverter {
     }
 
     private boolean isLineNode(Node node) {
-        return Arrays.asList(ComponentType.LINE, ComponentType.DANGLING_LINE, ComponentType.VSC_CONVERTER_STATION).contains(node.getComponentType());
+        return Arrays.asList(LINE, DANGLING_LINE, VSC_CONVERTER_STATION).contains(node.getComponentType());
     }
 
     private String getBranchId(String branchNodeId) {
@@ -100,7 +105,7 @@ public class LayoutToCgmesExtensionsConverter {
             double vlNodeMaxY = vlGraph.getNodes().stream().map(Node::getY).sorted(Collections.reverseOrder()).findFirst().orElse(0.0);
             subsBoundary.update(vlNodeMaxX, vlNodeMaxY);
 
-            List<ComponentType> componentTypeList = vlGraph.getNodes().stream().map(Node::getComponentType).collect(Collectors.toList());
+            List<String> componentTypeList = vlGraph.getNodes().stream().map(Node::getComponentType).collect(Collectors.toList());
             LOG.debug("Voltage level id: {} ({}); {} ;component types: {}; max x,y: {}, {}", voltageLevel.getId(), voltageLevel.getName(), voltageLevel.getTopologyKind(), componentTypeList, vlNodeMaxX, vlNodeMaxY);
 
             //iterate over the voltage level's equipments, and fill the IIDM CGMES DL extensions with the computed layout info
@@ -241,13 +246,13 @@ public class LayoutToCgmesExtensionsConverter {
     }
 
     private boolean checkNode(ThreeWindingsTransformer threeWindingsTransformer, Node node) {
-        return node.getComponentType().equals(ComponentType.THREE_WINDINGS_TRANSFORMER) &&
+        return node.getComponentType().equals(THREE_WINDINGS_TRANSFORMER) &&
             (((node instanceof Fictitious3WTNode) && ((Fictitious3WTNode) node).getTransformer().getId().equals(threeWindingsTransformer.getId()))
                 || ((node instanceof Feeder3WTNode) && ((Feeder3WTNode) node).getTransformer().getId().equals(threeWindingsTransformer.getId())));
     }
 
     private boolean checkNode(TwoWindingsTransformer twoWindingsTransformer, Node node) {
-        return node.getComponentType().equals(ComponentType.TWO_WINDINGS_TRANSFORMER) && node.getId().startsWith(twoWindingsTransformer.getId());
+        return node.getComponentType().equals(TWO_WINDINGS_TRANSFORMER) && node.getId().startsWith(twoWindingsTransformer.getId());
     }
 
     private double rotationValue(Node node) {

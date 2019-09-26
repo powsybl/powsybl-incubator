@@ -9,15 +9,16 @@ package com.powsybl.substationdiagram.model;
 import com.powsybl.iidm.network.Branch;
 import com.powsybl.iidm.network.Line;
 import com.powsybl.iidm.network.VoltageLevel;
-import com.powsybl.substationdiagram.library.ComponentType;
 
 import java.util.Objects;
+
+import static com.powsybl.substationdiagram.library.ComponentTypeName.LINE;
 
 /**
  * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
  */
 public class FeederLineNode extends FeederBranchNode {
-    protected FeederLineNode(String id, String name, ComponentType componentType, boolean fictitious, Graph graph, VoltageLevel vlOtherSide) {
+    protected FeederLineNode(String id, String name, String componentType, boolean fictitious, Graph graph, VoltageLevel vlOtherSide) {
         super(id, name, componentType, fictitious, graph, vlOtherSide);
     }
 
@@ -29,6 +30,6 @@ public class FeederLineNode extends FeederBranchNode {
         String name = line.getName() + "_" + side.name();
         Branch.Side otherSide = side == Branch.Side.ONE ? Branch.Side.TWO : Branch.Side.ONE;
         VoltageLevel vlOtherSide = line.getTerminal(otherSide).getVoltageLevel();
-        return new FeederLineNode(id, name, ComponentType.LINE, false, graph, vlOtherSide);
+        return new FeederLineNode(id, name, LINE, false, graph, vlOtherSide);
     }
 }

@@ -60,7 +60,7 @@ public class IeeeCdfBranch {
      * 3 - Variable tap (turns ratio) for MVAR control
      * 4 - Variable phase angle for MW control (phase shifter)
      */
-    enum Type {
+    public enum Type {
         TRANSMISSION_LINE,
         FIXED_TAP,
         VARIABLE_TAP_FOR_VOLTAVE_CONTROL,

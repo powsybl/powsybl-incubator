@@ -9,6 +9,7 @@ package com.powsybl.ieeecdf.converter;
 import com.powsybl.commons.datasource.ResourceDataSource;
 import com.powsybl.commons.datasource.ResourceSet;
 import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.xml.NetworkXml;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -22,5 +23,6 @@ public class IeeeCdfImporterTest {
     public void test14() {
         assertTrue(new IeeeCdfImporter().exists(new ResourceDataSource("ieee14cdf", new ResourceSet("/", "ieee14cdf.txt"))));
         Network network = IeeeCdfNetworkFactory.create14();
+        NetworkXml.write(network, System.out);
     }
 }

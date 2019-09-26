@@ -50,7 +50,7 @@ public class IeeeCdfBus {
      * 2 - Hold voltage within VAR limits (gen, PV)
      * 3 - Hold voltage and angle (swing, V-Theta) (must always have one)
      */
-    enum Type {
+    public enum Type {
         UNREGULATED,
         HOLD_MVAR_GENERATION_WITHIN_VOLTAGE_LIMITS,
         HOLD_VOLTAGE_WITHIN_VAR_LIMITS,

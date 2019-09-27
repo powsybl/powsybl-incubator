@@ -8,7 +8,6 @@ package com.powsybl.substationdiagram.cgmes;
 
 import com.powsybl.cgmes.iidm.extensions.dl.*;
 import com.powsybl.iidm.network.*;
-import com.powsybl.substationdiagram.library.ComponentType;
 import com.powsybl.substationdiagram.model.Graph;
 import com.powsybl.substationdiagram.model.Node;
 import org.junit.Before;
@@ -16,6 +15,11 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
+import static com.powsybl.substationdiagram.library.ComponentTypeName.BREAKER;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.BUSBAR_SECTION;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.DISCONNECTOR;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.GENERATOR;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.LINE;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -221,12 +225,12 @@ public abstract class AbstractNodeTopologyTest extends AbstractCgmesVoltageLevel
         assertEquals("Breaker1", graph.getNodes().get(4).getId());
         assertEquals("Disconnector2", graph.getNodes().get(5).getId());
 
-        assertEquals(ComponentType.BUSBAR_SECTION, graph.getNodes().get(0).getComponentType());
-        assertEquals(ComponentType.LINE, graph.getNodes().get(1).getComponentType());
-        assertEquals(ComponentType.GENERATOR, graph.getNodes().get(2).getComponentType());
-        assertEquals(ComponentType.DISCONNECTOR, graph.getNodes().get(3).getComponentType());
-        assertEquals(ComponentType.BREAKER, graph.getNodes().get(4).getComponentType());
-        assertEquals(ComponentType.DISCONNECTOR, graph.getNodes().get(5).getComponentType());
+        assertEquals(BUSBAR_SECTION, graph.getNodes().get(0).getComponentType());
+        assertEquals(LINE, graph.getNodes().get(1).getComponentType());
+        assertEquals(GENERATOR, graph.getNodes().get(2).getComponentType());
+        assertEquals(DISCONNECTOR, graph.getNodes().get(3).getComponentType());
+        assertEquals(BREAKER, graph.getNodes().get(4).getComponentType());
+        assertEquals(DISCONNECTOR, graph.getNodes().get(5).getComponentType());
 
         assertEquals(2, graph.getNodes().get(0).getAdjacentNodes().size());
         checkAdjacentNodes(graph.getNodes().get(0), Arrays.asList("Disconnector1", "Generator"));

@@ -6,7 +6,7 @@
  */
 package com.powsybl.substationdiagram.model;
 
-import com.powsybl.substationdiagram.library.ComponentType;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.NODE;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
@@ -16,10 +16,10 @@ import com.powsybl.substationdiagram.library.ComponentType;
 public class FictitiousNode extends Node {
 
     public FictitiousNode(Graph graph, String id) {
-        super(NodeType.FICTITIOUS, id, id, ComponentType.NODE, true, graph);
+        super(NodeType.FICTITIOUS, id, id, NODE, true, graph);
     }
 
-    public FictitiousNode(Graph graph, String id, ComponentType componentType) {
+    public FictitiousNode(Graph graph, String id, String componentType) {
         super(NodeType.FICTITIOUS, id, id, componentType, true, graph);
     }
 

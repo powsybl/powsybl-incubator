@@ -13,8 +13,8 @@ import com.powsybl.iidm.network.*;
 import com.powsybl.substationdiagram.layout.*;
 import com.powsybl.substationdiagram.library.ComponentLibrary;
 import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
+import com.powsybl.substationdiagram.svg.DefaultSVGWriter;
 import com.powsybl.substationdiagram.svg.SVGWriter;
-import com.powsybl.substationdiagram.svg.SVGWriterInterface;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
 import org.junit.Before;
@@ -90,7 +90,7 @@ public class TestSubstationDiagram extends AbstractTestCase {
         ComponentLibrary componentLibrary = new ResourcesComponentLibrary("/ConvergenceLibrary");
         LayoutParameters layoutParameters = new LayoutParameters();
 
-        SVGWriterInterface writer = new SVGWriter(componentLibrary, layoutParameters);
+        SVGWriter writer = new DefaultSVGWriter(componentLibrary, layoutParameters);
 
         Path outSvg = tmpDir.resolve("sub.svg");
 

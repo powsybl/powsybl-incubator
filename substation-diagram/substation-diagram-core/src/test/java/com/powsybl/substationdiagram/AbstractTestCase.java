@@ -16,7 +16,7 @@ import com.powsybl.substationdiagram.model.Graph;
 import com.powsybl.substationdiagram.model.SubstationGraph;
 import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramInitialValueProvider;
 import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramStyleProvider;
-import com.powsybl.substationdiagram.svg.SVGWriter;
+import com.powsybl.substationdiagram.svg.DefaultSVGWriter;
 import com.powsybl.substationdiagram.svg.SubstationDiagramStyleProvider;
 
 import java.io.IOException;
@@ -63,7 +63,7 @@ public abstract class AbstractTestCase {
 
     public void compareSvg(Graph graph, LayoutParameters layoutParameters, String refSvgName) {
         try (StringWriter writer = new StringWriter()) {
-            new SVGWriter(componentLibrary, layoutParameters)
+            new DefaultSVGWriter(componentLibrary, layoutParameters)
                     .write(graph, new DefaultSubstationDiagramInitialValueProvider(network), styleProvider, writer);
             writer.flush();
 
@@ -81,7 +81,7 @@ public abstract class AbstractTestCase {
 
     public void compareSvg(Graph graph, LayoutParameters layoutParameters, String refSvgName, SubstationDiagramStyleProvider myStyleProvider) {
         try (StringWriter writer = new StringWriter()) {
-            new SVGWriter(componentLibrary, layoutParameters)
+            new DefaultSVGWriter(componentLibrary, layoutParameters)
                     .write(graph, new DefaultSubstationDiagramInitialValueProvider(network), myStyleProvider, writer);
             writer.flush();
 
@@ -99,7 +99,7 @@ public abstract class AbstractTestCase {
 
     public void compareSvg(SubstationGraph graph, LayoutParameters layoutParameters, String refSvgName) {
         try (StringWriter writer = new StringWriter()) {
-            new SVGWriter(componentLibrary, layoutParameters)
+            new DefaultSVGWriter(componentLibrary, layoutParameters)
                     .write(graph, new DefaultSubstationDiagramInitialValueProvider(network), styleProvider, writer);
             writer.flush();
 
@@ -118,7 +118,7 @@ public abstract class AbstractTestCase {
     public void compareSvg(SubstationGraph graph, LayoutParameters layoutParameters,
                            String refSvgName, SubstationDiagramStyleProvider myStyleProvider) {
         try (StringWriter writer = new StringWriter()) {
-            new SVGWriter(componentLibrary, layoutParameters)
+            new DefaultSVGWriter(componentLibrary, layoutParameters)
                     .write(graph, new DefaultSubstationDiagramInitialValueProvider(network), myStyleProvider, writer);
             writer.flush();
 

@@ -19,8 +19,8 @@ import com.powsybl.substationdiagram.model.SubstationGraph;
 import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramInitialValueProvider;
 import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramStyleProvider;
 import com.powsybl.substationdiagram.svg.GraphMetadata;
+import com.powsybl.substationdiagram.svg.DefaultSVGWriter;
 import com.powsybl.substationdiagram.svg.SVGWriter;
-import com.powsybl.substationdiagram.svg.SVGWriterInterface;
 import com.powsybl.substationdiagram.svg.SubstationDiagramInitialValueProvider;
 import com.powsybl.substationdiagram.svg.SubstationDiagramStyleProvider;
 import org.slf4j.Logger;
@@ -68,15 +68,15 @@ public final class SubstationDiagram {
     }
 
     public void writeSvg(ComponentLibrary componentLibrary, LayoutParameters layoutParameters, Network network, Path svgFile) {
-        SVGWriterInterface writer = new SVGWriter(componentLibrary, layoutParameters);
+        SVGWriter writer = new DefaultSVGWriter(componentLibrary, layoutParameters);
         writeSvg(writer, svgFile, network);
     }
 
-    public void writeSvg(SVGWriterInterface writer, Network network, Path svgFile) {
+    public void writeSvg(SVGWriter writer, Network network, Path svgFile) {
         writeSvg(writer, svgFile, network);
     }
 
-    public void writeSvg(SVGWriterInterface writer, Path svgFile, Network network) {
+    public void writeSvg(SVGWriter writer, Path svgFile, Network network) {
         Path dir = svgFile.toAbsolutePath().getParent();
         String svgFileName = svgFile.getFileName().toString();
         if (!svgFileName.endsWith(".svg")) {
@@ -91,17 +91,17 @@ public final class SubstationDiagram {
         }
     }
 
-    public void writeSvg(SVGWriterInterface writer, Writer svgWriter, Writer metadataWriter, Network network) {
+    public void writeSvg(SVGWriter writer, Writer svgWriter, Writer metadataWriter, Network network) {
         writeSvg(writer, new DefaultSubstationDiagramInitialValueProvider(network), new DefaultSubstationDiagramStyleProvider(), svgWriter, metadataWriter);
     }
 
     public void writeSvg(ComponentLibrary componentLibrary, LayoutParameters layoutParameters, SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider,
                          Writer svgWriter, Writer metadataWriter) {
-        SVGWriterInterface writer = new SVGWriter(componentLibrary, layoutParameters);
+        SVGWriter writer = new DefaultSVGWriter(componentLibrary, layoutParameters);
         writeSvg(writer, initProvider, styleProvider, svgWriter, metadataWriter);
     }
 
-    public void writeSvg(SVGWriterInterface writer, SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider,
+    public void writeSvg(SVGWriter writer, SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider,
                 Writer svgWriter, Writer metadataWriter) {
         Objects.requireNonNull(writer);
         Objects.requireNonNull(writer.getLayoutParameters());

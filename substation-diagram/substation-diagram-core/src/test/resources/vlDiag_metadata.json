@@ -1,17 +1,5 @@
 {
   "components" : [ {
-    "type" : "ARROW",
-    "id" : null,
-    "anchorPoints" : [ {
-      "x" : 0.0,
-      "y" : 0.0,
-      "orientation" : "VERTICAL"
-    } ],
-    "size" : {
-      "width" : 10.0,
-      "height" : 10.0
-    }
-  }, {
     "type" : "BUSBAR_SECTION",
     "id" : "bbs4",
     "anchorPoints" : [ {
@@ -72,34 +60,6 @@
       "height" : 0.0
     }
   }, {
-    "type" : "BREAKER",
-    "id" : null,
-    "anchorPoints" : [ {
-      "x" : 0.0,
-      "y" : -10.0,
-      "orientation" : "VERTICAL"
-    }, {
-      "x" : 0.0,
-      "y" : 10.0,
-      "orientation" : "VERTICAL"
-    } ],
-    "size" : {
-      "width" : 20.0,
-      "height" : 20.0
-    }
-  }, {
-    "type" : "DISCONNECTOR",
-    "id" : null,
-    "anchorPoints" : [ {
-      "x" : 0.0,
-      "y" : 0.0,
-      "orientation" : "VERTICAL"
-    } ],
-    "size" : {
-      "width" : 8.0,
-      "height" : 8.0
-    }
-  }, {
     "type" : "GENERATOR",
     "id" : null,
     "anchorPoints" : [ {
@@ -124,16 +84,16 @@
       "height" : 12.0
     }
   }, {
-    "type" : "LINE",
+    "type" : "ARROW",
     "id" : null,
     "anchorPoints" : [ {
       "x" : 0.0,
       "y" : 0.0,
-      "orientation" : "NONE"
+      "orientation" : "VERTICAL"
     } ],
     "size" : {
-      "width" : 0.0,
-      "height" : 0.0
+      "width" : 10.0,
+      "height" : 10.0
     }
   }, {
     "type" : "LOAD",
@@ -162,6 +122,30 @@
     "size" : {
       "width" : 8.0,
       "height" : 8.0
+    }
+  }, {
+    "type" : "DISCONNECTOR",
+    "id" : null,
+    "anchorPoints" : [ {
+      "x" : 0.0,
+      "y" : 0.0,
+      "orientation" : "VERTICAL"
+    } ],
+    "size" : {
+      "width" : 8.0,
+      "height" : 8.0
+    }
+  }, {
+    "type" : "LINE",
+    "id" : null,
+    "anchorPoints" : [ {
+      "x" : 0.0,
+      "y" : 0.0,
+      "orientation" : "NONE"
+    } ],
+    "size" : {
+      "width" : 0.0,
+      "height" : 0.0
     }
   }, {
     "type" : "INDUCTOR",
@@ -222,6 +206,22 @@
     "size" : {
       "width" : 14.0,
       "height" : 12.0
+    }
+  }, {
+    "type" : "BREAKER",
+    "id" : null,
+    "anchorPoints" : [ {
+      "x" : 0.0,
+      "y" : -10.0,
+      "orientation" : "VERTICAL"
+    }, {
+      "x" : 0.0,
+      "y" : 10.0,
+      "orientation" : "VERTICAL"
+    } ],
+    "size" : {
+      "width" : 20.0,
+      "height" : 20.0
     }
   } ],
   "nodes" : [ {

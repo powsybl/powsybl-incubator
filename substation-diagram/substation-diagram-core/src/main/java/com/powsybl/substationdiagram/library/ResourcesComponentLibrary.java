@@ -6,7 +6,6 @@
  */
 package com.powsybl.substationdiagram.library;
 
-import com.google.common.collect.Sets;
 import com.google.common.io.ByteStreams;
 import com.powsybl.substationdiagram.svg.SVGLoaderToDocument;
 import org.apache.batik.anim.dom.SVGOMDocument;
@@ -28,9 +27,9 @@ public class ResourcesComponentLibrary implements ComponentLibrary {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ResourcesComponentLibrary.class);
 
-    private final Map<ComponentType, SVGOMDocument> svgDocuments = new EnumMap<>(ComponentType.class);
+    private final Map<String, SVGOMDocument> svgDocuments = new HashMap<>();
 
-    private final Map<ComponentType, Component> components;
+    private final Map<String, Component> components;
 
     private final String styleSheet;
 
@@ -41,11 +40,6 @@ public class ResourcesComponentLibrary implements ComponentLibrary {
         components = Components.load(directory).getComponents()
                 .stream()
                 .collect(Collectors.toMap(c -> c.getMetadata().getType(), c -> c));
-
-        Set<ComponentType> diff = Sets.difference(EnumSet.copyOf(Arrays.asList(ComponentType.values())), components.keySet());
-//        if (!diff.isEmpty()) {
-//            throw new PowsyblException("Incomplete component library, " + diff + " component are missing");
-//        }
 
         // preload SVG documents
         SVGLoaderToDocument svgLoadDoc = new SVGLoaderToDocument();
@@ -63,13 +57,13 @@ public class ResourcesComponentLibrary implements ComponentLibrary {
     }
 
     @Override
-    public SVGOMDocument getSvgDocument(ComponentType type) {
+    public SVGOMDocument getSvgDocument(String type) {
         Objects.requireNonNull(type);
         return svgDocuments.get(type);
     }
 
     @Override
-    public List<AnchorPoint> getAnchorPoints(ComponentType type) {
+    public List<AnchorPoint> getAnchorPoints(String type) {
         Objects.requireNonNull(type);
         Component component = components.get(type);
         return component != null ? component.getMetadata().getAnchorPoints()
@@ -77,7 +71,7 @@ public class ResourcesComponentLibrary implements ComponentLibrary {
     }
 
     @Override
-    public ComponentSize getSize(ComponentType type) {
+    public ComponentSize getSize(String type) {
         Objects.requireNonNull(type);
         Component component = components.get(type);
         return component != null ? component.getMetadata().getSize() : new ComponentSize(0, 0);

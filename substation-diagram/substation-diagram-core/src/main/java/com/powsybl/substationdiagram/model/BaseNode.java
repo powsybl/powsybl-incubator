@@ -6,8 +6,6 @@
  */
 package com.powsybl.substationdiagram.model;
 
-import com.powsybl.substationdiagram.library.ComponentType;
-
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
@@ -18,7 +16,7 @@ public interface BaseNode {
 
     String getId();
 
-    ComponentType getComponentType();
+    String getComponentType();
 
     boolean isRotated();
 

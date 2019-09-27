@@ -6,7 +6,7 @@
  */
 package com.powsybl.substationdiagram.model;
 
-import com.powsybl.substationdiagram.library.ComponentType;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.ARROW;
 
 /**
  * @author Giovanni Ferrari <giovanni.ferrari at techrain.eu>
@@ -14,7 +14,7 @@ import com.powsybl.substationdiagram.library.ComponentType;
 public class ArrowNode extends Node {
 
     public ArrowNode(Graph graph) {
-        super(NodeType.OTHER, "", "", ComponentType.ARROW, false, graph);
+        super(NodeType.OTHER, "", "", ARROW, false, graph);
     }
 
 }

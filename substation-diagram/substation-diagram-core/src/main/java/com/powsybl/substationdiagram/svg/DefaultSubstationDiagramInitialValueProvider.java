@@ -14,10 +14,22 @@ import com.powsybl.iidm.network.Injection;
 import com.powsybl.iidm.network.Load;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.ThreeWindingsTransformer;
-import com.powsybl.substationdiagram.library.ComponentType;
 import com.powsybl.substationdiagram.model.Feeder2WTNode;
 import com.powsybl.substationdiagram.model.Node;
 import org.apache.commons.lang3.StringUtils;
+
+import static com.powsybl.substationdiagram.library.ComponentTypeName.BREAKER;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.BUSBAR_SECTION;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.CAPACITOR;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.DISCONNECTOR;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.GENERATOR;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.INDUCTOR;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.LINE;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.LOAD;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.LOAD_BREAK_SWITCH;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.STATIC_VAR_COMPENSATOR;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.TWO_WINDINGS_TRANSFORMER;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.VSC_CONVERTER_STATION;
 
 /**
  * @author Giovanni Ferrari <giovanni.ferrari at techrain.eu>
@@ -95,7 +107,7 @@ public class DefaultSubstationDiagramInitialValueProvider implements SubstationD
 
     private InitialValue getBranchInitialValue(Node node) {
         String nodeId = node.getId();
-        if (node instanceof Feeder2WTNode && node.getComponentType() == ComponentType.LINE) {
+        if (node instanceof Feeder2WTNode && node.getComponentType().equals(LINE)) {
             // special case : branch of threeWindingsTransformer
             ThreeWindingsTransformer.Side side = ThreeWindingsTransformer.Side.ONE;
             ThreeWindingsTransformer transformer = null;

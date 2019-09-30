@@ -6,10 +6,9 @@
  */
 package com.powsybl.substationdiagram.svg;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.Objects;
-import java.util.regex.Pattern;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
@@ -32,19 +31,54 @@ public final class SubstationDiagramStyles {
         if (temp.length() < 2) {
             temp = StringUtils.leftPad(temp, 2, "_");
         }
-        return escapeId(temp);
+        return escape(temp);
     }
 
     public static String escapeId(String input) {
         Objects.requireNonNull(input);
-        String temp = input;
-        // class name cannot start with a digit
-        temp = Character.isDigit(temp.charAt(0)) ? "d" + temp : temp;
-        // class name cannot begin with two hyphens or a hyphen followed by a digit
-        if (temp.startsWith("--") || (temp.charAt(0) == '-' && Character.isDigit(temp.charAt(1)))) {
-            temp = "d" + temp;
+        String temp = "id" + input;
+        return escape(temp);
+    }
+
+    public static String escape(String input) {
+        Objects.requireNonNull(input);
+
+        StringBuilder sb = new StringBuilder();
+
+        char[] chars = input.toCharArray();
+
+        for (int i = 0; i < chars.length; i++) {
+            if (Character.isAlphabetic(chars[i]) || Character.isDigit(chars[i])) {
+                sb.append(chars[i]);
+            } else {
+                sb.append("_").append((int) chars[i]).append("_");
+            }
         }
-        // Substitution of all non authorized characters
-        return Pattern.compile("[^\\_\\-a-zA-Z0-9][^\\_\\-a-zA-Z0-9]*", 32).matcher(temp).replaceAll("_");
+        return sb.toString();
+    }
+
+    public static String unescapeId(String input) {
+        Objects.requireNonNull(input);
+        String temp = input.substring(2);
+
+        char[] chars = temp.toCharArray();
+        StringBuilder out = new StringBuilder();
+
+        for (int i = 0; i < chars.length; i++) {
+            char c =  chars[i];
+            if (c == 95) {
+                StringBuilder sb = new StringBuilder();
+                char n = chars[++i];
+                while (n != 95) {
+                    sb.append(n);
+                    n = chars[++i];
+                }
+                int x = Integer.parseInt(sb.toString());
+                out.append((char) x);
+            } else {
+                out.append(c);
+            }
+        }
+        return out.toString();
     }
 }

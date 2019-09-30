@@ -12,11 +12,8 @@ import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.LABEL_ST
 import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.SUBSTATION_STYLE_CLASS;
 import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.WIRE_STYLE_CLASS;
 import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.escapeClassName;
+import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.escapeId;
 
-import java.io.UncheckedIOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -57,47 +54,43 @@ public class DefaultSubstationDiagramStyleProvider implements SubstationDiagramS
     public Optional<String> getNodeStyle(Node node) {
         Objects.requireNonNull(node);
         if (node.getType() == Node.NodeType.SWITCH) {
-            try {
-                StringBuilder style = new StringBuilder();
-                String className = escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name()));
-                style.append(".").append(className)
-                        .append(" .open { visibility: ").append(node.isOpen() ? "visible;}" : "hidden;}");
 
-                style.append(".").append(className)
-                        .append(" .closed { visibility: ").append(node.isOpen() ? "hidden;}" : "visible;}");
+            StringBuilder style = new StringBuilder();
+            String className = escapeId(node.getId());
+            style.append(".").append(className)
+                    .append(" .open { visibility: ").append(node.isOpen() ? "visible;}" : "hidden;}");
 
-                return Optional.of(style.toString());
-            } catch (UnsupportedEncodingException e) {
-                throw new UncheckedIOException(e);
-            }
+            style.append(".").append(className)
+                    .append(" .closed { visibility: ").append(node.isOpen() ? "hidden;}" : "visible;}");
+
+            return Optional.of(style.toString());
         }
+
         if (node instanceof FeederNode) {
-            try {
-                StringBuilder style = new StringBuilder();
-                style.append(ARROW1).append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
-                        .append("_UP").append(" .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}");
-                style.append(ARROW1).append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
-                .append(UP).append(" .arrow-down { visibility: hidden;}");
 
-                style.append(ARROW1).append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
-                .append(DOWN).append(" .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}");
-                style.append(ARROW1).append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
-                .append(DOWN).append(" .arrow-up { visibility: hidden;}");
+            StringBuilder style = new StringBuilder();
+            style.append(ARROW1).append(escapeClassName(node.getId()))
+                    .append("_UP").append(" .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}");
+            style.append(ARROW1).append(escapeClassName(node.getId()))
+            .append(UP).append(" .arrow-down { visibility: hidden;}");
 
-                style.append(ARROW2).append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
-                .append(UP).append(" .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}");
-                style.append(ARROW2).append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
-                .append(UP).append(" .arrow-down { visibility: hidden;}");
+            style.append(ARROW1).append(escapeClassName(node.getId()))
+            .append(DOWN).append(" .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}");
+            style.append(ARROW1).append(escapeClassName(node.getId()))
+            .append(DOWN).append(" .arrow-up { visibility: hidden;}");
 
-                style.append(ARROW2).append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
-                .append(DOWN).append(" .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}");
-                style.append(ARROW2).append(escapeClassName(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())))
-                .append(DOWN).append(" .arrow-up { visibility: hidden;}");
+            style.append(ARROW2).append(escapeClassName(node.getId()))
+            .append(UP).append(" .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}");
+            style.append(ARROW2).append(escapeClassName(node.getId()))
+            .append(UP).append(" .arrow-down { visibility: hidden;}");
 
-                return Optional.of(style.toString());
-            } catch (UnsupportedEncodingException e) {
-                throw new UncheckedIOException(e);
-            }
+            style.append(ARROW2).append(escapeClassName(node.getId()))
+            .append(DOWN).append(" .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}");
+            style.append(ARROW2).append(escapeClassName(node.getId()))
+            .append(DOWN).append(" .arrow-up { visibility: hidden;}");
+
+            return Optional.of(style.toString());
+
         }
         return Optional.empty();
     }
@@ -125,5 +118,9 @@ public class DefaultSubstationDiagramStyleProvider implements SubstationDiagramS
     @Override
     public Optional<String> getColor(VoltageLevel vl) {
         return Optional.empty();
+    }
+
+    @Override
+    public void reset() {
     }
 }

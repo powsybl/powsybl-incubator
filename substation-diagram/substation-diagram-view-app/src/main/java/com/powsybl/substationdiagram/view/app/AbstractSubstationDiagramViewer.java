@@ -11,12 +11,25 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import com.powsybl.cgmes.iidm.extensions.dl.NetworkDiagramData;
 import com.powsybl.commons.json.JsonUtil;
-import com.powsybl.iidm.network.*;
+import com.powsybl.iidm.network.Container;
+import com.powsybl.iidm.network.ContainerType;
+import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.network.Substation;
+import com.powsybl.iidm.network.Switch;
+import com.powsybl.iidm.network.VoltageLevel;
 import com.powsybl.substationdiagram.SubstationDiagram;
 import com.powsybl.substationdiagram.VoltageLevelDiagram;
 import com.powsybl.substationdiagram.cgmes.CgmesSubstationLayoutFactory;
 import com.powsybl.substationdiagram.cgmes.CgmesVoltageLevelLayoutFactory;
-import com.powsybl.substationdiagram.layout.*;
+import com.powsybl.substationdiagram.layout.HorizontalSubstationLayoutFactory;
+import com.powsybl.substationdiagram.layout.LayoutParameters;
+import com.powsybl.substationdiagram.layout.PositionFree;
+import com.powsybl.substationdiagram.layout.PositionFromExtension;
+import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayoutFactory;
+import com.powsybl.substationdiagram.layout.RandomVoltageLevelLayoutFactory;
+import com.powsybl.substationdiagram.layout.SubstationLayoutFactory;
+import com.powsybl.substationdiagram.layout.VerticalSubstationLayoutFactory;
+import com.powsybl.substationdiagram.layout.VoltageLevelLayoutFactory;
 import com.powsybl.substationdiagram.library.ComponentLibrary;
 import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
 import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramInitialValueProvider;
@@ -29,7 +42,9 @@ import com.powsybl.substationdiagram.util.TopologicalStyleProvider;
 import com.powsybl.substationdiagram.view.AbstractContainerDiagramView;
 import com.powsybl.substationdiagram.view.DisplayVoltageLevel;
 import com.powsybl.substationdiagram.view.SubstationDiagramView;
+import com.powsybl.substationdiagram.view.SwitchPositionChangeListener;
 import com.powsybl.substationdiagram.view.VoltageLevelDiagramView;
+
 import javafx.application.Application;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -47,18 +62,40 @@ import javafx.geometry.Insets;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.CheckBoxTreeItem;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
+import javafx.scene.control.Tooltip;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.CheckBoxTreeCell;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.*;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.List;
@@ -73,6 +110,10 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
@@ -96,7 +137,7 @@ public abstract class AbstractSubstationDiagramViewer extends Application implem
     private final Map<String, SubstationDiagramStyleProvider> styles
             = ImmutableMap.of("Default", new DefaultSubstationDiagramStyleProvider(),
                               "Nominal voltage", new NominalVoltageSubstationDiagramStyleProvider(),
-                              "Topology", new TopologicalStyleProvider(null));
+                              "Topology", new TopologicalStyleProvider());
 
     private final Map<String, SubstationLayoutFactory> substationsLayouts
             = ImmutableMap.of("Horizontal", new HorizontalSubstationLayoutFactory(),
@@ -255,12 +296,33 @@ public abstract class AbstractSubstationDiagramViewer extends Application implem
             }
 
             AbstractContainerDiagramView diagramView;
+            SwitchPositionChangeListener listener = new SwitchPositionChangeListener() {
+
+                @Override
+                public void onPositionChange(String switchId) {
+                    Switch sw = null;
+                    if (c.getContainerType() == ContainerType.VOLTAGE_LEVEL) {
+                        VoltageLevel v = (VoltageLevel) c;
+                        sw = v.getSubstation().getNetwork().getSwitch(switchId);
+                    } else if (c.getContainerType() == ContainerType.SUBSTATION) {
+                        Substation s = (Substation) c;
+                        sw = s.getNetwork().getSwitch(switchId);
+                    }
+                    if (sw != null) {
+                        sw.setOpen(!sw.isOpen());
+                        SubstationDiagramStyleProvider styleProvider = styles.get(styleComboBox.getSelectionModel().getSelectedItem());
+                        styleProvider.reset();
+                        loadDiagram(c);
+                    }
+                }
+            };
+
             try (InputStream svgInputStream = new ByteArrayInputStream(svgData.getBytes(StandardCharsets.UTF_8));
                  InputStream metadataInputStream = new ByteArrayInputStream(metadataData.getBytes(StandardCharsets.UTF_8))) {
                 if (c.getContainerType() == ContainerType.VOLTAGE_LEVEL) {
-                    diagramView = VoltageLevelDiagramView.load(svgInputStream, metadataInputStream, AbstractSubstationDiagramViewer.this);
+                    diagramView = VoltageLevelDiagramView.load(svgInputStream, metadataInputStream, listener, AbstractSubstationDiagramViewer.this);
                 } else if (c.getContainerType() == ContainerType.SUBSTATION) {
-                    diagramView = SubstationDiagramView.load(svgInputStream, metadataInputStream, AbstractSubstationDiagramViewer.this);
+                    diagramView = SubstationDiagramView.load(svgInputStream, metadataInputStream, listener, AbstractSubstationDiagramViewer.this);
                 } else {
                     throw new AssertionError();
                 }

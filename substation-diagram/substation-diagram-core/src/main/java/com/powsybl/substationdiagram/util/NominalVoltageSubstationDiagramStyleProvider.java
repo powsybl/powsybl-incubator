@@ -14,10 +14,6 @@ import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.WIRE_STY
 import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.escapeClassName;
 import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.escapeId;
 
-import java.io.UncheckedIOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 import com.powsybl.iidm.network.ThreeWindingsTransformer;
@@ -77,14 +73,11 @@ public class NominalVoltageSubstationDiagramStyleProvider extends DefaultSubstat
         Optional<String> defaultStyle = super.getNodeStyle(node);
 
         String color = getColor(node.getGraph().getVoltageLevel()).orElse(DEFAULT_COLOR);
-        try {
-            if (node.getType() == Node.NodeType.SWITCH) {
-                return defaultStyle;
-            } else {
-                return Optional.of(defaultStyle.orElse("") + " ." + escapeId(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())) + " {stroke:" + color + ";stroke-width:1;fill-opacity:0;}");
-            }
-        } catch (UnsupportedEncodingException e) {
-            throw new UncheckedIOException(e);
+
+        if (node.getType() == Node.NodeType.SWITCH) {
+            return defaultStyle;
+        } else {
+            return Optional.of(defaultStyle.orElse("") + " ." + escapeId(node.getId()) + " {stroke:" + color + ";stroke-width:1;fill-opacity:0;}");
         }
     }
 

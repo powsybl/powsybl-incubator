@@ -11,11 +11,17 @@ import com.powsybl.substationdiagram.library.ComponentType;
 import com.powsybl.substationdiagram.model.BaseNode;
 import com.powsybl.substationdiagram.model.BusCell;
 import com.powsybl.substationdiagram.svg.GraphMetadata;
+import com.powsybl.substationdiagram.svg.SubstationDiagramStyles;
+import com.powsybl.substationdiagram.util.MouseClickNotDragDetector;
+
 import javafx.scene.Node;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
@@ -48,6 +54,8 @@ public class NodeHandler implements BaseNode {
 
     private DisplayVoltageLevel displayVL;
 
+    private SwitchPositionChangeListener switchListener;
+
     public NodeHandler(Node node, ComponentType componentType, Double rotationAngle,
                        GraphMetadata metadata,
                        String vId, String nextVId, BusCell.Direction direction) {
@@ -60,6 +68,20 @@ public class NodeHandler implements BaseNode {
         this.direction = direction;
 
         setDragAndDrop();
+        if (componentType != null
+                && (componentType.equals(ComponentType.BREAKER) || componentType.equals(ComponentType.DISCONNECTOR)
+                        || componentType.equals(ComponentType.LOAD_BREAK_SWITCH))) {
+            MouseClickNotDragDetector.clickNotDragDetectingOn(node).withPressedDurationTreshold(150)
+                    .setOnMouseClickedNotDragged(new Consumer<MouseEvent>() {
+
+                        @Override
+                        public void accept(MouseEvent event) {
+                            if (switchListener != null && event.getButton().equals(MouseButton.PRIMARY)) {
+                                switchListener.onPositionChange(SubstationDiagramStyles.unescapeId(node.getId()));
+                            }
+                        }
+                    });
+        }
     }
 
     public Node getNode() {
@@ -130,6 +152,7 @@ public class NodeHandler implements BaseNode {
 
     public void setDragAndDrop() {
         node.setOnMousePressed(event -> {
+            event.setDragDetect(true);
             screenX = event.getScreenX();
             screenY = event.getScreenY();
             mouseX = event.getSceneX() - node.getTranslateX();
@@ -163,5 +186,9 @@ public class NodeHandler implements BaseNode {
         if (nextVId != null) {
             displayVL.display(nextVId);
         }
+    }
+
+    public void setSwitchPositionListener(SwitchPositionChangeListener listener) {
+        switchListener = listener;
     }
 }

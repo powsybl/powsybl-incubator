@@ -16,9 +16,6 @@ import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.escapeId
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,7 +44,6 @@ import com.powsybl.substationdiagram.model.Node.NodeType;
 import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramStyleProvider;
 import com.powsybl.substationdiagram.svg.SubstationDiagramStyles;
 
-
 /**
  * @author Giovanni Ferrari <giovanni.ferrari at techrain.eu>
  */
@@ -60,6 +56,10 @@ public class TopologicalStyleProvider extends DefaultSubstationDiagramStyleProvi
     private static final double FACTOR = 0.7;
     private String disconnectedColor;
 
+    public TopologicalStyleProvider() {
+        this(null);
+    }
+
     public TopologicalStyleProvider(Path config) {
         try {
             baseVoltageColor = config != null ? new BaseVoltageColor(config) : new BaseVoltageColor();
@@ -67,6 +67,11 @@ public class TopologicalStyleProvider extends DefaultSubstationDiagramStyleProvi
             throw new UncheckedIOException(e);
         }
         disconnectedColor = getBaseColor(0, "RTE", DISCONNECTED_COLOR);
+    }
+
+    @Override
+    public void reset() {
+        voltageLevelColorMap.clear();
     }
 
     private RGBColor getBusColor(Node node) {
@@ -82,7 +87,6 @@ public class TopologicalStyleProvider extends DefaultSubstationDiagramStyleProvi
         long buses = vl.getBusView().getBusStream().count();
 
         HashMap<String, RGBColor> colorMap = new HashMap();
-        HashMap<String, RGBColor> busColorMap = new HashMap();
 
         RGBColor color = RGBColor.parse(basecolor);
 
@@ -90,7 +94,6 @@ public class TopologicalStyleProvider extends DefaultSubstationDiagramStyleProvi
 
         vl.getBusView().getBuses().forEach(b -> {
             RGBColor c = colors.get(idxColor.getAndIncrement());
-            busColorMap.put(b.getId(), c);
 
             vl.getBusView().getBus(b.getId()).visitConnectedEquipments(new TopologyVisitor() {
                 @Override
@@ -171,42 +174,30 @@ public class TopologicalStyleProvider extends DefaultSubstationDiagramStyleProvi
             return defaultStyle;
         }
 
-        try {
-            RGBColor c = getBusColor(node);
+        RGBColor c = getBusColor(node);
 
-            String color = c != null ? c.toString() : disconnectedColor;
+        String color = c != null ? c.toString() : disconnectedColor;
 
-            return Optional.of(defaultStyle.orElse("") + " #"
-                    + escapeId(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name())) + " {stroke:"
-                    + color + ";stroke-width:1;fill-opacity:0;}");
-
-        } catch (UnsupportedEncodingException e) {
-            throw new UncheckedIOException(e);
-        }
+        return Optional.of(defaultStyle.orElse("") + " #"
+                + escapeId(node.getId()) + " {stroke:"
+                + color + ";stroke-width:1;fill-opacity:0;}");
     }
 
     @Override
     public Optional<String> getWireStyle(Edge edge) {
 
-        try {
-            String wireId = SubstationDiagramStyles
-                    .escapeId(URLEncoder.encode(
-                            edge.getNode1().getGraph().getVoltageLevel().getId() + "_Wire"
-                                    + edge.getNode1().getGraph().getEdges().indexOf(edge),
-                            StandardCharsets.UTF_8.name()));
-            Node bus = findConnectedBus(edge);
-            String color = disconnectedColor;
-            if (bus != null) {
-                RGBColor c = getBusColor(bus);
-                if (c != null) {
-                    color = c.toString();
-                }
+        String wireId = SubstationDiagramStyles
+                .escapeId(edge.getNode1().getGraph().getVoltageLevel().getId() + "_Wire"
+                                + edge.getNode1().getGraph().getEdges().indexOf(edge));
+        Node bus = findConnectedBus(edge);
+        String color = disconnectedColor;
+        if (bus != null) {
+            RGBColor c = getBusColor(bus);
+            if (c != null) {
+                color = c.toString();
             }
-
-            return Optional.of(" #" + wireId + " {stroke:" + color + ";stroke-width:1;fill-opacity:0;}");
-        } catch (UnsupportedEncodingException e) {
-            throw new UncheckedIOException(e);
         }
+        return Optional.of(" #" + wireId + " {stroke:" + color + ";stroke-width:1;fill-opacity:0;}");
     }
 
     private Node findConnectedBus(Edge edge) {

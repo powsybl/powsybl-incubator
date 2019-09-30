@@ -36,4 +36,6 @@ public interface SubstationDiagramStyleProvider {
     Optional<String> getNode2WTStyle(Feeder2WTNode node, TwoWindingsTransformer.Side side);
 
     Optional<String> getColor(VoltageLevel vl);
+
+    void reset();
 }

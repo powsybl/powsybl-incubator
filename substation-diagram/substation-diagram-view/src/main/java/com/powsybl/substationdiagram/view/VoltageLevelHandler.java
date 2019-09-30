@@ -17,6 +17,7 @@ import com.powsybl.substationdiagram.model.Coord;
 import com.powsybl.substationdiagram.svg.GraphMetadata;
 import javafx.scene.Node;
 import javafx.scene.shape.Polyline;
+import javafx.scene.input.*;
 
 import java.util.*;
 import java.util.function.Function;
@@ -93,6 +94,7 @@ public class VoltageLevelHandler implements BaseNode {
     }
 
     public void setDragAndDrop() {
+
         node.setOnMousePressed(event -> {
             mouseX = event.getSceneX() - node.getTranslateX();
             mouseY = event.getSceneY() - node.getTranslateY();
@@ -113,6 +115,7 @@ public class VoltageLevelHandler implements BaseNode {
 
             event.consume();
         });
+
     }
 
     private void redrawSnakeLines() {

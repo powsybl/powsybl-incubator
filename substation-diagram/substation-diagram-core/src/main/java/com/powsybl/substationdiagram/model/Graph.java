@@ -9,6 +9,7 @@ package com.powsybl.substationdiagram.model;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.powsybl.commons.PowsyblException;
+import com.powsybl.commons.util.ServiceLoaderCache;
 import com.powsybl.iidm.network.Branch;
 import com.powsybl.iidm.network.Bus;
 import com.powsybl.iidm.network.BusbarSection;
@@ -29,7 +30,7 @@ import com.powsybl.iidm.network.ThreeWindingsTransformer;
 import com.powsybl.iidm.network.TopologyKind;
 import com.powsybl.iidm.network.TwoWindingsTransformer;
 import com.powsybl.iidm.network.VoltageLevel;
-import com.powsybl.substationdiagram.library.ComponentType;
+import com.powsybl.substationdiagram.postprocessor.GraphBuildPostProcessor;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
 import org.jgrapht.UndirectedGraph;
@@ -60,6 +61,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.powsybl.substationdiagram.library.ComponentTypeName.INDUCTOR;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.LINE;
+
 /**
  * This class builds the connectivity among the elements of a voltageLevel
  * buildGraphAndDetectCell establishes the List of nodes, edges and nodeBuses
@@ -73,6 +77,8 @@ import java.util.stream.Stream;
 public class Graph {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Graph.class);
+
+    private static final ServiceLoaderCache<GraphBuildPostProcessor> POST_PROCESSOR_LOADER = new ServiceLoaderCache<>(GraphBuildPostProcessor.class);
 
     private VoltageLevel voltageLevel;
 
@@ -337,6 +343,8 @@ public class Graph {
 
         constructCellForThreeWindingsTransformer();
 
+        handleGraphPostProcessors();
+
         handleConnectedComponents();
     }
 
@@ -590,7 +598,7 @@ public class Graph {
 
     public Stream<BusCell> getBusCells() {
         return cells.stream()
-                .filter(cell -> cell instanceof BusCell && !((BusCell) cell).getPrimaryBlocksConnectedToBus().isEmpty())
+                .filter(cell -> cell instanceof BusCell && !((BusCell) cell).getPrimaryLegBlocks().isEmpty())
                 .map(BusCell.class::cast);
     }
 
@@ -648,20 +656,14 @@ public class Graph {
         getNodeBuses().forEach(nodeBus -> nodeBus.getAdjacentNodes().stream()
                 .filter(node -> node.getType() == Node.NodeType.SWITCH
                         && ((SwitchNode) node).getKind() != SwitchKind.DISCONNECTOR)
-                .forEach(nodeSwitch -> addDoubleNode(nodeBus, (SwitchNode) nodeSwitch, "")));
+                .forEach(nodeSwitch -> addDoubleNode(nodeBus, nodeSwitch, "")));
     }
 
     //the first element shouldn't be a Feeder
     public void extendFeederConnectedToBus() {
         getNodeBuses().forEach(nodeBus -> nodeBus.getAdjacentNodes().stream()
                 .filter(node -> node.getType() == Node.NodeType.FEEDER)
-                .forEach(feeder -> {
-                    removeEdge(nodeBus, feeder);
-                    FictitiousNode fn = new FictitiousNode(this, feeder.getLabel() + "_fictif");
-                    addNode(fn);
-                    addEdge(nodeBus, fn);
-                    addEdge(feeder, fn);
-                }));
+                .forEach(feeder -> addDoubleNode(nodeBus, feeder, "")));
     }
 
     public void extendSwitchBetweenBus(SwitchNode nodeSwitch) {
@@ -670,15 +672,15 @@ public class Graph {
         addDoubleNode((BusNode) copyAdj.get(1), nodeSwitch, "1");
     }
 
-    private void addDoubleNode(BusNode busNode, SwitchNode nodeSwitch, String suffix) {
-        removeEdge(busNode, nodeSwitch);
-        SwitchNode fNodeToBus = SwitchNode.createFictitious(Graph.this, nodeSwitch.getId() + "fSwitch" + suffix, nodeSwitch.isOpen());
+    private void addDoubleNode(BusNode busNode, Node node, String suffix) {
+        removeEdge(busNode, node);
+        SwitchNode fNodeToBus = SwitchNode.createFictitious(Graph.this, node.getId() + "fSwitch" + suffix, node.isOpen());
         addNode(fNodeToBus);
-        FictitiousNode fNodeToSw = new FictitiousNode(Graph.this, nodeSwitch.getId() + "fNode" + suffix);
+        FictitiousNode fNodeToSw = new FictitiousNode(Graph.this, node.getId() + "fNode" + suffix);
         addNode(fNodeToSw);
         addEdge(busNode, fNodeToBus);
         addEdge(fNodeToBus, fNodeToSw);
-        addEdge(fNodeToSw, nodeSwitch);
+        addEdge(fNodeToSw, node);
     }
 
     private void substitueNode(Node nodeOrigin, Node newNode) {
@@ -847,7 +849,7 @@ public class Graph {
         return infos.get();
     }
 
-    public void constructCellForThreeWindingsTransformer() {
+    private void constructCellForThreeWindingsTransformer() {
         getNodes().stream()
                 .filter(n -> n instanceof Feeder3WTNode)
                 .forEach(n -> {
@@ -880,13 +882,13 @@ public class Graph {
                             String idFeeder1 = infosInductor.getId();
                             String nameFeeder1 = infosInductor.getName();
                             nfeeder1 = Feeder2WTNode.create(Graph.this, idFeeder1, nameFeeder1, n3WT.getVL2());
-                            nfeeder1.setComponentType(ComponentType.INDUCTOR);
+                            nfeeder1.setComponentType(INDUCTOR);
                         } else {
                             // Create a feeder for the winding to the secondary voltage level
                             String idFeeder1 = n3WT.getId() + "_" + n3WT.getId2();
                             String nameFeeder1 = n3WT.getName() + "_" + n3WT.getName2();
                             nfeeder1 = Feeder2WTNode.create(Graph.this, idFeeder1, nameFeeder1, n3WT.getVL2());
-                            nfeeder1.setComponentType(ComponentType.LINE);
+                            nfeeder1.setComponentType(LINE);
                         }
                         nfeeder1.setOrder(n3WT.getOrder());
                         nfeeder1.setDirection(n3WT.getDirection());
@@ -897,13 +899,13 @@ public class Graph {
                             String idFeeder2 = infosInductor.getId();
                             String nameFeeder2 = infosInductor.getName();
                             nfeeder2 = Feeder2WTNode.create(Graph.this, idFeeder2, nameFeeder2, n3WT.getVL3());
-                            nfeeder2.setComponentType(ComponentType.INDUCTOR);
+                            nfeeder2.setComponentType(INDUCTOR);
                         } else {
                             // Create a feeder for the winding to the tertiary voltage level
                             String idFeeder2 = n3WT.getId() + "_" + n3WT.getId3();
                             String nameFeeder2 = n3WT.getName() + "_" + n3WT.getName3();
                             nfeeder2 = Feeder2WTNode.create(Graph.this, idFeeder2, nameFeeder2, n3WT.getVL3());
-                            nfeeder2.setComponentType(ComponentType.LINE);
+                            nfeeder2.setComponentType(LINE);
                         }
                         nfeeder2.setOrder(n3WT.getOrder() + 1);
                         nfeeder2.setDirection(n3WT.getDirection());
@@ -917,7 +919,7 @@ public class Graph {
                         String idFeeder1 = n3WT.getId() + "_" + n3WT.getId2();
                         String nameFeeder1 = n3WT.getName() + "_" + n3WT.getName2();
                         nfeeder1 = Feeder2WTNode.create(Graph.this, idFeeder1, nameFeeder1, n3WT.getVL2());
-                        nfeeder1.setComponentType(ComponentType.LINE);
+                        nfeeder1.setComponentType(LINE);
                         nfeeder1.setOrder(n3WT.getOrder());
                         nfeeder1.setDirection(n3WT.getDirection());
                         addNode(nfeeder1);
@@ -926,7 +928,7 @@ public class Graph {
                         String idFeeder2 = n3WT.getId() + "_" + n3WT.getId3();
                         String nameFeeder2 = n3WT.getName() + "_" + n3WT.getName3();
                         nfeeder2 = Feeder2WTNode.create(Graph.this, idFeeder2, nameFeeder2, n3WT.getVL3());
-                        nfeeder2.setComponentType(ComponentType.LINE);
+                        nfeeder2.setComponentType(LINE);
                         nfeeder2.setOrder(n3WT.getOrder() + 1);
                         nfeeder2.setDirection(n3WT.getDirection());
                         addNode(nfeeder2);
@@ -941,4 +943,15 @@ public class Graph {
                 });
     }
 
+    /**
+       Discover and apply postprocessor plugins to add custom nodes
+     **/
+    private void handleGraphPostProcessors() {
+        List<GraphBuildPostProcessor> listPostProcessors = POST_PROCESSOR_LOADER.getServices();
+        for (GraphBuildPostProcessor gbp : listPostProcessors) {
+            LOGGER.info("Graph post-processor id '{}' : Adding custom node in graph '{}'",
+                    gbp.getId(), voltageLevel.getId());
+            gbp.addNode(this);
+        }
+    }
 }

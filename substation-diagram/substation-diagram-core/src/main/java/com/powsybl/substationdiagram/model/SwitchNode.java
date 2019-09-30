@@ -11,9 +11,13 @@ import com.powsybl.iidm.network.Bus;
 import com.powsybl.iidm.network.Switch;
 import com.powsybl.iidm.network.SwitchKind;
 import com.powsybl.iidm.network.Terminal;
-import com.powsybl.substationdiagram.library.ComponentType;
 
 import java.util.Objects;
+
+import static com.powsybl.substationdiagram.library.ComponentTypeName.BREAKER;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.DISCONNECTOR;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.LOAD_BREAK_SWITCH;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.NODE;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
@@ -24,7 +28,7 @@ public class SwitchNode extends Node {
 
     private final SwitchKind kind;
 
-    protected SwitchNode(String id, String name, ComponentType componentType, boolean fictitious, Graph graph, SwitchKind kind, boolean open) {
+    protected SwitchNode(String id, String name, String componentType, boolean fictitious, Graph graph, SwitchKind kind, boolean open) {
         super(NodeType.SWITCH, id, name, componentType, fictitious, graph);
         this.kind = Objects.requireNonNull(kind);
         setOpen(open);
@@ -33,16 +37,16 @@ public class SwitchNode extends Node {
     public static SwitchNode create(Graph graph, Switch aSwitch) {
         Objects.requireNonNull(graph);
         Objects.requireNonNull(aSwitch);
-        ComponentType componentType;
+        String componentType;
         switch (aSwitch.getKind()) {
             case BREAKER:
-                componentType = ComponentType.BREAKER;
+                componentType = BREAKER;
                 break;
             case DISCONNECTOR:
-                componentType = ComponentType.DISCONNECTOR;
+                componentType = DISCONNECTOR;
                 break;
             case LOAD_BREAK_SWITCH:
-                componentType = ComponentType.LOAD_BREAK_SWITCH;
+                componentType = LOAD_BREAK_SWITCH;
                 break;
             default:
                 throw new AssertionError();
@@ -56,11 +60,11 @@ public class SwitchNode extends Node {
         Bus bus = terminal.getBusBreakerView().getConnectableBus();
         String id = bus.getId() + "_" + terminal.getConnectable().getId();
         String name = bus.getName() + "_" + terminal.getConnectable().getName();
-        return new SwitchNode(id, name, ComponentType.DISCONNECTOR, false, graph, SwitchKind.DISCONNECTOR, !terminal.isConnected());
+        return new SwitchNode(id, name, DISCONNECTOR, false, graph, SwitchKind.DISCONNECTOR, !terminal.isConnected());
     }
 
     public static SwitchNode createFictitious(Graph graph, String id, boolean open) {
-        return new SwitchNode(id, id, ComponentType.NODE, true, graph, SwitchKind.BREAKER, open);
+        return new SwitchNode(id, id, NODE, true, graph, SwitchKind.BREAKER, open);
     }
 
     public SwitchKind getKind() {

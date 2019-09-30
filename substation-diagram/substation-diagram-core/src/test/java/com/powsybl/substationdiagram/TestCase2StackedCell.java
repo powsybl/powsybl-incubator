@@ -11,13 +11,13 @@ import com.powsybl.substationdiagram.layout.BlockOrganizer;
 import com.powsybl.substationdiagram.layout.ImplicitCellDetector;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
 import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayout;
-import com.powsybl.substationdiagram.library.ComponentType;
 import com.powsybl.substationdiagram.model.*;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
 import org.junit.Before;
 import org.junit.Test;
 
+import static com.powsybl.substationdiagram.library.ComponentTypeName.NODE;
 import static org.junit.Assert.*;
 
 /**
@@ -96,7 +96,7 @@ public class TestCase2StackedCell extends AbstractTestCase {
         assertEquals(7, g.getNodes().size());
         assertEquals(Node.NodeType.FICTITIOUS, g.getNodes().get(3).getType());
         assertEquals("FICT_vl_2", g.getNodes().get(3).getId());
-        assertEquals(ComponentType.NODE, g.getNodes().get(3).getComponentType());
+        assertEquals(NODE, g.getNodes().get(3).getComponentType());
 
         assertEquals(6, g.getEdges().size());
         assertEquals("d1", g.getEdges().get(1).getNode1().getId());
@@ -122,7 +122,7 @@ public class TestCase2StackedCell extends AbstractTestCase {
         new BlockOrganizer().organize(g);
 
         // assert blocks and nodes rotation
-        assertEquals(2, ((BusCell) cell).getPrimaryBlocksConnectedToBus().size());
+        assertEquals(2, ((BusCell) cell).getPrimaryLegBlocks().size());
         assertNotNull(cell.getRootBlock());
         assertTrue(cell.getRootBlock() instanceof SerialBlock);
         SerialBlock bc = (SerialBlock) cell.getRootBlock();
@@ -131,8 +131,8 @@ public class TestCase2StackedCell extends AbstractTestCase {
         assertEquals("bbs1", bc.getStartingNode().getId());
         assertEquals("l", bc.getEndingNode().getId());
 
-        assertTrue(bc.getUpperBlock() instanceof PrimaryBlock);
-        PrimaryBlock bpy = (PrimaryBlock) bc.getUpperBlock();
+        assertTrue(bc.getUpperBlock() instanceof BodyPrimaryBlock);
+        BodyPrimaryBlock bpy = (BodyPrimaryBlock) bc.getUpperBlock();
         assertEquals(bc, bpy.getParentBlock());
         assertEquals(new Coord(-1, -1), bpy.getCoord());
         assertEquals(new Position(0, 0, 1, 2, false, Orientation.VERTICAL), bpy.getPosition());
@@ -140,8 +140,8 @@ public class TestCase2StackedCell extends AbstractTestCase {
         assertEquals("l", bpy.getEndingNode().getId());
         assertTrue(bpy.getStackableBlocks().isEmpty());
 
-        assertTrue(bc.getLowerBlock() instanceof ParallelBlock);
-        ParallelBlock bpl = (ParallelBlock) bc.getLowerBlock();
+        assertTrue(bc.getLowerBlock() instanceof LegParralelBlock);
+        LegParralelBlock bpl = (LegParralelBlock) bc.getLowerBlock();
         assertEquals(bc, bpl.getParentBlock());
         assertEquals(new Position(0, 0, 1, 0, false, Orientation.VERTICAL), bpl.getPosition());
         assertEquals(new Coord(-1, -1), bpl.getCoord());
@@ -149,16 +149,17 @@ public class TestCase2StackedCell extends AbstractTestCase {
         assertEquals("FICT_vl_2", bpl.getEndingNode().getId());
         assertEquals(2, bpl.getSubBlocks().size());
 
-        assertTrue(bpl.getSubBlocks().get(0) instanceof PrimaryBlock);
-        PrimaryBlock bpy1 = (PrimaryBlock) bpl.getSubBlocks().get(0);
+        assertTrue(bpl.getSubBlocks().get(0) instanceof LegPrimaryBlock);
+        LegPrimaryBlock bpy1 = (LegPrimaryBlock) bpl.getSubBlocks().get(0);
         assertEquals(new Position(0, 0, 0, 0, false, Orientation.VERTICAL), bpy1.getPosition());
         assertEquals(new Coord(-1, -1), bpy1.getCoord());
         assertEquals("FICT_vl_2", bpy1.getEndingNode().getId());
         assertEquals("bbs1", bpy1.getStartingNode().getId());
         assertEquals(1, bpy1.getStackableBlocks().size());
 
-        assertTrue(bpl.getSubBlocks().get(1) instanceof PrimaryBlock);
-        PrimaryBlock bpy2 = (PrimaryBlock) bpl.getSubBlocks().get(1);
+        System.out.println(bpl.getSubBlocks().get(1).getClass());
+        assertTrue(bpl.getSubBlocks().get(1) instanceof LegPrimaryBlock);
+        LegPrimaryBlock bpy2 = (LegPrimaryBlock) bpl.getSubBlocks().get(1);
         assertEquals(new Position(0, 0, 0, 0, false, Orientation.VERTICAL), bpy2.getPosition());
         assertEquals(new Coord(-1, -1), bpy2.getCoord());
         assertEquals("FICT_vl_2", bpy2.getEndingNode().getId());

@@ -11,13 +11,17 @@ import com.powsybl.substationdiagram.layout.BlockOrganizer;
 import com.powsybl.substationdiagram.layout.ImplicitCellDetector;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
 import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayout;
-import com.powsybl.substationdiagram.library.ComponentType;
 import com.powsybl.substationdiagram.model.*;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
 import org.junit.Before;
 import org.junit.Test;
 
+import static com.powsybl.substationdiagram.library.ComponentTypeName.BREAKER;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.BUSBAR_SECTION;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.DISCONNECTOR;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.LOAD;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.NODE;
 import static org.junit.Assert.*;
 
 /**
@@ -96,11 +100,11 @@ public class TestCase1 extends AbstractTestCase {
         assertEquals("d", g.getNodes().get(3).getId());
         assertEquals("b", g.getNodes().get(4).getId());
 
-        assertEquals(ComponentType.BUSBAR_SECTION, g.getNodes().get(0).getComponentType());
-        assertEquals(ComponentType.LOAD, g.getNodes().get(1).getComponentType());
-        assertEquals(ComponentType.NODE, g.getNodes().get(2).getComponentType());
-        assertEquals(ComponentType.DISCONNECTOR, g.getNodes().get(3).getComponentType());
-        assertEquals(ComponentType.BREAKER, g.getNodes().get(4).getComponentType());
+        assertEquals(BUSBAR_SECTION, g.getNodes().get(0).getComponentType());
+        assertEquals(LOAD, g.getNodes().get(1).getComponentType());
+        assertEquals(NODE, g.getNodes().get(2).getComponentType());
+        assertEquals(DISCONNECTOR, g.getNodes().get(3).getComponentType());
+        assertEquals(BREAKER, g.getNodes().get(4).getComponentType());
 
         assertEquals(1, g.getNodes().get(0).getAdjacentNodes().size());
         assertEquals(1, g.getNodes().get(1).getAdjacentNodes().size());
@@ -152,7 +156,7 @@ public class TestCase1 extends AbstractTestCase {
         assertEquals(Cell.CellType.EXTERN, externCell.getType());
         assertEquals(-1, externCell.getOrder());
         assertEquals(5, externCell.getNodes().size());
-        assertTrue(externCell.getPrimaryBlocksConnectedToBus().isEmpty());
+        assertTrue(externCell.getPrimaryLegBlocks().isEmpty());
         assertEquals(1, externCell.getBusNodes().size());
         assertEquals("bbs", externCell.getBusNodes().get(0).getId());
         assertNull(externCell.getRootBlock());
@@ -169,17 +173,17 @@ public class TestCase1 extends AbstractTestCase {
         assertEquals(new Position(0, 0, 1, 2, false, Orientation.VERTICAL), bc.getPosition());
         assertEquals("bbs", bc.getStartingNode().getId());
         assertEquals("l", bc.getEndingNode().getId());
-        assertEquals(1, externCell.getPrimaryBlocksConnectedToBus().size());
+        assertEquals(1, externCell.getPrimaryLegBlocks().size());
 
-        assertTrue(bc.getUpperBlock() instanceof PrimaryBlock);
-        PrimaryBlock ub = (PrimaryBlock) bc.getUpperBlock();
+        assertTrue(bc.getUpperBlock() instanceof BodyPrimaryBlock);
+        BodyPrimaryBlock ub = (BodyPrimaryBlock) bc.getUpperBlock();
         assertEquals(new Position(0, 0, 1, 2, false, Orientation.VERTICAL), ub.getPosition());
         assertEquals("FICT_vl_dFictif", ub.getStartingNode().getId());
         assertEquals("l", ub.getEndingNode().getId());
         assertTrue(ub.getStackableBlocks().isEmpty());
 
-        assertTrue(bc.getLowerBlock() instanceof PrimaryBlock);
-        PrimaryBlock lb = (PrimaryBlock) bc.getLowerBlock();
+        assertTrue(bc.getLowerBlock() instanceof LegPrimaryBlock);
+        LegPrimaryBlock lb = (LegPrimaryBlock) bc.getLowerBlock();
         assertEquals(new Position(0, 0, 1, 0, false, Orientation.VERTICAL), lb.getPosition());
         assertEquals("bbs", lb.getStartingNode().getId());
         assertEquals("FICT_vl_dFictif", lb.getEndingNode().getId());

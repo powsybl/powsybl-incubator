@@ -44,7 +44,6 @@ public class BlockOrganizer {
 
     /**
      * Organize cells into blocks and call the layout resolvers
-     *
      */
     public void organize(Graph graph) {
         LOGGER.info("Organizing graph cells into blocks");
@@ -54,7 +53,7 @@ public class BlockOrganizer {
                 .forEach(cell -> {
                     new CellBlockDecomposer().determineBlocks(cell);
                     if (cell.getType() == Cell.CellType.INTERN) {
-                        ((InternCell) cell).rationalizeOrganization();
+                        ((InternCell) cell).organizeBlocks();
                     }
                 });
         graph.getCells().stream()
@@ -76,7 +75,7 @@ public class BlockOrganizer {
 
         graph.getCells().stream()
                 .filter(cell -> cell instanceof BusCell)
-                .forEach(cell -> cell.getRootBlock().calculateDimensionAndInternPos());
+                .forEach(cell -> ((BusCell) cell).blockSizing());
         new BlockPositionner().determineBlockPositions(graph, subSections);
     }
 
@@ -86,15 +85,15 @@ public class BlockOrganizer {
     private void determineStackableBlocks(Graph graph) {
         LOGGER.info("Determining stackable Blocks");
         graph.getBusCells().forEach(cell -> {
-            List<PrimaryBlock> blocks = cell.getPrimaryBlocksConnectedToBus();
+            List<LegPrimaryBlock> blocks = cell.getPrimaryLegBlocks();
             for (int i = 0; i < blocks.size(); i++) {
-                PrimaryBlock block1 = blocks.get(i);
+                LegPrimaryBlock block1 = blocks.get(i);
                 if (block1.getNodes().size() == 3) {
                     for (int j = i + 1; j < blocks.size(); j++) {
-                        PrimaryBlock block2 = blocks.get(j);
+                        LegPrimaryBlock block2 = blocks.get(j);
                         if (block2.getNodes().size() == 3
-                                && block1.getEndingNode().equals(block2.getEndingNode())
-                                && !block1.getStartingNode().equals(block2.getStartingNode())) {
+                                && block1.getExtremityNode(Block.Extremity.END).equals(block2.getExtremityNode(Block.Extremity.END))
+                                && !block1.getExtremityNode(Block.Extremity.START).equals(block2.getExtremityNode(Block.Extremity.START))) {
                             block1.addStackableBlock(block2);
                             block2.addStackableBlock(block1);
                         }

@@ -11,9 +11,20 @@ import com.powsybl.iidm.network.Branch;
 import com.powsybl.iidm.network.Injection;
 import com.powsybl.iidm.network.ShuntCompensator;
 import com.powsybl.iidm.network.TwoWindingsTransformer;
-import com.powsybl.substationdiagram.library.ComponentType;
 
 import java.util.Objects;
+
+import static com.powsybl.substationdiagram.library.ComponentTypeName.CAPACITOR;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.DANGLING_LINE;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.GENERATOR;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.INDUCTOR;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.LINE;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.LOAD;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.NODE;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.PHASE_SHIFT_TRANSFORMER;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.STATIC_VAR_COMPENSATOR;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.TWO_WINDINGS_TRANSFORMER;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.VSC_CONVERTER_STATION;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
@@ -27,32 +38,32 @@ public class FeederNode extends Node {
 
     private BusCell.Direction direction = BusCell.Direction.UNDEFINED;
 
-    protected FeederNode(String id, String name, ComponentType componentType, boolean fictitious, Graph graph) {
+    protected FeederNode(String id, String name, String componentType, boolean fictitious, Graph graph) {
         super(NodeType.FEEDER, id, name, componentType, fictitious, graph);
     }
 
     public static FeederNode create(Graph graph, Injection injection) {
         Objects.requireNonNull(graph);
         Objects.requireNonNull(injection);
-        ComponentType componentType;
+        String componentType;
         switch (injection.getType()) {
             case GENERATOR:
-                componentType = ComponentType.GENERATOR;
+                componentType = GENERATOR;
                 break;
             case LOAD:
-                componentType = ComponentType.LOAD;
+                componentType = LOAD;
                 break;
             case HVDC_CONVERTER_STATION:
-                componentType = ComponentType.VSC_CONVERTER_STATION;
+                componentType = VSC_CONVERTER_STATION;
                 break;
             case STATIC_VAR_COMPENSATOR:
-                componentType = ComponentType.STATIC_VAR_COMPENSATOR;
+                componentType = STATIC_VAR_COMPENSATOR;
                 break;
             case SHUNT_COMPENSATOR:
-                componentType = ((ShuntCompensator) injection).getbPerSection() >= 0 ? ComponentType.CAPACITOR : ComponentType.INDUCTOR;
+                componentType = ((ShuntCompensator) injection).getbPerSection() >= 0 ? CAPACITOR : INDUCTOR;
                 break;
             case DANGLING_LINE:
-                componentType = ComponentType.DANGLING_LINE;
+                componentType = DANGLING_LINE;
                 break;
             default:
                 throw new AssertionError();
@@ -63,16 +74,16 @@ public class FeederNode extends Node {
     public static FeederNode create(Graph graph, Branch branch, Branch.Side side) {
         Objects.requireNonNull(graph);
         Objects.requireNonNull(branch);
-        ComponentType componentType;
+        String componentType;
         switch (branch.getType()) {
             case LINE:
-                componentType = ComponentType.LINE;
+                componentType = LINE;
                 break;
             case TWO_WINDINGS_TRANSFORMER:
                 if (((TwoWindingsTransformer) branch).getPhaseTapChanger() == null) {
-                    componentType = ComponentType.TWO_WINDINGS_TRANSFORMER;
+                    componentType = TWO_WINDINGS_TRANSFORMER;
                 } else {
-                    componentType = ComponentType.PHASE_SHIFT_TRANSFORMER;
+                    componentType = PHASE_SHIFT_TRANSFORMER;
                 }
                 break;
             default:
@@ -84,10 +95,10 @@ public class FeederNode extends Node {
     }
 
     public static FeederNode createFictitious(Graph graph, String id) {
-        return new FeederNode(id, id, ComponentType.NODE, true, graph);
+        return new FeederNode(id, id, NODE, true, graph);
     }
 
-    public static FeederNode create(Graph graph, String id, String name, ComponentType componentType) {
+    public static FeederNode create(Graph graph, String id, String name, String componentType) {
         return new FeederNode(id, name, componentType, false, graph);
     }
 

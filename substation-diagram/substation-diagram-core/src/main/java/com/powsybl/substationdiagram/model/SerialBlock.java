@@ -28,24 +28,13 @@ public class SerialBlock extends AbstractComposedBlock {
 
     public SerialBlock(List<Block> blocks, Cell cell) {
         super(Type.SERIAL, blocks);
-        subBlocks = blocks;
+        subBlocks = new ArrayList<>(blocks);
         setCell(cell);
+        postConstruct();
+    }
 
-        for (int i = 0; i < subBlocks.size() - 1; i++) {
-            consistentChaining(subBlocks.get(i), subBlocks.get(i + 1));
-        }
-
-        if (getLowerBlock().isEmbedingNodeType(Node.NodeType.FEEDER)
-                || getUpperBlock().isEmbedingNodeType(Node.NodeType.BUS)) {
-            reverseBlock();
-        }
-
-        for (int i = 0; i < subBlocks.size(); i++) {
-            subBlocks.get(i).getPosition().setHV(0, i);
-        }
-
-        setCardinality(Extremity.START, getLowerBlock().getCardinality(Extremity.START));
-        setCardinality(Extremity.END, getUpperBlock().getCardinality(Extremity.END));
+    public SerialBlock(Block block, Cell cell) {
+        this(Collections.singletonList(block), cell);
     }
 
     public SerialBlock(Block block1,
@@ -59,22 +48,88 @@ public class SerialBlock extends AbstractComposedBlock {
         this(Arrays.asList(block1, block2), null);
     }
 
+    private void postConstruct() {
+        for (int i = 0; i < subBlocks.size() - 1; i++) {
+            consistentChaining(subBlocks.get(i), subBlocks.get(i + 1));
+        }
+
+        if (getLowerBlock().isEmbedingNodeType(Node.NodeType.FEEDER)
+                || getUpperBlock().isEmbedingNodeType(Node.NodeType.BUS)) {
+            reverseBlock();
+        }
+
+// TODO shouldn't it be this way only in the Vertical case ???
+        for (int i = 0; i < subBlocks.size(); i++) {
+            subBlocks.get(i).getPosition().setHV(0, i);
+        }
+
+        setCardinality(Extremity.START, getLowerBlock().getCardinality(Extremity.START));
+        setCardinality(Extremity.END, getUpperBlock().getCardinality(Extremity.END));
+    }
+
     private void consistentChaining(Block block1, Block block2) {
-        if (block1.getEndingNode() == block2.getStartingNode()) {
+        if (block1.getExtremityNode(Extremity.END) == block2.getExtremityNode(Extremity.START)) {
             return;
         }
-        if (block1.getEndingNode() == block2.getEndingNode()) {
+        if (block1.getExtremityNode(Extremity.END) == block2.getExtremityNode(Extremity.END)) {
             block2.reverseBlock();
             return;
         }
-        if (block1.getStartingNode() == block2.getEndingNode()) {
+        if (block1.getExtremityNode(Extremity.START) == block2.getExtremityNode(Extremity.END)) {
             block1.reverseBlock();
             block2.reverseBlock();
             return;
         }
-        if (block1.getStartingNode() == block2.getStartingNode()) {
+        if (block1.getExtremityNode(Extremity.START) == block2.getExtremityNode(Extremity.START)) {
             block1.reverseBlock();
         }
+    }
+
+    public boolean addSubBlock(Block block) {
+        for (Extremity myExtremity : Extremity.values()) {
+            if (getExtremityNode(myExtremity) instanceof FictitiousNode) {
+                FictitiousNode commonNode = (FictitiousNode) getExtremityNode(myExtremity);
+                for (Extremity itsExtremity : Extremity.values()) {
+                    if (commonNode == block.getExtremityNode(itsExtremity)
+                            && commonNode.getCardinality() == getCardinality(commonNode) + block.getCardinality(commonNode)
+                    ) {
+                        insertBlock(block, myExtremity);
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    Extremity whichExtremity(Block block) {
+        if (block.equals(subBlocks.get(0))) {
+            return Extremity.START;
+        }
+        if (block.equals(subBlocks.get(subBlocks.size() - 1))) {
+            return Extremity.END;
+        }
+        return Extremity.NONE;
+    }
+
+    Block extractBody(Collection<Block> blocks) {
+        List<Block> subBlocksCopy = new ArrayList<>(subBlocks);
+        subBlocksCopy.removeAll(blocks);
+        if (subBlocksCopy.size() == 1) {
+            return new BodyPrimaryBlock((BodyPrimaryBlock) subBlocksCopy.get(0));
+        } else {
+            return new SerialBlock(subBlocksCopy, getCell());
+        }
+    }
+
+    private void insertBlock(Block block, Extremity myExtremity) {
+        block.setParentBlock(this);
+        if (myExtremity == Extremity.START) {
+            subBlocks.add(0, block);
+        } else {
+            subBlocks.add(block);
+        }
+        postConstruct();
     }
 
     public Block getUpperBlock() {
@@ -85,15 +140,9 @@ public class SerialBlock extends AbstractComposedBlock {
         return subBlocks.get(0);
     }
 
-    private boolean isH2V(int i) {
-        return subBlocks.get(i - 1).getPosition().getOrientation() == Orientation.VERTICAL
-                && subBlocks.get(i).getPosition().getOrientation() == Orientation.HORIZONTAL;
-    }
-
     @Override
-    public void calculateDimensionAndInternPos() {
-        subBlocks.forEach(Block::calculateDimensionAndInternPos);
-
+    public void sizing() {
+        subBlocks.forEach(Block::sizing);
         if (getPosition().getOrientation() == Orientation.VERTICAL) {
             getPosition().setHSpan(subBlocks.stream().mapToInt(block -> block.getPosition().getHSpan()).max().orElse(0));
             getPosition().setVSpan(subBlocks.stream().mapToInt(block -> block.getPosition().getVSpan()).sum());
@@ -110,7 +159,6 @@ public class SerialBlock extends AbstractComposedBlock {
 
             int cumulHSpan = getLowerBlock().getPosition().getHSpan();
             for (int i = 1; i < subBlocks.size(); i++) {
-                cumulHSpan -= isH2V(i) ? 1 : 0;
                 subBlocks.get(i).getPosition().setHV(cumulHSpan, 0);
                 cumulHSpan += subBlocks.get(i).getPosition().getHSpan();
             }
@@ -146,9 +194,6 @@ public class SerialBlock extends AbstractComposedBlock {
 
         for (int i = 0; i < subBlocks.size(); i++) {
             Block sub = subBlocks.get(i);
-            if (i != 0) {
-                xTranslateInternalNonFlatCell = isH2V(i) ? layoutParam.getCellWidth() / 2 : 0;
-            }
             sub.setX(x0 + (sub.getPosition().getH() + (double) sub.getPosition().getHSpan() / 2) * xPxStep
                     + xTranslateInternalNonFlatCell);
             sub.setXSpan(sub.getPosition().getHSpan() * xPxStep);

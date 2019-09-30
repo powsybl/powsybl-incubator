@@ -27,8 +27,6 @@ public abstract class AbstractBlock implements Block {
 
     private Block parentBlock;
 
-    private BusNode busNode;
-
     private Cell cell;
 
     private Position position;
@@ -66,7 +64,7 @@ public abstract class AbstractBlock implements Block {
         if (node.equals(getExtremityNode(Extremity.END))) {
             return Extremity.END;
         }
-        return null;
+        return Extremity.NONE;
     }
 
     @Override
@@ -94,15 +92,6 @@ public abstract class AbstractBlock implements Block {
     }
 
     @Override
-    public BusNode getBusNode() {
-        return this.busNode;
-    }
-
-    @Override
-    public void setBusNode(BusNode busNode) {
-        this.busNode = busNode;
-    }
-
     public Cell getCell() {
         return cell;
     }
@@ -157,21 +146,15 @@ public abstract class AbstractBlock implements Block {
 
     @Override
     public void calculateCoord(LayoutParameters layoutParam) {
-        if (cell.getType() == Cell.CellType.SHUNT) {
-            ((PrimaryBlock) this).coordShuntCase();
+        if (getPosition().getOrientation() == Orientation.VERTICAL) {
+            coordVerticalCase(layoutParam);
         } else {
-            if (getParentBlock() == null || getPosition().isAbsolute()) {
-                calculateRootCoord(layoutParam);
-            }
-            if (getPosition().getOrientation() == Orientation.VERTICAL) {
-                coordVerticalCase(layoutParam);
-            } else {
-                coordHorizontalCase(layoutParam);
-            }
+            coordHorizontalCase(layoutParam);
         }
     }
 
-    private void calculateRootCoord(LayoutParameters layoutParam) {
+    @Override
+    public void calculateRootCoord(LayoutParameters layoutParam) {
         double dyToBus = 0;
         coord.setXSpan((double) position.getHSpan() * layoutParam.getCellWidth());
         if (cell.getType() == Cell.CellType.INTERN) {
@@ -199,11 +182,12 @@ public abstract class AbstractBlock implements Block {
                         - dyToBus);
                 break;
             case FLAT:
-                coord.setY(
-                        layoutParam.getInitialYBus() + (getPosition().getV() - 1) * layoutParam.getVerticalSpaceBus());
+                coord.setY(layoutParam.getInitialYBus()
+                        + (getPosition().getV() - 1) * layoutParam.getVerticalSpaceBus());
                 break;
             default:
         }
+        calculateCoord(layoutParam);
     }
 
     @Override

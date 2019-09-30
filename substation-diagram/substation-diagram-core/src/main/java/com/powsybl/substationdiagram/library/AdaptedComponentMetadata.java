@@ -22,7 +22,7 @@ import java.util.List;
 public class AdaptedComponentMetadata {
 
     @XmlAttribute(name = "type", required = true)
-    private ComponentType type;
+    private String type;
 
     @XmlAttribute(name = "id")
     private String id;
@@ -32,11 +32,11 @@ public class AdaptedComponentMetadata {
 
     private ComponentSize size;
 
-    public ComponentType getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(ComponentType type) {
+    public void setType(String type) {
         this.type = type;
     }
 

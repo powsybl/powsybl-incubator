@@ -105,29 +105,29 @@ public class TestCase3Coupling extends AbstractTestCase {
         new BlockOrganizer().organize(g);
 
         // assert blocks and nodes rotation
-        assertEquals(2, ((BusCell) cell).getPrimaryBlocksConnectedToBus().size());
+        assertEquals(2, ((BusCell) cell).getPrimaryLegBlocks().size());
         assertNotNull(cell.getRootBlock());
-        assertTrue(cell.getRootBlock() instanceof ParallelBlock);
-        ParallelBlock bp = (ParallelBlock) cell.getRootBlock();
-        assertEquals(new Position(0, 1, 2, 1, false, Orientation.VERTICAL), bp.getPosition());
-        assertEquals("bbs2", bp.getStartingNode().getId());
-        assertEquals("FICT_vl_d1Fictif", bp.getEndingNode().getId());
-        assertEquals(2, bp.getSubBlocks().size());
+        assertTrue(cell.getRootBlock() instanceof SerialBlock);
+        SerialBlock bp = (SerialBlock) cell.getRootBlock();
+        assertEquals(new Position(-1, -1, 0, 0, false, Orientation.VERTICAL), bp.getPosition());
+        assertEquals("bbs1", bp.getStartingNode().getId());
+        assertEquals("FICT_vl_d2Fictif", bp.getEndingNode().getId());
+        assertEquals(3, bp.getSubBlocks().size());
 
-        assertTrue(bp.getSubBlocks().get(0) instanceof SerialBlock);
+        assertTrue(bp.getSubBlocks().get(0) instanceof LegPrimaryBlock);
 
-        SerialBlock bc = (SerialBlock) bp.getSubBlocks().get(0);
-        assertEquals(new Position(0, 0, 1, 1, false, Orientation.HORIZONTAL), bc.getPosition());
+        LegPrimaryBlock bc = (LegPrimaryBlock) bp.getSubBlocks().get(0);
+        assertEquals(new Position(0, 0, 1, 0, false, Orientation.VERTICAL), bc.getPosition());
 
-        assertTrue(bc.getLowerBlock() instanceof PrimaryBlock);
-        PrimaryBlock bpyl = (PrimaryBlock) bc.getLowerBlock();
-        assertEquals(Node.NodeType.BUS, bpyl.getStartingNode().getType());
-        assertEquals(new Position(0, 0, 1, 0, false, Orientation.VERTICAL), bpyl.getPosition());
+        assertTrue(bp.getSubBlocks().get(1) instanceof BodyPrimaryBlock);
+        BodyPrimaryBlock bpyl = (BodyPrimaryBlock) bp.getSubBlocks().get(1);
+        assertEquals(Node.NodeType.FICTITIOUS, bpyl.getStartingNode().getType());
+        assertEquals(new Position(0, 1, 0, 0, false, Orientation.VERTICAL), bpyl.getPosition());
 
-        assertTrue(bc.getUpperBlock() instanceof PrimaryBlock);
-        PrimaryBlock bpyu = (PrimaryBlock) bc.getUpperBlock();
+        assertTrue(bp.getSubBlocks().get(2) instanceof LegPrimaryBlock);
+        LegPrimaryBlock bpyu = (LegPrimaryBlock) bp.getSubBlocks().get(2);
         assertEquals(Node.NodeType.SWITCH, bpyu.getNodes().get(1).getType());
-        assertEquals(new Position(0, 0, 1, 1, false, Orientation.HORIZONTAL), bpyu.getPosition());
+        assertEquals(new Position(1, 2, 1, 0, false, Orientation.VERTICAL), bpyu.getPosition());
 
         // calculate coordinates
         LayoutParameters layoutParameters = new LayoutParameters()
@@ -158,7 +158,7 @@ public class TestCase3Coupling extends AbstractTestCase {
         assertEquals(285, g.getNodes().get(1).getY(), 0);
         assertFalse(g.getNodes().get(1).isRotated());
 
-        assertEquals(75, g.getNodes().get(2).getX(), 0);
+        assertEquals(25, g.getNodes().get(2).getX(), 0);
         assertEquals(260, g.getNodes().get(2).getY(), 0);
         assertFalse(g.getNodes().get(2).isRotated());
 
@@ -166,15 +166,15 @@ public class TestCase3Coupling extends AbstractTestCase {
         assertEquals(220, g.getNodes().get(3).getY(), 0);
         assertTrue(g.getNodes().get(3).isRotated());
 
-        assertEquals(25, g.getNodes().get(4).getX(), 0);
+        assertEquals(75, g.getNodes().get(4).getX(), 0);
         assertEquals(285, g.getNodes().get(4).getY(), 0);
         assertFalse(g.getNodes().get(4).isRotated());
 
-        assertEquals(75, g.getNodes().get(5).getX(), 0);
+        assertEquals(25, g.getNodes().get(5).getX(), 0);
         assertEquals(220, g.getNodes().get(5).getY(), 0);
         assertTrue(g.getNodes().get(5).isRotated());
 
-        assertEquals(25, g.getNodes().get(6).getX(), 0);
+        assertEquals(75, g.getNodes().get(6).getX(), 0);
         assertEquals(220, g.getNodes().get(6).getY(), 0);
         assertTrue(g.getNodes().get(6).isRotated());
 

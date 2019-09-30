@@ -22,19 +22,18 @@ public class UndefinedBlock extends AbstractComposedBlock {
 
     public UndefinedBlock(List<Block> subBlocks) {
         super(Type.UNDEFINED, subBlocks);
-        if (subBlocks.isEmpty()) {
-            throw new IllegalArgumentException("Empty block list");
-        }
         this.subBlocks = Objects.requireNonNull(subBlocks);
-        for (Block block : subBlocks) {
-            block.setParentBlock(this);
-        }
+    }
+
+    public UndefinedBlock(List<Block> subBlocks, Cell cell) {
+        this(subBlocks);
+        setCell(cell);
     }
 
     @Override
-    public void calculateDimensionAndInternPos() {
+    public void sizing() {
         for (Block block : subBlocks) {
-            block.calculateDimensionAndInternPos();
+            block.sizing();
         }
         if (getPosition().getOrientation() == Orientation.VERTICAL) {
             // TODO

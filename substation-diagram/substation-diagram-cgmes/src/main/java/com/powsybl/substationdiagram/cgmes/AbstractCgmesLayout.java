@@ -30,7 +30,18 @@ import com.powsybl.iidm.network.Switch;
 import com.powsybl.iidm.network.ThreeWindingsTransformer;
 import com.powsybl.iidm.network.TopologyKind;
 import com.powsybl.iidm.network.TwoWindingsTransformer;
-import com.powsybl.substationdiagram.library.ComponentType;
+
+import static com.powsybl.substationdiagram.library.ComponentTypeName.CAPACITOR;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.GENERATOR;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.INDUCTOR;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.LINE;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.DANGLING_LINE;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.LOAD;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.PHASE_SHIFT_TRANSFORMER;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.STATIC_VAR_COMPENSATOR;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.THREE_WINDINGS_TRANSFORMER;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.TWO_WINDINGS_TRANSFORMER;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.VSC_CONVERTER_STATION;
 import com.powsybl.substationdiagram.model.BusNode;
 import com.powsybl.substationdiagram.model.FeederNode;
 import com.powsybl.substationdiagram.model.Graph;
@@ -79,7 +90,7 @@ public abstract class AbstractCgmesLayout {
     }
 
     protected boolean isLineNode(Node node) {
-        return Arrays.asList(ComponentType.LINE, ComponentType.DANGLING_LINE, ComponentType.VSC_CONVERTER_STATION).contains(node.getComponentType());
+        return Arrays.asList(LINE, DANGLING_LINE, VSC_CONVERTER_STATION).contains(node.getComponentType());
     }
 
     protected void setNodeCoordinates(Graph graph, Node node, String diagramName) {

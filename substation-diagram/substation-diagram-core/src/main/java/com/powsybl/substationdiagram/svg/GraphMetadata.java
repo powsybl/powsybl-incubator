@@ -33,7 +33,7 @@ public class GraphMetadata implements AnchorPointProvider {
 
         private final String id;
 
-        private ComponentType componentType;
+        private String componentType;
 
         private Double rotationAngle;
 
@@ -51,7 +51,7 @@ public class GraphMetadata implements AnchorPointProvider {
         public NodeMetadata(@JsonProperty("id") String id,
                             @JsonProperty("vid") String vId,
                             @JsonProperty("nextVId") String nextVId,
-                            @JsonProperty("componentType") ComponentType componentType,
+                            @JsonProperty("componentType") String componentType,
                             @JsonProperty("rotationAngle") Double rotationAngle,
                             @JsonProperty("open") boolean open,
                             @JsonProperty("direction") BusCell.Direction direction,
@@ -78,7 +78,7 @@ public class GraphMetadata implements AnchorPointProvider {
             return nextVId;
         }
 
-        public ComponentType getComponentType() {
+        public String getComponentType() {
             return componentType;
         }
 
@@ -173,7 +173,7 @@ public class GraphMetadata implements AnchorPointProvider {
         }
     }
 
-    private final Map<ComponentType, ComponentMetadata> componentMetadataByType = new EnumMap<>(ComponentType.class);
+    private final Map<String, ComponentMetadata> componentMetadataByType = new HashMap<>();
 
     private final Map<String, ComponentMetadata> componentMetadataById = new HashMap<>();
 
@@ -266,12 +266,12 @@ public class GraphMetadata implements AnchorPointProvider {
         }
     }
 
-    public ComponentMetadata getComponentMetadata(ComponentType componentType) {
+    public ComponentMetadata getComponentMetadata(String componentType) {
         return componentType != null ? componentMetadataByType.get(componentType) : null;
     }
 
     @Override
-    public List<AnchorPoint> getAnchorPoints(ComponentType type, String id) {
+    public List<AnchorPoint> getAnchorPoints(String type, String id) {
         ComponentMetadata componentMetadata = null;
         if (id != null) {
             componentMetadata = componentMetadataById.get(id);

@@ -6,19 +6,8 @@
  */
 package com.powsybl.substationdiagram;
 
-import com.google.common.io.ByteStreams;
-import com.powsybl.iidm.network.*;
-import com.powsybl.substationdiagram.layout.HorizontalSubstationLayoutFactory;
-import com.powsybl.substationdiagram.layout.LayoutParameters;
-import com.powsybl.substationdiagram.layout.VerticalSubstationLayoutFactory;
-import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
-import com.powsybl.substationdiagram.model.SubstationGraph;
-import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramStyleProvider;
-import com.powsybl.substationdiagram.util.NominalVoltageSubstationDiagramStyleProvider;
-import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
-import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -27,8 +16,33 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
+
+import com.google.common.io.ByteStreams;
+import com.powsybl.iidm.network.BusbarSection;
+import com.powsybl.iidm.network.Country;
+import com.powsybl.iidm.network.Generator;
+import com.powsybl.iidm.network.Line;
+import com.powsybl.iidm.network.Load;
+import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.network.Substation;
+import com.powsybl.iidm.network.SwitchKind;
+import com.powsybl.iidm.network.ThreeWindingsTransformer;
+import com.powsybl.iidm.network.TopologyKind;
+import com.powsybl.iidm.network.TwoWindingsTransformer;
+import com.powsybl.iidm.network.VoltageLevel;
+import com.powsybl.substationdiagram.layout.HorizontalSubstationLayoutFactory;
+import com.powsybl.substationdiagram.layout.LayoutParameters;
+import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayoutFactory;
+import com.powsybl.substationdiagram.layout.VerticalSubstationLayoutFactory;
+import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
+import com.powsybl.substationdiagram.model.SubstationGraph;
+import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramStyleProvider;
+import com.powsybl.substationdiagram.svg.DefaultSVGWriter;
+import com.powsybl.substationdiagram.util.NominalVoltageSubstationDiagramStyleProvider;
+import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
+import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
 
 /**
  * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
@@ -426,29 +440,30 @@ public class TestCase11SubstationGraph extends AbstractTestCase {
         assertEquals(14, g.getEdges().size());
 
         // write SVG and compare to reference (horizontal layout and defaut style provider)
+        new HorizontalSubstationLayoutFactory().create(g, new PositionVoltageLevelLayoutFactory()).run(layoutParameters);
         compareSvg(g, layoutParameters, "/TestCase11SubstationGraphHorizontal.svg",
-                   new HorizontalSubstationLayoutFactory(),
                    new DefaultSubstationDiagramStyleProvider());
 
         // rebuild substation graph
         g = SubstationGraph.create(substation);
 
         // write SVG and compare to reference (vertical layout)
-        compareSvg(g, layoutParameters, "/TestCase11SubstationGraphVertical.svg", new VerticalSubstationLayoutFactory());
+        new VerticalSubstationLayoutFactory().create(g, new PositionVoltageLevelLayoutFactory()).run(layoutParameters);
+        compareSvg(g, layoutParameters, "/TestCase11SubstationGraphVertical.svg");
 
         // rebuild substation graph
         g = SubstationGraph.create(substation);
 
          // write SVG and compare to reference (horizontal layout and nominal voltage style)
+        new HorizontalSubstationLayoutFactory().create(g, new PositionVoltageLevelLayoutFactory()).run(layoutParameters);
         compareSvg(g, layoutParameters, "/TestCase11SubstationGraphHorizontalNominalVoltageLevel.svg",
-                   new HorizontalSubstationLayoutFactory(),
                    new NominalVoltageSubstationDiagramStyleProvider());
 
         // Create substation diagram (svg + metadata files)
         SubstationDiagram diagram = SubstationDiagram.build(substation);
         Path pathSVG = Paths.get(System.getProperty("user.home"), "substDiag.svg");
         Path pathMetadata = Paths.get(System.getProperty("user.home"), "substDiag_metadata.json");
-        diagram.writeSvg(new ResourcesComponentLibrary("/ConvergenceLibrary"), layoutParameters, pathSVG, network);
+        diagram.writeSvg(new DefaultSVGWriter(new ResourcesComponentLibrary("/ConvergenceLibrary"), layoutParameters), pathSVG, network);
         assertTrue(Files.exists(pathSVG));
         assertTrue(Files.exists(pathMetadata));
         try {

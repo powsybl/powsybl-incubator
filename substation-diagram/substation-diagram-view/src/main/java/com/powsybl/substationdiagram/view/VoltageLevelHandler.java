@@ -10,7 +10,6 @@ import com.powsybl.substationdiagram.layout.HorizontalSubstationLayout;
 import com.powsybl.substationdiagram.layout.InfoCalcPoints;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
 import com.powsybl.substationdiagram.library.ComponentSize;
-import com.powsybl.substationdiagram.library.ComponentType;
 import com.powsybl.substationdiagram.model.BaseNode;
 import com.powsybl.substationdiagram.model.BusCell;
 import com.powsybl.substationdiagram.model.Coord;
@@ -22,6 +21,8 @@ import javafx.scene.input.*;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static com.powsybl.substationdiagram.library.ComponentTypeName.BUSBAR_SECTION;
 
 /**
  * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
@@ -61,7 +62,7 @@ public class VoltageLevelHandler implements BaseNode {
     }
 
     @Override
-    public ComponentType getComponentType() {
+    public String getComponentType() {
         return null;
     }
 
@@ -129,7 +130,7 @@ public class VoltageLevelHandler implements BaseNode {
         List<WireHandler> whSnakeLines = new ArrayList<>();
 
         for (NodeHandler nh : nodeHandlers) {
-            if (nh.getComponentType() == ComponentType.BUSBAR_SECTION) {
+            if (nh.getComponentType().equals(BUSBAR_SECTION)) {
                 if (!posVL.containsKey(nh.getVId())) {
                     posVL.put(nh.getVId(), new Coord(Double.MAX_VALUE, 0));
                 }

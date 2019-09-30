@@ -7,7 +7,6 @@
 package com.powsybl.substationdiagram.view;
 
 import com.powsybl.substationdiagram.library.ComponentSize;
-import com.powsybl.substationdiagram.library.ComponentType;
 import com.powsybl.substationdiagram.model.BaseNode;
 import com.powsybl.substationdiagram.model.BusCell;
 import com.powsybl.substationdiagram.svg.GraphMetadata;
@@ -23,6 +22,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import static com.powsybl.substationdiagram.library.ComponentTypeName.BREAKER;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.DISCONNECTOR;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.LINE;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.LOAD_BREAK_SWITCH;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.TWO_WINDINGS_TRANSFORMER;
+
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
@@ -33,7 +38,7 @@ public class NodeHandler implements BaseNode {
 
     private final Node node;
 
-    private ComponentType componentType;
+    private String componentType;
 
     private Double rotationAngle;
 
@@ -56,7 +61,7 @@ public class NodeHandler implements BaseNode {
 
     private SwitchPositionChangeListener switchListener;
 
-    public NodeHandler(Node node, ComponentType componentType, Double rotationAngle,
+    public NodeHandler(Node node, String componentType, Double rotationAngle,
                        GraphMetadata metadata,
                        String vId, String nextVId, BusCell.Direction direction) {
         this.node = Objects.requireNonNull(node);
@@ -69,8 +74,8 @@ public class NodeHandler implements BaseNode {
 
         setDragAndDrop();
         if (componentType != null
-                && (componentType.equals(ComponentType.BREAKER) || componentType.equals(ComponentType.DISCONNECTOR)
-                        || componentType.equals(ComponentType.LOAD_BREAK_SWITCH))) {
+                && (componentType.equals(BREAKER) || componentType.equals(DISCONNECTOR)
+                        || componentType.equals(LOAD_BREAK_SWITCH))) {
             MouseClickNotDragDetector.clickNotDragDetectingOn(node).withPressedDurationTreshold(150)
                     .setOnMouseClickedNotDragged(new Consumer<MouseEvent>() {
 
@@ -106,7 +111,7 @@ public class NodeHandler implements BaseNode {
     }
 
     @Override
-    public ComponentType getComponentType() {
+    public String getComponentType() {
         return componentType;
     }
 
@@ -152,7 +157,6 @@ public class NodeHandler implements BaseNode {
 
     public void setDragAndDrop() {
         node.setOnMousePressed(event -> {
-            event.setDragDetect(true);
             screenX = event.getScreenX();
             screenY = event.getScreenY();
             mouseX = event.getSceneX() - node.getTranslateX();
@@ -168,7 +172,7 @@ public class NodeHandler implements BaseNode {
         node.setOnMouseReleased(event -> {
             if (event.getScreenX() == screenX &&
                 event.getScreenY() == screenY &&
-                    componentType == ComponentType.LINE || componentType == ComponentType.TWO_WINDINGS_TRANSFORMER) {
+                    componentType.equals(LINE) || componentType.equals(TWO_WINDINGS_TRANSFORMER)) {
                 displayNextVoltageLevel();
             }
         });

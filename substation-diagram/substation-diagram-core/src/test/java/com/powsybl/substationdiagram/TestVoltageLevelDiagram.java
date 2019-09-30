@@ -14,6 +14,8 @@ import com.powsybl.substationdiagram.layout.LayoutParameters;
 import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayoutFactory;
 import com.powsybl.substationdiagram.library.ComponentLibrary;
 import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
+import com.powsybl.substationdiagram.svg.DefaultSVGWriter;
+import com.powsybl.substationdiagram.svg.SVGWriter;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
 import org.junit.Before;
@@ -74,6 +76,23 @@ public class TestVoltageLevelDiagram extends AbstractTestCase {
         Path outSvg = tmpDir.resolve("vl.svg");
 
         VoltageLevelDiagram.build(vl, new PositionVoltageLevelLayoutFactory(), false, false).writeSvg(componentLibrary, layoutParameters, network, outSvg);
+        String svgStr = normalizeLineSeparator(new String(Files.readAllBytes(outSvg), StandardCharsets.UTF_8));
+
+        String refSvg = normalizeLineSeparator(new String(
+                ByteStreams.toByteArray(getClass().getResourceAsStream("/TestVL.svg")), StandardCharsets.UTF_8));
+        assertEquals(refSvg, svgStr);
+    }
+
+    @Test
+    public void testWriter() throws IOException {
+        ComponentLibrary componentLibrary = new ResourcesComponentLibrary("/ConvergenceLibrary");
+        LayoutParameters layoutParameters = new LayoutParameters();
+
+        SVGWriter writer = new DefaultSVGWriter(componentLibrary, layoutParameters);
+
+        Path outSvg = tmpDir.resolve("vl.svg");
+
+        VoltageLevelDiagram.build(vl, new PositionVoltageLevelLayoutFactory(), false, false).writeSvg(writer, network, outSvg);
         String svgStr = normalizeLineSeparator(new String(Files.readAllBytes(outSvg), StandardCharsets.UTF_8));
 
         String refSvg = normalizeLineSeparator(new String(

@@ -8,7 +8,6 @@ package com.powsybl.substationdiagram.view;
 
 import afester.javafx.svg.SvgLoader;
 import com.powsybl.commons.PowsyblException;
-import com.powsybl.substationdiagram.library.ComponentType;
 import com.powsybl.substationdiagram.svg.GraphMetadata;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -23,6 +22,10 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static com.powsybl.substationdiagram.library.ComponentTypeName.BREAKER;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.DISCONNECTOR;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.LOAD_BREAK_SWITCH;
 
 /**
  * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
@@ -80,7 +83,7 @@ public abstract class AbstractContainerDiagramView extends BorderPane {
             if (nodeMetadata != null) {
                 if (node instanceof Group &&
                         (nodeMetadata.getComponentType() != null) &&
-                        (nodeMetadata.getComponentType().equals(ComponentType.BREAKER) || nodeMetadata.getComponentType().equals(ComponentType.DISCONNECTOR) || nodeMetadata.getComponentType().equals(ComponentType.LOAD_BREAK_SWITCH))) {
+                        (nodeMetadata.getComponentType().equals(BREAKER) || nodeMetadata.getComponentType().equals(DISCONNECTOR) || nodeMetadata.getComponentType().equals(LOAD_BREAK_SWITCH))) {
                     setNodeVisibility((Group) node, nodeMetadata);
                 }
                 installNodeHandlers(node, metadata, nodeMetadata, nodeHandlers, vlHandlers, listener, displayVL);
@@ -116,9 +119,9 @@ public abstract class AbstractContainerDiagramView extends BorderPane {
                                                       nodeMetadata.getDirection());
             nodeHandler.setDisplayVL(displayVL);
             if (nodeMetadata.getComponentType() != null
-                    && (nodeMetadata.getComponentType().equals(ComponentType.BREAKER)
-                            || nodeMetadata.getComponentType().equals(ComponentType.DISCONNECTOR)
-                            || nodeMetadata.getComponentType().equals(ComponentType.LOAD_BREAK_SWITCH))) {
+                    && (nodeMetadata.getComponentType().equals(BREAKER)
+                            || nodeMetadata.getComponentType().equals(DISCONNECTOR)
+                            || nodeMetadata.getComponentType().equals(LOAD_BREAK_SWITCH))) {
                 nodeHandler.setSwitchPositionListener(listener);
             }
             LOGGER.trace("Add handler to node {} in voltageLevel {}", node.getId(), nodeMetadata.getVId());

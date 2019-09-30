@@ -6,6 +6,9 @@
  */
 package com.powsybl.substationdiagram.util;
 
+import static com.powsybl.substationdiagram.library.ComponentTypeName.PHASE_SHIFT_TRANSFORMER;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.THREE_WINDINGS_TRANSFORMER;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.TWO_WINDINGS_TRANSFORMER;
 import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.BUS_STYLE_CLASS;
 import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.GRID_STYLE_CLASS;
 import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.LABEL_STYLE_CLASS;
@@ -36,7 +39,6 @@ import com.powsybl.iidm.network.ThreeWindingsTransformer;
 import com.powsybl.iidm.network.TopologyVisitor;
 import com.powsybl.iidm.network.TwoWindingsTransformer;
 import com.powsybl.iidm.network.VoltageLevel;
-import com.powsybl.substationdiagram.library.ComponentType;
 import com.powsybl.substationdiagram.model.Edge;
 import com.powsybl.substationdiagram.model.Graph;
 import com.powsybl.substationdiagram.model.Node;
@@ -170,7 +172,7 @@ public class TopologicalStyleProvider extends DefaultSubstationDiagramStyleProvi
     public Optional<String> getNodeStyle(Node node) {
 
         Optional<String> defaultStyle = super.getNodeStyle(node);
-        if (node.getType() == NodeType.SWITCH || node.getComponentType() == ComponentType.TWO_WINDINGS_TRANSFORMER || node.getComponentType() == ComponentType.THREE_WINDINGS_TRANSFORMER || node.getComponentType() == ComponentType.PHASE_SHIFT_TRANSFORMER) {
+        if (node.getType() == NodeType.SWITCH || node.getComponentType().equals(TWO_WINDINGS_TRANSFORMER) || node.getComponentType().equals(THREE_WINDINGS_TRANSFORMER) || node.getComponentType().equals(PHASE_SHIFT_TRANSFORMER)) {
             return defaultStyle;
         }
 

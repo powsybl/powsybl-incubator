@@ -134,27 +134,24 @@ public class TestCase6CouplingNonFlatHorizontal extends AbstractTestCase {
         new BlockOrganizer().organize(g);
 
         // assert blocks and nodes rotation
-        assertEquals(2, ((BusCell) cellB).getPrimaryBlocksConnectedToBus().size());
+        assertEquals(2, ((BusCell) cellB).getPrimaryLegBlocks().size());
         assertNotNull(cellB.getRootBlock());
-        assertTrue(cellB.getRootBlock() instanceof ParallelBlock);
-        ParallelBlock bp = (ParallelBlock) cellB.getRootBlock();
-        assertEquals(new Position(0, 1, 2, 1, false, Orientation.VERTICAL), bp.getPosition());
+        assertTrue(cellB.getRootBlock() instanceof SerialBlock);
+        SerialBlock bp = (SerialBlock) cellB.getRootBlock();
+        assertEquals(new Position(-1, -1, 0, 0, false, Orientation.VERTICAL), bp.getPosition());
 
-        assertTrue(bp.getSubBlocks().get(0) instanceof SerialBlock);
+        assertTrue(bp.getSubBlocks().get(0) instanceof LegPrimaryBlock);
 
-        SerialBlock bc = (SerialBlock) bp.getSubBlocks().get(0);
-        assertEquals(new Position(0, 0, 1, 1, false, Orientation.HORIZONTAL), bc.getPosition());
+        LegPrimaryBlock bc = (LegPrimaryBlock) bp.getSubBlocks().get(0);
+        assertEquals(new Position(0, 0, 1, 0, false, Orientation.VERTICAL), bc.getPosition());
 
-        assertTrue(bc.getLowerBlock() instanceof PrimaryBlock);
-        PrimaryBlock bpyl = (PrimaryBlock) bc.getLowerBlock();
-        assertEquals(new Position(0, 0, 1, 0, false, Orientation.VERTICAL), bpyl.getPosition());
+        assertTrue(bp.getSubBlocks().get(1) instanceof BodyPrimaryBlock);
+        BodyPrimaryBlock bpyl = (BodyPrimaryBlock) bp.getSubBlocks().get(1);
+        assertEquals(new Position(0, 1, 0, 0, false, Orientation.VERTICAL), bpyl.getPosition());
 
-        assertTrue(bc.getUpperBlock() instanceof PrimaryBlock);
-        PrimaryBlock bpyu = (PrimaryBlock) bc.getUpperBlock();
-        assertEquals(new Position(0, 0, 1, 1, false, Orientation.HORIZONTAL), bpyu.getPosition());
-
-        PrimaryBlock bpy = (PrimaryBlock) bp.getSubBlocks().get(1);
-        assertEquals(new Position(2, 0, 1, 0, true, Orientation.VERTICAL), bpy.getPosition());
+        assertTrue(bp.getSubBlocks().get(2) instanceof LegPrimaryBlock);
+        LegPrimaryBlock bpyu = (LegPrimaryBlock) bp.getSubBlocks().get(2);
+        assertEquals(new Position(2, 2, 1, 0, false, Orientation.VERTICAL), bpyu.getPosition());
 
         // calculate coordinates
         LayoutParameters layoutParameters = new LayoutParameters()

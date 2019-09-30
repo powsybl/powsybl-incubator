@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-public class ExternCell extends BusCell {
+public class ExternCell extends AbstractBusCell {
     private int order = -1;
 
     public ExternCell(Graph graph) {
@@ -32,6 +32,17 @@ public class ExternCell extends BusCell {
         if (nbFeeder != 0) {
             setOrder(sumOrder / nbFeeder);
         }
+    }
+
+    @Override
+    public void blockSizing() {
+        getRootBlock().sizing();
+    }
+
+    @Override
+    public int newHPosition(int hPosition) {
+        getRootBlock().getPosition().setHV(hPosition, 0);
+        return hPosition + getRootBlock().getPosition().getHSpan();
     }
 
     public int getOrder() {

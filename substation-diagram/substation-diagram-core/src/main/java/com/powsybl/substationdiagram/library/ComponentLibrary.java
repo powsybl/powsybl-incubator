@@ -17,11 +17,11 @@ import java.util.List;
  */
 public interface ComponentLibrary {
 
-    List<AnchorPoint> getAnchorPoints(ComponentType type);
+    List<AnchorPoint> getAnchorPoints(String type);
 
-    SVGOMDocument getSvgDocument(ComponentType type);
+    SVGOMDocument getSvgDocument(String type);
 
-    ComponentSize getSize(ComponentType type);
+    ComponentSize getSize(String type);
 
     String getStyleSheet();
 }

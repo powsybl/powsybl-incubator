@@ -26,7 +26,7 @@ public class CellBlockDecomposer {
     private static final Logger LOGGER = LoggerFactory.getLogger(CellBlockDecomposer.class);
 
     /**
-     * Search layout.block and build layout.block hierarchy by merging blocks together; also
+     * Search BlockPrimary and build Block hierarchy by merging blocks together; also
      * list blocks connected to busbar
      *
      * @param cell Cell we are working on
@@ -39,7 +39,7 @@ public class CellBlockDecomposer {
         }
     }
 
-    public void determineBusCellBlocks(BusCell busCell) {
+    private void determineBusCellBlocks(BusCell busCell) {
         if (busCell.getType() == Cell.CellType.INTERN && busCell.getNodes().size() == 3) {
             SwitchNode switchNode = (SwitchNode) busCell.getNodes().get(1);
             busCell.getGraph().extendSwitchBetweenBus(switchNode);
@@ -53,14 +53,17 @@ public class CellBlockDecomposer {
         determineComplexCell(busCell);
     }
 
-    public void determineShuntCellBlocks(ShuntCell shuntCell) {
-        PrimaryBlock bpy = new PrimaryBlock(shuntCell.getNodes());
-        bpy.setCell(shuntCell);
+    private void determineShuntCellBlocks(ShuntCell shuntCell) {
+        BodyPrimaryBlock bpy = new BodyPrimaryBlock(shuntCell.getNodes(), shuntCell);
         shuntCell.setRootBlock(bpy);
     }
 
     private void determineComplexCell(BusCell busCell) {
-        List<PrimaryBlock> blocksConnectedToBusbar = new ArrayList<>();
+        List<Block> blocks = createPrimaryBlock(busCell);
+        mergeBlocks(busCell, blocks);
+    }
+
+    private List<Block> createPrimaryBlock(BusCell busCell) {
         List<Node> alreadyTreated = new ArrayList<>();
         List<Block> blocks = new ArrayList<>();
         Node currentNode = busCell.getBusNodes().get(0);
@@ -73,84 +76,70 @@ public class CellBlockDecomposer {
                 rElaboratePrimaryBlocks(busCell, n, currentNode, alreadyTreated, blockNodes, blocks);
             }
         });
+        return blocks;
+    }
 
+    private void mergeBlocks(BusCell busCell, List<Block> blocks) {
         // Search all blocks connected to a busbar inside the primary blocks list
-        for (Block b : blocks) {
-            b.setCell(busCell);
-            if (b.getStartingNode().getType() == Node.NodeType.BUS) {
-                b.setBusNode((BusNode) b.getStartingNode());
-                blocksConnectedToBusbar.add((PrimaryBlock) b);
-            }
-        }
-
-        //put blocks with busNode at the end ==> this enables to foster chaining over parallelization (for internCell)
-        List<Block> organisedBlocks = new ArrayList<>();
-        blocks.forEach(b -> addBlockOrganised(organisedBlocks, b));
+        List<LegPrimaryBlock> primaryLegBlocks = blocks.stream()
+                .filter(b -> b instanceof LegPrimaryBlock)
+                .map(LegPrimaryBlock.class::cast)
+                .collect(Collectors.toList());
 
         // Merge blocks to obtain a hierarchy of blocks
-        while (organisedBlocks.size() != 1) {
-            boolean merged = searchParallelMerge(organisedBlocks, busCell);
-            merged |= searchSerialMerge(organisedBlocks, busCell);
+        while (blocks.size() != 1) {
+            boolean merged = searchParallelMerge(blocks, busCell);
+            merged |= searchSerialMerge(blocks, busCell);
             if (!merged) {
-                LOGGER.warn("{} busCell, cannot merge any additional blocks, {} blocks remains", busCell.getType(), organisedBlocks.size());
-                Block undefinedBlock = new UndefinedBlock(new ArrayList<>(organisedBlocks));
-                undefinedBlock.setCell(busCell);
-                organisedBlocks.clear();
-                organisedBlocks.add(undefinedBlock);
+                LOGGER.warn("{} busCell, cannot merge any additional blocks, {} blocks remains", busCell.getType(), blocks.size());
+                Block undefinedBlock = new UndefinedBlock(new ArrayList<>(blocks), busCell);
+                blocks.clear();
+                blocks.add(undefinedBlock);
                 break;
             }
         }
-        busCell.blocksSetting(organisedBlocks.get(0), blocksConnectedToBusbar);
-    }
-
-    private void addBlockOrganised(List<Block> blocks, Block b) {
-        if (b.isEmbedingNodeType(Node.NodeType.BUS)) {
-            blocks.add(b);
-        } else {
-            blocks.add(0, b);
-        }
+        busCell.blocksSetting(blocks.get(0), primaryLegBlocks);
     }
 
     /**
      * Search possibility to merge two blocks into a chain layout.block and do the merging
      *
      * @param blocks list of blocks we can merge
-     * @param cell current cell
+     * @param cell   current cell
      */
     private boolean searchSerialMerge(List<Block> blocks, Cell cell) {
-        boolean chainEnded = false;
         int i = 0;
-        while (i < blocks.size() && !chainEnded) {
+        boolean identifiedMerge = false;
+
+        while (i < blocks.size()) {
+            List<Block> blockToRemove = new ArrayList<>();
+            boolean chainIdentified = false;
+            Block b1 = blocks.get(i);
+            SerialBlock serialBlock = new SerialBlock(b1, cell);
             for (int j = i + 1; j < blocks.size(); j++) {
-                Block b1 = blocks.get(i);
                 Block b2 = blocks.get(j);
-                LOGGER.trace(" Blocks compared : {} & {}", b1, b2);
-                Node commonNode = compareBlockPath(b1, b2);
-                LOGGER.trace(" Common node : {}", commonNode);
-                if (commonNode != null
-                        && ((FictitiousNode) commonNode).getCardinality()
-                        == (b1.getCardinality(commonNode) + b2.getCardinality(commonNode))) {
-                    SerialBlock b = new SerialBlock(b1, b2);
-                    b1.setParentBlock(b);
-                    b2.setParentBlock(b);
-                    blocks.remove(b1);
-                    blocks.remove(b2);
-                    b.setCell(cell);
-                    blocks.add(b);
-                    chainEnded = true;
-                    break;
+                if (serialBlock.addSubBlock(b2)) {
+                    chainIdentified = true;
+                    blockToRemove.add(b2);
                 }
+            }
+            if (chainIdentified) {
+                blockToRemove.add(b1);
+                identifiedMerge = true;
+                blocks.removeAll(blockToRemove);
+                blocks.add(i, serialBlock);
             }
             i++;
         }
-        return chainEnded;
+        return identifiedMerge;
     }
+
 
     /**
      * Search possibility to merge some blocks into a parallel layout.block and do the merging
      *
      * @param blocks list of blocks we can merge
-     * @param cell current cell
+     * @param cell   current cell
      */
     private boolean searchParallelMerge(List<Block> blocks, Cell cell) {
         List<List<Block>> blocksBundlesToMerge = new ArrayList<>();
@@ -159,7 +148,7 @@ public class CellBlockDecomposer {
         while (i < blocks.size()) {
             List<Block> blocksBundle = new ArrayList<>();
             for (int j = i + 1; j < blocks.size(); j++) {
-                commonNode = compareBlockParallel(blocks.get(i), blocks.get(j));
+                commonNode = checkParallelCriteria(blocks.get(i), blocks.get(j));
                 if (commonNode != null) {
                     blocksBundle.add(blocks.get(j));
                 }
@@ -173,35 +162,15 @@ public class CellBlockDecomposer {
             }
         }
         for (List<Block> blocksBundle : blocksBundlesToMerge) {
-            ParallelBlock bPar = new ParallelBlock(blocksBundle);
-            bPar.setCell(cell);
+            ParallelBlock bPar;
+            if (blocksBundle.stream().anyMatch(b -> !(b instanceof LegPrimaryBlock))) {
+                bPar = new BodyParallelBlock(blocksBundle, cell, true);
+            } else {
+                bPar = new LegParralelBlock(blocksBundle, cell, true);
+            }
             blocks.add(bPar);
         }
         return !blocksBundlesToMerge.isEmpty();
-    }
-
-    /**
-     * Compare two blocks to see if they can be consecutive
-     *
-     * @param block1 layout.block
-     * @param block2 layout.block
-     * @return the common node between the 2 blocks, null otherwise
-     */
-    private Node compareBlockPath(Block block1, Block block2) {
-        Node s1 = block1.getStartingNode();
-        Node e1 = block1.getEndingNode();
-        Node s2 = block2.getStartingNode();
-        Node e2 = block2.getEndingNode();
-
-        if ((s1.getType() == Node.NodeType.FICTITIOUS || s1.getType() == Node.NodeType.SHUNT)
-                && (s1.equals(s2) || s1.equals(e2))) {
-            return s1;
-        }
-        if ((e1.getType() == Node.NodeType.FICTITIOUS || e1.getType() == Node.NodeType.SHUNT)
-                && (e1.equals(s2) || e1.equals(e2))) {
-            return e1;
-        }
-        return null;
     }
 
     /**
@@ -211,11 +180,11 @@ public class CellBlockDecomposer {
      * @param block2 layout.block
      * @return true if the two blocks are similar : same start and end
      */
-    private Node compareBlockParallel(Block block1, Block block2) {
-        Node s1 = block1.getStartingNode();
-        Node e1 = block1.getEndingNode();
-        Node s2 = block2.getStartingNode();
-        Node e2 = block2.getEndingNode();
+    private Node checkParallelCriteria(Block block1, Block block2) {
+        Node s1 = block1.getExtremityNode(Block.Extremity.START);
+        Node e1 = block1.getExtremityNode(Block.Extremity.END);
+        Node s2 = block2.getExtremityNode(Block.Extremity.START);
+        Node e2 = block2.getExtremityNode(Block.Extremity.END);
 
         if ((s1.checkNodeSimilarity(s2) && e1.checkNodeSimilarity(e2))
                 || (s1.checkNodeSimilarity(e2) && e1.checkNodeSimilarity(s2))) {
@@ -230,11 +199,14 @@ public class CellBlockDecomposer {
     }
 
     /**
-     * Search for primary layout.block
-     * a primary layout.block shall have the following pattern :
+     * Search for primaryBlock
+     * a primaryBlock is identified when the the following pattern is detected:
      * BUS|FICTICIOUS|FEEDER|SHUNT - n * SWITCH - BUS|FICTICIOUS|FEEDER|SHUNT
+     * when there is one BUS, it is instanciated as PrimaryLegBlock with this pattern (only allowed pattern with a bus) :
+     * BUS - SWITCH - FICTICIOUS
+     * otherwise it is instanciated as PrimaryBodyBlock
      *
-     * @param cell   cell
+     * @param cell           cell
      * @param currentNode    currentnode
      * @param alreadyTreated alreadyTreated
      * @param blockNodes     blockNodes
@@ -259,7 +231,12 @@ public class CellBlockDecomposer {
             }
             blockNodes.add(currentNode2);
         }
-        PrimaryBlock b = new PrimaryBlock(blockNodes);
+        PrimaryBlock b;
+        if (blockNodes.stream().anyMatch(node -> node.getType() == Node.NodeType.BUS)) {
+            b = new LegPrimaryBlock(blockNodes, cell);
+        } else {
+            b = new BodyPrimaryBlock(blockNodes, cell);
+        }
         blocks.add(b);
         // If we did'nt reach a Busbar, continue to search for other
         // blocks

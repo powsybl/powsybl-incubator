@@ -6,6 +6,12 @@
  */
 package com.powsybl.substationdiagram.cgmes;
 
+import static com.powsybl.substationdiagram.library.ComponentTypeName.BUSBAR_SECTION;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.CAPACITOR;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.DANGLING_LINE;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.LOAD;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.STATIC_VAR_COMPENSATOR;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.TWO_WINDINGS_TRANSFORMER;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -28,7 +34,6 @@ import com.powsybl.iidm.network.TopologyKind;
 import com.powsybl.iidm.network.TwoWindingsTransformer;
 import com.powsybl.iidm.network.VoltageLevel;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
-import com.powsybl.substationdiagram.library.ComponentType;
 import com.powsybl.substationdiagram.model.BusNode;
 import com.powsybl.substationdiagram.model.Graph;
 import com.powsybl.substationdiagram.model.Node;
@@ -233,11 +238,11 @@ public class BusTopologyTest extends AbstractCgmesVoltageLevelLayoutTest {
         assertEquals("DanglingLine", graph.getNodes().get(3).getId());
         assertEquals("Transformer_ONE", graph.getNodes().get(4).getId());
 
-        assertEquals(ComponentType.BUSBAR_SECTION, graph.getNodes().get(0).getComponentType());
-        assertEquals(ComponentType.LOAD, graph.getNodes().get(1).getComponentType());
-        assertEquals(ComponentType.CAPACITOR, graph.getNodes().get(2).getComponentType());
-        assertEquals(ComponentType.DANGLING_LINE, graph.getNodes().get(3).getComponentType());
-        assertEquals(ComponentType.TWO_WINDINGS_TRANSFORMER, graph.getNodes().get(4).getComponentType());
+        assertEquals(BUSBAR_SECTION, graph.getNodes().get(0).getComponentType());
+        assertEquals(LOAD, graph.getNodes().get(1).getComponentType());
+        assertEquals(CAPACITOR, graph.getNodes().get(2).getComponentType());
+        assertEquals(DANGLING_LINE, graph.getNodes().get(3).getComponentType());
+        assertEquals(TWO_WINDINGS_TRANSFORMER, graph.getNodes().get(4).getComponentType());
 
         assertEquals(4, graph.getNodes().get(0).getAdjacentNodes().size());
         checkAdjacentNodes(graph.getNodes().get(0), Arrays.asList("Load", "Shunt", "DanglingLine", "Transformer_ONE"));
@@ -285,9 +290,9 @@ public class BusTopologyTest extends AbstractCgmesVoltageLevelLayoutTest {
         assertEquals("Svc", graph.getNodes().get(1).getId());
         assertEquals("Transformer_TWO", graph.getNodes().get(2).getId());
 
-        assertEquals(ComponentType.BUSBAR_SECTION, graph.getNodes().get(0).getComponentType());
-        assertEquals(ComponentType.STATIC_VAR_COMPENSATOR, graph.getNodes().get(1).getComponentType());
-        assertEquals(ComponentType.TWO_WINDINGS_TRANSFORMER, graph.getNodes().get(2).getComponentType());
+        assertEquals(BUSBAR_SECTION, graph.getNodes().get(0).getComponentType());
+        assertEquals(STATIC_VAR_COMPENSATOR, graph.getNodes().get(1).getComponentType());
+        assertEquals(TWO_WINDINGS_TRANSFORMER, graph.getNodes().get(2).getComponentType());
 
         assertEquals(2, graph.getNodes().get(0).getAdjacentNodes().size());
         assertEquals("Svc", graph.getNodes().get(0).getAdjacentNodes().get(0).getId());

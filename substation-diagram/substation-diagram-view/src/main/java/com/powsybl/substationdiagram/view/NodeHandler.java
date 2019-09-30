@@ -7,7 +7,6 @@
 package com.powsybl.substationdiagram.view;
 
 import com.powsybl.substationdiagram.library.ComponentSize;
-import com.powsybl.substationdiagram.library.ComponentType;
 import com.powsybl.substationdiagram.model.BaseNode;
 import com.powsybl.substationdiagram.model.BusCell;
 import com.powsybl.substationdiagram.svg.GraphMetadata;
@@ -16,6 +15,9 @@ import javafx.scene.Node;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import static com.powsybl.substationdiagram.library.ComponentTypeName.LINE;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.TWO_WINDINGS_TRANSFORMER;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
@@ -27,7 +29,7 @@ public class NodeHandler implements BaseNode {
 
     private final Node node;
 
-    private ComponentType componentType;
+    private String componentType;
 
     private Double rotationAngle;
 
@@ -48,7 +50,7 @@ public class NodeHandler implements BaseNode {
 
     private DisplayVoltageLevel displayVL;
 
-    public NodeHandler(Node node, ComponentType componentType, Double rotationAngle,
+    public NodeHandler(Node node, String componentType, Double rotationAngle,
                        GraphMetadata metadata,
                        String vId, String nextVId, BusCell.Direction direction) {
         this.node = Objects.requireNonNull(node);
@@ -84,7 +86,7 @@ public class NodeHandler implements BaseNode {
     }
 
     @Override
-    public ComponentType getComponentType() {
+    public String getComponentType() {
         return componentType;
     }
 
@@ -145,7 +147,7 @@ public class NodeHandler implements BaseNode {
         node.setOnMouseReleased(event -> {
             if (event.getScreenX() == screenX &&
                 event.getScreenY() == screenY &&
-                    componentType == ComponentType.LINE || componentType == ComponentType.TWO_WINDINGS_TRANSFORMER) {
+                    componentType.equals(LINE) || componentType.equals(TWO_WINDINGS_TRANSFORMER)) {
                 displayNextVoltageLevel();
             }
         });

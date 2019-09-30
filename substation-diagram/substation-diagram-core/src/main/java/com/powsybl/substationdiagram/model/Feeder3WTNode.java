@@ -8,9 +8,10 @@ package com.powsybl.substationdiagram.model;
 
 import com.powsybl.iidm.network.ThreeWindingsTransformer;
 import com.powsybl.iidm.network.VoltageLevel;
-import com.powsybl.substationdiagram.library.ComponentType;
 
 import java.util.Objects;
+
+import static com.powsybl.substationdiagram.library.ComponentTypeName.THREE_WINDINGS_TRANSFORMER;
 
 /**
  * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
@@ -20,7 +21,7 @@ public class Feeder3WTNode extends FeederNode {
     private ThreeWindingsTransformer transformer;
     private ThreeWindingsTransformer.Side side;
 
-    protected Feeder3WTNode(String id, String name, ComponentType componentType,
+    protected Feeder3WTNode(String id, String name, String componentType,
                             boolean fictitious, Graph graph,
                             ThreeWindingsTransformer transformer,
                             ThreeWindingsTransformer.Side side) {
@@ -35,7 +36,7 @@ public class Feeder3WTNode extends FeederNode {
         Objects.requireNonNull(side);
         String id = twt.getId() + "_" + side.name();
         String name = twt.getName() + "_" + side.name();
-        return new Feeder3WTNode(id, name, ComponentType.THREE_WINDINGS_TRANSFORMER,
+        return new Feeder3WTNode(id, name, THREE_WINDINGS_TRANSFORMER,
                                             false, graph, twt, side);
     }
 

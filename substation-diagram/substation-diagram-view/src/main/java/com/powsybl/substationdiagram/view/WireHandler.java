@@ -8,7 +8,6 @@ package com.powsybl.substationdiagram.view;
 
 import com.google.common.collect.ImmutableList;
 import com.powsybl.substationdiagram.library.ComponentSize;
-import com.powsybl.substationdiagram.library.ComponentType;
 import com.powsybl.substationdiagram.svg.GraphMetadata;
 import com.powsybl.substationdiagram.svg.WireConnection;
 import javafx.geometry.Point2D;
@@ -23,6 +22,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.ARROW;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
@@ -92,7 +92,7 @@ public class WireHandler {
     }
 
     private void relocateArrow(Polyline polyline, Group arrow, int arrowNum) {
-        ComponentSize arrowSize = metadata.getComponentMetadata(ComponentType.ARROW).getSize();
+        ComponentSize arrowSize = metadata.getComponentMetadata(ARROW).getSize();
         Point2D center = new Point2D(arrowSize.getWidth() / 2, arrowSize.getHeight() / 2);
         double distance = metadata.getArrowMetadata(arrow.getId()).getDistance() + arrowNum * arrowSize.getHeight() * 2;
         relocateArrow(polyline, arrow, center, distance);

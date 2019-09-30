@@ -22,7 +22,7 @@ import java.util.Objects;
 @XmlJavaTypeAdapter(ComponentMetadataAdapter.class)
 public class ComponentMetadata {
 
-    private final ComponentType type;
+    private final String type;
 
     private final String id;
 
@@ -31,7 +31,7 @@ public class ComponentMetadata {
     private final ComponentSize size;
 
     @JsonCreator
-    public ComponentMetadata(@JsonProperty("type") ComponentType type,
+    public ComponentMetadata(@JsonProperty("type") String type,
                              @JsonProperty("id") String id,
                              @JsonProperty("anchorPoints") List<AnchorPoint> anchorPoints,
                              @JsonProperty("size") ComponentSize size) {
@@ -41,7 +41,7 @@ public class ComponentMetadata {
         this.size = Objects.requireNonNull(size);
     }
 
-    public ComponentType getType() {
+    public String getType() {
         return type;
     }
 

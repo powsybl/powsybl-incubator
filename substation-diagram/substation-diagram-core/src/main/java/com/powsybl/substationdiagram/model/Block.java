@@ -22,8 +22,17 @@ public interface Block {
     }
 
     enum Extremity {
-        START,
-        END
+        START, END, NONE;
+
+        public Extremity flip() {
+            if (this.equals(START)) {
+                return END;
+            }
+            if (this.equals(END)) {
+                return START;
+            }
+            return NONE;
+        }
     }
 
     Graph getGraph();
@@ -59,13 +68,15 @@ public interface Block {
      * Calculate maximal pxWidth that layout.block can use in a cell without modifying
      * root pxWidth
      */
-    void calculateDimensionAndInternPos();
+    void sizing();
 
     /**
      * Calculates all the blocks dimensions and find the order of the layout.block inside
      * the cell
      */
     void calculateCoord(LayoutParameters layoutParam);
+
+    void calculateRootCoord(LayoutParameters layoutParam);
 
     int getOrder();
 
@@ -81,9 +92,7 @@ public interface Block {
 
     void setCell(Cell cell);
 
-    BusNode getBusNode();
-
-    void setBusNode(BusNode busNode);
+    Cell getCell();
 
     void setOrientation(Orientation orientation);
 

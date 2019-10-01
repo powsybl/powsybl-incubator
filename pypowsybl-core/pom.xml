@@ -179,6 +179,12 @@
 
         <dependency>
             <groupId>com.powsybl</groupId>
+            <artifactId>powsybl-config-classic</artifactId>
+            <version>${powsyblcore.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.powsybl</groupId>
             <artifactId>powsybl-contingency-api</artifactId>
             <version>${powsyblcore.version}</version>
         </dependency>

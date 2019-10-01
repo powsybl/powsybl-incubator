@@ -35,7 +35,6 @@ public abstract class AbstractContainerDiagramView extends BorderPane {
 
     private double pressedX;
     private double pressedY;
-    private SwitchPositionChangeListener switchListener;
 
     protected AbstractContainerDiagramView(Group svgImage) {
         super(svgImage);

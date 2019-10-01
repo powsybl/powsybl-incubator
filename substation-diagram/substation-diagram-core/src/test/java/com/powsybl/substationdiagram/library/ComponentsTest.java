@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 
+import static com.powsybl.substationdiagram.library.ComponentTypeName.BREAKER;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -44,7 +45,7 @@ public class ComponentsTest {
         }
         assertEquals(1, components.getComponents().size());
         assertEquals("breaker.svg", components.getComponents().get(0).getFileName());
-        assertEquals(ComponentType.BREAKER, components.getComponents().get(0).getMetadata().getType());
+        assertEquals(BREAKER, components.getComponents().get(0).getMetadata().getType());
         assertEquals(18, components.getComponents().get(0).getMetadata().getSize().getWidth(), 0);
         assertEquals(19, components.getComponents().get(0).getMetadata().getSize().getHeight(), 0);
         assertEquals(2, components.getComponents().get(0).getMetadata().getAnchorPoints().size());

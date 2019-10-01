@@ -11,13 +11,13 @@ import com.powsybl.substationdiagram.layout.BlockOrganizer;
 import com.powsybl.substationdiagram.layout.ImplicitCellDetector;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
 import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayout;
-import com.powsybl.substationdiagram.library.ComponentType;
 import com.powsybl.substationdiagram.model.*;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
 import org.junit.Before;
 import org.junit.Test;
 
+import static com.powsybl.substationdiagram.library.ComponentTypeName.NODE;
 import static org.junit.Assert.*;
 
 /**
@@ -96,7 +96,7 @@ public class TestCase2StackedCell extends AbstractTestCase {
         assertEquals(7, g.getNodes().size());
         assertEquals(Node.NodeType.FICTITIOUS, g.getNodes().get(3).getType());
         assertEquals("FICT_vl_2", g.getNodes().get(3).getId());
-        assertEquals(ComponentType.NODE, g.getNodes().get(3).getComponentType());
+        assertEquals(NODE, g.getNodes().get(3).getComponentType());
 
         assertEquals(6, g.getEdges().size());
         assertEquals("d1", g.getEdges().get(1).getNode1().getId());

@@ -12,6 +12,7 @@ import com.powsybl.substationdiagram.layout.*;
 import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
 import com.powsybl.substationdiagram.model.Graph;
 import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramInitialValueProvider;
+import com.powsybl.substationdiagram.svg.DefaultSVGWriter;
 import com.powsybl.substationdiagram.util.NominalVoltageSubstationDiagramStyleProvider;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.BusbarSectionPosition;
 import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
@@ -426,7 +427,7 @@ public class TestCase12GraphWith3WT extends AbstractTestCase {
         VoltageLevelDiagram diagram = VoltageLevelDiagram.build(vl1, new PositionVoltageLevelLayoutFactory(), false, true);
         Path pathSVG = Paths.get(System.getProperty("user.home"), "vlDiag.svg");
         Path pathMetadata = Paths.get(System.getProperty("user.home"), "vlDiag_metadata.json");
-        diagram.writeSvg(new ResourcesComponentLibrary("/ConvergenceLibrary"), layoutParameters,
+        diagram.writeSvg(new DefaultSVGWriter(new ResourcesComponentLibrary("/ConvergenceLibrary"), layoutParameters),
                          new DefaultSubstationDiagramInitialValueProvider(network),
                          new NominalVoltageSubstationDiagramStyleProvider(), pathSVG, false);
         Assert.assertTrue(Files.exists(pathSVG));

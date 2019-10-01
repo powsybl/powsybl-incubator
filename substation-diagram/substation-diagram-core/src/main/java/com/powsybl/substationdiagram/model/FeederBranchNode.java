@@ -7,7 +7,6 @@
 package com.powsybl.substationdiagram.model;
 
 import com.powsybl.iidm.network.VoltageLevel;
-import com.powsybl.substationdiagram.library.ComponentType;
 
 /**
  * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
@@ -16,7 +15,7 @@ public class FeederBranchNode extends FeederNode {
 
     private VoltageLevel vlOtherSide;
 
-    protected FeederBranchNode(String id, String name, ComponentType componentType, boolean fictitious, Graph graph, VoltageLevel vlOtherSide) {
+    protected FeederBranchNode(String id, String name, String componentType, boolean fictitious, Graph graph, VoltageLevel vlOtherSide) {
         super(id, name, componentType, fictitious, graph);
         this.vlOtherSide = vlOtherSide;
     }

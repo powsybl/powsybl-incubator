@@ -8,27 +8,29 @@ package com.powsybl.substationdiagram.model;
 
 import com.powsybl.iidm.network.TwoWindingsTransformer;
 import com.powsybl.iidm.network.VoltageLevel;
-import com.powsybl.substationdiagram.library.ComponentType;
 
 import java.util.Objects;
+
+import static com.powsybl.substationdiagram.library.ComponentTypeName.PHASE_SHIFT_TRANSFORMER;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.TWO_WINDINGS_TRANSFORMER;
 
 /**
  * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
  */
 public class Feeder2WTNode extends FeederBranchNode {
-    protected Feeder2WTNode(String id, String name, ComponentType componentType, boolean fictitious, Graph graph, VoltageLevel vlOtherSide) {
+    protected Feeder2WTNode(String id, String name, String componentType, boolean fictitious, Graph graph, VoltageLevel vlOtherSide) {
         super(id, name, componentType, fictitious, graph, vlOtherSide);
     }
 
     public static FeederNode create(Graph graph, TwoWindingsTransformer branch, TwoWindingsTransformer.Side side) {
         Objects.requireNonNull(graph);
         Objects.requireNonNull(branch);
-        ComponentType componentType;
+        String componentType;
 
         if (branch.getPhaseTapChanger() == null) {
-            componentType = ComponentType.TWO_WINDINGS_TRANSFORMER;
+            componentType = TWO_WINDINGS_TRANSFORMER;
         } else {
-            componentType = ComponentType.PHASE_SHIFT_TRANSFORMER;
+            componentType = PHASE_SHIFT_TRANSFORMER;
         }
 
         String id = branch.getId() + "_" + side.name();
@@ -43,6 +45,6 @@ public class Feeder2WTNode extends FeederBranchNode {
     public static Feeder2WTNode create(Graph graph, String id, String name, VoltageLevel vlOtherSide) {
         Objects.requireNonNull(graph);
         Objects.requireNonNull(vlOtherSide);
-        return new Feeder2WTNode(id, name, ComponentType.TWO_WINDINGS_TRANSFORMER, false, graph, vlOtherSide);
+        return new Feeder2WTNode(id, name, TWO_WINDINGS_TRANSFORMER, false, graph, vlOtherSide);
     }
 }

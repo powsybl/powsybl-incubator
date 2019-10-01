@@ -15,12 +15,10 @@ import com.powsybl.substationdiagram.util.MouseClickNotDragDetector;
 
 import javafx.scene.Node;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 import static com.powsybl.substationdiagram.library.ComponentTypeName.BREAKER;
 import static com.powsybl.substationdiagram.library.ComponentTypeName.DISCONNECTOR;
@@ -73,17 +71,12 @@ public class NodeHandler implements BaseNode {
         this.direction = direction;
 
         setDragAndDrop();
-        if (componentType != null
-                && (componentType.equals(BREAKER) || componentType.equals(DISCONNECTOR)
-                        || componentType.equals(LOAD_BREAK_SWITCH))) {
+        if (componentType != null && (componentType.equals(BREAKER) || componentType.equals(DISCONNECTOR)
+                || componentType.equals(LOAD_BREAK_SWITCH))) {
             MouseClickNotDragDetector.clickNotDragDetectingOn(node).withPressedDurationTreshold(150)
-                    .setOnMouseClickedNotDragged(new Consumer<MouseEvent>() {
-
-                        @Override
-                        public void accept(MouseEvent event) {
-                            if (switchListener != null && event.getButton().equals(MouseButton.PRIMARY)) {
-                                switchListener.onPositionChange(SubstationDiagramStyles.unescapeId(node.getId()));
-                            }
+                    .setOnMouseClickedNotDragged(e -> {
+                        if (switchListener != null && e.getButton().equals(MouseButton.PRIMARY)) {
+                            switchListener.onPositionChange(SubstationDiagramStyles.unescapeId(node.getId()));
                         }
                     });
         }

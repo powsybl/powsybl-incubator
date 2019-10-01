@@ -122,5 +122,6 @@ public class DefaultSubstationDiagramStyleProvider implements SubstationDiagramS
 
     @Override
     public void reset() {
+        // Nothing to reset for this implementation
     }
 }

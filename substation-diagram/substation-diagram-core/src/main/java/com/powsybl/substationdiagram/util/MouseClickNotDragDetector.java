@@ -17,8 +17,6 @@ import javafx.scene.input.MouseEvent;
  */
 public final class MouseClickNotDragDetector {
 
-    private final Node node;
-
     private Consumer<MouseEvent> onClickedNotDragged;
     private boolean wasDragged;
     private long timePressed;
@@ -26,17 +24,12 @@ public final class MouseClickNotDragDetector {
     private long pressedDurationTreshold = 200;
 
     private MouseClickNotDragDetector(Node node) {
-        this.node = node;
 
-        node.addEventHandler(MouseEvent.MOUSE_PRESSED, (mouseEvent) -> {
-            this.timePressed = System.currentTimeMillis();
-        });
+        node.addEventHandler(MouseEvent.MOUSE_PRESSED, mouseEvent -> this.timePressed = System.currentTimeMillis());
 
-        node.addEventHandler(MouseEvent.MOUSE_DRAGGED, (mouseEvent) -> {
-            this.wasDragged = true;
-        });
+        node.addEventHandler(MouseEvent.MOUSE_DRAGGED, mouseEvent -> this.wasDragged = true);
 
-        node.addEventHandler(MouseEvent.MOUSE_RELEASED, (mouseEvent) -> {
+        node.addEventHandler(MouseEvent.MOUSE_RELEASED, mouseEvent -> {
             this.timeReleased = System.currentTimeMillis();
             this.fireEventIfWasClickedNotDragged(mouseEvent);
             this.clear();

@@ -42,7 +42,6 @@ import com.powsybl.substationdiagram.util.TopologicalStyleProvider;
 import com.powsybl.substationdiagram.view.AbstractContainerDiagramView;
 import com.powsybl.substationdiagram.view.DisplayVoltageLevel;
 import com.powsybl.substationdiagram.view.SubstationDiagramView;
-import com.powsybl.substationdiagram.view.SwitchPositionChangeListener;
 import com.powsybl.substationdiagram.view.VoltageLevelDiagramView;
 
 import javafx.application.Application;
@@ -295,33 +294,13 @@ public abstract class AbstractSubstationDiagramViewer extends Application implem
             }
 
             AbstractContainerDiagramView diagramView;
-            SwitchPositionChangeListener listener = new SwitchPositionChangeListener() {
-
-                @Override
-                public void onPositionChange(String switchId) {
-                    Switch sw = null;
-                    if (c.getContainerType() == ContainerType.VOLTAGE_LEVEL) {
-                        VoltageLevel v = (VoltageLevel) c;
-                        sw = v.getSubstation().getNetwork().getSwitch(switchId);
-                    } else if (c.getContainerType() == ContainerType.SUBSTATION) {
-                        Substation s = (Substation) c;
-                        sw = s.getNetwork().getSwitch(switchId);
-                    }
-                    if (sw != null) {
-                        sw.setOpen(!sw.isOpen());
-                        SubstationDiagramStyleProvider styleProvider = styles.get(styleComboBox.getSelectionModel().getSelectedItem());
-                        styleProvider.reset();
-                        loadDiagram(c);
-                    }
-                }
-            };
 
             try (InputStream svgInputStream = new ByteArrayInputStream(svgData.getBytes(StandardCharsets.UTF_8));
                  InputStream metadataInputStream = new ByteArrayInputStream(metadataData.getBytes(StandardCharsets.UTF_8))) {
                 if (c.getContainerType() == ContainerType.VOLTAGE_LEVEL) {
-                    diagramView = VoltageLevelDiagramView.load(svgInputStream, metadataInputStream, listener, AbstractSubstationDiagramViewer.this);
+                    diagramView = VoltageLevelDiagramView.load(svgInputStream, metadataInputStream, switchId -> handleSwitchPositionchange(c, switchId), AbstractSubstationDiagramViewer.this);
                 } else if (c.getContainerType() == ContainerType.SUBSTATION) {
-                    diagramView = SubstationDiagramView.load(svgInputStream, metadataInputStream, listener, AbstractSubstationDiagramViewer.this);
+                    diagramView = SubstationDiagramView.load(svgInputStream, metadataInputStream, switchId -> handleSwitchPositionchange(c, switchId), AbstractSubstationDiagramViewer.this);
                 } else {
                     throw new AssertionError();
                 }
@@ -329,6 +308,23 @@ public abstract class AbstractSubstationDiagramViewer extends Application implem
                 throw new UncheckedIOException(e);
             }
             return new ContainerDiagramResult(diagramView, svgData, metadataData);
+        }
+
+        private void handleSwitchPositionchange(Container c, String switchId) {
+            Switch sw = null;
+            if (c.getContainerType() == ContainerType.VOLTAGE_LEVEL) {
+                VoltageLevel v = (VoltageLevel) c;
+                sw = v.getSubstation().getNetwork().getSwitch(switchId);
+            } else if (c.getContainerType() == ContainerType.SUBSTATION) {
+                Substation s = (Substation) c;
+                sw = s.getNetwork().getSwitch(switchId);
+            }
+            if (sw != null) {
+                sw.setOpen(!sw.isOpen());
+                SubstationDiagramStyleProvider styleProvider = styles.get(styleComboBox.getSelectionModel().getSelectedItem());
+                styleProvider.reset();
+                loadDiagram(c);
+            }
         }
 
         private void loadDiagram(Container c) {

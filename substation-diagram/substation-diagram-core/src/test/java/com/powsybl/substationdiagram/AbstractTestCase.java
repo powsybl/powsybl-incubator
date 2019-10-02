@@ -14,6 +14,7 @@ import com.powsybl.substationdiagram.layout.LayoutParameters;
 import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
 import com.powsybl.substationdiagram.model.Graph;
 import com.powsybl.substationdiagram.model.SubstationGraph;
+import com.powsybl.substationdiagram.svg.DefaultNodeLabelConfiguration;
 import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramInitialValueProvider;
 import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramStyleProvider;
 import com.powsybl.substationdiagram.svg.DefaultSVGWriter;
@@ -30,6 +31,7 @@ import static org.junit.Assert.assertEquals;
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
+ * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
  */
 public abstract class AbstractTestCase {
 
@@ -64,7 +66,11 @@ public abstract class AbstractTestCase {
     public void compareSvg(Graph graph, LayoutParameters layoutParameters, String refSvgName) {
         try (StringWriter writer = new StringWriter()) {
             new DefaultSVGWriter(componentLibrary, layoutParameters)
-                    .write(graph, new DefaultSubstationDiagramInitialValueProvider(network), styleProvider, writer);
+                    .write(graph,
+                            new DefaultSubstationDiagramInitialValueProvider(network),
+                            styleProvider,
+                            new DefaultNodeLabelConfiguration(componentLibrary),
+                            writer);
             writer.flush();
 
 //            FileWriter fw = new FileWriter(System.getProperty("user.home") + refSvgName);
@@ -82,7 +88,11 @@ public abstract class AbstractTestCase {
     public void compareSvg(Graph graph, LayoutParameters layoutParameters, String refSvgName, SubstationDiagramStyleProvider myStyleProvider) {
         try (StringWriter writer = new StringWriter()) {
             new DefaultSVGWriter(componentLibrary, layoutParameters)
-                    .write(graph, new DefaultSubstationDiagramInitialValueProvider(network), myStyleProvider, writer);
+                    .write(graph,
+                            new DefaultSubstationDiagramInitialValueProvider(network),
+                            myStyleProvider,
+                            new DefaultNodeLabelConfiguration(componentLibrary),
+                            writer);
             writer.flush();
 
 //            FileWriter fw = new FileWriter(System.getProperty("user.home") + refSvgName);
@@ -100,7 +110,11 @@ public abstract class AbstractTestCase {
     public void compareSvg(SubstationGraph graph, LayoutParameters layoutParameters, String refSvgName) {
         try (StringWriter writer = new StringWriter()) {
             new DefaultSVGWriter(componentLibrary, layoutParameters)
-                    .write(graph, new DefaultSubstationDiagramInitialValueProvider(network), styleProvider, writer);
+                    .write(graph,
+                            new DefaultSubstationDiagramInitialValueProvider(network),
+                            styleProvider,
+                            new DefaultNodeLabelConfiguration(componentLibrary),
+                            writer);
             writer.flush();
 
 //            FileWriter fw = new FileWriter(System.getProperty("user.home") + refSvgName);
@@ -119,7 +133,11 @@ public abstract class AbstractTestCase {
                            String refSvgName, SubstationDiagramStyleProvider myStyleProvider) {
         try (StringWriter writer = new StringWriter()) {
             new DefaultSVGWriter(componentLibrary, layoutParameters)
-                    .write(graph, new DefaultSubstationDiagramInitialValueProvider(network), myStyleProvider, writer);
+                    .write(graph,
+                            new DefaultSubstationDiagramInitialValueProvider(network),
+                            myStyleProvider,
+                            new DefaultNodeLabelConfiguration(componentLibrary),
+                            writer);
             writer.flush();
 
 //            FileWriter fw = new FileWriter(System.getProperty("user.home") + refSvgName);

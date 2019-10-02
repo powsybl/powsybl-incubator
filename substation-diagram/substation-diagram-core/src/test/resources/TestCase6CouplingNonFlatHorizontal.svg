@@ -41,19 +41,19 @@
         </g>
         <g class="substation-diagram BUSBAR_SECTION bbs1_1" id="bbs1_1" transform="translate(30.0,310.0)">
             <line y2="0" x1="0" class="bus_vl" x2="30.0" y1="0"/>
-            <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs1.1</text>
+            <text x="-5.0" font-size="8" y="-5.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="bbs1.1_NW_LABEL">bbs1.1</text>
         </g>
         <g class="substation-diagram BUSBAR_SECTION bbs1_2" id="bbs1_2" transform="translate(130.0,310.0)">
             <line y2="0" x1="0" class="bus_vl" x2="30.0" y1="0"/>
-            <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs1.2</text>
+            <text x="-5.0" font-size="8" y="-5.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="bbs1.2_NW_LABEL">bbs1.2</text>
         </g>
         <g class="substation-diagram BUSBAR_SECTION bbs2_1" id="bbs2_1" transform="translate(30.0,335.0)">
             <line y2="0" x1="0" class="bus_vl" x2="30.0" y1="0"/>
-            <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs2.1</text>
+            <text x="-5.0" font-size="8" y="-5.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="bbs2.1_NW_LABEL">bbs2.1</text>
         </g>
         <g class="substation-diagram BUSBAR_SECTION bbs2_2" id="bbs2_2" transform="translate(130.0,335.0)">
             <line y2="0" x1="0" class="bus_vl" x2="30.0" y1="0"/>
-            <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs2.2</text>
+            <text x="-5.0" font-size="8" y="-5.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="bbs2.2_NW_LABEL">bbs2.2</text>
         </g>
         <g class="substation-diagram DISCONNECTOR d1" id="d1" transform="translate(41.0,306.0)">
     <g class="closed" id="closed">

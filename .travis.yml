@@ -16,9 +16,9 @@ install:
 # Build powsybl-core
 - git clone https://github.com/powsybl/powsybl-core powsybl/powsybl-core
 - pushd powsybl/powsybl-core && mvn --batch-mode -DskipTests install && popd
-# Build powsybl-loadflow
-- git clone https://github.com/powsybl/powsybl-loadflow powsybl/powsybl-loadflow
-- pushd powsybl/powsybl-loadflow && mvn --batch-mode -DskipTests install && popd
+# Build powsybl-open-loadflow
+- git clone https://github.com/powsybl/powsybl-open-loadflow powsybl/powsybl-open-loadflow
+- pushd powsybl/powsybl-open-loadflow && mvn --batch-mode -DskipTests install && popd
 
 script:
 - mvn --batch-mode -Pjacoco,checks clean verify sonar:sonar

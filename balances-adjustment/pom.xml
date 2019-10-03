@@ -101,7 +101,7 @@
         </dependency>
         <dependency>
             <groupId>com.powsybl</groupId>
-            <artifactId>powsybl-loadflow</artifactId>
+            <artifactId>powsybl-open-loadflow</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

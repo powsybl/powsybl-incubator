@@ -608,6 +608,8 @@ public abstract class AbstractSubstationDiagramViewer extends Application implem
         rowIndex += 1;
         addCheckBox("Shift feeders height", rowIndex, LayoutParameters::isShiftFeedersPosition, LayoutParameters::setShiftFeedersPosition);
         rowIndex += 1;
+        addSpinner("Shift feeders height scale factor:", 1, 5, 1, rowIndex, LayoutParameters::getScaleShiftFeedersPosition, LayoutParameters::setScaleShiftFeedersPosition);
+        rowIndex += 2;
         addSpinner("Scale factor:", 1, 20, 1, rowIndex, LayoutParameters::getScaleFactor, LayoutParameters::setScaleFactor);
         rowIndex += 2;
         addSpinner("Arrows distance:", 10, 800, 5, rowIndex, LayoutParameters::getArrowDistance, LayoutParameters::setArrowDistance);

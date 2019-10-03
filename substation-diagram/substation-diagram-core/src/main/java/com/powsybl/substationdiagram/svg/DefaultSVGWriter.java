@@ -198,7 +198,7 @@ public class DefaultSVGWriter implements SVGWriter {
         };
 
         if (layoutParameters.isShiftFeedersPosition()) {
-            shiftFeedersPosition(graph);
+            shiftFeedersPosition(graph, layoutParameters.getScaleShiftFeedersPosition());
         }
 
         drawNodes(root, graph, metadata, anchorPointProvider, initProvider, styleProvider);
@@ -302,7 +302,7 @@ public class DefaultSVGWriter implements SVGWriter {
             };
 
             if (layoutParameters.isShiftFeedersPosition()) {
-                shiftFeedersPosition(vlGraph);
+                shiftFeedersPosition(vlGraph, layoutParameters.getScaleShiftFeedersPosition());
             }
 
             drawNodes(root, vlGraph, metadata, anchorPointProvider, initProvider, styleProvider);
@@ -960,7 +960,7 @@ public class DefaultSVGWriter implements SVGWriter {
      * Adjust feeders height, positioning them on a descending/ascending ramp
      * (depending on their BusCell direction)
      */
-    private void shiftFeedersPosition(Graph graph) {
+    private void shiftFeedersPosition(Graph graph, double scaleShiftFeederNames) {
         List<Node> orderedFeederNodes = graph.getNodes().stream()
                 .filter(node -> !node.isFictitious() && node instanceof FeederNode && node.getCell() != null)
                 .sorted(Comparator.comparing(Node::getX))
@@ -974,7 +974,7 @@ public class DefaultSVGWriter implements SVGWriter {
             BusCell.Direction direction = nodeDirection.apply(node);
             int componentHeight = (int) (componentLibrary.getSize(node.getComponentType()).getHeight());
             double oldY = node.getY() - graph.getY();
-            double newY = mapLev.get(direction) + FONT_SIZE + (componentHeight == 0 ? LABEL_OFFSET : componentHeight);
+            double newY = mapLev.get(direction) + scaleShiftFeederNames * FONT_SIZE + (componentHeight == 0 ? LABEL_OFFSET : componentHeight);
             node.setY(oldY + ((direction == BusCell.Direction.TOP) ? 1 : -1) * newY);
             mapLev.put(direction, newY);
         }

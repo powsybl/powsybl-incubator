@@ -67,10 +67,8 @@
         <junit.version>4.12</junit.version>
         <logback.version>1.2.3</logback.version>
         <guava.version>27.0.1-jre</guava.version>
-        <jafama.version>2.3.1</jafama.version>
         <mockito.version>1.10.19</mockito.version>
         <slf4j.version>1.7.22</slf4j.version>
-        <slf4jtoys.version>1.6.2</slf4jtoys.version>
 
         <maven.antrun.version>1.8</maven.antrun.version>
         <maven.assembly.version>3.1.0</maven.assembly.version>
@@ -449,19 +447,9 @@
                 <version>${guava.version}</version>
             </dependency>
             <dependency>
-                <groupId>net.jafama</groupId>
-                <artifactId>jafama</artifactId>
-                <version>${jafama.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.usefultoys</groupId>
-                <artifactId>slf4j-toys</artifactId>
-                <version>${slf4jtoys.version}</version>
             </dependency>
 
             <dependency>
@@ -471,12 +459,7 @@
             </dependency>
             <dependency>
                 <groupId>com.powsybl</groupId>
-                <artifactId>powsybl-iidm-extensions</artifactId>
-                <version>${powsyblcore.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.powsybl</groupId>
-                <artifactId>powsybl-simple-loadflow</artifactId>
+                <artifactId>powsybl-loadflow</artifactId>
                 <version>${powsybl-loadflow.version}</version>
             </dependency>
 

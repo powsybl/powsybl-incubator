@@ -85,18 +85,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.powsybl</groupId>
-            <artifactId>powsybl-iidm-extensions</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.jafama</groupId>
-            <artifactId>jafama</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -111,7 +101,7 @@
         </dependency>
         <dependency>
             <groupId>com.powsybl</groupId>
-            <artifactId>powsybl-simple-loadflow</artifactId>
+            <artifactId>powsybl-loadflow</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

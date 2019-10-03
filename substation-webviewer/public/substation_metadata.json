@@ -1,0 +1,1132 @@
+{
+  "components" : [ {
+    "type" : "ARROW",
+    "id" : null,
+    "anchorPoints" : [ {
+      "x" : 0.0,
+      "y" : 0.0,
+      "orientation" : "VERTICAL"
+    } ],
+    "size" : {
+      "width" : 10.0,
+      "height" : 10.0
+    }
+  }, {
+    "type" : "BUSBAR_SECTION",
+    "id" : "AP3_1_3",
+    "anchorPoints" : [ {
+      "x" : 0.0,
+      "y" : 0.0,
+      "orientation" : "HORIZONTAL"
+    }, {
+      "x" : 15.0,
+      "y" : 0.0,
+      "orientation" : "VERTICAL"
+    }, {
+      "x" : 40.0,
+      "y" : 0.0,
+      "orientation" : "VERTICAL"
+    }, {
+      "x" : 65.0,
+      "y" : 0.0,
+      "orientation" : "VERTICAL"
+    }, {
+      "x" : 80.0,
+      "y" : 0.0,
+      "orientation" : "HORIZONTAL"
+    } ],
+    "size" : {
+      "width" : 0.0,
+      "height" : 0.0
+    }
+  }, {
+    "type" : "BREAKER",
+    "id" : null,
+    "anchorPoints" : [ {
+      "x" : 0.0,
+      "y" : -10.0,
+      "orientation" : "VERTICAL"
+    }, {
+      "x" : 0.0,
+      "y" : 10.0,
+      "orientation" : "VERTICAL"
+    } ],
+    "size" : {
+      "width" : 20.0,
+      "height" : 20.0
+    }
+  }, {
+    "type" : "DISCONNECTOR",
+    "id" : null,
+    "anchorPoints" : [ {
+      "x" : 0.0,
+      "y" : 0.0,
+      "orientation" : "VERTICAL"
+    } ],
+    "size" : {
+      "width" : 8.0,
+      "height" : 8.0
+    }
+  }, {
+    "type" : "GENERATOR",
+    "id" : null,
+    "anchorPoints" : [ {
+      "x" : 0.0,
+      "y" : -6.0,
+      "orientation" : "VERTICAL"
+    }, {
+      "x" : 0.0,
+      "y" : 6.0,
+      "orientation" : "VERTICAL"
+    }, {
+      "x" : -6.0,
+      "y" : 0.0,
+      "orientation" : "HORIZONTAL"
+    }, {
+      "x" : 6.0,
+      "y" : 0.0,
+      "orientation" : "HORIZONTAL"
+    } ],
+    "size" : {
+      "width" : 12.0,
+      "height" : 12.0
+    }
+  }, {
+    "type" : "LINE",
+    "id" : null,
+    "anchorPoints" : [ {
+      "x" : 0.0,
+      "y" : 0.0,
+      "orientation" : "NONE"
+    } ],
+    "size" : {
+      "width" : 0.0,
+      "height" : 0.0
+    }
+  }, {
+    "type" : "LOAD",
+    "id" : null,
+    "anchorPoints" : [ {
+      "x" : 0.0,
+      "y" : -4.0,
+      "orientation" : "VERTICAL"
+    }, {
+      "x" : 0.0,
+      "y" : 4.0,
+      "orientation" : "VERTICAL"
+    } ],
+    "size" : {
+      "width" : 16.0,
+      "height" : 9.0
+    }
+  }, {
+    "type" : "NODE",
+    "id" : null,
+    "anchorPoints" : [ {
+      "x" : 0.0,
+      "y" : 0.0,
+      "orientation" : "NONE"
+    } ],
+    "size" : {
+      "width" : 8.0,
+      "height" : 8.0
+    }
+  }, {
+    "type" : "CAPACITOR",
+    "id" : null,
+    "anchorPoints" : [ {
+      "x" : 0.0,
+      "y" : -6.0,
+      "orientation" : "VERTICAL"
+    }, {
+      "x" : 0.0,
+      "y" : 6.0,
+      "orientation" : "VERTICAL"
+    } ],
+    "size" : {
+      "width" : 12.0,
+      "height" : 12.0
+    }
+  } ],
+  "nodes" : [ {
+    "id" : "AP3_A_3TR311_DJ_HT",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "BREAKER",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "AINA",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "CAPACITOR",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "TOP",
+    "vlabel" : false
+  }, {
+    "id" : "AP3_A_3TR311_DJ_BT_AIN1",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "BREAKER",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "FICT_AP3_AP3_A3TR312SA_1FFictif",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "NODE",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "A3G2",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "GENERATOR",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "BOTTOM",
+    "vlabel" : false
+  }, {
+    "id" : "A3G1",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "GENERATOR",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "TOP",
+    "vlabel" : false
+  }, {
+    "id" : "AP3_1_1",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "BUSBAR_SECTION",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "AP3_1_2",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "BUSBAR_SECTION",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "AP3_1_3",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "BUSBAR_SECTION",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "AP3_A_3TR311_DJ_BT_A3TR311",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "BREAKER",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "AP3_A_3CBO_1_SS_1_23fSwitch0",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "NODE",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "AL31D_ONE",
+    "vid" : "AP3",
+    "nextVId" : "DP3",
+    "componentType" : "LINE",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "TOP",
+    "vlabel" : false
+  }, {
+    "id" : "AIN1",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "GENERATOR",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "TOP",
+    "vlabel" : false
+  }, {
+    "id" : "AP3_A_3CBO_1_SS_1_23fSwitch1",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "NODE",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "AIN2",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "GENERATOR",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "BOTTOM",
+    "vlabel" : false
+  }, {
+    "id" : "FICT_AP3_AP3_A3GROUP1SA_1FFictif",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "NODE",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "FICT_AP3_AP3_A_3CBO_1_SS_1_12fNode0",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "NODE",
+    "rotationAngle" : 90.0,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "AL31B_ONE",
+    "vid" : "AP3",
+    "nextVId" : "BP3",
+    "componentType" : "LINE",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "TOP",
+    "vlabel" : false
+  }, {
+    "id" : "AP3_A_3TR311_DJ_BT_AINA",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "BREAKER",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "FICT_AP3_AP3_A_3CBO_1_SS_1_12fNode1",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "NODE",
+    "rotationAngle" : 90.0,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "AP3_A_3CBO_1_SS_1_23",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "DISCONNECTOR",
+    "rotationAngle" : 90.0,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "AP3_A_3B_1_DJ",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "BREAKER",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "LABEL_VL_AP3",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : null,
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : true
+  }, {
+    "id" : "AP3_A_3CBO_1_SS_1_12fSwitch1",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "NODE",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "AP3_A_3TR312_DJ_BT_A3TR312",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "BREAKER",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "AP3_A_3CBO_1_SS_1_12fSwitch0",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "NODE",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "AP3_H7CAR_3GROUP01_DJ_MT_GR",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "BREAKER",
+    "rotationAngle" : null,
+    "open" : true,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "AP3_A3TR312SA_1F",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "DISCONNECTOR",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "AP3_A_3E_1_DJ",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "BREAKER",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "GRID_AP3",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : null,
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "AP3_A_3C_1_DJ",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "BREAKER",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "AP3_A3E_1SA_1F",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "DISCONNECTOR",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "FICT_AP3_AP3_A_3CBO_1_SS_1_23fNode1",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "NODE",
+    "rotationAngle" : 90.0,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "FICT_AP3_AP3_A_3CBO_1_SS_1_23fNode0",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "NODE",
+    "rotationAngle" : 90.0,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "AP3_A_3D_1_DJ",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "BREAKER",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "AP3_A_3TR312_DJ_BT_AIN2",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "BREAKER",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "AL31E_ONE",
+    "vid" : "AP3",
+    "nextVId" : "EP3",
+    "componentType" : "LINE",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "BOTTOM",
+    "vlabel" : false
+  }, {
+    "id" : "A3CD2",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "LOAD",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "BOTTOM",
+    "vlabel" : false
+  }, {
+    "id" : "AP3_A_3CBO_1_SS_1_12",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "DISCONNECTOR",
+    "rotationAngle" : 90.0,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "A3CD1",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "LOAD",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "TOP",
+    "vlabel" : false
+  }, {
+    "id" : "AP3_A3B_1SA_1F",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "DISCONNECTOR",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "FICT_AP3_AP3_A3E_1SA_1FFictif",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "NODE",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "FICT_AP3_AP3_A3C_1SA_1FFictif",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "NODE",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "FICT_AP3_AP3_A3GROUP2SA_1FFictif",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "NODE",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "AP3_A_3AH2_DJ_HT",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "BREAKER",
+    "rotationAngle" : null,
+    "open" : true,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "AP3_H7CAR_3GROUP02_DJ_MT_GR",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "BREAKER",
+    "rotationAngle" : null,
+    "open" : true,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "FICT_AP3_AP3_A3D_1SA_1FFictif",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "NODE",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "AP3_A3GROUP2SA_1F",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "DISCONNECTOR",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "AP3_A3D_1SA_1F",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "DISCONNECTOR",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "FICT_AP3_AP3_A3B_1SA_1FFictif",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "NODE",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "FICT_AP3_16",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "NODE",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "FICT_AP3_AP3_A3TR311SA_1FFictif",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "NODE",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "CL31A_TWO",
+    "vid" : "AP3",
+    "nextVId" : "CP3",
+    "componentType" : "LINE",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "BOTTOM",
+    "vlabel" : false
+  }, {
+    "id" : "AP3_A_3AH1_DJ_HT",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "BREAKER",
+    "rotationAngle" : null,
+    "open" : true,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "AP3_A_3TR312_DJ_HT",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "BREAKER",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "AP3_A3C_1SA_1F",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "DISCONNECTOR",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "FICT_AP3_21",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "NODE",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "AP3_A3GROUP1SA_1F",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "DISCONNECTOR",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "AP3_A3TR311SA_1F",
+    "vid" : "AP3",
+    "nextVId" : null,
+    "componentType" : "DISCONNECTOR",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  } ],
+  "wires" : [ {
+    "id" : "AP3_Wire50",
+    "nodeId1" : "AP3_1_2",
+    "nodeId2" : "AP3_A_3CBO_1_SS_1_23fSwitch0",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire51",
+    "nodeId1" : "AP3_A_3CBO_1_SS_1_23fSwitch0",
+    "nodeId2" : "FICT_AP3_AP3_A_3CBO_1_SS_1_23fNode0",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire52",
+    "nodeId1" : "FICT_AP3_AP3_A_3CBO_1_SS_1_23fNode0",
+    "nodeId2" : "AP3_A_3CBO_1_SS_1_23",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire53",
+    "nodeId1" : "AP3_1_3",
+    "nodeId2" : "AP3_A_3CBO_1_SS_1_23fSwitch1",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire10",
+    "nodeId1" : "AP3_H7CAR_3GROUP02_DJ_MT_GR",
+    "nodeId2" : "A3G2",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire54",
+    "nodeId1" : "AP3_A_3CBO_1_SS_1_23fSwitch1",
+    "nodeId2" : "FICT_AP3_AP3_A_3CBO_1_SS_1_23fNode1",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire44",
+    "nodeId1" : "AP3_1_1",
+    "nodeId2" : "AP3_A_3CBO_1_SS_1_12fSwitch0",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire45",
+    "nodeId1" : "AP3_A_3CBO_1_SS_1_12fSwitch0",
+    "nodeId2" : "FICT_AP3_AP3_A_3CBO_1_SS_1_12fNode0",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire46",
+    "nodeId1" : "FICT_AP3_AP3_A_3CBO_1_SS_1_12fNode0",
+    "nodeId2" : "AP3_A_3CBO_1_SS_1_12",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire47",
+    "nodeId1" : "AP3_1_2",
+    "nodeId2" : "AP3_A_3CBO_1_SS_1_12fSwitch1",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire48",
+    "nodeId1" : "AP3_A_3CBO_1_SS_1_12fSwitch1",
+    "nodeId2" : "FICT_AP3_AP3_A_3CBO_1_SS_1_12fNode1",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire49",
+    "nodeId1" : "FICT_AP3_AP3_A_3CBO_1_SS_1_12fNode1",
+    "nodeId2" : "AP3_A_3CBO_1_SS_1_12",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire40",
+    "nodeId1" : "AP3_A_3D_1_DJ",
+    "nodeId2" : "FICT_AP3_AP3_A3D_1SA_1FFictif",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire41",
+    "nodeId1" : "AP3_A3D_1SA_1F",
+    "nodeId2" : "FICT_AP3_AP3_A3D_1SA_1FFictif",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire42",
+    "nodeId1" : "AP3_A_3C_1_DJ",
+    "nodeId2" : "FICT_AP3_AP3_A3C_1SA_1FFictif",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire43",
+    "nodeId1" : "AP3_A3C_1SA_1F",
+    "nodeId2" : "FICT_AP3_AP3_A3C_1SA_1FFictif",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire33",
+    "nodeId1" : "AP3_A3TR311SA_1F",
+    "nodeId2" : "FICT_AP3_AP3_A3TR311SA_1FFictif",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire34",
+    "nodeId1" : "AP3_A_3E_1_DJ",
+    "nodeId2" : "FICT_AP3_AP3_A3E_1SA_1FFictif",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire35",
+    "nodeId1" : "AP3_A3E_1SA_1F",
+    "nodeId2" : "FICT_AP3_AP3_A3E_1SA_1FFictif",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire36",
+    "nodeId1" : "AP3_A_3AH1_DJ_HT",
+    "nodeId2" : "FICT_AP3_AP3_A3GROUP1SA_1FFictif",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire37",
+    "nodeId1" : "AP3_A3GROUP1SA_1F",
+    "nodeId2" : "FICT_AP3_AP3_A3GROUP1SA_1FFictif",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire38",
+    "nodeId1" : "AP3_A_3TR312_DJ_HT",
+    "nodeId2" : "FICT_AP3_AP3_A3TR312SA_1FFictif",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire39",
+    "nodeId1" : "AP3_A3TR312SA_1F",
+    "nodeId2" : "FICT_AP3_AP3_A3TR312SA_1FFictif",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire30",
+    "nodeId1" : "AP3_A_3AH2_DJ_HT",
+    "nodeId2" : "FICT_AP3_AP3_A3GROUP2SA_1FFictif",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire31",
+    "nodeId1" : "AP3_A3GROUP2SA_1F",
+    "nodeId2" : "FICT_AP3_AP3_A3GROUP2SA_1FFictif",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire32",
+    "nodeId1" : "AP3_A_3TR311_DJ_HT",
+    "nodeId2" : "FICT_AP3_AP3_A3TR311SA_1FFictif",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire8",
+    "nodeId1" : "AP3_A_3C_1_DJ",
+    "nodeId2" : "CL31A_TWO",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire9",
+    "nodeId1" : "AP3_H7CAR_3GROUP01_DJ_MT_GR",
+    "nodeId2" : "A3G1",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire0",
+    "nodeId1" : "AP3_1_1",
+    "nodeId2" : "AP3_A3B_1SA_1F",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire22",
+    "nodeId1" : "AP3_A_3TR312_DJ_BT_A3TR312",
+    "nodeId2" : "FICT_AP3_21",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire1",
+    "nodeId1" : "AP3_1_1",
+    "nodeId2" : "AP3_A3GROUP2SA_1F",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire23",
+    "nodeId1" : "AIN2",
+    "nodeId2" : "AP3_A_3TR312_DJ_BT_AIN2",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire2",
+    "nodeId1" : "AP3_1_1",
+    "nodeId2" : "AP3_A3TR311SA_1F",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire24",
+    "nodeId1" : "AP3_A_3TR312_DJ_BT_AIN2",
+    "nodeId2" : "FICT_AP3_21",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire3",
+    "nodeId1" : "AP3_1_2",
+    "nodeId2" : "AP3_A3E_1SA_1F",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire25",
+    "nodeId1" : "AP3_A_3E_1_DJ",
+    "nodeId2" : "AL31E_ONE",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire4",
+    "nodeId1" : "AP3_1_2",
+    "nodeId2" : "AP3_A3GROUP1SA_1F",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire26",
+    "nodeId1" : "AP3_A_3AH1_DJ_HT",
+    "nodeId2" : "AP3_H7CAR_3GROUP01_DJ_MT_GR",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire5",
+    "nodeId1" : "AP3_1_2",
+    "nodeId2" : "AP3_A3TR312SA_1F",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire27",
+    "nodeId1" : "AP3_A_3AH2_DJ_HT",
+    "nodeId2" : "AP3_H7CAR_3GROUP02_DJ_MT_GR",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire6",
+    "nodeId1" : "AP3_1_3",
+    "nodeId2" : "AP3_A3D_1SA_1F",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire28",
+    "nodeId1" : "AP3_A_3B_1_DJ",
+    "nodeId2" : "FICT_AP3_AP3_A3B_1SA_1FFictif",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire7",
+    "nodeId1" : "AP3_1_3",
+    "nodeId2" : "AP3_A3C_1SA_1F",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire29",
+    "nodeId1" : "AP3_A3B_1SA_1F",
+    "nodeId2" : "FICT_AP3_AP3_A3B_1SA_1FFictif",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire20",
+    "nodeId1" : "AP3_A_3TR312_DJ_HT",
+    "nodeId2" : "FICT_AP3_21",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire21",
+    "nodeId1" : "A3CD2",
+    "nodeId2" : "AP3_A_3TR312_DJ_BT_A3TR312",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire19",
+    "nodeId1" : "AP3_A_3TR311_DJ_BT_AIN1",
+    "nodeId2" : "FICT_AP3_16",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire11",
+    "nodeId1" : "AP3_A_3D_1_DJ",
+    "nodeId2" : "AL31D_ONE",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire55",
+    "nodeId1" : "FICT_AP3_AP3_A_3CBO_1_SS_1_23fNode1",
+    "nodeId2" : "AP3_A_3CBO_1_SS_1_23",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire12",
+    "nodeId1" : "AP3_A_3B_1_DJ",
+    "nodeId2" : "AL31B_ONE",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire13",
+    "nodeId1" : "AP3_A_3TR311_DJ_HT",
+    "nodeId2" : "FICT_AP3_16",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire14",
+    "nodeId1" : "A3CD1",
+    "nodeId2" : "AP3_A_3TR311_DJ_BT_A3TR311",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire15",
+    "nodeId1" : "AP3_A_3TR311_DJ_BT_A3TR311",
+    "nodeId2" : "FICT_AP3_16",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire16",
+    "nodeId1" : "AINA",
+    "nodeId2" : "AP3_A_3TR311_DJ_BT_AINA",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire17",
+    "nodeId1" : "AP3_A_3TR311_DJ_BT_AINA",
+    "nodeId2" : "FICT_AP3_16",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "AP3_Wire18",
+    "nodeId1" : "AIN1",
+    "nodeId2" : "AP3_A_3TR311_DJ_BT_AIN1",
+    "straight" : false,
+    "snakeLine" : false
+  } ],
+  "arrows" : [ {
+    "id" : "AP3_Wire9_ARROW2",
+    "wireId" : "AP3_Wire9",
+    "distance" : 20.0
+  }, {
+    "id" : "AP3_Wire14_ARROW1",
+    "wireId" : "AP3_Wire14",
+    "distance" : 20.0
+  }, {
+    "id" : "AP3_Wire8_ARROW1",
+    "wireId" : "AP3_Wire8",
+    "distance" : 20.0
+  }, {
+    "id" : "AP3_Wire9_ARROW1",
+    "wireId" : "AP3_Wire9",
+    "distance" : 20.0
+  }, {
+    "id" : "AP3_Wire14_ARROW2",
+    "wireId" : "AP3_Wire14",
+    "distance" : 20.0
+  }, {
+    "id" : "AP3_Wire12_ARROW1",
+    "wireId" : "AP3_Wire12",
+    "distance" : 20.0
+  }, {
+    "id" : "AP3_Wire16_ARROW2",
+    "wireId" : "AP3_Wire16",
+    "distance" : 20.0
+  }, {
+    "id" : "AP3_Wire12_ARROW2",
+    "wireId" : "AP3_Wire12",
+    "distance" : 20.0
+  }, {
+    "id" : "AP3_Wire16_ARROW1",
+    "wireId" : "AP3_Wire16",
+    "distance" : 20.0
+  }, {
+    "id" : "AP3_Wire11_ARROW1",
+    "wireId" : "AP3_Wire11",
+    "distance" : 20.0
+  }, {
+    "id" : "AP3_Wire10_ARROW1",
+    "wireId" : "AP3_Wire10",
+    "distance" : 20.0
+  }, {
+    "id" : "AP3_Wire18_ARROW2",
+    "wireId" : "AP3_Wire18",
+    "distance" : 20.0
+  }, {
+    "id" : "AP3_Wire10_ARROW2",
+    "wireId" : "AP3_Wire10",
+    "distance" : 20.0
+  }, {
+    "id" : "AP3_Wire11_ARROW2",
+    "wireId" : "AP3_Wire11",
+    "distance" : 20.0
+  }, {
+    "id" : "AP3_Wire18_ARROW1",
+    "wireId" : "AP3_Wire18",
+    "distance" : 20.0
+  }, {
+    "id" : "AP3_Wire21_ARROW2",
+    "wireId" : "AP3_Wire21",
+    "distance" : 20.0
+  }, {
+    "id" : "AP3_Wire21_ARROW1",
+    "wireId" : "AP3_Wire21",
+    "distance" : 20.0
+  }, {
+    "id" : "AP3_Wire23_ARROW1",
+    "wireId" : "AP3_Wire23",
+    "distance" : 20.0
+  }, {
+    "id" : "AP3_Wire25_ARROW1",
+    "wireId" : "AP3_Wire25",
+    "distance" : 20.0
+  }, {
+    "id" : "AP3_Wire23_ARROW2",
+    "wireId" : "AP3_Wire23",
+    "distance" : 20.0
+  }, {
+    "id" : "AP3_Wire25_ARROW2",
+    "wireId" : "AP3_Wire25",
+    "distance" : 20.0
+  }, {
+    "id" : "AP3_Wire8_ARROW2",
+    "wireId" : "AP3_Wire8",
+    "distance" : 20.0
+  } ],
+  "layoutParams" : {
+    "translateX" : 20.0,
+    "translateY" : 50.0,
+    "initialXBus" : 0.0,
+    "initialYBus" : 260.0,
+    "verticalSpaceBus" : 25.0,
+    "horizontalBusPadding" : 20.0,
+    "cellWidth" : 50.0,
+    "externCellHeight" : 250.0,
+    "internCellHeight" : 40.0,
+    "stackHeight" : 30.0,
+    "showGrid" : false,
+    "showInternalNodes" : false,
+    "scaleFactor" : 1.0,
+    "horizontalSubstationPadding" : 50.0,
+    "verticalSubstationPadding" : 50.0,
+    "drawStraightWires" : false,
+    "horizontalSnakeLinePadding" : 20.0,
+    "verticalSnakeLinePadding" : 25.0,
+    "arrowDistance" : 20.0,
+    "showInductorFor3WT" : false,
+    "diagramName" : null
+  }
+}

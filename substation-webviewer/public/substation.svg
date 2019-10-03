@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg">
+    <style><![CDATA[.substation-diagram {fill:rgb(255,255,255);stroke-width:1;fill-opacity:0;}.wire_VLGEN {stroke:rgb(200,0,0);stroke-width:1;}.grid {stroke:rgb(0,55,0);stroke-width:1;stroke-dasharray:1,10;}.bus_VLGEN {stroke:rgb(0,0,0);stroke-width:3;}.component-label {fill:black;color:black;stroke:none;fill-opacity:1;}.BUSBAR_SECTION{stroke:rgb(0,0,255);}
+
+.BREAKER {
+    stroke:rgb(0,0,255);
+    stroke-width:2;
+    fill-opacity:1;
+}
+
+.DISCONNECTOR {
+    stroke:rgb(0,0,0);
+    stroke-width:3
+}
+.GENERATOR{stroke:rgb(0,0,255);}
+.LINE{stroke:rgb(0,0,255);}
+.LOAD{stroke:rgb(0,0,255);}
+.LOAD_BREAK_SWITCH{stroke:rgb(0,0,255);}
+.NODE {stroke:rgb(0,0,0);fill:rgb(0,0,0);fill-opacity:1;}
+.CAPACITOR{stroke:rgb(0,0,255);}
+.INDUCTOR{stroke:rgb(0,0,255);}
+.STATIC_VAR_COMPENSATOR{stroke:rgb(0,0,255);}
+#path5227 { stroke-width:0.4; stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:1.4;}
+#path5229 {stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;}
+#path5231 {stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;}
+.TWO_WINDINGS_TRANSFORMER{stroke:rgb(0,0,255);}
+.THREE_WINDINGS_TRANSFORMER{stroke:rgb(0,0,255);}
+.VSC_CONVERTER_STATION {stroke:rgb(0,0,255);font-size:7.4314661px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;stroke-miterlimit:4;}
+.DANGLING_LINE {stroke:rgb(0,0,0);stroke-width:2;}
+.PHASE_SHIFT_TRANSFORMER {stroke:rgb(0,0,255);stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;}
+.ARROW1_GEN_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_GEN_UP .arrow-down { visibility: hidden;}.ARROW1_GEN_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_GEN_DOWN .arrow-up { visibility: hidden;}.ARROW2_GEN_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_GEN_UP .arrow-down { visibility: hidden;}.ARROW2_GEN_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_GEN_DOWN .arrow-up { visibility: hidden;}.NGEN_GEN .open { visibility: hidden;}.NGEN_GEN .closed { visibility: visible;}.ARROW1_NGEN_NHV1_ONE_UP .arrow-up {stroke: black; fill: black; fill-opacity:1; visibility: visible;}.ARROW1_NGEN_NHV1_ONE_UP .arrow-down { visibility: hidden;}.ARROW1_NGEN_NHV1_ONE_DOWN .arrow-down {stroke: black; fill: black; fill-opacity:1;  visibility: visible;}.ARROW1_NGEN_NHV1_ONE_DOWN .arrow-up { visibility: hidden;}.ARROW2_NGEN_NHV1_ONE_UP .arrow-up {stroke: blue; fill: blue; fill-opacity:1; visibility: visible;}.ARROW2_NGEN_NHV1_ONE_UP .arrow-down { visibility: hidden;}.ARROW2_NGEN_NHV1_ONE_DOWN .arrow-down {stroke: blue; fill: blue; fill-opacity:1;  visibility: visible;}.ARROW2_NGEN_NHV1_ONE_DOWN .arrow-up { visibility: hidden;}.NGEN_NGEN_NHV1 .open { visibility: hidden;}.NGEN_NGEN_NHV1 .closed { visibility: visible;}]]></style>
+    <g class="substation-diagram">
+        <g id="GRID_VLGEN">
+            <line y2="565.0" x1="0.0" class="grid" x2="0.0" transform="translate(20.0,50.0)" y1="-20.0"/>
+            <line y2="565.0" x1="50.0" class="grid" x2="50.0" transform="translate(20.0,50.0)" y1="-20.0"/>
+            <line y2="565.0" x1="100.0" class="grid" x2="100.0" transform="translate(20.0,50.0)" y1="-20.0"/>
+        </g>
+        <g class="substation-diagram BUSBAR_SECTION NGEN" id="NGEN" transform="translate(30.0,310.0)">
+            <line y2="0" x1="0" class="bus_VLGEN" x2="80.0" y1="0"/>
+            <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">NGEN</text>
+        </g>
+        <g class="substation-diagram GENERATOR GEN" id="GEN" transform="translate(39.0,24.0)">
+    <circle r="6" cx="6" cy="6"/>
+    <path d="M6,6 A 6 20 0 0 0 0,6"/>
+    <path d="M6,6 A 6 20 0 0 0 12,6"/>
+<text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">GEN</text>
+        </g>
+        <g class="substation-diagram DISCONNECTOR NGEN_GEN" id="NGEN_GEN" transform="translate(41.0,306.0)">
+    <g class="closed" id="closed">
+        <line y2="8" x1="0" x2="8" y1="0"/>
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+    <g class="open" id="open">
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+</g>
+        <g class="substation-diagram TWO_WINDINGS_TRANSFORMER NGEN_NHV1_ONE" id="NGEN_NHV1_ONE" transform="translate(88.5,586.0)">
+    <circle r="4" id="WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="WINDING2" cx="9" cy="4"/>
+<text x="-5.0" font-size="8" y="21.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">NGEN_NHV1_ONE</text>
+        </g>
+        <g class="substation-diagram DISCONNECTOR NGEN_NGEN_NHV1" id="NGEN_NGEN_NHV1" transform="translate(91.0,306.0)">
+    <g class="closed" id="closed">
+        <line y2="8" x1="0" x2="8" y1="0"/>
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+    <g class="open" id="open">
+        <line y2="8" x1="8" x2="0" y1="0"/>
+    </g>
+</g>
+        <g class="substation-diagram NODE FICT_VLGEN_NGEN_GENFictif" id="FICT_VLGEN_NGEN_GENFictif" transform="translate(41.0,276.0)">
+    <circle r="4" cx="4" cy="4"/>
+</g>
+        <g class="substation-diagram NODE FICT_VLGEN_NGEN_NGEN_NHV1Fictif" id="FICT_VLGEN_NGEN_NGEN_NHV1Fictif" transform="translate(91.0,336.0)">
+    <circle r="4" cx="4" cy="4"/>
+</g>
+        <polyline class="wire_VLGEN" points="45.0,310.0,45.0,310.0" id="VLGEN_Wire0"/>
+        <polyline class="wire_VLGEN" points="95.0,310.0,95.0,310.0" id="VLGEN_Wire1"/>
+        <polyline class="wire_VLGEN" points="45.0,36.0,45.0,280.0" id="VLGEN_Wire2"/>
+        <g class="substation-diagram ARROW1_GEN_DOWN" id="VLGEN_Wire2_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,40.0,51.0)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+<text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">-606</text>
+        </g>
+        <g class="substation-diagram ARROW2_GEN_DOWN" id="VLGEN_Wire2_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,40.0,71.0)">
+     <g class="arrow-up" id="arrow-up">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+<text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">-225</text>
+        </g>
+        <polyline class="wire_VLGEN" points="45.0,310.0,45.0,280.0" id="VLGEN_Wire3"/>
+        <polyline class="wire_VLGEN" points="95.0,586.0,95.0,340.0" id="VLGEN_Wire4"/>
+        <g class="substation-diagram ARROW1_NGEN_NHV1_ONE_UP" id="VLGEN_Wire4_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,90.0,561.0)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+<text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">606</text>
+        </g>
+        <g class="substation-diagram ARROW2_NGEN_NHV1_ONE_UP" id="VLGEN_Wire4_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,90.0,541.0)">
+     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="5,0 10,10 0,10"/>
+     </g>
+     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+        <polygon points="0,0 10,0 5,10"/>
+     </g>
+<text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">225</text>
+        </g>
+        <polyline class="wire_VLGEN" points="95.0,310.0,95.0,340.0" id="VLGEN_Wire5"/>
+        <g id="LABEL_VL_VLGEN">
+            <text x="0.0" font-size="12" y="0.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">VLGEN</text>
+        </g>
+    </g>
+</svg>

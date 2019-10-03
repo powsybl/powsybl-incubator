@@ -1,0 +1,274 @@
+{
+  "components" : [ {
+    "type" : "ARROW",
+    "id" : null,
+    "anchorPoints" : [ {
+      "x" : 0.0,
+      "y" : 0.0,
+      "orientation" : "VERTICAL"
+    } ],
+    "size" : {
+      "width" : 10.0,
+      "height" : 10.0
+    }
+  }, {
+    "type" : "BUSBAR_SECTION",
+    "id" : "NGEN",
+    "anchorPoints" : [ {
+      "x" : 0.0,
+      "y" : 0.0,
+      "orientation" : "HORIZONTAL"
+    }, {
+      "x" : 15.0,
+      "y" : 0.0,
+      "orientation" : "VERTICAL"
+    }, {
+      "x" : 40.0,
+      "y" : 0.0,
+      "orientation" : "VERTICAL"
+    }, {
+      "x" : 65.0,
+      "y" : 0.0,
+      "orientation" : "VERTICAL"
+    }, {
+      "x" : 80.0,
+      "y" : 0.0,
+      "orientation" : "HORIZONTAL"
+    } ],
+    "size" : {
+      "width" : 0.0,
+      "height" : 0.0
+    }
+  }, {
+    "type" : "DISCONNECTOR",
+    "id" : null,
+    "anchorPoints" : [ {
+      "x" : 0.0,
+      "y" : 0.0,
+      "orientation" : "VERTICAL"
+    } ],
+    "size" : {
+      "width" : 8.0,
+      "height" : 8.0
+    }
+  }, {
+    "type" : "GENERATOR",
+    "id" : null,
+    "anchorPoints" : [ {
+      "x" : 0.0,
+      "y" : -6.0,
+      "orientation" : "VERTICAL"
+    }, {
+      "x" : 0.0,
+      "y" : 6.0,
+      "orientation" : "VERTICAL"
+    }, {
+      "x" : -6.0,
+      "y" : 0.0,
+      "orientation" : "HORIZONTAL"
+    }, {
+      "x" : 6.0,
+      "y" : 0.0,
+      "orientation" : "HORIZONTAL"
+    } ],
+    "size" : {
+      "width" : 12.0,
+      "height" : 12.0
+    }
+  }, {
+    "type" : "NODE",
+    "id" : null,
+    "anchorPoints" : [ {
+      "x" : 0.0,
+      "y" : 0.0,
+      "orientation" : "NONE"
+    } ],
+    "size" : {
+      "width" : 8.0,
+      "height" : 8.0
+    }
+  }, {
+    "type" : "TWO_WINDINGS_TRANSFORMER",
+    "id" : null,
+    "anchorPoints" : [ {
+      "x" : 0.0,
+      "y" : -4.0,
+      "orientation" : "VERTICAL"
+    }, {
+      "x" : 0.0,
+      "y" : 4.0,
+      "orientation" : "VERTICAL"
+    }, {
+      "x" : -6.0,
+      "y" : 0.0,
+      "orientation" : "HORIZONTAL"
+    }, {
+      "x" : 6.0,
+      "y" : 0.0,
+      "orientation" : "HORIZONTAL"
+    } ],
+    "size" : {
+      "width" : 13.0,
+      "height" : 8.0
+    }
+  } ],
+  "nodes" : [ {
+    "id" : "GEN",
+    "vid" : "VLGEN",
+    "nextVId" : null,
+    "componentType" : "GENERATOR",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "TOP",
+    "vlabel" : false
+  }, {
+    "id" : "GRID_VLGEN",
+    "vid" : "VLGEN",
+    "nextVId" : null,
+    "componentType" : null,
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "NGEN",
+    "vid" : "VLGEN",
+    "nextVId" : null,
+    "componentType" : "BUSBAR_SECTION",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "LABEL_VL_VLGEN",
+    "vid" : "VLGEN",
+    "nextVId" : null,
+    "componentType" : null,
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : true
+  }, {
+    "id" : "FICT_VLGEN_NGEN_NGEN_NHV1Fictif",
+    "vid" : "VLGEN",
+    "nextVId" : null,
+    "componentType" : "NODE",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "NGEN_GEN",
+    "vid" : "VLGEN",
+    "nextVId" : null,
+    "componentType" : "DISCONNECTOR",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "FICT_VLGEN_NGEN_GENFictif",
+    "vid" : "VLGEN",
+    "nextVId" : null,
+    "componentType" : "NODE",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "NGEN_NGEN_NHV1",
+    "vid" : "VLGEN",
+    "nextVId" : null,
+    "componentType" : "DISCONNECTOR",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "NGEN_NHV1_ONE",
+    "vid" : "VLGEN",
+    "nextVId" : "VLHV1",
+    "componentType" : "TWO_WINDINGS_TRANSFORMER",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "BOTTOM",
+    "vlabel" : false
+  } ],
+  "wires" : [ {
+    "id" : "VLGEN_Wire5",
+    "nodeId1" : "NGEN_NGEN_NHV1",
+    "nodeId2" : "FICT_VLGEN_NGEN_NGEN_NHV1Fictif",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "VLGEN_Wire4",
+    "nodeId1" : "NGEN_NHV1_ONE",
+    "nodeId2" : "FICT_VLGEN_NGEN_NGEN_NHV1Fictif",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "VLGEN_Wire3",
+    "nodeId1" : "NGEN_GEN",
+    "nodeId2" : "FICT_VLGEN_NGEN_GENFictif",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "VLGEN_Wire2",
+    "nodeId1" : "GEN",
+    "nodeId2" : "FICT_VLGEN_NGEN_GENFictif",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "VLGEN_Wire1",
+    "nodeId1" : "NGEN",
+    "nodeId2" : "NGEN_NGEN_NHV1",
+    "straight" : false,
+    "snakeLine" : false
+  }, {
+    "id" : "VLGEN_Wire0",
+    "nodeId1" : "NGEN",
+    "nodeId2" : "NGEN_GEN",
+    "straight" : false,
+    "snakeLine" : false
+  } ],
+  "arrows" : [ {
+    "id" : "VLGEN_Wire4_ARROW1",
+    "wireId" : "VLGEN_Wire4",
+    "distance" : 20.0
+  }, {
+    "id" : "VLGEN_Wire4_ARROW2",
+    "wireId" : "VLGEN_Wire4",
+    "distance" : 20.0
+  }, {
+    "id" : "VLGEN_Wire2_ARROW1",
+    "wireId" : "VLGEN_Wire2",
+    "distance" : 20.0
+  }, {
+    "id" : "VLGEN_Wire2_ARROW2",
+    "wireId" : "VLGEN_Wire2",
+    "distance" : 20.0
+  } ],
+  "layoutParams" : {
+    "translateX" : 20.0,
+    "translateY" : 50.0,
+    "initialXBus" : 0.0,
+    "initialYBus" : 260.0,
+    "verticalSpaceBus" : 25.0,
+    "horizontalBusPadding" : 20.0,
+    "cellWidth" : 50.0,
+    "externCellHeight" : 250.0,
+    "internCellHeight" : 40.0,
+    "stackHeight" : 30.0,
+    "showGrid" : false,
+    "showInternalNodes" : false,
+    "scaleFactor" : 1.0,
+    "horizontalSubstationPadding" : 50.0,
+    "verticalSubstationPadding" : 50.0,
+    "drawStraightWires" : false,
+    "horizontalSnakeLinePadding" : 20.0,
+    "verticalSnakeLinePadding" : 25.0,
+    "arrowDistance" : 20.0,
+    "showInductorFor3WT" : false,
+    "diagramName" : null
+  }
+}

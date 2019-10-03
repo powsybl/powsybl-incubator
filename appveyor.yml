@@ -18,5 +18,10 @@ before_build:
       pushd powsybl/powsybl-core
       mvn -DskipTests install --batch-mode
       popd
+  - git clone https://github.com/powsybl/powsybl-loadflow.git powsybl/powsybl-loadflow
+  - ps: |
+      pushd powsybl/powsybl-loadflow
+      mvn -DskipTests install --batch-mode
+      popd
 build_script:
   - mvn clean package --batch-mode

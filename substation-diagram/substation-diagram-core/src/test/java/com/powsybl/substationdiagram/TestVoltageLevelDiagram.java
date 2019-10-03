@@ -44,6 +44,7 @@ import static org.junit.Assert.assertEquals;
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  * @author Giovanni Ferrari <giovanni.ferrari at techrain.eu>
+ * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
  */
 public class TestVoltageLevelDiagram extends AbstractTestCase {
 
@@ -77,6 +78,10 @@ public class TestVoltageLevelDiagram extends AbstractTestCase {
 
         VoltageLevelDiagram.build(vl, new PositionVoltageLevelLayoutFactory(), false, false).writeSvg(componentLibrary, layoutParameters, network, outSvg);
         String svgStr = normalizeLineSeparator(new String(Files.readAllBytes(outSvg), StandardCharsets.UTF_8));
+
+//        FileWriter fw = new FileWriter(System.getProperty("user.home") + "/TestVL.svg");
+//        fw.write(svgStr);
+//        fw.close();
 
         String refSvg = normalizeLineSeparator(new String(
                 ByteStreams.toByteArray(getClass().getResourceAsStream("/TestVL.svg")), StandardCharsets.UTF_8));

@@ -49,41 +49,41 @@
         </g>
         <g class="substation-diagram BUSBAR_SECTION bbs7" id="bbs7" transform="translate(30.0,310.0)">
             <line y2="0" x1="0" class="bus_vl3" x2="780.0" y1="0"/>
-            <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs7</text>
+            <text x="-5.0" font-size="8" y="-5.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="bbs7_NW_LABEL">bbs7</text>
         </g>
         <g class="substation-diagram LOAD load4" id="load4" transform="translate(52.0,25.5)">
     <rect height="9" width="16"/>
     <line y2="9" x1="0" x2="16" y1="0"/>
     <line y2="9" x1="16" x2="0" y1="0"/>
-<text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">load4</text>
+<text x="-5.0" font-size="8" y="-5.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="load4_N_LABEL">load4</text>
         </g>
         <g class="substation-diagram INDUCTOR self4" id="self4" transform="translate(132.5,585.5)">
     <path d="M5,5 A 5 20 0 0 0 0,5"/>
     <path d="M10,5 A 5 20 0 0 0 5,5"/>
     <path d="M15,5 A 5 20 0 0 0 10,5"/>
-<text x="-5.0" font-size="8" y="22.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">self4</text>
+<text x="-5.0" font-size="8" y="22.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="self4_S_LABEL">self4</text>
         </g>
         <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf5_TWO" id="trf5_TWO" transform="translate(213.5,586.0)">
     <circle r="4" id="WINDING1" cx="4" cy="4"/>
     <circle r="4" id="WINDING2" cx="9" cy="4"/>
-<text x="-5.0" font-size="8" y="21.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf5</text>
+<text x="-5.0" font-size="8" y="21.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="trf5_TWO_S_LABEL">trf5</text>
         </g>
         <g class="substation-diagram INDUCTOR self5" id="self5" transform="translate(772.5,585.5)">
     <path d="M5,5 A 5 20 0 0 0 0,5"/>
     <path d="M10,5 A 5 20 0 0 0 5,5"/>
     <path d="M15,5 A 5 20 0 0 0 10,5"/>
-<text x="-5.0" font-size="8" y="22.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">self5</text>
+<text x="-5.0" font-size="8" y="22.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="self5_S_LABEL">self5</text>
         </g>
         <g class="substation-diagram BUSBAR_SECTION bbs8" id="bbs8" transform="translate(830.0,310.0)">
             <line y2="0" x1="0" class="bus_vl3" x2="60.0" y1="0"/>
-            <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs8</text>
+            <text x="-5.0" font-size="8" y="-5.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="bbs8_NW_LABEL">bbs8</text>
         </g>
         <g class="substation-diagram CAPACITOR self6" id="self6" transform="translate(854.0,584.0)">
     <line y2="3" x1="6" x2="6" y1="0"/>
     <line y2="3" x1="0" x2="12" y1="3"/>
     <line y2="6" x1="0" x2="12" y1="6"/>
     <line y2="9" x1="6" x2="6" y1="6"/>
-<text x="-5.0" font-size="8" y="25.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">self6</text>
+<text x="-5.0" font-size="8" y="25.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="self6_S_LABEL">self6</text>
         </g>
         <g class="substation-diagram DISCONNECTOR dload4" id="dload4" transform="translate(56.0,306.0)">
     <g class="closed" id="closed">
@@ -243,10 +243,10 @@
     <circle r="4" id="WINDING3" cx="7" cy="8"/>
 </g>
         <g class="substation-diagram LINE trf6_THREE_ONE" id="trf6_THREE_ONE" transform="translate(380.0,30.00000000000002)">
-            <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf6_THREE_ONE</text>
+            <text x="-5.0" font-size="8" y="-5.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="trf6_THREE_ONE_N_LABEL">trf6_THREE_ONE</text>
         </g>
         <g class="substation-diagram LINE trf6_THREE_TWO" id="trf6_THREE_TWO" transform="translate(300.0,30.00000000000002)">
-            <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf6_THREE_TWO</text>
+            <text x="-5.0" font-size="8" y="-5.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="trf6_THREE_TWO_N_LABEL">trf6_THREE_TWO</text>
         </g>
         <g class="substation-diagram THREE_WINDINGS_TRANSFORMER FICT_vl3_trf73_fictif" id="FICT_vl3_trf73_fictif" transform="translate(493.0,500.6666666666667)">
     <circle r="4" id="WINDING1" cx="4" transform="rotate(180,7.0,6.0)" cy="4"/>
@@ -254,10 +254,10 @@
     <circle r="4" id="WINDING3" cx="7" transform="rotate(180,7.0,6.0)" cy="8"/>
 </g>
         <g class="substation-diagram LINE trf7_THREE_ONE" id="trf7_THREE_ONE" transform="translate(540.0,590.0)">
-            <text x="-5.0" font-size="8" y="13.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf7_THREE_ONE</text>
+            <text x="-5.0" font-size="8" y="13.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="trf7_THREE_ONE_S_LABEL">trf7_THREE_ONE</text>
         </g>
         <g class="substation-diagram LINE trf7_THREE_TWO" id="trf7_THREE_TWO" transform="translate(460.0,590.0)">
-            <text x="-5.0" font-size="8" y="13.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf7_THREE_TWO</text>
+            <text x="-5.0" font-size="8" y="13.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="trf7_THREE_TWO_S_LABEL">trf7_THREE_TWO</text>
         </g>
         <g class="substation-diagram THREE_WINDINGS_TRANSFORMER FICT_vl3_trf83_fictif" id="FICT_vl3_trf83_fictif" transform="translate(653.0,107.33333333333334)">
     <circle r="4" id="WINDING1" cx="4" cy="4"/>
@@ -265,10 +265,10 @@
     <circle r="4" id="WINDING3" cx="7" cy="8"/>
 </g>
         <g class="substation-diagram LINE trf8_THREE_ONE" id="trf8_THREE_ONE" transform="translate(700.0,30.00000000000002)">
-            <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf8_THREE_ONE</text>
+            <text x="-5.0" font-size="8" y="-5.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="trf8_THREE_ONE_N_LABEL">trf8_THREE_ONE</text>
         </g>
         <g class="substation-diagram LINE trf8_THREE_TWO" id="trf8_THREE_TWO" transform="translate(620.0,30.00000000000002)">
-            <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf8_THREE_TWO</text>
+            <text x="-5.0" font-size="8" y="-5.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="trf8_THREE_TWO_N_LABEL">trf8_THREE_TWO</text>
         </g>
         <g class="substation-diagram NODE FICT_vl3_dload4Fictif" id="FICT_vl3_dload4Fictif" transform="translate(56.0,276.0)"/>
         <g class="substation-diagram NODE FICT_vl3_dself4Fictif" id="FICT_vl3_dself4Fictif" transform="translate(136.0,336.0)"/>

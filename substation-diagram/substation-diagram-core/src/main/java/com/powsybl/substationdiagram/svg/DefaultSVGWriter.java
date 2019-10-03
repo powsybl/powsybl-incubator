@@ -33,6 +33,7 @@ import com.powsybl.substationdiagram.svg.GraphMetadata.ArrowMetadata;
 import com.powsybl.substationdiagram.svg.SubstationDiagramInitialValueProvider.Direction;
 import org.apache.batik.anim.dom.SVGOMDocument;
 import org.apache.batik.dom.GenericDOMImplementation;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.util.Precision;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,9 +112,13 @@ public class DefaultSVGWriter implements SVGWriter {
      * @param svgFile file
      */
     @Override
-    public GraphMetadata write(Graph graph, SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider, Path svgFile) {
+    public GraphMetadata write(Graph graph,
+                               SubstationDiagramInitialValueProvider initProvider,
+                               SubstationDiagramStyleProvider styleProvider,
+                               NodeLabelConfiguration nodeLabelConfiguration,
+                               Path svgFile) {
         try (Writer writer = Files.newBufferedWriter(svgFile)) {
-            return write(graph, initProvider, styleProvider, writer);
+            return write(graph, initProvider, styleProvider, nodeLabelConfiguration, writer);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -126,7 +131,11 @@ public class DefaultSVGWriter implements SVGWriter {
      * @param writer writer
      */
     @Override
-    public GraphMetadata write(Graph graph, SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider, Writer writer) {
+    public GraphMetadata write(Graph graph,
+                               SubstationDiagramInitialValueProvider initProvider,
+                               SubstationDiagramStyleProvider styleProvider,
+                               NodeLabelConfiguration nodeLabelConfiguration,
+                               Writer writer) {
         DOMImplementation domImpl = GenericDOMImplementation.getDOMImplementation();
 
         Document document = domImpl.createDocument("http://www.w3.org/2000/svg", "svg", null);
@@ -151,7 +160,7 @@ public class DefaultSVGWriter implements SVGWriter {
         document.adoptNode(style);
         document.getDocumentElement().appendChild(style);
 
-        GraphMetadata metadata = writegraph(graph, document, initProvider, styleProvider);
+        GraphMetadata metadata = writegraph(graph, document, initProvider, styleProvider, nodeLabelConfiguration);
 
         try {
             DOMSource source = new DOMSource(document);
@@ -171,7 +180,11 @@ public class DefaultSVGWriter implements SVGWriter {
     /**
      * Create the SVGDocument corresponding to the graph
      */
-    protected GraphMetadata writegraph(Graph graph, Document document, SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider) {
+    protected GraphMetadata writegraph(Graph graph,
+                                       Document document,
+                                       SubstationDiagramInitialValueProvider initProvider,
+                                       SubstationDiagramStyleProvider styleProvider,
+                                       NodeLabelConfiguration nodeLabelConfiguration) {
         GraphMetadata metadata = new GraphMetadata();
 
         Element root = document.createElement("g");
@@ -201,7 +214,7 @@ public class DefaultSVGWriter implements SVGWriter {
             shiftFeedersPosition(graph, layoutParameters.getScaleShiftFeedersPosition());
         }
 
-        drawNodes(root, graph, metadata, anchorPointProvider, initProvider, styleProvider);
+        drawNodes(root, graph, metadata, anchorPointProvider, initProvider, styleProvider, nodeLabelConfiguration);
         drawEdges(root, graph, metadata, anchorPointProvider, initProvider, styleProvider);
 
         // the drawing of the voltageLevel graph label is done at the end in order to
@@ -221,10 +234,13 @@ public class DefaultSVGWriter implements SVGWriter {
      * @param svgFile file
      */
     @Override
-    public GraphMetadata write(SubstationGraph graph, SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider,
+    public GraphMetadata write(SubstationGraph graph,
+                               SubstationDiagramInitialValueProvider initProvider,
+                               SubstationDiagramStyleProvider styleProvider,
+                               NodeLabelConfiguration nodeLabelConfiguration,
                                Path svgFile) {
         try (Writer writer = Files.newBufferedWriter(svgFile)) {
-            return write(graph, initProvider, styleProvider, writer);
+            return write(graph, initProvider, styleProvider, nodeLabelConfiguration, writer);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -237,13 +253,16 @@ public class DefaultSVGWriter implements SVGWriter {
      * @param writer writer
      */
     @Override
-    public GraphMetadata write(SubstationGraph graph, SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider,
+    public GraphMetadata write(SubstationGraph graph,
+                               SubstationDiagramInitialValueProvider initProvider,
+                               SubstationDiagramStyleProvider styleProvider,
+                               NodeLabelConfiguration nodeLabelConfiguration,
                                Writer writer) {
         DOMImplementation domImpl = GenericDOMImplementation.getDOMImplementation();
 
         Document document = domImpl.createDocument("http://www.w3.org/2000/svg", "svg", null);
 
-        GraphMetadata metadata = writegraph(graph, document, initProvider, styleProvider);
+        GraphMetadata metadata = writegraph(graph, document, initProvider, styleProvider, nodeLabelConfiguration);
 
         try {
             DOMSource source = new DOMSource(document);
@@ -265,11 +284,19 @@ public class DefaultSVGWriter implements SVGWriter {
         return layoutParameters;
     }
 
+    @Override
+    public ComponentLibrary getComponentLibrary() {
+        return componentLibrary;
+    }
+
     /**
      * Create the SVGDocument corresponding to the substation graph
      */
-    protected GraphMetadata writegraph(SubstationGraph graph, Document document, SubstationDiagramInitialValueProvider initProvider,
-                                     SubstationDiagramStyleProvider styleProvider) {
+    protected GraphMetadata writegraph(SubstationGraph graph,
+                                       Document document,
+                                       SubstationDiagramInitialValueProvider initProvider,
+                                       SubstationDiagramStyleProvider styleProvider,
+                                       NodeLabelConfiguration nodeLabelConfiguration) {
         GraphMetadata metadata = new GraphMetadata();
 
         Element root = document.createElement("g");
@@ -305,7 +332,7 @@ public class DefaultSVGWriter implements SVGWriter {
                 shiftFeedersPosition(vlGraph, layoutParameters.getScaleShiftFeedersPosition());
             }
 
-            drawNodes(root, vlGraph, metadata, anchorPointProvider, initProvider, styleProvider);
+            drawNodes(root, vlGraph, metadata, anchorPointProvider, initProvider, styleProvider, nodeLabelConfiguration);
             drawEdges(root, vlGraph, metadata, anchorPointProvider, initProvider, styleProvider);
         }
 
@@ -430,8 +457,10 @@ public class DefaultSVGWriter implements SVGWriter {
      * Drawing the voltageLevel graph nodes
      */
     protected void drawNodes(Element root, Graph graph, GraphMetadata metadata,
-                           AnchorPointProvider anchorPointProvider, SubstationDiagramInitialValueProvider initProvider,
-                           SubstationDiagramStyleProvider styleProvider) {
+                             AnchorPointProvider anchorPointProvider,
+                             SubstationDiagramInitialValueProvider initProvider,
+                             SubstationDiagramStyleProvider styleProvider,
+                             NodeLabelConfiguration nodeLabelConfiguration) {
         graph.getNodes().forEach(node -> {
             try {
                 String nodeId = SubstationDiagramStyles.escapeId(URLEncoder.encode(node.getId(), StandardCharsets.UTF_8.name()));
@@ -449,7 +478,7 @@ public class DefaultSVGWriter implements SVGWriter {
                 BusCell.Direction direction = (node instanceof FeederNode && node.getCell() != null) ? ((ExternCell) node.getCell()).getDirection() : BusCell.Direction.UNDEFINED;
 
                 if (!node.isFictitious()) {
-                    drawNodeLabel(g, node, initProvider, direction);
+                    drawNodeLabel(g, node, initProvider, nodeLabelConfiguration);
                 }
                 root.appendChild(g);
 
@@ -486,34 +515,20 @@ public class DefaultSVGWriter implements SVGWriter {
         }
     }
 
-    protected void drawNodeLabel(Element g, Node node, SubstationDiagramInitialValueProvider initProvider, BusCell.Direction direction) {
-        if (node instanceof FeederNode) {
-            double yShift = -LABEL_OFFSET;
-            if (node.getCell() != null) {
-                yShift = direction == BusCell.Direction.TOP
-                        ? -LABEL_OFFSET
-                        : ((int) (componentLibrary.getSize(node.getComponentType()).getHeight()) + FONT_SIZE + LABEL_OFFSET);
-            }
-            drawLabel(node.getLabel(), node.isRotated(), -LABEL_OFFSET, yShift, g, FONT_SIZE);
-        } else if (node instanceof BusNode) {
-            InitialValue val = initProvider.getInitialValue(node);
-            double d = ((BusNode) node).getPxWidth();
-            Optional<String> label1 = val.getLabel1();
-            if (label1.isPresent()) {
-                drawLabel(label1.get(), false, -LABEL_OFFSET, -LABEL_OFFSET, g, FONT_SIZE);
-            }
-            Optional<String> label2 = val.getLabel2();
-            if (label2.isPresent()) {
-                drawLabel(label2.get(), false, d - LABEL_OFFSET, -LABEL_OFFSET, g, FONT_SIZE);
-            }
-            Optional<String> label3 = val.getLabel3();
-            if (label3.isPresent()) {
-                drawLabel(label3.get(), false, -LABEL_OFFSET, LABEL_OFFSET + (double) FONT_SIZE / 2, g, FONT_SIZE);
-            }
-            Optional<String> label4 = val.getLabel4();
-            if (label4.isPresent()) {
-                drawLabel(label4.get(), false, d - LABEL_OFFSET, LABEL_OFFSET + (double) FONT_SIZE / 2, g, FONT_SIZE);
-            }
+    protected void drawNodeLabel(Element g, Node node,
+                                 SubstationDiagramInitialValueProvider initProvider,
+                                 NodeLabelConfiguration nodeLabelConfiguration) {
+        List<String> labelsNode = initProvider.getNodeLabelValue(node);
+        List<LabelPosition> labelsPosition = nodeLabelConfiguration.getLabelsPosition(node);
+
+        if (labelsPosition.size() != labelsNode.size()) {
+            throw new AssertionError("Number of node labels <> Number of labels positions");
+        }
+
+        for (int i = 0; i < labelsNode.size(); ++i) {
+            drawLabel(labelsPosition.get(i).getPositionName(), labelsNode.get(i), node.isRotated(),
+                    labelsPosition.get(i).getdX(), labelsPosition.get(i).getdY(),
+                    g, FONT_SIZE);
         }
     }
 
@@ -526,7 +541,7 @@ public class DefaultSVGWriter implements SVGWriter {
         Element gLabel = root.getOwnerDocument().createElement("g");
         gLabel.setAttribute("id", idLabelVoltageLevel);
 
-        drawLabel(graph.isUseName()
+        drawLabel(null, graph.isUseName()
                      ? graph.getVoltageLevel().getName()
                      : graph.getVoltageLevel().getId(),
                   false, graph.getX(), graph.getY(), gLabel, FONT_VOLTAGE_LEVEL_LABEL_SIZE);
@@ -567,9 +582,12 @@ public class DefaultSVGWriter implements SVGWriter {
     /*
      * Drawing the voltageLevel graph busbar section names and feeder names
      */
-    protected void drawLabel(String str, boolean rotated, double xShift, double yShift, Element g,
-                           int fontSize) {
+    protected void drawLabel(String idLabel, String str, boolean rotated, double xShift, double yShift, Element g,
+                             int fontSize) {
         Element label = g.getOwnerDocument().createElement("text");
+        if (!StringUtils.isEmpty(idLabel)) {
+            label.setAttribute("id", idLabel);
+        }
         label.setAttribute("x", String.valueOf(xShift));
         label.setAttribute("y", String.valueOf(yShift));
         label.setAttribute("font-family", FONT_FAMILY);
@@ -807,7 +825,7 @@ public class DefaultSVGWriter implements SVGWriter {
         }
         Optional<String> label1 = init.getLabel1();
         if (label1.isPresent()) {
-            drawLabel(label1.get(), false, shX, shY, g1, FONT_SIZE);
+            drawLabel(null, label1.get(), false, shX, shY, g1, FONT_SIZE);
         }
         Optional<Direction> dir1 = init.getArrowDirection1();
         if (dir1.isPresent()) {
@@ -830,7 +848,7 @@ public class DefaultSVGWriter implements SVGWriter {
         }
         Optional<String> label2 = init.getLabel2();
         if (label2.isPresent()) {
-            drawLabel(label2.get(), false, shX, shY, g2, FONT_SIZE);
+            drawLabel(null, label2.get(), false, shX, shY, g2, FONT_SIZE);
         }
         Optional<Direction> dir2 = init.getArrowDirection2();
         if (dir2.isPresent()) {
@@ -842,11 +860,11 @@ public class DefaultSVGWriter implements SVGWriter {
         }
         Optional<String> label3 = init.getLabel3();
         if (label3.isPresent()) {
-            drawLabel(label3.get(), false, -(label3.get().length() * (double) FONT_SIZE / 2 + LABEL_OFFSET), shY, g1, FONT_SIZE);
+            drawLabel(null, label3.get(), false, -(label3.get().length() * (double) FONT_SIZE / 2 + LABEL_OFFSET), shY, g1, FONT_SIZE);
         }
         Optional<String> label4 = init.getLabel4();
         if (label4.isPresent()) {
-            drawLabel(label4.get(), false, -(label4.get().length() * (double) FONT_SIZE / 2 + LABEL_OFFSET), shY, g2, FONT_SIZE);
+            drawLabel(null, label4.get(), false, -(label4.get().length() * (double) FONT_SIZE / 2 + LABEL_OFFSET), shY, g2, FONT_SIZE);
         }
 
         root.appendChild(g2);

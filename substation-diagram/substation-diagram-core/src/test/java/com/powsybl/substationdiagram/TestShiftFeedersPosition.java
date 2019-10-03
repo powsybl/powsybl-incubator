@@ -168,7 +168,7 @@ public class TestShiftFeedersPosition extends AbstractTestCase {
         // re-build substation graph, write SVG using the shifted feeders positioner and compare to reference (same layout providers)
         g = SubstationGraph.create(substation);
         new HorizontalSubstationLayoutFactory().create(g, new PositionVoltageLevelLayoutFactory()).run(layoutParameters);
-        compareSvg(g, layoutParameters.setShiftFeedersPosition(true), "/TestShiftFeedersPosition.svg", new DefaultSubstationDiagramStyleProvider());
+            compareSvg(g, layoutParameters.setShiftFeedersPosition(true), "/TestShiftFeedersPosition.svg", new DefaultSubstationDiagramStyleProvider());
     }
 
     @Test

@@ -37,6 +37,7 @@ import com.rte_france.powsybl.iidm.network.extensions.cvg.ConnectablePosition;
 
 /**
  * @author Giovanni Ferrari <giovanni.ferrari at techrain.eu>
+ * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
  */
 public class TopologicalStyleTest {
 
@@ -76,9 +77,20 @@ public class TopologicalStyleTest {
 
         Files.copy(getClass().getResourceAsStream("/base-voltages.yml"), config);
 
-        SubstationDiagram.build(substation).writeSvg(componentLibrary, layoutParameters, new DefaultSubstationDiagramInitialValueProvider(network), new TopologicalStyleProvider(config), Files.newBufferedWriter(outSvg, StandardCharsets.UTF_8), Files.newBufferedWriter(meta));
+        SubstationDiagram.build(substation)
+                .writeSvg(componentLibrary,
+                        layoutParameters,
+                        new DefaultSubstationDiagramInitialValueProvider(network),
+                        new TopologicalStyleProvider(config),
+                        new DefaultNodeLabelConfiguration(componentLibrary),
+                        Files.newBufferedWriter(outSvg, StandardCharsets.UTF_8),
+                        Files.newBufferedWriter(meta));
 
         String svgStr = normalizeLineSeparator(new String(Files.readAllBytes(outSvg), StandardCharsets.UTF_8));
+
+//        FileWriter fw = new FileWriter(System.getProperty("user.home") + "/topological.svg");
+//        fw.write(svgStr);
+//        fw.close();
 
         String refSvg = normalizeLineSeparator(
                 new String(ByteStreams.toByteArray(getClass().getResourceAsStream("/topological.svg")),

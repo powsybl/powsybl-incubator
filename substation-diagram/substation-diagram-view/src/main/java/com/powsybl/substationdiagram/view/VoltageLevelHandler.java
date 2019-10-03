@@ -127,7 +127,7 @@ public class VoltageLevelHandler implements BaseNode {
         List<WireHandler> whSnakeLines = new ArrayList<>();
 
         for (NodeHandler nh : nodeHandlers) {
-            if (nh.getComponentType().equals(BUSBAR_SECTION)) {
+            if (nh.getComponentType() != null && nh.getComponentType().equals(BUSBAR_SECTION)) {
                 if (!posVL.containsKey(nh.getVId())) {
                     posVL.put(nh.getVId(), new Coord(Double.MAX_VALUE, 0));
                 }

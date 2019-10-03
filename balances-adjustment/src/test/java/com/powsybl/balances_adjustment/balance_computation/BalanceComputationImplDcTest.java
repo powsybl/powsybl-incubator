@@ -16,7 +16,7 @@ import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Country;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.loadflow.LoadFlow;
-import com.powsybl.loadflow.simple.SimpleLoadFlowProvider;
+import com.powsybl.loadflow.open.OpenLoadFlowProvider;
 import com.powsybl.math.matrix.DenseMatrixFactory;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,7 +55,7 @@ public class BalanceComputationImplDcTest {
         parameters = new BalanceComputationParameters();
         balanceComputationFactory = new BalanceComputationFactoryImpl();
 
-        loadFlowRunner = new LoadFlow.Runner(new SimpleLoadFlowProvider(new DenseMatrixFactory()));
+        loadFlowRunner = new LoadFlow.Runner(new OpenLoadFlowProvider(new DenseMatrixFactory()));
 
         networkAreasScalableMap = new HashMap<>();
         Scalable scalableFR = Scalable.proportional(Arrays.asList(60f, 30f, 10f),

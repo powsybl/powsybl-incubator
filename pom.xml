@@ -103,7 +103,7 @@
         </sonar.exclusions>
 
         <powsyblcore.version>3.0.0-SNAPSHOT</powsyblcore.version>
-        <powsybl-loadflow.version>1.0.0-SNAPSHOT</powsybl-loadflow.version>
+        <powsybl-open-loadflow.version>1.0.0-SNAPSHOT</powsybl-open-loadflow.version>
         <powsybl-iidm-cvg-extensions.version>2.6.0</powsybl-iidm-cvg-extensions.version>
     </properties>
 
@@ -459,8 +459,8 @@
             </dependency>
             <dependency>
                 <groupId>com.powsybl</groupId>
-                <artifactId>powsybl-loadflow</artifactId>
-                <version>${powsybl-loadflow.version}</version>
+                <artifactId>powsybl-open-loadflow</artifactId>
+                <version>${powsybl-open-loadflow.version}</version>
             </dependency>
 
             <!-- Runtime dependencies -->

@@ -18,73 +18,23 @@
     </parent>
 
     <packaging>pom</packaging>
-    <artifactId>pypowsybl-incubator</artifactId>
-    <name>pypowsybl-incubator-distribution</name>
-    <description>pypowsybl-incubator distribution module</description>
+    <artifactId>pypowsybl-open-loadflow</artifactId>
+    <name>pypowsybl-open-loadflow-distribution</name>
+    <description>pypowsybl-open-loadflow distribution module</description>
 
     <properties>
-        <pypowsybl-module-name>pypowsybl_incubator</pypowsybl-module-name>
+        <pypowsybl-module-name>pypowsybl_open_loadflow</pypowsybl-module-name>
+        <open-loadflow.integration.groupid>com.powsybl</open-loadflow.integration.groupid>
+        <open-loadflow.integration.version>1.0.0-SNAPSHOT</open-loadflow.integration.version>
     </properties>
-
 
     <dependencies>
         <dependency>
-            <groupId>xml-apis</groupId>
-            <artifactId>xml-apis-ext</artifactId>
-            <version>1.3.04</version>
-        </dependency>
-        <dependency>
-            <groupId>com.powsybl</groupId>
-            <artifactId>powsybl-balances-adjustment</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.powsybl</groupId>
-            <artifactId>powsybl-base-voltage-color</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.powsybl</groupId>
-            <artifactId>powsybl-cgmes-dl-conversion</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.powsybl</groupId>
-            <artifactId>powsybl-cgmes-gl-conversion</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.powsybl</groupId>
-            <artifactId>powsybl-cgmes-gl-iidm-extensions</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.powsybl</groupId>
-            <artifactId>powsybl-cgmes-iidm-extensions</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.powsybl</groupId>
-            <artifactId>powsybl-substation-diagram-cgmes</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.powsybl</groupId>
-            <artifactId>powsybl-substation-diagram-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.powsybl</groupId>
-            <artifactId>powsybl-substation-diagram-util</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.powsybl</groupId>
-            <artifactId>powsybl-substation-diagram-view</artifactId>
-            <version>${project.version}</version>
+            <groupId>${open-loadflow.integration.groupid}</groupId>
+            <artifactId>powsybl-open-loadflow</artifactId>
+            <version>${open-loadflow.integration.version}</version>
         </dependency>
     </dependencies>
-
 
     <build>
         <plugins>
@@ -101,7 +51,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <packageName>powsybl</packageName>
+                    <packageName>pypowsybl-open-loadflow</packageName>
                 </configuration>
             </plugin>
             <plugin>
@@ -157,5 +107,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

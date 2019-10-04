@@ -33,7 +33,6 @@ You must first build pypowsybl-core with maven: in pypowsybl-core directory, run
 MODULE_HOME = os.path.abspath("./")
 
 VERSION = getVersionFromPom(os.path.join(MODULE_HOME, 'pom.xml'), "hades2.integration.version")
-# Figure out where the jars are we need to package with PySpark.
 JARS = "target/powsybl-hades2/share/java/"
 JARS_PATH = glob.glob(os.path.join(MODULE_HOME, JARS))
 
@@ -51,7 +50,7 @@ setup(
     version=VERSION,
     author="Christian Biasuzzi",
     author_email="christian.biasuzzi@techrain.eu",
-    description="pypowsybl-core python integration",
+    description="pypowsybl-hades2 python integration",
     long_description=long_description,
     long_description_content_type="text/markdown",
     license="https://rte-france.github.io/hades2/license.html",

@@ -33,8 +33,6 @@ You must first build pypowsybl-incubator with maven: in pypowsybl-incubator dire
 MODULE_HOME = os.path.abspath("./")
 
 VERSION = getVersionFromPom(os.path.join(MODULE_HOME, 'pom.xml'), "version")
-
-# Figure out where the jars are we need to package with PySpark.
 JARS = "target/powsybl/share/java/"
 JARS_PATH = glob.glob(os.path.join(MODULE_HOME, JARS))
 
@@ -53,7 +51,7 @@ setup(
     version=VERSION,
     author="Christian Biasuzzi",
     author_email="christian.biasuzzi@techrain.eu",
-    description="pypowsybl-core python integration",
+    description="pypowsybl-incubator python integration",
     long_description=long_description,
     long_description_content_type="text/markdown",
     license="Mozilla Public License 2.0 (MPL 2.0)",
@@ -96,8 +94,7 @@ setup(
                                      'powsybl-substation-diagram-core-1.0.0-SNAPSHOT.jar',
                                      'powsybl-substation-diagram-util-1.0.0-SNAPSHOT.jar',
                                      'powsybl-substation-diagram-view-1.0.0-SNAPSHOT.jar',
-                                     'xml-apis-ext-1.3.04.jar',
-                                     'jafama-2.3.1.jar']
+                                     'xml-apis-ext-1.3.04.jar']
     },
     classifiers=[
         "Development Status :: 4 - Beta",

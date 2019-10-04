@@ -30,11 +30,10 @@ You must first build pypowsybl-core with maven: in pypowsybl-core directory, run
     python setup.py bdist_wheel"""
 
 
-PROJECT_HOME = os.path.abspath("../")
 MODULE_HOME = os.path.abspath("./")
 
-VERSION = getVersionFromPom(os.path.join(PROJECT_HOME, 'pom.xml'), "powsyblcore.version")
-JARS = "target/powsybl/share/java/"
+VERSION = getVersionFromPom(os.path.join(MODULE_HOME, 'pom.xml'), "open-loadflow.integration.version")
+JARS = "target/pypowsybl-open-loadflow/share/java/"
 JARS_PATH = glob.glob(os.path.join(MODULE_HOME, JARS))
 
 if not os.path.exists(JARS):
@@ -42,35 +41,33 @@ if not os.path.exists(JARS):
     sys.exit(-1)
 
 
-
 ###########################################
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
-    name="pypowsybl_core",
+    name="pypowsybl_open_loadflow",
     version=VERSION,
     author="Christian Biasuzzi",
     author_email="christian.biasuzzi@techrain.eu",
-    description="pypowsybl-core python integration",
+    description="pypowsybl-open-loadflow python integration",
     long_description=long_description,
     long_description_content_type="text/markdown",
     license="Mozilla Public License 2.0 (MPL 2.0)",
     url="https://github.com/powsybl/powsybl-core",
     python_requires='>3.0.0',
-    install_requires=['JPype1'],
+    install_requires=['JPype1', 'pypowsybl-core'],
     include_package_data=True,
-    packages=['pypowsybl_core',
-              'pypowsybl_core.jars'],
+    packages=['pypowsybl_open_loadflow',
+              'pypowsybl_open_loadflow.jars'],
     package_dir={
-        'pypowsybl_core.jars': JARS
+        'pypowsybl_open_loadflow.jars': JARS
     },
     package_data={
-        'pypowsybl_core.jars': ['*.jar']
+        'pypowsybl_open_loadflow.jars': ['powsybl-open-loadflow-1.0.0-SNAPSHOT.jar', 'jafama-2.3.1.jar']
     },
     classifiers=[
         "Development Status :: 4 - Beta",
-        "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: Implementation :: CPython"
     ],

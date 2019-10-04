@@ -58,12 +58,11 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static com.powsybl.substationdiagram.library.ComponentTypeName.ARROW;
 import static com.powsybl.substationdiagram.library.ComponentTypeName.BUSBAR_SECTION;
@@ -97,6 +96,9 @@ public class DefaultSVGWriter implements SVGWriter {
     protected final ComponentLibrary componentLibrary;
 
     protected final LayoutParameters layoutParameters;
+
+    Function<Node, BusCell.Direction> nodeDirection = node ->
+            (node instanceof FeederNode && node.getCell() != null) ? ((ExternCell) node.getCell()).getDirection() : BusCell.Direction.UNDEFINED;
 
     public DefaultSVGWriter(ComponentLibrary componentLibrary, LayoutParameters layoutParameters) {
         this.componentLibrary = Objects.requireNonNull(componentLibrary);
@@ -208,12 +210,17 @@ public class DefaultSVGWriter implements SVGWriter {
             return componentLibrary.getAnchorPoints(type);
         };
 
+        if (layoutParameters.isShiftFeedersPosition()) {
+            shiftFeedersPosition(graph, layoutParameters.getScaleShiftFeedersPosition());
+        }
+
         drawNodes(root, graph, metadata, anchorPointProvider, initProvider, styleProvider, nodeLabelConfiguration);
         drawEdges(root, graph, metadata, anchorPointProvider, initProvider, styleProvider);
 
         // the drawing of the voltageLevel graph label is done at the end in order to
         // facilitate the move of a voltageLevel in the diagram
         drawGraphLabel(root, graph, metadata);
+
         document.adoptNode(root);
         document.getDocumentElement().appendChild(root);
 
@@ -320,6 +327,11 @@ public class DefaultSVGWriter implements SVGWriter {
                     return componentLibrary.getAnchorPoints(type);
                 }
             };
+
+            if (layoutParameters.isShiftFeedersPosition()) {
+                shiftFeedersPosition(vlGraph, layoutParameters.getScaleShiftFeedersPosition());
+            }
+
             drawNodes(root, vlGraph, metadata, anchorPointProvider, initProvider, styleProvider, nodeLabelConfiguration);
             drawEdges(root, vlGraph, metadata, anchorPointProvider, initProvider, styleProvider);
         }
@@ -960,6 +972,31 @@ public class DefaultSVGWriter implements SVGWriter {
                 .mapToObj(n -> n % 2 == 0 ? pol.get(n) + layoutParameters.getTranslateX() : pol.get(n) + layoutParameters.getTranslateY())
                 .map(Object::toString)
                 .collect(Collectors.joining(","));
+    }
+
+    /**
+     * Adjust feeders height, positioning them on a descending/ascending ramp
+     * (depending on their BusCell direction)
+     */
+    private void shiftFeedersPosition(Graph graph, double scaleShiftFeederNames) {
+        Map<BusCell.Direction, List<Node>> orderedFeederNodesByDirection = graph.getNodes().stream()
+                .filter(node -> !node.isFictitious() && node instanceof FeederNode && node.getCell() != null)
+                .sorted(Comparator.comparing(Node::getX))
+                .collect(Collectors.groupingBy(node -> nodeDirection.apply(node)));
+
+        Map<BusCell.Direction, Double> mapLev = Arrays.stream(BusCell.Direction.values()).collect(Collectors.toMap(d -> d, d -> 0.0));
+
+        Stream.of(BusCell.Direction.values())
+                .filter(direction -> orderedFeederNodesByDirection.get(direction) != null)
+                .forEach(direction -> {
+                    orderedFeederNodesByDirection.get(direction).stream().skip(1).forEach(node -> {
+                        int componentHeight = (int) (componentLibrary.getSize(node.getComponentType()).getHeight());
+                        double oldY = node.getY() - graph.getY();
+                        double newY = mapLev.get(direction) + scaleShiftFeederNames * FONT_SIZE + (componentHeight == 0 ? LABEL_OFFSET : componentHeight);
+                        node.setY(oldY + ((direction == BusCell.Direction.TOP) ? 1 : -1) * newY);
+                        mapLev.put(direction, newY);
+                    });
+                });
     }
 
 }

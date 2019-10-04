@@ -35,22 +35,48 @@ public abstract class AbstractContainerDiagramView extends BorderPane {
 
     private double pressedX;
     private double pressedY;
+    private final Group svgImage;
 
     protected AbstractContainerDiagramView(Group svgImage) {
         super(svgImage);
+        this.svgImage = svgImage;
 
-        registerEvents(svgImage);
+        registerEvents();
     }
 
-    private void registerEvents(Group svgImage) {
+    /*
+     * Resizing the group of nodes to fit the viewport scrollpane dimensions
+     */
+    public void fitToContent(double viewportWidth, double dWidth,
+                             double viewportHeight, double dHeight) {
+        double boundsWidth = svgImage.getBoundsInParent().getWidth();
+        double boundsHeight = svgImage.getBoundsInParent().getHeight();
+
+        double scaleX = 1.;
+        double scaleY = 1.;
+        if (boundsWidth > boundsHeight) {
+            scaleX = (viewportWidth - dWidth) / boundsWidth;
+            scaleY = scaleX;
+        } else {
+            scaleY = (viewportHeight - dHeight) / boundsHeight;
+            scaleX = scaleY;
+        }
+
+        svgImage.setScaleX(svgImage.getScaleX() * scaleX);
+        svgImage.setScaleY(svgImage.getScaleY() * scaleY);
+        svgImage.setTranslateX(svgImage.getTranslateX() - svgImage.getBoundsInParent().getMinX() + dWidth / 2);
+        svgImage.setTranslateY(svgImage.getTranslateY() - svgImage.getBoundsInParent().getMinY() + dHeight / 2);
+    }
+
+    private void registerEvents() {
         setOnScroll(event -> {
             double zoomFactor = 1.05;
             double deltaY = event.getDeltaY();
             if (deltaY < 0) {
                 zoomFactor = 2.0 - zoomFactor;
             }
-            setScaleX(getScaleX() * zoomFactor);
-            setScaleY(getScaleY() * zoomFactor);
+            svgImage.setScaleX(svgImage.getScaleX() * zoomFactor);
+            svgImage.setScaleY(svgImage.getScaleY() * zoomFactor);
 
             event.consume();
         });

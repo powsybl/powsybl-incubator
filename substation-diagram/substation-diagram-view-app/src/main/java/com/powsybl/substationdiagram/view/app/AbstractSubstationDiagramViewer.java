@@ -225,6 +225,10 @@ public abstract class AbstractSubstationDiagramViewer extends Application implem
             }
         }
 
+        private ScrollPane getFlowPane() {
+            return flowPane;
+        }
+
         private String getSelectedDiagramName() {
             return diagramNamesComboBox.getSelectionModel().getSelectedItem();
         }
@@ -550,6 +554,30 @@ public abstract class AbstractSubstationDiagramViewer extends Application implem
         parametersPane.setPadding(new Insets(5, 5, 5, 5));
 
         int rowIndex = 0;
+
+        Button fitToContent = new Button("Fit to content");
+        fitToContent.setOnAction(event -> {
+            ContainerDiagramPane pane = null;
+            Tab tab = diagramsPane.getSelectionModel().getSelectedItem();
+            if (tab != null) {
+                if (tab == tabChecked) {
+                    if (checkedDiagramsPane.getSelectionModel().getSelectedItem() != null) {
+                        pane = (ContainerDiagramPane) checkedDiagramsPane.getSelectionModel().getSelectedItem().getContent();
+                    }
+                } else {
+                    pane = (ContainerDiagramPane) selectedDiagramPane.getCenter();
+                }
+                if (pane != null) {
+                    ((AbstractContainerDiagramView) pane.getFlowPane().getContent()).fitToContent(
+                            pane.getFlowPane().getViewportBounds().getWidth(), 20.,
+                            pane.getFlowPane().getViewportBounds().getHeight(), 20.);
+                    pane.getFlowPane().setHvalue(pane.getFlowPane().getHmin());
+                    pane.getFlowPane().setVvalue(pane.getFlowPane().getVmin());
+                }
+            }
+        });
+
+        parametersPane.add(fitToContent, 0, rowIndex++);
 
         // svg library list
         svgLibraryComboBox.getItems().addAll(svgLibraries.keySet());

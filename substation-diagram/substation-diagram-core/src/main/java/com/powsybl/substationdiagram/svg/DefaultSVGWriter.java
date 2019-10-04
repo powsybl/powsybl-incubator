@@ -979,23 +979,24 @@ public class DefaultSVGWriter implements SVGWriter {
      * (depending on their BusCell direction)
      */
     private void shiftFeedersPosition(Graph graph, double scaleShiftFeederNames) {
-        List<Node> orderedFeederNodes = graph.getNodes().stream()
+        Map<BusCell.Direction, List<Node>> orderedFeederNodesByDirection = graph.getNodes().stream()
                 .filter(node -> !node.isFictitious() && node instanceof FeederNode && node.getCell() != null)
                 .sorted(Comparator.comparing(Node::getX))
-                .collect(Collectors.toList());
-        Map<BusCell.Direction, Double> mapLev = new EnumMap<>(BusCell.Direction.class);
-        Stream.of(BusCell.Direction.values()).forEach(direction -> {
-            mapLev.put(direction, 0.0);
-        });
+                .collect(Collectors.groupingBy(node -> nodeDirection.apply(node)));
 
-        for (Node node : orderedFeederNodes) {
-            BusCell.Direction direction = nodeDirection.apply(node);
-            int componentHeight = (int) (componentLibrary.getSize(node.getComponentType()).getHeight());
-            double oldY = node.getY() - graph.getY();
-            double newY = mapLev.get(direction) + scaleShiftFeederNames * FONT_SIZE + (componentHeight == 0 ? LABEL_OFFSET : componentHeight);
-            node.setY(oldY + ((direction == BusCell.Direction.TOP) ? 1 : -1) * newY);
-            mapLev.put(direction, newY);
-        }
+        Map<BusCell.Direction, Double> mapLev = Arrays.stream(BusCell.Direction.values()).collect(Collectors.toMap(d -> d, d -> 0.0));
+
+        Stream.of(BusCell.Direction.values())
+                .filter(direction -> orderedFeederNodesByDirection.get(direction) != null)
+                .forEach(direction -> {
+                    orderedFeederNodesByDirection.get(direction).stream().skip(1).forEach(node -> {
+                        int componentHeight = (int) (componentLibrary.getSize(node.getComponentType()).getHeight());
+                        double oldY = node.getY() - graph.getY();
+                        double newY = mapLev.get(direction) + scaleShiftFeederNames * FONT_SIZE + (componentHeight == 0 ? LABEL_OFFSET : componentHeight);
+                        node.setY(oldY + ((direction == BusCell.Direction.TOP) ? 1 : -1) * newY);
+                        mapLev.put(direction, newY);
+                    });
+                });
     }
 
 }

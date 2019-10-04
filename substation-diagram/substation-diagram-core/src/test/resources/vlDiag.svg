@@ -54,68 +54,68 @@
         </g>
         <g class="substation-diagram BUSBAR_SECTION idbbs1" id="idbbs1" transform="translate(30.0,310.0)">
             <line y2="0" x1="0" class="bus_vl1" x2="700.0" y1="0"/>
-            <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs1</text>
+            <text x="-5.0" font-size="8" y="-5.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="bbs1_NW_LABEL">bbs1</text>
         </g>
         <g class="substation-diagram BUSBAR_SECTION idbbs2" id="idbbs2" transform="translate(830.0,310.0)">
             <line y2="0" x1="0" class="bus_vl1" x2="460.0" y1="0"/>
-            <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs2</text>
+            <text x="-5.0" font-size="8" y="-5.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="bbs2_NW_LABEL">bbs2</text>
         </g>
         <g class="substation-diagram BUSBAR_SECTION idbbs3" id="idbbs3" transform="translate(30.0,335.0)">
             <line y2="0" x1="0" class="bus_vl1" x2="700.0" y1="0"/>
-            <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs3</text>
+            <text x="-5.0" font-size="8" y="-5.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="bbs3_NW_LABEL">bbs3</text>
         </g>
         <g class="substation-diagram BUSBAR_SECTION idbbs4" id="idbbs4" transform="translate(830.0,335.0)">
             <line y2="0" x1="0" class="bus_vl1" x2="460.0" y1="0"/>
-            <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">bbs4</text>
+            <text x="-5.0" font-size="8" y="-5.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="bbs4_NW_LABEL">bbs4</text>
         </g>
         <g class="substation-diagram LOAD idload1" id="idload1" transform="translate(52.0,25.5)">
     <rect height="9" width="16"/>
     <line y2="9" x1="0" x2="16" y1="0"/>
     <line y2="9" x1="16" x2="0" y1="0"/>
-<text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">load1</text>
+<text x="-5.0" font-size="8" y="-5.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="load1_N_LABEL">load1</text>
         </g>
         <g class="substation-diagram GENERATOR idgen1" id="idgen1" transform="translate(214.0,609.0)">
     <circle r="6" cx="6" cy="6"/>
     <path d="M6,6 A 6 20 0 0 0 0,6"/>
     <path d="M6,6 A 6 20 0 0 0 12,6"/>
-<text x="-5.0" font-size="8" y="25.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">gen1</text>
+<text x="-5.0" font-size="8" y="25.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="gen1_S_LABEL">gen1</text>
         </g>
         <g class="substation-diagram LOAD idload2" id="idload2" transform="translate(852.0,25.5)">
     <rect height="9" width="16"/>
     <line y2="9" x1="0" x2="16" y1="0"/>
     <line y2="9" x1="16" x2="0" y1="0"/>
-<text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">load2</text>
+<text x="-5.0" font-size="8" y="-5.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="load2_N_LABEL">load2</text>
         </g>
         <g class="substation-diagram GENERATOR idgen2" id="idgen2" transform="translate(1254.0,609.0)">
     <circle r="6" cx="6" cy="6"/>
     <path d="M6,6 A 6 20 0 0 0 0,6"/>
     <path d="M6,6 A 6 20 0 0 0 12,6"/>
-<text x="-5.0" font-size="8" y="25.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">gen2</text>
+<text x="-5.0" font-size="8" y="25.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="gen2_S_LABEL">gen2</text>
         </g>
         <g class="substation-diagram TWO_WINDINGS_TRANSFORMER idtrf1_95_ONE" id="idtrf1_95_ONE" transform="translate(133.5,26.0)">
     <circle r="4" id="WINDING1" cx="4" cy="4" stroke="rgb(255, 0, 0)"/>
     <circle r="4" id="WINDING2" cx="9" cy="4" stroke="rgb(34, 139, 34)"/>
-<text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf1</text>
+<text x="-5.0" font-size="8" y="-5.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="trf1_ONE_N_LABEL">trf1</text>
         </g>
         <g class="substation-diagram TWO_WINDINGS_TRANSFORMER idtrf2_95_ONE" id="idtrf2_95_ONE" transform="translate(1173.5,26.0)">
     <circle r="4" id="WINDING1" cx="4" cy="4" stroke="rgb(255, 0, 0)"/>
     <circle r="4" id="WINDING2" cx="9" cy="4" stroke="rgb(34, 139, 34)"/>
-<text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf2</text>
+<text x="-5.0" font-size="8" y="-5.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="trf2_ONE_N_LABEL">trf2</text>
         </g>
         <g class="substation-diagram TWO_WINDINGS_TRANSFORMER idtrf3_95_ONE" id="idtrf3_95_ONE" transform="translate(293.5,611.0)">
     <circle r="4" id="WINDING1" cx="4" cy="4" stroke="rgb(255, 0, 0)"/>
     <circle r="4" id="WINDING2" cx="9" cy="4" stroke="rgb(34, 139, 34)"/>
-<text x="-5.0" font-size="8" y="21.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf3</text>
+<text x="-5.0" font-size="8" y="21.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="trf3_ONE_S_LABEL">trf3</text>
         </g>
         <g class="substation-diagram TWO_WINDINGS_TRANSFORMER idtrf4_95_ONE" id="idtrf4_95_ONE" transform="translate(1093.5,611.0)">
     <circle r="4" id="WINDING1" cx="4" cy="4" stroke="rgb(255, 0, 0)"/>
     <circle r="4" id="WINDING2" cx="9" cy="4" stroke="rgb(34, 139, 34)"/>
-<text x="-5.0" font-size="8" y="21.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf4</text>
+<text x="-5.0" font-size="8" y="21.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="trf4_ONE_S_LABEL">trf4</text>
         </g>
         <g class="substation-diagram TWO_WINDINGS_TRANSFORMER idtrf5_95_ONE" id="idtrf5_95_ONE" transform="translate(373.5,26.0)">
     <circle r="4" id="WINDING1" cx="4" cy="4" stroke="rgb(255, 0, 0)"/>
     <circle r="4" id="WINDING2" cx="9" cy="4" stroke="rgb(160, 32, 240)"/>
-<text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf5</text>
+<text x="-5.0" font-size="8" y="-5.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="trf5_ONE_N_LABEL">trf5</text>
         </g>
         <g class="substation-diagram DISCONNECTOR iddsect11" id="iddsect11" transform="translate(736.0,306.0)">
     <g class="closed" id="closed">
@@ -407,13 +407,13 @@
     <circle r="4" id="WINDING3" cx="7" cy="8" stroke="rgb(255, 0, 0)"/>
 </g>
         <g class="substation-diagram LINE idtrf6_95_ONE_95_TWO" id="idtrf6_95_ONE_95_TWO" transform="translate(540.0,30.00000000000002)">
-            <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf6_ONE_TWO</text>
+            <text x="-5.0" font-size="8" y="-5.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="trf6_ONE_TWO_N_LABEL">trf6_ONE_TWO</text>
         </g>
         <g class="substation-diagram INDUCTOR idself4" id="idself4" transform="translate(452.5,25.50000000000002)">
     <path d="M5,5 A 5 20 0 0 0 0,5" stroke="rgb(160, 32, 240)"/>
     <path d="M10,5 A 5 20 0 0 0 5,5" stroke="rgb(160, 32, 240)"/>
     <path d="M15,5 A 5 20 0 0 0 10,5" stroke="rgb(160, 32, 240)"/>
-<text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">self4</text>
+<text x="-5.0" font-size="8" y="-5.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="self4_N_LABEL">self4</text>
         </g>
         <g class="substation-diagram THREE_WINDINGS_TRANSFORMER idFICT_95_vl1_95_trf71_95_fictif" id="idFICT_95_vl1_95_trf71_95_fictif" transform="translate(653.0,525.6666666666665)">
     <circle r="4" id="WINDING1" cx="4" transform="rotate(180,7.0,6.0)" cy="4" stroke="rgb(160, 32, 240)"/>
@@ -421,13 +421,13 @@
     <circle r="4" id="WINDING3" cx="7" transform="rotate(180,7.0,6.0)" cy="8" stroke="rgb(255, 0, 0)"/>
 </g>
         <g class="substation-diagram LINE idtrf7_95_ONE_95_TWO" id="idtrf7_95_ONE_95_TWO" transform="translate(700.0,614.9999999999999)">
-            <text x="-5.0" font-size="8" y="13.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf7_ONE_TWO</text>
+            <text x="-5.0" font-size="8" y="13.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="trf7_ONE_TWO_S_LABEL">trf7_ONE_TWO</text>
         </g>
         <g class="substation-diagram INDUCTOR idself4" id="idself4" transform="translate(612.5,610.4999999999999)">
     <path d="M5,5 A 5 20 0 0 0 0,5" stroke="rgb(160, 32, 240)"/>
     <path d="M10,5 A 5 20 0 0 0 5,5" stroke="rgb(160, 32, 240)"/>
     <path d="M15,5 A 5 20 0 0 0 10,5" stroke="rgb(160, 32, 240)"/>
-<text x="-5.0" font-size="8" y="22.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">self4</text>
+<text x="-5.0" font-size="8" y="22.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="self4_S_LABEL">self4</text>
         </g>
         <g class="substation-diagram THREE_WINDINGS_TRANSFORMER idFICT_95_vl1_95_trf81_95_fictif" id="idFICT_95_vl1_95_trf81_95_fictif" transform="translate(973.0,107.33333333333334)">
     <circle r="4" id="WINDING1" cx="4" cy="4" stroke="rgb(34, 139, 34)"/>
@@ -435,13 +435,13 @@
     <circle r="4" id="WINDING3" cx="7" cy="8" stroke="rgb(255, 0, 0)"/>
 </g>
         <g class="substation-diagram LINE idtrf8_95_ONE_95_TWO" id="idtrf8_95_ONE_95_TWO" transform="translate(1020.0,30.00000000000002)">
-            <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">trf8_ONE_TWO</text>
+            <text x="-5.0" font-size="8" y="-5.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="trf8_ONE_TWO_N_LABEL">trf8_ONE_TWO</text>
         </g>
         <g class="substation-diagram INDUCTOR idself4" id="idself4" transform="translate(932.5,25.50000000000002)">
     <path d="M5,5 A 5 20 0 0 0 0,5" stroke="rgb(160, 32, 240)"/>
     <path d="M10,5 A 5 20 0 0 0 5,5" stroke="rgb(160, 32, 240)"/>
     <path d="M15,5 A 5 20 0 0 0 10,5" stroke="rgb(160, 32, 240)"/>
-<text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">self4</text>
+<text x="-5.0" font-size="8" y="-5.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="self4_N_LABEL">self4</text>
         </g>
         <g class="substation-diagram NODE idFICT_95_vl1_95_dsect11Fictif" id="idFICT_95_vl1_95_dsect11Fictif" transform="matrix(0.0,1.0,-1.0,0.0,744.0,306.0)"/>
         <g class="substation-diagram NODE idFICT_95_vl1_95_dload1Fictif" id="idFICT_95_vl1_95_dload1Fictif" transform="translate(56.0,276.0)"/>

@@ -43,6 +43,7 @@ import static org.junit.Assert.assertEquals;
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  * @author Giovanni Ferrari <giovanni.ferrari at techrain.eu>
+ * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
  */
 public class TestSubstationDiagram extends AbstractTestCase {
 
@@ -78,6 +79,10 @@ public class TestSubstationDiagram extends AbstractTestCase {
 
         SubstationDiagram.build(substation).writeSvg(componentLibrary, layoutParameters, network, outSvg);
         String svgStr = normalizeLineSeparator(new String(Files.readAllBytes(outSvg), StandardCharsets.UTF_8));
+
+//        FileWriter fw = new FileWriter(System.getProperty("user.home") + "/TestSubstation.svg");
+//        fw.write(svgStr);
+//        fw.close();
 
         String refSvg = normalizeLineSeparator(
                 new String(ByteStreams.toByteArray(getClass().getResourceAsStream("/TestSubstation.svg")),

@@ -52,6 +52,10 @@ public class LayoutParameters {
 
     private boolean showInductorFor3WT = false;
 
+    private boolean shiftFeedersPosition = false;
+
+    private double scaleShiftFeedersPosition = 1;
+
     @JsonCreator
     public LayoutParameters() {
     }
@@ -77,7 +81,9 @@ public class LayoutParameters {
                             @JsonProperty("verticalSnakeLinePadding") double verticalSnakeLinePadding,
                             @JsonProperty("arrowDistance") double arrowDistance,
                             @JsonProperty("showInductorFor3WT") boolean showInductorFor3WT,
-                            @JsonProperty("diagramName") String diagramName) {
+                            @JsonProperty("diagramName") String diagramName,
+                            @JsonProperty("shiftFeedersPosition") boolean shiftFeedersPosition,
+                            @JsonProperty("scaleShiftFeedersPosition") double scaleShiftFeedersPosition) {
         this.translateX = translateX;
         this.translateY = translateY;
         this.initialXBus = initialXBus;
@@ -99,6 +105,8 @@ public class LayoutParameters {
         this.arrowDistance = arrowDistance;
         this.showInductorFor3WT = showInductorFor3WT;
         this.diagramName = diagramName;
+        this.shiftFeedersPosition = shiftFeedersPosition;
+        this.scaleShiftFeedersPosition = scaleShiftFeedersPosition;
     }
 
     public LayoutParameters(LayoutParameters other) {
@@ -124,6 +132,8 @@ public class LayoutParameters {
         arrowDistance = other.arrowDistance;
         showInductorFor3WT = other.showInductorFor3WT;
         diagramName = other.diagramName;
+        shiftFeedersPosition = other.shiftFeedersPosition;
+        scaleShiftFeedersPosition = other.scaleShiftFeedersPosition;
     }
 
     public double getTranslateX() {
@@ -314,4 +324,23 @@ public class LayoutParameters {
         this.showInductorFor3WT = showInductorFor3WT;
         return this;
     }
+
+    public boolean isShiftFeedersPosition() {
+        return shiftFeedersPosition;
+    }
+
+    public LayoutParameters setShiftFeedersPosition(boolean shiftFeedersPosition) {
+        this.shiftFeedersPosition = shiftFeedersPosition;
+        return this;
+    }
+
+    public double getScaleShiftFeedersPosition() {
+        return scaleShiftFeedersPosition;
+    }
+
+    public LayoutParameters setScaleShiftFeedersPosition(double scaleShiftFeedersPosition) {
+        this.scaleShiftFeedersPosition = scaleShiftFeedersPosition;
+        return this;
+    }
+
 }

@@ -8,8 +8,11 @@ package com.powsybl.substationdiagram.svg;
 
 import com.powsybl.substationdiagram.model.Node;
 
+import java.util.List;
+
 /**
  * @author Giovanni Ferrari <giovanni.ferrari at techrain.eu>
+ * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
  */
 public interface SubstationDiagramInitialValueProvider {
 
@@ -19,4 +22,5 @@ public interface SubstationDiagramInitialValueProvider {
 
     InitialValue getInitialValue(Node node);
 
+    List<String> getNodeLabelValue(Node node);
 }

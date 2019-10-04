@@ -30,6 +30,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * @author Giovanni Ferrari <giovanni.ferrari at techrain.eu>
+ * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
  */
 public class NominalVoltageStyleTest {
 
@@ -65,9 +66,19 @@ public class NominalVoltageStyleTest {
         Path outSvg = tmpDir.resolve("sub.svg");
         Path meta = tmpDir.resolve("meta.json");
 
-        SubstationDiagram.build(substation).writeSvg(componentLibrary, layoutParameters, new DefaultSubstationDiagramInitialValueProvider(network), new NominalVoltageSubstationDiagramStyleProvider(), Files.newBufferedWriter(outSvg, StandardCharsets.UTF_8), Files.newBufferedWriter(meta));
+        SubstationDiagram.build(substation).writeSvg(componentLibrary,
+                layoutParameters,
+                new DefaultSubstationDiagramInitialValueProvider(network),
+                new NominalVoltageSubstationDiagramStyleProvider(),
+                new DefaultNodeLabelConfiguration(componentLibrary),
+                Files.newBufferedWriter(outSvg, StandardCharsets.UTF_8),
+                Files.newBufferedWriter(meta));
 
         String svgStr = normalizeLineSeparator(new String(Files.readAllBytes(outSvg), StandardCharsets.UTF_8));
+
+//        FileWriter fw = new FileWriter(System.getProperty("user.home") + "/nominalVoltage.svg");
+//        fw.write(svgStr);
+//        fw.close();
 
         String refSvg = normalizeLineSeparator(
                 new String(ByteStreams.toByteArray(getClass().getResourceAsStream("/nominalVoltage.svg")),

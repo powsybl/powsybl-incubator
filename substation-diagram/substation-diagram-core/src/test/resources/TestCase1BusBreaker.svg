@@ -39,17 +39,17 @@
         </g>
         <g class="substation-diagram BUSBAR_SECTION idb1" id="idb1" transform="translate(30.0,310.0)">
             <line y2="0" x1="0" class="bus_vl" x2="30.0" y1="0"/>
-            <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">b1</text>
+            <text x="-5.0" font-size="8" y="-5.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="b1_NW_LABEL">b1</text>
         </g>
         <g class="substation-diagram BUSBAR_SECTION idb2" id="idb2" transform="translate(-20.0,335.0)">
             <line y2="0" x1="0" class="bus_vl" x2="-20.0" y1="0"/>
-            <text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">b2</text>
+            <text x="-5.0" font-size="8" y="-5.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="b2_NW_LABEL">b2</text>
         </g>
         <g class="substation-diagram LOAD idl" id="idl" transform="translate(37.0,25.5)">
     <rect height="9" width="16"/>
     <line y2="9" x1="0" x2="16" y1="0"/>
     <line y2="9" x1="16" x2="0" y1="0"/>
-<text x="-5.0" font-size="8" y="-5.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">l</text>
+<text x="-5.0" font-size="8" y="-5.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="l_N_LABEL">l</text>
         </g>
         <g class="substation-diagram DISCONNECTOR idb1_95_l" id="idb1_95_l" transform="translate(41.0,306.0)">
     <g class="closed" id="closed">

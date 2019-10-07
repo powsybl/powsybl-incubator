@@ -64,8 +64,8 @@
 <text x="-5.0" font-size="8" y="22.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="self4_S_LABEL">self4</text>
         </g>
         <g class="substation-diagram TWO_WINDINGS_TRANSFORMER trf5_TWO" id="trf5_TWO" transform="translate(213.5,586.0)">
-    <circle r="4" id="WINDING1" cx="4" cy="4"/>
-    <circle r="4" id="WINDING2" cx="9" cy="4"/>
+    <circle r="4" id="TWO_WINDINGS_TRANSFORMER-WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="TWO_WINDINGS_TRANSFORMER-WINDING2" cx="9" cy="4"/>
 <text x="-5.0" font-size="8" y="21.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="trf5_TWO_S_LABEL">trf5</text>
         </g>
         <g class="substation-diagram INDUCTOR self5" id="self5" transform="translate(772.5,585.5)">
@@ -86,161 +86,161 @@
 <text x="-5.0" font-size="8" y="25.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="self6_S_LABEL">self6</text>
         </g>
         <g class="substation-diagram DISCONNECTOR dload4" id="dload4" transform="translate(56.0,306.0)">
-    <g class="closed" id="closed">
+    <g class="closed" id="DISCONNECTOR-closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
-    <g class="open" id="open">
+    <g class="open" id="DISCONNECTOR-open">
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
         <g class="substation-diagram BREAKER bload4" id="bload4" transform="translate(50.0,145.0)">
-    <g class="closed" id="closed">
+    <g class="closed" id="BREAKER-closed">
         <rect x="1" width="18" y="1" height="18"/>
         <line y2="15" x1="10" x2="10" y1="5"/>
     </g>
-    <g class="open" id="open">
+    <g class="open" id="BREAKER-open">
         <rect x="1" width="18" y="1" height="18"/>
         <line y2="10" x1="5" x2="15" y1="10"/>
     </g>
 </g>
         <g class="substation-diagram DISCONNECTOR dself4" id="dself4" transform="translate(136.0,306.0)">
-    <g class="closed" id="closed">
+    <g class="closed" id="DISCONNECTOR-closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
-    <g class="open" id="open">
+    <g class="open" id="DISCONNECTOR-open">
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
         <g class="substation-diagram BREAKER bself4" id="bself4" transform="translate(130.0,455.0)">
-    <g class="closed" id="closed">
+    <g class="closed" id="BREAKER-closed">
         <rect x="1" width="18" y="1" height="18"/>
         <line y2="15" x1="10" x2="10" y1="5"/>
     </g>
-    <g class="open" id="open">
+    <g class="open" id="BREAKER-open">
         <rect x="1" width="18" y="1" height="18"/>
         <line y2="10" x1="5" x2="15" y1="10"/>
     </g>
 </g>
         <g class="substation-diagram DISCONNECTOR dtrf25" id="dtrf25" transform="translate(216.0,306.0)">
-    <g class="closed" id="closed">
+    <g class="closed" id="DISCONNECTOR-closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
-    <g class="open" id="open">
+    <g class="open" id="DISCONNECTOR-open">
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
         <g class="substation-diagram BREAKER btrf25" id="btrf25" transform="translate(210.0,455.0)">
-    <g class="closed" id="closed">
+    <g class="closed" id="BREAKER-closed">
         <rect x="1" width="18" y="1" height="18"/>
         <line y2="15" x1="10" x2="10" y1="5"/>
     </g>
-    <g class="open" id="open">
+    <g class="open" id="BREAKER-open">
         <rect x="1" width="18" y="1" height="18"/>
         <line y2="10" x1="5" x2="15" y1="10"/>
     </g>
 </g>
         <g class="substation-diagram DISCONNECTOR dtrf36" id="dtrf36" transform="translate(336.0,306.0)">
-    <g class="closed" id="closed">
+    <g class="closed" id="DISCONNECTOR-closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
-    <g class="open" id="open">
+    <g class="open" id="DISCONNECTOR-open">
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
         <g class="substation-diagram BREAKER btrf36" id="btrf36" transform="translate(330.0,186.66666666666669)">
-    <g class="closed" id="closed">
+    <g class="closed" id="BREAKER-closed">
         <rect x="1" width="18" y="1" height="18"/>
         <line y2="15" x1="10" x2="10" y1="5"/>
     </g>
-    <g class="open" id="open">
+    <g class="open" id="BREAKER-open">
         <rect x="1" width="18" y="1" height="18"/>
         <line y2="10" x1="5" x2="15" y1="10"/>
     </g>
 </g>
         <g class="substation-diagram DISCONNECTOR dtrf37" id="dtrf37" transform="translate(496.0,306.0)">
-    <g class="closed" id="closed">
+    <g class="closed" id="DISCONNECTOR-closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
-    <g class="open" id="open">
+    <g class="open" id="DISCONNECTOR-open">
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
         <g class="substation-diagram BREAKER btrf37" id="btrf37" transform="translate(490.0,413.3333333333333)">
-    <g class="closed" id="closed">
+    <g class="closed" id="BREAKER-closed">
         <rect x="1" width="18" y="1" height="18"/>
         <line y2="15" x1="10" x2="10" y1="5"/>
     </g>
-    <g class="open" id="open">
+    <g class="open" id="BREAKER-open">
         <rect x="1" width="18" y="1" height="18"/>
         <line y2="10" x1="5" x2="15" y1="10"/>
     </g>
 </g>
         <g class="substation-diagram DISCONNECTOR dtrf38" id="dtrf38" transform="translate(656.0,306.0)">
-    <g class="closed" id="closed">
+    <g class="closed" id="DISCONNECTOR-closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
-    <g class="open" id="open">
+    <g class="open" id="DISCONNECTOR-open">
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
         <g class="substation-diagram BREAKER btrf38" id="btrf38" transform="translate(650.0,186.66666666666669)">
-    <g class="closed" id="closed">
+    <g class="closed" id="BREAKER-closed">
         <rect x="1" width="18" y="1" height="18"/>
         <line y2="15" x1="10" x2="10" y1="5"/>
     </g>
-    <g class="open" id="open">
+    <g class="open" id="BREAKER-open">
         <rect x="1" width="18" y="1" height="18"/>
         <line y2="10" x1="5" x2="15" y1="10"/>
     </g>
 </g>
         <g class="substation-diagram DISCONNECTOR dself5" id="dself5" transform="translate(776.0,306.0)">
-    <g class="closed" id="closed">
+    <g class="closed" id="DISCONNECTOR-closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
-    <g class="open" id="open">
+    <g class="open" id="DISCONNECTOR-open">
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
         <g class="substation-diagram BREAKER bself5" id="bself5" transform="translate(770.0,455.0)">
-    <g class="closed" id="closed">
+    <g class="closed" id="BREAKER-closed">
         <rect x="1" width="18" y="1" height="18"/>
         <line y2="15" x1="10" x2="10" y1="5"/>
     </g>
-    <g class="open" id="open">
+    <g class="open" id="BREAKER-open">
         <rect x="1" width="18" y="1" height="18"/>
         <line y2="10" x1="5" x2="15" y1="10"/>
     </g>
 </g>
         <g class="substation-diagram DISCONNECTOR dself6" id="dself6" transform="translate(856.0,306.0)">
-    <g class="closed" id="closed">
+    <g class="closed" id="DISCONNECTOR-closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
-    <g class="open" id="open">
+    <g class="open" id="DISCONNECTOR-open">
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
         <g class="substation-diagram BREAKER bself6" id="bself6" transform="translate(850.0,455.0)">
-    <g class="closed" id="closed">
+    <g class="closed" id="BREAKER-closed">
         <rect x="1" width="18" y="1" height="18"/>
         <line y2="15" x1="10" x2="10" y1="5"/>
     </g>
-    <g class="open" id="open">
+    <g class="open" id="BREAKER-open">
         <rect x="1" width="18" y="1" height="18"/>
         <line y2="10" x1="5" x2="15" y1="10"/>
     </g>
 </g>
         <g class="substation-diagram THREE_WINDINGS_TRANSFORMER FICT_vl3_trf63_fictif" id="FICT_vl3_trf63_fictif" transform="translate(333.0,107.33333333333334)">
-    <circle r="4" id="WINDING1" cx="4" cy="4"/>
-    <circle r="4" id="WINDING2" cx="10" cy="4"/>
-    <circle r="4" id="WINDING3" cx="7" cy="8"/>
+    <circle r="4" id="THREE_WINDINGS_TRANSFORMER-WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="THREE_WINDINGS_TRANSFORMER-WINDING2" cx="10" cy="4"/>
+    <circle r="4" id="THREE_WINDINGS_TRANSFORMER-WINDING3" cx="7" cy="8"/>
 </g>
         <g class="substation-diagram LINE trf6_THREE_ONE" id="trf6_THREE_ONE" transform="translate(380.0,30.00000000000002)">
             <text x="-5.0" font-size="8" y="-5.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="trf6_THREE_ONE_N_LABEL">trf6_THREE_ONE</text>
@@ -249,9 +249,9 @@
             <text x="-5.0" font-size="8" y="-5.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="trf6_THREE_TWO_N_LABEL">trf6_THREE_TWO</text>
         </g>
         <g class="substation-diagram THREE_WINDINGS_TRANSFORMER FICT_vl3_trf73_fictif" id="FICT_vl3_trf73_fictif" transform="translate(493.0,500.6666666666667)">
-    <circle r="4" id="WINDING1" cx="4" transform="rotate(180,7.0,6.0)" cy="4"/>
-    <circle r="4" id="WINDING2" cx="10" transform="rotate(180,7.0,6.0)" cy="4"/>
-    <circle r="4" id="WINDING3" cx="7" transform="rotate(180,7.0,6.0)" cy="8"/>
+    <circle r="4" id="THREE_WINDINGS_TRANSFORMER-WINDING1" cx="4" transform="rotate(180,7.0,6.0)" cy="4"/>
+    <circle r="4" id="THREE_WINDINGS_TRANSFORMER-WINDING2" cx="10" transform="rotate(180,7.0,6.0)" cy="4"/>
+    <circle r="4" id="THREE_WINDINGS_TRANSFORMER-WINDING3" cx="7" transform="rotate(180,7.0,6.0)" cy="8"/>
 </g>
         <g class="substation-diagram LINE trf7_THREE_ONE" id="trf7_THREE_ONE" transform="translate(540.0,590.0)">
             <text x="-5.0" font-size="8" y="13.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="trf7_THREE_ONE_S_LABEL">trf7_THREE_ONE</text>
@@ -260,9 +260,9 @@
             <text x="-5.0" font-size="8" y="13.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="trf7_THREE_TWO_S_LABEL">trf7_THREE_TWO</text>
         </g>
         <g class="substation-diagram THREE_WINDINGS_TRANSFORMER FICT_vl3_trf83_fictif" id="FICT_vl3_trf83_fictif" transform="translate(653.0,107.33333333333334)">
-    <circle r="4" id="WINDING1" cx="4" cy="4"/>
-    <circle r="4" id="WINDING2" cx="10" cy="4"/>
-    <circle r="4" id="WINDING3" cx="7" cy="8"/>
+    <circle r="4" id="THREE_WINDINGS_TRANSFORMER-WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="THREE_WINDINGS_TRANSFORMER-WINDING2" cx="10" cy="4"/>
+    <circle r="4" id="THREE_WINDINGS_TRANSFORMER-WINDING3" cx="7" cy="8"/>
 </g>
         <g class="substation-diagram LINE trf8_THREE_ONE" id="trf8_THREE_ONE" transform="translate(700.0,30.00000000000002)">
             <text x="-5.0" font-size="8" y="-5.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="trf8_THREE_ONE_N_LABEL">trf8_THREE_ONE</text>
@@ -281,19 +281,19 @@
         <polyline class="wire_vl3" points="60.0,310.0,60.0,310.0" id="vl3_Wire0"/>
         <polyline class="wire_vl3" points="60.0,145.0,60.0,34.0" id="vl3_Wire1"/>
         <g class="substation-diagram ARROW1_load4_UP" id="vl3_Wire1_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,55.0,120.0)">
-     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+     <g class="arrow-up" id="ARROW-arrow-up" transform="rotate(180.0,5.0,5.0)">
         <polygon points="5,0 10,10 0,10"/>
      </g>
-     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+     <g class="arrow-down" id="ARROW-arrow-down" transform="rotate(180.0,5.0,5.0)">
         <polygon points="0,0 10,0 5,10"/>
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">10</text>
         </g>
         <g class="substation-diagram ARROW2_load4_UP" id="vl3_Wire1_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,55.0,100.0)">
-     <g class="arrow-up" id="arrow-up" transform="rotate(180.0,5.0,5.0)">
+     <g class="arrow-up" id="ARROW-arrow-up" transform="rotate(180.0,5.0,5.0)">
         <polygon points="5,0 10,10 0,10"/>
      </g>
-     <g class="arrow-down" id="arrow-down" transform="rotate(180.0,5.0,5.0)">
+     <g class="arrow-down" id="ARROW-arrow-down" transform="rotate(180.0,5.0,5.0)">
         <polygon points="0,0 10,0 5,10"/>
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">10</text>
@@ -301,19 +301,19 @@
         <polyline class="wire_vl3" points="140.0,310.0,140.0,310.0" id="vl3_Wire2"/>
         <polyline class="wire_vl3" points="140.0,475.0,140.0,586.0" id="vl3_Wire3"/>
         <g class="substation-diagram ARROW1_self4_DOWN" id="vl3_Wire3_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,135.0,490.0)">
-     <g class="arrow-up" id="arrow-up">
+     <g class="arrow-up" id="ARROW-arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
-     <g class="arrow-down" id="arrow-down">
+     <g class="arrow-down" id="ARROW-arrow-down">
         <polygon points="0,0 10,0 5,10"/>
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
         <g class="substation-diagram ARROW2_self4_DOWN" id="vl3_Wire3_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,135.0,510.0)">
-     <g class="arrow-up" id="arrow-up">
+     <g class="arrow-up" id="ARROW-arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
-     <g class="arrow-down" id="arrow-down">
+     <g class="arrow-down" id="ARROW-arrow-down">
         <polygon points="0,0 10,0 5,10"/>
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
@@ -321,19 +321,19 @@
         <polyline class="wire_vl3" points="220.0,310.0,220.0,310.0" id="vl3_Wire4"/>
         <polyline class="wire_vl3" points="220.0,475.0,220.0,586.0" id="vl3_Wire5"/>
         <g class="substation-diagram ARROW1_trf5_TWO_DOWN" id="vl3_Wire5_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,215.0,490.0)">
-     <g class="arrow-up" id="arrow-up">
+     <g class="arrow-up" id="ARROW-arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
-     <g class="arrow-down" id="arrow-down">
+     <g class="arrow-down" id="ARROW-arrow-down">
         <polygon points="0,0 10,0 5,10"/>
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
         <g class="substation-diagram ARROW2_trf5_TWO_DOWN" id="vl3_Wire5_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,215.0,510.0)">
-     <g class="arrow-up" id="arrow-up">
+     <g class="arrow-up" id="ARROW-arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
-     <g class="arrow-down" id="arrow-down">
+     <g class="arrow-down" id="ARROW-arrow-down">
         <polygon points="0,0 10,0 5,10"/>
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
@@ -344,19 +344,19 @@
         <polyline class="wire_vl3" points="780.0,310.0,780.0,310.0" id="vl3_Wire9"/>
         <polyline class="wire_vl3" points="780.0,475.0,780.0,586.0" id="vl3_Wire10"/>
         <g class="substation-diagram ARROW1_self5_DOWN" id="vl3_Wire10_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,775.0,490.0)">
-     <g class="arrow-up" id="arrow-up">
+     <g class="arrow-up" id="ARROW-arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
-     <g class="arrow-down" id="arrow-down">
+     <g class="arrow-down" id="ARROW-arrow-down">
         <polygon points="0,0 10,0 5,10"/>
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
         <g class="substation-diagram ARROW2_self5_DOWN" id="vl3_Wire10_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,775.0,510.0)">
-     <g class="arrow-up" id="arrow-up">
+     <g class="arrow-up" id="ARROW-arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
-     <g class="arrow-down" id="arrow-down">
+     <g class="arrow-down" id="ARROW-arrow-down">
         <polygon points="0,0 10,0 5,10"/>
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
@@ -364,19 +364,19 @@
         <polyline class="wire_vl3" points="860.0,310.0,860.0,310.0" id="vl3_Wire11"/>
         <polyline class="wire_vl3" points="860.0,475.0,860.0,584.0" id="vl3_Wire12"/>
         <g class="substation-diagram ARROW1_self6_DOWN" id="vl3_Wire12_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,855.0,490.0)">
-     <g class="arrow-up" id="arrow-up">
+     <g class="arrow-up" id="ARROW-arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
-     <g class="arrow-down" id="arrow-down">
+     <g class="arrow-down" id="ARROW-arrow-down">
         <polygon points="0,0 10,0 5,10"/>
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
         <g class="substation-diagram ARROW2_self6_DOWN" id="vl3_Wire12_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,855.0,510.0)">
-     <g class="arrow-up" id="arrow-up">
+     <g class="arrow-up" id="ARROW-arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
-     <g class="arrow-down" id="arrow-down">
+     <g class="arrow-down" id="ARROW-arrow-down">
         <polygon points="0,0 10,0 5,10"/>
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
@@ -384,38 +384,38 @@
         <polyline class="wire_vl3" points="340.0,186.66666666666669,340.0,119.33333333333334" id="vl3_Wire13"/>
         <polyline class="wire_vl3" points="347.0,109.33333333333334,380.0,109.33333333333334,380.0,30.00000000000002" id="vl3_Wire14"/>
         <g class="substation-diagram ARROW1_trf6_THREE_ONE_DOWN" id="vl3_Wire14_ARROW1" transform="matrix(0.0,1.0,-1.0,0.0,372.0,104.3333)">
-     <g class="arrow-up" id="arrow-up">
+     <g class="arrow-up" id="ARROW-arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
-     <g class="arrow-down" id="arrow-down">
+     <g class="arrow-down" id="ARROW-arrow-down">
         <polygon points="0,0 10,0 5,10"/>
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
         <g class="substation-diagram ARROW2_trf6_THREE_ONE_DOWN" id="vl3_Wire14_ARROW2" transform="matrix(0.0,1.0,-1.0,0.0,392.0,104.3333)">
-     <g class="arrow-up" id="arrow-up">
+     <g class="arrow-up" id="ARROW-arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
-     <g class="arrow-down" id="arrow-down">
+     <g class="arrow-down" id="ARROW-arrow-down">
         <polygon points="0,0 10,0 5,10"/>
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
         <polyline class="wire_vl3" points="333.0,109.33333333333334,300.0,109.33333333333334,300.0,30.00000000000002" id="vl3_Wire15"/>
         <g class="substation-diagram ARROW1_trf6_THREE_TWO_DOWN" id="vl3_Wire15_ARROW1" transform="matrix(0.0,-1.0,1.0,0.0,308.0,114.3333)">
-     <g class="arrow-up" id="arrow-up">
+     <g class="arrow-up" id="ARROW-arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
-     <g class="arrow-down" id="arrow-down">
+     <g class="arrow-down" id="ARROW-arrow-down">
         <polygon points="0,0 10,0 5,10"/>
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
         <g class="substation-diagram ARROW2_trf6_THREE_TWO_DOWN" id="vl3_Wire15_ARROW2" transform="matrix(0.0,-1.0,1.0,0.0,288.0,114.3333)">
-     <g class="arrow-up" id="arrow-up">
+     <g class="arrow-up" id="ARROW-arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
-     <g class="arrow-down" id="arrow-down">
+     <g class="arrow-down" id="ARROW-arrow-down">
         <polygon points="0,0 10,0 5,10"/>
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
@@ -423,38 +423,38 @@
         <polyline class="wire_vl3" points="500.0,433.3333333333333,500.0,500.6666666666667" id="vl3_Wire16"/>
         <polyline class="wire_vl3" points="507.0,510.6666666666667,540.0,510.6666666666667,540.0,590.0" id="vl3_Wire17"/>
         <g class="substation-diagram ARROW1_trf7_THREE_ONE_DOWN" id="vl3_Wire17_ARROW1" transform="matrix(0.0,1.0,-1.0,0.0,532.0,505.6667)">
-     <g class="arrow-up" id="arrow-up">
+     <g class="arrow-up" id="ARROW-arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
-     <g class="arrow-down" id="arrow-down">
+     <g class="arrow-down" id="ARROW-arrow-down">
         <polygon points="0,0 10,0 5,10"/>
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
         <g class="substation-diagram ARROW2_trf7_THREE_ONE_DOWN" id="vl3_Wire17_ARROW2" transform="matrix(0.0,1.0,-1.0,0.0,552.0,505.6667)">
-     <g class="arrow-up" id="arrow-up">
+     <g class="arrow-up" id="ARROW-arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
-     <g class="arrow-down" id="arrow-down">
+     <g class="arrow-down" id="ARROW-arrow-down">
         <polygon points="0,0 10,0 5,10"/>
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
         <polyline class="wire_vl3" points="493.0,510.6666666666667,460.0,510.6666666666667,460.0,590.0" id="vl3_Wire18"/>
         <g class="substation-diagram ARROW1_trf7_THREE_TWO_DOWN" id="vl3_Wire18_ARROW1" transform="matrix(0.0,-1.0,1.0,0.0,468.0,515.6667)">
-     <g class="arrow-up" id="arrow-up">
+     <g class="arrow-up" id="ARROW-arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
-     <g class="arrow-down" id="arrow-down">
+     <g class="arrow-down" id="ARROW-arrow-down">
         <polygon points="0,0 10,0 5,10"/>
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
         <g class="substation-diagram ARROW2_trf7_THREE_TWO_DOWN" id="vl3_Wire18_ARROW2" transform="matrix(0.0,-1.0,1.0,0.0,448.0,515.6667)">
-     <g class="arrow-up" id="arrow-up">
+     <g class="arrow-up" id="ARROW-arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
-     <g class="arrow-down" id="arrow-down">
+     <g class="arrow-down" id="ARROW-arrow-down">
         <polygon points="0,0 10,0 5,10"/>
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
@@ -462,38 +462,38 @@
         <polyline class="wire_vl3" points="660.0,186.66666666666669,660.0,119.33333333333334" id="vl3_Wire19"/>
         <polyline class="wire_vl3" points="667.0,109.33333333333334,700.0,109.33333333333334,700.0,30.00000000000002" id="vl3_Wire20"/>
         <g class="substation-diagram ARROW1_trf8_THREE_ONE_DOWN" id="vl3_Wire20_ARROW1" transform="matrix(0.0,1.0,-1.0,0.0,692.0,104.3333)">
-     <g class="arrow-up" id="arrow-up">
+     <g class="arrow-up" id="ARROW-arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
-     <g class="arrow-down" id="arrow-down">
+     <g class="arrow-down" id="ARROW-arrow-down">
         <polygon points="0,0 10,0 5,10"/>
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
         <g class="substation-diagram ARROW2_trf8_THREE_ONE_DOWN" id="vl3_Wire20_ARROW2" transform="matrix(0.0,1.0,-1.0,0.0,712.0,104.3333)">
-     <g class="arrow-up" id="arrow-up">
+     <g class="arrow-up" id="ARROW-arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
-     <g class="arrow-down" id="arrow-down">
+     <g class="arrow-down" id="ARROW-arrow-down">
         <polygon points="0,0 10,0 5,10"/>
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
         <polyline class="wire_vl3" points="653.0,109.33333333333334,620.0,109.33333333333334,620.0,30.00000000000002" id="vl3_Wire21"/>
         <g class="substation-diagram ARROW1_trf8_THREE_TWO_DOWN" id="vl3_Wire21_ARROW1" transform="matrix(0.0,-1.0,1.0,0.0,628.0,114.3333)">
-     <g class="arrow-up" id="arrow-up">
+     <g class="arrow-up" id="ARROW-arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
-     <g class="arrow-down" id="arrow-down">
+     <g class="arrow-down" id="ARROW-arrow-down">
         <polygon points="0,0 10,0 5,10"/>
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
         <g class="substation-diagram ARROW2_trf8_THREE_TWO_DOWN" id="vl3_Wire21_ARROW2" transform="matrix(0.0,-1.0,1.0,0.0,608.0,114.3333)">
-     <g class="arrow-up" id="arrow-up">
+     <g class="arrow-up" id="ARROW-arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
-     <g class="arrow-down" id="arrow-down">
+     <g class="arrow-down" id="ARROW-arrow-down">
         <polygon points="0,0 10,0 5,10"/>
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>

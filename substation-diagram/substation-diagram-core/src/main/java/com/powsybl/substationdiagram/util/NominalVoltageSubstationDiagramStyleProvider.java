@@ -73,8 +73,8 @@ public class NominalVoltageSubstationDiagramStyleProvider extends DefaultSubstat
     }
 
     @Override
-    public Optional<String> getNodeStyle(Node node) {
-        Optional<String> defaultStyle = super.getNodeStyle(node);
+    public Optional<String> getNodeStyle(Node node, boolean avoidSVGComponentsDuplication) {
+        Optional<String> defaultStyle = super.getNodeStyle(node, avoidSVGComponentsDuplication);
 
         String color = getColor(node.getGraph().getVoltageLevel()).orElse(DEFAULT_COLOR);
         try {

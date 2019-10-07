@@ -6,13 +6,13 @@
  */
 package com.powsybl.substationdiagram.svg;
 
-import java.io.Writer;
-import java.nio.file.Path;
-
 import com.powsybl.substationdiagram.layout.LayoutParameters;
 import com.powsybl.substationdiagram.library.ComponentLibrary;
 import com.powsybl.substationdiagram.model.Graph;
 import com.powsybl.substationdiagram.model.SubstationGraph;
+
+import java.io.Writer;
+import java.nio.file.Path;
 
 /**
  * @author Gilles Brada <gilles.brada at rte-france.com>

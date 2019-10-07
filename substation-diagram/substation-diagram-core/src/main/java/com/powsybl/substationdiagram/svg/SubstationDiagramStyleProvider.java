@@ -6,6 +6,7 @@
  */
 package com.powsybl.substationdiagram.svg;
 
+import java.util.Map;
 import java.util.Optional;
 
 import com.powsybl.iidm.network.ThreeWindingsTransformer;
@@ -25,7 +26,7 @@ public interface SubstationDiagramStyleProvider {
 
     Optional<String> getGlobalStyle(Graph graph);
 
-    Optional<String> getNodeStyle(Node node);
+    Optional<String> getNodeStyle(Node node, boolean avoidSVGComponentsDuplication);
 
     String getIdWireStyle(Edge edge);
 
@@ -36,4 +37,6 @@ public interface SubstationDiagramStyleProvider {
     Optional<String> getNode2WTStyle(Feeder2WTNode node, TwoWindingsTransformer.Side side);
 
     Optional<String> getColor(VoltageLevel vl);
+
+    Map<String, String> getAttributesArrow(int num);
 }

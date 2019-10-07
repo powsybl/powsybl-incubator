@@ -166,9 +166,9 @@ public class TopologicalStyleProvider extends DefaultSubstationDiagramStyleProvi
     }
 
     @Override
-    public Optional<String> getNodeStyle(Node node) {
+    public Optional<String> getNodeStyle(Node node, boolean avoidSVGComponentsDuplication) {
 
-        Optional<String> defaultStyle = super.getNodeStyle(node);
+        Optional<String> defaultStyle = super.getNodeStyle(node, avoidSVGComponentsDuplication);
         if (node.getType() == NodeType.SWITCH || node.getComponentType().equals(TWO_WINDINGS_TRANSFORMER) || node.getComponentType().equals(THREE_WINDINGS_TRANSFORMER) || node.getComponentType().equals(PHASE_SHIFT_TRANSFORMER)) {
             return defaultStyle;
         }

@@ -52,11 +52,11 @@
 <text x="-5.0" font-size="8" y="-5.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="l_N_LABEL">l</text>
         </g>
         <g class="substation-diagram DISCONNECTOR b1_l" id="b1_l" transform="translate(41.0,306.0)">
-    <g class="closed" id="closed">
+    <g class="closed" id="DISCONNECTOR-closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
-    <g class="open" id="open">
+    <g class="open" id="DISCONNECTOR-open">
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
@@ -66,19 +66,19 @@
         <polyline class="wire_vl" points="45.0,310.0,45.0,310.0" id="vl_Wire0"/>
         <polyline class="wire_vl" points="45.0,34.0,45.0,280.0" id="vl_Wire1"/>
         <g class="substation-diagram ARROW1_l_UP" id="vl_Wire1_ARROW1" transform="matrix(1.0,0.0,-0.0,1.0,40.0,49.0)">
-     <g class="arrow-up" id="arrow-up">
+     <g class="arrow-up" id="ARROW-arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
-     <g class="arrow-down" id="arrow-down">
+     <g class="arrow-down" id="ARROW-arrow-down">
         <polygon points="0,0 10,0 5,10"/>
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">10</text>
         </g>
         <g class="substation-diagram ARROW2__l_UP" id="vl_Wire1_ARROW2" transform="matrix(1.0,0.0,-0.0,1.0,40.0,69.0)">
-     <g class="arrow-up" id="arrow-up">
+     <g class="arrow-up" id="ARROW-arrow-up">
         <polygon points="5,0 10,10 0,10"/>
      </g>
-     <g class="arrow-down" id="arrow-down">
+     <g class="arrow-down" id="ARROW-arrow-down">
         <polygon points="0,0 10,0 5,10"/>
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">10</text>

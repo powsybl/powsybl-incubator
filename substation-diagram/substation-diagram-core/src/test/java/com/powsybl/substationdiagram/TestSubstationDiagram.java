@@ -77,7 +77,7 @@ public class TestSubstationDiagram extends AbstractTestCase {
         SubstationLayoutFactory substationLayoutFactory = new HorizontalSubstationLayoutFactory();
         Path outSvg = tmpDir.resolve("sub.svg");
 
-        SubstationDiagram.build(substation).writeSvg(componentLibrary, layoutParameters, network, outSvg);
+        SubstationDiagram.build(substation).writeSvg("", componentLibrary, layoutParameters, network, outSvg);
         String svgStr = normalizeLineSeparator(new String(Files.readAllBytes(outSvg), StandardCharsets.UTF_8));
 
 //        FileWriter fw = new FileWriter(System.getProperty("user.home") + "/TestSubstation.svg");
@@ -99,7 +99,7 @@ public class TestSubstationDiagram extends AbstractTestCase {
 
         Path outSvg = tmpDir.resolve("sub.svg");
 
-        SubstationDiagram.build(substation).writeSvg(writer, network, outSvg);
+        SubstationDiagram.build(substation).writeSvg("", writer, network, outSvg);
         String svgStr = normalizeLineSeparator(new String(Files.readAllBytes(outSvg), StandardCharsets.UTF_8));
 
         String refSvg = normalizeLineSeparator(

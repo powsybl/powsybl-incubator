@@ -264,140 +264,140 @@
         </g>
         <g class="NODE FICT_vl1_14" id="FICT_vl1_14" transform="translate(15.0,45.0)"/>
         <g class="DISCONNECTOR dsect11" id="dsect11" transform="translate(15.0,45.0)">
-    <g class="closed" id="DISCONNECTOR-closed">
+    <g class="closed" id="dsect11_DISCONNECTOR-closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
-    <g class="open" id="DISCONNECTOR-open">
+    <g class="open" id="dsect11_DISCONNECTOR-open">
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
         <g class="NODE FICT_vl1_15" id="FICT_vl1_15" transform="translate(15.0,45.0)"/>
         <g class="BREAKER dtrct11" id="dtrct11" transform="translate(9.0,39.0)">
-    <g class="closed" id="BREAKER-closed">
+    <g class="closed" id="dtrct11_BREAKER-closed">
         <rect x="1" width="18" y="1" height="18"/>
         <line y2="15" x1="10" x2="10" y1="5"/>
     </g>
-    <g class="open" id="BREAKER-open">
+    <g class="open" id="dtrct11_BREAKER-open">
         <rect x="1" width="18" y="1" height="18"/>
         <line y2="10" x1="5" x2="15" y1="10"/>
     </g>
 </g>
         <g class="DISCONNECTOR dsect12" id="dsect12" transform="translate(15.0,45.0)">
-    <g class="closed" id="DISCONNECTOR-closed">
+    <g class="closed" id="dsect12_DISCONNECTOR-closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
-    <g class="open" id="DISCONNECTOR-open">
+    <g class="open" id="dsect12_DISCONNECTOR-open">
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
         <g class="NODE FICT_vl1_16" id="FICT_vl1_16" transform="translate(15.0,45.0)"/>
         <g class="DISCONNECTOR dsect21" id="dsect21" transform="translate(15.0,45.0)">
-    <g class="closed" id="DISCONNECTOR-closed">
+    <g class="closed" id="dsect21_DISCONNECTOR-closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
-    <g class="open" id="DISCONNECTOR-open">
+    <g class="open" id="dsect21_DISCONNECTOR-open">
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
         <g class="NODE FICT_vl1_17" id="FICT_vl1_17" transform="translate(15.0,45.0)"/>
         <g class="BREAKER dtrct21" id="dtrct21" transform="translate(9.0,39.0)">
-    <g class="closed" id="BREAKER-closed">
+    <g class="closed" id="dtrct21_BREAKER-closed">
         <rect x="1" width="18" y="1" height="18"/>
         <line y2="15" x1="10" x2="10" y1="5"/>
     </g>
-    <g class="open" id="BREAKER-open">
+    <g class="open" id="dtrct21_BREAKER-open">
         <rect x="1" width="18" y="1" height="18"/>
         <line y2="10" x1="5" x2="15" y1="10"/>
     </g>
 </g>
         <g class="DISCONNECTOR dsect22" id="dsect22" transform="translate(15.0,45.0)">
-    <g class="closed" id="DISCONNECTOR-closed">
+    <g class="closed" id="dsect22_DISCONNECTOR-closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
-    <g class="open" id="DISCONNECTOR-open">
+    <g class="open" id="dsect22_DISCONNECTOR-open">
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
         <g class="NODE FICT_vl1_5" id="FICT_vl1_5" transform="translate(15.0,45.0)"/>
         <g class="DISCONNECTOR dload1" id="dload1" transform="translate(15.0,45.0)">
-    <g class="closed" id="DISCONNECTOR-closed">
+    <g class="closed" id="dload1_DISCONNECTOR-closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
-    <g class="open" id="DISCONNECTOR-open">
+    <g class="open" id="dload1_DISCONNECTOR-open">
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
         <g class="BREAKER bload1" id="bload1" transform="translate(9.0,39.0)">
-    <g class="closed" id="BREAKER-closed">
+    <g class="closed" id="bload1_BREAKER-closed">
         <rect x="1" width="18" y="1" height="18"/>
         <line y2="15" x1="10" x2="10" y1="5"/>
     </g>
-    <g class="open" id="BREAKER-open">
+    <g class="open" id="bload1_BREAKER-open">
         <rect x="1" width="18" y="1" height="18"/>
         <line y2="10" x1="5" x2="15" y1="10"/>
     </g>
 </g>
         <g class="NODE FICT_vl1_7" id="FICT_vl1_7" transform="translate(15.0,45.0)"/>
         <g class="DISCONNECTOR dgen1" id="dgen1" transform="translate(15.0,45.0)">
-    <g class="closed" id="DISCONNECTOR-closed">
+    <g class="closed" id="dgen1_DISCONNECTOR-closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
-    <g class="open" id="DISCONNECTOR-open">
+    <g class="open" id="dgen1_DISCONNECTOR-open">
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
         <g class="BREAKER bgen1" id="bgen1" transform="translate(9.0,39.0)">
-    <g class="closed" id="BREAKER-closed">
+    <g class="closed" id="bgen1_BREAKER-closed">
         <rect x="1" width="18" y="1" height="18"/>
         <line y2="15" x1="10" x2="10" y1="5"/>
     </g>
-    <g class="open" id="BREAKER-open">
+    <g class="open" id="bgen1_BREAKER-open">
         <rect x="1" width="18" y="1" height="18"/>
         <line y2="10" x1="5" x2="15" y1="10"/>
     </g>
 </g>
         <g class="NODE FICT_vl1_9" id="FICT_vl1_9" transform="translate(15.0,45.0)"/>
         <g class="DISCONNECTOR dload2" id="dload2" transform="translate(15.0,45.0)">
-    <g class="closed" id="DISCONNECTOR-closed">
+    <g class="closed" id="dload2_DISCONNECTOR-closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
-    <g class="open" id="DISCONNECTOR-open">
+    <g class="open" id="dload2_DISCONNECTOR-open">
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
         <g class="BREAKER bload2" id="bload2" transform="translate(9.0,39.0)">
-    <g class="closed" id="BREAKER-closed">
+    <g class="closed" id="bload2_BREAKER-closed">
         <rect x="1" width="18" y="1" height="18"/>
         <line y2="15" x1="10" x2="10" y1="5"/>
     </g>
-    <g class="open" id="BREAKER-open">
+    <g class="open" id="bload2_BREAKER-open">
         <rect x="1" width="18" y="1" height="18"/>
         <line y2="10" x1="5" x2="15" y1="10"/>
     </g>
 </g>
         <g class="NODE FICT_vl1_11" id="FICT_vl1_11" transform="translate(15.0,45.0)"/>
         <g class="DISCONNECTOR dgen2" id="dgen2" transform="translate(15.0,45.0)">
-    <g class="closed" id="DISCONNECTOR-closed">
+    <g class="closed" id="dgen2_DISCONNECTOR-closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
-    <g class="open" id="DISCONNECTOR-open">
+    <g class="open" id="dgen2_DISCONNECTOR-open">
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
         <g class="BREAKER bgen2" id="bgen2" transform="translate(9.0,39.0)">
-    <g class="closed" id="BREAKER-closed">
+    <g class="closed" id="bgen2_BREAKER-closed">
         <rect x="1" width="18" y="1" height="18"/>
         <line y2="15" x1="10" x2="10" y1="5"/>
     </g>
-    <g class="open" id="BREAKER-open">
+    <g class="open" id="bgen2_BREAKER-open">
         <rect x="1" width="18" y="1" height="18"/>
         <line y2="10" x1="5" x2="15" y1="10"/>
     </g>
@@ -418,19 +418,19 @@
         <polyline class="wire wire_vl1" points="19.0,49.0,19.0,49.0" id="vl1_Wire13"/>
         <polyline class="wire wire_vl1" points="19.0,45.0,19.0,39.0" id="vl1_Wire14"/>
         <g class="ARROW1_load1_UP" id="vl1_Wire14_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,14.0,20.0)">
-     <g class="arrow-up" id="ARROW-arrow-up" transform="rotate(180.0,5.0,5.0)">
+     <g class="arrow-up" id="vl1_Wire14_ARROW1_ARROW-arrow-up" transform="rotate(180.0,5.0,5.0)">
         <polygon points="5,0 10,10 0,10"/>
      </g>
-     <g class="arrow-down" id="ARROW-arrow-down" transform="rotate(180.0,5.0,5.0)">
+     <g class="arrow-down" id="vl1_Wire14_ARROW1_ARROW-arrow-down" transform="rotate(180.0,5.0,5.0)">
         <polygon points="0,0 10,0 5,10"/>
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">10</text>
         </g>
         <g class="ARROW2_load1_UP" id="vl1_Wire14_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,14.0,0.0)">
-     <g class="arrow-up" id="ARROW-arrow-up" transform="rotate(180.0,5.0,5.0)">
+     <g class="arrow-up" id="vl1_Wire14_ARROW2_ARROW-arrow-up" transform="rotate(180.0,5.0,5.0)">
         <polygon points="5,0 10,10 0,10"/>
      </g>
-     <g class="arrow-down" id="ARROW-arrow-down" transform="rotate(180.0,5.0,5.0)">
+     <g class="arrow-down" id="vl1_Wire14_ARROW2_ARROW-arrow-down" transform="rotate(180.0,5.0,5.0)">
         <polygon points="0,0 10,0 5,10"/>
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">10</text>
@@ -440,19 +440,19 @@
         <polyline class="wire wire_vl1" points="19.0,49.0,19.0,49.0" id="vl1_Wire17"/>
         <polyline class="wire wire_vl1" points="19.0,43.0,19.0,39.0" id="vl1_Wire18"/>
         <g class="ARROW1_gen1_DOWN" id="vl1_Wire18_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,14.0,18.0)">
-     <g class="arrow-up" id="ARROW-arrow-up" transform="rotate(180.0,5.0,5.0)">
+     <g class="arrow-up" id="vl1_Wire18_ARROW1_ARROW-arrow-up" transform="rotate(180.0,5.0,5.0)">
         <polygon points="5,0 10,10 0,10"/>
      </g>
-     <g class="arrow-down" id="ARROW-arrow-down" transform="rotate(180.0,5.0,5.0)">
+     <g class="arrow-down" id="vl1_Wire18_ARROW1_ARROW-arrow-down" transform="rotate(180.0,5.0,5.0)">
         <polygon points="0,0 10,0 5,10"/>
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
         <g class="ARROW2_gen1_DOWN" id="vl1_Wire18_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,14.0,-2.0)">
-     <g class="arrow-up" id="ARROW-arrow-up" transform="rotate(180.0,5.0,5.0)">
+     <g class="arrow-up" id="vl1_Wire18_ARROW2_ARROW-arrow-up" transform="rotate(180.0,5.0,5.0)">
         <polygon points="5,0 10,10 0,10"/>
      </g>
-     <g class="arrow-down" id="ARROW-arrow-down" transform="rotate(180.0,5.0,5.0)">
+     <g class="arrow-down" id="vl1_Wire18_ARROW2_ARROW-arrow-down" transform="rotate(180.0,5.0,5.0)">
         <polygon points="0,0 10,0 5,10"/>
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
@@ -462,19 +462,19 @@
         <polyline class="wire wire_vl1" points="19.0,49.0,19.0,49.0" id="vl1_Wire21"/>
         <polyline class="wire wire_vl1" points="19.0,45.0,19.0,39.0" id="vl1_Wire22"/>
         <g class="ARROW1_load2_UP" id="vl1_Wire22_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,14.0,20.0)">
-     <g class="arrow-up" id="ARROW-arrow-up" transform="rotate(180.0,5.0,5.0)">
+     <g class="arrow-up" id="vl1_Wire22_ARROW1_ARROW-arrow-up" transform="rotate(180.0,5.0,5.0)">
         <polygon points="5,0 10,10 0,10"/>
      </g>
-     <g class="arrow-down" id="ARROW-arrow-down" transform="rotate(180.0,5.0,5.0)">
+     <g class="arrow-down" id="vl1_Wire22_ARROW1_ARROW-arrow-down" transform="rotate(180.0,5.0,5.0)">
         <polygon points="0,0 10,0 5,10"/>
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">10</text>
         </g>
         <g class="ARROW2_load2_UP" id="vl1_Wire22_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,14.0,0.0)">
-     <g class="arrow-up" id="ARROW-arrow-up" transform="rotate(180.0,5.0,5.0)">
+     <g class="arrow-up" id="vl1_Wire22_ARROW2_ARROW-arrow-up" transform="rotate(180.0,5.0,5.0)">
         <polygon points="5,0 10,10 0,10"/>
      </g>
-     <g class="arrow-down" id="ARROW-arrow-down" transform="rotate(180.0,5.0,5.0)">
+     <g class="arrow-down" id="vl1_Wire22_ARROW2_ARROW-arrow-down" transform="rotate(180.0,5.0,5.0)">
         <polygon points="0,0 10,0 5,10"/>
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">10</text>
@@ -484,19 +484,19 @@
         <polyline class="wire wire_vl1" points="19.0,49.0,19.0,49.0" id="vl1_Wire25"/>
         <polyline class="wire wire_vl1" points="19.0,43.0,19.0,39.0" id="vl1_Wire26"/>
         <g class="ARROW1_gen2_DOWN" id="vl1_Wire26_ARROW1" transform="matrix(1.0,-0.0,0.0,1.0,14.0,18.0)">
-     <g class="arrow-up" id="ARROW-arrow-up" transform="rotate(180.0,5.0,5.0)">
+     <g class="arrow-up" id="vl1_Wire26_ARROW1_ARROW-arrow-up" transform="rotate(180.0,5.0,5.0)">
         <polygon points="5,0 10,10 0,10"/>
      </g>
-     <g class="arrow-down" id="ARROW-arrow-down" transform="rotate(180.0,5.0,5.0)">
+     <g class="arrow-down" id="vl1_Wire26_ARROW1_ARROW-arrow-down" transform="rotate(180.0,5.0,5.0)">
         <polygon points="0,0 10,0 5,10"/>
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>
         </g>
         <g class="ARROW2_gen2_DOWN" id="vl1_Wire26_ARROW2" transform="matrix(1.0,-0.0,0.0,1.0,14.0,-2.0)">
-     <g class="arrow-up" id="ARROW-arrow-up" transform="rotate(180.0,5.0,5.0)">
+     <g class="arrow-up" id="vl1_Wire26_ARROW2_ARROW-arrow-up" transform="rotate(180.0,5.0,5.0)">
         <polygon points="5,0 10,10 0,10"/>
      </g>
-     <g class="arrow-down" id="ARROW-arrow-down" transform="rotate(180.0,5.0,5.0)">
+     <g class="arrow-down" id="vl1_Wire26_ARROW2_ARROW-arrow-down" transform="rotate(180.0,5.0,5.0)">
         <polygon points="0,0 10,0 5,10"/>
      </g>
 <text x="15.0" font-size="8" y="9.0" class="component-label" font-family="Verdana" transform="rotate(0,0,0)">0</text>

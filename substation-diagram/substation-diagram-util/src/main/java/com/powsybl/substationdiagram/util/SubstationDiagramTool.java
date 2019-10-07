@@ -109,7 +109,7 @@ public class SubstationDiagramTool implements Tool {
         context.getOutputStream().println("Generating '" + svgFile + "' (" + vl.getNominalV() + ")");
         try {
             VoltageLevelDiagram.build(vl, voltageLevelLayoutFactory, true, parameters.isShowInductorFor3WT())
-                    .writeSvg(componentLibrary, parameters, network, svgFile);
+                    .writeSvg("", componentLibrary, parameters, network, svgFile);
         } catch (Exception e) {
             e.printStackTrace(context.getErrorStream());
         }
@@ -123,7 +123,7 @@ public class SubstationDiagramTool implements Tool {
         context.getOutputStream().println("Generating '" + svgFile + "'");
         try {
             SubstationDiagram.build(s, substationLayoutFactory, voltageLevelLayoutFactory, true)
-                    .writeSvg(componentLibrary, parameters, network, svgFile);
+                    .writeSvg("", componentLibrary, parameters, network, svgFile);
         } catch (Exception e) {
             e.printStackTrace(context.getErrorStream());
         }

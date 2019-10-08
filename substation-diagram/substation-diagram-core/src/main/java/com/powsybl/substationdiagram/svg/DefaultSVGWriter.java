@@ -152,7 +152,7 @@ public class DefaultSVGWriter implements SVGWriter {
         globalStyle.ifPresent(graphStyle::append);
         graphStyle.append(componentLibrary.getStyleSheet());
 
-        List<String> listUsedComponentSVG = new ArrayList<>();
+        Set<String> listUsedComponentSVG = new HashSet<>();
 
         graph.getNodes().forEach(n -> {
             Optional<String> nodeStyle = styleProvider.getNodeStyle(n, layoutParameters.isAvoidSVGComponentsDuplication());
@@ -274,7 +274,7 @@ public class DefaultSVGWriter implements SVGWriter {
         Document document = domImpl.createDocument("http://www.w3.org/2000/svg", "svg", null);
         Element style = document.createElement("style");
 
-        List<String> listUsedComponentSVG = new ArrayList<>();
+        Set<String> listUsedComponentSVG = new HashSet<>();
 
         StringBuilder graphStyle = new StringBuilder();
         for (Graph vlGraph : graph.getNodes()) {
@@ -1139,7 +1139,7 @@ public class DefaultSVGWriter implements SVGWriter {
     /**
      * Creation of the defs area for the SVG components
      */
-    protected void createDefsSVGComponents(Document document, List<String> listUsedComponentSVG) {
+    protected void createDefsSVGComponents(Document document, Set<String> listUsedComponentSVG) {
         if (layoutParameters.isAvoidSVGComponentsDuplication()) {
             Element defs = document.createElement("defs");
 

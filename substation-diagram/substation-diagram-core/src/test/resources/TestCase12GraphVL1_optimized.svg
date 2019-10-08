@@ -111,11 +111,6 @@
 }
 ]]></style>
     <defs>
-        <g id="LOAD">
-    <rect height="9" width="16"/>
-    <line y2="9" x1="0" x2="16" y1="0"/>
-    <line y2="9" x1="16" x2="0" y1="0"/>
-</g>
         <g id="GENERATOR">
     <circle r="6" cx="6" cy="6"/>
     <path d="M6,6 A 6 20 0 0 0 0,6"/>
@@ -126,30 +121,8 @@
     <line y2="9" x1="0" x2="16" y1="0"/>
     <line y2="9" x1="16" x2="0" y1="0"/>
 </g>
-        <g id="GENERATOR">
-    <circle r="6" cx="6" cy="6"/>
-    <path d="M6,6 A 6 20 0 0 0 0,6"/>
-    <path d="M6,6 A 6 20 0 0 0 12,6"/>
-</g>
-        <g id="TWO_WINDINGS_TRANSFORMER">
-    <circle r="4" id="TWO_WINDINGS_TRANSFORMER-WINDING1" cx="4" cy="4"/>
-    <circle r="4" id="TWO_WINDINGS_TRANSFORMER-WINDING2" cx="9" cy="4"/>
-</g>
-        <g id="TWO_WINDINGS_TRANSFORMER">
-    <circle r="4" id="TWO_WINDINGS_TRANSFORMER-WINDING1" cx="4" cy="4"/>
-    <circle r="4" id="TWO_WINDINGS_TRANSFORMER-WINDING2" cx="9" cy="4"/>
-</g>
-        <g id="TWO_WINDINGS_TRANSFORMER">
-    <circle r="4" id="TWO_WINDINGS_TRANSFORMER-WINDING1" cx="4" cy="4"/>
-    <circle r="4" id="TWO_WINDINGS_TRANSFORMER-WINDING2" cx="9" cy="4"/>
-</g>
-        <g id="TWO_WINDINGS_TRANSFORMER">
-    <circle r="4" id="TWO_WINDINGS_TRANSFORMER-WINDING1" cx="4" cy="4"/>
-    <circle r="4" id="TWO_WINDINGS_TRANSFORMER-WINDING2" cx="9" cy="4"/>
-</g>
-        <g id="TWO_WINDINGS_TRANSFORMER">
-    <circle r="4" id="TWO_WINDINGS_TRANSFORMER-WINDING1" cx="4" cy="4"/>
-    <circle r="4" id="TWO_WINDINGS_TRANSFORMER-WINDING2" cx="9" cy="4"/>
+        <g id="NODE">
+    <circle r="4" cx="4" cy="4"/>
 </g>
         <g id="DISCONNECTOR">
     <g class="closed" id="DISCONNECTOR-closed">
@@ -159,359 +132,30 @@
     <g class="open" id="DISCONNECTOR-open">
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
-</g>
-        <g id="BREAKER">
-    <g class="closed" id="BREAKER-closed">
-        <rect x="1" width="18" y="1" height="18"/>
-        <line y2="15" x1="10" x2="10" y1="5"/>
-    </g>
-    <g class="open" id="BREAKER-open">
-        <rect x="1" width="18" y="1" height="18"/>
-        <line y2="10" x1="5" x2="15" y1="10"/>
-    </g>
-</g>
-        <g id="DISCONNECTOR">
-    <g class="closed" id="DISCONNECTOR-closed">
-        <line y2="8" x1="0" x2="8" y1="0"/>
-        <line y2="8" x1="8" x2="0" y1="0"/>
-    </g>
-    <g class="open" id="DISCONNECTOR-open">
-        <line y2="8" x1="8" x2="0" y1="0"/>
-    </g>
-</g>
-        <g id="DISCONNECTOR">
-    <g class="closed" id="DISCONNECTOR-closed">
-        <line y2="8" x1="0" x2="8" y1="0"/>
-        <line y2="8" x1="8" x2="0" y1="0"/>
-    </g>
-    <g class="open" id="DISCONNECTOR-open">
-        <line y2="8" x1="8" x2="0" y1="0"/>
-    </g>
-</g>
-        <g id="BREAKER">
-    <g class="closed" id="BREAKER-closed">
-        <rect x="1" width="18" y="1" height="18"/>
-        <line y2="15" x1="10" x2="10" y1="5"/>
-    </g>
-    <g class="open" id="BREAKER-open">
-        <rect x="1" width="18" y="1" height="18"/>
-        <line y2="10" x1="5" x2="15" y1="10"/>
-    </g>
-</g>
-        <g id="DISCONNECTOR">
-    <g class="closed" id="DISCONNECTOR-closed">
-        <line y2="8" x1="0" x2="8" y1="0"/>
-        <line y2="8" x1="8" x2="0" y1="0"/>
-    </g>
-    <g class="open" id="DISCONNECTOR-open">
-        <line y2="8" x1="8" x2="0" y1="0"/>
-    </g>
-</g>
-        <g id="DISCONNECTOR">
-    <g class="closed" id="DISCONNECTOR-closed">
-        <line y2="8" x1="0" x2="8" y1="0"/>
-        <line y2="8" x1="8" x2="0" y1="0"/>
-    </g>
-    <g class="open" id="DISCONNECTOR-open">
-        <line y2="8" x1="8" x2="0" y1="0"/>
-    </g>
-</g>
-        <g id="BREAKER">
-    <g class="closed" id="BREAKER-closed">
-        <rect x="1" width="18" y="1" height="18"/>
-        <line y2="15" x1="10" x2="10" y1="5"/>
-    </g>
-    <g class="open" id="BREAKER-open">
-        <rect x="1" width="18" y="1" height="18"/>
-        <line y2="10" x1="5" x2="15" y1="10"/>
-    </g>
-</g>
-        <g id="DISCONNECTOR">
-    <g class="closed" id="DISCONNECTOR-closed">
-        <line y2="8" x1="0" x2="8" y1="0"/>
-        <line y2="8" x1="8" x2="0" y1="0"/>
-    </g>
-    <g class="open" id="DISCONNECTOR-open">
-        <line y2="8" x1="8" x2="0" y1="0"/>
-    </g>
-</g>
-        <g id="BREAKER">
-    <g class="closed" id="BREAKER-closed">
-        <rect x="1" width="18" y="1" height="18"/>
-        <line y2="15" x1="10" x2="10" y1="5"/>
-    </g>
-    <g class="open" id="BREAKER-open">
-        <rect x="1" width="18" y="1" height="18"/>
-        <line y2="10" x1="5" x2="15" y1="10"/>
-    </g>
-</g>
-        <g id="DISCONNECTOR">
-    <g class="closed" id="DISCONNECTOR-closed">
-        <line y2="8" x1="0" x2="8" y1="0"/>
-        <line y2="8" x1="8" x2="0" y1="0"/>
-    </g>
-    <g class="open" id="DISCONNECTOR-open">
-        <line y2="8" x1="8" x2="0" y1="0"/>
-    </g>
-</g>
-        <g id="BREAKER">
-    <g class="closed" id="BREAKER-closed">
-        <rect x="1" width="18" y="1" height="18"/>
-        <line y2="15" x1="10" x2="10" y1="5"/>
-    </g>
-    <g class="open" id="BREAKER-open">
-        <rect x="1" width="18" y="1" height="18"/>
-        <line y2="10" x1="5" x2="15" y1="10"/>
-    </g>
-</g>
-        <g id="DISCONNECTOR">
-    <g class="closed" id="DISCONNECTOR-closed">
-        <line y2="8" x1="0" x2="8" y1="0"/>
-        <line y2="8" x1="8" x2="0" y1="0"/>
-    </g>
-    <g class="open" id="DISCONNECTOR-open">
-        <line y2="8" x1="8" x2="0" y1="0"/>
-    </g>
-</g>
-        <g id="BREAKER">
-    <g class="closed" id="BREAKER-closed">
-        <rect x="1" width="18" y="1" height="18"/>
-        <line y2="15" x1="10" x2="10" y1="5"/>
-    </g>
-    <g class="open" id="BREAKER-open">
-        <rect x="1" width="18" y="1" height="18"/>
-        <line y2="10" x1="5" x2="15" y1="10"/>
-    </g>
-</g>
-        <g id="DISCONNECTOR">
-    <g class="closed" id="DISCONNECTOR-closed">
-        <line y2="8" x1="0" x2="8" y1="0"/>
-        <line y2="8" x1="8" x2="0" y1="0"/>
-    </g>
-    <g class="open" id="DISCONNECTOR-open">
-        <line y2="8" x1="8" x2="0" y1="0"/>
-    </g>
-</g>
-        <g id="BREAKER">
-    <g class="closed" id="BREAKER-closed">
-        <rect x="1" width="18" y="1" height="18"/>
-        <line y2="15" x1="10" x2="10" y1="5"/>
-    </g>
-    <g class="open" id="BREAKER-open">
-        <rect x="1" width="18" y="1" height="18"/>
-        <line y2="10" x1="5" x2="15" y1="10"/>
-    </g>
-</g>
-        <g id="DISCONNECTOR">
-    <g class="closed" id="DISCONNECTOR-closed">
-        <line y2="8" x1="0" x2="8" y1="0"/>
-        <line y2="8" x1="8" x2="0" y1="0"/>
-    </g>
-    <g class="open" id="DISCONNECTOR-open">
-        <line y2="8" x1="8" x2="0" y1="0"/>
-    </g>
-</g>
-        <g id="BREAKER">
-    <g class="closed" id="BREAKER-closed">
-        <rect x="1" width="18" y="1" height="18"/>
-        <line y2="15" x1="10" x2="10" y1="5"/>
-    </g>
-    <g class="open" id="BREAKER-open">
-        <rect x="1" width="18" y="1" height="18"/>
-        <line y2="10" x1="5" x2="15" y1="10"/>
-    </g>
-</g>
-        <g id="DISCONNECTOR">
-    <g class="closed" id="DISCONNECTOR-closed">
-        <line y2="8" x1="0" x2="8" y1="0"/>
-        <line y2="8" x1="8" x2="0" y1="0"/>
-    </g>
-    <g class="open" id="DISCONNECTOR-open">
-        <line y2="8" x1="8" x2="0" y1="0"/>
-    </g>
-</g>
-        <g id="BREAKER">
-    <g class="closed" id="BREAKER-closed">
-        <rect x="1" width="18" y="1" height="18"/>
-        <line y2="15" x1="10" x2="10" y1="5"/>
-    </g>
-    <g class="open" id="BREAKER-open">
-        <rect x="1" width="18" y="1" height="18"/>
-        <line y2="10" x1="5" x2="15" y1="10"/>
-    </g>
-</g>
-        <g id="DISCONNECTOR">
-    <g class="closed" id="DISCONNECTOR-closed">
-        <line y2="8" x1="0" x2="8" y1="0"/>
-        <line y2="8" x1="8" x2="0" y1="0"/>
-    </g>
-    <g class="open" id="DISCONNECTOR-open">
-        <line y2="8" x1="8" x2="0" y1="0"/>
-    </g>
-</g>
-        <g id="BREAKER">
-    <g class="closed" id="BREAKER-closed">
-        <rect x="1" width="18" y="1" height="18"/>
-        <line y2="15" x1="10" x2="10" y1="5"/>
-    </g>
-    <g class="open" id="BREAKER-open">
-        <rect x="1" width="18" y="1" height="18"/>
-        <line y2="10" x1="5" x2="15" y1="10"/>
-    </g>
-</g>
-        <g id="DISCONNECTOR">
-    <g class="closed" id="DISCONNECTOR-closed">
-        <line y2="8" x1="0" x2="8" y1="0"/>
-        <line y2="8" x1="8" x2="0" y1="0"/>
-    </g>
-    <g class="open" id="DISCONNECTOR-open">
-        <line y2="8" x1="8" x2="0" y1="0"/>
-    </g>
-</g>
-        <g id="BREAKER">
-    <g class="closed" id="BREAKER-closed">
-        <rect x="1" width="18" y="1" height="18"/>
-        <line y2="15" x1="10" x2="10" y1="5"/>
-    </g>
-    <g class="open" id="BREAKER-open">
-        <rect x="1" width="18" y="1" height="18"/>
-        <line y2="10" x1="5" x2="15" y1="10"/>
-    </g>
-</g>
-        <g id="DISCONNECTOR">
-    <g class="closed" id="DISCONNECTOR-closed">
-        <line y2="8" x1="0" x2="8" y1="0"/>
-        <line y2="8" x1="8" x2="0" y1="0"/>
-    </g>
-    <g class="open" id="DISCONNECTOR-open">
-        <line y2="8" x1="8" x2="0" y1="0"/>
-    </g>
-</g>
-        <g id="BREAKER">
-    <g class="closed" id="BREAKER-closed">
-        <rect x="1" width="18" y="1" height="18"/>
-        <line y2="15" x1="10" x2="10" y1="5"/>
-    </g>
-    <g class="open" id="BREAKER-open">
-        <rect x="1" width="18" y="1" height="18"/>
-        <line y2="10" x1="5" x2="15" y1="10"/>
-    </g>
-</g>
-        <g id="DISCONNECTOR">
-    <g class="closed" id="DISCONNECTOR-closed">
-        <line y2="8" x1="0" x2="8" y1="0"/>
-        <line y2="8" x1="8" x2="0" y1="0"/>
-    </g>
-    <g class="open" id="DISCONNECTOR-open">
-        <line y2="8" x1="8" x2="0" y1="0"/>
-    </g>
-</g>
-        <g id="BREAKER">
-    <g class="closed" id="BREAKER-closed">
-        <rect x="1" width="18" y="1" height="18"/>
-        <line y2="15" x1="10" x2="10" y1="5"/>
-    </g>
-    <g class="open" id="BREAKER-open">
-        <rect x="1" width="18" y="1" height="18"/>
-        <line y2="10" x1="5" x2="15" y1="10"/>
-    </g>
-</g>
-        <g id="DISCONNECTOR">
-    <g class="closed" id="DISCONNECTOR-closed">
-        <line y2="8" x1="0" x2="8" y1="0"/>
-        <line y2="8" x1="8" x2="0" y1="0"/>
-    </g>
-    <g class="open" id="DISCONNECTOR-open">
-        <line y2="8" x1="8" x2="0" y1="0"/>
-    </g>
-</g>
-        <g id="BREAKER">
-    <g class="closed" id="BREAKER-closed">
-        <rect x="1" width="18" y="1" height="18"/>
-        <line y2="15" x1="10" x2="10" y1="5"/>
-    </g>
-    <g class="open" id="BREAKER-open">
-        <rect x="1" width="18" y="1" height="18"/>
-        <line y2="10" x1="5" x2="15" y1="10"/>
-    </g>
-</g>
-        <g id="THREE_WINDINGS_TRANSFORMER">
-    <circle r="4" id="THREE_WINDINGS_TRANSFORMER-WINDING1" cx="4" cy="4"/>
-    <circle r="4" id="THREE_WINDINGS_TRANSFORMER-WINDING2" cx="10" cy="4"/>
-    <circle r="4" id="THREE_WINDINGS_TRANSFORMER-WINDING3" cx="7" cy="8"/>
 </g>
         <g id="INDUCTOR">
     <path d="M5,5 A 5 20 0 0 0 0,5"/>
     <path d="M10,5 A 5 20 0 0 0 5,5"/>
     <path d="M15,5 A 5 20 0 0 0 10,5"/>
 </g>
-        <g id="THREE_WINDINGS_TRANSFORMER">
-    <circle r="4" id="THREE_WINDINGS_TRANSFORMER-WINDING1" cx="4" cy="4"/>
-    <circle r="4" id="THREE_WINDINGS_TRANSFORMER-WINDING2" cx="10" cy="4"/>
-    <circle r="4" id="THREE_WINDINGS_TRANSFORMER-WINDING3" cx="7" cy="8"/>
-</g>
-        <g id="INDUCTOR">
-    <path d="M5,5 A 5 20 0 0 0 0,5"/>
-    <path d="M10,5 A 5 20 0 0 0 5,5"/>
-    <path d="M15,5 A 5 20 0 0 0 10,5"/>
+        <g id="TWO_WINDINGS_TRANSFORMER">
+    <circle r="4" id="TWO_WINDINGS_TRANSFORMER-WINDING1" cx="4" cy="4"/>
+    <circle r="4" id="TWO_WINDINGS_TRANSFORMER-WINDING2" cx="9" cy="4"/>
 </g>
         <g id="THREE_WINDINGS_TRANSFORMER">
     <circle r="4" id="THREE_WINDINGS_TRANSFORMER-WINDING1" cx="4" cy="4"/>
     <circle r="4" id="THREE_WINDINGS_TRANSFORMER-WINDING2" cx="10" cy="4"/>
     <circle r="4" id="THREE_WINDINGS_TRANSFORMER-WINDING3" cx="7" cy="8"/>
 </g>
-        <g id="INDUCTOR">
-    <path d="M5,5 A 5 20 0 0 0 0,5"/>
-    <path d="M10,5 A 5 20 0 0 0 5,5"/>
-    <path d="M15,5 A 5 20 0 0 0 10,5"/>
-</g>
-        <g id="NODE">
-    <circle r="4" cx="4" cy="4"/>
-</g>
-        <g id="NODE">
-    <circle r="4" cx="4" cy="4"/>
-</g>
-        <g id="NODE">
-    <circle r="4" cx="4" cy="4"/>
-</g>
-        <g id="NODE">
-    <circle r="4" cx="4" cy="4"/>
-</g>
-        <g id="NODE">
-    <circle r="4" cx="4" cy="4"/>
-</g>
-        <g id="NODE">
-    <circle r="4" cx="4" cy="4"/>
-</g>
-        <g id="NODE">
-    <circle r="4" cx="4" cy="4"/>
-</g>
-        <g id="NODE">
-    <circle r="4" cx="4" cy="4"/>
-</g>
-        <g id="NODE">
-    <circle r="4" cx="4" cy="4"/>
-</g>
-        <g id="NODE">
-    <circle r="4" cx="4" cy="4"/>
-</g>
-        <g id="NODE">
-    <circle r="4" cx="4" cy="4"/>
-</g>
-        <g id="NODE">
-    <circle r="4" cx="4" cy="4"/>
-</g>
-        <g id="NODE">
-    <circle r="4" cx="4" cy="4"/>
-</g>
-        <g id="NODE">
-    <circle r="4" cx="4" cy="4"/>
-</g>
-        <g id="NODE">
-    <circle r="4" cx="4" cy="4"/>
-</g>
-        <g id="NODE">
-    <circle r="4" cx="4" cy="4"/>
+        <g id="BREAKER">
+    <g class="closed" id="BREAKER-closed">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="15" x1="10" x2="10" y1="5"/>
+    </g>
+    <g class="open" id="BREAKER-open">
+        <rect x="1" width="18" y="1" height="18"/>
+        <line y2="10" x1="5" x2="15" y1="10"/>
+    </g>
 </g>
         <g id="ARROW">
      <g class="arrow-up" id="ARROW-arrow-up">

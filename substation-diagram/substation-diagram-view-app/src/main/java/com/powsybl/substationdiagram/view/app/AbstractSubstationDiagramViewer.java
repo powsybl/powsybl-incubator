@@ -107,11 +107,9 @@ public abstract class AbstractSubstationDiagramViewer extends Application implem
                               "Cgmes", new CgmesSubstationLayoutFactory());
 
     private final ComponentLibrary convergenceComponentLibrary = new ResourcesComponentLibrary("/ConvergenceLibrary");
-    private final ComponentLibrary flatDesignComponentLibrary = new ResourcesComponentLibrary("/FlatDesignLibrary");
 
     private final Map<String, ComponentLibrary> svgLibraries
-            = ImmutableMap.of("CVG Design", convergenceComponentLibrary,
-                              "Flat Design", flatDesignComponentLibrary);
+            = ImmutableMap.of("CVG Design", convergenceComponentLibrary);
 
     private final ObservableList<SelectableSubstation> selectableSubstations = FXCollections.observableArrayList();
 

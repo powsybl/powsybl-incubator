@@ -11,24 +11,9 @@ import com.powsybl.iidm.network.ThreeWindingsTransformer;
 import com.powsybl.iidm.network.TwoWindingsTransformer;
 import com.powsybl.iidm.network.VoltageLevel;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
-import com.powsybl.substationdiagram.library.AnchorOrientation;
-import com.powsybl.substationdiagram.library.AnchorPoint;
-import com.powsybl.substationdiagram.library.AnchorPointProvider;
-import com.powsybl.substationdiagram.library.ComponentLibrary;
-import com.powsybl.substationdiagram.library.ComponentMetadata;
-import com.powsybl.substationdiagram.library.ComponentSize;
-import com.powsybl.substationdiagram.model.BusCell;
-import com.powsybl.substationdiagram.model.BusNode;
-import com.powsybl.substationdiagram.model.Edge;
-import com.powsybl.substationdiagram.model.ExternCell;
-import com.powsybl.substationdiagram.model.Feeder2WTNode;
-import com.powsybl.substationdiagram.model.FeederBranchNode;
-import com.powsybl.substationdiagram.model.FeederNode;
-import com.powsybl.substationdiagram.model.Fictitious3WTNode;
-import com.powsybl.substationdiagram.model.Graph;
+import com.powsybl.substationdiagram.library.*;
 import com.powsybl.substationdiagram.model.Node;
-import com.powsybl.substationdiagram.model.SubstationGraph;
-import com.powsybl.substationdiagram.model.TwtEdge;
+import com.powsybl.substationdiagram.model.*;
 import com.powsybl.substationdiagram.svg.GraphMetadata.ArrowMetadata;
 import com.powsybl.substationdiagram.svg.SubstationDiagramInitialValueProvider.Direction;
 import org.apache.batik.anim.dom.SVGOMDocument;
@@ -37,11 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.util.Precision;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.CDATASection;
-import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Text;
+import org.w3c.dom.*;
 import org.w3c.dom.svg.SVGElement;
 
 import javax.xml.transform.OutputKeys;
@@ -64,15 +45,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static com.powsybl.substationdiagram.library.ComponentTypeName.ARROW;
-import static com.powsybl.substationdiagram.library.ComponentTypeName.BREAKER;
-import static com.powsybl.substationdiagram.library.ComponentTypeName.BUSBAR_SECTION;
-import static com.powsybl.substationdiagram.library.ComponentTypeName.DISCONNECTOR;
-import static com.powsybl.substationdiagram.library.ComponentTypeName.INDUCTOR;
-import static com.powsybl.substationdiagram.library.ComponentTypeName.THREE_WINDINGS_TRANSFORMER;
-import static com.powsybl.substationdiagram.library.ComponentTypeName.TWO_WINDINGS_TRANSFORMER;
-import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.escapeClassName;
-import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.escapeId;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.*;
+import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.*;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
@@ -148,8 +122,6 @@ public class DefaultSVGWriter implements SVGWriter {
         Element style = document.createElement("style");
 
         StringBuilder graphStyle = new StringBuilder();
-        Optional<String> globalStyle = styleProvider.getGlobalStyle(graph);
-        globalStyle.ifPresent(graphStyle::append);
         graphStyle.append(componentLibrary.getStyleSheet());
 
         List<String> listUsedComponentSVG = new ArrayList<>();
@@ -199,7 +171,6 @@ public class DefaultSVGWriter implements SVGWriter {
         GraphMetadata metadata = new GraphMetadata();
 
         Element root = document.createElement("g");
-        root.setAttribute(CLASS, SubstationDiagramStyles.SUBSTATION_STYLE_CLASS);
 
         if (layoutParameters.isShowGrid()) {
             root.appendChild(drawGrid(graph, document, metadata));
@@ -277,10 +248,6 @@ public class DefaultSVGWriter implements SVGWriter {
         List<String> listUsedComponentSVG = new ArrayList<>();
 
         StringBuilder graphStyle = new StringBuilder();
-        for (Graph vlGraph : graph.getNodes()) {
-            Optional<String> globalStyle = styleProvider.getGlobalStyle(vlGraph);
-            globalStyle.ifPresent(graphStyle::append);
-        }
         graphStyle.append(componentLibrary.getStyleSheet());
 
         for (Graph vlGraph : graph.getNodes()) {
@@ -340,7 +307,6 @@ public class DefaultSVGWriter implements SVGWriter {
         GraphMetadata metadata = new GraphMetadata();
 
         Element root = document.createElement("g");
-        root.setAttribute(CLASS, SubstationDiagramStyles.SUBSTATION_STYLE_CLASS);
 
         // Drawing grid lines
         if (layoutParameters.isShowGrid()) {
@@ -387,10 +353,6 @@ public class DefaultSVGWriter implements SVGWriter {
         Element style = document.createElement("style");
 
         StringBuilder graphStyle = new StringBuilder();
-        for (Graph vlGraph : graph.getNodes()) {
-            Optional<String> globalStyle = styleProvider.getGlobalStyle(vlGraph);
-            globalStyle.ifPresent(graphStyle::append);
-        }
         graphStyle.append(componentLibrary.getStyleSheet());
 
         for (Graph vlGraph : graph.getNodes()) {
@@ -433,6 +395,7 @@ public class DefaultSVGWriter implements SVGWriter {
         Element gridRoot = document.createElement("g");
         String gridId = "GRID_" + graph.getVoltageLevel().getId();
         gridRoot.setAttribute("id", gridId);
+        gridRoot.setAttribute(CLASS, SubstationDiagramStyles.GRID_STYLE_CLASS);
         gridRoot.setAttribute(TRANSFORM,
                 TRANSLATE + "(" + layoutParameters.getTranslateX() + "," + layoutParameters.getTranslateY() + ")");
         // vertical lines
@@ -488,7 +451,6 @@ public class DefaultSVGWriter implements SVGWriter {
         line.setAttribute("x2", Double.toString(x2));
         line.setAttribute("y1", Double.toString(y1));
         line.setAttribute("y2", Double.toString(y2));
-        line.setAttribute(CLASS, SubstationDiagramStyles.GRID_STYLE_CLASS);
         return line;
     }
 
@@ -507,7 +469,7 @@ public class DefaultSVGWriter implements SVGWriter {
                 Element g = root.getOwnerDocument().createElement("g");
                 g.setAttribute("id", nodeId);
 
-                g.setAttribute(CLASS, SubstationDiagramStyles.SUBSTATION_STYLE_CLASS + " " + node.getComponentType() + " " + SubstationDiagramStyles.escapeId(nodeId));
+                g.setAttribute(CLASS, node.getComponentType() + " " + SubstationDiagramStyles.escapeId(nodeId));
 
                 if (node.getType() == Node.NodeType.BUS) {
                     drawBus((BusNode) node, g);
@@ -611,7 +573,6 @@ public class DefaultSVGWriter implements SVGWriter {
             line.setAttribute("x2", String.valueOf(node.getPxWidth()));
             line.setAttribute("y2", "0");
         }
-        line.setAttribute(CLASS, SubstationDiagramStyles.BUS_STYLE_CLASS + "_" + escapeClassName(node.getGraph().getVoltageLevel().getId()));
 
         g.appendChild(line);
 
@@ -956,7 +917,7 @@ public class DefaultSVGWriter implements SVGWriter {
         }
         if (dir1.isPresent()) {
             try {
-                g1.setAttribute(CLASS, SubstationDiagramStyles.SUBSTATION_STYLE_CLASS + " "  + "ARROW1_" + escapeId(URLEncoder.encode(n.getId(), StandardCharsets.UTF_8.name())) + "_" + dir1.get());
+                g1.setAttribute(CLASS, "ARROW1_" + escapeId(URLEncoder.encode(n.getId(), StandardCharsets.UTF_8.name())) + "_" + dir1.get());
                 if (layoutParameters.isAvoidSVGComponentsDuplication()) {
                     styleProvider.getAttributesArrow(1).entrySet().stream().forEach(e -> ((Element) g1.getFirstChild()).setAttribute(e.getKey(), e.getValue()));
                 }
@@ -988,7 +949,7 @@ public class DefaultSVGWriter implements SVGWriter {
         }
         if (dir2.isPresent()) {
             try {
-                g2.setAttribute(CLASS, SubstationDiagramStyles.SUBSTATION_STYLE_CLASS + " "  + "ARROW2_" + escapeClassName(URLEncoder.encode(n.getId(), StandardCharsets.UTF_8.name())) + "_" + dir2.get());
+                g2.setAttribute(CLASS, "ARROW2_" + escapeClassName(URLEncoder.encode(n.getId(), StandardCharsets.UTF_8.name())) + "_" + dir2.get());
                 if (layoutParameters.isAvoidSVGComponentsDuplication()) {
                     styleProvider.getAttributesArrow(2).entrySet().stream().forEach(e -> ((Element) g2.getFirstChild()).setAttribute(e.getKey(), e.getValue()));
                 }
@@ -1029,7 +990,7 @@ public class DefaultSVGWriter implements SVGWriter {
                         layoutParameters.isDrawStraightWires());
 
                 g.setAttribute(POINTS, pointsListToString(pol));
-                g.setAttribute(CLASS, styleProvider.getIdWireStyle(edge));
+                g.setAttribute(CLASS, WIRE_STYLE_CLASS + " " + styleProvider.getIdWireStyle(edge));
                 root.appendChild(g);
 
                 metadata.addWireMetadata(new GraphMetadata.WireMetadata(wireId,
@@ -1083,7 +1044,7 @@ public class DefaultSVGWriter implements SVGWriter {
                     vId = vId2;
                 }
 
-                g.setAttribute(CLASS, SubstationDiagramStyles.WIRE_STYLE_CLASS + "_" + escapeClassName(vId));
+                g.setAttribute(CLASS, SubstationDiagramStyles.WIRE_STYLE_CLASS + " " + SubstationDiagramStyles.WIRE_STYLE_CLASS + "_" + escapeClassName(vId));
                 root.appendChild(g);
 
                 metadata.addWireMetadata(new GraphMetadata.WireMetadata(wireId,

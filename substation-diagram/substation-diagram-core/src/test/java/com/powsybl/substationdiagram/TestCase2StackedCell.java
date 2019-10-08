@@ -157,7 +157,6 @@ public class TestCase2StackedCell extends AbstractTestCase {
         assertEquals("bbs1", bpy1.getStartingNode().getId());
         assertEquals(1, bpy1.getStackableBlocks().size());
 
-        System.out.println(bpl.getSubBlocks().get(1).getClass());
         assertTrue(bpl.getSubBlocks().get(1) instanceof LegPrimaryBlock);
         LegPrimaryBlock bpy2 = (LegPrimaryBlock) bpl.getSubBlocks().get(1);
         assertEquals(new Position(0, 0, 0, 0, false, Orientation.VERTICAL), bpy2.getPosition());

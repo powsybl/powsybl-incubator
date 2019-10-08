@@ -6,25 +6,22 @@
  */
 package com.powsybl.substationdiagram.svg;
 
-import java.util.Map;
-import java.util.Optional;
-
 import com.powsybl.iidm.network.ThreeWindingsTransformer;
 import com.powsybl.iidm.network.TwoWindingsTransformer;
 import com.powsybl.iidm.network.VoltageLevel;
 import com.powsybl.substationdiagram.model.Edge;
 import com.powsybl.substationdiagram.model.Feeder2WTNode;
 import com.powsybl.substationdiagram.model.Fictitious3WTNode;
-import com.powsybl.substationdiagram.model.Graph;
 import com.powsybl.substationdiagram.model.Node;
+
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author Giovanni Ferrari <giovanni.ferrari at techrain.eu>
  * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
  */
 public interface SubstationDiagramStyleProvider {
-
-    Optional<String> getGlobalStyle(Graph graph);
 
     Optional<String> getNodeStyle(Node node, boolean avoidSVGComponentsDuplication);
 

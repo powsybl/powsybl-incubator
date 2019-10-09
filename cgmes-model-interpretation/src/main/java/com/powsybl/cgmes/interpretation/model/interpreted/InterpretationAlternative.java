@@ -165,8 +165,8 @@ public class InterpretationAlternative {
             case END1:
                 configuration.append("Xfmr2_ratio0_end1.");
                 break;
-            case X:
-                configuration.append("Xfmr2_ratio0_x.");
+            case END2:
+                configuration.append("Xfmr2_ratio0_end2.");
                 break;
             case RTC:
                 configuration.append("Xfmr2_ratio0_rtc.");
@@ -257,7 +257,7 @@ public class InterpretationAlternative {
 
     LineShuntInterpretationAlternative lineBshunt = LineShuntInterpretationAlternative.SPLIT;
     boolean lineRatio0 = false;
-    Xfmr2RatioPhaseIntepretationAlternative xfmr2Ratio0 = Xfmr2RatioPhaseIntepretationAlternative.END2;
+    Xfmr2RatioPhaseIntepretationAlternative xfmr2Ratio0 = Xfmr2RatioPhaseIntepretationAlternative.X;
     Xfmr2RatioPhaseIntepretationAlternative xfmr2RatioPhase = Xfmr2RatioPhaseIntepretationAlternative.END1_END2;
     boolean xfmr2Ptc2Negate = false;
     Xfmr2ShuntInterpretationAlternative xfmr2YShunt = Xfmr2ShuntInterpretationAlternative.END1;

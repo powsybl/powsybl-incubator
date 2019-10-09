@@ -1,2 +1,2 @@
 TSO,Best interpretation,Num nodes,Pct of bad nodes,Num bad nodes,Total error bad nodes,Total error,Isolated nodes,Non-calculated nodes,Num nodes ok,Total bad voltage error,Num bad voltage nodes,Pct bad voltage nodes,Model
-iNodeBreaker,Xfmr2_ratio0_x.,13,0.00000,0,0.00000,0.0225273,1,1,11,0.00000,0,0.00000,miniNodeBreaker
+iNodeBreaker,Xfmr3_ratedU0_network_side.,13,0.00000,0,0.00000,0.0222564,1,1,11,0.00000,0,0.00000,miniNodeBreaker

@@ -9,8 +9,10 @@ package com.powsybl.substationdiagram;
 import com.google.common.io.ByteStreams;
 import com.powsybl.iidm.network.*;
 import com.powsybl.substationdiagram.layout.*;
+import com.powsybl.substationdiagram.library.ComponentLibrary;
 import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
 import com.powsybl.substationdiagram.model.Graph;
+import com.powsybl.substationdiagram.svg.DefaultNodeLabelConfiguration;
 import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramInitialValueProvider;
 import com.powsybl.substationdiagram.svg.DefaultSVGWriter;
 import com.powsybl.substationdiagram.util.NominalVoltageSubstationDiagramStyleProvider;
@@ -423,13 +425,26 @@ public class TestCase12GraphWith3WT extends AbstractTestCase {
         compareSvg(g2, layoutParameters, "/TestCase12GraphVL2.svg");
         compareSvg(g3, layoutParameters, "/TestCase12GraphVL3.svg");
 
+        // write optimized SVG and compare to reference (horizontal layout)
+        LayoutParameters layoutParametersOptimized = new LayoutParameters(layoutParameters);
+        layoutParametersOptimized.setAvoidSVGComponentsDuplication(true);
+
+        compareSvg(g1, layoutParametersOptimized, "/TestCase12GraphVL1_optimized.svg");
+        compareSvg(g2, layoutParametersOptimized, "/TestCase12GraphVL2_optimized.svg");
+        compareSvg(g3, layoutParametersOptimized, "/TestCase12GraphVL3_optimized.svg");
+
         // Create voltageLevel diagram (svg + metadata files)
         VoltageLevelDiagram diagram = VoltageLevelDiagram.build(vl1, new PositionVoltageLevelLayoutFactory(), false, true);
         Path pathSVG = Paths.get(System.getProperty("user.home"), "vlDiag.svg");
         Path pathMetadata = Paths.get(System.getProperty("user.home"), "vlDiag_metadata.json");
-        diagram.writeSvg(new DefaultSVGWriter(new ResourcesComponentLibrary("/ConvergenceLibrary"), layoutParameters),
-                         new DefaultSubstationDiagramInitialValueProvider(network),
-                         new NominalVoltageSubstationDiagramStyleProvider(), pathSVG, false);
+
+        ComponentLibrary componentLibrary = new ResourcesComponentLibrary("/ConvergenceLibrary");
+        diagram.writeSvg(new DefaultSVGWriter(componentLibrary, layoutParameters),
+                new DefaultSubstationDiagramInitialValueProvider(network),
+                new NominalVoltageSubstationDiagramStyleProvider(),
+                new DefaultNodeLabelConfiguration(componentLibrary),
+                pathSVG,
+                false);
         Assert.assertTrue(Files.exists(pathSVG));
         Assert.assertTrue(Files.exists(pathMetadata));
         try {

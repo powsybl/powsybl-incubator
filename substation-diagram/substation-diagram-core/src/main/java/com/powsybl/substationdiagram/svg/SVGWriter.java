@@ -6,27 +6,45 @@
  */
 package com.powsybl.substationdiagram.svg;
 
-import java.io.Writer;
-import java.nio.file.Path;
-
 import com.powsybl.substationdiagram.layout.LayoutParameters;
+import com.powsybl.substationdiagram.library.ComponentLibrary;
 import com.powsybl.substationdiagram.model.Graph;
 import com.powsybl.substationdiagram.model.SubstationGraph;
 
+import java.io.Writer;
+import java.nio.file.Path;
+
 /**
  * @author Gilles Brada <gilles.brada at rte-france.com>
+ * @author Franck Lecuyer <franck.lecuyer at rte-france.com>
  */
 public interface SVGWriter {
 
-    GraphMetadata write(Graph graph, SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider, Path svgFile);
+    GraphMetadata write(Graph graph,
+                        SubstationDiagramInitialValueProvider initProvider,
+                        SubstationDiagramStyleProvider styleProvider,
+                        NodeLabelConfiguration nodeLabelConfiguration,
+                        Path svgFile);
 
-    GraphMetadata write(Graph graph, SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider, Writer writer);
+    GraphMetadata write(Graph graph,
+                        SubstationDiagramInitialValueProvider initProvider,
+                        SubstationDiagramStyleProvider styleProvider,
+                        NodeLabelConfiguration nodeLabelConfiguration,
+                        Writer writer);
 
-    GraphMetadata write(SubstationGraph graph, SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider,
-            Path svgFile);
+    GraphMetadata write(SubstationGraph graph,
+                        SubstationDiagramInitialValueProvider initProvider,
+                        SubstationDiagramStyleProvider styleProvider,
+                        NodeLabelConfiguration nodeLabelConfiguration,
+                        Path svgFile);
 
-    GraphMetadata write(SubstationGraph graph, SubstationDiagramInitialValueProvider initProvider, SubstationDiagramStyleProvider styleProvider,
-            Writer writer);
+    GraphMetadata write(SubstationGraph graph,
+                        SubstationDiagramInitialValueProvider initProvider,
+                        SubstationDiagramStyleProvider styleProvider,
+                        NodeLabelConfiguration nodeLabelConfiguration,
+                        Writer writer);
 
     LayoutParameters getLayoutParameters();
+
+    ComponentLibrary getComponentLibrary();
 }

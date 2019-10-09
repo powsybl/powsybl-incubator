@@ -14,7 +14,7 @@ substation-diagram/substation-diagram-force-layout/target
 substation-diagram/substation-diagram-util/target
 substation-diagram/substation-diagram-view/target
 substation-diagram/target
-substation-webviewer
+substation-webviewer/target
 balances-adjustment/target
 target
 

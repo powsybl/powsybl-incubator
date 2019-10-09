@@ -63,7 +63,7 @@ class App extends Component {
        return;
      }
      var draw = SVG().addTo('#drawing').size(1800, 800).viewbox(0,0,1800,800).panZoom({zoomMin: 0.5, zoomMax: 10, zoomFactor:0.2});
-     draw.svg(this.state.svgstr);
+     draw.svg(this.state.svgstr).node.firstElementChild.style.overflow = "visible";
 
      // TODO: Do we have to write this ourselves ? Or does it exist in
         // sgvdotjs

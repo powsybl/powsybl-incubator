@@ -39,7 +39,6 @@ import com.powsybl.cgmes.model.test.TestGridModel;
 import com.powsybl.commons.config.InMemoryPlatformConfig;
 import com.powsybl.commons.datasource.ReadOnlyDataSource;
 import com.powsybl.loadflow.LoadFlowParameters;
-import com.powsybl.loadflow.mock.LoadFlowFactoryMock;
 import com.powsybl.loadflow.validation.ValidationConfig;
 import com.powsybl.triplestore.api.TripleStoreFactory;
 
@@ -141,8 +140,7 @@ public class CgmesValidationTest {
     private ValidationConfig loadFlowParametersConfig(FileSystem fs, double threshold) {
         InMemoryPlatformConfig pconfig = new InMemoryPlatformConfig(fs);
         pconfig
-            .createModuleConfig("componentDefaultConfig")
-            .setStringProperty("LoadFlowFactory", LoadFlowFactoryMock.class.getCanonicalName());
+            .createModuleConfig("componentDefaultConfig");
         ValidationConfig config = ValidationConfig.load(pconfig);
         config.setVerbose(true);
         config.setThreshold(threshold);

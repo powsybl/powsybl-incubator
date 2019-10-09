@@ -6,6 +6,8 @@
  */
 package com.powsybl.substationdiagram.svg;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import com.powsybl.iidm.network.Branch;
@@ -14,7 +16,9 @@ import com.powsybl.iidm.network.Injection;
 import com.powsybl.iidm.network.Load;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.ThreeWindingsTransformer;
+import com.powsybl.substationdiagram.model.BusNode;
 import com.powsybl.substationdiagram.model.Feeder2WTNode;
+import com.powsybl.substationdiagram.model.FeederNode;
 import com.powsybl.substationdiagram.model.Node;
 import org.apache.commons.lang3.StringUtils;
 
@@ -33,6 +37,7 @@ import static com.powsybl.substationdiagram.library.ComponentTypeName.VSC_CONVER
 
 /**
  * @author Giovanni Ferrari <giovanni.ferrari at techrain.eu>
+ * @author Franck Lecuyer <franck.lecuyer at franck.lecuyer@rte-france.com>
  */
 public class DefaultSubstationDiagramInitialValueProvider implements SubstationDiagramInitialValueProvider {
 
@@ -135,5 +140,16 @@ public class DefaultSubstationDiagramInitialValueProvider implements SubstationD
                 return new InitialValue(null, null, null, null, null, null);
             }
         }
+    }
+
+    @Override
+    public List<String> getNodeLabelValue(Node node) {
+        Objects.requireNonNull(node);
+
+        List<String> res = new ArrayList<>();
+        if (node instanceof FeederNode || node instanceof BusNode) {
+            res.add(node.getLabel());
+        }
+        return res;
     }
 }

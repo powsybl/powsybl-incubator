@@ -161,6 +161,15 @@ public class PositionFree implements PositionFinder {
                     bus2flatCells.get(busNode).add(cell);
                 }));
 
+        Map<BusNode, Set<BusNode>> bus2vbcpBus = new HashMap<>();
+        context.vbcpToCells.keySet()
+                .forEach(vbcp -> {
+                    vbcp.getBusNodeSet().forEach(bus -> {
+                        bus2vbcpBus.putIfAbsent(bus, new HashSet<>());
+                        bus2vbcpBus.get(bus).addAll(vbcp.getBusNodeSet());
+                    });
+                });
+
         List<HorizontalChain> chains = new ArrayList<>();
 
         List<BusNode> busConnectedToFlatCell = bus2flatCells.keySet().stream()
@@ -176,7 +185,7 @@ public class PositionFree implements PositionFinder {
         while (!busConnectedToFlatCell.isEmpty()) {
             BusNode bus = busConnectedToFlatCell.get(0);
             HorizontalChain hChain = new HorizontalChain();
-            rBuildHChain(hChain, bus, busConnectedToFlatCell, bus2flatCells);
+            rBuildHChain(hChain, bus, busConnectedToFlatCell, new ArrayList<>(busConnectedToFlatCell), bus2vbcpBus, bus2flatCells);
             chains.add(hChain);
         }
         for (BusNode bus : remainingBus) {
@@ -192,13 +201,18 @@ public class PositionFree implements PositionFinder {
     private void rBuildHChain(HorizontalChain hChain,
                               BusNode bus,
                               List<BusNode> busConnectedToFlatCell,
+                              List<BusNode> busOnRight,
+                              Map<BusNode, Set<BusNode>> bus2vbcpBus,
                               Map<BusNode, List<InternCell>> bus2flatCells) {
         hChain.busNodes.add(bus);
         busConnectedToFlatCell.remove(bus);
+        busOnRight.removeAll(bus2vbcpBus.get(bus));
         for (InternCell cell : bus2flatCells.get(bus)) {
-            BusNode otherBus = cell.getBusNodes().stream().filter(busNode -> busNode != bus).findAny().orElse(null);
+            BusNode otherBus = cell.getBusNodes()
+                    .stream()
+                    .filter(busNode -> busOnRight.contains(busNode)).findAny().orElse(null);
             if (otherBus != null && busConnectedToFlatCell.contains(otherBus)) {
-                rBuildHChain(hChain, otherBus, busConnectedToFlatCell, bus2flatCells);
+                rBuildHChain(hChain, otherBus, busConnectedToFlatCell, busOnRight, bus2vbcpBus, bus2flatCells);
             }
         }
 

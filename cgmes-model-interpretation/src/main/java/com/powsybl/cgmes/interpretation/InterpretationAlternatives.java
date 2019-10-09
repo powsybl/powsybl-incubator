@@ -41,7 +41,12 @@ public final class InterpretationAlternatives {
         alternatives.add(a);
 
         a = new InterpretationAlternative();
-        a.setXfmr2Ratio0(Xfmr2RatioPhaseIntepretationAlternative.X);
+        a.setXfmr2Ratio0(Xfmr2RatioPhaseIntepretationAlternative.END2);
+        alternatives.add(a);
+
+        a = new InterpretationAlternative();
+        a.setXfmr2Ratio0(Xfmr2RatioPhaseIntepretationAlternative.END2);
+        a.setXfmr2YShunt(Xfmr2ShuntInterpretationAlternative.SPLIT);
         alternatives.add(a);
 
         a = new InterpretationAlternative();

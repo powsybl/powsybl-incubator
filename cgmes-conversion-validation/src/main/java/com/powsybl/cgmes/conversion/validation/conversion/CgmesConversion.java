@@ -34,6 +34,8 @@ public class CgmesConversion {
         Conversion.Config config = new Conversion.Config();
         config.reset();
         config.allowUnsupportedTapChangers();
+        // Configure the tap position to get
+        config.setProfileUsedForInitialStateValues("SV");
 
         switch (alternative.getXfmr2RatioPhase()) {
             case END1:

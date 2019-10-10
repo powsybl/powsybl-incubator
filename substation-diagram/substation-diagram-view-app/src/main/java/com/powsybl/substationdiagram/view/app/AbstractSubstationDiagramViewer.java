@@ -85,32 +85,35 @@ public abstract class AbstractSubstationDiagramViewer extends Application implem
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractSubstationDiagramViewer.class);
 
-    private  static final String SELECTED_VOLTAGE_LEVEL_IDS_PROPERTY = "selectedVoltageLevelIds";
-    private  static final String SELECTED_SUBSTATION_IDS_PROPERTY = "selectedSubstationIds";
+    private static final String SELECTED_VOLTAGE_LEVEL_IDS_PROPERTY = "selectedVoltageLevelIds";
+    private static final String SELECTED_SUBSTATION_IDS_PROPERTY = "selectedSubstationIds";
 
     private final Map<String, VoltageLevelLayoutFactory> voltageLevelsLayouts
-            = ImmutableMap.of("Smart", new SmartVoltageLevelLayoutFactory(),
-                              "Auto extensions", new PositionVoltageLevelLayoutFactory(new PositionFromExtension()),
-                              "Auto without extensions", new PositionVoltageLevelLayoutFactory(new PositionFree()),
-                              "Random", new RandomVoltageLevelLayoutFactory(500, 500),
-                              "Cgmes", new CgmesVoltageLevelLayoutFactory());
+            = new ImmutableMap.Builder<String, VoltageLevelLayoutFactory>()
+            .put("Smart", new SmartVoltageLevelLayoutFactory())
+            .put("Auto extensions", new PositionVoltageLevelLayoutFactory(new PositionFromExtension()))
+            .put("Auto without extensions", new PositionVoltageLevelLayoutFactory(new PositionFree()))
+            .put("Auto without extensions Clustering", new PositionVoltageLevelLayoutFactory(new PositionByClustering()))
+            .put("Random", new RandomVoltageLevelLayoutFactory(500, 500))
+            .put("Cgmes", new CgmesVoltageLevelLayoutFactory())
+            .build();
 
     private final Map<String, SubstationDiagramStyleProvider> styles
             = ImmutableMap.of("Default", new DefaultSubstationDiagramStyleProvider(),
-                              "Nominal voltage", new NominalVoltageSubstationDiagramStyleProvider(),
-                              "Topology", new TopologicalStyleProvider(null));
+            "Nominal voltage", new NominalVoltageSubstationDiagramStyleProvider(),
+            "Topology", new TopologicalStyleProvider(null));
 
     private final Map<String, SubstationLayoutFactory> substationsLayouts
             = ImmutableMap.of("Horizontal", new HorizontalSubstationLayoutFactory(),
-                              "Vertical", new VerticalSubstationLayoutFactory(),
-                              "Cgmes", new CgmesSubstationLayoutFactory());
+            "Vertical", new VerticalSubstationLayoutFactory(),
+            "Cgmes", new CgmesSubstationLayoutFactory());
 
     private final ComponentLibrary convergenceComponentLibrary = new ResourcesComponentLibrary("/ConvergenceLibrary");
     private final ComponentLibrary flatDesignComponentLibrary = new ResourcesComponentLibrary("/FlatDesignLibrary");
 
     private final Map<String, ComponentLibrary> svgLibraries
             = ImmutableMap.of("CVG Design", convergenceComponentLibrary,
-                              "Flat Design", flatDesignComponentLibrary);
+            "Flat Design", flatDesignComponentLibrary);
 
     private final ObservableList<SelectableSubstation> selectableSubstations = FXCollections.observableArrayList();
 
@@ -185,8 +188,8 @@ public abstract class AbstractSubstationDiagramViewer extends Application implem
 
             infoArea.setEditable(false);
             infoArea.setText(String.join(System.lineSeparator(),
-                                         "id: " + c.getId(),
-                                         "name: " + c.getName()));
+                    "id: " + c.getId(),
+                    "name: " + c.getName()));
             tabPane.setSide(Side.BOTTOM);
             tab1.setClosable(false);
             tab2.setClosable(false);
@@ -357,7 +360,7 @@ public abstract class AbstractSubstationDiagramViewer extends Application implem
                 }
             });
             searchField.textProperty().addListener((observable, oldValue, newValue) ->
-                searchStart.set(0)
+                    searchStart.set(0)
             );
 
             area.setSpacing(8);
@@ -716,7 +719,7 @@ public abstract class AbstractSubstationDiagramViewer extends Application implem
         });
 
         filterInput.textProperty().addListener(obs ->
-            initSubstationsTree()
+                initSubstationsTree()
         );
 
         // handling the change of the network
@@ -858,7 +861,7 @@ public abstract class AbstractSubstationDiagramViewer extends Application implem
                 }
                 rootItem.getChildren().add(sItem);
                 sItem.selectedProperty().addListener((obs, oldVal, newVal) ->
-                    checkSubstation(s, newVal)
+                        checkSubstation(s, newVal)
                 );
             }
 

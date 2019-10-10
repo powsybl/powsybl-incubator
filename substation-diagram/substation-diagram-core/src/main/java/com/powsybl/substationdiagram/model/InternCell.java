@@ -37,10 +37,10 @@ public class InternCell extends AbstractBusCell {
             assignLeg(serialRootBlock, candidateLegs.get(1));
             body = serialRootBlock.extractBody(new ArrayList<>(legs.values()));
             body.setOrientation(Orientation.HORIZONTAL);
-        } else if (getRootBlock() instanceof LegParralelBlock) {
-            legs.put(Side.UNDEFINED, (LegParralelBlock) getRootBlock());
-        } else {
-            throw new PowsyblException("InternCell pattern not recognized");
+        } else {     // if (candidateLegs.size() == 1) { TODO: to choose ?
+            legs.put(Side.UNDEFINED, candidateLegs.get(0));
+//        } else {
+//            throw new PowsyblException("InternCell pattern not recognized");
         }
     }
 
@@ -174,7 +174,7 @@ public class InternCell extends AbstractBusCell {
         }
     }
 
-    public Block getSideToLeg(Side side) {
+    public LegBlock getSideToLeg(Side side) {
         return legs.get(side);
     }
 

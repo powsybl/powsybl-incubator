@@ -300,7 +300,7 @@ class SubSections {
     }
 
     private boolean verticalInternCell(InternCell cell) {
-        return cell.getBusNodes().stream()
+        return cell.isUniLeg() || cell.getBusNodes().stream()
                 .map(bus -> bus.getStructuralPosition().getH())
                 .distinct().count() == 1;
     }
@@ -316,7 +316,6 @@ class SubSections {
                 .collect(Collectors.toSet());
 
         Set<InternCell> verticalInternCells = internCells.stream().filter(this::verticalInternCell)
-
                 .collect(Collectors.toSet());
         verticalInternCells.forEach(cell -> allocateCellToSubsection(cell, cell.getBusNodes(), Side.UNDEFINED));
 

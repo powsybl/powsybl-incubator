@@ -13,7 +13,7 @@ import java.util.List;
  * @author Nicolas Duchene
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at rte-france.com>
  */
-interface LegBlock extends Block {
+public interface LegBlock extends Block {
 
     default FictitiousNode getLegNode() {
         return (FictitiousNode) getExtremityNode(Extremity.END);

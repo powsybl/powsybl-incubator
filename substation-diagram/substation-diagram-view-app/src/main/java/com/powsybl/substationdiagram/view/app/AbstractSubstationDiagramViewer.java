@@ -6,6 +6,32 @@
  */
 package com.powsybl.substationdiagram.view.app;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.ToDoubleFunction;
+import java.util.prefs.Preferences;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
@@ -88,32 +114,9 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.io.UncheckedIOException;
-import java.nio.charset.StandardCharsets;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.ToDoubleFunction;
-import java.util.prefs.Preferences;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
@@ -145,11 +148,9 @@ public abstract class AbstractSubstationDiagramViewer extends Application implem
                               "Cgmes", new CgmesSubstationLayoutFactory());
 
     private final ComponentLibrary convergenceComponentLibrary = new ResourcesComponentLibrary("/ConvergenceLibrary");
-    private final ComponentLibrary flatDesignComponentLibrary = new ResourcesComponentLibrary("/FlatDesignLibrary");
 
     private final Map<String, ComponentLibrary> svgLibraries
-            = ImmutableMap.of("CVG Design", convergenceComponentLibrary,
-                              "Flat Design", flatDesignComponentLibrary);
+            = ImmutableMap.of("CVG Design", convergenceComponentLibrary);
 
     private final ObservableList<SelectableSubstation> selectableSubstations = FXCollections.observableArrayList();
 
@@ -199,12 +200,14 @@ public abstract class AbstractSubstationDiagramViewer extends Application implem
         private final Button svgSearchButton = new Button("Search");
         private final TextArea svgTextArea = new TextArea();
         private AtomicReference<Integer> svgSearchStart = new AtomicReference<>(0);
+        private final Button svgSaveButton = new Button("Save");
 
         private final VBox metadataArea = new VBox();
         private final TextField metadataSearchField = new TextField();
         private final Button metadataSearchButton = new Button("Search");
         private final TextArea metadataTextArea = new TextArea();
         private final AtomicReference<Integer> metadataSearchStart = new AtomicReference<>(0);
+        private final Button metadataSaveButton = new Button("Save");
 
         private final Tab tab1 = new Tab("Diagram", flowPane);
 
@@ -219,8 +222,8 @@ public abstract class AbstractSubstationDiagramViewer extends Application implem
         private final ChangeListener<LayoutParameters> listener;
 
         ContainerDiagramPane(Container c) {
-            createSearchArea(svgSearchField, svgSearchButton, svgTextArea, svgArea, svgSearchStart);
-            createSearchArea(metadataSearchField, metadataSearchButton, metadataTextArea, metadataArea, metadataSearchStart);
+            createArea(svgSearchField, svgSearchButton, svgSaveButton, "SVG file", "*.svg", svgTextArea, svgArea, svgSearchStart);
+            createArea(metadataSearchField, metadataSearchButton, metadataSaveButton, "JSON file", "*.json", metadataTextArea, metadataArea, metadataSearchStart);
 
             infoArea.setEditable(false);
             infoArea.setText(String.join(System.lineSeparator(),
@@ -262,6 +265,10 @@ public abstract class AbstractSubstationDiagramViewer extends Application implem
             String getMetadataData() {
                 return metadataData;
             }
+        }
+
+        private ScrollPane getFlowPane() {
+            return flowPane;
         }
 
         private String getSelectedDiagramName() {
@@ -308,8 +315,7 @@ public abstract class AbstractSubstationDiagramViewer extends Application implem
                 throw new UncheckedIOException(e);
             }
 
-            AbstractContainerDiagramView diagramView;
-
+            AbstractContainerDiagramView diagramView = null;
             try (InputStream svgInputStream = new ByteArrayInputStream(svgData.getBytes(StandardCharsets.UTF_8));
                  InputStream metadataInputStream = new ByteArrayInputStream(metadataData.getBytes(StandardCharsets.UTF_8))) {
                 if (c.getContainerType() == ContainerType.VOLTAGE_LEVEL) {
@@ -363,7 +369,9 @@ public abstract class AbstractSubstationDiagramViewer extends Application implem
             });
             loader.setOnSucceeded(event -> {
                 ContainerDiagramResult result = (ContainerDiagramResult) event.getSource().getValue();
-                flowPane.setContent(result.getView());
+                if (result.getView() != null) {
+                    flowPane.setContent(result.getView());
+                }
                 svgTextArea.setText(result.getSvgData());
                 metadataTextArea.setText(result.getMetadataData());
             });
@@ -384,15 +392,17 @@ public abstract class AbstractSubstationDiagramViewer extends Application implem
             return substationsLayouts.get(selectedItem);
         }
 
-        private void createSearchArea(TextField searchField, Button searchButton,
-                                      TextArea textArea, VBox area,
-                                      AtomicReference<Integer> searchStart) {
+        private void createArea(TextField searchField, Button searchButton, Button saveButton,
+                                String descrSave, String extensionSave,
+                                TextArea textArea, VBox area,
+                                AtomicReference<Integer> searchStart) {
             HBox searchBox = new HBox();
             searchBox.setSpacing(20);
             searchBox.setPadding(new Insets(10));
             searchField.setPrefColumnCount(35);
             searchBox.getChildren().add(searchField);
             searchBox.getChildren().add(searchButton);
+            searchBox.getChildren().add(saveButton);
 
             searchStart.set(0);
             searchButton.setOnAction(evh -> {
@@ -416,6 +426,24 @@ public abstract class AbstractSubstationDiagramViewer extends Application implem
             searchField.textProperty().addListener((observable, oldValue, newValue) ->
                 searchStart.set(0)
             );
+
+            saveButton.setOnAction(evh -> {
+                FileChooser fileChooser = new FileChooser();
+                FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(descrSave, extensionSave);
+                fileChooser.getExtensionFilters().add(extFilter);
+                File file = fileChooser.showSaveDialog(getScene().getWindow());
+
+                if (file != null) {
+                    try {
+                        PrintWriter writer;
+                        writer = new PrintWriter(file);
+                        writer.println(textArea.getText());
+                        writer.close();
+                    } catch (IOException ex) {
+                        throw new UncheckedIOException(ex);
+                    }
+                }
+            });
 
             area.setSpacing(8);
             area.getChildren().add(searchBox);
@@ -608,6 +636,30 @@ public abstract class AbstractSubstationDiagramViewer extends Application implem
 
         int rowIndex = 0;
 
+        Button fitToContent = new Button("Fit to content");
+        fitToContent.setOnAction(event -> {
+            ContainerDiagramPane pane = null;
+            Tab tab = diagramsPane.getSelectionModel().getSelectedItem();
+            if (tab != null) {
+                if (tab == tabChecked) {
+                    if (checkedDiagramsPane.getSelectionModel().getSelectedItem() != null) {
+                        pane = (ContainerDiagramPane) checkedDiagramsPane.getSelectionModel().getSelectedItem().getContent();
+                    }
+                } else {
+                    pane = (ContainerDiagramPane) selectedDiagramPane.getCenter();
+                }
+                if (pane != null) {
+                    ((AbstractContainerDiagramView) pane.getFlowPane().getContent()).fitToContent(
+                            pane.getFlowPane().getViewportBounds().getWidth(), 20.,
+                            pane.getFlowPane().getViewportBounds().getHeight(), 20.);
+                    pane.getFlowPane().setHvalue(pane.getFlowPane().getHmin());
+                    pane.getFlowPane().setVvalue(pane.getFlowPane().getVmin());
+                }
+            }
+        });
+
+        parametersPane.add(fitToContent, 0, rowIndex++);
+
         // svg library list
         svgLibraryComboBox.getItems().addAll(svgLibraries.keySet());
         svgLibraryComboBox.getSelectionModel().selectFirst();
@@ -685,6 +737,8 @@ public abstract class AbstractSubstationDiagramViewer extends Application implem
         addSpinner("Scale factor:", 1, 20, 1, rowIndex, LayoutParameters::getScaleFactor, LayoutParameters::setScaleFactor);
         rowIndex += 2;
         addSpinner("Arrows distance:", 10, 800, 5, rowIndex, LayoutParameters::getArrowDistance, LayoutParameters::setArrowDistance);
+        rowIndex += 2;
+        addCheckBox("Avoid SVG components duplication", rowIndex, LayoutParameters::isAvoidSVGComponentsDuplication, LayoutParameters::setAvoidSVGComponentsDuplication);
     }
 
     private void setDiagramsNamesContent(Network network, boolean setValues) {

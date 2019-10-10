@@ -84,15 +84,6 @@
         </metadata>
     </component>
     <component>
-        <fileName>dangling-line.svg</fileName>
-        <metadata type="DANGLING_LINE">
-            <size width="16" height="16"/>
-            <anchorPoint x="0" y="-8" orientation="VERTICAL"/>
-            <anchorPoint x="0" y="8" orientation="VERTICAL"/>
-            <anchorPoint x="0" y="0" orientation="HORIZONTAL"/>
-        </metadata>
-    </component>
-    <component>
         <fileName>phaseShift.svg</fileName>
         <metadata type="PHASE_SHIFT_TRANSFORMER">
             <size width="15" height="15"/>

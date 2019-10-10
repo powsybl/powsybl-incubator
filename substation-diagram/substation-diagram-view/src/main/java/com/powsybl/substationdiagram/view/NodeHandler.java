@@ -11,7 +11,6 @@ import com.powsybl.substationdiagram.model.BaseNode;
 import com.powsybl.substationdiagram.model.BusCell;
 import com.powsybl.substationdiagram.svg.GraphMetadata;
 import com.powsybl.substationdiagram.svg.SubstationDiagramStyles;
-import com.powsybl.substationdiagram.util.MouseClickNotDragDetector;
 
 import javafx.scene.Node;
 import javafx.scene.input.MouseButton;

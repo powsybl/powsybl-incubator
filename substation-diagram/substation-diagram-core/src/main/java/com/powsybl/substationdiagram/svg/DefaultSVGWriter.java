@@ -11,24 +11,9 @@ import com.powsybl.iidm.network.ThreeWindingsTransformer;
 import com.powsybl.iidm.network.TwoWindingsTransformer;
 import com.powsybl.iidm.network.VoltageLevel;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
-import com.powsybl.substationdiagram.library.AnchorOrientation;
-import com.powsybl.substationdiagram.library.AnchorPoint;
-import com.powsybl.substationdiagram.library.AnchorPointProvider;
-import com.powsybl.substationdiagram.library.ComponentLibrary;
-import com.powsybl.substationdiagram.library.ComponentMetadata;
-import com.powsybl.substationdiagram.library.ComponentSize;
-import com.powsybl.substationdiagram.model.BusCell;
-import com.powsybl.substationdiagram.model.BusNode;
-import com.powsybl.substationdiagram.model.Edge;
-import com.powsybl.substationdiagram.model.ExternCell;
-import com.powsybl.substationdiagram.model.Feeder2WTNode;
-import com.powsybl.substationdiagram.model.FeederBranchNode;
-import com.powsybl.substationdiagram.model.FeederNode;
-import com.powsybl.substationdiagram.model.Fictitious3WTNode;
-import com.powsybl.substationdiagram.model.Graph;
+import com.powsybl.substationdiagram.library.*;
 import com.powsybl.substationdiagram.model.Node;
-import com.powsybl.substationdiagram.model.SubstationGraph;
-import com.powsybl.substationdiagram.model.TwtEdge;
+import com.powsybl.substationdiagram.model.*;
 import com.powsybl.substationdiagram.svg.GraphMetadata.ArrowMetadata;
 import com.powsybl.substationdiagram.svg.SubstationDiagramInitialValueProvider.Direction;
 import org.apache.batik.anim.dom.SVGOMDocument;
@@ -37,11 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.util.Precision;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.CDATASection;
-import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Text;
+import org.w3c.dom.*;
 import org.w3c.dom.svg.SVGElement;
 
 import javax.xml.transform.OutputKeys;
@@ -61,13 +42,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static com.powsybl.substationdiagram.library.ComponentTypeName.ARROW;
-import static com.powsybl.substationdiagram.library.ComponentTypeName.BUSBAR_SECTION;
-import static com.powsybl.substationdiagram.library.ComponentTypeName.INDUCTOR;
-import static com.powsybl.substationdiagram.library.ComponentTypeName.THREE_WINDINGS_TRANSFORMER;
-import static com.powsybl.substationdiagram.library.ComponentTypeName.TWO_WINDINGS_TRANSFORMER;
-import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.escapeClassName;
-import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.escapeId;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.*;
+import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.*;
 
 /**
  * @author Benoit Jeanson <benoit.jeanson at rte-france.com>
@@ -82,6 +58,7 @@ public class DefaultSVGWriter implements SVGWriter {
     protected static final String CLASS = "class";
     protected static final String TRANSFORM = "transform";
     protected static final String TRANSLATE = "translate";
+    protected static final String ROTATE = "rotate";
     protected static final int FONT_SIZE = 8;
     protected static final String FONT_FAMILY = "Verdana";
     protected static final double LABEL_OFFSET = 5d;
@@ -89,6 +66,9 @@ public class DefaultSVGWriter implements SVGWriter {
     protected static final String POLYLINE = "polyline";
     protected static final String POINTS = "points";
     protected static final String STROKE = "stroke";
+    protected static final String WINDING1 = "WINDING1";
+    protected static final String WINDING2 = "WINDING2";
+    protected static final String WINDING3 = "WINDING3";
 
     protected final ComponentLibrary componentLibrary;
 
@@ -139,13 +119,14 @@ public class DefaultSVGWriter implements SVGWriter {
         Element style = document.createElement("style");
 
         StringBuilder graphStyle = new StringBuilder();
-        Optional<String> globalStyle = styleProvider.getGlobalStyle(graph);
-        globalStyle.ifPresent(graphStyle::append);
         graphStyle.append(componentLibrary.getStyleSheet());
 
+        Set<String> listUsedComponentSVG = new HashSet<>();
+
         graph.getNodes().forEach(n -> {
-            Optional<String> nodeStyle = styleProvider.getNodeStyle(n);
+            Optional<String> nodeStyle = styleProvider.getNodeStyle(n, layoutParameters.isAvoidSVGComponentsDuplication());
             nodeStyle.ifPresent(graphStyle::append);
+            listUsedComponentSVG.add(n.getComponentType());
         });
         graph.getEdges().forEach(e -> {
             Optional<String> wireStyle = styleProvider.getWireStyle(e);
@@ -156,6 +137,8 @@ public class DefaultSVGWriter implements SVGWriter {
 
         document.adoptNode(style);
         document.getDocumentElement().appendChild(style);
+
+        createDefsSVGComponents(document, listUsedComponentSVG);
 
         GraphMetadata metadata = writegraph(graph, document, initProvider, styleProvider, nodeLabelConfiguration);
 
@@ -185,7 +168,6 @@ public class DefaultSVGWriter implements SVGWriter {
         GraphMetadata metadata = new GraphMetadata();
 
         Element root = document.createElement("g");
-        root.setAttribute(CLASS, SubstationDiagramStyles.SUBSTATION_STYLE_CLASS);
 
         if (layoutParameters.isShowGrid()) {
             root.appendChild(drawGrid(graph, document, metadata));
@@ -258,6 +240,31 @@ public class DefaultSVGWriter implements SVGWriter {
         DOMImplementation domImpl = GenericDOMImplementation.getDOMImplementation();
 
         Document document = domImpl.createDocument("http://www.w3.org/2000/svg", "svg", null);
+        Element style = document.createElement("style");
+
+        Set<String> listUsedComponentSVG = new HashSet<>();
+
+        StringBuilder graphStyle = new StringBuilder();
+        graphStyle.append(componentLibrary.getStyleSheet());
+
+        for (Graph vlGraph : graph.getNodes()) {
+            vlGraph.getNodes().forEach(n -> {
+                Optional<String> nodeStyle = styleProvider.getNodeStyle(n, layoutParameters.isAvoidSVGComponentsDuplication());
+                nodeStyle.ifPresent(graphStyle::append);
+                listUsedComponentSVG.add(n.getComponentType());
+            });
+            vlGraph.getEdges().forEach(e -> {
+                Optional<String> wireStyle = styleProvider.getWireStyle(e);
+                wireStyle.ifPresent(graphStyle::append);
+            });
+        }
+        CDATASection cd = document.createCDATASection(graphStyle.toString());
+        style.appendChild(cd);
+
+        document.adoptNode(style);
+        document.getDocumentElement().appendChild(style);
+
+        createDefsSVGComponents(document, listUsedComponentSVG);
 
         GraphMetadata metadata = writegraph(graph, document, initProvider, styleProvider, nodeLabelConfiguration);
 
@@ -297,7 +304,6 @@ public class DefaultSVGWriter implements SVGWriter {
         GraphMetadata metadata = new GraphMetadata();
 
         Element root = document.createElement("g");
-        root.setAttribute(CLASS, SubstationDiagramStyles.SUBSTATION_STYLE_CLASS);
 
         // Drawing grid lines
         if (layoutParameters.isShowGrid()) {
@@ -344,15 +350,11 @@ public class DefaultSVGWriter implements SVGWriter {
         Element style = document.createElement("style");
 
         StringBuilder graphStyle = new StringBuilder();
-        for (Graph vlGraph : graph.getNodes()) {
-            Optional<String> globalStyle = styleProvider.getGlobalStyle(vlGraph);
-            globalStyle.ifPresent(graphStyle::append);
-        }
         graphStyle.append(componentLibrary.getStyleSheet());
 
         for (Graph vlGraph : graph.getNodes()) {
             vlGraph.getNodes().forEach(n -> {
-                Optional<String> nodeStyle = styleProvider.getNodeStyle(n);
+                Optional<String> nodeStyle = styleProvider.getNodeStyle(n, layoutParameters.isAvoidSVGComponentsDuplication());
                 nodeStyle.ifPresent(graphStyle::append);
             });
             vlGraph.getEdges().forEach(e -> {
@@ -390,6 +392,7 @@ public class DefaultSVGWriter implements SVGWriter {
         Element gridRoot = document.createElement("g");
         String gridId = "GRID_" + graph.getVoltageLevel().getId();
         gridRoot.setAttribute("id", gridId);
+        gridRoot.setAttribute(CLASS, SubstationDiagramStyles.GRID_STYLE_CLASS);
         gridRoot.setAttribute(TRANSFORM,
                 TRANSLATE + "(" + layoutParameters.getTranslateX() + "," + layoutParameters.getTranslateY() + ")");
         // vertical lines
@@ -445,7 +448,6 @@ public class DefaultSVGWriter implements SVGWriter {
         line.setAttribute("x2", Double.toString(x2));
         line.setAttribute("y1", Double.toString(y1));
         line.setAttribute("y2", Double.toString(y2));
-        line.setAttribute(CLASS, SubstationDiagramStyles.GRID_STYLE_CLASS);
         return line;
     }
 
@@ -464,7 +466,7 @@ public class DefaultSVGWriter implements SVGWriter {
             Element g = root.getOwnerDocument().createElement("g");
             g.setAttribute("id", nodeId);
 
-            g.setAttribute(CLASS, SubstationDiagramStyles.SUBSTATION_STYLE_CLASS + " " + node.getComponentType() + " " + nodeId);
+            g.setAttribute(CLASS, node.getComponentType() + " " + nodeId);
 
             if (node.getType() == Node.NodeType.BUS) {
                 drawBus((BusNode) node, g);
@@ -564,7 +566,6 @@ public class DefaultSVGWriter implements SVGWriter {
             line.setAttribute("x2", String.valueOf(node.getPxWidth()));
             line.setAttribute("y2", "0");
         }
-        line.setAttribute(CLASS, SubstationDiagramStyles.BUS_STYLE_CLASS + "_" + escapeClassName(node.getGraph().getVoltageLevel().getId()));
 
         g.appendChild(line);
 
@@ -587,7 +588,7 @@ public class DefaultSVGWriter implements SVGWriter {
         label.setAttribute("font-size", Integer.toString(fontSize));
         label.setAttribute(CLASS, SubstationDiagramStyles.LABEL_STYLE_CLASS);
         Text text = g.getOwnerDocument().createTextNode(str);
-        label.setAttribute(TRANSFORM, "rotate(" + (rotated ? -90 : 0) + "," + 0 + "," + 0 + ")");
+        label.setAttribute(TRANSFORM, ROTATE + "(" + (rotated ? -90 : 0) + "," + 0 + "," + 0 + ")");
         label.appendChild(text);
         g.appendChild(label);
     }
@@ -602,17 +603,21 @@ public class DefaultSVGWriter implements SVGWriter {
         SVGOMDocument obj = componentLibrary.getSvgDocument(node.getComponentType());
         transformComponent(node, g);
         if (obj != null && canInsertComponentSVG(node)) {
-            insertComponentSVGIntoDocumentSVG(obj, g, node, styleProvider, componentLibrary.getSize(node.getComponentType()));
+            String componentDefsId = node.getComponentType();
+            if (node.getComponentType().equals(BREAKER)
+                    || node.getComponentType().equals(DISCONNECTOR)) {
+                componentDefsId += node.isOpen() ? "-open" : "-closed";
+            }
+            insertComponentSVGIntoDocumentSVG(obj, g, node, styleProvider, componentLibrary.getSize(node.getComponentType()), componentDefsId);
         }
     }
 
-    /*
-     * Handling the transformer SVG part (rotation, colorization)
-     */
-    protected void handleTransformerSvgDocument(Node node, SubstationDiagramStyleProvider styleProvider,
-                                              ComponentSize size, org.w3c.dom.Node n) {
+    protected Map<String, String> getAttributesTransformer(Node node,
+                                                         String idWinding,
+                                                         SubstationDiagramStyleProvider styleProvider,
+                                                         ComponentSize size) {
+        Map<String, String> attributes = new HashMap<>();
         Optional<String> color = Optional.empty();
-
         VoltageLevel vl = node.getGraph().getVoltageLevel();
 
         // We will rotate the 3WT SVG, if cell orientation is BOTTOM
@@ -620,7 +625,7 @@ public class DefaultSVGWriter implements SVGWriter {
                 && node.getCell() != null
                 && ((ExternCell) node.getCell()).getDirection() == BusCell.Direction.BOTTOM;
 
-        if (((SVGElement) n).getId().equals("WINDING1")) {  // first winding
+        if (idWinding.endsWith(WINDING1)) {
             if (node instanceof Fictitious3WTNode) {
                 ThreeWindingsTransformer.Side otherSide = ThreeWindingsTransformer.Side.ONE;
 
@@ -635,7 +640,7 @@ public class DefaultSVGWriter implements SVGWriter {
             } else {
                 color = styleProvider.getNode2WTStyle((Feeder2WTNode) node, TwoWindingsTransformer.Side.ONE);
             }
-        } else if (((SVGElement) n).getId().equals("WINDING2")) {  // second winding
+        } else if (idWinding.endsWith(WINDING2)) {  // second winding
             if (node instanceof Fictitious3WTNode) {
                 ThreeWindingsTransformer.Side otherSide = ThreeWindingsTransformer.Side.ONE;
 
@@ -650,7 +655,7 @@ public class DefaultSVGWriter implements SVGWriter {
             } else {
                 color = styleProvider.getNode2WTStyle((Feeder2WTNode) node, TwoWindingsTransformer.Side.TWO);
             }
-        } else if (((SVGElement) n).getId().equals("WINDING3") && node instanceof Fictitious3WTNode) {  // third winding
+        } else if (idWinding.endsWith(WINDING3) && node instanceof Fictitious3WTNode) {  // third winding
             if (((Fictitious3WTNode) node).getTransformer().getLeg1().getTerminal().getVoltageLevel() == vl) {
                 color = styleProvider.getNode3WTStyle((Fictitious3WTNode) node, ThreeWindingsTransformer.Side.ONE);
             } else if (((Fictitious3WTNode) node).getTransformer().getLeg2().getTerminal().getVoltageLevel() == vl) {
@@ -659,17 +664,46 @@ public class DefaultSVGWriter implements SVGWriter {
                 color = styleProvider.getNode3WTStyle((Fictitious3WTNode) node, ThreeWindingsTransformer.Side.THREE);
             }
         }
-
-        // Setting the stroke color for SVG element
         if (color.isPresent()) {
-            ((Element) n).removeAttribute(STROKE);
-            ((Element) n).setAttribute(STROKE, color.get());
+            attributes.put(STROKE, color.get());
         }
-
         if (rotateSVG) {  // SVG element rotation
-            ((Element) n).setAttribute(TRANSFORM, "rotate(" + 180 + "," + size.getWidth() / 2 + "," + size.getHeight() / 2 + ")");
+            attributes.put(TRANSFORM, ROTATE + "(" + 180 + "," + size.getWidth() / 2 + "," + size.getHeight() / 2 + ")");
             // We store the rotation angle in order to transform correctly the anchor points when further drawing the edges
             node.setRotationAngle(180.);
+        }
+        return attributes;
+    }
+
+    protected Map<String, String> getAttributesInductor(Node node, SubstationDiagramStyleProvider styleProvider) {
+        Map<String, String> attributes = new HashMap<>();
+        Optional<String> color = styleProvider.getColor(((Feeder2WTNode) node).getVlOtherSide());
+        if (color.isPresent()) {
+            attributes.put(STROKE, color.get());
+        }
+        return attributes;
+    }
+
+    /*
+     * Handling the transformer SVG part (rotation, colorization)
+     */
+    protected void handleTransformerSvgDocument(Node node, SubstationDiagramStyleProvider styleProvider,
+                                              ComponentSize size, org.w3c.dom.Node n) {
+        if (((SVGElement) n).getId().endsWith(WINDING1)) {  // first winding
+            getAttributesTransformer(node, WINDING1, styleProvider, size).entrySet().stream().forEach(e -> {
+                ((Element) n).removeAttribute(e.getKey());
+                ((Element) n).setAttribute(e.getKey(), e.getValue());
+            });
+        } else if (((SVGElement) n).getId().endsWith(WINDING2)) {  // second winding
+            getAttributesTransformer(node, WINDING2, styleProvider, size).entrySet().stream().forEach(e -> {
+                ((Element) n).removeAttribute(e.getKey());
+                ((Element) n).setAttribute(e.getKey(), e.getValue());
+            });
+        } else if (((SVGElement) n).getId().endsWith(WINDING3) && node instanceof Fictitious3WTNode) {  // third winding
+            getAttributesTransformer(node, WINDING3, styleProvider, size).entrySet().stream().forEach(e -> {
+                ((Element) n).removeAttribute(e.getKey());
+                ((Element) n).setAttribute(e.getKey(), e.getValue());
+            });
         }
     }
 
@@ -677,48 +711,95 @@ public class DefaultSVGWriter implements SVGWriter {
      * Handling the inductor SVG part (colorization)
      */
     protected void handleInductorSvgDocument(Node node, SubstationDiagramStyleProvider styleProvider, org.w3c.dom.Node n) {
-        Optional<String> color = styleProvider.getColor(((Feeder2WTNode) node).getVlOtherSide());
-
-        if (color.isPresent()) {
-            ((Element) n).removeAttribute(STROKE);
-            ((Element) n).setAttribute(STROKE, color.get());
-        }
+        getAttributesInductor(node, styleProvider).entrySet().stream().forEach(e -> {
+            ((Element) n).removeAttribute(e.getKey());
+            ((Element) n).setAttribute(e.getKey(), e.getValue());
+        });
     }
 
     protected void insertComponentSVGIntoDocumentSVG(SVGOMDocument obj, Element g, Node node,
                                                    SubstationDiagramStyleProvider styleProvider,
-                                                   ComponentSize size) {
-        // The following code work correctly considering SVG part describing the component is the first child of "obj" the SVGDocument.
-        // If SVG are written otherwise, it will not work correctly.
-        for (int i = 0; i < obj.getChildNodes().item(0).getChildNodes().getLength(); i++) {
-            org.w3c.dom.Node n = obj.getChildNodes().item(0).getChildNodes().item(i).cloneNode(true);
+                                                   ComponentSize size,
+                                                   String componentDefsId) {
+        if (!layoutParameters.isAvoidSVGComponentsDuplication()) {
+            // The following code work correctly considering SVG part describing the component is the first child of "obj" the SVGDocument.
+            // If SVG are written otherwise, it will not work correctly.
+            for (int i = 0; i < obj.getChildNodes().item(0).getChildNodes().getLength(); i++) {
+                org.w3c.dom.Node n = obj.getChildNodes().item(0).getChildNodes().item(i).cloneNode(true);
 
-            if (n instanceof SVGElement) {
-                if (node instanceof Fictitious3WTNode ||
-                        (node instanceof Feeder2WTNode && node.getComponentType().equals(TWO_WINDINGS_TRANSFORMER)))  {
-                    handleTransformerSvgDocument(node, styleProvider, size, n);
-                } else if (node instanceof Feeder2WTNode && node.getComponentType().equals(INDUCTOR)) {
-                    handleInductorSvgDocument(node, styleProvider, n);
+                if (n instanceof SVGElement) {
+                    if (node instanceof Fictitious3WTNode ||
+                            (node instanceof Feeder2WTNode && node.getComponentType().equals(TWO_WINDINGS_TRANSFORMER))) {
+                        handleTransformerSvgDocument(node, styleProvider, size, n);
+                    } else if (node instanceof Feeder2WTNode && node.getComponentType().equals(INDUCTOR)) {
+                        handleInductorSvgDocument(node, styleProvider, n);
+                    }
                 }
-            }
 
-            g.getOwnerDocument().adoptNode(n);
-            g.appendChild(n);
+                g.getOwnerDocument().adoptNode(n);
+                g.appendChild(n);
+            }
+        } else {
+            // Adding <use> markup to reuse the svg defined in the <defs> part
+            if (node instanceof Fictitious3WTNode ||
+                    (node instanceof Feeder2WTNode && node.getComponentType().equals(TWO_WINDINGS_TRANSFORMER))) {
+
+                Element eltUse1 = g.getOwnerDocument().createElement("use");
+                eltUse1.setAttribute("href", "#" + componentDefsId + "-WINDING1");
+                getAttributesTransformer(node, WINDING1, styleProvider, size).entrySet().stream().forEach(e -> eltUse1.setAttribute(e.getKey(), e.getValue()));
+                g.getOwnerDocument().adoptNode(eltUse1);
+                g.appendChild(eltUse1);
+
+                Element eltUse2 = g.getOwnerDocument().createElement("use");
+                eltUse2.setAttribute("href", "#" + componentDefsId + "-WINDING2");
+                getAttributesTransformer(node, WINDING2, styleProvider, size).entrySet().stream().forEach(e -> eltUse2.setAttribute(e.getKey(), e.getValue()));
+                g.getOwnerDocument().adoptNode(eltUse2);
+                g.appendChild(eltUse2);
+
+                if (node instanceof Fictitious3WTNode) {
+                    Element eltUse3 = g.getOwnerDocument().createElement("use");
+                    eltUse3.setAttribute("href", "#" + componentDefsId + "-WINDING3");
+                    getAttributesTransformer(node, WINDING3, styleProvider, size).entrySet().stream().forEach(e -> eltUse3.setAttribute(e.getKey(), e.getValue()));
+                    g.getOwnerDocument().adoptNode(eltUse3);
+                    g.appendChild(eltUse3);
+                }
+            } else {
+                Element eltUse = g.getOwnerDocument().createElement("use");
+                eltUse.setAttribute("href", "#" + componentDefsId);
+
+                if (node instanceof Feeder2WTNode && node.getComponentType().equals(INDUCTOR)) {
+                    getAttributesInductor(node, styleProvider).entrySet().stream().forEach(e -> eltUse.setAttribute(e.getKey(), e.getValue()));
+                }
+
+                g.getOwnerDocument().adoptNode(eltUse);
+                g.appendChild(eltUse);
+            }
         }
     }
 
-    protected void insertRotatedComponentSVGIntoDocumentSVG(SVGOMDocument obj, Element g, double angle, double cx, double cy) {
-        // The following code work correctly considering SVG part describing the component is the first child of "obj" the SVGDocument.
-        // If SVG are written otherwise, it will not work correctly.
-
-        for (int i = 0; i < obj.getChildNodes().item(0).getChildNodes().getLength(); i++) {
-            org.w3c.dom.Node n = obj.getChildNodes().item(0).getChildNodes().item(i).cloneNode(true);
-            if (n.getNodeName().equals("g") && n.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
-                Element e = (Element) n;
-                e.setAttribute(TRANSFORM, "rotate(" + angle + "," + cx + "," + cy + ")");
+    protected void insertRotatedComponentSVGIntoDocumentSVG(SVGOMDocument obj, Element g, double angle,
+                                                          double cx, double cy,
+                                                          String componentDefsId) {
+        if (!layoutParameters.isAvoidSVGComponentsDuplication()) {
+            // The following code work correctly considering SVG part describing the component is the first child of "obj" the SVGDocument.
+            // If SVG are written otherwise, it will not work correctly.
+            for (int i = 0; i < obj.getChildNodes().item(0).getChildNodes().getLength(); i++) {
+                org.w3c.dom.Node n = obj.getChildNodes().item(0).getChildNodes().item(i).cloneNode(true);
+                if (n.getNodeName().equals("g") && n.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
+                    Element e = (Element) n;
+                    e.setAttribute(TRANSFORM, ROTATE + "(" + angle + "," + cx + "," + cy + ")");
+                }
+                g.getOwnerDocument().adoptNode(n);
+                g.appendChild(n);
             }
-            g.getOwnerDocument().adoptNode(n);
-            g.appendChild(n);
+        } else {
+            // Adding <use> markup to reuse the svg defined in the <defs> part
+            Element eltUse = g.getOwnerDocument().createElement("use");
+            eltUse.setAttribute("href", "#" + componentDefsId);
+            eltUse.setAttribute(TRANSFORM, ROTATE + "(" + angle + "," + cx + "," + cy + ")");
+
+            g.getOwnerDocument().adoptNode(eltUse);
+            g.appendChild(eltUse);
         }
     }
 
@@ -811,18 +892,29 @@ public class DefaultSVGWriter implements SVGWriter {
         transformArrow(points, cd.getSize(), 0, g1);
         double y1 = points.get(1);
         double y2 = points.get(3);
+        String defsId = ARROW;
+
+        Optional<Direction> dir1 = init.getArrowDirection1();
+        if (dir1.isPresent()) {
+            defsId += dir1.get() == Direction.UP ? "-arrow-up" : "-arrow-down";
+        }
+
         if (y1 > y2) {
-            insertRotatedComponentSVGIntoDocumentSVG(arr, g1, 180, cd.getSize().getWidth() / 2, cd.getSize().getHeight() / 2);
+            insertRotatedComponentSVGIntoDocumentSVG(arr, g1, 180, cd.getSize().getWidth() / 2, cd.getSize().getHeight() / 2, defsId);
         } else {
-            insertComponentSVGIntoDocumentSVG(arr, g1, n, styleProvider, componentLibrary.getSize(n.getComponentType()));
+            insertComponentSVGIntoDocumentSVG(arr, g1, n, styleProvider, componentLibrary.getSize(n.getComponentType()), defsId);
         }
         Optional<String> label1 = init.getLabel1();
         if (label1.isPresent()) {
             drawLabel(null, label1.get(), false, shX, shY, g1, FONT_SIZE);
         }
-        Optional<Direction> dir1 = init.getArrowDirection1();
         if (dir1.isPresent()) {
-            g1.setAttribute(CLASS, SubstationDiagramStyles.SUBSTATION_STYLE_CLASS + " " + "ARROW1_" + escapeClassName(n.getId()) + "_" + dir1.get());
+
+            g1.setAttribute(CLASS, "ARROW1_" + escapeClassName(n.getId()) + "_" + dir1.get());
+            if (layoutParameters.isAvoidSVGComponentsDuplication()) {
+                styleProvider.getAttributesArrow(1).entrySet().stream().forEach(e -> ((Element) g1.getFirstChild()).setAttribute(e.getKey(), e.getValue()));
+            }
+
         }
         root.appendChild(g1);
         metadata.addArrowMetadata(new ArrowMetadata(wireId + "_ARROW1", wireId, layoutParameters.getArrowDistance()));
@@ -830,18 +922,27 @@ public class DefaultSVGWriter implements SVGWriter {
         Element g2 = root.getOwnerDocument().createElement("g");
         g2.setAttribute("id", wireId + "_ARROW2");
         transformArrow(points, cd.getSize(), 2 * cd.getSize().getHeight(), g2);
+
+        defsId = ARROW;
+        Optional<Direction> dir2 = init.getArrowDirection2();
+        if (dir2.isPresent()) {
+            defsId += dir2.get() == Direction.UP ? "-arrow-up" : "-arrow-down";
+        }
+
         if (y1 > y2) {
-            insertRotatedComponentSVGIntoDocumentSVG(arr, g2, 180, 5, 5);
+            insertRotatedComponentSVGIntoDocumentSVG(arr, g2, 180, 5, 5, defsId);
         } else {
-            insertComponentSVGIntoDocumentSVG(arr, g2, n, styleProvider, componentLibrary.getSize(n.getComponentType()));
+            insertComponentSVGIntoDocumentSVG(arr, g2, n, styleProvider, componentLibrary.getSize(n.getComponentType()), defsId);
         }
         Optional<String> label2 = init.getLabel2();
         if (label2.isPresent()) {
             drawLabel(null, label2.get(), false, shX, shY, g2, FONT_SIZE);
         }
-        Optional<Direction> dir2 = init.getArrowDirection2();
         if (dir2.isPresent()) {
-            g2.setAttribute(CLASS, SubstationDiagramStyles.SUBSTATION_STYLE_CLASS + " " + "ARROW2_" + escapeClassName(n.getId()) + "_" + dir2.get());
+            g2.setAttribute(CLASS, "ARROW2_" + escapeClassName(n.getId()) + "_" + dir2.get());
+            if (layoutParameters.isAvoidSVGComponentsDuplication()) {
+                styleProvider.getAttributesArrow(2).entrySet().stream().forEach(e -> ((Element) g2.getFirstChild()).setAttribute(e.getKey(), e.getValue()));
+            }
         }
         Optional<String> label3 = init.getLabel3();
         if (label3.isPresent()) {
@@ -873,10 +974,10 @@ public class DefaultSVGWriter implements SVGWriter {
 
             // Determine points of the polyline
             List<Double> pol = anchorPoints.calculatePolylinePoints(edge.getNode1(), edge.getNode2(),
-                                                                    layoutParameters.isDrawStraightWires());
+                    layoutParameters.isDrawStraightWires());
 
             g.setAttribute(POINTS, pointsListToString(pol));
-            g.setAttribute(CLASS, styleProvider.getIdWireStyle(edge));
+            g.setAttribute(CLASS, WIRE_STYLE_CLASS + " " + styleProvider.getIdWireStyle(edge));
             root.appendChild(g);
 
             metadata.addWireMetadata(new GraphMetadata.WireMetadata(wireId,
@@ -887,9 +988,9 @@ public class DefaultSVGWriter implements SVGWriter {
 
             if (metadata.getComponentMetadata(ARROW) == null) {
                 metadata.addComponentMetadata(new ComponentMetadata(ARROW,
-                                                                    null,
-                                                                    componentLibrary.getAnchorPoints(ARROW),
-                                                                    componentLibrary.getSize(ARROW)));
+                        null,
+                        componentLibrary.getAnchorPoints(ARROW),
+                        componentLibrary.getSize(ARROW)));
             }
 
             if (edge.getNode1() instanceof FeederNode) {
@@ -926,8 +1027,7 @@ public class DefaultSVGWriter implements SVGWriter {
             } else {
                 vId = vId2;
             }
-
-            g.setAttribute(CLASS, SubstationDiagramStyles.WIRE_STYLE_CLASS + "_" + escapeClassName(vId));
+            g.setAttribute(CLASS, SubstationDiagramStyles.WIRE_STYLE_CLASS + " " + SubstationDiagramStyles.WIRE_STYLE_CLASS + "_" + escapeClassName(vId));
             root.appendChild(g);
 
             metadata.addWireMetadata(new GraphMetadata.WireMetadata(wireId,
@@ -938,15 +1038,14 @@ public class DefaultSVGWriter implements SVGWriter {
 
             if (metadata.getComponentMetadata(ARROW) == null) {
                 metadata.addComponentMetadata(new ComponentMetadata(ARROW,
-                                                                    null,
-                                                                    componentLibrary.getAnchorPoints(ARROW),
-                                                                    componentLibrary.getSize(ARROW)));
+                        null,
+                        componentLibrary.getAnchorPoints(ARROW),
+                        componentLibrary.getSize(ARROW)));
             }
         }
     }
 
     protected String pointsListToString(List<Double> pol) {
-
         return IntStream.range(0, pol.size())
                 .mapToObj(n -> n % 2 == 0 ? pol.get(n) + layoutParameters.getTranslateX() : pol.get(n) + layoutParameters.getTranslateY())
                 .map(Object::toString)
@@ -978,4 +1077,44 @@ public class DefaultSVGWriter implements SVGWriter {
                 });
     }
 
+    /**
+     * Creation of the defs area for the SVG components
+     */
+    protected void createDefsSVGComponents(Document document, Set<String> listUsedComponentSVG) {
+        if (layoutParameters.isAvoidSVGComponentsDuplication()) {
+            Element defs = document.createElement("defs");
+
+            listUsedComponentSVG.stream().forEach(c -> {
+                SVGOMDocument obj = componentLibrary.getSvgDocument(c);
+                if (obj != null) {
+                    Element group = document.createElement("g");
+                    group.setAttribute("id", c);
+
+                    insertSVGComponentIntoDefsArea(group, obj);
+
+                    defs.getOwnerDocument().adoptNode(group);
+                    defs.appendChild(group);
+                }
+            });
+
+            // Adding also arrows
+            Element group = document.createElement("g");
+            group.setAttribute("id", ARROW);
+            SVGOMDocument obj = componentLibrary.getSvgDocument(ARROW);
+            insertSVGComponentIntoDefsArea(group, obj);
+            defs.getOwnerDocument().adoptNode(group);
+            defs.appendChild(group);
+
+            document.adoptNode(defs);
+            document.getDocumentElement().appendChild(defs);
+        }
+    }
+
+    protected void insertSVGComponentIntoDefsArea(Element defs, SVGOMDocument obj) {
+        for (int i = 0; i < obj.getChildNodes().item(0).getChildNodes().getLength(); i++) {
+            org.w3c.dom.Node n = obj.getChildNodes().item(0).getChildNodes().item(i).cloneNode(true);
+            defs.getOwnerDocument().adoptNode(n);
+            defs.appendChild(n);
+        }
+    }
 }

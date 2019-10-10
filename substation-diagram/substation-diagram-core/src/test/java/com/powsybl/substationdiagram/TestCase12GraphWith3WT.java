@@ -425,6 +425,14 @@ public class TestCase12GraphWith3WT extends AbstractTestCase {
         compareSvg(g2, layoutParameters, "/TestCase12GraphVL2.svg");
         compareSvg(g3, layoutParameters, "/TestCase12GraphVL3.svg");
 
+        // write optimized SVG and compare to reference (horizontal layout)
+        LayoutParameters layoutParametersOptimized = new LayoutParameters(layoutParameters);
+        layoutParametersOptimized.setAvoidSVGComponentsDuplication(true);
+
+        compareSvg(g1, layoutParametersOptimized, "/TestCase12GraphVL1_optimized.svg");
+        compareSvg(g2, layoutParametersOptimized, "/TestCase12GraphVL2_optimized.svg");
+        compareSvg(g3, layoutParametersOptimized, "/TestCase12GraphVL3_optimized.svg");
+
         // Create voltageLevel diagram (svg + metadata files)
         VoltageLevelDiagram diagram = VoltageLevelDiagram.build(vl1, new PositionVoltageLevelLayoutFactory(), false, true);
         Path pathSVG = Paths.get(System.getProperty("user.home"), "vlDiag.svg");

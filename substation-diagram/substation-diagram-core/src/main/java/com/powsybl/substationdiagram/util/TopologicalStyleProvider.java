@@ -6,16 +6,14 @@
  */
 package com.powsybl.substationdiagram.util;
 
-import static com.powsybl.substationdiagram.library.ComponentTypeName.PHASE_SHIFT_TRANSFORMER;
-import static com.powsybl.substationdiagram.library.ComponentTypeName.THREE_WINDINGS_TRANSFORMER;
-import static com.powsybl.substationdiagram.library.ComponentTypeName.TWO_WINDINGS_TRANSFORMER;
-import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.BUS_STYLE_CLASS;
-import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.GRID_STYLE_CLASS;
-import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.LABEL_STYLE_CLASS;
-import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.SUBSTATION_STYLE_CLASS;
-import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.WIRE_STYLE_CLASS;
-import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.escapeClassName;
-import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.escapeId;
+import com.powsybl.basevoltage.BaseVoltageColor;
+import com.powsybl.iidm.network.Branch.Side;
+import com.powsybl.iidm.network.*;
+import com.powsybl.substationdiagram.model.Edge;
+import com.powsybl.substationdiagram.model.Node;
+import com.powsybl.substationdiagram.model.Node.NodeType;
+import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramStyleProvider;
+import com.powsybl.substationdiagram.svg.SubstationDiagramStyles;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -26,25 +24,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.powsybl.basevoltage.BaseVoltageColor;
-import com.powsybl.iidm.network.Branch.Side;
-import com.powsybl.iidm.network.BusbarSection;
-import com.powsybl.iidm.network.DanglingLine;
-import com.powsybl.iidm.network.Generator;
-import com.powsybl.iidm.network.Line;
-import com.powsybl.iidm.network.Load;
-import com.powsybl.iidm.network.ShuntCompensator;
-import com.powsybl.iidm.network.StaticVarCompensator;
-import com.powsybl.iidm.network.ThreeWindingsTransformer;
-import com.powsybl.iidm.network.TopologyVisitor;
-import com.powsybl.iidm.network.TwoWindingsTransformer;
-import com.powsybl.iidm.network.VoltageLevel;
-import com.powsybl.substationdiagram.model.Edge;
-import com.powsybl.substationdiagram.model.Graph;
-import com.powsybl.substationdiagram.model.Node;
-import com.powsybl.substationdiagram.model.Node.NodeType;
-import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramStyleProvider;
-import com.powsybl.substationdiagram.svg.SubstationDiagramStyles;
+import static com.powsybl.substationdiagram.library.ComponentTypeName.*;
+import static com.powsybl.substationdiagram.svg.SubstationDiagramStyles.escapeId;
 
 /**
  * @author Giovanni Ferrari <giovanni.ferrari at techrain.eu>
@@ -154,24 +135,9 @@ public class TopologicalStyleProvider extends DefaultSubstationDiagramStyleProvi
     }
 
     @Override
-    public Optional<String> getGlobalStyle(Graph graph) {
-        String idVL = escapeClassName(graph.getVoltageLevel().getId());
-        StringBuilder style = new StringBuilder();
-        style.append(".").append(SUBSTATION_STYLE_CLASS)
-                .append(" {fill:rgb(255,255,255);stroke-width:1;fill-opacity:0;}");
-        style.append(".").append(WIRE_STYLE_CLASS).append("_").append(idVL)
-                .append(" {stroke:rgb(200,0,0);stroke-width:1;}");
-        style.append(".").append(GRID_STYLE_CLASS)
-                .append(" {stroke:rgb(0,55,0);stroke-width:1;stroke-dasharray:1,10;}");
-        style.append(".").append(BUS_STYLE_CLASS).append("_").append(idVL).append(" {stroke-width:3;}");
-        style.append(".").append(LABEL_STYLE_CLASS).append(" {fill:black;color:black;stroke:none;fill-opacity:1;}");
-        return Optional.of(style.toString());
-    }
+    public Optional<String> getNodeStyle(Node node, boolean avoidSVGComponentsDuplication) {
 
-    @Override
-    public Optional<String> getNodeStyle(Node node) {
-
-        Optional<String> defaultStyle = super.getNodeStyle(node);
+        Optional<String> defaultStyle = super.getNodeStyle(node, avoidSVGComponentsDuplication);
         if (node.getType() == NodeType.SWITCH || node.getComponentType().equals(TWO_WINDINGS_TRANSFORMER) || node.getComponentType().equals(THREE_WINDINGS_TRANSFORMER) || node.getComponentType().equals(PHASE_SHIFT_TRANSFORMER)) {
             return defaultStyle;
         }
@@ -182,7 +148,7 @@ public class TopologicalStyleProvider extends DefaultSubstationDiagramStyleProvi
 
         return Optional.of(defaultStyle.orElse("") + " #"
                 + escapeId(node.getId()) + " {stroke:"
-                + color + ";stroke-width:1;fill-opacity:0;}");
+                + color + ";}");
     }
 
     @Override

@@ -16,10 +16,9 @@ import java.util.regex.Pattern;
  */
 public final class SubstationDiagramStyles {
 
-    public static final String SUBSTATION_STYLE_CLASS = "substation-diagram";
     public static final String WIRE_STYLE_CLASS = "wire";
     public static final String GRID_STYLE_CLASS = "grid";
-    public static final String BUS_STYLE_CLASS = "bus";
+    public static final String BUS_STYLE_CLASS = "busbar-section";
     public static final String LABEL_STYLE_CLASS = "component-label";
 
     private SubstationDiagramStyles() {

@@ -246,7 +246,7 @@ public abstract class AbstractSubstationDiagramViewer extends Application implem
                 if (c.getContainerType() == ContainerType.VOLTAGE_LEVEL) {
                     VoltageLevelDiagram diagram = VoltageLevelDiagram.build((VoltageLevel) c, getVoltageLevelLayoutFactory(), showNames.isSelected(),
                             layoutParameters.get().isShowInductorFor3WT());
-                    diagram.writeSvg(getComponentLibrary(),
+                    diagram.writeSvg("", getComponentLibrary(),
                             diagramLayoutParameters,
                             initProvider,
                             styleProvider,
@@ -255,7 +255,7 @@ public abstract class AbstractSubstationDiagramViewer extends Application implem
                             metadataWriter);
                 } else if (c.getContainerType() == ContainerType.SUBSTATION) {
                     SubstationDiagram diagram = SubstationDiagram.build((Substation) c, getSubstationLayoutFactory(), getVoltageLevelLayoutFactory(), showNames.isSelected());
-                    diagram.writeSvg(getComponentLibrary(),
+                    diagram.writeSvg("", getComponentLibrary(),
                             diagramLayoutParameters,
                             initProvider,
                             styleProvider,

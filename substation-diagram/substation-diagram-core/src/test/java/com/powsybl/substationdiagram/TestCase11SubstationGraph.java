@@ -470,12 +470,12 @@ public class TestCase11SubstationGraph extends AbstractTestCase {
             String refSvg = normalizeLineSeparator(new String(ByteStreams.toByteArray(getClass().getResourceAsStream("/substDiag.svg")), StandardCharsets.UTF_8));
             String svg = normalizeLineSeparator(new String(Files.readAllBytes(pathSVG), StandardCharsets.UTF_8));
             assertEquals(refSvg, svg);
-            Files.deleteIfExists(pathSVG);
+            //Files.deleteIfExists(pathSVG);
 
             String refMetadata = normalizeLineSeparator(new String(ByteStreams.toByteArray(getClass().getResourceAsStream("/substDiag_metadata.json")), StandardCharsets.UTF_8));
             String metadata = normalizeLineSeparator(new String(Files.readAllBytes(pathMetadata), StandardCharsets.UTF_8));
             assertEquals(refMetadata, metadata);
-            Files.deleteIfExists(pathMetadata);
+            //Files.deleteIfExists(pathMetadata);
 
         } catch (IOException e) {
             throw new UncheckedIOException(e);

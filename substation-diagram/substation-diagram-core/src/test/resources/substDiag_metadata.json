@@ -74,7 +74,8 @@
     "size" : {
       "width" : 0.0,
       "height" : 0.0
-    }
+    },
+    "allowRotation" : true
   }, {
     "type" : "GENERATOR",
     "id" : null,
@@ -98,7 +99,8 @@
     "size" : {
       "width" : 12.0,
       "height" : 12.0
-    }
+    },
+    "allowRotation" : true
   }, {
     "type" : "ARROW",
     "id" : null,
@@ -110,7 +112,8 @@
     "size" : {
       "width" : 10.0,
       "height" : 10.0
-    }
+    },
+    "allowRotation" : true
   }, {
     "type" : "LOAD",
     "id" : null,
@@ -126,7 +129,8 @@
     "size" : {
       "width" : 16.0,
       "height" : 9.0
-    }
+    },
+    "allowRotation" : true
   }, {
     "type" : "NODE",
     "id" : null,
@@ -138,7 +142,8 @@
     "size" : {
       "width" : 8.0,
       "height" : 8.0
-    }
+    },
+    "allowRotation" : true
   }, {
     "type" : "LINE",
     "id" : null,
@@ -150,7 +155,8 @@
     "size" : {
       "width" : 0.0,
       "height" : 0.0
-    }
+    },
+    "allowRotation" : true
   }, {
     "type" : "DISCONNECTOR",
     "id" : null,
@@ -162,7 +168,8 @@
     "size" : {
       "width" : 8.0,
       "height" : 8.0
-    }
+    },
+    "allowRotation" : true
   }, {
     "type" : "TWO_WINDINGS_TRANSFORMER",
     "id" : null,
@@ -186,7 +193,8 @@
     "size" : {
       "width" : 13.0,
       "height" : 8.0
-    }
+    },
+    "allowRotation" : true
   }, {
     "type" : "THREE_WINDINGS_TRANSFORMER",
     "id" : null,
@@ -206,7 +214,8 @@
     "size" : {
       "width" : 14.0,
       "height" : 12.0
-    }
+    },
+    "allowRotation" : true
   }, {
     "type" : "BREAKER",
     "id" : null,
@@ -222,7 +231,8 @@
     "size" : {
       "width" : 20.0,
       "height" : 20.0
-    }
+    },
+    "allowRotation" : true
   } ],
   "nodes" : [ {
     "id" : "dtrct21",

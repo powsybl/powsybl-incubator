@@ -512,13 +512,13 @@ public class DefaultSVGWriter implements SVGWriter {
             metadata.addComponentMetadata(new ComponentMetadata(BUSBAR_SECTION,
                     nodeId,
                     anchorPointProvider.getAnchorPoints(BUSBAR_SECTION, node.getId()),
-                    new ComponentSize(0, 0)));
+                    new ComponentSize(0, 0), true));
         } else {
             if (metadata.getComponentMetadata(node.getComponentType()) == null) {
                 metadata.addComponentMetadata(new ComponentMetadata(node.getComponentType(),
                         null,
                         componentLibrary.getAnchorPoints(node.getComponentType()),
-                        componentLibrary.getSize(node.getComponentType())));
+                        componentLibrary.getSize(node.getComponentType()), true));
             }
         }
     }
@@ -850,6 +850,12 @@ public class DefaultSVGWriter implements SVGWriter {
     protected void transformComponent(Node node, Element g) {
         ComponentSize componentSize = componentLibrary.getSize(node.getComponentType());
 
+        // For a node marked for rotation during the graph building, but with an svg component not allowed
+        // to rotate (ex : disconnector in SVG component library), we cancel the rotation
+        if (node.isRotated() && !componentLibrary.isAllowRotation(node.getComponentType())) {
+            node.setRotationAngle(null);
+        }
+
         if (!node.isRotated()) {
             g.setAttribute(TRANSFORM,
                     TRANSLATE + "(" + (layoutParameters.getTranslateX() + node.getX() - componentSize.getWidth() / 2) + ","
@@ -1042,7 +1048,7 @@ public class DefaultSVGWriter implements SVGWriter {
                     metadata.addComponentMetadata(new ComponentMetadata(ARROW,
                             null,
                             componentLibrary.getAnchorPoints(ARROW),
-                            componentLibrary.getSize(ARROW)));
+                            componentLibrary.getSize(ARROW), true));
                 }
 
                 if (edge.getNode1() instanceof FeederNode) {
@@ -1099,7 +1105,7 @@ public class DefaultSVGWriter implements SVGWriter {
                 metadata.addComponentMetadata(new ComponentMetadata(ARROW,
                         null,
                         componentLibrary.getAnchorPoints(ARROW),
-                        componentLibrary.getSize(ARROW)));
+                        componentLibrary.getSize(ARROW), true));
             }
         }
     }

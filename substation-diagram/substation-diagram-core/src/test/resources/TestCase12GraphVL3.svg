@@ -161,10 +161,10 @@
             <text x="-5.0" font-size="8" y="-5.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="bbs8_NW_LABEL">bbs8</text>
         </g>
         <g class="CAPACITOR self6" id="self6" transform="translate(854.0,584.0)">
-    <line y2="3" x1="6" x2="6" y1="0"/>
-    <line y2="3" x1="0" x2="12" y1="3"/>
-    <line y2="6" x1="0" x2="12" y1="6"/>
-    <line y2="9" x1="6" x2="6" y1="6"/>
+    <line y2="4.5" x1="6" x2="6" y1="0"/>
+    <line y2="4.5" x1="0" x2="12" y1="4.5"/>
+    <line y2="7.5" x1="0" x2="12" y1="7.5"/>
+    <line y2="12" x1="6" x2="6" y1="7.5"/>
 <text x="-5.0" font-size="8" y="25.0" transform="rotate(0,0,0)" font-family="Verdana" class="component-label" id="self6_S_LABEL">self6</text>
         </g>
         <g class="DISCONNECTOR dload4" id="dload4" transform="translate(56.0,306.0)">

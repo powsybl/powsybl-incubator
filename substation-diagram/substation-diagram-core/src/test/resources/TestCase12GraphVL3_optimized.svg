@@ -120,10 +120,10 @@
     <circle r="4" cx="4" cy="4"/>
 </g>
         <g id="CAPACITOR">
-    <line y2="3" x1="6" x2="6" y1="0"/>
-    <line y2="3" x1="0" x2="12" y1="3"/>
-    <line y2="6" x1="0" x2="12" y1="6"/>
-    <line y2="9" x1="6" x2="6" y1="6"/>
+    <line y2="4.5" x1="6" x2="6" y1="0"/>
+    <line y2="4.5" x1="0" x2="12" y1="4.5"/>
+    <line y2="7.5" x1="0" x2="12" y1="7.5"/>
+    <line y2="12" x1="6" x2="6" y1="7.5"/>
 </g>
         <g id="DISCONNECTOR">
     <g class="closed" id="DISCONNECTOR-closed">

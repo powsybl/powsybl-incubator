@@ -165,7 +165,7 @@
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
-        <g class="DISCONNECTOR ds1" id="ds1" transform="matrix(0.0,1.0,-1.0,0.0,99.0,306.0)">
+        <g class="DISCONNECTOR ds1" id="ds1" transform="translate(91.0,306.0)">
     <g class="closed" id="ds1_DISCONNECTOR-closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>
@@ -174,7 +174,7 @@
         <line y2="8" x1="8" x2="0" y1="0"/>
     </g>
 </g>
-        <g class="DISCONNECTOR ds2" id="ds2" transform="matrix(0.0,1.0,-1.0,0.0,99.0,331.0)">
+        <g class="DISCONNECTOR ds2" id="ds2" transform="translate(91.0,331.0)">
     <g class="closed" id="ds2_DISCONNECTOR-closed">
         <line y2="8" x1="0" x2="8" y1="0"/>
         <line y2="8" x1="8" x2="0" y1="0"/>

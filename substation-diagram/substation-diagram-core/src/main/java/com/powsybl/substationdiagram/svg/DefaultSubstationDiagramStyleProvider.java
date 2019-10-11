@@ -38,7 +38,7 @@ public class DefaultSubstationDiagramStyleProvider implements SubstationDiagramS
     @Override
     public Optional<String> getNodeStyle(Node node, boolean avoidSVGComponentsDuplication) {
         Objects.requireNonNull(node);
-        if (node.getType() == Node.NodeType.SWITCH) {
+        if (node.getType() == Node.NodeType.SWITCH && !avoidSVGComponentsDuplication) {
 
             StringBuilder style = new StringBuilder();
             String className = escapeId(node.getId());
@@ -51,7 +51,7 @@ public class DefaultSubstationDiagramStyleProvider implements SubstationDiagramS
             return Optional.of(style.toString());
         }
 
-        if (node instanceof FeederNode) {
+        if (node instanceof FeederNode && !avoidSVGComponentsDuplication) {
 
             StringBuilder style = new StringBuilder();
             style.append(ARROW1).append(escapeClassName(node.getId()))

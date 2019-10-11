@@ -441,6 +441,24 @@
     "direction" : "UNDEFINED",
     "vlabel" : false
   }, {
+    "id" : "idself4_95_trf8",
+    "vid" : "vl1",
+    "nextVId" : "vl3",
+    "componentType" : "INDUCTOR",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "TOP",
+    "vlabel" : false
+  }, {
+    "id" : "idself4_95_trf7",
+    "vid" : "vl1",
+    "nextVId" : "vl3",
+    "componentType" : "INDUCTOR",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "BOTTOM",
+    "vlabel" : false
+  }, {
     "id" : "idFICT_95_vl1_95_dtrf11Fictif",
     "vid" : "vl1",
     "nextVId" : null,
@@ -490,15 +508,6 @@
     "vid" : "vl1",
     "nextVId" : "vl2",
     "componentType" : "LINE",
-    "rotationAngle" : null,
-    "open" : false,
-    "direction" : "TOP",
-    "vlabel" : false
-  }, {
-    "id" : "idself4",
-    "vid" : "vl1",
-    "nextVId" : "vl3",
-    "componentType" : "INDUCTOR",
     "rotationAngle" : null,
     "open" : false,
     "direction" : "TOP",
@@ -637,6 +646,15 @@
     "rotationAngle" : null,
     "open" : false,
     "direction" : "UNDEFINED",
+    "vlabel" : false
+  }, {
+    "id" : "idself4_95_trf6",
+    "vid" : "vl1",
+    "nextVId" : "vl3",
+    "componentType" : "INDUCTOR",
+    "rotationAngle" : null,
+    "open" : false,
+    "direction" : "TOP",
     "vlabel" : false
   }, {
     "id" : "idFICT_95_vl1_95_dtrf17Fictif",
@@ -972,7 +990,7 @@
   }, {
     "id" : "idvl1_95_Wire33",
     "nodeId1" : "idFICT_95_vl1_95_trf81_95_fictif",
-    "nodeId2" : "idself4",
+    "nodeId2" : "idself4_95_trf8",
     "straight" : false,
     "snakeLine" : false
   }, {
@@ -1002,7 +1020,7 @@
   }, {
     "id" : "idvl1_95_Wire30",
     "nodeId1" : "idFICT_95_vl1_95_trf71_95_fictif",
-    "nodeId2" : "idself4",
+    "nodeId2" : "idself4_95_trf7",
     "straight" : false,
     "snakeLine" : false
   }, {
@@ -1038,7 +1056,7 @@
   }, {
     "id" : "idvl1_95_Wire27",
     "nodeId1" : "idFICT_95_vl1_95_trf61_95_fictif",
-    "nodeId2" : "idself4",
+    "nodeId2" : "idself4_95_trf6",
     "straight" : false,
     "snakeLine" : false
   }, {

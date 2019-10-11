@@ -64,27 +64,29 @@ public final class VoltageLevelDiagram {
         return new VoltageLevelDiagram(graph, layout);
     }
 
-    public void writeSvg(ComponentLibrary componentLibrary,
+    public void writeSvg(String prefixId,
+                         ComponentLibrary componentLibrary,
                          LayoutParameters layoutParameters,
                          Network network,
                          Path svgFile) {
         SVGWriter writer = new DefaultSVGWriter(componentLibrary, layoutParameters);
-        writeSvg(writer,
+        writeSvg(prefixId, writer,
                 new DefaultSubstationDiagramInitialValueProvider(network),
                 new DefaultSubstationDiagramStyleProvider(),
                 new DefaultNodeLabelConfiguration(writer.getComponentLibrary()),
                 svgFile, false);
     }
 
-    public void writeSvg(SVGWriter writer, Network network, Path svgFile) {
-        writeSvg(writer,
+    public void writeSvg(String prefixId, SVGWriter writer, Network network, Path svgFile) {
+        writeSvg(prefixId, writer,
                 new DefaultSubstationDiagramInitialValueProvider(network),
                 new DefaultSubstationDiagramStyleProvider(),
                 new DefaultNodeLabelConfiguration(writer.getComponentLibrary()),
                 svgFile, false);
     }
 
-    public void writeSvg(SVGWriter writer,
+    public void writeSvg(String prefixId,
+                         SVGWriter writer,
                          SubstationDiagramInitialValueProvider initProvider,
                          SubstationDiagramStyleProvider styleProvider,
                          NodeLabelConfiguration nodeLabelConfiguration,
@@ -97,23 +99,25 @@ public final class VoltageLevelDiagram {
         }
         try (Writer svgWriter = Files.newBufferedWriter(svgFile, StandardCharsets.UTF_8);
                 Writer metadataWriter = Files.newBufferedWriter(dir.resolve(svgFileName.replace(".svg", "_metadata.json")), StandardCharsets.UTF_8)) {
-            writeSvg(writer, initProvider, styleProvider, nodeLabelConfiguration, svgWriter, metadataWriter);
+            writeSvg(prefixId, writer, initProvider, styleProvider, nodeLabelConfiguration, svgWriter, metadataWriter);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }
 
-    public void writeSvg(ComponentLibrary componentLibrary, LayoutParameters layoutParameters,
+    public void writeSvg(String prefixId,
+                         ComponentLibrary componentLibrary, LayoutParameters layoutParameters,
                          SubstationDiagramInitialValueProvider initProvider,
                          SubstationDiagramStyleProvider styleProvider,
                          NodeLabelConfiguration nodeLabelConfiguration,
                          Writer svgWriter,
                          Writer metadataWriter) {
         SVGWriter writer = new DefaultSVGWriter(componentLibrary, layoutParameters);
-        writeSvg(writer, initProvider, styleProvider, nodeLabelConfiguration, svgWriter, metadataWriter);
+        writeSvg(prefixId, writer, initProvider, styleProvider, nodeLabelConfiguration, svgWriter, metadataWriter);
     }
 
-    public void writeSvg(SVGWriter writer,
+    public void writeSvg(String prefixId,
+                         SVGWriter writer,
                          SubstationDiagramInitialValueProvider initProvider,
                          SubstationDiagramStyleProvider styleProvider,
                          NodeLabelConfiguration nodeLabelConfiguration,
@@ -130,7 +134,7 @@ public final class VoltageLevelDiagram {
         // write SVG file
         LOGGER.info("Writing SVG and JSON metadata files...");
 
-        GraphMetadata metadata = writer.write(graph, initProvider, styleProvider, nodeLabelConfiguration, svgWriter);
+        GraphMetadata metadata = writer.write(prefixId, graph, initProvider, styleProvider, nodeLabelConfiguration, svgWriter);
 
         // write metadata file
         metadata.writeJson(metadataWriter);

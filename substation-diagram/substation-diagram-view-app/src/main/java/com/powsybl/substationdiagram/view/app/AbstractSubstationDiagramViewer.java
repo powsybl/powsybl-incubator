@@ -49,6 +49,7 @@ import com.powsybl.substationdiagram.cgmes.CgmesSubstationLayoutFactory;
 import com.powsybl.substationdiagram.cgmes.CgmesVoltageLevelLayoutFactory;
 import com.powsybl.substationdiagram.layout.HorizontalSubstationLayoutFactory;
 import com.powsybl.substationdiagram.layout.LayoutParameters;
+import com.powsybl.substationdiagram.layout.PositionByClustering;
 import com.powsybl.substationdiagram.layout.PositionFree;
 import com.powsybl.substationdiagram.layout.PositionFromExtension;
 import com.powsybl.substationdiagram.layout.PositionVoltageLevelLayoutFactory;
@@ -58,12 +59,7 @@ import com.powsybl.substationdiagram.layout.VerticalSubstationLayoutFactory;
 import com.powsybl.substationdiagram.layout.VoltageLevelLayoutFactory;
 import com.powsybl.substationdiagram.library.ComponentLibrary;
 import com.powsybl.substationdiagram.library.ResourcesComponentLibrary;
-import com.powsybl.substationdiagram.svg.DefaultNodeLabelConfiguration;
-import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramInitialValueProvider;
-import com.powsybl.substationdiagram.svg.DefaultSubstationDiagramStyleProvider;
-import com.powsybl.substationdiagram.svg.NodeLabelConfiguration;
-import com.powsybl.substationdiagram.svg.SubstationDiagramInitialValueProvider;
-import com.powsybl.substationdiagram.svg.SubstationDiagramStyleProvider;
+import com.powsybl.substationdiagram.svg.*;
 import com.powsybl.substationdiagram.util.NominalVoltageSubstationDiagramStyleProvider;
 import com.powsybl.substationdiagram.util.SmartVoltageLevelLayoutFactory;
 import com.powsybl.substationdiagram.util.TopologicalStyleProvider;
@@ -127,15 +123,18 @@ public abstract class AbstractSubstationDiagramViewer extends Application implem
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractSubstationDiagramViewer.class);
 
-    private  static final String SELECTED_VOLTAGE_LEVEL_IDS_PROPERTY = "selectedVoltageLevelIds";
-    private  static final String SELECTED_SUBSTATION_IDS_PROPERTY = "selectedSubstationIds";
+    private static final String SELECTED_VOLTAGE_LEVEL_IDS_PROPERTY = "selectedVoltageLevelIds";
+    private static final String SELECTED_SUBSTATION_IDS_PROPERTY = "selectedSubstationIds";
 
     private final Map<String, VoltageLevelLayoutFactory> voltageLevelsLayouts
-            = ImmutableMap.of("Smart", new SmartVoltageLevelLayoutFactory(),
-                              "Auto extensions", new PositionVoltageLevelLayoutFactory(new PositionFromExtension()),
-                              "Auto without extensions", new PositionVoltageLevelLayoutFactory(new PositionFree()),
-                              "Random", new RandomVoltageLevelLayoutFactory(500, 500),
-                              "Cgmes", new CgmesVoltageLevelLayoutFactory());
+            = new ImmutableMap.Builder<String, VoltageLevelLayoutFactory>()
+            .put("Smart", new SmartVoltageLevelLayoutFactory())
+            .put("Auto extensions", new PositionVoltageLevelLayoutFactory(new PositionFromExtension()))
+            .put("Auto without extensions", new PositionVoltageLevelLayoutFactory(new PositionFree()))
+            .put("Auto without extensions Clustering", new PositionVoltageLevelLayoutFactory(new PositionByClustering()))
+            .put("Random", new RandomVoltageLevelLayoutFactory(500, 500))
+            .put("Cgmes", new CgmesVoltageLevelLayoutFactory())
+            .build();
 
     private final Map<String, SubstationDiagramStyleProvider> styles
             = ImmutableMap.of("Default", new DefaultSubstationDiagramStyleProvider(),
@@ -227,8 +226,8 @@ public abstract class AbstractSubstationDiagramViewer extends Application implem
 
             infoArea.setEditable(false);
             infoArea.setText(String.join(System.lineSeparator(),
-                                         "id: " + c.getId(),
-                                         "name: " + c.getName()));
+                    "id: " + c.getId(),
+                    "name: " + c.getName()));
             tabPane.setSide(Side.BOTTOM);
             tab1.setClosable(false);
             tab2.setClosable(false);
@@ -289,7 +288,7 @@ public abstract class AbstractSubstationDiagramViewer extends Application implem
                 if (c.getContainerType() == ContainerType.VOLTAGE_LEVEL) {
                     VoltageLevelDiagram diagram = VoltageLevelDiagram.build((VoltageLevel) c, getVoltageLevelLayoutFactory(), showNames.isSelected(),
                             layoutParameters.get().isShowInductorFor3WT());
-                    diagram.writeSvg(getComponentLibrary(),
+                    diagram.writeSvg("", getComponentLibrary(),
                             diagramLayoutParameters,
                             initProvider,
                             styleProvider,
@@ -298,7 +297,7 @@ public abstract class AbstractSubstationDiagramViewer extends Application implem
                             metadataWriter);
                 } else if (c.getContainerType() == ContainerType.SUBSTATION) {
                     SubstationDiagram diagram = SubstationDiagram.build((Substation) c, getSubstationLayoutFactory(), getVoltageLevelLayoutFactory(), showNames.isSelected());
-                    diagram.writeSvg(getComponentLibrary(),
+                    diagram.writeSvg("", getComponentLibrary(),
                             diagramLayoutParameters,
                             initProvider,
                             styleProvider,

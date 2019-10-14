@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
+import javax.inject.Singleton;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -29,8 +30,9 @@ public class PositionByClustering implements PositionFinder {
 
     private class Context {
         private final Graph graph;
-        private final Map<BusNode, Integer> nodeToNb = new HashMap<>();
+        private final Map<BusNode, Integer> busToNb = new HashMap<>();
         private final List<LegBusSet> legBusSets = new ArrayList<>();
+        private final Map<BusNode, List<LegBusSet>> busToLBSs = new HashMap<>();
         private final List<LBSCluster> lbsClusterSet = new ArrayList<>();
         private final List<LBSLink> lbsLinks = new ArrayList<>();
 
@@ -46,7 +48,8 @@ public class PositionByClustering implements PositionFinder {
 
         indexBusPosition(context);
 
-        initLegBusSets(context.graph, context.legBusSets, context.nodeToNb);
+        initLegBusSets(context.graph, context.legBusSets, context.busToNb);
+        mapBusToLbs(context.legBusSets, context.busToLBSs);
         linkLegBusSets(context);
 
         clustering(context);
@@ -60,7 +63,7 @@ public class PositionByClustering implements PositionFinder {
     private void indexBusPosition(Context context) {
         int i = 1;
         for (BusNode n : new ArrayList<>(context.graph.getNodeBuses())) {
-            context.nodeToNb.put(n, i);
+            context.busToNb.put(n, i);
             i++;
         }
     }
@@ -77,10 +80,23 @@ public class PositionByClustering implements PositionFinder {
                         pushNewLBS(legBusSets, nodeToNb, cell, Side.UNDEFINED);
                     }
                 });
+        // find orphan busNodes and build their LBS
+        List<BusNode> allBusNodes = new ArrayList(graph.getNodeBuses());
+        allBusNodes.removeAll(legBusSets.stream()
+                .flatMap(legBusSet -> legBusSet.getBusNodeSet().stream()).collect(Collectors.toList()));
+        allBusNodes.forEach(busNode -> legBusSets.add(new LegBusSet(nodeToNb, busNode)));
         legBusSets.forEach(LegBusSet::checkInternCells);
     }
 
-    private void pushNewLBS(List<LegBusSet> legBusSets, Map<BusNode, Integer> nodeToNb, BusCell busCell, Side side) {
+    private void mapBusToLbs(List<LegBusSet> legBusSets, Map<BusNode, List<LegBusSet>> busToLBSs) {
+        legBusSets.forEach(lbs -> lbs.getBusNodeSet().forEach(busNode -> {
+            busToLBSs.putIfAbsent(busNode, new ArrayList<>());
+            busToLBSs.get(busNode).add(lbs);
+        }));
+    }
+
+    private void pushNewLBS(List<LegBusSet> legBusSets, Map<BusNode, Integer> nodeToNb, BusCell busCell, Side
+            side) {
         LegBusSet legBusSet = side == Side.UNDEFINED ?
                 new LegBusSet(nodeToNb, busCell) :
                 new LegBusSet(nodeToNb, (InternCell) busCell, side);
@@ -117,9 +133,10 @@ public class PositionByClustering implements PositionFinder {
         // Cluster with links: stronger links first
         List<LBSLink> linksToHandle = context.lbsLinks.stream()
                 .filter(LBSLink::hasLink)
+                .sorted(Collections.reverseOrder())
                 .collect(Collectors.toList());
         for (LBSLink lbsLink : linksToHandle) {
-            lbsLink.tryToMergeClusters();
+            lbsLink.mergeClusters();
         }
         LBSCluster mainCluster = context.lbsClusterSet.get(0);
 
@@ -181,8 +198,20 @@ public class PositionByClustering implements PositionFinder {
                                      Set<BusNode> busOnLeftSide) {
         for (int i = busIndex.lbsIndex; i < legBusSetList.size(); i++) {
             busIndex.lbsIndex = i;
-            for (BusNode bus : legBusSetList.get(busIndex.lbsIndex).getBusNodeSet()) {
-                if (remainingBuses.contains(bus) && !busOnLeftSide.contains(bus)) {
+            LegBusSet lbs = legBusSetList.get(busIndex.lbsIndex);
+            for (BusNode bus : lbs.getBusNodeSet()) {
+                if (remainingBuses.contains(bus)
+                        && !busOnLeftSide.contains(bus)
+                    // if bus is connected through a flatCell to a bus that is remaining and on left, then, this bus should be in a next lane
+/*
+                        && !lbs.getCandidateFlatCells().keySet().stream()
+                        .filter(internCell -> internCell.getBusNodes().contains(bus))
+                        .flatMap(internCell -> internCell.getBusNodes().stream())
+                        .anyMatch(busNode -> busNode != bus
+                                && remainingBuses.contains(busNode)
+                                && busOnLeftSide.contains(busNode))
+*/
+                ) {
                     busIndex.busNode = bus;
                     return;
                 }
@@ -213,30 +242,31 @@ public class PositionByClustering implements PositionFinder {
                                                    BusNodeAndLbsIndex busIndex,
                                                    Set<BusNode> remainingBuses,
                                                    Set<BusNode> busOnLeftSide) {
-        BusNode node = legBusSetList.get(busIndex.lbsIndex)
+        Set<BusNode> candidateFlatConnectedBusNode = legBusSetList.get(busIndex.lbsIndex)
                 .getCandidateFlatCells().keySet().stream()
                 .filter(internCell -> internCell.getBusNodes().contains(busIndex.busNode))
                 .flatMap(internCell -> internCell.getBusNodes().stream())
                 .filter(busNode -> busNode != busIndex.busNode
                         && remainingBuses.contains(busNode)
                         && !busOnLeftSide.contains(busNode))
-                .findAny()
-                .orElse(null);
+                .collect(Collectors.toSet());
 
-        if (node != null) {
-            busIndex.busNode = node;
-            int j = busIndex.lbsIndex;
-            while (j < legBusSetList.size()) {
-                if (legBusSetList.get(j).getBusNodeSet().contains(busIndex.busNode)) {
-                    break;
+        List<BusNode> nodes;
+        for (int i = 0; i < legBusSetList.size(); i++) {
+            LegBusSet lbs = legBusSetList.get(i);
+            nodes = new ArrayList<>(lbs.getBusNodeSet());
+            nodes.retainAll(candidateFlatConnectedBusNode);
+            if (!nodes.isEmpty()) {
+                if (i < busIndex.lbsIndex && lbs.getCandidateFlatCells().size() == 1) {
+                    candidateFlatConnectedBusNode.removeAll(nodes);
+                } else {
+                    busIndex.busNode = nodes.get(0);
+                    busIndex.lbsIndex = i;
+                    return true;
                 }
-                j++;
             }
-            busIndex.lbsIndex = j;
-            return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     private void establishFeederPositions(Context context) {
@@ -291,6 +321,10 @@ public class PositionByClustering implements PositionFinder {
             } else {
                 crossoverInternCells.put(internCell, side);
             }
+        }
+
+        LegBusSet(Map<BusNode, Integer> nodeToNb, BusNode busNode) {
+            this(nodeToNb, Collections.singletonList(busNode));
         }
 
         boolean contains(LegBusSet lbs) {
@@ -449,15 +483,16 @@ public class PositionByClustering implements PositionFinder {
             return lbss[i];
         }
 
-        boolean tryToMergeClusters() {
+        void mergeClusters() {
             if (lbss[0].getCluster() == lbss[1].getCluster()
                     || lbss[0].getMySidInCluster() == Side.UNDEFINED
                     || lbss[1].getMySidInCluster() == Side.UNDEFINED) {
-                return false;
+                return;
             }
-            lbss[0].getCluster().merge(lbss[0].getMySidInCluster(),
-                    lbss[1].getCluster(), lbss[1].getMySidInCluster());
-            return true;
+            lbss[0].getCluster().merge(
+                    lbss[0].getMySidInCluster(),
+                    lbss[1].getCluster(),
+                    lbss[1].getMySidInCluster());
         }
 
         boolean hasLink() {
@@ -492,125 +527,9 @@ public class PositionByClustering implements PositionFinder {
         }
     }
 
-/*
-    private class LBSClusterLink implements Comparable {
-        LBSCluster[] lbsClusters = new LBSCluster[2];
-        Map<LinkCategory, Integer> categoryToWeight = new EnumMap<>(LinkCategory.class);
-
-        LBSClusterLink(LBSCluster lbsCluster1, LBSCluster lbsCluster2, Set<LBSClusterLink> LBSClusterLinks) {
-            lbsClusters[0] = lbsCluster1;
-            lbsClusters[1] = lbsCluster2;
-            LBSClusterLinks.add(this);
-            assessLink();
-        }
-
-        void assessLink() {
-            HashSet<BusNode> nodeBusesIntersect = new HashSet<>(lbsClusters[0].getNodeBuses());
-            nodeBusesIntersect.retainAll(lbsClusters[1].getNodeBuses());
-            categoryToWeight.put(LinkCategory.COMMONBUSES, nodeBusesIntersect.size());
-
-            HashSet<InternCell> flatCellIntersect = new HashSet<>(lbsClusters[0].getCandidateFlatCells());
-            flatCellIntersect.retainAll(lbsClusters[1].getCandidateFlatCells());
-            categoryToWeight.put(LinkCategory.FLATCELLS, flatCellIntersect.size());
-
-            HashSet<InternCell> commonInternCells = new HashSet<>(lbsClusters[0].getCrossoverCells());
-            commonInternCells.retainAll(lbsClusters[1].getCrossoverCells());
-            categoryToWeight.put(LinkCategory.CROSSOVER, (int) (commonInternCells
-                    .stream()
-                    .flatMap(internCell -> internCell.getBusNodes().stream())
-                    .distinct()
-                    .count()));
-        }
-
-        int getLinkCategoryWeight(LinkCategory cat) {
-            return categoryToWeight.get(cat);
-        }
-
-        LBSCluster getOtherLBS(LBSCluster lbsCluster) {
-            if (lbsCluster == lbsClusters[0]) {
-                return lbsClusters[1];
-            }
-            if (lbsCluster == lbsClusters[1]) {
-                return lbsClusters[0];
-            }
-            return null;
-        }
-
-        LBSCluster getLbs(int i) {
-            if (i > 1) {
-                return null;
-            }
-            return lbsClusters[i];
-        }
-
-        boolean tryToMergeClusters() {
-            if (lbsClusters[0] == lbsClusters[1]
-                    || lbsClusters[0].getMySidInCluster() == Side.UNDEFINED
-                    || lbsClusters[1].getMySidInCluster() == Side.UNDEFINED) {
-                return false;
-            }
-            lbsClusters[0].getCluster().merge(lbsClusters[0].getMySidInCluster(),
-                    lbsClusters[1].getCluster(), lbsClusters[1].getMySidInCluster());
-            return true;
-        }
-
-
-        @Override
-        public boolean equals(Object obj) {
-            return super.equals(obj);
-        }
-
-        @Override
-        public int hashCode() {
-            return super.hashCode();
-        }
-
-        @Override
-        public int compareTo(@Nonnull Object o) {
-            if (!(o instanceof LBSLink)) {
-                return 0;
-            }
-            LBSLink lbsLink = (LBSLink) o;
-            for (LinkCategory category : LinkCategory.values()) {
-                if (lbsLink.getLinkCategoryWeight(category) > getLinkCategoryWeight(category)) {
-                    return -1;
-                }
-                if (lbsLink.getLinkCategoryWeight(category) < getLinkCategoryWeight(category)) {
-                    return 1;
-                }
-            }
-            return 0;
-        }
-    }
-*/
-
-    private class HorizontalLane {
-        List<BusNode> busNodes;
-
-        HorizontalLane(BusNode busNode) {
-            busNodes = new ArrayList<>();
-            busNodes.add(busNode);
-        }
-
-        void reverse() {
-            Collections.reverse(busNodes);
-        }
-
-        BusNode getSideNode(Side side) {
-            if (side == Side.LEFT) {
-                return busNodes.get(0);
-            }
-            if (side == Side.RIGHT) {
-                return busNodes.get(busNodes.size() - 1);
-            }
-            return null;
-        }
-    }
-
     private class LBSCluster {
         List<LegBusSet> lbsList;
         Map<Side, LegBusSet> sideToLbs;
-        List<HorizontalLane> horizontalLanes;
 
         List<LBSCluster> lbsClusters;
 
@@ -618,9 +537,6 @@ public class PositionByClustering implements PositionFinder {
             lbsList = new ArrayList<>();
             lbsList.add(lbs);
             lbs.setLbsCluster(this);
-
-            horizontalLanes = new ArrayList<>();
-            lbs.getBusNodeSet().forEach(busNode -> horizontalLanes.add(new HorizontalLane(busNode)));
 
             sideToLbs = new EnumMap<>(Side.class);
             sideToLbs.put(Side.LEFT, lbs);
@@ -648,7 +564,6 @@ public class PositionByClustering implements PositionFinder {
             LegBusSet lbs = sideToLbs.get(Side.LEFT);
             sideToLbs.put(Side.LEFT, sideToLbs.get(Side.RIGHT));
             sideToLbs.put(Side.RIGHT, lbs);
-            horizontalLanes.forEach(HorizontalLane::reverse);
         }
 
         Side getLbsSide(LegBusSet lbs) {
@@ -659,15 +574,6 @@ public class PositionByClustering implements PositionFinder {
                 return Side.LEFT;
             }
             return Side.UNDEFINED;
-        }
-
-        List<BusNode> getSideConnectableBuses(Side side) {
-            if (side == Side.LEFT || side == Side.RIGHT) {
-                return horizontalLanes.stream()
-                        .map(horizontalLane -> horizontalLane.getSideNode(side))
-                        .collect(Collectors.toList());
-            }
-            return null;
         }
 
         Set<BusNode> getNodeBuses() {
@@ -686,6 +592,5 @@ public class PositionByClustering implements PositionFinder {
         List<LegBusSet> getLbsList() {
             return lbsList;
         }
-
     }
 }

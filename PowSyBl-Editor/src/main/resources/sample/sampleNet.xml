@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- License Here -->
+<iidm:network xmlns:iidm="http://www.itesla_project.eu/schema/iidm/1_0" id="hvdctest" caseDate="2016-06-27T16:34:55.930+02:00" forecastDistance="0" sourceFormat="test">
+    <iidm:substation id="1" country="AR">
+        <iidm:voltageLevel id="13TUN_BB" nominalV="132.0" topologyKind="NODE_BREAKER">
+            <iidm:nodeBreakerTopology nodeCount="5">
+                <iidm:busbarSection id="1_11" name="1_11" node="0"/>
+                <iidm:busbarSection id="1_21" name="1_21" node="1"/>
+                <iidm:switch id="SW111" name="13TUN_SBA_L1" kind="DISCONNECTOR" retained="false" open="false" node1="0" node2="2"/>
+                <iidm:switch id="SW121" name="13TUN_SBB_L1" kind="DISCONNECTOR" retained="false" open="false" node1="1" node2="2"/>
+                <iidm:switch id="SW101" name="13TUN_INT_L1" kind="BREAKER"      retained="true"  open="false" node1="2" node2="3"/>
+                <iidm:switch id="SW141" name="13TUN_SL_L1"  kind="DISCONNECTOR" retained="true"  open="false" node1="3" node2="4"/>
+            </iidm:nodeBreakerTopology>
+            <iidm:shunt id="C2_Filter1" name="Filter 3"  bPerSection="3.0E-5" maximumSectionCount="1" currentSectionCount="1" node="4" q="12.5"/>
+        </iidm:voltageLevel>
+    </iidm:substation>
+</iidm:network>

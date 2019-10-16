@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="21"
+   height="21"
+   viewBox="0 0 21 21"
+   version="1.1"
+   id="svg2386"
+   inkscape:version="0.92.4 (unknown)"
+   sodipodi:docname="icon_cell.svg">
+  <defs
+     id="defs2380" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#000000"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="44.8"
+     inkscape:cx="6.6737966"
+     inkscape:cy="8.2175254"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="true"
+     units="px"
+     scale-x="1"
+     inkscape:window-width="1920"
+     inkscape:window-height="1053"
+     inkscape:window-x="1366"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1">
+    <inkscape:grid
+       type="xygrid"
+       id="grid2939"
+       spacingx="0.5"
+       spacingy="0.5" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata2383">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-291.44373)">
+    <path
+       inkscape:connector-curvature="0"
+       id="path1390"
+       style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.33333325"
+       d="m 19.833332,307.44373 h -6.666666 v -1.33333 h 6.666666 z M 7.8333333,292.77706 h 6.6666657 v 1.33334 H 7.8333333 Z m 0,14.66667 H 1.1666668 v -1.33333 h 6.6666665 z m 9.3333327,-2.66667 v -4 h -5.333333 v -1.33333 h 4 v -8 H 6.5 v 8 h 3.999999 v 1.33333 H 3.8333334 v 4 h -3.9999999 v 8 h 9.3333331 v -8 H 5.1666667 V 302.1104 H 15.833333 v 2.66666 h -4 v 8 h 9.333333 v -8 z" />
+  </g>
+</svg>

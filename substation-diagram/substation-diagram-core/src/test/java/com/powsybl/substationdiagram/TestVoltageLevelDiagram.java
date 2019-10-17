@@ -76,7 +76,7 @@ public class TestVoltageLevelDiagram extends AbstractTestCase {
 
         Path outSvg = tmpDir.resolve("vl.svg");
 
-        VoltageLevelDiagram.build(vl, new PositionVoltageLevelLayoutFactory(), false, false).writeSvg(componentLibrary, layoutParameters, network, outSvg);
+        VoltageLevelDiagram.build(vl, new PositionVoltageLevelLayoutFactory(), false, false).writeSvg("", componentLibrary, layoutParameters, network, outSvg);
         String svgStr = normalizeLineSeparator(new String(Files.readAllBytes(outSvg), StandardCharsets.UTF_8));
 
 //        FileWriter fw = new FileWriter(System.getProperty("user.home") + "/TestVL.svg");
@@ -97,7 +97,7 @@ public class TestVoltageLevelDiagram extends AbstractTestCase {
 
         Path outSvg = tmpDir.resolve("vl.svg");
 
-        VoltageLevelDiagram.build(vl, new PositionVoltageLevelLayoutFactory(), false, false).writeSvg(writer, network, outSvg);
+        VoltageLevelDiagram.build(vl, new PositionVoltageLevelLayoutFactory(), false, false).writeSvg("", writer, network, outSvg);
         String svgStr = normalizeLineSeparator(new String(Files.readAllBytes(outSvg), StandardCharsets.UTF_8));
 
         String refSvg = normalizeLineSeparator(new String(

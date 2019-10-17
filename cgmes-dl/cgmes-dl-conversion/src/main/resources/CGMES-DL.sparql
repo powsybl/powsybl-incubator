@@ -136,7 +136,7 @@ SELECT ?identifiedObject ?name ?x ?y ?seq ?rotation ?diagramName
     ?identifiedObject
         a ?type ;
         cim:IdentifiedObject.name ?name .
-    VALUES ?type { cim:EnergyConsumer cim:AsynchronousMachine } .
+    VALUES ?type { cim:EnergyConsumer cim:AsynchronousMachine cim:ConformLoad cim:NonConformLoad } .
     ?diagramObjectPoint
         a cim:DiagramObjectPoint ;
         cim:DiagramObjectPoint.DiagramObject ?diagramObject ;

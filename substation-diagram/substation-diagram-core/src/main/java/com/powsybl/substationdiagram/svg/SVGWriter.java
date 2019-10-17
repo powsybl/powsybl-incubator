@@ -20,25 +20,29 @@ import java.nio.file.Path;
  */
 public interface SVGWriter {
 
-    GraphMetadata write(Graph graph,
+    GraphMetadata write(String prefixId,
+                        Graph graph,
                         SubstationDiagramInitialValueProvider initProvider,
                         SubstationDiagramStyleProvider styleProvider,
                         NodeLabelConfiguration nodeLabelConfiguration,
                         Path svgFile);
 
-    GraphMetadata write(Graph graph,
+    GraphMetadata write(String prefixId,
+                        Graph graph,
                         SubstationDiagramInitialValueProvider initProvider,
                         SubstationDiagramStyleProvider styleProvider,
                         NodeLabelConfiguration nodeLabelConfiguration,
                         Writer writer);
 
-    GraphMetadata write(SubstationGraph graph,
+    GraphMetadata write(String prefixId,
+                        SubstationGraph graph,
                         SubstationDiagramInitialValueProvider initProvider,
                         SubstationDiagramStyleProvider styleProvider,
                         NodeLabelConfiguration nodeLabelConfiguration,
                         Path svgFile);
 
-    GraphMetadata write(SubstationGraph graph,
+    GraphMetadata write(String prefixId,
+                        SubstationGraph graph,
                         SubstationDiagramInitialValueProvider initProvider,
                         SubstationDiagramStyleProvider styleProvider,
                         NodeLabelConfiguration nodeLabelConfiguration,

@@ -78,7 +78,7 @@ public class TopologicalStyleTest {
         Files.copy(getClass().getResourceAsStream("/base-voltages.yml"), config);
 
         SubstationDiagram.build(substation)
-                .writeSvg(componentLibrary,
+                .writeSvg("", componentLibrary,
                         layoutParameters,
                         new DefaultSubstationDiagramInitialValueProvider(network),
                         new TopologicalStyleProvider(config),

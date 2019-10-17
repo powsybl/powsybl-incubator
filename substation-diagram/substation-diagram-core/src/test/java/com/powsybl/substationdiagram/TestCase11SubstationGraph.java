@@ -465,7 +465,7 @@ public class TestCase11SubstationGraph extends AbstractTestCase {
         SubstationDiagram diagram = SubstationDiagram.build(substation);
         Path pathSVG = Paths.get(System.getProperty("user.home"), "substDiag.svg");
         Path pathMetadata = Paths.get(System.getProperty("user.home"), "substDiag_metadata.json");
-        diagram.writeSvg(new DefaultSVGWriter(new ResourcesComponentLibrary("/ConvergenceLibrary"), layoutParameters), pathSVG, network);
+        diagram.writeSvg("", new DefaultSVGWriter(new ResourcesComponentLibrary("/ConvergenceLibrary"), layoutParameters), pathSVG, network);
         assertTrue(Files.exists(pathSVG));
         assertTrue(Files.exists(pathMetadata));
         try {

@@ -66,7 +66,7 @@ public abstract class AbstractTestCase {
     public void compareSvg(Graph graph, LayoutParameters layoutParameters, String refSvgName) {
         try (StringWriter writer = new StringWriter()) {
             new DefaultSVGWriter(componentLibrary, layoutParameters)
-                    .write(graph,
+                    .write("", graph,
                             new DefaultSubstationDiagramInitialValueProvider(network),
                             styleProvider,
                             new DefaultNodeLabelConfiguration(componentLibrary),
@@ -88,7 +88,7 @@ public abstract class AbstractTestCase {
     public void compareSvg(Graph graph, LayoutParameters layoutParameters, String refSvgName, SubstationDiagramStyleProvider myStyleProvider) {
         try (StringWriter writer = new StringWriter()) {
             new DefaultSVGWriter(componentLibrary, layoutParameters)
-                    .write(graph,
+                    .write("", graph,
                             new DefaultSubstationDiagramInitialValueProvider(network),
                             myStyleProvider,
                             new DefaultNodeLabelConfiguration(componentLibrary),
@@ -110,7 +110,7 @@ public abstract class AbstractTestCase {
     public void compareSvg(SubstationGraph graph, LayoutParameters layoutParameters, String refSvgName) {
         try (StringWriter writer = new StringWriter()) {
             new DefaultSVGWriter(componentLibrary, layoutParameters)
-                    .write(graph,
+                    .write("", graph,
                             new DefaultSubstationDiagramInitialValueProvider(network),
                             styleProvider,
                             new DefaultNodeLabelConfiguration(componentLibrary),
@@ -133,7 +133,7 @@ public abstract class AbstractTestCase {
                            String refSvgName, SubstationDiagramStyleProvider myStyleProvider) {
         try (StringWriter writer = new StringWriter()) {
             new DefaultSVGWriter(componentLibrary, layoutParameters)
-                    .write(graph,
+                    .write("", graph,
                             new DefaultSubstationDiagramInitialValueProvider(network),
                             myStyleProvider,
                             new DefaultNodeLabelConfiguration(componentLibrary),

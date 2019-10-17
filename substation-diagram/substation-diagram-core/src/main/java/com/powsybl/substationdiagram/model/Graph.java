@@ -879,7 +879,7 @@ public class Graph {
 
                         if (infosInductor.getSide() == ThreeWindingsTransformer.Side.TWO) {
                             // Create a feeder for the inductor
-                            String idFeeder1 = infosInductor.getId();
+                            String idFeeder1 = infosInductor.getId() + "_" + n3WT.getTransformer().getId();
                             String nameFeeder1 = infosInductor.getName();
                             nfeeder1 = Feeder2WTNode.create(Graph.this, idFeeder1, nameFeeder1, n3WT.getVL2());
                             nfeeder1.setComponentType(INDUCTOR);
@@ -896,7 +896,7 @@ public class Graph {
 
                         if (infosInductor.getSide() == ThreeWindingsTransformer.Side.THREE) {
                             // Create a feeder for the inductor
-                            String idFeeder2 = infosInductor.getId();
+                            String idFeeder2 = infosInductor.getId() + "_" + n3WT.getTransformer().getId();
                             String nameFeeder2 = infosInductor.getName();
                             nfeeder2 = Feeder2WTNode.create(Graph.this, idFeeder2, nameFeeder2, n3WT.getVL3());
                             nfeeder2.setComponentType(INDUCTOR);

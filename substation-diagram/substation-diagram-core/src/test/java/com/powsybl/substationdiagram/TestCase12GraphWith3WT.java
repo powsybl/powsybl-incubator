@@ -439,7 +439,7 @@ public class TestCase12GraphWith3WT extends AbstractTestCase {
         Path pathMetadata = Paths.get(System.getProperty("user.home"), "vlDiag_metadata.json");
 
         ComponentLibrary componentLibrary = new ResourcesComponentLibrary("/ConvergenceLibrary");
-        diagram.writeSvg(new DefaultSVGWriter(componentLibrary, layoutParameters),
+        diagram.writeSvg("", new DefaultSVGWriter(componentLibrary, layoutParameters),
                 new DefaultSubstationDiagramInitialValueProvider(network),
                 new NominalVoltageSubstationDiagramStyleProvider(),
                 new DefaultNodeLabelConfiguration(componentLibrary),

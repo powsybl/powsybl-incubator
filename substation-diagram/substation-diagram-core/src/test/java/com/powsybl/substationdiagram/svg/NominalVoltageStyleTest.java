@@ -66,7 +66,7 @@ public class NominalVoltageStyleTest {
         Path outSvg = tmpDir.resolve("sub.svg");
         Path meta = tmpDir.resolve("meta.json");
 
-        SubstationDiagram.build(substation).writeSvg(componentLibrary,
+        SubstationDiagram.build(substation).writeSvg("", componentLibrary,
                 layoutParameters,
                 new DefaultSubstationDiagramInitialValueProvider(network),
                 new NominalVoltageSubstationDiagramStyleProvider(),

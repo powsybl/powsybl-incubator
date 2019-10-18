@@ -13,7 +13,6 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.google.common.io.ByteStreams;
@@ -33,63 +32,58 @@ import com.powsybl.triplestore.api.TripleStoreFactory;
 
 public class CgmesInterpretationTest {
 
-    @BeforeClass
-    public static void setUp() {
-        catalog = new CgmesConformity1Catalog();
-    }
-
     @Test
     public void microGridBaseCaseBE() throws IOException {
-        InterpretationResults results = test(catalog.microGridBaseCaseBE(), "microGridBaseCaseBE");
+        InterpretationResults results = test(CgmesConformity1Catalog.microGridBaseCaseBE(), "microGridBaseCaseBE");
         assertFalse(results.error() > Configuration.ERROR_TOLERANCE);
     }
 
     @Test
     public void microGridBaseCaseNL() throws IOException {
-        InterpretationResults results = test(catalog.microGridBaseCaseNL(), "microGridBaseCaseNL");
+        InterpretationResults results = test(CgmesConformity1Catalog.microGridBaseCaseNL(), "microGridBaseCaseNL");
         assertFalse(results.error() > Configuration.ERROR_TOLERANCE);
     }
 
     @Test
     public void microGridBaseCaseAssembled() throws IOException {
-        InterpretationResults results = test(catalog.microGridBaseCaseAssembled(), "microGridBaseCaseAssembled");
+        InterpretationResults results = test(CgmesConformity1Catalog.microGridBaseCaseAssembled(), "microGridBaseCaseAssembled");
         assertFalse(results.error() > Configuration.ERROR_TOLERANCE);
     }
 
     @Test
     public void microGridType4BE() throws IOException {
-        InterpretationResults results = test(catalog.microGridType4BE(), "microGridType4BE");
+        InterpretationResults results = test(CgmesConformity1Catalog.microGridType4BE(), "microGridType4BE");
         assertTrue(results.error() > Configuration.ERROR_TOLERANCE);
     }
 
     @Test
     public void miniBusBranch() throws IOException {
-        InterpretationResults results = test(catalog.miniBusBranch(), "miniBusBranch");
+        InterpretationResults results = test(CgmesConformity1Catalog.miniBusBranch(), "miniBusBranch");
         assertFalse(results.error() > Configuration.ERROR_TOLERANCE);
     }
 
     @Test
     public void miniNodeBreaker() throws IOException {
-        InterpretationResults results = test(catalog.miniNodeBreaker(), "miniNodeBreaker");
+        InterpretationResults results = test(CgmesConformity1Catalog.miniNodeBreaker(), "miniNodeBreaker");
         assertFalse(results.error() > Configuration.ERROR_TOLERANCE);
     }
 
     @Test
     public void smallBusBranch() throws IOException {
-        InterpretationResults results = test(catalog.smallBusBranch(), "smallBusBranch");
+        InterpretationResults results = test(CgmesConformity1Catalog.smallBusBranch(), "smallBusBranch");
         assertTrue(results.error() > Configuration.ERROR_TOLERANCE);
     }
 
     @Test
     public void smallNodeBreaker() throws IOException {
-        InterpretationResults results = test(catalog.smallNodeBreaker(), "smallNodeBreaker");
+        InterpretationResults results = test(CgmesConformity1Catalog.smallNodeBreaker(), "smallNodeBreaker");
         assertTrue(results.error() > Configuration.ERROR_TOLERANCE);
     }
 
     @Test
     public void report() throws IOException {
         Collection<InterpretationResults> results = new ArrayList<>();
-        InterpretationResults r = test(catalog.miniNodeBreaker(), "miniNodeBreaker");
+        InterpretationResults r = test(CgmesConformity1Catalog.miniNodeBreaker(), "miniNodeBreaker");
         results.add(r);
         try (FileSystem fs = Jimfs.newFileSystem(com.google.common.jimfs.Configuration.unix())) {
             Files.createDirectory(fs.getPath("tmp"));
@@ -133,6 +127,4 @@ public class CgmesInterpretationTest {
             throw new UncheckedIOException(e);
         }
     }
-
-    private static CgmesConformity1Catalog catalog;
 }

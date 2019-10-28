@@ -51,10 +51,7 @@
 
     <modules>
         <module>balances-adjustment</module>
-        <module>substation-diagram</module>
-        <module>cgmes-dl</module>
         <module>cgmes-gl</module>
-        <module>base-voltage-color</module>
     </modules>
 
     <properties>
@@ -104,7 +101,6 @@
 
         <powsyblcore.version>3.1.0-SNAPSHOT</powsyblcore.version>
         <powsybl-open-loadflow.version>1.0.0-SNAPSHOT</powsybl-open-loadflow.version>
-        <powsybl-iidm-cvg-extensions.version>2.6.0</powsybl-iidm-cvg-extensions.version>
     </properties>
 
     <build>
@@ -452,11 +448,6 @@
                 <version>${slf4j.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>com.rte-france.powsybl</groupId>
-                <artifactId>powsybl-iidm-cvg-extensions</artifactId>
-                <version>${powsybl-iidm-cvg-extensions.version}</version>
-            </dependency>
             <dependency>
                 <groupId>com.powsybl</groupId>
                 <artifactId>powsybl-open-loadflow</artifactId>

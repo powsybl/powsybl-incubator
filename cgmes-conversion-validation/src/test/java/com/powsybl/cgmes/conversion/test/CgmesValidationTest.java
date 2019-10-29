@@ -19,7 +19,6 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.google.common.io.ByteStreams;
@@ -49,56 +48,51 @@ import com.powsybl.triplestore.api.TripleStoreFactory;
 
 public class CgmesValidationTest {
 
-    @BeforeClass
-    public static void setUp() {
-        catalog = new CgmesConformity1Catalog();
-    }
-
     @Test
     public void microGridBaseCaseBE() throws IOException {
-        ValidationResults conversionValidationResult = test(catalog.microGridBaseCaseBE(), "microGridBaseCaseBE");
+        ValidationResults conversionValidationResult = test(CgmesConformity1Catalog.microGridBaseCaseBE(), "microGridBaseCaseBE");
         assertFalse(getFailed(conversionValidationResult));
     }
 
     @Test
     public void microGridBaseCaseNL() throws IOException {
-        ValidationResults conversionValidationResult = test(catalog.microGridBaseCaseNL(), "microGridBaseCaseNL");
+        ValidationResults conversionValidationResult = test(CgmesConformity1Catalog.microGridBaseCaseNL(), "microGridBaseCaseNL");
         assertFalse(getFailed(conversionValidationResult));
     }
 
     @Test
     public void microGridBaseCaseAssembled() throws IOException {
-        ValidationResults conversionValidationResult = test(catalog.microGridBaseCaseAssembled(), "microGridBaseCaseAssembled");
+        ValidationResults conversionValidationResult = test(CgmesConformity1Catalog.microGridBaseCaseAssembled(), "microGridBaseCaseAssembled");
         assertFalse(getFailed(conversionValidationResult));
     }
 
     @Test
     public void microGridType4BE() throws IOException {
-        ValidationResults conversionValidationResult = test(catalog.microGridType4BE(), "microGridType4BE");
+        ValidationResults conversionValidationResult = test(CgmesConformity1Catalog.microGridType4BE(), "microGridType4BE");
         assertFalse(getFailed(conversionValidationResult));
     }
 
     @Test
     public void miniBusBranch() throws IOException {
-        ValidationResults conversionValidationResult = test(catalog.miniBusBranch(), "miniBusBranch");
+        ValidationResults conversionValidationResult = test(CgmesConformity1Catalog.miniBusBranch(), "miniBusBranch");
         assertFalse(getFailed(conversionValidationResult));
     }
 
     @Test
     public void miniNodeBreaker() throws IOException {
-        ValidationResults conversionValidationResult = test(catalog.miniNodeBreaker(), "miniNodeBreaker");
+        ValidationResults conversionValidationResult = test(CgmesConformity1Catalog.miniNodeBreaker(), "miniNodeBreaker");
         assertFalse(getFailed(conversionValidationResult));
     }
 
     @Test
     public void smallBusBranch() throws IOException {
-        ValidationResults conversionValidationResult = test(catalog.smallBusBranch(), "smallBusBranch");
+        ValidationResults conversionValidationResult = test(CgmesConformity1Catalog.smallBusBranch(), "smallBusBranch");
         assertFalse(getFailed(conversionValidationResult));
     }
 
     @Test
     public void smallNodeBreaker() throws IOException {
-        ValidationResults conversionValidationResult = test(catalog.smallNodeBreaker(), "smallNodeBreaker");
+        ValidationResults conversionValidationResult = test(CgmesConformity1Catalog.smallNodeBreaker(), "smallNodeBreaker");
         assertFalse(getFailed(conversionValidationResult));
     }
 
@@ -171,6 +165,4 @@ public class CgmesValidationTest {
             throw new UncheckedIOException(e);
         }
     }
-
-    private static CgmesConformity1Catalog catalog;
 }

@@ -89,16 +89,15 @@ public class BalanceComputationImpl implements BalanceComputation {
         network.getVariantManager().cloneVariant(workingStateId, workingVariantCopyId);
         network.getVariantManager().setWorkingVariant(workingVariantCopyId);
 
-        Map<NetworkArea, Double> mismatches = new HashMap<>();
-        double totalMismatches;
+        Map<NetworkArea, Double> balanceOffsets = new HashMap<>();
 
         do {
             // Step 2: Perform the scaling
-            for (NetworkArea na : mismatches.keySet()) {
-                double asked = mismatches.get(na);
+            for (NetworkArea na : balanceOffsets.keySet()) {
+                double asked = balanceOffsets.get(na);
 
                 Scalable scalable = networkAreasScalableMap.get(na);
-                double done = scalable.scale(network, mismatches.get(na));
+                double done = scalable.scale(network, balanceOffsets.get(na));
                 LOGGER.debug("Scaling for area {}: asked={}, done={}", na.getName(), asked, done);
             }
 
@@ -111,26 +110,26 @@ public class BalanceComputationImpl implements BalanceComputation {
             }
 
             // Step 4: Compute balance and mismatch for each area
-            totalMismatches = 0.0;
+            double mismatchesNorm = 0.0;
             for (NetworkArea na : networkAreaNetPositionTargetMap.keySet()) {
                 double target = networkAreaNetPositionTargetMap.get(na);
                 double balance = na.getNetPosition(network);
-                double oldMismatch = mismatches.computeIfAbsent(na, k -> 0.0);
+                double oldMismatch = balanceOffsets.computeIfAbsent(na, k -> 0.0);
                 double mismatch = target - balance;
-                mismatches.put(na, oldMismatch + mismatch);
+                balanceOffsets.put(na, oldMismatch + mismatch);
                 LOGGER.debug("Mistmatch for area {}: {} (target={}, balance={})", na.getName(), mismatch, target, balance);
 
-                totalMismatches += mismatch * mismatch;
+                mismatchesNorm += mismatch * mismatch;
             }
 
             // Step 5: Checks balance adjustment results
-            if (totalMismatches < parameters.getThresholdNetPosition()) {
-                result = new BalanceComputationResult(BalanceComputationResult.Status.SUCCESS, ++iterationCounter, mismatches);
+            if (mismatchesNorm < parameters.getThresholdNetPosition()) {
+                result = new BalanceComputationResult(BalanceComputationResult.Status.SUCCESS, ++iterationCounter, balanceOffsets);
                 network.getVariantManager().cloneVariant(workingVariantCopyId, workingStateId, true);
             } else {
                 // Reset current variant with initial state
                 network.getVariantManager().cloneVariant(workingStateId, workingVariantCopyId, true);
-                result = new BalanceComputationResult(BalanceComputationResult.Status.FAILED, ++iterationCounter, mismatches);
+                result = new BalanceComputationResult(BalanceComputationResult.Status.FAILED, ++iterationCounter, balanceOffsets);
             }
         } while (iterationCounter < parameters.getMaxNumberIterations() && result.getStatus() != BalanceComputationResult.Status.SUCCESS);
 

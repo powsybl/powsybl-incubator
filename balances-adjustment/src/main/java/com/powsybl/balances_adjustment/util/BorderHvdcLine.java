@@ -13,7 +13,7 @@ import com.powsybl.iidm.network.VoltageLevel;
 import java.util.List;
 
 /**
- * @author Ameni Walha <ameni.walha at rte-france.com>
+ * @author Ameni Walha {@literal <ameni.walha at rte-france.com>}
  */
 public class BorderHvdcLine implements  BorderDevice {
 

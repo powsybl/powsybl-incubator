@@ -22,7 +22,7 @@ import static org.junit.Assert.assertTrue;
 
 
 /**
- * @author Ameni Walha <ameni.walha at rte-france.com>
+ * @author Ameni Walha {@literal <ameni.walha at rte-france.com>}
  */
 public class VoltageLevelsAreaTest {
 

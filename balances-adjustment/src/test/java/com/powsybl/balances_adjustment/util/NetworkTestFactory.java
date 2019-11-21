@@ -8,7 +8,7 @@ package com.powsybl.balances_adjustment.util;
 import com.powsybl.iidm.network.*;
 
 /**
- * @author Ameni Walha <ameni.walha at rte-france.com>
+ * @author Ameni Walha {@literal <ameni.walha at rte-france.com>}
  */
 public final class NetworkTestFactory {
 

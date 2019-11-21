@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * @author Ameni Walha <ameni.walha at rte-france.com>
+ * @author Ameni Walha {@literal <ameni.walha at rte-france.com>}
  */
 public class VoltageLevelsArea extends AbstractNetworkArea {
 

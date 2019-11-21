@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
  * </ul>
  * </p>
  *
- * @author Ameni Walha <ameni.walha at rte-france.com>
+ * @author Ameni Walha {@literal <ameni.walha at rte-france.com>}
  */
 public class BalanceComputationImpl implements BalanceComputation {
 

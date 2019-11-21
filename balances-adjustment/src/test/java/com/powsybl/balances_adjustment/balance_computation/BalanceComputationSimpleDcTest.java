@@ -105,8 +105,8 @@ public class BalanceComputationSimpleDcTest {
     @Test
     public void testBalancedNetworkMockito() {
         networkAreaNetPositionTargetMap = new HashMap<>();
-        networkAreaNetPositionTargetMap.put(countryAreaFR, 1200.);
-        networkAreaNetPositionTargetMap.put(countryAreaBE, -1200.);
+        networkAreaNetPositionTargetMap.put(countryAreaFR, 1199.);
+        networkAreaNetPositionTargetMap.put(countryAreaBE, -1199.);
 
         LoadFlowProvider loadFlowProviderMock = new LoadFlowProvider() {
 

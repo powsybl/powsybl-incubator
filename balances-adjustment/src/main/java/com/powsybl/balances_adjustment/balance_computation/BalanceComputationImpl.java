@@ -41,31 +41,30 @@ import java.util.stream.Collectors;
 public class BalanceComputationImpl implements BalanceComputation {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BalanceComputationImpl.class);
-    private Network network;
+
+    private final Network network;
 
     /**
      * The target net position for each network area
      */
-    private Map<NetworkArea, Double> networkAreaNetPositionTargetMap;
+    private final Map<NetworkArea, Double> networkAreaNetPositionTargetMap;
 
     /**
      * The scalable for each network area.
      * Scalable contains a list of injections (generator or load)
      * @see com.powsybl.action.util.Scalable;
      */
-    private Map<NetworkArea, Scalable> networkAreasScalableMap;
+    private final Map<NetworkArea, Scalable> networkAreasScalableMap;
 
-    private ComputationManager computationManager;
-    private LoadFlow.Runner loadFlowRunner;
+    private final ComputationManager computationManager;
+    private final LoadFlow.Runner loadFlowRunner;
 
     public BalanceComputationImpl(Network network, Map<NetworkArea, Double> networkAreaNetPositionTargetMap, Map<NetworkArea, Scalable> networkAreasScalableMap, ComputationManager computationManager, LoadFlow.Runner loadFlowRunner) {
-
         this.network = Objects.requireNonNull(network);
         this.networkAreaNetPositionTargetMap = Objects.requireNonNull(networkAreaNetPositionTargetMap);
         this.networkAreasScalableMap = Objects.requireNonNull(networkAreasScalableMap);
         this.computationManager = Objects.requireNonNull(computationManager);
         this.loadFlowRunner = Objects.requireNonNull(loadFlowRunner);
-
     }
 
     /**
@@ -76,14 +75,10 @@ public class BalanceComputationImpl implements BalanceComputation {
         Objects.requireNonNull(workingStateId);
         Objects.requireNonNull(parameters);
 
-        BalanceComputationResult result = new BalanceComputationResult(BalanceComputationResult.Status.FAILED);
+        BalanceComputationResult result;
         int iterationCounter = 0;
-        Map<NetworkArea, Double> previousScalingMap = new HashMap<>();
 
-        for (NetworkArea networkArea : networkAreaNetPositionTargetMap.keySet()) {
-            previousScalingMap.put(networkArea, 0.);
-        }
-        // Step 1 : Input data validation
+        // Step 1: Input data validation
         List<String> inputDataViolations = this.listInputDataViolations();
         if (!inputDataViolations.isEmpty()) {
             inputDataViolations.forEach(LOGGER::error);
@@ -95,13 +90,20 @@ public class BalanceComputationImpl implements BalanceComputation {
         network.getVariantManager().cloneVariant(workingStateId, workingVariantCopyId);
         network.getVariantManager().setWorkingVariant(workingVariantCopyId);
 
-        Map<NetworkArea, Double> networkAreasResidue;
-        List<NetworkArea> unbalancedNetworkAreas;
+        Map<NetworkArea, Double> mismatches = new HashMap<>();
+        double totalMismatches;
 
-        while (iterationCounter < parameters.getMaxNumberIterations()
-                && result.getStatus() == BalanceComputationResult.Status.FAILED) {
+        do {
+            // Step 2: Perform the scaling
+            for (NetworkArea na : mismatches.keySet()) {
+                double asked = mismatches.get(na);
 
-            // Step 2 : compute Loadflow
+                Scalable scalable = networkAreasScalableMap.get(na);
+                double done = scalable.scale(network, mismatches.get(na));
+                LOGGER.debug("Scaling for area {}: asked={}, done={}", na.getName(), asked, done);
+            }
+
+            // Step 3: compute Loadflow
             LoadFlowResult loadFlowResult = loadFlowRunner.run(network, workingVariantCopyId, computationManager, new LoadFlowParameters());
             if (!loadFlowResult.isOk()) {
                 LOGGER.error("Loadflow on network {} does not converge", network.getId());
@@ -109,29 +111,29 @@ public class BalanceComputationImpl implements BalanceComputation {
                 return CompletableFuture.completedFuture(result);
             }
 
-            // Step 3 : Balance computation iteration
-            iterationCounter++;
-            networkAreasResidue = getNetworkAreasResidue(network);
-            unbalancedNetworkAreas = listUnbalancedNetworkAreas(parameters, networkAreasResidue);
+            // Step 4: Compute balance and mismatch for each area
+            totalMismatches = 0.0;
+            for (NetworkArea na : networkAreaNetPositionTargetMap.keySet()) {
+                double target = networkAreaNetPositionTargetMap.get(na);
+                double balance = na.getNetPosition(network);
+                double oldMismatch = mismatches.computeIfAbsent(na, k -> 0.0);
+                double mismatch = target - balance;
+                mismatches.put(na, oldMismatch + mismatch);
+                LOGGER.debug("Mistmatch for area {}: {} (target={}, balance={})", na.getName(), mismatch, target, balance);
 
-            if (unbalancedNetworkAreas.isEmpty()) {
-                // Change the workingStateId with final scaling
-                network.getVariantManager().setWorkingVariant(workingStateId);
-                scaleBalancedNetwork(previousScalingMap);
-                loadFlowRunner.run(network, workingStateId, computationManager, new LoadFlowParameters());
-                result = new BalanceComputationResult(BalanceComputationResult.Status.SUCCESS, iterationCounter, previousScalingMap);
-
-            } else {
-                // Step 4 : scaling network areas
-                result = new BalanceComputationResult(BalanceComputationResult.Status.FAILED, iterationCounter);
-                network.getVariantManager().removeVariant(workingVariantCopyId);
-                network.getVariantManager().cloneVariant(workingStateId, workingVariantCopyId);
-                network.getVariantManager().setWorkingVariant(workingVariantCopyId);
-                LOGGER.info(" Scaling iteration number {}", iterationCounter);
-
-                previousScalingMap = scaleNetworkAreas(networkAreasResidue, previousScalingMap);
+                totalMismatches += mismatch * mismatch;
             }
-        }
+
+            // Step 5: Checks balance adjustment results
+            if (totalMismatches < parameters.getThresholdNetPosition()) {
+                result = new BalanceComputationResult(BalanceComputationResult.Status.SUCCESS, ++iterationCounter, mismatches);
+                network.getVariantManager().cloneVariant(workingVariantCopyId, workingStateId, true);
+            } else {
+                // Reset current variant with initial state
+                network.getVariantManager().cloneVariant(workingStateId, workingVariantCopyId, true);
+                result = new BalanceComputationResult(BalanceComputationResult.Status.FAILED, ++iterationCounter, mismatches);
+            }
+        } while (iterationCounter < parameters.getMaxNumberIterations() && result.getStatus() != BalanceComputationResult.Status.SUCCESS);
 
         if (result.getStatus() == BalanceComputationResult.Status.SUCCESS) {
             List<String> networkAreasName = networkAreaNetPositionTargetMap.keySet().stream()
@@ -146,31 +148,6 @@ public class BalanceComputationImpl implements BalanceComputation {
         network.getVariantManager().setWorkingVariant(initialVariantId);
 
         return CompletableFuture.completedFuture(result);
-    }
-
-    /**
-     * @return the net position residue for each network area
-     */
-    private Map<NetworkArea, Double> getNetworkAreasResidue(Network network) {
-        Map<NetworkArea, Double> networkAreasResidualMap = new HashMap<>();
-        for (Map.Entry<NetworkArea, Double> entry : networkAreaNetPositionTargetMap.entrySet()) {
-            NetworkArea networkArea = entry.getKey();
-            double residue = entry.getValue() - networkArea.getNetPosition(network);
-            networkAreasResidualMap.put(networkArea, residue);
-        }
-        return networkAreasResidualMap;
-    }
-
-    /**
-     * @return the unbalanced network areas list
-     * If net position residue is above the threshold, the network area is unbalanced
-     */
-    private List<NetworkArea> listUnbalancedNetworkAreas(BalanceComputationParameters parameters, Map<NetworkArea, Double> networkAreasResidualMap) {
-        double threshold = parameters.getThresholdNetPosition();
-
-        return networkAreasResidualMap.keySet().stream()
-                .filter(networkArea -> Math.abs(networkAreasResidualMap.get(networkArea)) > threshold)
-                .collect(Collectors.toList());
     }
 
     /**
@@ -268,39 +245,4 @@ public class BalanceComputationImpl implements BalanceComputation {
         }
         return listOfViolations;
     }
-
-    /**
-     * Adjusts the generators and loads of network areas to reach the target net positions
-     * @see com.powsybl.action.util.Scalable
-     * @param networkAreasResidualMap the net position residue for each network area
-     * @param previousScalingMap the previous value of adjustment for each network area
-     * @return the value of power adjusted for each network area
-     */
-    private Map<NetworkArea, Double> scaleNetworkAreas(Map<NetworkArea, Double> networkAreasResidualMap, Map<NetworkArea, Double> previousScalingMap) {
-        Map<NetworkArea, Double> scalingNetworkAreasMap = new HashMap<>();
-        for (NetworkArea networkArea : networkAreaNetPositionTargetMap.keySet()) {
-            double residue = networkAreasResidualMap.get(networkArea);
-            double asked = previousScalingMap.get(networkArea) + residue;
-            Scalable scalable = networkAreasScalableMap.get(networkArea);
-            scalingNetworkAreasMap.put(networkArea, asked);
-
-            double done = scalable.scale(network, asked);
-            if (done != asked) {
-                LOGGER.warn("The scaled power value on networkArea {} is different from the asked value", networkArea.getName());
-            }
-
-        }
-        return scalingNetworkAreasMap;
-    }
-
-    private void scaleBalancedNetwork(Map<NetworkArea, Double> previousScalingMap) {
-        for (Map.Entry<NetworkArea, Double> entry : previousScalingMap.entrySet()) {
-            double scalingValue = entry.getValue();
-            NetworkArea networkArea = entry.getKey();
-            Scalable scalable = networkAreasScalableMap.get(networkArea);
-            double done = scalable.scale(network, scalingValue);
-            LOGGER.info("The scaled power value on networkArea {} is equals {}", networkArea.getName(), done);
-        }
-    }
-
 }

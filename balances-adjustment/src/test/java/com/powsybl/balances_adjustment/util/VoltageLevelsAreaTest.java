@@ -42,13 +42,13 @@ public class VoltageLevelsAreaTest {
         voltageLevels1 = testNetwork1.getVoltageLevelStream().filter(v -> v.getId().equals("FFR1AA1") || v.getId().equals("DDE3AA1"))
                 .collect(Collectors.toList());
 
-        voltageLevelsArea1 = new VoltageLevelsArea(voltageLevels1);
+        voltageLevelsArea1 = new VoltageLevelsArea("Area1", voltageLevels1);
 
         //test Network with ThreeWindingsTransformer
         voltageLevels2 = testNetwork2.getVoltageLevelStream().filter(v -> v.getId().equals("vlFr1A") || v.getId().equals("vlEs1B"))
                 .collect(Collectors.toList());
 
-        voltageLevelsArea2 = new VoltageLevelsArea(voltageLevels2);
+        voltageLevelsArea2 = new VoltageLevelsArea("Area2", voltageLevels2);
 
     }
 
@@ -61,7 +61,7 @@ public class VoltageLevelsAreaTest {
         assertTrue(checkSameList(voltageLevelsArea1.getAreaVoltageLevels(testNetwork1), voltageLevels1));
         List<VoltageLevel> voltageLevelsTest2 = new ArrayList<>(Arrays.asList(testNetwork2.getVoltageLevel("vlFr1A"), testNetwork2.getVoltageLevel("vlEs1B")));
         assertTrue(checkSameList(voltageLevelsArea2.getAreaVoltageLevels(testNetwork2), voltageLevelsTest2));
-        assertEquals("VoltageLevelsArea{ vlFr1A, vlEs1B, }", voltageLevelsArea2.getName());
+        assertEquals("Area2", voltageLevelsArea2.getName());
     }
 
     @Test

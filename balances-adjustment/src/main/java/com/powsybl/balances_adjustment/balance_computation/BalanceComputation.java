@@ -12,7 +12,7 @@ import java.util.concurrent.CompletableFuture;
  * Balance computation feature interface.
  * Asynchronous computation is foreseen
  *
- * @author Ameni Walha <ameni.walha at rte-france.com>
+ * @author Ameni Walha {@literal <ameni.walha at rte-france.com>}
  */
 public interface BalanceComputation {
 

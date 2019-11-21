@@ -16,7 +16,7 @@ import java.util.Map;
 
 /**
  * Balance computation factory to create <code>BalanceComputationImpl</code> class
- * @author Ameni Walha <ameni.walha at rte-france.com>
+ * @author Ameni Walha {@literal <ameni.walha at rte-france.com>}
  */
 public class BalanceComputationFactoryImpl implements BalanceComputationFactory {
 

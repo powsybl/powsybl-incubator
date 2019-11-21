@@ -15,7 +15,8 @@ import com.powsybl.computation.local.LocalComputationManager;
 import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.*;
 import com.powsybl.loadflow.*;
-import com.powsybl.loadflow.open.OpenLoadFlowProvider;
+import com.powsybl.openloadflow.OpenLoadFlowParameters;
+import com.powsybl.openloadflow.OpenLoadFlowProvider;
 import com.powsybl.math.matrix.DenseMatrixFactory;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +35,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
 
 /**
- * @author Ameni Walha <ameni.walha at rte-france.com>
+ * @author Ameni Walha {@literal <ameni.walha at rte-france.com>}
  */
 public class BalanceComputationSimpleDcTest {
     private Network simpleNetwork;
@@ -64,6 +65,10 @@ public class BalanceComputationSimpleDcTest {
         computationManager = LocalComputationManager.getDefault();
 
         parameters = new BalanceComputationParameters();
+        OpenLoadFlowParameters openLoadFlowParameters = new OpenLoadFlowParameters();
+        openLoadFlowParameters.setDc(true);
+        parameters.getLoadFlowParameters().addExtension(OpenLoadFlowParameters.class, openLoadFlowParameters);
+
         balanceComputationFactory = new BalanceComputationFactoryImpl();
 
         loadFlowRunner = new LoadFlow.Runner(new OpenLoadFlowProvider(new DenseMatrixFactory()));
@@ -105,8 +110,8 @@ public class BalanceComputationSimpleDcTest {
     @Test
     public void testBalancedNetworkMockito() {
         networkAreaNetPositionTargetMap = new HashMap<>();
-        networkAreaNetPositionTargetMap.put(countryAreaFR, 1200.);
-        networkAreaNetPositionTargetMap.put(countryAreaBE, -1200.);
+        networkAreaNetPositionTargetMap.put(countryAreaFR, 1199.);
+        networkAreaNetPositionTargetMap.put(countryAreaBE, -1199.);
 
         LoadFlowProvider loadFlowProviderMock = new LoadFlowProvider() {
 

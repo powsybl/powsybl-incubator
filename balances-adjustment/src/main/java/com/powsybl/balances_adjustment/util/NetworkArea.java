@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * NetworkArea is defined as a list of participating voltage levels and a list of border devices.
  *
- * @author Ameni Walha <ameni.walha at rte-france.com>
+ * @author Ameni Walha {@literal <ameni.walha at rte-france.com>}
  */
 public interface NetworkArea {
 

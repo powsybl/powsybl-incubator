@@ -16,7 +16,8 @@ import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Country;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.loadflow.LoadFlow;
-import com.powsybl.loadflow.open.OpenLoadFlowProvider;
+import com.powsybl.openloadflow.OpenLoadFlowParameters;
+import com.powsybl.openloadflow.OpenLoadFlowProvider;
 import com.powsybl.math.matrix.DenseMatrixFactory;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,7 +29,7 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 
 /**
- * @author Ameni Walha <ameni.walha at rte-france.com>
+ * @author Ameni Walha {@literal <ameni.walha at rte-france.com>}
  */
 public class BalanceComputationImplDcTest {
     private Network testNetwork1;
@@ -53,6 +54,10 @@ public class BalanceComputationImplDcTest {
         computationManager = LocalComputationManager.getDefault();
 
         parameters = new BalanceComputationParameters();
+        OpenLoadFlowParameters openLoadFlowParameters = new OpenLoadFlowParameters();
+        openLoadFlowParameters.setDc(true);
+        parameters.getLoadFlowParameters().addExtension(OpenLoadFlowParameters.class, openLoadFlowParameters);
+
         balanceComputationFactory = new BalanceComputationFactoryImpl();
 
         loadFlowRunner = new LoadFlow.Runner(new OpenLoadFlowProvider(new DenseMatrixFactory()));

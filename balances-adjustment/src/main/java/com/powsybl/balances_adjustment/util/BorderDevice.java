@@ -12,7 +12,7 @@ import com.powsybl.iidm.network.Network;
  * Border devices are a subset of "Branch", "HvdcLine" or "ThreeWindingsTransformer" objects
  * that connect a voltage level of the area to a voltage level that is not part of the area.
  *
- * @author Ameni Walha <ameni.walha at rte-france.com>
+ * @author Ameni Walha {@literal <ameni.walha at rte-france.com>}
  */
 public interface BorderDevice {
 

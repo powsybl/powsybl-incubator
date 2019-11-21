@@ -20,7 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @author Ameni Walha <ameni.walha at rte-france.com>
+ * @author Ameni Walha {@literal <ameni.walha at rte-france.com>}
  */
 public class NetworkAreaTest {
 
@@ -36,7 +36,7 @@ public class NetworkAreaTest {
         List<VoltageLevel> voltageLevels1 = testNetwork1.getVoltageLevelStream().filter(v -> v.getId().equals("FFR1AA1") || v.getId().equals("FFR3AA1"))
                 .collect(Collectors.toList());
 
-        voltageLevelsArea1 = new VoltageLevelsArea(voltageLevels1);
+        voltageLevelsArea1 = new VoltageLevelsArea("Area1", voltageLevels1);
 
         countryAreaFR = new CountryArea(Country.FR);
 

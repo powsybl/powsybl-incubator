@@ -9,16 +9,20 @@ package com.powsybl.balances_adjustment.util;
 import com.powsybl.iidm.network.*;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
- * @author Ameni Walha <ameni.walha at rte-france.com>
+ * @author Ameni Walha {@literal <ameni.walha at rte-france.com>}
  */
 public class VoltageLevelsArea extends AbstractNetworkArea {
 
+    private final String name;
+
     private final List<VoltageLevel> areaVoltageLevels;
 
-    public VoltageLevelsArea(List<VoltageLevel> areaVoltageLevels) {
-        this.areaVoltageLevels = areaVoltageLevels;
+    public VoltageLevelsArea(String name, List<VoltageLevel> areaVoltageLevels) {
+        this.name = Objects.requireNonNull(name);
+        this.areaVoltageLevels = Objects.requireNonNull(areaVoltageLevels);
     }
 
     @Override
@@ -28,12 +32,6 @@ public class VoltageLevelsArea extends AbstractNetworkArea {
 
     @Override
     public String getName() {
-        StringBuilder sbld = new StringBuilder("VoltageLevelsArea{ ");
-        for (VoltageLevel v : areaVoltageLevels) {
-            sbld.append(v.getName());
-            sbld.append(", ");
-        }
-        sbld.append("}");
-        return sbld.toString();
+        return name;
     }
 }

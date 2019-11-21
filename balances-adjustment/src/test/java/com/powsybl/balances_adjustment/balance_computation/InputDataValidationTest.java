@@ -27,7 +27,7 @@ import java.util.Map;
 import static org.junit.Assert.*;
 
 /**
- * @author Ameni Walha <ameni.walha at rte-france.com>
+ * @author Ameni Walha {@literal <ameni.walha at rte-france.com>}
  */
 public class InputDataValidationTest {
     private BalanceComputation balanceComputation;
@@ -106,7 +106,7 @@ public class InputDataValidationTest {
         networkAreaNetPositionTargetMap = new HashMap<>();
         networkAreaNetPositionTargetMap.put(countryAreaNotFound, 0.);
 
-        NetworkArea networkAreaTest = new VoltageLevelsArea(Arrays.asList(testNetwork2.getVoltageLevel("vlFr1A"), testNetwork1.getVoltageLevel("FFR3AA1")));
+        NetworkArea networkAreaTest = new VoltageLevelsArea("Area", Arrays.asList(testNetwork2.getVoltageLevel("vlFr1A"), testNetwork1.getVoltageLevel("FFR3AA1")));
         networkAreaNetPositionTargetMap.put(networkAreaTest, 0.);
 
         balanceComputation = balanceComputationFactory.create(testNetwork1, networkAreaNetPositionTargetMap, networkAreasScalableMap, loadFlowRunner, computationManager, 1);

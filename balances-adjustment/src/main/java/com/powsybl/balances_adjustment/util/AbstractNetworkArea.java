@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * @author Ameni Walha <ameni.walha at rte-france.com>
+ * @author Ameni Walha {@literal <ameni.walha at rte-france.com>}
  */
 public abstract class AbstractNetworkArea implements NetworkArea {
 
@@ -73,7 +73,10 @@ public abstract class AbstractNetworkArea implements NetworkArea {
     public double getNetPosition(Network network) {
         double netPosition = 0;
         for (BorderDevice b : this.getBorderDevices(network)) {
-            netPosition += b.getLeavingFlow(network, this);
+            double flow = b.getLeavingFlow(network, this);
+            if (!Double.isNaN(flow)) {
+                netPosition += flow;
+            }
         }
         return  netPosition;
     }

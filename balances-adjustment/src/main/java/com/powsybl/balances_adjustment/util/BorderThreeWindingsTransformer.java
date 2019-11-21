@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * ThreeWindingsTransformer at the border of a NetworkArea
  *
- *  @author Ameni Walha <ameni.walha at rte-france.com>
+ *  @author Ameni Walha {@literal <ameni.walha at rte-france.com>}
  */
 public class BorderThreeWindingsTransformer implements  BorderDevice {
 

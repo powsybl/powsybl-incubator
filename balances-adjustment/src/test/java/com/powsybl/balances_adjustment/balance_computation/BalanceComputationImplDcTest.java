@@ -16,7 +16,7 @@ import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.Country;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.loadflow.LoadFlow;
-import com.powsybl.loadflow.open.OpenLoadFlowProvider;
+import com.powsybl.openloadflow.OpenLoadFlowProvider;
 import com.powsybl.math.matrix.DenseMatrixFactory;
 import org.junit.Before;
 import org.junit.Test;

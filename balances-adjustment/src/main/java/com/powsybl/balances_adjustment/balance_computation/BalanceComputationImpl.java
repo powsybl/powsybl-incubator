@@ -14,7 +14,6 @@ import com.powsybl.iidm.network.Injection;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.VoltageLevel;
 import com.powsybl.loadflow.LoadFlow;
-import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -104,7 +103,7 @@ public class BalanceComputationImpl implements BalanceComputation {
             }
 
             // Step 3: compute Loadflow
-            LoadFlowResult loadFlowResult = loadFlowRunner.run(network, workingVariantCopyId, computationManager, new LoadFlowParameters());
+            LoadFlowResult loadFlowResult = loadFlowRunner.run(network, workingVariantCopyId, computationManager, parameters.getLoadFlowParameters());
             if (!loadFlowResult.isOk()) {
                 LOGGER.error("Loadflow on network {} does not converge", network.getId());
                 result = new BalanceComputationResult(BalanceComputationResult.Status.FAILED, iterationCounter);

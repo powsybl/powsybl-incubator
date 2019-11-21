@@ -6,11 +6,15 @@
  */
 package com.powsybl.balances_adjustment.balance_computation;
 
+import com.powsybl.loadflow.LoadFlowParameters;
+
 /**
  * parameters for balance computation.
  * @author Ameni Walha <ameni.walha at rte-france.com>
  */
 public class BalanceComputationParameters {
+
+    private final LoadFlowParameters loadFlowParameters;
 
     /**
      * Threshold for comparing net positions (given in MW).
@@ -32,7 +36,7 @@ public class BalanceComputationParameters {
      * Constructor with default parameters
      */
     public BalanceComputationParameters() {
-        this(DEFAULT_THRESHOLD_NETPOSITION, DEFAULT_MAX_NUMBER_ITERATIONS);
+        this(DEFAULT_THRESHOLD_NETPOSITION, DEFAULT_MAX_NUMBER_ITERATIONS, new LoadFlowParameters());
     }
 
     /**
@@ -40,9 +44,14 @@ public class BalanceComputationParameters {
      * @param threshold Threshold for comparing net positions (given in MW)
      * @param max Maximum iteration number for balances adjustment
      */
-    public BalanceComputationParameters(double threshold, int max) {
+    public BalanceComputationParameters(double threshold, int max, LoadFlowParameters loadFlowParameters) {
         this.thresholdNetPosition = threshold;
         this.maxNumberIterations = max;
+        this.loadFlowParameters = loadFlowParameters;
+    }
+
+    public LoadFlowParameters getLoadFlowParameters() {
+        return loadFlowParameters;
     }
 
     public double getThresholdNetPosition() {

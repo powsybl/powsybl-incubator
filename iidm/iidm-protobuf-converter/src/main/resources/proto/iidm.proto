@@ -1,0 +1,558 @@
+/**
+ * Copyright (c) 2019, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+package com.powsybl.iidm.protobuf.proto;
+
+message Property
+{
+    required string name = 1;
+    required string value = 2;
+}
+
+enum TopologyKind
+{
+    TopologyKind_BUS_BREAKER = 1;
+    TopologyKind_NODE_BREAKER = 2;
+}
+
+message Bus
+{
+	optional double angle = 1;
+	required string id = 2;
+	optional string name = 3;
+	repeated Property property = 4;
+	optional double v = 5;
+}
+
+message SwitchBus
+{
+    required string id = 1;
+    optional string name = 2;
+    required SwitchKind kind = 3;
+    required bool open = 4;
+    required bool retained = 5;
+    required string bus1 = 6;
+    required string bus2 = 7;
+    optional bool fictitious = 8;
+    repeated Property property = 9;
+}
+
+message BusBreakerTopology
+{
+	repeated Bus bus = 1;
+	repeated SwitchBus switch = 2;
+}
+
+message InternalConnection
+{
+    required int32 node1 = 1;
+    required int32 node2 = 2;
+}
+
+message BusbarSection
+{
+    required string id = 1;
+    optional string name = 2;
+    required int32 node = 3;
+    optional double angle = 4;
+    optional double v = 5;
+    repeated Property property = 6;
+}
+
+enum SwitchKind
+{
+    SwitchKind_BREAKER = 1;
+    SwitchKind_DISCONNECTOR = 2;
+    SwitchKind_LOAD_BREAK_SWITCH = 3;
+}
+
+message SwitchNode
+{
+    required string id = 1;
+    optional string name = 2;
+    required SwitchKind kind = 3;
+    required int32 node1 = 4;
+    required int32 node2 = 5;
+    required bool open = 6;
+    required bool retained = 7;
+    optional bool fictitious = 8;
+    repeated Property property = 9;
+}
+
+message NodeBreakerTopology
+{
+    repeated BusbarSection busbarSection = 1;
+    repeated InternalConnection internalConnection = 2;
+    required int32 nodeCount = 3;
+    repeated SwitchNode switch = 4;
+}
+
+enum LoadType
+{
+    LoadType_AUXILIARY = 1;
+    LoadType_FICTITIOUS = 2;
+    LoadType_UNDEFINED = 3;
+}
+
+enum EnergySource
+{
+    EnergySource_HYDRO = 1;
+    EnergySource_NUCLEAR = 2;
+    EnergySource_OTHER = 3;
+    EnergySource_SOLAR = 4;
+    EnergySource_THERMAL = 5;
+    EnergySource_WIND = 6;
+}
+
+message MinMaxReactiveLimits
+{
+    required double maxQ = 1;
+    required double minQ = 2;
+}
+
+message Point
+{
+    required double maxQ = 1;
+    required double minQ = 2;
+    required double p = 3;
+}
+
+message ReactiveCapabilityCurve
+{
+    repeated Point point = 1;
+}
+
+enum Side
+{
+    Side_ONE = 1;
+    Side_THREE = 2;
+    Side_TWO = 3;
+}
+
+message TerminalRef
+{
+    required string id = 1;
+    optional Side side = 2;
+}
+
+message Battery
+{
+        required string id = 1;
+        optional string name = 2;
+        required double minP = 3;
+        required double maxP = 4;
+        required double p0 = 5;
+        required double q0 = 6;
+
+        optional MinMaxReactiveLimits minMaxReactiveLimits = 7;
+        optional ReactiveCapabilityCurve reactiveCapabilityCurve = 8;
+
+        optional string bus = 9;
+        optional string connectableBus = 10;
+        optional int32 node = 11;
+
+        optional double p = 12;
+        optional double q = 13;
+
+        repeated Property property = 14;
+}
+
+message Generator
+{
+    required string id = 1;
+    optional string name = 2;
+
+    required EnergySource energySource = 3;
+
+    required double minP = 4;
+    required double maxP = 5;
+    optional double ratedS = 6;
+
+    optional string bus = 7;
+    optional string connectableBus = 8;
+    optional int32 node = 9;
+
+    required double targetP = 10;
+    optional double targetQ = 11;
+    optional double targetV = 12;
+
+    required bool voltageRegulatorOn = 13;
+
+    optional double p = 14;
+    optional double q = 15;
+
+    optional MinMaxReactiveLimits minMaxReactiveLimits = 16;
+    optional ReactiveCapabilityCurve reactiveCapabilityCurve = 17;
+
+    optional TerminalRef regulatingTerminal = 18;
+
+    repeated Property property = 19;
+}
+
+message Load
+{
+    required string id = 1;
+    optional string name = 2;
+    required double p0 = 3;
+    required double q0 = 4;
+    optional LoadType loadType = 5;
+    optional string bus = 6;
+    optional string connectableBus = 7;
+    optional int32 node = 8;
+    optional double p = 9;
+    optional double q = 10;
+    repeated Property property = 11;
+}
+
+message ShuntCompensator
+{
+    required string id = 1;
+    optional string name = 2;
+    required double bPerSection = 3;
+    required int32 currentSectionCount = 4;
+    required int32 maximumSectionCount = 5;
+    optional string bus = 6;
+    optional string connectableBus = 7;
+    optional int32 node = 8;
+    optional double p = 9;
+    optional double q = 10;
+    repeated Property property = 11;
+}
+
+message VoltageLevel
+{
+    required string id = 1;
+    optional string name = 2;
+	required double nominalV = 3;
+	required TopologyKind topologyKind = 4;
+    optional BusBreakerTopology busBreakerTopology = 5;
+	optional double highVoltageLimit = 6;
+	optional double lowVoltageLimit = 7;
+	repeated Property property = 8;
+	repeated Load load = 9;
+	repeated Generator generator = 10;
+	repeated ShuntCompensator shuntCompensator = 11;
+	repeated DanglingLine danglingLine = 12;
+	repeated StaticVarCompensator staticVarCompensator = 13;
+	repeated VscConverterStation vscConverterStation = 14;
+	repeated LccConverterStation lccConverterStation = 15;
+	repeated Battery battery = 16;
+}
+
+message TemporaryLimitType
+{
+    required string name = 1;
+    optional int32 acceptableDuration = 2;
+    optional bool fictitious = 3;
+    optional double value = 4;
+}
+
+message CurrentLimit
+{
+    optional double permanentLimit = 1;
+    repeated TemporaryLimitType temporaryLimit = 2;
+}
+
+message RatioTapChangerStep
+{
+    required double b = 1;
+    required double g = 2;
+    required double r = 3;
+    required double rho = 4;
+    required double x = 5;
+}
+
+message RatioTapChanger
+{
+    required bool loadTapChangingCapabilities = 1;
+    required int32 lowTapPosition = 2;
+    optional bool regulating = 3;
+    repeated RatioTapChangerStep step = 4;
+    required int32 tapPosition = 5;
+    optional double targetDeadband = 6;
+    optional double targetV = 7;
+    optional TerminalRef terminalRef = 8;
+}
+
+message PhaseTapChangerStep
+{
+    required double alpha = 1;
+    required double b = 2;
+    required double g = 3;
+    required double r = 4;
+    required double rho = 5;
+    required double x = 6;
+}
+
+enum PhaseRegulationMode
+{
+    PhaseRegulationMode_ACTIVE_POWER_CONTROL = 1;
+    PhaseRegulationMode_CURRENT_LIMITER = 2;
+    PhaseRegulationMode_FIXED_TAP = 3;
+}
+
+message PhaseTapChanger
+{
+    required PhaseRegulationMode regulationMode = 1;
+    required int32 tapPosition = 2;
+    required int32 lowTapPosition = 3;
+    optional bool regulating = 4;
+    optional double regulationValue = 5;
+    optional double targetDeadband = 6;
+    optional TerminalRef terminalRef = 7;
+    repeated PhaseTapChangerStep step = 8;
+}
+
+message TwoWindingsTransformer
+{
+    required string id = 1;
+    optional string name = 2;
+
+    required double b = 3;
+    required double g = 4;
+    required double r = 5;
+    required double ratedU1 = 6;
+    required double ratedU2 = 7;
+    required double x = 8;
+
+    required string voltageLevelId1 = 9;
+    required string voltageLevelId2 = 10;
+
+    optional string bus1 = 11;
+    optional string bus2 = 12;
+    optional string connectableBus1 = 13;
+    optional string connectableBus2 = 14;
+    optional int32 node1 = 15;
+    optional int32 node2 = 16;
+
+    optional CurrentLimit currentLimits1 = 17;
+    optional CurrentLimit currentLimits2 = 18;
+
+    optional double p1 = 19;
+    optional double p2 = 20;
+    optional double q1 = 21;
+    optional double q2 = 22;
+    optional RatioTapChanger ratioTapChanger = 23;
+    optional PhaseTapChanger phaseTapChanger = 24;
+    repeated Property property = 25;
+}
+
+message ThreeWindingsTransformer
+{
+        required string id = 1;
+        optional string name = 2;
+
+        required double b1 = 3;
+        required double g1 = 4;
+        required double r1 = 5;
+        required double r2 = 6;
+        required double r3 = 7;
+        required double ratedU1 = 8;
+        required double ratedU2 = 9;
+        required double ratedU3 = 10;
+        required double x1 = 11;
+        required double x2 = 12;
+        required double x3 = 13;
+        required string voltageLevelId1 = 14;
+        required string voltageLevelId2 = 15;
+        required string voltageLevelId3 = 16;
+
+        optional CurrentLimit currentLimits1 = 17;
+        optional CurrentLimit currentLimits2 = 18;
+        optional CurrentLimit currentLimits3 = 19;
+
+        optional RatioTapChanger ratioTapChanger2 = 20;
+        optional RatioTapChanger ratioTapChanger3 = 21;
+
+        optional string bus1 = 22;
+        optional string bus2 = 23;
+        optional string bus3 = 24;
+        optional string connectableBus1 = 25;
+        optional string connectableBus2 = 26;
+        optional string connectableBus3 = 27;
+        optional int32 node1 = 28;
+        optional int32 node2 = 29;
+        optional int32 node3 = 30;
+
+        optional double p1 = 31;
+        optional double p2 = 32;
+        optional double p3 = 33;
+        optional double q1 = 34;
+        optional double q2 = 35;
+        optional double q3 = 36;
+
+        repeated Property property = 37;
+}
+
+message Substation
+{
+	optional string country = 1;
+	repeated string geographicalTags = 2;
+	required string id = 3;
+	optional string name = 4;
+	repeated Property property = 5;
+	optional string tso = 6;
+	repeated VoltageLevel voltageLevel = 7;
+	repeated TwoWindingsTransformer twoWindingsTransformer = 8;
+	repeated ThreeWindingsTransformer threeWindingsTransformer = 9;
+}
+
+message DanglingLine
+{
+        required string id = 1;
+        optional string name = 2;
+
+        required double b = 3;
+        required double g = 4;
+        required double r = 5;
+        required double p0 = 6;
+        required double q0 = 7;
+        required double x = 8;
+
+        optional CurrentLimit currentLimits = 9;
+        optional double p = 10;
+        optional double q = 11;
+        optional string ucteXnodeCode = 12;
+
+        optional string bus = 13;
+        optional string connectableBus = 14;
+        optional int32 node = 15;
+
+        repeated Property property = 16;
+}
+
+message Line
+{
+    required string id = 1;
+    optional string name = 2;
+
+    required double b1 = 3;
+    required double b2 = 4;
+    required double g1 = 5;
+    required double g2 = 6;
+    required string voltageLevelId1 = 7;
+    required string voltageLevelId2 = 8;
+    required double r = 9;
+    required double x = 10;
+
+    optional double p1 = 11;
+    optional double p2 = 12;
+    optional double q1 = 13;
+    optional double q2 = 14;
+
+    optional string bus1 = 15;
+    optional string bus2 = 16;
+    optional string connectableBus1 = 17;
+    optional string connectableBus2 = 18;
+    optional int32 node1 = 19;
+    optional int32 node2 = 20;
+
+    optional CurrentLimit currentLimits1 = 21;
+    optional CurrentLimit currentLimits2 = 22;
+    repeated Property property = 23;
+}
+
+enum StaticVarCompensatorRegulationMode
+{
+    StaticVarCompensatorRegulationMode_OFF = 1;
+    StaticVarCompensatorRegulationMode_REACTIVE_POWER = 2;
+    StaticVarCompensatorRegulationMode_VOLTAGE = 3;
+}
+
+message StaticVarCompensator
+{
+    required string id = 1;
+    optional string name = 2;
+    required StaticVarCompensatorRegulationMode regulationMode = 3;
+
+    required double bMax = 4;
+    required double bMin = 5;
+    optional double reactivePowerSetPoint = 6;
+    optional double voltageSetPoint = 7;
+
+    optional string bus = 8;
+    optional string connectableBus = 9;
+    optional int32 node = 10;
+
+    optional double p = 11;
+    optional double q = 12;
+
+    repeated Property property = 13;
+}
+
+enum ConvertersMode
+{
+    ConvertersMode_SIDE_1_INVERTER_SIDE_2_RECTIFIER = 1;
+    ConvertersMode_SIDE_1_RECTIFIER_SIDE_2_INVERTER = 2;
+}
+
+message VscConverterStation
+{
+    required string id = 1;
+    optional string name = 2;
+
+    required float lossFactor = 3;
+    required bool voltageRegulatorOn = 4;
+
+    optional double reactivePowerSetpoint = 5;
+    optional double voltageSetpoint = 6;
+    optional MinMaxReactiveLimits minMaxReactiveLimits = 7;
+    optional ReactiveCapabilityCurve reactiveCapabilityCurve = 8;
+
+    optional string bus = 9;
+    optional string connectableBus = 10;
+    optional int32 node = 11;
+
+    optional double p = 12;
+    optional double q = 13;
+
+    repeated Property property = 14;
+}
+
+message LccConverterStation
+{
+    required string id = 1;
+    optional string name = 2;
+    required float lossFactor = 3;
+    required float powerFactor = 4;
+
+    optional string bus = 5;
+    optional string connectableBus = 6;
+    optional int32 node = 7;
+
+    optional double p = 8;
+    optional double q = 9;
+
+    repeated Property property = 10;
+}
+
+
+message HvdcLine
+{
+    required string id = 1;
+    optional string name = 2;
+    required ConvertersMode convertersMode = 3;
+    required double nominalV = 4;
+    required double activePowerSetpoint = 5;
+    required double maxP = 6;
+    required double r = 7;
+    required string converterStation1 = 8;
+    required string converterStation2 = 9;
+    repeated Property property = 10;
+}
+
+message Network
+{
+	required string caseDate = 1;
+	required int32 forecastDistance = 2;
+	required string id = 3;
+	repeated Property property = 4;
+	required string sourceFormat = 5;
+	repeated Substation substation = 6;
+	repeated Line line = 7;
+	repeated HvdcLine hvdcLine = 8;
+}
+

@@ -159,7 +159,7 @@ NN,15,14,12,ok
 __NN__,6,6,6,ok
 __NNn_,2,2,0,__NNn(C)_
 n_NN__.__NN__.__NN__,6,6,6,n(C)_NN__.__NN__.__NN__
-----> config Xfmr2_clock_on_end1_end2.Xfmr2_pac2_negate_on.Xfmr3_clock_on_star_bus_side.
+----> config Xfmr2_clock_on.Xfmr3_clock_on.
 BALANCE
 total error,total nodes,isolated nodes,non-calculated node,ok nodes,bad error,bad nodes,pct,badVoltage error,badVoltage nodes,pct
 14081.1,13,1,1,3,10508.6,6,50.0000,3572.57,2,16.6667
@@ -180,8 +180,8 @@ NN,15,14,6,ok
 __NN__,4,4,4,ok
 __NN_x,2,2,0,__NN_x(C)
 __NNnx,2,2,0,__NNn(C)x(C)
-n_NN__.__NN__.__NN_x,6,6,0,n(C)_NN__.__NN__.__NN_x(C)
-----> config Xfmr2_yshunt_split.Xfmr2_clock_on_end1_end2.Xfmr2_pac2_negate_on.Xfmr3_yshunt_split.Xfmr3_clock_on_star_bus_side.
+n_NN__.__NN__._xNN__,6,6,0,n(C)_NN__.__NN__._xNN__
+----> config Xfmr2_yshunt_split.Xfmr2_clock_on.Xfmr3_yshunt_split.Xfmr3_clock_on.
 BALANCE
 total error,total nodes,isolated nodes,non-calculated node,ok nodes,bad error,bad nodes,pct,badVoltage error,badVoltage nodes,pct
 14081.1,13,1,1,3,10508.6,6,50.0000,3572.57,2,16.6667
@@ -202,8 +202,8 @@ NN,15,14,6,ok
 __NN__,4,4,4,ok
 __NN_x,2,2,0,__NN_x(C)
 __NNnx,2,2,0,__NNn(C)x(C)
-n_NN__.__NN__.__NN_x,6,6,0,n(C)_NN__.__NN__.__NN_x(C)
-----> config Line_ratio0_on.Xfmr2_yshunt_split.Xfmr2_clock_on_end1_end2.Xfmr2_pac2_negate_on.Xfmr3_yshunt_split.Xfmr3_clock_on_star_bus_side.
+n_NN__.__NN__._xNN__,6,6,0,n(C)_NN__.__NN__._xNN__
+----> config Line_ratio0_on.Xfmr2_yshunt_split.Xfmr2_clock_on.Xfmr3_yshunt_split.Xfmr3_clock_on.
 BALANCE
 total error,total nodes,isolated nodes,non-calculated node,ok nodes,bad error,bad nodes,pct,badVoltage error,badVoltage nodes,pct
 14081.1,13,1,1,3,10508.6,6,50.0000,3572.57,2,16.6667
@@ -224,5 +224,5 @@ NN,15,14,6,ok
 __NN__,4,4,4,ok
 __NN_x,2,2,0,__NN_x(C)
 __NNnx,2,2,0,__NNn(C)x(C)
-n_NN__.__NN__.__NN_x,6,6,0,n(C)_NN__.__NN__.__NN_x(C)
+n_NN__.__NN__._xNN__,6,6,0,n(C)_NN__.__NN__._xNN__
 

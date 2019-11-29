@@ -9,7 +9,6 @@ package com.powsybl.cgmes.conversion.validation.conversion;
 
 import com.powsybl.cgmes.conversion.Conversion;
 import com.powsybl.cgmes.interpretation.model.interpreted.InterpretationAlternative;
-import com.powsybl.cgmes.interpretation.model.interpreted.InterpretationAlternative.Xfmr2PhaseAngleClockAlternative;
 import com.powsybl.cgmes.interpretation.model.interpreted.InterpretationAlternative.Xfmr3RatioPhaseInterpretationAlternative;
 import com.powsybl.cgmes.model.CgmesModel;
 import com.powsybl.iidm.network.Network;
@@ -54,10 +53,6 @@ public class CgmesConversion {
                 break;
         }
 
-        if (alternative.isXfmr2Ptc2Negate()) {
-            config.setXfmr2Phase2Negate(true);
-        }
-
         switch (alternative.getXfmr2YShunt()) {
             case END1:
                 config.setXfmr2ShuntEnd1(true);
@@ -73,12 +68,12 @@ public class CgmesConversion {
                 break;
         }
 
-        if (alternative.getXfmr2PhaseAngleClock() == Xfmr2PhaseAngleClockAlternative.END1_END2) {
-            config.setXfmr2PhaseAngleClockEnd1End2(true);
-        }
-
-        if (alternative.isXfmr2Pac2Negate()) {
-            config.setXfmr2PhaseAngleClock2Negate(true);
+        switch (alternative.getXfmr2PhaseAngleClock()) {
+            case OFF:
+                break;
+            case ON:
+                config.setXfmr2PhaseAngleClockOn(true);
+                break;
         }
 
         switch (alternative.getXfmr2Ratio0()) {
@@ -115,11 +110,8 @@ public class CgmesConversion {
         switch (alternative.getXfmr3PhaseAngleClock()) {
             case OFF:
                 break;
-            case NETWORK_SIDE:
-                config.setXfmr3PhaseAngleClockNetworkSide(true);
-                break;
-            case STAR_BUS_SIDE:
-                config.setXfmr3PhaseAngleClockStarBusSide(true);
+            case ON:
+                config.setXfmr3PhaseAngleClockOn(true);
                 break;
         }
 

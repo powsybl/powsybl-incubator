@@ -157,13 +157,9 @@ public class InterpretedTransformer2 {
         InterpretationAlternative alternative) {
 
         InterpretedBranch.PhaseAngleClocks pacs = new InterpretedBranch.PhaseAngleClocks();
-        if (alternative.getXfmr2PhaseAngleClock() == Xfmr2PhaseAngleClockAlternative.END1_END2) {
-            pacs.angle1 += transformer.end1().phaseAngleClockDegrees();
-            double angle2 = transformer.end2().phaseAngleClockDegrees();
-            if (alternative.isXfmr2Pac2Negate()) {
-                angle2 = -angle2;
-            }
-            pacs.angle2 = angle2;
+        if (alternative.getXfmr2PhaseAngleClock() == Xfmr2PhaseAngleClockAlternative.ON) {
+            pacs.angle1 += -transformer.end1().phaseAngleClockDegrees();
+            pacs.angle2 += -transformer.end2().phaseAngleClockDegrees();
         }
         return pacs;
     }

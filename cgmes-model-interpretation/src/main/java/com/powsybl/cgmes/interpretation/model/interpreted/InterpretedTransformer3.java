@@ -124,10 +124,8 @@ public class InterpretedTransformer3 {
             InterpretationAlternative alternative) {
 
         InterpretedBranch.PhaseAngleClocks pacs = new InterpretedBranch.PhaseAngleClocks();
-        if (alternative.getXfmr3PhaseAngleClock() == Xfmr3PhaseAngleClockAlternative.STAR_BUS_SIDE) {
-            pacs.angle2 = transformerEnd.phaseAngleClockDegrees();
-        } else if (alternative.getXfmr3PhaseAngleClock() == Xfmr3PhaseAngleClockAlternative.NETWORK_SIDE) {
-            pacs.angle1 = transformerEnd.phaseAngleClockDegrees();
+        if (alternative.getXfmr3PhaseAngleClock() == Xfmr3PhaseAngleClockAlternative.ON) {
+            pacs.angle1 += -transformerEnd.phaseAngleClockDegrees();
         }
         return pacs;
     }

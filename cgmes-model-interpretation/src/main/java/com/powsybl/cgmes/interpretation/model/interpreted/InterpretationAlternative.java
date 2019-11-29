@@ -26,7 +26,7 @@ public class InterpretationAlternative {
     }
 
     public enum Xfmr2PhaseAngleClockAlternative {
-        OFF, END1_END2
+        OFF, ON
     }
 
     public enum Xfmr3StructuralRatioInterpretationAlternative {
@@ -42,7 +42,7 @@ public class InterpretationAlternative {
     }
 
     public enum Xfmr3PhaseAngleClockAlternative {
-        OFF, STAR_BUS_SIDE, NETWORK_SIDE
+        OFF, ON
     }
 
     public LineShuntInterpretationAlternative getLineBshunt() {
@@ -99,14 +99,6 @@ public class InterpretationAlternative {
 
     public void setXfmr2PhaseAngleClock(Xfmr2PhaseAngleClockAlternative xfmr2PhaseAngleClock) {
         this.xfmr2PhaseAngleClock = xfmr2PhaseAngleClock;
-    }
-
-    public boolean isXfmr2Pac2Negate() {
-        return xfmr2Pac2Negate;
-    }
-
-    public void setXfmr2Pac2Negate(boolean xfmr2Pac2Negate) {
-        this.xfmr2Pac2Negate = xfmr2Pac2Negate;
     }
 
     public Xfmr3StructuralRatioInterpretationAlternative getXfmr3Ratio0Side() {
@@ -203,11 +195,12 @@ public class InterpretationAlternative {
             default:
                 break;
         }
-        if (xfmr2PhaseAngleClock == Xfmr2PhaseAngleClockAlternative.END1_END2) {
-            configuration.append("Xfmr2_clock_on_end1_end2.");
-        }
-        if (xfmr2Pac2Negate) {
-            configuration.append("Xfmr2_pac2_negate_on.");
+        switch (xfmr2PhaseAngleClock) {
+            case ON:
+                configuration.append("Xfmr2_clock_on.");
+                break;
+            default:
+                break;
         }
         switch (xfmr3Ratio0Side) {
             case END1:
@@ -239,11 +232,8 @@ public class InterpretationAlternative {
                 break;
         }
         switch (xfmr3PhaseAngleClock) {
-            case STAR_BUS_SIDE:
-                configuration.append("Xfmr3_clock_on_star_bus_side.");
-                break;
-            case NETWORK_SIDE:
-                configuration.append("Xfmr3_clock_on_network_side.");
+            case ON:
+                configuration.append("Xfmr3_clock_on.");
                 break;
             default:
                 break;
@@ -262,7 +252,6 @@ public class InterpretationAlternative {
     boolean xfmr2Ptc2Negate = false;
     Xfmr2ShuntInterpretationAlternative xfmr2YShunt = Xfmr2ShuntInterpretationAlternative.END1;
     Xfmr2PhaseAngleClockAlternative xfmr2PhaseAngleClock = Xfmr2PhaseAngleClockAlternative.OFF;
-    boolean xfmr2Pac2Negate = false;
     Xfmr3StructuralRatioInterpretationAlternative xfmr3Ratio0Side = Xfmr3StructuralRatioInterpretationAlternative.STAR_BUS_SIDE;
     Xfmr3RatioPhaseInterpretationAlternative xfmr3RatioPhaseStarBusSide = Xfmr3RatioPhaseInterpretationAlternative.NETWORK_SIDE;
     Xfmr3ShuntInterpretationAlternative xfmr3YShunt = Xfmr3ShuntInterpretationAlternative.NETWORK_SIDE;

@@ -78,25 +78,22 @@ public final class InterpretationAlternatives {
         alternatives.add(a);
 
         a = new InterpretationAlternative();
-        a.setXfmr2PhaseAngleClock(Xfmr2PhaseAngleClockAlternative.END1_END2);
-        a.setXfmr3PhaseAngleClock(Xfmr3PhaseAngleClockAlternative.STAR_BUS_SIDE);
-        a.setXfmr2Pac2Negate(true);
+        a.setXfmr2PhaseAngleClock(Xfmr2PhaseAngleClockAlternative.ON);
+        a.setXfmr3PhaseAngleClock(Xfmr3PhaseAngleClockAlternative.ON);
         alternatives.add(a);
 
         a = new InterpretationAlternative();
         a.setXfmr2YShunt(Xfmr2ShuntInterpretationAlternative.SPLIT);
         a.setXfmr3YShunt(Xfmr3ShuntInterpretationAlternative.SPLIT);
-        a.setXfmr2PhaseAngleClock(Xfmr2PhaseAngleClockAlternative.END1_END2);
-        a.setXfmr3PhaseAngleClock(Xfmr3PhaseAngleClockAlternative.STAR_BUS_SIDE);
-        a.setXfmr2Pac2Negate(true);
+        a.setXfmr2PhaseAngleClock(Xfmr2PhaseAngleClockAlternative.ON);
+        a.setXfmr3PhaseAngleClock(Xfmr3PhaseAngleClockAlternative.ON);
         alternatives.add(a);
 
         a = new InterpretationAlternative();
         a.setXfmr2YShunt(Xfmr2ShuntInterpretationAlternative.SPLIT);
         a.setXfmr3YShunt(Xfmr3ShuntInterpretationAlternative.SPLIT);
-        a.setXfmr2PhaseAngleClock(Xfmr2PhaseAngleClockAlternative.END1_END2);
-        a.setXfmr3PhaseAngleClock(Xfmr3PhaseAngleClockAlternative.STAR_BUS_SIDE);
-        a.setXfmr2Pac2Negate(true);
+        a.setXfmr2PhaseAngleClock(Xfmr2PhaseAngleClockAlternative.ON);
+        a.setXfmr3PhaseAngleClock(Xfmr3PhaseAngleClockAlternative.ON);
         a.setLineRatio0(true);
         alternatives.add(a);
 

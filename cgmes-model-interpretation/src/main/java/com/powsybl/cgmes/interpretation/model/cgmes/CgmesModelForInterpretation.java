@@ -173,7 +173,7 @@ public class CgmesModelForInterpretation {
 
     private Map<String, List<String>> computeZ0Adjacencies() {
         Map<String, List<String>> z0Adjacencies = new HashMap<>();
-        endNodesOfRetainedSwitchesAsZ0Adjacencies(cgmes, z0Adjacencies);
+        endNodesOfClosedSwitchesAsZ0Adjacencies(cgmes, z0Adjacencies);
         cgmes.acLineSegments().forEach(l -> considerZ0Adjacency(l, z0Adjacencies));
         cgmes.equivalentBranches().forEach(eb -> considerZ0Adjacency(eb, z0Adjacencies));
         cgmes.seriesCompensators().forEach(sc -> considerZ0Adjacency(sc, z0Adjacencies));
@@ -182,13 +182,12 @@ public class CgmesModelForInterpretation {
         return z0Adjacencies;
     }
 
-    private void endNodesOfRetainedSwitchesAsZ0Adjacencies(CgmesModel cgmes, Map<String, List<String>> z0Adjacencies) {
-        String retainedSwitches = SELECT_WHERE
+    private void endNodesOfClosedSwitchesAsZ0Adjacencies(CgmesModel cgmes, Map<String, List<String>> z0Adjacencies) {
+        String switches = SELECT_WHERE
             + "{ GRAPH ?graph {"
             + "    ?Switch"
             + "        a ?type ;"
             + "        cim:IdentifiedObject.name ?name ;"
-            + "        cim:Switch.retained ?retained ;"
             + "        cim:Equipment.EquipmentContainer ?EquipmentContainer ."
             + "    VALUES ?type { cim:Switch cim:Breaker cim:Disconnector } ."
             + "    ?Terminal1"
@@ -203,10 +202,9 @@ public class CgmesModelForInterpretation {
             + "    ?Switch cim:Switch.open ?open"
             + "}}"
             + "}";
-        ((CgmesModelTripleStore) cgmes).query(retainedSwitches).forEach(rs -> {
-            Boolean retained = rs.asBoolean("retained", false);
+        ((CgmesModelTripleStore) cgmes).query(switches).forEach(rs -> {
             Boolean open = rs.asBoolean("open", false);
-            if (retained && !open) {
+            if (!open) {
                 CgmesTerminal t1 = cgmes.terminal(rs.getId(CgmesNames.TERMINAL + "1"));
                 CgmesTerminal t2 = cgmes.terminal(rs.getId(CgmesNames.TERMINAL + "2"));
                 String nodeId1 = t1.topologicalNode();

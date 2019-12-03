@@ -28,8 +28,10 @@
     </modules>
 
     <properties>
-        <protobuf.version>2.5.0</protobuf.version>
         <jimfs.version>1.1</jimfs.version>
+        <protobuf.version>2.5.0</protobuf.version>
+        <protobuf.maven.plugin>0.6.1</protobuf.maven.plugin>
+        <os.maven.plugin>1.6.0</os.maven.plugin>
         <xmlunit.version>2.3.0</xmlunit.version>
     </properties>
 

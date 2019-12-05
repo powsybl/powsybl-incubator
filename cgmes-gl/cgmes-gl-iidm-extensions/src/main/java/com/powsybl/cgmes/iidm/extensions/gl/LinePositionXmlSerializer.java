@@ -67,8 +67,8 @@ public class LinePositionXmlSerializer<T extends Identifiable<T>> implements Ext
     public void write(LinePosition<T> linePosition, XmlWriterContext context) throws XMLStreamException {
         for (Coordinate point : linePosition.getCoordinates()) {
             context.getWriter().writeEmptyElement(getNamespaceUri(), "coordinate");
-            XmlUtil.writeDouble("longitude", point.getLongitude(), context.getWriter());
-            XmlUtil.writeDouble("latitude", point.getLatitude(), context.getWriter());
+            XmlUtil.writeDouble("longitude", point.getLon(), context.getWriter());
+            XmlUtil.writeDouble("latitude", point.getLat(), context.getWriter());
         }
     }
 

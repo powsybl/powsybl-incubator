@@ -143,8 +143,8 @@ public class CgmesGLExporterTest {
         checkProperties(context, namespace, type, properties, basename, "PositionPoint",
                         expectedSeq == -1 ? Arrays.asList("xPosition", "yPosition", "Location") : Arrays.asList("xPosition", "yPosition", "sequenceNumber", "Location"),
                         Arrays.asList("Location"), Collections.emptyList());
-        assertEquals(expectedCoordinate.getLongitude(), properties.asDouble("xPosition"), 0);
-        assertEquals(expectedCoordinate.getLatitude(), properties.asDouble("yPosition"), 0);
+        assertEquals(expectedCoordinate.getLon(), properties.asDouble("xPosition"), 0);
+        assertEquals(expectedCoordinate.getLat(), properties.asDouble("yPosition"), 0);
         if (expectedSeq != -1) {
             assertEquals(expectedSeq, properties.asInt("sequenceNumber"), 0);
         }

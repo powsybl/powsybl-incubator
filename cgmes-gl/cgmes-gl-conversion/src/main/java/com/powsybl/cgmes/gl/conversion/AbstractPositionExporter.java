@@ -46,8 +46,8 @@ public abstract class AbstractPositionExporter {
         if (seq > 0) {
             locationPointProperties.put("sequenceNumber", Integer.toString(seq));
         }
-        locationPointProperties.put("xPosition", Double.toString(coordinate.getLongitude()));
-        locationPointProperties.put("yPosition", Double.toString(coordinate.getLatitude()));
+        locationPointProperties.put("xPosition", Double.toString(coordinate.getLon()));
+        locationPointProperties.put("yPosition", Double.toString(coordinate.getLat()));
         locationPointProperties.put("Location", locationId);
         tripleStore.add(context.getGlContext(), CgmesNamespace.CIM_16_NAMESPACE, "PositionPoint", locationPointProperties);
     }

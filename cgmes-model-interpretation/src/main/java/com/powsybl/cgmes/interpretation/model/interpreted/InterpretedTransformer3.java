@@ -97,6 +97,11 @@ public class InterpretedTransformer3 {
             tcs.ptc1.changeable = transformerEnd.ptc().hasDifferentRatiosAngles();
         }
 
+        if (alternative.isXfmr3PtcNegate()) {
+            tcs.ptc1.angle = -tcs.ptc1.angle;
+            tcs.ptc2.angle = -tcs.ptc2.angle;
+        }
+
         return tcs;
     }
 

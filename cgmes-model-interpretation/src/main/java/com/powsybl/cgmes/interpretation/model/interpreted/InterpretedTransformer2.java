@@ -119,9 +119,11 @@ public class InterpretedTransformer2 {
                     tcs.setPhase2(ptc12Ratio, ptc12Angle, ptc12RegulatingControl, ptc12Changeable);
                 }
                 break;
-            case RTC:
-                // does not apply
-                break;
+        }
+
+        if (alternative.isXfmr2PtcNegate()) {
+            tcs.ptc1.angle = -tcs.ptc1.angle;
+            tcs.ptc2.angle = -tcs.ptc2.angle;
         }
 
         return tcs;
@@ -168,7 +170,6 @@ public class InterpretedTransformer2 {
         CgmesTransformer transformer,
         InterpretationAlternative alternative) {
 
-        int rtcEnd = transformer.end1().rtc().hasStepVoltageIncrement() ? 1 : 2;
         double ratedU1 = transformer.end1().ratedU();
         double ratedU2 = transformer.end2().ratedU();
         InterpretedBranch.Ratios structuralRatios = new InterpretedBranch.Ratios();
@@ -178,13 +179,6 @@ public class InterpretedTransformer2 {
                 break;
             case END2:
                 structuralRatios.a2 = ratedU2 / ratedU1;
-                break;
-            case RTC:
-                if (rtcEnd == 1) {
-                    structuralRatios.a1 = ratedU1 / ratedU2;
-                } else {
-                    structuralRatios.a2 = ratedU2 / ratedU1;
-                }
                 break;
             case X:
                 if (transformer.end1().x() == 0.0) {

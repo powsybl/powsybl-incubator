@@ -22,7 +22,7 @@ public class InterpretationAlternative {
     }
 
     public enum Xfmr2RatioPhaseIntepretationAlternative {
-        END1, END2, END1_END2, RTC, X
+        END1, END2, END1_END2, X
     }
 
     public enum Xfmr2PhaseAngleClockAlternative {
@@ -77,12 +77,12 @@ public class InterpretationAlternative {
         this.xfmr2RatioPhase = xfmr2RatioPhase;
     }
 
-    public boolean isXfmr2Ptc2Negate() {
-        return xfmr2Ptc2Negate;
+    public boolean isXfmr2PtcNegate() {
+        return xfmr2PtcNegate;
     }
 
-    public void setXfmr2Ptc2Negate(boolean xfmr2Ptc2Negate) {
-        this.xfmr2Ptc2Negate = xfmr2Ptc2Negate;
+    public void setXfmr2PtcNegate(boolean xfmr2PtcNegate) {
+        this.xfmr2PtcNegate = xfmr2PtcNegate;
     }
 
     public Xfmr2ShuntInterpretationAlternative getXfmr2YShunt() {
@@ -115,6 +115,14 @@ public class InterpretationAlternative {
 
     public void setXfmr3RatioPhaseStarBusSide(Xfmr3RatioPhaseInterpretationAlternative xfmr3RatioStarBusSide) {
         this.xfmr3RatioPhaseStarBusSide = xfmr3RatioStarBusSide;
+    }
+
+    public boolean isXfmr3PtcNegate() {
+        return xfmr3PtcNegate;
+    }
+
+    public void setXfmr3PtcNegate(boolean xfmr3PtcNegate) {
+        this.xfmr3PtcNegate = xfmr3PtcNegate;
     }
 
     public Xfmr3ShuntInterpretationAlternative getXfmr3YShunt() {
@@ -160,9 +168,6 @@ public class InterpretationAlternative {
             case END2:
                 configuration.append("Xfmr2_ratio0_end2.");
                 break;
-            case RTC:
-                configuration.append("Xfmr2_ratio0_rtc.");
-                break;
             default:
                 break;
         }
@@ -179,8 +184,8 @@ public class InterpretationAlternative {
             default:
                 break;
         }
-        if (xfmr2Ptc2Negate) {
-            configuration.append("Xfmr2_ptc2_tabular_negate_on.");
+        if (xfmr2PtcNegate) {
+            configuration.append("Xfmr2_ptc_negate_on.");
         }
         switch (xfmr2YShunt) {
             case END2:
@@ -221,6 +226,9 @@ public class InterpretationAlternative {
         if (xfmr3RatioPhaseStarBusSide == Xfmr3RatioPhaseInterpretationAlternative.STAR_BUS_SIDE) {
             configuration.append("Xfmr3_ratio_star_bus_side.");
         }
+        if (xfmr3PtcNegate) {
+            configuration.append("Xfmr3_ptc_negate_on.");
+        }
         switch (xfmr3YShunt) {
             case STAR_BUS_SIDE:
                 configuration.append("Xfmr3_yshunt_star_bus_side.");
@@ -249,11 +257,12 @@ public class InterpretationAlternative {
     boolean lineRatio0 = false;
     Xfmr2RatioPhaseIntepretationAlternative xfmr2Ratio0 = Xfmr2RatioPhaseIntepretationAlternative.X;
     Xfmr2RatioPhaseIntepretationAlternative xfmr2RatioPhase = Xfmr2RatioPhaseIntepretationAlternative.END1_END2;
-    boolean xfmr2Ptc2Negate = false;
+    boolean xfmr2PtcNegate = false;
     Xfmr2ShuntInterpretationAlternative xfmr2YShunt = Xfmr2ShuntInterpretationAlternative.END1;
     Xfmr2PhaseAngleClockAlternative xfmr2PhaseAngleClock = Xfmr2PhaseAngleClockAlternative.OFF;
     Xfmr3StructuralRatioInterpretationAlternative xfmr3Ratio0Side = Xfmr3StructuralRatioInterpretationAlternative.STAR_BUS_SIDE;
     Xfmr3RatioPhaseInterpretationAlternative xfmr3RatioPhaseStarBusSide = Xfmr3RatioPhaseInterpretationAlternative.NETWORK_SIDE;
+    boolean xfmr3PtcNegate = false;
     Xfmr3ShuntInterpretationAlternative xfmr3YShunt = Xfmr3ShuntInterpretationAlternative.NETWORK_SIDE;
     Xfmr3PhaseAngleClockAlternative xfmr3PhaseAngleClock = Xfmr3PhaseAngleClockAlternative.OFF;
 }

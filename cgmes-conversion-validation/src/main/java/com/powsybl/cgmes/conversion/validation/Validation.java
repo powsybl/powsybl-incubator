@@ -66,19 +66,19 @@ public class Validation {
 
         LoadFlowParameters copyLoadFlowParameters = loadFlowParameters.copy();
 
-        boolean specificCompatibility = false;
+        boolean splitShuntAdmittanceXfmr2 = false;
         switch (alternative.getXfmr2YShunt()) {
             case END1:
-                specificCompatibility = false;
+                splitShuntAdmittanceXfmr2 = false;
                 break;
             case END2:
-                specificCompatibility = false;
+                splitShuntAdmittanceXfmr2 = false;
                 break;
             case END1_END2:
-                specificCompatibility = false;
+                splitShuntAdmittanceXfmr2 = false;
                 break;
             case SPLIT:
-                specificCompatibility = true;
+                splitShuntAdmittanceXfmr2 = true;
                 break;
         }
 
@@ -96,7 +96,7 @@ public class Validation {
                 break;
         }
 
-        copyLoadFlowParameters.setSpecificCompatibility(specificCompatibility);
+        copyLoadFlowParameters.setSplitShuntAdmittanceXfmr2(splitShuntAdmittanceXfmr2);
         copyLoadFlowParameters.setSplitShuntAdmittanceXfmr3(splitShuntAdmittanceXfmr3);
 
         return copyLoadFlowParameters;

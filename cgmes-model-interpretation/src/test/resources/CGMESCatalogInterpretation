@@ -29,6 +29,16 @@ NN,15,14,14,ok
 __NN__,6,6,6,ok
 __NNn_,2,2,2,__NNn(C)_
 n_NN__.__NN__.__NN__,6,6,6,n(C)_NN__.__NN__.__NN__
+----> config Default.
+BALANCE
+total error,total nodes,isolated nodes,non-calculated node,ok nodes,bad error,bad nodes,pct,badVoltage error,badVoltage nodes,pct
+0.0225273,13,1,1,11,0.00000,0,0.00000,0.00000,0,0.00000
+DETECTED MODEL
+code,total,calculated,ok,evaluationCode
+NN,15,14,14,ok
+__NN__,6,6,6,ok
+__NNn_,2,2,2,__NNn(C)_
+n_NN__.__NN__.__NN__,6,6,6,n(C)_NN__.__NN__.__NN__
 ----> config Line_ratio0_on.
 BALANCE
 total error,total nodes,isolated nodes,non-calculated node,ok nodes,bad error,bad nodes,pct,badVoltage error,badVoltage nodes,pct
@@ -116,20 +126,6 @@ code,total,calculated,ok,evaluationCode
 NN,15,14,9,ok
 __NN__,6,6,2,ok
 __NNn_,2,2,2,__NNn(C)_
-n_NN__.__NN__.__NN__,6,6,6,n(C)_NN__.__NN__.__NN__
-----> config Xfmr2_ratio0_rtc.
-BALANCE
-total error,total nodes,isolated nodes,non-calculated node,ok nodes,bad error,bad nodes,pct,badVoltage error,badVoltage nodes,pct
-404.920,13,1,1,9,404.898,2,16.6667,0.00000,0,0.00000
-BAD NODES
-id,balanceP,balanceQ,lines,xfmr2s,xfmr3s,nodes
-_7f5515b2-ca6b-45af-93ee-f196686f0c66,144.940,57.9741,0,1,0,[_7f5515b2-ca6b-45af-93ee-f196686f0c66]
-_c0adab49-d445-4609-a1a3-ebe4ef297cc8,-144.912,-57.0710,2,1,0,[_c0adab49-d445-4609-a1a3-ebe4ef297cc8]
-DETECTED MODEL
-code,total,calculated,ok,evaluationCode
-NN,15,14,12,ok
-__NN__,6,6,6,ok
-__NNn_,2,2,0,__NNn(C)_
 n_NN__.__NN__.__NN__,6,6,6,n(C)_NN__.__NN__.__NN__
 ----> config Xfmr2_ratio0_end2.
 BALANCE

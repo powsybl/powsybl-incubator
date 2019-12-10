@@ -63,7 +63,7 @@ public final class InterpretationAlternatives {
         alternatives.add(a);
 
         a = new InterpretationAlternative();
-        a.setXfmr2Ratio0(Xfmr2RatioPhaseIntepretationAlternative.RTC);
+        a.setXfmr2Ratio0(Xfmr2RatioPhaseIntepretationAlternative.X);
         alternatives.add(a);
 
         a = new InterpretationAlternative();

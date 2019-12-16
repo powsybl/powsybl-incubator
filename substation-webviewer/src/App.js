@@ -292,8 +292,9 @@ class App extends Component {
              var wireArrows = this.state.metadata.arrows.filter( a => a.wireId === wire.id).sort((a,b) => (a.id > b.id) ? 1 : ((b.id > a.id) ? -1 : 0));
 
              var arrowSize = componentsByType['ARROW'].size.height;
+             const points = thisNode.componentType === 'BREAKER' || thisNode.componentType === 'DISCONNECTOR' || thisNode.componentType === 'LOAD_BREAK_SWITCH' ? wireObj.array().reverse() : wireObj.array();
              for (var i = 0; i< wireArrows.length; i++) {
-                 relocateArrow(childrenById[wireArrows[i].id], wireObj.array(), arrowSize, (2 +  2 * i) * arrowSize);
+                 relocateArrow(childrenById[wireArrows[i].id], points, arrowSize, (2 +  2 * i) * arrowSize);
              }
 
            });

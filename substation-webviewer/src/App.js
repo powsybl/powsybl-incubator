@@ -80,10 +80,8 @@ class App extends Component {
      var initialWiresPoints = {};
 
      forEachChild(draw, e => { if (e.node && e.node.id) { childrenById[e.node.id] = e}
-     console.log("CHILD " + e);
      if (this.state.wiresById[e.node.id]) {
          initialWiresPoints[e.node.id] = e.array();
-         console.log("its a wire " + e.node.id + " " + e.array());
      }});
 
 
@@ -119,7 +117,6 @@ class App extends Component {
      function   relocateArrow(arrow, points, size, distance) {
 
          const finalPos = positionAtDistance(points, distance);
-         console.log("finalPos (" + finalPos['x'] + ' , ' + finalPos['y'] + ') ' + finalPos['angle']);
          untransform(arrow);
          arrow.move(finalPos['x'] - size / 2, finalPos['y'] - size / 2);
          if (arrow.children) {
@@ -188,7 +185,6 @@ class App extends Component {
          e.draggable();
          var wires = this.state.metadata.wires.filter( w => w.nodeId1 === e.node.id || w.nodeId2 === e.node.id );
          e.on('dragmove.namespace', event => {
-             console.log("dragmove");
            event.preventDefault();// we can't use the default drag because it
                                     // moves the children inside the group
                                     // instead of translating the group

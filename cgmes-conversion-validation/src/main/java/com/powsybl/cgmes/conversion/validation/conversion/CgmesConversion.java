@@ -8,6 +8,11 @@
 package com.powsybl.cgmes.conversion.validation.conversion;
 
 import com.powsybl.cgmes.conversion.Conversion;
+import com.powsybl.cgmes.conversion.Conversion.Xfmr2RatioPhaseInterpretationAlternative;
+import com.powsybl.cgmes.conversion.Conversion.Xfmr2ShuntInterpretationAlternative;
+import com.powsybl.cgmes.conversion.Conversion.Xfmr2StructuralRatioInterpretationAlternative;
+import com.powsybl.cgmes.conversion.Conversion.Xfmr3ShuntInterpretationAlternative;
+import com.powsybl.cgmes.conversion.Conversion.Xfmr3StructuralRatioInterpretationAlternative;
 import com.powsybl.cgmes.interpretation.model.interpreted.InterpretationAlternative;
 import com.powsybl.cgmes.interpretation.model.interpreted.InterpretationAlternative.Xfmr3RatioPhaseInterpretationAlternative;
 import com.powsybl.cgmes.model.CgmesModel;
@@ -37,55 +42,55 @@ public class CgmesConversion {
 
         switch (alternative.getXfmr2RatioPhase()) {
             case END1:
-                config.setXfmr2RatioPhaseEnd1();
+                config.setXfmr2RatioPhase(Xfmr2RatioPhaseInterpretationAlternative.END1);
                 break;
             case END2:
-                config.setXfmr2RatioPhaseEnd2();
+                config.setXfmr2RatioPhase(Xfmr2RatioPhaseInterpretationAlternative.END2);
                 break;
             case END1_END2:
-                config.setXfmr2RatioPhaseEnd1End2();
+                config.setXfmr2RatioPhase(Xfmr2RatioPhaseInterpretationAlternative.END1_END2);
                 break;
             case X:
-                config.setXfmr2RatioPhaseX();
+                config.setXfmr2RatioPhase(Xfmr2RatioPhaseInterpretationAlternative.X);
                 break;
         }
         config.setXfmr2PhaseNegate(alternative.isXfmr2PtcNegate());
 
         switch (alternative.getXfmr2YShunt()) {
             case END1:
-                config.setXfmr2ShuntEnd1();
+                config.setXfmr2Shunt(Xfmr2ShuntInterpretationAlternative.END1);
                 break;
             case END2:
-                config.setXfmr2ShuntEnd2();
+                config.setXfmr2Shunt(Xfmr2ShuntInterpretationAlternative.END2);
                 break;
             case END1_END2:
-                config.setXfmr2ShuntEnd1End2();
+                config.setXfmr2Shunt(Xfmr2ShuntInterpretationAlternative.END1_END2);
                 break;
             case SPLIT:
-                config.setXfmr2ShuntSplit();
+                config.setXfmr2Shunt(Xfmr2ShuntInterpretationAlternative.SPLIT);
                 break;
         }
 
         switch (alternative.getXfmr2PhaseAngleClock()) {
             case OFF:
-                config.setXfmr2PhaseAngleClockOn(false);
+                //config.setXfmr2PhaseAngleClockOn(false);
                 break;
             case ON:
-                config.setXfmr2PhaseAngleClockOn(true);
+                //config.setXfmr2PhaseAngleClockOn(true);
                 break;
         }
 
         switch (alternative.getXfmr2Ratio0()) {
             case END1:
-                config.setXfmr2Ratio0End1();
+                config.setXfmr2StructuralRatio(Xfmr2StructuralRatioInterpretationAlternative.END1);
                 break;
             case END2:
-                config.setXfmr2Ratio0End2();
+                config.setXfmr2StructuralRatio(Xfmr2StructuralRatioInterpretationAlternative.END2);
                 break;
             case END1_END2:
                 break;
             case X:
-                config.setXfmr2Ratio0X();
+                config.setXfmr2StructuralRatio(Xfmr2StructuralRatioInterpretationAlternative.X);
                 break;
         }
 
@@ -94,40 +99,40 @@ public class CgmesConversion {
 
         switch (alternative.getXfmr3YShunt()) {
             case NETWORK_SIDE:
-                config.setXfmr3ShuntNetworkSide();
+                config.setXfmr3Shunt(Xfmr3ShuntInterpretationAlternative.NETWORK_SIDE);
                 break;
             case STAR_BUS_SIDE:
-                config.setXfmr3ShuntStarBusSide();
+                config.setXfmr3Shunt(Xfmr3ShuntInterpretationAlternative.STAR_BUS_SIDE);
                 break;
             case SPLIT:
-                config.setXfmr3ShuntSplit();
+                config.setXfmr3Shunt(Xfmr3ShuntInterpretationAlternative.SPLIT);
                 break;
         }
 
         switch (alternative.getXfmr3PhaseAngleClock()) {
             case OFF:
-                config.setXfmr3PhaseAngleClockOn(false);
+                //config.setXfmr3PhaseAngleClockOn(false);
                 break;
             case ON:
-                config.setXfmr3PhaseAngleClockOn(true);
+                //config.setXfmr3PhaseAngleClockOn(true);
                 break;
         }
 
         switch (alternative.getXfmr3Ratio0Side()) {
             case STAR_BUS_SIDE:
-                config.setXfmr3Ratio0StarBusSide();
+                config.setXfmr3StructuralRatio(Xfmr3StructuralRatioInterpretationAlternative.STAR_BUS_SIDE);
                 break;
             case NETWORK_SIDE:
-                config.setXfmr3Ratio0NetworkSide();
+                config.setXfmr3StructuralRatio(Xfmr3StructuralRatioInterpretationAlternative.NETWORK_SIDE);
                 break;
             case END1:
-                config.setXfmr3Ratio0End1();
+                config.setXfmr3StructuralRatio(Xfmr3StructuralRatioInterpretationAlternative.END1);
                 break;
             case END2:
-                config.setXfmr3Ratio0End2();
+                config.setXfmr3StructuralRatio(Xfmr3StructuralRatioInterpretationAlternative.END2);
                 break;
             case END3:
-                config.setXfmr3Ratio0End3();
+                config.setXfmr3StructuralRatio(Xfmr3StructuralRatioInterpretationAlternative.END3);
                 break;
         }
 

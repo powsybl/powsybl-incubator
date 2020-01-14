@@ -51,6 +51,7 @@
 
     <modules>
         <module>cgmes-gl</module>
+        <module>iidm</module>
     </modules>
 
     <properties>

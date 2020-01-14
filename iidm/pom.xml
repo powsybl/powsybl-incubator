@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019, RTE (http://www.rte-france.com)
+    Copyright (c) 2020, RTE (http://www.rte-france.com)
     This Source Code Form is subject to the terms of the Mozilla Public
     License, v. 2.0. If a copy of the MPL was not distributed with this
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -25,6 +25,7 @@
 
     <modules>
         <module>iidm-protobuf-converter</module>
+        <module>iidm-avro-converter</module>
     </modules>
 
     <properties>
@@ -32,6 +33,7 @@
         <protobuf.version>2.5.0</protobuf.version>
         <protobuf.maven.plugin>0.6.1</protobuf.maven.plugin>
         <os.maven.plugin>1.6.0</os.maven.plugin>
+        <staxutils.version>20070216</staxutils.version>
         <xmlunit.version>2.3.0</xmlunit.version>
     </properties>
 

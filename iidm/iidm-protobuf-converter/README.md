@@ -1,13 +1,11 @@
-#IIDM-Protobuf conversion
+#IIDM-Protobuf converter
+IIDM to [Protocol Buffer](https://developers.google.com/protocol-buffers) converter.
+This module allows serializing an IIDM network to a binary Protocol Buffer (Protobuf) file (with extension .piidm)
 
+Present time limitations:
+* Node-breaker network are not supported (Bus-Breaker, only).
+* IIDM extensions are not supported.
 
-## Xsd2thrift experiments
-Xsd2thrift (https://github.com/tranchis/xsd2thrift) allegedly converts an xml schema to a proto file
-
-  java -jar xsd2thrift-1.0.jar --protobuf --filename=iidm.proto --package=com.powsybl.iidm.protobuf.proto --splitBySchema=true iidm.xsd
-
-Once you have a .proto file, you can compile it to java (via protobuf compiler).
-Apparently though, this java code contains a lot of errors and can't be used 'out of the box'; Therefore it is better to create .proto definitions from scratch.
 
 
 

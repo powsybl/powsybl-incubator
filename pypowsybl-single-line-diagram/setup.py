@@ -24,7 +24,7 @@ def getVersionFromPom(pompath, elementtag):
 
 # Provide guidance about how to use setup.py
 incorrect_invocation_message = """
-You must first build pypowsybl-incubator with maven: in pypowsybl-incubator directory, run
+You must first build pypowsybl-single-line-diagram with maven: in pypowsybl-single-line-diagram directory, run
     mvn clean package
   Then, to build the python binary dist, run
     python setup.py bdist_wheel"""
@@ -32,7 +32,7 @@ You must first build pypowsybl-incubator with maven: in pypowsybl-incubator dire
 
 MODULE_HOME = os.path.abspath("./")
 
-VERSION = getVersionFromPom(os.path.join(MODULE_HOME, 'pom.xml'), "version")
+VERSION = getVersionFromPom(os.path.join(MODULE_HOME, 'pom.xml'), "powsybl-sld.version")
 JARS = "target/powsybl/share/java/"
 JARS_PATH = glob.glob(os.path.join(MODULE_HOME, JARS))
 
@@ -47,11 +47,11 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
-    name="pypowsybl_incubator",
+    name="pypowsybl_single_line_diagram",
     version=VERSION,
     author="Christian Biasuzzi",
     author_email="christian.biasuzzi@techrain.eu",
-    description="pypowsybl-incubator python integration",
+    description="pypowsybl-single-line-diagram python integration",
     long_description=long_description,
     long_description_content_type="text/markdown",
     license="Mozilla Public License 2.0 (MPL 2.0)",
@@ -59,13 +59,13 @@ setup(
     python_requires='>3.0.0',
     install_requires=['JPype1','pypowsybl-core'],
     include_package_data=True,
-    packages=['pypowsybl_incubator',
-              'pypowsybl_incubator.jars'],
+    packages=['pypowsybl_single_line_diagram',
+              'pypowsybl_single_line_diagram.jars'],
     package_dir={
-        'pypowsybl_incubator.jars': JARS
+        'pypowsybl_single_line_diagram.jars': JARS
     },
     package_data={
-        'pypowsybl_incubator.jars': ['batik-anim-1.9.jar',
+        'pypowsybl_single_line_diagram.jars': ['batik-anim-1.9.jar',
                                      'batik-awt-util-1.9.jar',
                                      'batik-bridge-1.9.jar',
                                      'batik-constants-1.9.jar',
@@ -81,19 +81,7 @@ setup(
                                      'batik-svgrasterizer-1.10.jar',
                                      'batik-util-1.9.jar',
                                      'batik-xml-1.9.jar',
-                                     'powsybl-balances-adjustment-1.0.0-SNAPSHOT.jar',
-                                     'powsybl-base-voltage-color-1.0.0-SNAPSHOT.jar',
-                                     'powsybl-cgmes-dl-conversion-1.0.0-SNAPSHOT.jar',
-                                     'powsybl-cgmes-gl-conversion-1.0.0-SNAPSHOT.jar',
-                                     'powsybl-cgmes-gl-iidm-extensions-1.0.0-SNAPSHOT.jar',
-                                     'powsybl-cgmes-gl-iidm-extensions-1.0.0-SNAPSHOT-tests.jar',
-                                     'powsybl-cgmes-iidm-extensions-1.0.0-SNAPSHOT.jar',
-                                     'powsybl-cgmes-iidm-extensions-1.0.0-SNAPSHOT-tests.jar',
-                                     'powsybl-simple-loadflow-1.0.0-SNAPSHOT.jar',
-                                     'powsybl-substation-diagram-cgmes-1.0.0-SNAPSHOT.jar',
-                                     'powsybl-substation-diagram-core-1.0.0-SNAPSHOT.jar',
-                                     'powsybl-substation-diagram-util-1.0.0-SNAPSHOT.jar',
-                                     'powsybl-substation-diagram-view-1.0.0-SNAPSHOT.jar',
+                                     'powsybl-single-line-diagram*.jar',
                                      'xml-apis-ext-1.3.04.jar']
     },
     classifiers=[

@@ -359,7 +359,7 @@
             <plugin>
                 <groupId>com.powsybl</groupId>
                 <artifactId>powsybl-itools-packager-maven-plugin</artifactId>
-                <version>3.0.0-SNAPSHOT</version>
+                <version>${powsyblcore.version}</version>
                 <executions>
                     <execution>
                         <phase>package</phase>

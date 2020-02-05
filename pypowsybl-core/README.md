@@ -10,6 +10,8 @@ This package uses the python-java bridge [JPype](https://github.com/jpype-projec
  
 ### Runtime requirements, build and installation:
 
+If behind a proxy, set https_proxy for pip install
+
 To create an isolated virtual python v3.6 environment, on CentOS v7
 
     python3 -m venv penv
@@ -34,6 +36,7 @@ Notes:
 * the  .whl package is to be found in the *dist* directory, after a 'mvn clean package'
 * 'mvn clean package' executes python, during its execution: make sure to run it from your virtual python environment (ref. above)
 * Jpype1 package is automatically installed as a pypowsybl-core dependency.
+* In version 0.7.1 of JPype1, JPype requires numpy but numpy is not automatically installed by JPype. You could have to do "pip install numpy"
 
 
 
@@ -54,7 +57,8 @@ Demo/demo_pandas.py provides a similar demo and demostrates an integration with 
 
 JDK is expected to be available in the $PATH.
 
-A loadflow must be configured, for the demo to run: please ref. to powsybl's documentation to learn how to configure it (e.g. with a $HOME/.itools/config.yml file).
+A loadflow integration package (pypowsybl-hades2 or pypowsybl-open-loadflow) must be installed.
+The corresponding loadflow must be configured for the demo to run: please ref. to powsybl's documentation to learn how to configure it (e.g. with a $HOME/.itools/config.yml file).
 
 
 

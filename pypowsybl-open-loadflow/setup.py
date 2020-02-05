@@ -64,7 +64,7 @@ setup(
         'pypowsybl_open_loadflow.jars': JARS
     },
     package_data={
-        'pypowsybl_open_loadflow.jars': ['powsybl-open-loadflow-1.0.0-SNAPSHOT.jar', 'jafama-2.3.1.jar']
+        'pypowsybl_open_loadflow.jars': ['powsybl-open-loadflow*.jar', 'jafama-2.3.1.jar']
     },
     classifiers=[
         "Development Status :: 4 - Beta",

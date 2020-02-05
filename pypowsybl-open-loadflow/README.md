@@ -5,4 +5,4 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 # pypowsybl-open-loadflow
 
-Provides a loadflow implementation: powsybl-open-loadflow
+This package uses the python-java bridge [JPype](https://github.com/jpype-project/jpype) (Apache-2.0 licensed) to interface python and powsybl-open-loadlflow [powsybl](http://www.powsybl.org/) libraries.

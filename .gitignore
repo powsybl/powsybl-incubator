@@ -2,19 +2,7 @@
 cgmes-dl/target
 cgmes-dl/cgmes-dl-conversion/target
 cgmes-dl/cgmes-iidm-extensions/target
-cgmes-gl/target
-cgmes-gl/cgmes-gl-conversion/target
-cgmes-gl/cgmes-gl-iidm-extensions/target
-loadflow/simple-loadflow/target
-simple-loadflow/target
-substation-diagram/substation-diagram-cgmes/target
-substation-diagram/substation-diagram-core/target
-substation-diagram/substation-diagram-force-layout/target
-substation-diagram/substation-diagram-util/target
-substation-diagram/substation-diagram-view/target
-substation-diagram/target
 substation-webviewer/target
-balances-adjustment/target
 target
 
 # IntelliJ

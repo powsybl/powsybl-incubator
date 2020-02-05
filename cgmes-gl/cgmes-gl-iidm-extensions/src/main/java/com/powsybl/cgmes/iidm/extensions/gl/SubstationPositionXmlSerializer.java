@@ -62,8 +62,8 @@ public class SubstationPositionXmlSerializer implements ExtensionXmlSerializer<S
     @Override
     public void write(SubstationPosition substationPosition, XmlWriterContext context) throws XMLStreamException {
         context.getWriter().writeEmptyElement(getNamespaceUri(), "coordinate");
-        XmlUtil.writeDouble("longitude", substationPosition.getCoordinate().getLongitude(), context.getWriter());
-        XmlUtil.writeDouble("latitude", substationPosition.getCoordinate().getLatitude(), context.getWriter());
+        XmlUtil.writeDouble("longitude", substationPosition.getCoordinate().getLon(), context.getWriter());
+        XmlUtil.writeDouble("latitude", substationPosition.getCoordinate().getLat(), context.getWriter());
     }
 
     @Override

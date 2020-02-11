@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<iidm:network xmlns:iidm="http://www.itesla_project.eu/schema/iidm/1_0" id="case9" caseDate="2020-01-01T00:00:00.000Z" forecastDistance="0" sourceFormat="MATPOWER">
+    <iidm:substation id="S5">
+        <iidm:voltageLevel id="VL1" nominalV="345.0" topologyKind="BUS_BREAKER">
+            <iidm:busBreakerTopology>
+                <iidm:bus id="B1" v="345.0" angle="0.0"/>
+            </iidm:busBreakerTopology>
+            <iidm:generator id="G1-0" energySource="OTHER" minP="10.0" maxP="250.0" voltageRegulatorOn="true" targetP="72.3" targetV="1.04" targetQ="27.03" bus="B1" connectableBus="B1">
+                <iidm:minMaxReactiveLimits minQ="-300.0" maxQ="300.0"/>
+            </iidm:generator>
+        </iidm:voltageLevel>
+    </iidm:substation>
+    <iidm:substation id="S7">
+        <iidm:voltageLevel id="VL2" nominalV="345.0" topologyKind="BUS_BREAKER">
+            <iidm:busBreakerTopology>
+                <iidm:bus id="B2" v="345.0" angle="0.0"/>
+            </iidm:busBreakerTopology>
+            <iidm:generator id="G2-0" energySource="OTHER" minP="10.0" maxP="300.0" voltageRegulatorOn="true" targetP="163.0" targetV="1.025" targetQ="6.54" bus="B2" connectableBus="B2">
+                <iidm:minMaxReactiveLimits minQ="-300.0" maxQ="300.0"/>
+            </iidm:generator>
+        </iidm:voltageLevel>
+    </iidm:substation>
+    <iidm:substation id="S6">
+        <iidm:voltageLevel id="VL3" nominalV="345.0" topologyKind="BUS_BREAKER">
+            <iidm:busBreakerTopology>
+                <iidm:bus id="B3" v="345.0" angle="0.0"/>
+            </iidm:busBreakerTopology>
+            <iidm:generator id="G3-0" energySource="OTHER" minP="10.0" maxP="270.0" voltageRegulatorOn="true" targetP="85.0" targetV="1.025" targetQ="-10.95" bus="B3" connectableBus="B3">
+                <iidm:minMaxReactiveLimits minQ="-300.0" maxQ="300.0"/>
+            </iidm:generator>
+        </iidm:voltageLevel>
+    </iidm:substation>
+    <iidm:substation id="S9">
+        <iidm:voltageLevel id="VL4" nominalV="345.0" topologyKind="BUS_BREAKER">
+            <iidm:busBreakerTopology>
+                <iidm:bus id="B4" v="345.0" angle="0.0"/>
+            </iidm:busBreakerTopology>
+        </iidm:voltageLevel>
+    </iidm:substation>
+    <iidm:substation id="S8">
+        <iidm:voltageLevel id="VL5" nominalV="345.0" topologyKind="BUS_BREAKER">
+            <iidm:busBreakerTopology>
+                <iidm:bus id="B5" v="345.0" angle="0.0"/>
+            </iidm:busBreakerTopology>
+            <iidm:load id="LB5" loadType="UNDEFINED" p0="90.0" q0="30.0" bus="B5" connectableBus="B5"/>
+        </iidm:voltageLevel>
+    </iidm:substation>
+    <iidm:substation id="S2">
+        <iidm:voltageLevel id="VL6" nominalV="345.0" topologyKind="BUS_BREAKER">
+            <iidm:busBreakerTopology>
+                <iidm:bus id="B6" v="345.0" angle="0.0"/>
+            </iidm:busBreakerTopology>
+        </iidm:voltageLevel>
+    </iidm:substation>
+    <iidm:substation id="S1">
+        <iidm:voltageLevel id="VL7" nominalV="345.0" topologyKind="BUS_BREAKER">
+            <iidm:busBreakerTopology>
+                <iidm:bus id="B7" v="345.0" angle="0.0"/>
+            </iidm:busBreakerTopology>
+            <iidm:load id="LB7" loadType="UNDEFINED" p0="100.0" q0="35.0" bus="B7" connectableBus="B7"/>
+        </iidm:voltageLevel>
+    </iidm:substation>
+    <iidm:substation id="S4">
+        <iidm:voltageLevel id="VL8" nominalV="345.0" topologyKind="BUS_BREAKER">
+            <iidm:busBreakerTopology>
+                <iidm:bus id="B8" v="345.0" angle="0.0"/>
+            </iidm:busBreakerTopology>
+        </iidm:voltageLevel>
+    </iidm:substation>
+    <iidm:substation id="S3">
+        <iidm:voltageLevel id="VL9" nominalV="345.0" topologyKind="BUS_BREAKER">
+            <iidm:busBreakerTopology>
+                <iidm:bus id="B9" v="345.0" angle="0.0"/>
+            </iidm:busBreakerTopology>
+            <iidm:load id="LB9" loadType="UNDEFINED" p0="125.0" q0="50.0" bus="B9" connectableBus="B9"/>
+        </iidm:voltageLevel>
+    </iidm:substation>
+    <iidm:line id="L1-4-0" r="0.0" x="6855.84" g1="0.0" b1="0.0" g2="0.0" b2="0.0" bus1="B1" connectableBus1="B1" voltageLevelId1="VL1" bus2="B4" connectableBus2="B4" voltageLevelId2="VL4"/>
+    <iidm:line id="L4-5-0" r="2023.4250000000002" x="10950.3" g1="0.0" b1="6.637261079605125E-7" g2="0.0" b2="6.637261079605125E-7" bus1="B4" connectableBus1="B4" voltageLevelId1="VL4" bus2="B5" connectableBus2="B5" voltageLevelId2="VL5"/>
+    <iidm:line id="L5-6-0" r="4641.975" x="20234.25" g1="0.0" b1="1.503885738290275E-6" g2="0.0" b2="1.503885738290275E-6" bus1="B5" connectableBus1="B5" voltageLevelId1="VL5" bus2="B6" connectableBus2="B6" voltageLevelId2="VL6"/>
+    <iidm:line id="L3-6-0" r="0.0" x="6974.865" g1="0.0" b1="0.0" g2="0.0" b2="0.0" bus1="B3" connectableBus1="B3" voltageLevelId1="VL3" bus2="B6" connectableBus2="B6" voltageLevelId2="VL6"/>
+    <iidm:line id="L6-7-0" r="1416.3975" x="11997.72" g1="0.0" b1="8.77966813694602E-7" g2="0.0" b2="8.77966813694602E-7" bus1="B6" connectableBus1="B6" voltageLevelId1="VL6" bus2="B7" connectableBus2="B7" voltageLevelId2="VL7"/>
+    <iidm:line id="L7-8-0" r="1011.7125000000001" x="8569.8" g1="0.0" b1="6.259189245956731E-7" g2="0.0" b2="6.259189245956731E-7" bus1="B7" connectableBus1="B7" voltageLevelId1="VL7" bus2="B8" connectableBus2="B8" voltageLevelId2="VL8"/>
+    <iidm:line id="L8-2-0" r="0.0" x="7439.0625" g1="0.0" b1="0.0" g2="0.0" b2="0.0" bus1="B8" connectableBus1="B8" voltageLevelId1="VL8" bus2="B2" connectableBus2="B2" voltageLevelId2="VL2"/>
+    <iidm:line id="L8-9-0" r="3808.8" x="19163.025" g1="0.0" b1="1.2854442344045367E-6" g2="0.0" b2="1.2854442344045367E-6" bus1="B8" connectableBus1="B8" voltageLevelId1="VL8" bus2="B9" connectableBus2="B9" voltageLevelId2="VL9"/>
+    <iidm:line id="L9-4-0" r="1190.25" x="10117.125" g1="0.0" b1="7.393404746901911E-7" g2="0.0" b2="7.393404746901911E-7" bus1="B9" connectableBus1="B9" voltageLevelId1="VL9" bus2="B4" connectableBus2="B4" voltageLevelId2="VL4"/>
+</iidm:network>

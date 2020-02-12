@@ -2,6 +2,9 @@
 cgmes-dl/target
 cgmes-dl/cgmes-dl-conversion/target
 cgmes-dl/cgmes-iidm-extensions/target
+iidm/target
+iidm/iidm-protobuf-converter/target
+
 substation-webviewer/target
 target
 

@@ -1,0 +1,1923 @@
+{
+  "type" : "record",
+  "name" : "ANetwork",
+  "fields" : [ {
+    "name" : "property",
+    "type" : [ "null", {
+      "type" : "array",
+      "items" : {
+        "type" : "record",
+        "name" : "Property",
+        "fields" : [ {
+          "name" : "name",
+          "type" : "string",
+          "source" : "attribute name"
+        }, {
+          "name" : "value",
+          "type" : "string",
+          "source" : "attribute value"
+        } ]
+      }
+    } ],
+    "default" : null,
+    "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:property"
+  }, {
+    "name" : "substation",
+    "type" : [ "null", {
+      "type" : "array",
+      "items" : {
+        "type" : "record",
+        "name" : "ASubstation",
+        "fields" : [ {
+          "name" : "property",
+          "type" : [ "null", {
+            "type" : "array",
+            "items" : "Property"
+          } ],
+          "default" : null,
+          "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:property"
+        }, {
+          "name" : "voltageLevel",
+          "type" : [ "null", {
+            "type" : "array",
+            "items" : {
+              "type" : "record",
+              "name" : "AVoltageLevel",
+              "fields" : [ {
+                "name" : "property",
+                "type" : [ "null", {
+                  "type" : "array",
+                  "items" : "Property"
+                } ],
+                "default" : null,
+                "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:property"
+              }, {
+                "name" : "nodeBreakerTopology",
+                "type" : [ "null", {
+                  "type" : "record",
+                  "name" : "ANodeBreakerTopology",
+                  "fields" : [ {
+                    "name" : "busbarSection",
+                    "type" : [ "null", {
+                      "type" : "array",
+                      "items" : {
+                        "type" : "record",
+                        "name" : "BusbarSection",
+                        "fields" : [ {
+                          "name" : "property",
+                          "type" : [ "null", {
+                            "type" : "array",
+                            "items" : "Property"
+                          } ],
+                          "default" : null,
+                          "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:property"
+                        }, {
+                          "name" : "node",
+                          "type" : "int",
+                          "source" : "attribute node"
+                        }, {
+                          "name" : "v",
+                          "type" : [ "null", "double" ],
+                          "default" : null,
+                          "source" : "attribute v"
+                        }, {
+                          "name" : "angle",
+                          "type" : [ "null", "double" ],
+                          "default" : null,
+                          "source" : "attribute angle"
+                        }, {
+                          "name" : "id",
+                          "type" : "string",
+                          "source" : "attribute id"
+                        }, {
+                          "name" : "name",
+                          "type" : [ "null", "string" ],
+                          "default" : null,
+                          "source" : "attribute name"
+                        } ]
+                      }
+                    } ],
+                    "default" : null,
+                    "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:busbarSection"
+                  }, {
+                    "name" : "switch",
+                    "type" : [ "null", {
+                      "type" : "array",
+                      "items" : {
+                        "type" : "record",
+                        "name" : "SwitchNode",
+                        "fields" : [ {
+                          "name" : "property",
+                          "type" : [ "null", {
+                            "type" : "array",
+                            "items" : "Property"
+                          } ],
+                          "default" : null,
+                          "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:property"
+                        }, {
+                          "name" : "node1",
+                          "type" : "int",
+                          "source" : "attribute node1"
+                        }, {
+                          "name" : "node2",
+                          "type" : "int",
+                          "source" : "attribute node2"
+                        }, {
+                          "name" : "kind",
+                          "type" : "string",
+                          "source" : "attribute kind"
+                        }, {
+                          "name" : "retained",
+                          "type" : "boolean",
+                          "source" : "attribute retained"
+                        }, {
+                          "name" : "open",
+                          "type" : "boolean",
+                          "source" : "attribute open"
+                        }, {
+                          "name" : "fictitious",
+                          "type" : [ "null", "boolean" ],
+                          "default" : null,
+                          "source" : "attribute fictitious"
+                        }, {
+                          "name" : "id",
+                          "type" : "string",
+                          "source" : "attribute id"
+                        }, {
+                          "name" : "name",
+                          "type" : [ "null", "string" ],
+                          "default" : null,
+                          "source" : "attribute name"
+                        } ]
+                      }
+                    } ],
+                    "default" : null,
+                    "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:switch"
+                  }, {
+                    "name" : "internalConnection",
+                    "type" : [ "null", {
+                      "type" : "array",
+                      "items" : {
+                        "type" : "record",
+                        "name" : "InternalConnection",
+                        "fields" : [ {
+                          "name" : "node1",
+                          "type" : "int",
+                          "source" : "attribute node1"
+                        }, {
+                          "name" : "node2",
+                          "type" : "int",
+                          "source" : "attribute node2"
+                        } ]
+                      }
+                    } ],
+                    "default" : null,
+                    "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:internalConnection"
+                  }, {
+                    "name" : "nodeCount",
+                    "type" : "int",
+                    "source" : "attribute nodeCount"
+                  } ]
+                } ],
+                "default" : null,
+                "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:nodeBreakerTopology"
+              }, {
+                "name" : "busBreakerTopology",
+                "type" : [ "null", {
+                  "type" : "record",
+                  "name" : "ABusBreakerTopology",
+                  "fields" : [ {
+                    "name" : "bus",
+                    "type" : [ "null", {
+                      "type" : "array",
+                      "items" : {
+                        "type" : "record",
+                        "name" : "ABus",
+                        "fields" : [ {
+                          "name" : "property",
+                          "type" : [ "null", {
+                            "type" : "array",
+                            "items" : "Property"
+                          } ],
+                          "default" : null,
+                          "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:property"
+                        }, {
+                          "name" : "v",
+                          "type" : [ "null", "double" ],
+                          "default" : null,
+                          "source" : "attribute v"
+                        }, {
+                          "name" : "angle",
+                          "type" : [ "null", "double" ],
+                          "default" : null,
+                          "source" : "attribute angle"
+                        }, {
+                          "name" : "id",
+                          "type" : "string",
+                          "source" : "attribute id"
+                        }, {
+                          "name" : "name",
+                          "type" : [ "null", "string" ],
+                          "default" : null,
+                          "source" : "attribute name"
+                        } ]
+                      }
+                    } ],
+                    "default" : null,
+                    "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:bus"
+                  }, {
+                    "name" : "switch",
+                    "type" : [ "null", {
+                      "type" : "array",
+                      "items" : {
+                        "type" : "record",
+                        "name" : "ASwitchBus",
+                        "fields" : [ {
+                          "name" : "property",
+                          "type" : [ "null", {
+                            "type" : "array",
+                            "items" : "Property"
+                          } ],
+                          "default" : null,
+                          "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:property"
+                        }, {
+                          "name" : "bus1",
+                          "type" : "string",
+                          "source" : "attribute bus1"
+                        }, {
+                          "name" : "bus2",
+                          "type" : "string",
+                          "source" : "attribute bus2"
+                        }, {
+                          "name" : "kind",
+                          "type" : "string",
+                          "source" : "attribute kind"
+                        }, {
+                          "name" : "retained",
+                          "type" : "boolean",
+                          "source" : "attribute retained"
+                        }, {
+                          "name" : "open",
+                          "type" : "boolean",
+                          "source" : "attribute open"
+                        }, {
+                          "name" : "fictitious",
+                          "type" : [ "null", "boolean" ],
+                          "default" : null,
+                          "source" : "attribute fictitious"
+                        }, {
+                          "name" : "id",
+                          "type" : "string",
+                          "source" : "attribute id"
+                        }, {
+                          "name" : "name",
+                          "type" : [ "null", "string" ],
+                          "default" : null,
+                          "source" : "attribute name"
+                        } ]
+                      }
+                    } ],
+                    "default" : null,
+                    "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:switch"
+                  } ]
+                } ],
+                "default" : null,
+                "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:busBreakerTopology"
+              }, {
+                "name" : "generator",
+                "type" : [ "null", {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "record",
+                    "name" : "AGenerator",
+                    "fields" : [ {
+                      "name" : "property",
+                      "type" : [ "null", {
+                        "type" : "array",
+                        "items" : "Property"
+                      } ],
+                      "default" : null,
+                      "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:property"
+                    }, {
+                      "name" : "regulatingTerminal",
+                      "type" : [ "null", {
+                        "type" : "record",
+                        "name" : "ATerminalRef",
+                        "fields" : [ {
+                          "name" : "id",
+                          "type" : "string",
+                          "source" : "attribute id"
+                        }, {
+                          "name" : "side",
+                          "type" : [ "null", "string" ],
+                          "default" : null,
+                          "source" : "attribute side"
+                        } ]
+                      } ],
+                      "default" : null,
+                      "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:regulatingTerminal"
+                    }, {
+                      "name" : "reactiveCapabilityCurve",
+                      "type" : [ "null", {
+                        "type" : "record",
+                        "name" : "ReactiveCapabilityCurve",
+                        "fields" : [ {
+                          "name" : "point",
+                          "type" : {
+                            "type" : "array",
+                            "items" : {
+                              "type" : "record",
+                              "name" : "Point",
+                              "fields" : [ {
+                                "name" : "p",
+                                "type" : "double",
+                                "source" : "attribute p"
+                              }, {
+                                "name" : "minQ",
+                                "type" : "double",
+                                "source" : "attribute minQ"
+                              }, {
+                                "name" : "maxQ",
+                                "type" : "double",
+                                "source" : "attribute maxQ"
+                              } ]
+                            }
+                          },
+                          "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:point"
+                        } ]
+                      } ],
+                      "default" : null,
+                      "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:reactiveCapabilityCurve"
+                    }, {
+                      "name" : "minMaxReactiveLimits",
+                      "type" : [ "null", {
+                        "type" : "record",
+                        "name" : "MinMaxReactiveLimits",
+                        "fields" : [ {
+                          "name" : "minQ",
+                          "type" : "double",
+                          "source" : "attribute minQ"
+                        }, {
+                          "name" : "maxQ",
+                          "type" : "double",
+                          "source" : "attribute maxQ"
+                        } ]
+                      } ],
+                      "default" : null,
+                      "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:minMaxReactiveLimits"
+                    }, {
+                      "name" : "energySource",
+                      "type" : "string",
+                      "source" : "attribute energySource"
+                    }, {
+                      "name" : "maxP",
+                      "type" : "double",
+                      "source" : "attribute maxP"
+                    }, {
+                      "name" : "minP",
+                      "type" : "double",
+                      "source" : "attribute minP"
+                    }, {
+                      "name" : "ratedS",
+                      "type" : [ "null", "double" ],
+                      "default" : null,
+                      "source" : "attribute ratedS"
+                    }, {
+                      "name" : "voltageRegulatorOn",
+                      "type" : "boolean",
+                      "source" : "attribute voltageRegulatorOn"
+                    }, {
+                      "name" : "targetP",
+                      "type" : "double",
+                      "source" : "attribute targetP"
+                    }, {
+                      "name" : "targetQ",
+                      "type" : [ "null", "double" ],
+                      "default" : null,
+                      "source" : "attribute targetQ"
+                    }, {
+                      "name" : "targetV",
+                      "type" : [ "null", "double" ],
+                      "default" : null,
+                      "source" : "attribute targetV"
+                    }, {
+                      "name" : "node",
+                      "type" : [ "null", "int" ],
+                      "default" : null,
+                      "source" : "attribute node"
+                    }, {
+                      "name" : "bus",
+                      "type" : [ "null", "string" ],
+                      "default" : null,
+                      "source" : "attribute bus"
+                    }, {
+                      "name" : "connectableBus",
+                      "type" : [ "null", "string" ],
+                      "default" : null,
+                      "source" : "attribute connectableBus"
+                    }, {
+                      "name" : "p",
+                      "type" : [ "null", "double" ],
+                      "default" : null,
+                      "source" : "attribute p"
+                    }, {
+                      "name" : "q",
+                      "type" : [ "null", "double" ],
+                      "default" : null,
+                      "source" : "attribute q"
+                    }, {
+                      "name" : "id",
+                      "type" : "string",
+                      "source" : "attribute id"
+                    }, {
+                      "name" : "name",
+                      "type" : [ "null", "string" ],
+                      "default" : null,
+                      "source" : "attribute name"
+                    } ]
+                  }
+                } ],
+                "default" : null,
+                "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:generator"
+              }, {
+                "name" : "battery",
+                "type" : [ "null", {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "record",
+                    "name" : "ABattery",
+                    "fields" : [ {
+                      "name" : "property",
+                      "type" : [ "null", {
+                        "type" : "array",
+                        "items" : "Property"
+                      } ],
+                      "default" : null,
+                      "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:property"
+                    }, {
+                      "name" : "reactiveCapabilityCurve",
+                      "type" : [ "null", "ReactiveCapabilityCurve" ],
+                      "default" : null,
+                      "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:reactiveCapabilityCurve"
+                    }, {
+                      "name" : "minMaxReactiveLimits",
+                      "type" : [ "null", "MinMaxReactiveLimits" ],
+                      "default" : null,
+                      "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:minMaxReactiveLimits"
+                    }, {
+                      "name" : "p0",
+                      "type" : "double",
+                      "source" : "attribute p0"
+                    }, {
+                      "name" : "q0",
+                      "type" : "double",
+                      "source" : "attribute q0"
+                    }, {
+                      "name" : "minP",
+                      "type" : "double",
+                      "source" : "attribute minP"
+                    }, {
+                      "name" : "maxP",
+                      "type" : "double",
+                      "source" : "attribute maxP"
+                    }, {
+                      "name" : "node",
+                      "type" : [ "null", "int" ],
+                      "default" : null,
+                      "source" : "attribute node"
+                    }, {
+                      "name" : "bus",
+                      "type" : [ "null", "string" ],
+                      "default" : null,
+                      "source" : "attribute bus"
+                    }, {
+                      "name" : "connectableBus",
+                      "type" : [ "null", "string" ],
+                      "default" : null,
+                      "source" : "attribute connectableBus"
+                    }, {
+                      "name" : "p",
+                      "type" : [ "null", "double" ],
+                      "default" : null,
+                      "source" : "attribute p"
+                    }, {
+                      "name" : "q",
+                      "type" : [ "null", "double" ],
+                      "default" : null,
+                      "source" : "attribute q"
+                    }, {
+                      "name" : "id",
+                      "type" : "string",
+                      "source" : "attribute id"
+                    }, {
+                      "name" : "name",
+                      "type" : [ "null", "string" ],
+                      "default" : null,
+                      "source" : "attribute name"
+                    } ]
+                  }
+                } ],
+                "default" : null,
+                "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:battery"
+              }, {
+                "name" : "load",
+                "type" : [ "null", {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "record",
+                    "name" : "ALoad",
+                    "fields" : [ {
+                      "name" : "property",
+                      "type" : [ "null", {
+                        "type" : "array",
+                        "items" : "Property"
+                      } ],
+                      "default" : null,
+                      "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:property"
+                    }, {
+                      "name" : "p0",
+                      "type" : "double",
+                      "source" : "attribute p0"
+                    }, {
+                      "name" : "q0",
+                      "type" : "double",
+                      "source" : "attribute q0"
+                    }, {
+                      "name" : "loadType",
+                      "type" : [ "null", "string" ],
+                      "default" : null,
+                      "source" : "attribute loadType"
+                    }, {
+                      "name" : "node",
+                      "type" : [ "null", "int" ],
+                      "default" : null,
+                      "source" : "attribute node"
+                    }, {
+                      "name" : "bus",
+                      "type" : [ "null", "string" ],
+                      "default" : null,
+                      "source" : "attribute bus"
+                    }, {
+                      "name" : "connectableBus",
+                      "type" : [ "null", "string" ],
+                      "default" : null,
+                      "source" : "attribute connectableBus"
+                    }, {
+                      "name" : "p",
+                      "type" : [ "null", "double" ],
+                      "default" : null,
+                      "source" : "attribute p"
+                    }, {
+                      "name" : "q",
+                      "type" : [ "null", "double" ],
+                      "default" : null,
+                      "source" : "attribute q"
+                    }, {
+                      "name" : "id",
+                      "type" : "string",
+                      "source" : "attribute id"
+                    }, {
+                      "name" : "name",
+                      "type" : [ "null", "string" ],
+                      "default" : null,
+                      "source" : "attribute name"
+                    } ]
+                  }
+                } ],
+                "default" : null,
+                "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:load"
+              }, {
+                "name" : "shunt",
+                "type" : [ "null", {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "record",
+                    "name" : "AShuntCompensator",
+                    "fields" : [ {
+                      "name" : "property",
+                      "type" : [ "null", {
+                        "type" : "array",
+                        "items" : "Property"
+                      } ],
+                      "default" : null,
+                      "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:property"
+                    }, {
+                      "name" : "bPerSection",
+                      "type" : "double",
+                      "source" : "attribute bPerSection"
+                    }, {
+                      "name" : "maximumSectionCount",
+                      "type" : "int",
+                      "source" : "attribute maximumSectionCount"
+                    }, {
+                      "name" : "currentSectionCount",
+                      "type" : "int",
+                      "source" : "attribute currentSectionCount"
+                    }, {
+                      "name" : "node",
+                      "type" : [ "null", "int" ],
+                      "default" : null,
+                      "source" : "attribute node"
+                    }, {
+                      "name" : "bus",
+                      "type" : [ "null", "string" ],
+                      "default" : null,
+                      "source" : "attribute bus"
+                    }, {
+                      "name" : "connectableBus",
+                      "type" : [ "null", "string" ],
+                      "default" : null,
+                      "source" : "attribute connectableBus"
+                    }, {
+                      "name" : "p",
+                      "type" : [ "null", "double" ],
+                      "default" : null,
+                      "source" : "attribute p"
+                    }, {
+                      "name" : "q",
+                      "type" : [ "null", "double" ],
+                      "default" : null,
+                      "source" : "attribute q"
+                    }, {
+                      "name" : "id",
+                      "type" : "string",
+                      "source" : "attribute id"
+                    }, {
+                      "name" : "name",
+                      "type" : [ "null", "string" ],
+                      "default" : null,
+                      "source" : "attribute name"
+                    } ]
+                  }
+                } ],
+                "default" : null,
+                "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:shunt"
+              }, {
+                "name" : "danglingLine",
+                "type" : [ "null", {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "record",
+                    "name" : "ADanglingLine",
+                    "fields" : [ {
+                      "name" : "property",
+                      "type" : [ "null", {
+                        "type" : "array",
+                        "items" : "Property"
+                      } ],
+                      "default" : null,
+                      "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:property"
+                    }, {
+                      "name" : "currentLimits",
+                      "type" : [ "null", {
+                        "type" : "record",
+                        "name" : "CurrentLimit",
+                        "fields" : [ {
+                          "name" : "temporaryLimit",
+                          "type" : [ "null", {
+                            "type" : "array",
+                            "items" : {
+                              "type" : "record",
+                              "name" : "TemporaryLimit",
+                              "fields" : [ {
+                                "name" : "name",
+                                "type" : "string",
+                                "source" : "attribute name"
+                              }, {
+                                "name" : "acceptableDuration",
+                                "type" : [ "null", "int" ],
+                                "default" : null,
+                                "source" : "attribute acceptableDuration"
+                              }, {
+                                "name" : "value",
+                                "type" : [ "null", "double" ],
+                                "default" : null,
+                                "source" : "attribute value"
+                              }, {
+                                "name" : "fictitious",
+                                "type" : [ "null", "boolean" ],
+                                "default" : null,
+                                "source" : "attribute fictitious"
+                              } ]
+                            }
+                          } ],
+                          "default" : null,
+                          "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:temporaryLimit"
+                        }, {
+                          "name" : "permanentLimit",
+                          "type" : [ "null", "double" ],
+                          "default" : null,
+                          "source" : "attribute permanentLimit"
+                        } ]
+                      } ],
+                      "default" : null,
+                      "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:currentLimits"
+                    }, {
+                      "name" : "p0",
+                      "type" : "double",
+                      "source" : "attribute p0"
+                    }, {
+                      "name" : "q0",
+                      "type" : "double",
+                      "source" : "attribute q0"
+                    }, {
+                      "name" : "r",
+                      "type" : "double",
+                      "source" : "attribute r"
+                    }, {
+                      "name" : "x",
+                      "type" : "double",
+                      "source" : "attribute x"
+                    }, {
+                      "name" : "g",
+                      "type" : "double",
+                      "source" : "attribute g"
+                    }, {
+                      "name" : "b",
+                      "type" : "double",
+                      "source" : "attribute b"
+                    }, {
+                      "name" : "ucteXnodeCode",
+                      "type" : [ "null", "string" ],
+                      "default" : null,
+                      "source" : "attribute ucteXnodeCode"
+                    }, {
+                      "name" : "node",
+                      "type" : [ "null", "int" ],
+                      "default" : null,
+                      "source" : "attribute node"
+                    }, {
+                      "name" : "bus",
+                      "type" : [ "null", "string" ],
+                      "default" : null,
+                      "source" : "attribute bus"
+                    }, {
+                      "name" : "connectableBus",
+                      "type" : [ "null", "string" ],
+                      "default" : null,
+                      "source" : "attribute connectableBus"
+                    }, {
+                      "name" : "p",
+                      "type" : [ "null", "double" ],
+                      "default" : null,
+                      "source" : "attribute p"
+                    }, {
+                      "name" : "q",
+                      "type" : [ "null", "double" ],
+                      "default" : null,
+                      "source" : "attribute q"
+                    }, {
+                      "name" : "id",
+                      "type" : "string",
+                      "source" : "attribute id"
+                    }, {
+                      "name" : "name",
+                      "type" : [ "null", "string" ],
+                      "default" : null,
+                      "source" : "attribute name"
+                    } ]
+                  }
+                } ],
+                "default" : null,
+                "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:danglingLine"
+              }, {
+                "name" : "staticVarCompensator",
+                "type" : [ "null", {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "record",
+                    "name" : "AStaticVarCompensator",
+                    "fields" : [ {
+                      "name" : "property",
+                      "type" : [ "null", {
+                        "type" : "array",
+                        "items" : "Property"
+                      } ],
+                      "default" : null,
+                      "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:property"
+                    }, {
+                      "name" : "bMin",
+                      "type" : "double",
+                      "source" : "attribute bMin"
+                    }, {
+                      "name" : "bMax",
+                      "type" : "double",
+                      "source" : "attribute bMax"
+                    }, {
+                      "name" : "voltageSetPoint",
+                      "type" : [ "null", "double" ],
+                      "default" : null,
+                      "source" : "attribute voltageSetPoint"
+                    }, {
+                      "name" : "reactivePowerSetPoint",
+                      "type" : [ "null", "double" ],
+                      "default" : null,
+                      "source" : "attribute reactivePowerSetPoint"
+                    }, {
+                      "name" : "regulationMode",
+                      "type" : "string",
+                      "source" : "attribute regulationMode"
+                    }, {
+                      "name" : "node",
+                      "type" : [ "null", "int" ],
+                      "default" : null,
+                      "source" : "attribute node"
+                    }, {
+                      "name" : "bus",
+                      "type" : [ "null", "string" ],
+                      "default" : null,
+                      "source" : "attribute bus"
+                    }, {
+                      "name" : "connectableBus",
+                      "type" : [ "null", "string" ],
+                      "default" : null,
+                      "source" : "attribute connectableBus"
+                    }, {
+                      "name" : "p",
+                      "type" : [ "null", "double" ],
+                      "default" : null,
+                      "source" : "attribute p"
+                    }, {
+                      "name" : "q",
+                      "type" : [ "null", "double" ],
+                      "default" : null,
+                      "source" : "attribute q"
+                    }, {
+                      "name" : "id",
+                      "type" : "string",
+                      "source" : "attribute id"
+                    }, {
+                      "name" : "name",
+                      "type" : [ "null", "string" ],
+                      "default" : null,
+                      "source" : "attribute name"
+                    } ]
+                  }
+                } ],
+                "default" : null,
+                "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:staticVarCompensator"
+              }, {
+                "name" : "vscConverterStation",
+                "type" : [ "null", {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "record",
+                    "name" : "AVscConverterStation",
+                    "fields" : [ {
+                      "name" : "property",
+                      "type" : [ "null", {
+                        "type" : "array",
+                        "items" : "Property"
+                      } ],
+                      "default" : null,
+                      "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:property"
+                    }, {
+                      "name" : "reactiveCapabilityCurve",
+                      "type" : [ "null", "ReactiveCapabilityCurve" ],
+                      "default" : null,
+                      "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:reactiveCapabilityCurve"
+                    }, {
+                      "name" : "minMaxReactiveLimits",
+                      "type" : [ "null", "MinMaxReactiveLimits" ],
+                      "default" : null,
+                      "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:minMaxReactiveLimits"
+                    }, {
+                      "name" : "voltageRegulatorOn",
+                      "type" : "boolean",
+                      "source" : "attribute voltageRegulatorOn"
+                    }, {
+                      "name" : "voltageSetpoint",
+                      "type" : [ "null", "double" ],
+                      "default" : null,
+                      "source" : "attribute voltageSetpoint"
+                    }, {
+                      "name" : "reactivePowerSetpoint",
+                      "type" : [ "null", "double" ],
+                      "default" : null,
+                      "source" : "attribute reactivePowerSetpoint"
+                    }, {
+                      "name" : "lossFactor",
+                      "type" : "float",
+                      "source" : "attribute lossFactor"
+                    }, {
+                      "name" : "node",
+                      "type" : [ "null", "int" ],
+                      "default" : null,
+                      "source" : "attribute node"
+                    }, {
+                      "name" : "bus",
+                      "type" : [ "null", "string" ],
+                      "default" : null,
+                      "source" : "attribute bus"
+                    }, {
+                      "name" : "connectableBus",
+                      "type" : [ "null", "string" ],
+                      "default" : null,
+                      "source" : "attribute connectableBus"
+                    }, {
+                      "name" : "p",
+                      "type" : [ "null", "double" ],
+                      "default" : null,
+                      "source" : "attribute p"
+                    }, {
+                      "name" : "q",
+                      "type" : [ "null", "double" ],
+                      "default" : null,
+                      "source" : "attribute q"
+                    }, {
+                      "name" : "id",
+                      "type" : "string",
+                      "source" : "attribute id"
+                    }, {
+                      "name" : "name",
+                      "type" : [ "null", "string" ],
+                      "default" : null,
+                      "source" : "attribute name"
+                    } ]
+                  }
+                } ],
+                "default" : null,
+                "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:vscConverterStation"
+              }, {
+                "name" : "lccConverterStation",
+                "type" : [ "null", {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "record",
+                    "name" : "ALccConverterStation",
+                    "fields" : [ {
+                      "name" : "property",
+                      "type" : [ "null", {
+                        "type" : "array",
+                        "items" : "Property"
+                      } ],
+                      "default" : null,
+                      "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:property"
+                    }, {
+                      "name" : "powerFactor",
+                      "type" : "float",
+                      "source" : "attribute powerFactor"
+                    }, {
+                      "name" : "lossFactor",
+                      "type" : "float",
+                      "source" : "attribute lossFactor"
+                    }, {
+                      "name" : "node",
+                      "type" : [ "null", "int" ],
+                      "default" : null,
+                      "source" : "attribute node"
+                    }, {
+                      "name" : "bus",
+                      "type" : [ "null", "string" ],
+                      "default" : null,
+                      "source" : "attribute bus"
+                    }, {
+                      "name" : "connectableBus",
+                      "type" : [ "null", "string" ],
+                      "default" : null,
+                      "source" : "attribute connectableBus"
+                    }, {
+                      "name" : "p",
+                      "type" : [ "null", "double" ],
+                      "default" : null,
+                      "source" : "attribute p"
+                    }, {
+                      "name" : "q",
+                      "type" : [ "null", "double" ],
+                      "default" : null,
+                      "source" : "attribute q"
+                    }, {
+                      "name" : "id",
+                      "type" : "string",
+                      "source" : "attribute id"
+                    }, {
+                      "name" : "name",
+                      "type" : [ "null", "string" ],
+                      "default" : null,
+                      "source" : "attribute name"
+                    } ]
+                  }
+                } ],
+                "default" : null,
+                "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:lccConverterStation"
+              }, {
+                "name" : "nominalV",
+                "type" : "double",
+                "source" : "attribute nominalV"
+              }, {
+                "name" : "topologyKind",
+                "type" : "string",
+                "source" : "attribute topologyKind"
+              }, {
+                "name" : "lowVoltageLimit",
+                "type" : [ "null", "double" ],
+                "default" : null,
+                "source" : "attribute lowVoltageLimit"
+              }, {
+                "name" : "highVoltageLimit",
+                "type" : [ "null", "double" ],
+                "default" : null,
+                "source" : "attribute highVoltageLimit"
+              }, {
+                "name" : "id",
+                "type" : "string",
+                "source" : "attribute id"
+              }, {
+                "name" : "name",
+                "type" : [ "null", "string" ],
+                "default" : null,
+                "source" : "attribute name"
+              } ]
+            }
+          } ],
+          "default" : null,
+          "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:voltageLevel"
+        }, {
+          "name" : "twoWindingsTransformer",
+          "type" : [ "null", {
+            "type" : "array",
+            "items" : {
+              "type" : "record",
+              "name" : "ATwoWindingsTransformer",
+              "fields" : [ {
+                "name" : "property",
+                "type" : [ "null", {
+                  "type" : "array",
+                  "items" : "Property"
+                } ],
+                "default" : null,
+                "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:property"
+              }, {
+                "name" : "ratioTapChanger",
+                "type" : [ "null", {
+                  "type" : "record",
+                  "name" : "ARatioTapChanger",
+                  "fields" : [ {
+                    "name" : "terminalRef",
+                    "type" : [ "null", "ATerminalRef" ],
+                    "default" : null,
+                    "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:terminalRef"
+                  }, {
+                    "name" : "step",
+                    "type" : {
+                      "type" : "array",
+                      "items" : {
+                        "type" : "record",
+                        "name" : "ARatioTapChangerStep",
+                        "fields" : [ {
+                          "name" : "rho",
+                          "type" : "double",
+                          "source" : "attribute rho"
+                        }, {
+                          "name" : "r",
+                          "type" : "double",
+                          "source" : "attribute r"
+                        }, {
+                          "name" : "x",
+                          "type" : "double",
+                          "source" : "attribute x"
+                        }, {
+                          "name" : "g",
+                          "type" : "double",
+                          "source" : "attribute g"
+                        }, {
+                          "name" : "b",
+                          "type" : "double",
+                          "source" : "attribute b"
+                        } ]
+                      }
+                    },
+                    "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:step"
+                  }, {
+                    "name" : "lowTapPosition",
+                    "type" : "int",
+                    "source" : "attribute lowTapPosition"
+                  }, {
+                    "name" : "tapPosition",
+                    "type" : "int",
+                    "source" : "attribute tapPosition"
+                  }, {
+                    "name" : "targetDeadband",
+                    "type" : [ "null", "double" ],
+                    "default" : null,
+                    "source" : "attribute targetDeadband"
+                  }, {
+                    "name" : "loadTapChangingCapabilities",
+                    "type" : "boolean",
+                    "source" : "attribute loadTapChangingCapabilities"
+                  }, {
+                    "name" : "regulating",
+                    "type" : [ "null", "boolean" ],
+                    "default" : null,
+                    "source" : "attribute regulating"
+                  }, {
+                    "name" : "targetV",
+                    "type" : [ "null", "double" ],
+                    "default" : null,
+                    "source" : "attribute targetV"
+                  } ]
+                } ],
+                "default" : null,
+                "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:ratioTapChanger"
+              }, {
+                "name" : "phaseTapChanger",
+                "type" : [ "null", {
+                  "type" : "record",
+                  "name" : "APhaseTapChanger",
+                  "fields" : [ {
+                    "name" : "terminalRef",
+                    "type" : [ "null", "ATerminalRef" ],
+                    "default" : null,
+                    "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:terminalRef"
+                  }, {
+                    "name" : "step",
+                    "type" : {
+                      "type" : "array",
+                      "items" : {
+                        "type" : "record",
+                        "name" : "APhaseTapChangerStep",
+                        "fields" : [ {
+                          "name" : "rho",
+                          "type" : "double",
+                          "source" : "attribute rho"
+                        }, {
+                          "name" : "alpha",
+                          "type" : "double",
+                          "source" : "attribute alpha"
+                        }, {
+                          "name" : "r",
+                          "type" : "double",
+                          "source" : "attribute r"
+                        }, {
+                          "name" : "x",
+                          "type" : "double",
+                          "source" : "attribute x"
+                        }, {
+                          "name" : "g",
+                          "type" : "double",
+                          "source" : "attribute g"
+                        }, {
+                          "name" : "b",
+                          "type" : "double",
+                          "source" : "attribute b"
+                        } ]
+                      }
+                    },
+                    "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:step"
+                  }, {
+                    "name" : "lowTapPosition",
+                    "type" : "int",
+                    "source" : "attribute lowTapPosition"
+                  }, {
+                    "name" : "tapPosition",
+                    "type" : "int",
+                    "source" : "attribute tapPosition"
+                  }, {
+                    "name" : "targetDeadband",
+                    "type" : [ "null", "double" ],
+                    "default" : null,
+                    "source" : "attribute targetDeadband"
+                  }, {
+                    "name" : "regulationMode",
+                    "type" : "string",
+                    "source" : "attribute regulationMode"
+                  }, {
+                    "name" : "regulationValue",
+                    "type" : [ "null", "double" ],
+                    "default" : null,
+                    "source" : "attribute regulationValue"
+                  }, {
+                    "name" : "regulating",
+                    "type" : [ "null", "boolean" ],
+                    "default" : null,
+                    "source" : "attribute regulating"
+                  } ]
+                } ],
+                "default" : null,
+                "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:phaseTapChanger"
+              }, {
+                "name" : "currentLimits1",
+                "type" : [ "null", "CurrentLimit" ],
+                "default" : null,
+                "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:currentLimits1"
+              }, {
+                "name" : "currentLimits2",
+                "type" : [ "null", "CurrentLimit" ],
+                "default" : null,
+                "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:currentLimits2"
+              }, {
+                "name" : "r",
+                "type" : "double",
+                "source" : "attribute r"
+              }, {
+                "name" : "x",
+                "type" : "double",
+                "source" : "attribute x"
+              }, {
+                "name" : "g",
+                "type" : "double",
+                "source" : "attribute g"
+              }, {
+                "name" : "b",
+                "type" : "double",
+                "source" : "attribute b"
+              }, {
+                "name" : "ratedU1",
+                "type" : "double",
+                "source" : "attribute ratedU1"
+              }, {
+                "name" : "ratedU2",
+                "type" : "double",
+                "source" : "attribute ratedU2"
+              }, {
+                "name" : "node1",
+                "type" : [ "null", "int" ],
+                "default" : null,
+                "source" : "attribute node1"
+              }, {
+                "name" : "bus1",
+                "type" : [ "null", "string" ],
+                "default" : null,
+                "source" : "attribute bus1"
+              }, {
+                "name" : "connectableBus1",
+                "type" : [ "null", "string" ],
+                "default" : null,
+                "source" : "attribute connectableBus1"
+              }, {
+                "name" : "voltageLevelId1",
+                "type" : "string",
+                "source" : "attribute voltageLevelId1"
+              }, {
+                "name" : "node2",
+                "type" : [ "null", "int" ],
+                "default" : null,
+                "source" : "attribute node2"
+              }, {
+                "name" : "bus2",
+                "type" : [ "null", "string" ],
+                "default" : null,
+                "source" : "attribute bus2"
+              }, {
+                "name" : "connectableBus2",
+                "type" : [ "null", "string" ],
+                "default" : null,
+                "source" : "attribute connectableBus2"
+              }, {
+                "name" : "voltageLevelId2",
+                "type" : "string",
+                "source" : "attribute voltageLevelId2"
+              }, {
+                "name" : "p1",
+                "type" : [ "null", "double" ],
+                "default" : null,
+                "source" : "attribute p1"
+              }, {
+                "name" : "q1",
+                "type" : [ "null", "double" ],
+                "default" : null,
+                "source" : "attribute q1"
+              }, {
+                "name" : "p2",
+                "type" : [ "null", "double" ],
+                "default" : null,
+                "source" : "attribute p2"
+              }, {
+                "name" : "q2",
+                "type" : [ "null", "double" ],
+                "default" : null,
+                "source" : "attribute q2"
+              }, {
+                "name" : "id",
+                "type" : "string",
+                "source" : "attribute id"
+              }, {
+                "name" : "name",
+                "type" : [ "null", "string" ],
+                "default" : null,
+                "source" : "attribute name"
+              } ]
+            }
+          } ],
+          "default" : null,
+          "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:twoWindingsTransformer"
+        }, {
+          "name" : "threeWindingsTransformer",
+          "type" : [ "null", {
+            "type" : "array",
+            "items" : {
+              "type" : "record",
+              "name" : "AThreeWindingsTransformer",
+              "fields" : [ {
+                "name" : "property",
+                "type" : [ "null", {
+                  "type" : "array",
+                  "items" : "Property"
+                } ],
+                "default" : null,
+                "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:property"
+              }, {
+                "name" : "ratioTapChanger2",
+                "type" : [ "null", "ARatioTapChanger" ],
+                "default" : null,
+                "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:ratioTapChanger2"
+              }, {
+                "name" : "ratioTapChanger3",
+                "type" : [ "null", "ARatioTapChanger" ],
+                "default" : null,
+                "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:ratioTapChanger3"
+              }, {
+                "name" : "currentLimits1",
+                "type" : [ "null", "CurrentLimit" ],
+                "default" : null,
+                "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:currentLimits1"
+              }, {
+                "name" : "currentLimits2",
+                "type" : [ "null", "CurrentLimit" ],
+                "default" : null,
+                "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:currentLimits2"
+              }, {
+                "name" : "currentLimits3",
+                "type" : [ "null", "CurrentLimit" ],
+                "default" : null,
+                "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:currentLimits3"
+              }, {
+                "name" : "ratedU1",
+                "type" : "double",
+                "source" : "attribute ratedU1"
+              }, {
+                "name" : "ratedU2",
+                "type" : "double",
+                "source" : "attribute ratedU2"
+              }, {
+                "name" : "ratedU3",
+                "type" : "double",
+                "source" : "attribute ratedU3"
+              }, {
+                "name" : "r1",
+                "type" : "double",
+                "source" : "attribute r1"
+              }, {
+                "name" : "r2",
+                "type" : "double",
+                "source" : "attribute r2"
+              }, {
+                "name" : "r3",
+                "type" : "double",
+                "source" : "attribute r3"
+              }, {
+                "name" : "x1",
+                "type" : "double",
+                "source" : "attribute x1"
+              }, {
+                "name" : "x2",
+                "type" : "double",
+                "source" : "attribute x2"
+              }, {
+                "name" : "x3",
+                "type" : "double",
+                "source" : "attribute x3"
+              }, {
+                "name" : "g1",
+                "type" : "double",
+                "source" : "attribute g1"
+              }, {
+                "name" : "b1",
+                "type" : "double",
+                "source" : "attribute b1"
+              }, {
+                "name" : "node1",
+                "type" : [ "null", "int" ],
+                "default" : null,
+                "source" : "attribute node1"
+              }, {
+                "name" : "bus1",
+                "type" : [ "null", "string" ],
+                "default" : null,
+                "source" : "attribute bus1"
+              }, {
+                "name" : "voltageLevelId1",
+                "type" : "string",
+                "source" : "attribute voltageLevelId1"
+              }, {
+                "name" : "connectableBus1",
+                "type" : [ "null", "string" ],
+                "default" : null,
+                "source" : "attribute connectableBus1"
+              }, {
+                "name" : "node2",
+                "type" : [ "null", "int" ],
+                "default" : null,
+                "source" : "attribute node2"
+              }, {
+                "name" : "bus2",
+                "type" : [ "null", "string" ],
+                "default" : null,
+                "source" : "attribute bus2"
+              }, {
+                "name" : "connectableBus2",
+                "type" : [ "null", "string" ],
+                "default" : null,
+                "source" : "attribute connectableBus2"
+              }, {
+                "name" : "voltageLevelId2",
+                "type" : "string",
+                "source" : "attribute voltageLevelId2"
+              }, {
+                "name" : "node3",
+                "type" : [ "null", "int" ],
+                "default" : null,
+                "source" : "attribute node3"
+              }, {
+                "name" : "bus3",
+                "type" : [ "null", "string" ],
+                "default" : null,
+                "source" : "attribute bus3"
+              }, {
+                "name" : "connectableBus3",
+                "type" : [ "null", "string" ],
+                "default" : null,
+                "source" : "attribute connectableBus3"
+              }, {
+                "name" : "voltageLevelId3",
+                "type" : "string",
+                "source" : "attribute voltageLevelId3"
+              }, {
+                "name" : "p1",
+                "type" : [ "null", "double" ],
+                "default" : null,
+                "source" : "attribute p1"
+              }, {
+                "name" : "q1",
+                "type" : [ "null", "double" ],
+                "default" : null,
+                "source" : "attribute q1"
+              }, {
+                "name" : "p2",
+                "type" : [ "null", "double" ],
+                "default" : null,
+                "source" : "attribute p2"
+              }, {
+                "name" : "q2",
+                "type" : [ "null", "double" ],
+                "default" : null,
+                "source" : "attribute q2"
+              }, {
+                "name" : "p3",
+                "type" : [ "null", "double" ],
+                "default" : null,
+                "source" : "attribute p3"
+              }, {
+                "name" : "q3",
+                "type" : [ "null", "double" ],
+                "default" : null,
+                "source" : "attribute q3"
+              }, {
+                "name" : "id",
+                "type" : "string",
+                "source" : "attribute id"
+              }, {
+                "name" : "name",
+                "type" : [ "null", "string" ],
+                "default" : null,
+                "source" : "attribute name"
+              } ]
+            }
+          } ],
+          "default" : null,
+          "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:threeWindingsTransformer"
+        }, {
+          "name" : "tso",
+          "type" : [ "null", "string" ],
+          "default" : null,
+          "source" : "attribute tso"
+        }, {
+          "name" : "country",
+          "type" : [ "null", "string" ],
+          "default" : null,
+          "source" : "attribute country"
+        }, {
+          "name" : "geographicalTags",
+          "type": {
+                "type": "array",
+                "items": "string"
+             },
+          "default" : [],
+          "source" : "attribute geographicalTags"
+        }, {
+          "name" : "id",
+          "type" : "string",
+          "source" : "attribute id"
+        }, {
+          "name" : "name",
+          "type" : [ "null", "string" ],
+          "default" : null,
+          "source" : "attribute name"
+        } ]
+      }
+    } ],
+    "default" : null,
+    "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:substation"
+  }, {
+    "name" : "line",
+    "type" : [ "null", {
+      "type" : "array",
+      "items" : {
+        "type" : "record",
+        "name" : "ALine",
+        "fields" : [ {
+          "name" : "property",
+          "type" : [ "null", {
+            "type" : "array",
+            "items" : "Property"
+          } ],
+          "default" : null,
+          "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:property"
+        }, {
+          "name" : "currentLimits1",
+          "type" : [ "null", "CurrentLimit" ],
+          "default" : null,
+          "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:currentLimits1"
+        }, {
+          "name" : "currentLimits2",
+          "type" : [ "null", "CurrentLimit" ],
+          "default" : null,
+          "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:currentLimits2"
+        }, {
+          "name" : "r",
+          "type" : "double",
+          "source" : "attribute r"
+        }, {
+          "name" : "x",
+          "type" : "double",
+          "source" : "attribute x"
+        }, {
+          "name" : "g1",
+          "type" : "double",
+          "source" : "attribute g1"
+        }, {
+          "name" : "g2",
+          "type" : "double",
+          "source" : "attribute g2"
+        }, {
+          "name" : "b1",
+          "type" : "double",
+          "source" : "attribute b1"
+        }, {
+          "name" : "b2",
+          "type" : "double",
+          "source" : "attribute b2"
+        }, {
+          "name" : "node1",
+          "type" : [ "null", "int" ],
+          "default" : null,
+          "source" : "attribute node1"
+        }, {
+          "name" : "bus1",
+          "type" : [ "null", "string" ],
+          "default" : null,
+          "source" : "attribute bus1"
+        }, {
+          "name" : "connectableBus1",
+          "type" : [ "null", "string" ],
+          "default" : null,
+          "source" : "attribute connectableBus1"
+        }, {
+          "name" : "voltageLevelId1",
+          "type" : "string",
+          "source" : "attribute voltageLevelId1"
+        }, {
+          "name" : "node2",
+          "type" : [ "null", "int" ],
+          "default" : null,
+          "source" : "attribute node2"
+        }, {
+          "name" : "bus2",
+          "type" : [ "null", "string" ],
+          "default" : null,
+          "source" : "attribute bus2"
+        }, {
+          "name" : "connectableBus2",
+          "type" : [ "null", "string" ],
+          "default" : null,
+          "source" : "attribute connectableBus2"
+        }, {
+          "name" : "voltageLevelId2",
+          "type" : "string",
+          "source" : "attribute voltageLevelId2"
+        }, {
+          "name" : "p1",
+          "type" : [ "null", "double" ],
+          "default" : null,
+          "source" : "attribute p1"
+        }, {
+          "name" : "q1",
+          "type" : [ "null", "double" ],
+          "default" : null,
+          "source" : "attribute q1"
+        }, {
+          "name" : "p2",
+          "type" : [ "null", "double" ],
+          "default" : null,
+          "source" : "attribute p2"
+        }, {
+          "name" : "q2",
+          "type" : [ "null", "double" ],
+          "default" : null,
+          "source" : "attribute q2"
+        }, {
+          "name" : "id",
+          "type" : "string",
+          "source" : "attribute id"
+        }, {
+          "name" : "name",
+          "type" : [ "null", "string" ],
+          "default" : null,
+          "source" : "attribute name"
+        } ]
+      }
+    } ],
+    "default" : null,
+    "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:line"
+  }, {
+    "name" : "tieLine",
+    "type" : [ "null", {
+      "type" : "array",
+      "items" : {
+        "type" : "record",
+        "name" : "TieLine",
+        "fields" : [ {
+          "name" : "property",
+          "type" : [ "null", {
+            "type" : "array",
+            "items" : "Property"
+          } ],
+          "default" : null,
+          "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:property"
+        }, {
+          "name" : "currentLimits1",
+          "type" : [ "null", "CurrentLimit" ],
+          "default" : null,
+          "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:currentLimits1"
+        }, {
+          "name" : "currentLimits2",
+          "type" : [ "null", "CurrentLimit" ],
+          "default" : null,
+          "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:currentLimits2"
+        }, {
+          "name" : "ucteXnodeCode",
+          "type" : [ "null", "string" ],
+          "default" : null,
+          "source" : "attribute ucteXnodeCode"
+        }, {
+          "name" : "id_1",
+          "type" : "string",
+          "source" : "attribute id_1"
+        }, {
+          "name" : "name_1",
+          "type" : [ "null", "string" ],
+          "default" : null,
+          "source" : "attribute name_1"
+        }, {
+          "name" : "r_1",
+          "type" : "double",
+          "source" : "attribute r_1"
+        }, {
+          "name" : "x_1",
+          "type" : "double",
+          "source" : "attribute x_1"
+        }, {
+          "name" : "g1_1",
+          "type" : "double",
+          "source" : "attribute g1_1"
+        }, {
+          "name" : "g2_1",
+          "type" : "double",
+          "source" : "attribute g2_1"
+        }, {
+          "name" : "b1_1",
+          "type" : "double",
+          "source" : "attribute b1_1"
+        }, {
+          "name" : "b2_1",
+          "type" : "double",
+          "source" : "attribute b2_1"
+        }, {
+          "name" : "xnodeP_1",
+          "type" : "double",
+          "source" : "attribute xnodeP_1"
+        }, {
+          "name" : "xnodeQ_1",
+          "type" : "double",
+          "source" : "attribute xnodeQ_1"
+        }, {
+          "name" : "id_2",
+          "type" : "string",
+          "source" : "attribute id_2"
+        }, {
+          "name" : "name_2",
+          "type" : [ "null", "string" ],
+          "default" : null,
+          "source" : "attribute name_2"
+        }, {
+          "name" : "r_2",
+          "type" : "double",
+          "source" : "attribute r_2"
+        }, {
+          "name" : "x_2",
+          "type" : "double",
+          "source" : "attribute x_2"
+        }, {
+          "name" : "g1_2",
+          "type" : "double",
+          "source" : "attribute g1_2"
+        }, {
+          "name" : "g2_2",
+          "type" : "double",
+          "source" : "attribute g2_2"
+        }, {
+          "name" : "b1_2",
+          "type" : "double",
+          "source" : "attribute b1_2"
+        }, {
+          "name" : "b2_2",
+          "type" : "double",
+          "source" : "attribute b2_2"
+        }, {
+          "name" : "xnodeP_2",
+          "type" : "double",
+          "source" : "attribute xnodeP_2"
+        }, {
+          "name" : "xnodeQ_2",
+          "type" : "double",
+          "source" : "attribute xnodeQ_2"
+        }, {
+          "name" : "node1",
+          "type" : [ "null", "int" ],
+          "default" : null,
+          "source" : "attribute node1"
+        }, {
+          "name" : "bus1",
+          "type" : [ "null", "string" ],
+          "default" : null,
+          "source" : "attribute bus1"
+        }, {
+          "name" : "connectableBus1",
+          "type" : [ "null", "string" ],
+          "default" : null,
+          "source" : "attribute connectableBus1"
+        }, {
+          "name" : "voltageLevelId1",
+          "type" : "string",
+          "source" : "attribute voltageLevelId1"
+        }, {
+          "name" : "node2",
+          "type" : [ "null", "int" ],
+          "default" : null,
+          "source" : "attribute node2"
+        }, {
+          "name" : "bus2",
+          "type" : [ "null", "string" ],
+          "default" : null,
+          "source" : "attribute bus2"
+        }, {
+          "name" : "connectableBus2",
+          "type" : [ "null", "string" ],
+          "default" : null,
+          "source" : "attribute connectableBus2"
+        }, {
+          "name" : "voltageLevelId2",
+          "type" : "string",
+          "source" : "attribute voltageLevelId2"
+        }, {
+          "name" : "p1",
+          "type" : [ "null", "double" ],
+          "default" : null,
+          "source" : "attribute p1"
+        }, {
+          "name" : "q1",
+          "type" : [ "null", "double" ],
+          "default" : null,
+          "source" : "attribute q1"
+        }, {
+          "name" : "p2",
+          "type" : [ "null", "double" ],
+          "default" : null,
+          "source" : "attribute p2"
+        }, {
+          "name" : "q2",
+          "type" : [ "null", "double" ],
+          "default" : null,
+          "source" : "attribute q2"
+        }, {
+          "name" : "id",
+          "type" : "string",
+          "source" : "attribute id"
+        }, {
+          "name" : "name",
+          "type" : [ "null", "string" ],
+          "default" : null,
+          "source" : "attribute name"
+        } ]
+      }
+    } ],
+    "default" : null,
+    "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:tieLine"
+  }, {
+    "name" : "hvdcLine",
+    "type" : [ "null", {
+      "type" : "array",
+      "items" : {
+        "type" : "record",
+        "name" : "AHvdcLine",
+        "fields" : [ {
+          "name" : "property",
+          "type" : [ "null", {
+            "type" : "array",
+            "items" : "Property"
+          } ],
+          "default" : null,
+          "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:property"
+        }, {
+          "name" : "r",
+          "type" : "double",
+          "source" : "attribute r"
+        }, {
+          "name" : "nominalV",
+          "type" : "double",
+          "source" : "attribute nominalV"
+        }, {
+          "name" : "activePowerSetpoint",
+          "type" : "double",
+          "source" : "attribute activePowerSetpoint"
+        }, {
+          "name" : "maxP",
+          "type" : "double",
+          "source" : "attribute maxP"
+        }, {
+          "name" : "convertersMode",
+          "type" : "string",
+          "source" : "attribute convertersMode"
+        }, {
+          "name" : "converterStation1",
+          "type" : "string",
+          "source" : "attribute converterStation1"
+        }, {
+          "name" : "converterStation2",
+          "type" : "string",
+          "source" : "attribute converterStation2"
+        }, {
+          "name" : "id",
+          "type" : "string",
+          "source" : "attribute id"
+        }, {
+          "name" : "name",
+          "type" : [ "null", "string" ],
+          "default" : null,
+          "source" : "attribute name"
+        } ]
+      }
+    } ],
+    "default" : null,
+    "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:hvdcLine"
+  }, {
+    "name" : "extension",
+    "type" : [ "null", {
+      "type" : "array",
+      "items" : {
+        "type" : "record",
+        "name" : "AnonType_extensionnetwork",
+        "fields" : [ {
+          "name" : "others",
+          "type" : {
+            "type" : "map",
+            "values" : "string"
+          }
+        }, {
+          "name" : "id",
+          "type" : "string",
+          "source" : "attribute id"
+        } ]
+      }
+    } ],
+    "default" : null,
+    "source" : "element http://www.itesla_project.eu/schema/iidm/1_0:extension"
+  }, {
+    "name" : "id",
+    "type" : "string",
+    "source" : "attribute id"
+  }, {
+    "name" : "caseDate",
+    "type" : "string",
+    "source" : "attribute caseDate"
+  }, {
+    "name" : "forecastDistance",
+    "type" : "int",
+    "source" : "attribute forecastDistance"
+  }, {
+    "name" : "sourceFormat",
+    "type" : "string",
+    "source" : "attribute sourceFormat"
+  } ]
+  , "namespace": "com.powsybl.iidm.avro"
+}

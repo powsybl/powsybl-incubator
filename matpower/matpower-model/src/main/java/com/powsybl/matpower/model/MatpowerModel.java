@@ -61,16 +61,4 @@ public class MatpowerModel {
     public List<MBranch> getBranches() {
         return branches;
     }
-
-    @Override
-    public String toString() {
-        return "MatpowerModel{" +
-                "case name ='" + caseName + '\'' +
-                ", version ='" + version + '\'' +
-                ", baseMva =" + baseMva +
-                ", buses size =" + buses.size() +
-                ", generators size =" + generators.size() +
-                ", branches size =" + branches.size() +
-                '}';
-    }
 }

@@ -28,6 +28,7 @@
     </modules>
 
     <properties>
+        <commons-io.version>2.6</commons-io.version>
         <jackson.version>2.10.1</jackson.version>
         <jgrapht.version>1.0.1</jgrapht.version>
         <jimfs.version>1.1</jimfs.version>
@@ -73,6 +74,11 @@
             <groupId>com.powsybl</groupId>
             <artifactId>powsybl-iidm-xml-converter</artifactId>
             <version>${powsyblcore.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons-io.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jgrapht</groupId>

@@ -39,7 +39,7 @@ public class MatpowerWriter {
         writer.write(String.format("function mpc = %s", model.getCaseName()));
         writer.newLine();
 
-        writer.write(String.format("mpc.version = %s", model.getVersion()));
+        writer.write(String.format("mpc.version = '%s'", model.getVersion()));
         writer.newLine();
 
         writer.write("%% system MVA base");
@@ -50,33 +50,33 @@ public class MatpowerWriter {
         writer.newLine();
         writer.write("%% bus data");
         writer.newLine();
-        writer.write("%       bus_i   type    Pd      Qd      Gs      Bs      area    Vm      Va      baseKV  zone    Vmax    Vmin");
+        writer.write("%\tbus_i\ttype\tPd\tQd\tGs\tBs\tarea\tVm\tVa\tbaseKV\tzone\tVmax\tVmin");
         writer.newLine();
         writer.write("mpc.bus = [");
         writer.newLine();
         writeRecords(writer, model.getBuses(), MBus.class);
-        writer.write(String.format("];"));
+        writer.write("];");
         writer.newLine();
 
         writer.write("%% generator data");
         writer.newLine();
-        writer.write(" %       bus     Pg      Qg      Qmax    Qmin    Vg      mBase   status  Pmax    Pmin    Pc1     Pc2     Qc1min  Qc1max  Qc2min  Qc2max  ramp_agc        ramp_10 ramp_30 ramp_q  apf");
+        writer.write("%\tbus\tPg\tQg\tQmax\tQmin\tVg\tmBase\tstatus\tPmax\tPmin\tPc1\tPc2\tQc1min\tQc1max\tQc2min\tQc2max\tramp_agc\tramp_10\tramp_30\tramp_q\tapf");
         writer.newLine();
         writer.write("mpc.gen = [");
         writer.newLine();
         writeRecords(writer, model.getGenerators(), MGen.class);
-        writer.write(String.format("];"));
+        writer.write("];");
         writer.newLine();
 
         writer.newLine();
         writer.write("%% branch data");
         writer.newLine();
-        writer.write("%       fbus    tbus    r       x       b       rateA   rateB   rateC   ratio   angle   status  angmin  angmax");
+        writer.write("%\tfbus\ttbus\tr\tx\tb\trateA\trateB\trateC\tratio\tangle\tstatus\tangmin\tangmax");
         writer.newLine();
         writer.write("mpc.branch = [");
         writer.newLine();
         writeRecords(writer, model.getBranches(), MBranch.class);
-        writer.write(String.format("];"));
+        writer.write("];");
         writer.newLine();
     }
 }

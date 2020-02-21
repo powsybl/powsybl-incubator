@@ -38,7 +38,7 @@ public class MatpowerImporter implements Importer {
 
     private static final String FORMAT = "MATPOWER";
 
-    private static final String EXT = "m";
+    private static final String[] EXTENSIONS = {"m", "mat"};
 
     public static final LocalDate DEFAULTDATE = LocalDate.of(2020, Month.JANUARY, 1);
 
@@ -328,10 +328,24 @@ public class MatpowerImporter implements Importer {
         return "MATPOWER Format to IIDM converter";
     }
 
+    private String findExtension(ReadOnlyDataSource dataSource, boolean throwException) throws IOException {
+        for (String ext : EXTENSIONS) {
+            if (dataSource.exists(null, ext)) {
+                return ext;
+            }
+        }
+        if (throwException) {
+            throw new MatpowerException("File " + dataSource.getBaseName()
+                    + "." + String.join("|", EXTENSIONS) + " not found");
+        }
+        return null;
+    }
+
     @Override
     public boolean exists(ReadOnlyDataSource dataSource) {
         try {
-            return dataSource.exists(null, EXT);
+            String ext = findExtension(dataSource, false);
+            return dataSource.exists(null, ext);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -342,8 +356,10 @@ public class MatpowerImporter implements Importer {
         Objects.requireNonNull(fromDataSource);
         Objects.requireNonNull(toDataSource);
         try {
-            try (InputStream is = fromDataSource.newInputStream(null, EXT);
-                 OutputStream os = toDataSource.newOutputStream(null, EXT, false)) {
+            String extFrom = findExtension(fromDataSource, false);
+            String extTo = findExtension(toDataSource, false);
+            try (InputStream is = fromDataSource.newInputStream(null, extFrom);
+                 OutputStream os = toDataSource.newOutputStream(null, extTo, false)) {
                 ByteStreams.copy(is, os);
             }
         } catch (IOException e) {
@@ -361,17 +377,28 @@ public class MatpowerImporter implements Importer {
         ZonedDateTime caseDateTime = DEFAULTDATE.atStartOfDay(ZoneOffset.UTC.normalized());
         network.setCaseDate(new DateTime(caseDateTime.toInstant().toEpochMilli(), DateTimeZone.UTC));
 
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(dataSource.newInputStream(null, EXT)))) {
-            // parse file
-            MatpowerModel model = new MatpowerReader().read(reader);
-            LOGGER.debug("MATPOWER model {}", model);
+        try {
+            String ext = findExtension(dataSource, true);
+            try (InputStream iStream = dataSource.newInputStream(null, ext)) {
+                // parse file
+                MatpowerModel model;
+                if (ext.equals("m")) {
+                    //.m matlab text file
+                    model = new MatpowerReader().read(iStream);
+                } else if (ext.equals("mat")) {
+                    //.mat matlab binary file
+                    model = new MatpowerBinReader().read(iStream, dataSource.getBaseName());
+                } else {
+                    throw new MatpowerException("file extension not supported: " + ext);
+                }
+                LOGGER.debug("MATPOWER model {}", model);
 
-            ContainersMapping containerMapping = createContainerMapping(model);
+                ContainersMapping containerMapping = createContainerMapping(model);
 
-            createBuses(model, containerMapping, network);
+                createBuses(model, containerMapping, network);
 
-            createBranches(model, containerMapping, network);
-
+                createBranches(model, containerMapping, network);
+            }
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

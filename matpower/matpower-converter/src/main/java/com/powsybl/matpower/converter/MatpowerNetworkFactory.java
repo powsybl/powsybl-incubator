@@ -19,8 +19,12 @@ public final class MatpowerNetworkFactory {
     private MatpowerNetworkFactory() {
     }
 
+    private static Network create(String baseName, NetworkFactory networkFactory, String ext) {
+        return new MatpowerImporter().importData(new ResourceDataSource(baseName, new ResourceSet("/", baseName + ext)), networkFactory, null);
+    }
+
     private static Network create(String baseName, NetworkFactory networkFactory) {
-        return new MatpowerImporter().importData(new ResourceDataSource(baseName, new ResourceSet("/", baseName + ".m")), networkFactory, null);
+        return create(baseName, networkFactory, ".m");
     }
 
     public static Network create118(NetworkFactory networkFactory) {

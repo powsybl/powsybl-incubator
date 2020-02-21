@@ -12,13 +12,18 @@ import com.powsybl.commons.datasource.ResourceDataSource;
 import com.powsybl.commons.datasource.ResourceSet;
 import com.powsybl.iidm.import_.Importer;
 import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.network.NetworkFactory;
 import com.powsybl.iidm.xml.NetworkXml;
+import com.powsybl.matpower.model.MatpowerBinWriter;
+import com.powsybl.matpower.model.MatpowerModel;
+import com.powsybl.matpower.model.MatpowerReader;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Objects;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -38,7 +43,7 @@ public class MatpowerImporterTest extends AbstractConverterTest {
     @Test
     public void copyTest() {
         new MatpowerImporter().copy(new ResourceDataSource("case118", new ResourceSet("/", "case118.m")),
-            new FileDataSource(fileSystem.getPath("/work"), "copy"));
+            new FileDataSource(fileSystem.getPath("/work"), "copy.m"));
         assertTrue(Files.exists(fileSystem.getPath("/work").resolve("copy.m")));
     }
 
@@ -47,12 +52,35 @@ public class MatpowerImporterTest extends AbstractConverterTest {
         assertTrue(new MatpowerImporter().exists(new ResourceDataSource("case118", new ResourceSet("/", "case118.m"))));
     }
 
-    private void testNetwork(Network network) throws IOException {
-        Path file = fileSystem.getPath("/work/" + network.getId() + ".xiidm");
+    private void testNetwork(Network network, String id) throws IOException {
+        Path file = fileSystem.getPath("/work/" + id + ".xiidm");
         NetworkXml.write(network, file);
         try (InputStream is = Files.newInputStream(file)) {
-            compareTxt(getClass().getResourceAsStream("/" + network.getId() + ".xiidm"), is);
+            compareTxt(getClass().getResourceAsStream("/" + id + ".xiidm"), is);
         }
+    }
+
+    private void testNetwork(Network network) throws IOException {
+        testNetwork(network, network.getId());
+    }
+
+    private void testCaseBin(String caseId) throws IOException {
+        createMatCaseFile(caseId + ".m", fileSystem.getPath("/work").resolve(caseId + ".mat"));
+        testNetwork(new MatpowerImporter().importData(new FileDataSource(fileSystem.getPath("/work"), caseId), NetworkFactory.findDefault(), null), caseId);
+    }
+
+    private void createMatCaseFile(String sourceTextFile, Path destMatFile) throws IOException {
+        MatpowerModel model = readModelFromResources(sourceTextFile);
+        new MatpowerBinWriter(model).write(Files.newOutputStream(destMatFile));
+    }
+
+    private MatpowerModel readModelFromResources(String fileName) throws IOException {
+        Objects.requireNonNull(fileName);
+        MatpowerModel model;
+        try (InputStream iStream = getClass().getResourceAsStream("/" + fileName)) {
+            model = new MatpowerReader().read(iStream);
+        }
+        return model;
     }
 
     @Test
@@ -83,6 +111,41 @@ public class MatpowerImporterTest extends AbstractConverterTest {
     @Test
     public void testCase9() throws IOException {
         testNetwork(MatpowerNetworkFactory.create9());
+    }
+
+    @Test
+    public void testCaseBin9() throws IOException {
+        testCaseBin("case9");
+    }
+
+    @Test
+    public void testCaseBin14() throws IOException {
+        testCaseBin("case14");
+    }
+
+    @Test
+    public void testCaseBin30() throws IOException {
+        testCaseBin("case30");
+    }
+
+    @Test
+    public void testCaseBin57() throws IOException {
+        testCaseBin("case57");
+    }
+
+    @Test
+    public void testCaseBin118() throws IOException {
+        testCaseBin("case118");
+    }
+
+    @Test
+    public void testCaseBin300() throws IOException {
+        testCaseBin("case300");
+    }
+
+    @Test(expected = MatpowerException.class)
+    public void testNonexistentCase() throws IOException {
+        testNetwork(new MatpowerImporter().importData(new FileDataSource(fileSystem.getPath("/"), "unknown"), NetworkFactory.findDefault(), null));
     }
 
 }

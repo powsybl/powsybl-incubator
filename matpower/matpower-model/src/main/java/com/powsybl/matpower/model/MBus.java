@@ -48,10 +48,29 @@ public class MBus {
      * bus type (1 = PQ, 2 = PV, 3 = ref, 4 = isolated)
      */
     public enum Type {
-        PQ,
-        PV,
-        REF,
-        ISOLATED
+        PQ(1),
+        PV(2),
+        REF(3),
+        ISOLATED(4);
+
+        private final int id;
+
+        Type(int id) {
+            this.id = id;
+        }
+
+        public int getValue() {
+            return id;
+        }
+
+        public static Type fromInt(int iType) {
+            for (Type b : Type.values()) {
+                if (b.getValue() == iType) {
+                    return b;
+                }
+            }
+            throw new IllegalArgumentException("No type with id " + iType + " found");
+        }
     }
 
     /**

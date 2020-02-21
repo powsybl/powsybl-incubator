@@ -9,18 +9,17 @@ package com.powsybl.matpower.model;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.jimfs.Configuration;
 import com.google.common.jimfs.Jimfs;
+import org.apache.commons.io.FilenameUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Objects;
 
 import static org.junit.Assert.assertEquals;
 
@@ -43,13 +42,24 @@ public class MatpowerReaderWriterTest {
         fileSystem.close();
     }
 
-    private void testMatpowerFile(String fileName) throws IOException {
+    private MatpowerModel readModelFromResources(String fileName) throws IOException {
+        Objects.requireNonNull(fileName);
         MatpowerModel model;
         // read the source file in a model
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/" + fileName)))) {
-            model = new MatpowerReader().read(reader);
-            System.out.println(model);
+        try (InputStream iStream = getClass().getResourceAsStream("/" + fileName)) {
+            model = new MatpowerReader().read(iStream);
         }
+        return model;
+    }
+
+    private void createMatCaseFile(MatpowerModel model, Path destMatFile) throws IOException {
+        Objects.requireNonNull(model);
+        Objects.requireNonNull(destMatFile);
+        new MatpowerBinWriter(model).write(Files.newOutputStream(destMatFile));
+    }
+
+    private void testMatpowerFile(String fileName) throws IOException {
+        MatpowerModel model = readModelFromResources(fileName);
 
         // write the model in a file
         Path file = fileSystem.getPath("/work/" + fileName);
@@ -62,6 +72,23 @@ public class MatpowerReaderWriterTest {
         try (BufferedReader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
             model2 = new MatpowerReader().read(reader);
         }
+
+        // compare the two models
+        String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(model);
+        String json2 = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(model2);
+        assertEquals(json, json2);
+    }
+
+    private void testMatpowerBinFile(String fileName) throws IOException {
+        MatpowerModel model = readModelFromResources(fileName);
+
+        // write the model in a bin file
+        String fileBaseName = FilenameUtils.getBaseName(fileName);
+        Path file = fileSystem.getPath("/work/" + fileBaseName + ".mat");
+        createMatCaseFile(model, file);
+
+        // read the bin model back
+        MatpowerModel model2 = new MatpowerBinReader().read(Files.newInputStream(file), fileBaseName);
 
         // compare the two models
         String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(model);
@@ -97,5 +124,35 @@ public class MatpowerReaderWriterTest {
     @Test
     public void testCase300() throws IOException {
         testMatpowerFile("case300.m");
+    }
+
+    @Test
+    public void testBinCase9() throws IOException {
+        testMatpowerBinFile("case9.m");
+    }
+
+    @Test
+    public void testBinCase14() throws IOException {
+        testMatpowerBinFile("case14.m");
+    }
+
+    @Test
+    public void testBinCase30() throws IOException {
+        testMatpowerBinFile("case30.m");
+    }
+
+    @Test
+    public void testBinCase57() throws IOException {
+        testMatpowerBinFile("case57.m");
+    }
+
+    @Test
+    public void testBinCase118() throws IOException {
+        testMatpowerBinFile("case118.m");
+    }
+
+    @Test
+    public void testBinCase300() throws IOException {
+        testMatpowerBinFile("case300.m");
     }
 }

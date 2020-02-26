@@ -18,12 +18,13 @@ To create an isolated virtual python v3.6 environment, on CentOS v7
     . ./penv/bin/activate
     pip install --upgrade pip
     pip install wheel
+    pip install numpy
 
 To build and install the pypowsybl-core package 
 
     cd pypowsybl-core
     mvn clean package
-    pip install ./dist/pypowsybl_core-3.0.0_SNAPSHOT-py3-none-any.whl
+    pip install ./dist/pypowsybl_core-3.0.0-py3-none-any.whl
 
 
 Other pypowsybl packages can be created and installed in the same way
@@ -36,7 +37,6 @@ Notes:
 * the  .whl package is to be found in the *dist* directory, after a 'mvn clean package'
 * 'mvn clean package' executes python, during its execution: make sure to run it from your virtual python environment (ref. above)
 * Jpype1 package is automatically installed as a pypowsybl-core dependency.
-* In version 0.7.1 of JPype1, JPype requires numpy but numpy is not automatically installed by JPype. You could have to do "pip install numpy"
 
 
 

@@ -1,0 +1,5 @@
+# Maven projects
+target
+build
+dist
+*.egg-info

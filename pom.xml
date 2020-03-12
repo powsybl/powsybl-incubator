@@ -98,7 +98,7 @@
             **/generated/**/*
         </sonar.exclusions>
 
-        <powsyblcore.version>3.3.0-SNAPSHOT</powsyblcore.version>
+        <powsyblcore.version>3.2.0</powsyblcore.version>
         <powsybl-open-loadflow.version>0.1.0</powsybl-open-loadflow.version>
     </properties>
 

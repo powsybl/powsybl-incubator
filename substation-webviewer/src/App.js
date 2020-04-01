@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import SVG from "@svgdotjs/svg.js/src/svg.js";
+import { SVG } from "@svgdotjs/svg.js";
 import "@svgdotjs/svg.draggable.js";
 import "@svgdotjs/svg.panzoom.js";
 import './App.css';

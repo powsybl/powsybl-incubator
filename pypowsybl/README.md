@@ -63,3 +63,11 @@ To run it
 Notes: 
 * Jpype1 package is automatically installed as a pypowsybl-core dependency.
 * JDK is expected to be available in the $PATH.
+
+
+Known issues:
+* multiprocessing: since each process uses its own JVM, and java objects contain references to, and depends on the JVM where they were instantiated, java objects cannot be automatically serialized and read in another process properly, with the python's multiprocess library approach.
+There are some related [notes about multiprocessing](https://jpype.readthedocs.io/en/latest/userguide.html#multiprocessing), 
+in Jpype1 documentation, suggesting a workaround but it requires writing specific code and could introduce deadlocks, in some cases.
+However, threads works well since there is only one process/one JVM involved, so using multithreading might be a safer option. 
+

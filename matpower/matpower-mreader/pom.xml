@@ -17,7 +17,7 @@
     </parent>
 
     <artifactId>powsybl-matpower-mreader</artifactId>
-    <name>MATPOWER mreader</name>
+    <name>MATPOWER-incubator mreader</name>
     <description>MATPOWER mreader</description>
 
     <build>

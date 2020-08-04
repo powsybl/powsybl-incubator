@@ -60,7 +60,7 @@ public final class MWriter {
 
         writer.write("%% system MVA base");
         writer.newLine();
-        writer.write(String.format("mpc.baseMVA = %f", model.getBaseMva()));
+        writer.write(String.format("mpc.baseMVA = %s", model.getBaseMva()));
         writer.newLine();
 
         writer.newLine();

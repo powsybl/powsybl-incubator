@@ -123,7 +123,7 @@ class App extends Component {
              var c = arrow.children();
              for (var i =0; i<c.length;i++) {
                  if (c[i].id().startsWith('SvgjsText')){
-                     if (finalPos['angle'] != 180)  {
+                     if (finalPos['angle'] !== 180)  {
                          c[i].rotate(finalPos['angle'],finalPos['x'], finalPos['y']);
                      }
                  } else {

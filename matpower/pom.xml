@@ -31,7 +31,7 @@
         <findbugs.version>3.0.0</findbugs.version>
         <graphviz-builder.version>1.0.11</graphviz-builder.version>
         <guava.version>29.0-jre</guava.version>
-        <jackson.version>2.10.1</jackson.version>
+        <jackson.version>2.10.5.1</jackson.version>
         <jimfs.version>1.1</jimfs.version>
 
         <powsyblcore.version>3.4.0</powsyblcore.version>

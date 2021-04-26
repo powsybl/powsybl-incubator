@@ -27,7 +27,7 @@
 
     <properties>
         <commonscompress.version>1.19</commonscompress.version>
-        <commonsio.version>2.5</commonsio.version>
+        <commonsio.version>2.7</commonsio.version>
         <findbugs.version>3.0.0</findbugs.version>
         <graphviz-builder.version>1.0.11</graphviz-builder.version>
         <guava.version>29.0-jre</guava.version>

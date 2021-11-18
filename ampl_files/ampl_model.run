@@ -1,0 +1,20 @@
+model ampl_dataread_model.mod;
+data ampl_data.dat;
+model ampl_computed_data.mod;
+model ampl_model.mod;
+option solver knitroampl;
+display BUSES;
+display PV_BUSES;
+display PQ_BUSES;
+display br_x;
+display ss_country;
+display BRANCHES;
+display slack_bus;
+display ld_p0;
+display br_y;
+display br_ksi;
+problem Initialize_voltage_plan: V, Phi, Q, Quadratic_Error, Active_power_balance;
+
+solve Initialize_voltage_plan;
+display V;
+display Active_power_balance;

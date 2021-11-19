@@ -18,6 +18,16 @@ if card(PV_BUSES) + card(PQ_BUSES) != card(BUSES) then {
     quit;
 } else
     printf "Correct instanciation of PV and PQ buses\n";
+param all_local_control default 1;
+for{i in PV_BUSES} {
+    for{j in GENS: gen_bus[1,j]==i} {
+        if gen_conbus[1,j] != i then {
+        let all_local_control := 0;
+        printf "Control of generator %d is not local!\n", j;
+        }
+    }
+}
+if all_local_control==1 then printf "All controls are local\n"; else quit;
 
 #BRANCHES and LOADS definitions
 set BRANCHES = union{(i,j) in VARIANTS_BRANCHES} {j};

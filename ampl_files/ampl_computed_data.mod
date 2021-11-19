@@ -9,25 +9,28 @@ if card(VARIANTS) > 1 then {
     printf "Correct using of variant input\n";
 
 # PV/PQ BUSES definitions and checks
+param set_target_V default 0;
+param generator_controling default 0;
 set BUSES = union{(i,j) in VARIANTS_BUSES} {j};
 set GENS = union{(i,j) in VARIANTS_GENS} {j};
-set PV_BUSES = {i in BUSES: card({j in GENS: gen_bus[1, j] == i and gen_vregul[1, j] == "true"}) == 1};
+set PV_BUSES = {i in BUSES: card({j in GENS: gen_bus[1, j] == i and gen_vregul[1, j] == "true"}) >= 1};
 set PQ_BUSES = {i in BUSES: card({j in GENS: gen_bus[1, j] == i and gen_vregul[1, j] == "true"}) == 0};
-if card(PV_BUSES) + card(PQ_BUSES) != card(BUSES) then {
-    printf "Some bus voltages are controled by more than one generator !\n";
-    quit;
-} else
-    printf "Correct instanciation of PV and PQ buses\n";
-param all_local_control default 1;
+param targetV{PV_BUSES};
 for{i in PV_BUSES} {
+    let set_target_V := 0;
     for{j in GENS: gen_bus[1,j]==i} {
         if gen_conbus[1,j] != i then {
-        let all_local_control := 0;
-        printf "Control of generator %d is not local!\n", j;
+        printf "Control of generator %d is not local.\nHowever it will be turned to local in this simulation.\n", j;
+        }
+        if set_target_V == 1 then {
+            if targetV[i] != gen_targetv[1,j] then printf"Inconsistent target V between generators %d and %d at bus %d.\nGenerator %d is chosen as reference.\n", j, generator_controling, i, generator_controling;
+        } else {
+            let targetV[i] := gen_targetv[1,j];
+            let set_target_V := 1;
+            let generator_controling := j;
         }
     }
 }
-if all_local_control==1 then printf "All controls are local\n"; else quit;
 
 #BRANCHES and LOADS definitions
 set BRANCHES = union{(i,j) in VARIANTS_BRANCHES} {j};

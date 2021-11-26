@@ -20,7 +20,8 @@ for{i in PV_BUSES} {
     let set_target_V := 0;
     for{j in GENS: gen_bus[1,j]==i} {
         if gen_conbus[1,j] != i then {
-        printf "Control of generator %d is not local.\nHowever it will be turned to local in this simulation.\n", j;
+            # FIX ME
+            printf "Control of generator %d is not local.\nHowever it will be turned to local in this simulation.\n", j;
         }
         if set_target_V == 1 then {
             if targetV[i] != gen_targetv[1,j] then printf"Inconsistent target V between generators %d and %d at bus %d.\nGenerator %d is chosen as reference.\n", j, generator_controling, i, generator_controling;

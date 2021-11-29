@@ -3,6 +3,7 @@ data ampl_data.dat;
 model ampl_computed_data.mod;
 model ampl_model.mod;
 option solver knitroampl;
+option knitro_options "feastol=1e-3";
 /*
 display BUSES;
 display PV_BUSES;
@@ -17,6 +18,9 @@ display br_ksi;
 */
 problem Initialize_voltage_plan: V, Phi, Q, Quadratic_Error, Active_power_balance, Null_phase_slack, Rective_power_balance_PQ, Rective_power_balance_PV, Reactive_power_inf, Reactive_power_sup, Voltage_limit_inf, Voltage_limit_sup;
 
+for{i in BUSES} {
+    if sum{(j,k) in VARIANTS_SS: k == bus_substations[1,i] and j == 1} ss_minv[j,k] > V[i] or sum{(j,k) in VARIANTS_SS: k == bus_substations[1,i] and j == 1} ss_maxv[j,k] < V[i] then printf "Bus %d : %f < %f < %f\n", i, sum{(j,k) in VARIANTS_SS: k == bus_substations[1,i] and j == 1} ss_minv[j,k], V[i], sum{(j,k) in VARIANTS_SS: k == bus_substations[1,i] and j == 1} ss_maxv[j,k];
+}
 solve Initialize_voltage_plan;
 /*
 display V;
@@ -32,6 +36,8 @@ for{i in BUSES: i != slack_bus} {
         + sum {j in BRANCHES: br_bus2[1,j] == i} ( 1 * V[i] * ( - br_b2[1,j] * 1 * V[i] - br_y[j] * br_cstr[1,j] * V[br_bus1[1,j]] * cos(br_ksi[j] + 0 - 0 + Phi[br_bus1[1,j]] - Phi[i]) + br_y[j] * 1 * V[i] * cos(br_ksi[j]) ) );
     display sum {j in GENS: gen_bus[1,j] == i} gen_targetq[1,j] - sum {j in LOADS: ld_bus[1,j] == i} ld_q0[1,j];
 }
+
+
 printf "slack node (i=1) \n";
 display sum {j in BRANCHES: br_bus1[1,j] == 1} ( br_cstr[1,j] * V[1] * ( br_g1[1,j] * br_cstr[1,j] * V[1] + br_y[j] * br_cstr[1,j] * V[1] * sin(br_ksi[j]) - br_y[j] * 1 * V[br_bus2[1,j]] * sin(br_ksi[j] - 0 + 0 - Phi[1] + Phi[br_bus2[1,j]]) ) )
     + sum {j in BRANCHES: br_bus2[1,j] == 1} ( 1 * V[1] * ( br_g2[1,j] * 1 * V[1] - br_y[j] * br_cstr[1,j] * V[br_bus1[1,j]] * sin(br_ksi[j] + 0 - 0 + Phi[br_bus1[1,j]] - Phi[1]) + br_y[j] * 1 * V[1] * sin(br_ksi[j]) ) );

@@ -1,5 +1,5 @@
 # Variables
-var V{BUSES} default 1;
+var V{i in BUSES} default if bus_v[1,i] > 0 then bus_v[1,i] else 1;
 var Phi{BUSES} default 0;
 var Q{PV_BUSES} default 0;
 
@@ -27,13 +27,13 @@ subject to Rective_power_balance_PV{i in PV_BUSES}:
     == Q[i]/p_pu;
     
 subject to Reactive_power_inf{i in PV_BUSES}:
-    sum {j in GENS: gen_bus[1,j] == i} gen_minq0[1,j] <= Q[i];
+    sum {j in GENS: gen_bus[1,j] == i} gen_minq0[1,j] - sum {j in LOADS: ld_bus[1,j] == i} ld_q0[1,j] <= Q[i];
     
 subject to Reactive_power_sup{i in PV_BUSES}:
-    Q[i] <= sum {j in GENS: gen_bus[1,j] == i} gen_maxq0[1,j];
+    Q[i] <= sum {j in GENS: gen_bus[1,j] == i} gen_maxq0[1,j] - sum {j in LOADS: ld_bus[1,j] == i} ld_q0[1,j];
     
 subject to Voltage_limit_inf{i in BUSES}:
-    v_min[1,i] <= V[i];
+    sum{(j,k) in VARIANTS_SS: k == bus_substations[1,i] and j == 1} ss_minv[j,k] <= V[i];
 
 subject to Voltage_limit_sup{i in BUSES}:
-    V[i] <= v_max[1,i];
+    V[i] <= sum{(j,k) in VARIANTS_SS: k == bus_substations[1,i] and j == 1} ss_maxv[j,k];

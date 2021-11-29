@@ -87,3 +87,5 @@ param ld_q{VARIANTS_LOADS};
 
 param v_min{VARIANTS_BUSES} default 0.8;
 param v_max{VARIANTS_BUSES} default 1.2;
+
+param p_pu default 100;

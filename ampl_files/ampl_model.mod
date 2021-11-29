@@ -5,7 +5,7 @@ var Q{PV_BUSES} default 0;
 
 # Objectif function
 minimize Quadratic_Error:
-   sum {i in PQ_BUSES} ( (V[i]-1)*(V[i]-1) );
+   sum {i in PQ_BUSES: bus_v[1,i] > 0} ( (V[i] - bus_v[1,i]) * (V[i] - bus_v[1,i]) );
    
 # Constraints
 subject to Active_power_balance{i in BUSES: i != slack_bus}:

@@ -17,7 +17,7 @@ PV_buses = []
 PQ_buses = []
 for generator in generators:
     if n.get_generators().at[generator, "voltage_regulator_on"]:
-        if n.get_generators().at[generator, "bus_id"] not in PV_buses:
+        if n.get_generators().at[generator, "bus_id"] not in PV_buses: # TO DO : Work only when regulations are local
             PV_buses.append(n.get_generators().at[generator, "bus_id"])
 
 for bus in buses:

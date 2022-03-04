@@ -111,7 +111,7 @@ def active_power_balance_expr(m,i):
             line_x = row["x"]
             line_y_pu = 1 / np.sqrt(line_r * line_r + line_x * line_x) / sus_pu_coeff
             line_ksi = np.arctan2(line_r,line_x)
-            lhs += ratio_tr_pu * m.V[i] * (0 + line_y_pu * ratio_tr_pu * m.V[i] * pyo.sin(line_ksi) - line_y_pu * 1 * m.V[j] * pyo.sin(line_ksi - 0 + 0 - m.Phi[i] + m.Phi[j]) )
+            lhs += ratio_tr_pu * m.V[i] * (line_y_pu * ratio_tr_pu * m.V[i] * pyo.sin(line_ksi) - line_y_pu * 1 * m.V[j] * pyo.sin(line_ksi - 0 + 0 - m.Phi[i] + m.Phi[j]) )
         elif row["bus2_id"] == i and row["bus1_id"] in buses:
             is_empy = False
             j = row["bus1_id"]
@@ -123,7 +123,7 @@ def active_power_balance_expr(m,i):
             line_x = row["x"]
             line_y_pu = 1 / np.sqrt(line_r * line_r + line_x * line_x) / sus_pu_coeff
             line_ksi = np.arctan2(line_r,line_x)
-            lhs += 1 * m.V[i] * (0 - line_y_pu * ratio_tr_pu * m.V[j] * pyo.sin(line_ksi + 0 - 0 + m.Phi[j] - m.Phi[i]) + line_y_pu * 1 * m.V[i] * pyo.sin(line_ksi) )
+            lhs += 1 * m.V[i] * (- line_y_pu * ratio_tr_pu * m.V[j] * pyo.sin(line_ksi + 0 - 0 + m.Phi[j] - m.Phi[i]) + line_y_pu * 1 * m.V[i] * pyo.sin(line_ksi) )
     for id_gen, row in n.get_generators().iterrows():
         if row["bus_id"] == i:
             rhs += row["target_p"] / p_pu
@@ -136,3 +136,77 @@ def active_power_balance_expr(m,i):
         return lhs == rhs
 
 model.ActivePowerBalance = pyo.Constraint(model.I,rule=active_power_balance_expr)
+
+## Null phase for slack
+model.NullPhaseSlack = pyo.Constraint(expr = model.Phi[slack_bus] == 0)
+
+## Reactive power balance
+model.J = pyo.Set(initialize=PQ_buses)
+
+def reactive_power_balance_expr(m,i):
+    v_pu_coeff_i = n.get_voltage_levels().at[n.get_buses().at[i, "voltage_level_id"], "nominal_v"]
+    lhs = 0
+    rhs = 0
+    is_empty = True
+    for id_line, row in n.get_lines().iterrows():
+        if row["bus1_id"] == i and row["bus2_id"] in buses:
+            is_empy = False
+            j = row["bus2_id"]
+            v_pu_coeff_j = n.get_voltage_levels().at[n.get_buses().at[j, "voltage_level_id"], "nominal_v"]
+            sus_pu_coeff = p_pu / v_pu_coeff_i / v_pu_coeff_j #POWER/U/U 
+            ratio_tr_pu = 1
+            line_b1_pu = row[ "b1"] / sus_pu_coeff # TO DO: to be replaced with pu getters
+            line_r = row["r"]
+            line_x = row["x"]
+            line_y_pu = 1 / np.sqrt(line_r * line_r + line_x * line_x) / sus_pu_coeff
+            line_ksi = np.arctan2(line_r,line_x)
+            lhs += ratio_tr_pu * m.V[i] * (-line_b1_pu * ratio_tr_pu * m.V[i] + line_y_pu * ratio_tr_pu * m.V[i] * pyo.cos(line_ksi) - line_y_pu * 1 * m.V[j] * pyo.cos(line_ksi - 0 + 0 - m.Phi[i] + m.Phi[j]) )
+        elif row["bus2_id"] == i and row["bus1_id"] in buses:
+            is_empy = False
+            j = row["bus1_id"]
+            v_pu_coeff_j = n.get_voltage_levels().at[n.get_buses().at[j, "voltage_level_id"], "nominal_v"]
+            sus_pu_coeff = p_pu / v_pu_coeff_i / v_pu_coeff_j #POWER/U/U 
+            ratio_tr_pu = 1
+            line_b2_pu = row["b2"] / sus_pu_coeff # TO DO: to be replaced with pu getters
+            line_r = row["r"]
+            line_x = row["x"]
+            line_y_pu = 1 / np.sqrt(line_r * line_r + line_x * line_x) / sus_pu_coeff
+            line_ksi = np.arctan2(line_r,line_x)
+            lhs += 1 * m.V[i] * ( - line_b2_pu * 1 * m.V[i] - line_y_pu * ratio_tr_pu * m.V[j] * pyo.cos(line_ksi + 0 - 0 + m.Phi[j] - m.Phi[i]) + line_y_pu * 1 * m.V[i] * pyo.cos(line_ksi) )
+    for id_tr, row in n.get_2_windings_transformers().iterrows():
+        if row["bus1_id"] == i and row["bus2_id"] in buses:
+            is_empy = False
+            j = row["bus2_id"]
+            v_pu_coeff_j = n.get_voltage_levels().at[n.get_buses().at[j, "voltage_level_id"], "nominal_v"]
+            sus_pu_coeff = p_pu / v_pu_coeff_i / v_pu_coeff_j #POWER/U/U
+            ratio_tr_pu_coeff = v_pu_coeff_j / v_pu_coeff_i
+            ratio_tr_pu = row["rated_u2"] / row["rated_u1"] / ratio_tr_pu_coeff
+            line_r = row["r"]
+            line_x = row["x"]
+            line_y_pu = 1 / np.sqrt(line_r * line_r + line_x * line_x) / sus_pu_coeff
+            line_ksi = np.arctan2(line_r,line_x)
+            lhs += ratio_tr_pu * m.V[i] * (line_y_pu * ratio_tr_pu * m.V[i] * pyo.cos(line_ksi) - line_y_pu * 1 * m.V[j] * pyo.cos(line_ksi - 0 + 0 - m.Phi[i] + m.Phi[j]) )
+        elif row["bus2_id"] == i and row["bus1_id"] in buses:
+            is_empy = False
+            j = row["bus1_id"]
+            v_pu_coeff_j = n.get_voltage_levels().at[n.get_buses().at[j, "voltage_level_id"], "nominal_v"]
+            sus_pu_coeff = p_pu / v_pu_coeff_i / v_pu_coeff_j #POWER/U/U 
+            ratio_tr_pu_coeff = v_pu_coeff_i / v_pu_coeff_j
+            ratio_tr_pu = row["rated_u2"] / row["rated_u1"] / ratio_tr_pu_coeff
+            line_r = row["r"]
+            line_x = row["x"]
+            line_y_pu = 1 / np.sqrt(line_r * line_r + line_x * line_x) / sus_pu_coeff
+            line_ksi = np.arctan2(line_r,line_x)
+            lhs += 1 * m.V[i] * ( - line_y_pu * ratio_tr_pu * m.V[j] * pyo.cos(line_ksi + 0 - 0 + m.Phi[j] - m.Phi[i]) + line_y_pu * 1 * m.V[i] * pyo.cos(line_ksi) )
+    for id_gen, row in n.get_generators().iterrows():
+        if row["bus_id"] == i:
+            rhs += row["target_q"] / p_pu
+    for id_ld, row in n.get_loads().iterrows():
+        if row["bus_id"] == i:
+            rhs -= row["q0"] / p_pu
+    if is_empty:
+        return pyo.Constraint.Skip
+    else:
+        return lhs == rhs
+
+model.ReactivePowerBalance = pyo.Constraint(model.J,rule=reactive_power_balance_expr)

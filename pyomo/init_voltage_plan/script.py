@@ -15,13 +15,12 @@ model = pyo.ConcreteModel()
 
 # Define bus types
 buses = n.get_buses().index.tolist()
-generators = n.get_generators().index.tolist()
 PV_buses = []
 PQ_buses = []
-for generator in generators:
-    if n.get_generators().at[generator, "voltage_regulator_on"]:
-        if n.get_generators().at[generator, "bus_id"] not in PV_buses: # TO DO: Work only when regulations are local
-            PV_buses.append(n.get_generators().at[generator, "bus_id"])
+for id_gen, row in n.get_generators().iterrows():
+    if row["voltage_regulator_on"]:
+        if row["bus_id"] not in PV_buses: # TO DO: Work only when regulations are local
+            PV_buses.append(row["bus_id"])
 
 for bus in buses:
     if bus not in PV_buses:
@@ -59,7 +58,7 @@ model.OBJ = pyo.Objective(rule=obj_expression)
 # Constraints
 lines = n.get_lines().index.tolist()
 two_w_transf = n.get_2_windings_transformers().index.tolist()
-gens = n.get_generators().index.tolist()
+generators = n.get_generators().index.tolist()
 loads = n.get_loads().index.tolist()
 
 ## Active power balance
@@ -121,7 +120,7 @@ def active_power_balance_expr(m,i):
             line_y_pu = 1 / np.sqrt(line_r * line_r + line_x * line_x) / sus_pu_coeff
             line_ksi = np.arctan2(line_r,line_x)
             lhs += 1 * m.V[i] * (0 - line_y_pu * ratio_tr_pu * m.V[j] * pyo.sin(line_ksi + 0 - 0 + m.Phi[j] - m.Phi[i]) + line_y_pu * 1 * m.V[i] * pyo.sin(line_ksi) )
-    for gen in gens:
+    for gen in generators:
         if n.get_generators().at[gen, "bus_id"] == i:
             rhs += n.get_generators().at[gen, "target_p"] / p_pu
     for ld in loads:

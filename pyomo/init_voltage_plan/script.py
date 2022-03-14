@@ -71,16 +71,16 @@ if debug:
     print("Create variables...")
 model.Buses = pyo.Set(initialize=buses)
 model.PVbuses = pyo.Set(initialize=PV_buses)
-model.V = pyo.Var(model.Buses, domain=pyo.NonNegativeReals) # TO DO : add default values
-model.Phi = pyo.Var(model.Buses, domain=pyo.Reals) # TO DO : add default values
-model.Q = pyo.Var(model.PVbuses, domain=pyo.Reals) # TO DO : add default values
+model.V = pyo.Var(model.Buses, domain=pyo.NonNegativeReals, bounds=voltage_bounds(n), initialize=voltage_init(n))
+model.Phi = pyo.Var(model.Buses, domain=pyo.Reals, initialize=0)
+model.Q = pyo.Var(model.PVbuses, domain=pyo.Reals, bounds=reactive_power_bounds(n), initialize=0)
         
-# Objectif function
+# Objective function
 if debug:
     toc = time.perf_counter()
     print(f"\tin {toc-tic:0.4f} seconds")
     tic = time.perf_counter()
-    print("Objectif function...")
+    print("Objective function...")
 model.OBJ = pyo.Objective(rule=obj_expression(n, PQ_buses))
 
 # Constraints

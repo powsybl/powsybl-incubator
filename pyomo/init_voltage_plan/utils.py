@@ -256,26 +256,62 @@ def reactive_power_bounds(n):
         ub = 0
         for id_gen, row in n.get_generators().iterrows():
             if row["bus_id"] == i:
-                lb += row["min_q"]
-                ub += row["max_q"]
+                target_p = row["target_p"]
+                dist = np.nan
+                for id_curve, row in n.get_reactive_capability_curve_points().iterrows():
+                    if id_curve[0] == id_gen:
+                        if np.isnan(dist):
+                            dist = abs(target_p-row["p"])
+                            minq = row["min_q"]
+                            maxq = row["max_q"]
+                        else:
+                            if abs(target_p-row["p"]) < dist:
+                                dist = abs(target_p-row["p"])
+                                minq = row["min_q"]
+                                maxq = row["max_q"]
+                lb += minq
+                ub += maxq
         for id_ld, row in n.get_loads().iterrows():
             if row["bus_id"] == i:
                 lb -= row["q0"]
                 ub -= row["q0"]
         return (lb, ub)
     return reactive_power_bounds_m
+    
+# Reactive power initialization
+def reactive_init(n):
+    def reactive_init_m(m,i):
+        q_init = 0
+        if q_init < m.Q[i].lb:
+            q_init =  m.Q[i].lb
+        if q_init > m.Q[i].ub:
+            q_init =  m.Q[i].ub
+        return q_init
+    return reactive_init_m
 
 # Voltage bounds
 def voltage_bounds(n):
     def voltage_bounds_m(m, i):
-        lb = 0
-        ub = 0
-        return (lb, ub)
+        voltage_level_id = n.get_buses().at[i, "voltage_level_id"]
+        v_pu_coeff = n.get_voltage_levels().at[voltage_level_id, "nominal_v"]
+        v_min_pu = n.get_voltage_levels().at[voltage_level_id, "low_voltage_limit"] / v_pu_coeff # TO DO: to be replaced with pu getters
+        v_max_pu = n.get_voltage_levels().at[voltage_level_id, "high_voltage_limit"] / v_pu_coeff # TO DO: to be replaced with pu getters
+        return (v_min_pu, v_max_pu)
     return voltage_bounds_m
 
 # Voltage initialization
 def voltage_init(n):
     def voltage_init_m(m,i):
-        val = 0
-        return val
+        voltage_level_id = n.get_buses().at[i, "voltage_level_id"]
+        v_init = n.get_buses().at[i,"v_mag"]
+        if np.isnan(v_init):
+            v_init_pu = 1
+        else:
+            v_pu_coeff = n.get_voltage_levels().at[voltage_level_id, "nominal_v"]
+            v_init_pu = n.get_buses().at[i,"v_mag"] / v_pu_coeff # TO DO: to be replaced with pu getters
+        if v_init_pu < m.V[i].lb:
+            v_init_pu =  m.V[i].lb
+        if v_init_pu > m.V[i].ub:
+            v_init_pu =  m.V[i].ub
+        return v_init_pu
     return voltage_init_m

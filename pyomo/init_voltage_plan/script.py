@@ -1,6 +1,7 @@
 import time
 import pypowsybl as pp
 import pyomo.environ as pyo
+from pyomo.opt import SolverFactory
 from utils import *
 
 debug = True
@@ -73,7 +74,7 @@ model.Buses = pyo.Set(initialize=buses)
 model.PVbuses = pyo.Set(initialize=PV_buses)
 model.V = pyo.Var(model.Buses, domain=pyo.NonNegativeReals, bounds=voltage_bounds(n), initialize=voltage_init(n))
 model.Phi = pyo.Var(model.Buses, domain=pyo.Reals, initialize=0)
-model.Q = pyo.Var(model.PVbuses, domain=pyo.Reals, bounds=reactive_power_bounds(n), initialize=0)
+model.Q = pyo.Var(model.PVbuses, domain=pyo.Reals, bounds=reactive_power_bounds(n), initialize=reactive_init(n))
         
 # Objective function
 if debug:
@@ -135,3 +136,8 @@ if debug:
     print(f"\t\tin {toc-tic:0.4f} seconds")
     tic = time.perf_counter()
     print("End")
+    
+# Solve
+executable = 'knitroampl.exe'
+opt = SolverFactory("knitro", executable=executable, solver_io='nl')
+results = opt.solve(model)

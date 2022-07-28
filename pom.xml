@@ -50,7 +50,7 @@
     </developers>
 
     <modules>
-        <module>cgmes-gl</module>
+        <module>matpower</module>
         <module>substation-webviewer</module>
     </modules>
 

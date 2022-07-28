@@ -56,8 +56,6 @@
     </developers>
 
     <modules>
-        <module>iidm</module>
-        <module>matpower</module>
     </modules>
 
     <properties>

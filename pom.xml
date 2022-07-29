@@ -56,19 +56,20 @@
     </developers>
 
     <modules>
+        <module>simulator</module>
     </modules>
 
     <properties>
         <java.version>11</java.version>
-        <powsybl-core.version>4.9.2</powsybl-core.version>
+        <powsybl-dependencies.version>1.2.2</powsybl-dependencies.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>com.powsybl</groupId>
-                <artifactId>powsybl-core</artifactId>
-                <version>${powsybl-core.version}</version>
+                <artifactId>powsybl-dependencies</artifactId>
+                <version>${powsybl-dependencies.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

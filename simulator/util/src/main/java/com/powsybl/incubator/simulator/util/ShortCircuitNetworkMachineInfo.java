@@ -11,6 +11,7 @@ package com.powsybl.incubator.simulator.util;
  */
 public class ShortCircuitNetworkMachineInfo {
 
+    public static final String NAME = "ShortCircuit";
 
     public enum MachineType {
         SYNCHRONOUS_GEN,

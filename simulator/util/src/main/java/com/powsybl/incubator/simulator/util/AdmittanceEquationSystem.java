@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
@@ -117,45 +116,43 @@ public final class AdmittanceEquationSystem {
         return tmpB;
     }
 
-    private static Pair<Double, Double> getYtransfromRdXd(LfBus bus, Map<String, ShortCircuitNetworkMachineInfo> rotatingMachineInfo, AdmittancePeriodType admittancePeriodType, List<ShortCircuitEquationSystemFeeder> feederList, AdmittanceType admittanceType) {
+    private static Pair<Double, Double> getYtransfromRdXd(LfBus bus, AdmittancePeriodType admittancePeriodType, List<ShortCircuitEquationSystemFeeder> feederList, AdmittanceType admittanceType) {
         double vnomVl = bus.getNominalV();
 
         double tmpG = 0.;
         double tmpB = 0.;
         for (LfGenerator lfgen : bus.getGenerators()) { //compute R'd or R"d from generators at bus
-            if (rotatingMachineInfo.containsKey(lfgen.getId())) {
-                ShortCircuitNetworkMachineInfo machineInfo = rotatingMachineInfo.get(lfgen.getId());
-                double rd = machineInfo.getTransRd() + machineInfo.getStepUpTfoR();
-                double xd = machineInfo.getTransXd() + machineInfo.getStepUpTfoX();
-                if (admittancePeriodType == AdmittancePeriodType.ADM_SUB_TRANSIENT) {
-                    xd = machineInfo.getSubTransXd() + machineInfo.getStepUpTfoX();
-                    rd = machineInfo.getSubTransRd() + machineInfo.getStepUpTfoR();
+            ShortCircuitNetworkMachineInfo machineInfo = (ShortCircuitNetworkMachineInfo) lfgen.getProperty(ShortCircuitNetworkMachineInfo.NAME);
+            double rd = machineInfo.getTransRd() + machineInfo.getStepUpTfoR();
+            double xd = machineInfo.getTransXd() + machineInfo.getStepUpTfoX();
+            if (admittancePeriodType == AdmittancePeriodType.ADM_SUB_TRANSIENT) {
+                xd = machineInfo.getSubTransXd() + machineInfo.getStepUpTfoX();
+                rd = machineInfo.getSubTransRd() + machineInfo.getStepUpTfoR();
+            }
+
+            double coeffR = 1.0; // coeff used to deduce Ro from Rd. It is equal to 1.0 if we are looking for direct values. If the machine is not grounded, homopolar values are zero, then we set coeffs to 0.
+            double coeffX = 1.0;
+            if (admittanceType == AdmittanceType.ADM_THEVENIN_HOMOPOLAR) {
+                coeffR = 0.;
+                coeffX = 0.;
+                if (machineInfo.isGrounded()) {
+                    coeffR = machineInfo.getCoeffRo();
+                    coeffX = machineInfo.getCoeffXo();
                 }
+            }
 
-                double coeffR = 1.0; // coeff used to deduce Ro from Rd. It is equal to 1.0 if we are looking for direct values. If the machine is not grounded, homopolar values are zero, then we set coeffs to 0.
-                double coeffX = 1.0;
-                if (admittanceType == AdmittanceType.ADM_THEVENIN_HOMOPOLAR) {
-                    coeffR = 0.;
-                    coeffX = 0.;
-                    if (machineInfo.isGrounded()) {
-                        coeffR = machineInfo.getCoeffRo();
-                        coeffX = machineInfo.getCoeffXo();
-                    }
-                }
+            double epsilon = 0.0000001;
 
-                double epsilon = 0.0000001;
+            rd = rd * coeffR;
+            xd = xd * coeffX;
 
-                rd = rd * coeffR;
-                xd = xd * coeffX;
-
-                if (Math.abs(rd) > epsilon || Math.abs(xd) > epsilon) {
-                    double gGen = (vnomVl * vnomVl / SB) * rd / (rd * rd + xd * xd);
-                    double bGen = -(vnomVl * vnomVl / SB) * xd / (rd * rd + xd * xd);
-                    tmpG = tmpG + gGen;
-                    tmpB = tmpB + bGen; // TODO: check: for now X'd = 0 not allowed
-                    ShortCircuitEquationSystemFeeder shuntFeeder = new ShortCircuitEquationSystemFeeder(bGen, gGen, lfgen.getId(), ShortCircuitEquationSystemFeeder.FeederType.GENERATOR);
-                    feederList.add(shuntFeeder);
-                }
+            if (Math.abs(rd) > epsilon || Math.abs(xd) > epsilon) {
+                double gGen = (vnomVl * vnomVl / SB) * rd / (rd * rd + xd * xd);
+                double bGen = -(vnomVl * vnomVl / SB) * xd / (rd * rd + xd * xd);
+                tmpG = tmpG + gGen;
+                tmpB = tmpB + bGen; // TODO: check: for now X'd = 0 not allowed
+                ShortCircuitEquationSystemFeeder shuntFeeder = new ShortCircuitEquationSystemFeeder(bGen, gGen, lfgen.getId(), ShortCircuitEquationSystemFeeder.FeederType.GENERATOR);
+                feederList.add(shuntFeeder);
             }
         }
 
@@ -165,7 +162,7 @@ public final class AdmittanceEquationSystem {
 
     private static void createShunts(LfNetwork network, VariableSet<VariableType> variableSet, EquationSystem<VariableType, EquationType> equationSystem, AdmittanceType admittanceType,
                                      AdmittanceVoltageProfileType admittanceVoltageProfileType, AdmittancePeriodType admittancePeriodType,
-                                     Map<String, ShortCircuitNetworkMachineInfo> rotatingMachineInfo, boolean isShuntsIgnore, ShortCircuitNetwork shortCircuitNetwork, ShortCircuitEquationSystemFeeders feeders) {
+                                     boolean isShuntsIgnore, ShortCircuitEquationSystemFeeders feeders) {
         for (LfBus bus : network.getBuses()) {
 
             //total shunt at bus to be integrated in the admittance matrix
@@ -222,7 +219,7 @@ public final class AdmittanceEquationSystem {
                 ShortCircuitEquationSystemFeeder shuntFeeder = new ShortCircuitEquationSystemFeeder(bLoadEq, gLoadEq, bus.getId(), ShortCircuitEquationSystemFeeder.FeederType.LOAD);
                 feederList.add(shuntFeeder);
 
-                Pair<Double, Double> bAndG = getYtransfromRdXd(bus, rotatingMachineInfo, admittancePeriodType, feederList, admittanceType); // ! updates feederList
+                Pair<Double, Double> bAndG = getYtransfromRdXd(bus, admittancePeriodType, feederList, admittanceType); // ! updates feederList
                 bGenEq = bAndG.getValue(); //TODO : check how the verify that the generators are operating
                 gGenEq = bAndG.getKey();
 
@@ -234,7 +231,7 @@ public final class AdmittanceEquationSystem {
 
                 List<ShortCircuitEquationSystemFeeder> feederList = new ArrayList<>(); // not used yet in homopolar
 
-                Pair<Double, Double> bAndG = getYtransfromRdXd(bus, rotatingMachineInfo, admittancePeriodType, feederList, admittanceType); // ! updates feederList
+                Pair<Double, Double> bAndG = getYtransfromRdXd(bus, admittancePeriodType, feederList, admittanceType); // ! updates feederList
                 bGenEq = bAndG.getValue(); //TODO : check how the verify that the generators are operating
                 gGenEq = bAndG.getKey();
 
@@ -276,7 +273,6 @@ public final class AdmittanceEquationSystem {
                                                                     AcLoadFlowParameters acLoadFlowParameters) {
 
         EquationSystem<VariableType, EquationType> equationSystem = new EquationSystem<>();
-        Map<String, ShortCircuitNetworkMachineInfo> rotatingMachineInfo = shortCircuitNetwork.getMachinesInfo();
 
         if (admittanceType == AdmittanceType.ADM_ADMIT) {
             try (AcLoadFlowContext context = new AcLoadFlowContext(network, acLoadFlowParameters)) {
@@ -287,7 +283,7 @@ public final class AdmittanceEquationSystem {
 
         createBranches(network, variableSet, equationSystem, admittanceType, mf, shortCircuitNetwork);
         if (admittanceType != AdmittanceType.ADM_INJ) { //shunts created in the admittance matrix are only those that really exist in the network
-            createShunts(network, variableSet, equationSystem, admittanceType, admittanceVoltageProfileType, admittancePeriodType, rotatingMachineInfo, isShuntsIgnore, shortCircuitNetwork, feeders); // TODO : shuntIgnore was set at false
+            createShunts(network, variableSet, equationSystem, admittanceType, admittanceVoltageProfileType, admittancePeriodType, isShuntsIgnore, feeders); // TODO : shuntIgnore was set at false
         }
 
         return equationSystem;

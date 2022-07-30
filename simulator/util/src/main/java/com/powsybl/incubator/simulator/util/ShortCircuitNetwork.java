@@ -9,8 +9,12 @@ package com.powsybl.incubator.simulator.util;
 import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.*;
 import com.powsybl.iidm.network.extensions.GeneratorShortCircuit;
+import com.powsybl.openloadflow.network.LfBus;
+import com.powsybl.openloadflow.network.LfGenerator;
+import com.powsybl.openloadflow.network.LfNetwork;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,8 +23,6 @@ import java.util.Map;
 public class ShortCircuitNetwork {
 
     Network iidmNetwork;
-
-    private Map<String, ShortCircuitNetworkMachineInfo> machinesInfo;
 
     private Map<String, ShortCircuitNetworkT2W> transfo2wInfo;
 
@@ -32,55 +34,59 @@ public class ShortCircuitNetwork {
 
     }
 
+    public static void postProcessLoading(Network network, List<LfNetwork> lfNetworks, AdditionalDataInfo additionalDataInfo) {
+        for (LfNetwork lfNetwork : lfNetworks) {
+            for (LfBus lfBus : lfNetwork.getBuses()) {
+                for (LfGenerator lfGenerator : lfBus.getGenerators()) {
+                    Generator generator = network.getGenerator(lfGenerator.getOriginalId());
+
+                    GeneratorShortCircuit extension = generator.getExtension(GeneratorShortCircuit.class);
+                    if (extension == null) { // TODO: use a default value if extension is missing
+                        throw new PowsyblException("Short circuit extension not found for generator '" + generator.getId() + "'");
+                    }
+                    double transX = extension.getDirectTransX();
+                    double subtransX = extension.getDirectSubtransX();
+                    double stepUpTfoX = extension.getStepUpTransformerX();
+
+                    double transRd = 0.;
+                    if (additionalDataInfo.getMachineIdToTransRd().containsKey(generator.getId())) {
+                        transRd = additionalDataInfo.getMachineIdToTransRd().get(generator.getId());
+                    }
+
+                    double subTransRd = 0.;
+                    if (additionalDataInfo.getMachineIdToSubTransRd().containsKey(generator.getId())) {
+                        subTransRd = additionalDataInfo.getMachineIdToSubTransRd().get(generator.getId());
+                    }
+
+                    boolean isToGround = false;
+                    if (additionalDataInfo.getMachineToGround().containsKey(generator.getId())) {
+                        isToGround = additionalDataInfo.getMachineToGround().get(generator.getId());
+                    }
+
+                    double coeffRo = 1.;
+                    if (additionalDataInfo.getMachineCoeffRo() != null) {
+                        if (additionalDataInfo.getMachineCoeffRo().containsKey(generator.getId())) {
+                            coeffRo = additionalDataInfo.getMachineCoeffRo().get(generator.getId());
+                        }
+                    }
+
+                    double coeffXo = 1.;
+                    if (additionalDataInfo.getMachineCoeffXo() != null) {
+                        if (additionalDataInfo.getMachineCoeffXo().containsKey(generator.getId())) {
+                            coeffXo = additionalDataInfo.getMachineCoeffXo().get(generator.getId());
+                        }
+                    }
+
+                    ShortCircuitNetworkMachineInfo rotatingMachineInfo = new ShortCircuitNetworkMachineInfo(transX, stepUpTfoX, ShortCircuitNetworkMachineInfo.MachineType.SYNCHRONOUS_GEN, transRd, 0., subTransRd, subtransX, isToGround, 0., 0., coeffRo, coeffXo); // TODO: set the right type when info available
+                    lfGenerator.setProperty(ShortCircuitNetworkMachineInfo.NAME, rotatingMachineInfo);
+                }
+            }
+        }
+    }
+
     public ShortCircuitNetwork(Network iidmNetwork, AdditionalDataInfo additionalDataInfo) {
 
         this.iidmNetwork = iidmNetwork;
-
-        this.machinesInfo = new HashMap<>();
-        for (Generator gen : iidmNetwork.getGenerators()) { //TODO: use a default value if extension is missing
-            GeneratorShortCircuit extension = gen.getExtension(GeneratorShortCircuit.class);
-            if (extension == null) {
-                throw new PowsyblException("Short circuit extension not found for generator '" + gen.getId() + "'");
-            }
-            double transX = extension.getDirectTransX();
-            double subtransX = extension.getDirectSubtransX();
-            double stepUpTfoX = extension.getStepUpTransformerX();
-            String idGen = gen.getId();
-
-            double transRd = 0.;
-            if (additionalDataInfo.getMachineIdToTransRd().containsKey(idGen)) {
-                transRd = additionalDataInfo.getMachineIdToTransRd().get(idGen);
-            }
-
-            double subTransRd = 0.;
-            if (additionalDataInfo.getMachineIdToSubTransRd().containsKey(idGen)) {
-                subTransRd = additionalDataInfo.getMachineIdToSubTransRd().get(idGen);
-            }
-
-            boolean isToGround = false;
-            if (additionalDataInfo.getMachineToGround().containsKey(idGen)) {
-                isToGround = additionalDataInfo.getMachineToGround().get(idGen);
-            }
-
-            double coeffRo = 1.;
-            if (additionalDataInfo.getMachineCoeffRo() != null) {
-                if (additionalDataInfo.getMachineCoeffRo().containsKey(idGen)) {
-                    coeffRo = additionalDataInfo.getMachineCoeffRo().get(idGen);
-                }
-            }
-
-            double coeffXo = 1.;
-            if (additionalDataInfo.getMachineCoeffXo() != null) {
-                if (additionalDataInfo.getMachineCoeffXo().containsKey(idGen)) {
-                    coeffXo = additionalDataInfo.getMachineCoeffXo().get(idGen);
-                }
-            }
-
-            ShortCircuitNetworkMachineInfo rotatingMachineInfo = new ShortCircuitNetworkMachineInfo(transX, stepUpTfoX, ShortCircuitNetworkMachineInfo.MachineType.SYNCHRONOUS_GEN, transRd, 0., subTransRd, subtransX, isToGround, 0., 0., coeffRo, coeffXo); // TODO: set the right type when info available
-
-            this.machinesInfo.put(idGen, rotatingMachineInfo);
-
-        }
 
         this.transfo2wInfo = new HashMap<>();
         for (TwoWindingsTransformer t2w : iidmNetwork.getTwoWindingsTransformers()) {
@@ -257,10 +263,6 @@ public class ShortCircuitNetwork {
         }
     }
 
-    public Map<String, ShortCircuitNetworkMachineInfo> getMachinesInfo() {
-        return machinesInfo;
-    }
-
     public Map<String, ShortCircuitNetworkLine> getLineInfo() {
         return lineInfo;
     }
@@ -272,10 +274,4 @@ public class ShortCircuitNetwork {
     public Map<String, ShortCircuitNetworkT3W> getTransfo3wInfo() {
         return transfo3wInfo;
     }
-
-    public void setMachinesInfo(Map<String, ShortCircuitNetworkMachineInfo> info) {
-        machinesInfo = info;
-
-    }
-
 }

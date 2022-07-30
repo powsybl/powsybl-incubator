@@ -8,6 +8,7 @@ package com.powsybl.incubator.simulator.shortcircuit;
 
 import com.powsybl.iidm.network.Network;
 import com.powsybl.incubator.simulator.util.*;
+import com.powsybl.incubator.simulator.util.extensions.AdditionalDataInfo;
 import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.math.matrix.DenseMatrixFactory;

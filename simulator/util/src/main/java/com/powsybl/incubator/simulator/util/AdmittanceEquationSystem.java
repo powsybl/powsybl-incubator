@@ -6,6 +6,8 @@
  */
 package com.powsybl.incubator.simulator.util;
 
+import com.powsybl.incubator.simulator.util.extensions.ShortCircuitExtensions;
+import com.powsybl.incubator.simulator.util.extensions.ShortCircuitNetworkMachineInfo;
 import com.powsybl.math.matrix.MatrixFactory;
 import com.powsybl.openloadflow.ac.outerloop.AcLoadFlowContext;
 import com.powsybl.openloadflow.ac.outerloop.AcLoadFlowParameters;

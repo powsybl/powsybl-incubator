@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.powsybl.incubator.simulator.util;
+package com.powsybl.incubator.simulator.util.extensions;
 
 import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.Generator;
@@ -85,13 +85,13 @@ public final class ShortCircuitExtensions {
         double coeffLeg3Ro = getParameterValue(additionalDataInfo.getTfo3wIdToLeg3CoeffRo(), t3wId, 1.0);
         double coeffLeg3Xo = getParameterValue(additionalDataInfo.getTfo3wIdToLeg3CoeffXo(), t3wId, 1.0);
 
-        boolean isLeg1FreeFluxes = getParameterValue(additionalDataInfo.getTfo3wIdLeg1ToFreeFluxes(), t3wId, false);
-        boolean isLeg2FreeFluxes = getParameterValue(additionalDataInfo.getTfo3wIdLeg2ToFreeFluxes(), t3wId, false);
-        boolean isLeg3FreeFluxes = getParameterValue(additionalDataInfo.getTfo3wIdLeg3ToFreeFluxes(), t3wId, false);
+        boolean leg1FreeFluxes = getParameterValue(additionalDataInfo.getTfo3wIdLeg1ToFreeFluxes(), t3wId, false);
+        boolean leg2FreeFluxes = getParameterValue(additionalDataInfo.getTfo3wIdLeg2ToFreeFluxes(), t3wId, false);
+        boolean leg3FreeFluxes = getParameterValue(additionalDataInfo.getTfo3wIdLeg3ToFreeFluxes(), t3wId, false);
 
-        ShortCircuitNetworkTransformerLeg leg1 = new ShortCircuitNetworkTransformerLeg(ShortCircuitNetworkTransformerLeg.LegConnectionType.DELTA, coeffLeg1Ro, coeffLeg1Xo, isLeg1FreeFluxes); // TODO : check if default connection acceptable
-        ShortCircuitNetworkTransformerLeg leg2 = new ShortCircuitNetworkTransformerLeg(ShortCircuitNetworkTransformerLeg.LegConnectionType.Y_GROUNDED, coeffLeg2Ro, coeffLeg2Xo, isLeg2FreeFluxes); // TODO : check if default connection acceptable
-        ShortCircuitNetworkTransformerLeg leg3 = new ShortCircuitNetworkTransformerLeg(ShortCircuitNetworkTransformerLeg.LegConnectionType.DELTA, coeffLeg3Ro, coeffLeg3Xo, isLeg3FreeFluxes);
+        ShortCircuitNetworkTransformerLeg leg1 = new ShortCircuitNetworkTransformerLeg(ShortCircuitNetworkTransformerLeg.LegConnectionType.DELTA, coeffLeg1Ro, coeffLeg1Xo, leg1FreeFluxes); // TODO : check if default connection acceptable
+        ShortCircuitNetworkTransformerLeg leg2 = new ShortCircuitNetworkTransformerLeg(ShortCircuitNetworkTransformerLeg.LegConnectionType.Y_GROUNDED, coeffLeg2Ro, coeffLeg2Xo, leg2FreeFluxes); // TODO : check if default connection acceptable
+        ShortCircuitNetworkTransformerLeg leg3 = new ShortCircuitNetworkTransformerLeg(ShortCircuitNetworkTransformerLeg.LegConnectionType.DELTA, coeffLeg3Ro, coeffLeg3Xo, leg3FreeFluxes);
 
         AdditionalDataInfo.LegType leg1Type = getParameterValue(additionalDataInfo.getLeg1type(), t3wId, null);
         if (leg1Type == AdditionalDataInfo.LegType.Y) {

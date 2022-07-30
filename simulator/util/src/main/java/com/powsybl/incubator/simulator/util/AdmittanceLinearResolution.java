@@ -7,6 +7,7 @@
 package com.powsybl.incubator.simulator.util;
 
 import com.powsybl.iidm.network.Network;
+import com.powsybl.incubator.simulator.util.extensions.ShortCircuitExtensions;
 import com.powsybl.math.matrix.DenseMatrix;
 import com.powsybl.openloadflow.equations.EquationSystem;
 import com.powsybl.openloadflow.equations.VariableSet;

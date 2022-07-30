@@ -6,6 +6,7 @@
  */
 package com.powsybl.incubator.simulator.util;
 
+import com.powsybl.incubator.simulator.util.extensions.*;
 import com.powsybl.math.matrix.DenseMatrix;
 import com.powsybl.math.matrix.MatrixFactory;
 import com.powsybl.openloadflow.equations.AbstractNamedEquationTerm;
@@ -216,20 +217,20 @@ public abstract class AbstractAdmittanceEquationTerm extends AbstractNamedEquati
             double rCoeff = 1.0;
             double xCoeff = 1.0;
             if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_1) {
-                rCoeff = shortCircuitNetworkT3W.leg1.coeffRo;
-                xCoeff = shortCircuitNetworkT3W.leg1.coeffXo;
-                homopolarExtension.leg1ConnectionType = shortCircuitNetworkT3W.leg1.getLegConnectionType();
-                homopolarExtension.isFreeFluxes = shortCircuitNetworkT3W.leg1.isFreeFluxes();
+                rCoeff = shortCircuitNetworkT3W.getLeg1().getCoeffRo();
+                xCoeff = shortCircuitNetworkT3W.getLeg1().getCoeffXo();
+                homopolarExtension.leg1ConnectionType = shortCircuitNetworkT3W.getLeg1().getLegConnectionType();
+                homopolarExtension.isFreeFluxes = shortCircuitNetworkT3W.getLeg1().isFreeFluxes();
             } else if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_2) {
-                rCoeff = shortCircuitNetworkT3W.leg2.coeffRo;
-                xCoeff = shortCircuitNetworkT3W.leg2.coeffXo;
-                homopolarExtension.leg1ConnectionType = shortCircuitNetworkT3W.leg2.getLegConnectionType();
-                homopolarExtension.isFreeFluxes = shortCircuitNetworkT3W.leg2.isFreeFluxes();
+                rCoeff = shortCircuitNetworkT3W.getLeg2().getCoeffRo();
+                xCoeff = shortCircuitNetworkT3W.getLeg2().getCoeffXo();
+                homopolarExtension.leg1ConnectionType = shortCircuitNetworkT3W.getLeg2().getLegConnectionType();
+                homopolarExtension.isFreeFluxes = shortCircuitNetworkT3W.getLeg2().isFreeFluxes();
             } else if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_3) {
-                rCoeff = shortCircuitNetworkT3W.leg3.coeffRo;
-                xCoeff = shortCircuitNetworkT3W.leg3.coeffXo;
-                homopolarExtension.leg1ConnectionType = shortCircuitNetworkT3W.leg3.getLegConnectionType();
-                homopolarExtension.isFreeFluxes = shortCircuitNetworkT3W.leg3.isFreeFluxes();
+                rCoeff = shortCircuitNetworkT3W.getLeg3().getCoeffRo();
+                xCoeff = shortCircuitNetworkT3W.getLeg3().getCoeffXo();
+                homopolarExtension.leg1ConnectionType = shortCircuitNetworkT3W.getLeg3().getLegConnectionType();
+                homopolarExtension.isFreeFluxes = shortCircuitNetworkT3W.getLeg3().isFreeFluxes();
             } else {
                 throw new IllegalArgumentException("Branch " + branch.getId() + " has unknown 3-winding leg number");
             }

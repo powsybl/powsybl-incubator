@@ -37,20 +37,20 @@ public final class AdmittanceEquationSystem {
 
     //Equations are created based on the branches connections
     private static void createImpedantBranch(VariableSet<VariableType> variableSet, EquationSystem<VariableType, EquationType> equationSystem,
-                                             LfBranch branch, LfBus bus1, LfBus bus2, AdmittanceType admittanceType, MatrixFactory mf, ShortCircuitNetwork shortCircuitNetwork) {
+                                             LfBranch branch, LfBus bus1, LfBus bus2, AdmittanceType admittanceType, MatrixFactory mf) {
         if (bus1 != null && bus2 != null) { //TODO: check case when one bus is OK
             // Equation system Y*V = I (expressed in cartesian coordinates x,y)
             equationSystem.createEquation(bus1.getNum(), EquationType.BUS_YR)
-                    .addTerm(new AdmittanceRealPartSide1EquationTerm(branch, bus1, bus2, variableSet, admittanceType, mf, shortCircuitNetwork));
+                    .addTerm(new AdmittanceRealPartSide1EquationTerm(branch, bus1, bus2, variableSet, admittanceType, mf));
 
             equationSystem.createEquation(bus1.getNum(), EquationType.BUS_YI)
-                    .addTerm(new AdmittanceImgPartSide1EquationTerm(branch, bus1, bus2, variableSet, admittanceType, mf, shortCircuitNetwork));
+                    .addTerm(new AdmittanceImgPartSide1EquationTerm(branch, bus1, bus2, variableSet, admittanceType, mf));
 
             equationSystem.createEquation(bus2.getNum(), EquationType.BUS_YR)
-                    .addTerm(new AdmittanceRealPartSide2EquationTerm(branch, bus1, bus2, variableSet, admittanceType, mf, shortCircuitNetwork));
+                    .addTerm(new AdmittanceRealPartSide2EquationTerm(branch, bus1, bus2, variableSet, admittanceType, mf));
 
             equationSystem.createEquation(bus2.getNum(), EquationType.BUS_YI)
-                    .addTerm(new AdmittanceImgPartSide2EquationTerm(branch, bus1, bus2, variableSet, admittanceType, mf, shortCircuitNetwork));
+                    .addTerm(new AdmittanceImgPartSide2EquationTerm(branch, bus1, bus2, variableSet, admittanceType, mf));
         }
     }
 
@@ -74,7 +74,7 @@ public final class AdmittanceEquationSystem {
         ADM_STEADY_STATE, // all external  nodal injections are transformed into passive shunt elements included in the Y matrix (then [Ie] should be [0])
     }
 
-    private static void createBranches(LfNetwork network, VariableSet<VariableType> variableSet, EquationSystem<VariableType, EquationType> equationSystem, AdmittanceType admittanceType, MatrixFactory mf, ShortCircuitNetwork shortCircuitNetwork) {
+    private static void createBranches(LfNetwork network, VariableSet<VariableType> variableSet, EquationSystem<VariableType, EquationType> equationSystem, AdmittanceType admittanceType, MatrixFactory mf) {
         for (LfBranch branch : network.getBranches()) {
             LfBus bus1 = branch.getBus1();
             LfBus bus2 = branch.getBus2();
@@ -86,7 +86,7 @@ public final class AdmittanceEquationSystem {
                 }
             } else {
                 //System.out.println("X(" + branch.getId() + ")= " + piModel.getX());
-                createImpedantBranch(variableSet, equationSystem, branch, bus1, bus2, admittanceType, mf, shortCircuitNetwork);
+                createImpedantBranch(variableSet, equationSystem, branch, bus1, bus2, admittanceType, mf);
             }
         }
     }
@@ -122,7 +122,7 @@ public final class AdmittanceEquationSystem {
         double tmpG = 0.;
         double tmpB = 0.;
         for (LfGenerator lfgen : bus.getGenerators()) { //compute R'd or R"d from generators at bus
-            ShortCircuitNetworkMachineInfo machineInfo = (ShortCircuitNetworkMachineInfo) lfgen.getProperty(ShortCircuitNetworkMachineInfo.NAME);
+            ShortCircuitNetworkMachineInfo machineInfo = (ShortCircuitNetworkMachineInfo) lfgen.getProperty(ShortCircuitNetwork.NAME);
             double rd = machineInfo.getTransRd() + machineInfo.getStepUpTfoR();
             double xd = machineInfo.getTransXd() + machineInfo.getStepUpTfoX();
             if (admittancePeriodType == AdmittancePeriodType.ADM_SUB_TRANSIENT) {
@@ -258,16 +258,15 @@ public final class AdmittanceEquationSystem {
 
         // Following data Not needed for reduction methods
         AdmittanceEquationSystem.AdmittancePeriodType admittancePeriodType = AdmittanceEquationSystem.AdmittancePeriodType.ADM_TRANSIENT; //TODO: not relevant for reduction: see how to improve that
-        ShortCircuitNetwork shortCircuitNetwork = new ShortCircuitNetwork();
         ShortCircuitEquationSystemFeeders equationsSystemFeeders = new ShortCircuitEquationSystemFeeders();
         boolean isShuntsIgnore = false;
 
-        return create(network, shortCircuitNetwork, mf, variableSet,
+        return create(network, mf, variableSet,
                 admittanceType, admittanceVoltageProfileType, admittancePeriodType, isShuntsIgnore,
                 equationsSystemFeeders, acLoadFlowParameters);
     }
 
-    public static EquationSystem<VariableType, EquationType> create(LfNetwork network, ShortCircuitNetwork shortCircuitNetwork, MatrixFactory mf, VariableSet<VariableType> variableSet,
+    public static EquationSystem<VariableType, EquationType> create(LfNetwork network, MatrixFactory mf, VariableSet<VariableType> variableSet,
                                                                     AdmittanceType admittanceType, AdmittanceVoltageProfileType admittanceVoltageProfileType,
                                                                     AdmittancePeriodType admittancePeriodType, boolean isShuntsIgnore, ShortCircuitEquationSystemFeeders feeders,
                                                                     AcLoadFlowParameters acLoadFlowParameters) {
@@ -281,7 +280,7 @@ public final class AdmittanceEquationSystem {
             }
         }
 
-        createBranches(network, variableSet, equationSystem, admittanceType, mf, shortCircuitNetwork);
+        createBranches(network, variableSet, equationSystem, admittanceType, mf);
         if (admittanceType != AdmittanceType.ADM_INJ) { //shunts created in the admittance matrix are only those that really exist in the network
             createShunts(network, variableSet, equationSystem, admittanceType, admittanceVoltageProfileType, admittancePeriodType, isShuntsIgnore, feeders); // TODO : shuntIgnore was set at false
         }

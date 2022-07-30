@@ -70,8 +70,7 @@ public class TheveninTest {
         TheveninEquivalentParameters.TheveninPeriodType periodType = TheveninEquivalentParameters.TheveninPeriodType.THEVENIN_TRANSIENT;
         ShortCircuitNormCourcirc shortCircuitNormCourcirc = new ShortCircuitNormCourcirc();
         TheveninEquivalentParameters thParameters = new TheveninEquivalentParameters(acLoadFlowParameters, matrixFactory, faultsList, true, avp, periodType, false, additionalDataInfo, shortCircuitNormCourcirc); // check how to give a Network bus in input
-        ShortCircuitNetwork shortCircuitNetwork = new ShortCircuitNetwork(network, additionalDataInfo);
-        TheveninEquivalent thEq = new TheveninEquivalent(network, shortCircuitNetwork, thParameters);
+        TheveninEquivalent thEq = new TheveninEquivalent(network, thParameters);
 
         thEq.run();
 
@@ -108,8 +107,7 @@ public class TheveninTest {
         TheveninEquivalentParameters.TheveninPeriodType periodType = TheveninEquivalentParameters.TheveninPeriodType.THEVENIN_TRANSIENT;
         ShortCircuitNormCourcirc shortCircuitNormCourcirc = new ShortCircuitNormCourcirc();
         TheveninEquivalentParameters thParameters = new TheveninEquivalentParameters(acLoadFlowParameters, matrixFactory, faultsList, true, avp, periodType, false, additionalDataInfo, shortCircuitNormCourcirc); // check how to give a Network bus in input
-        ShortCircuitNetwork shortCircuitNetwork = new ShortCircuitNetwork(network, additionalDataInfo);
-        TheveninEquivalent thEq = new TheveninEquivalent(network, shortCircuitNetwork, thParameters);
+        TheveninEquivalent thEq = new TheveninEquivalent(network, thParameters);
 
         thEq.run();
 
@@ -146,8 +144,7 @@ public class TheveninTest {
         TheveninEquivalentParameters.TheveninPeriodType periodType = TheveninEquivalentParameters.TheveninPeriodType.THEVENIN_SUB_TRANSIENT;
         ShortCircuitNormCourcirc shortCircuitNormCourcirc = new ShortCircuitNormCourcirc();
         TheveninEquivalentParameters thParameters = new TheveninEquivalentParameters(acLoadFlowParameters, matrixFactory, faultsList, true, avp, periodType, false, additionalDataInfo, shortCircuitNormCourcirc); // check how to give a Network bus in input
-        ShortCircuitNetwork shortCircuitNetwork = new ShortCircuitNetwork(network, additionalDataInfo);
-        TheveninEquivalent thEq = new TheveninEquivalent(network, shortCircuitNetwork, thParameters);
+        TheveninEquivalent thEq = new TheveninEquivalent(network, thParameters);
 
         thEq.run();
 

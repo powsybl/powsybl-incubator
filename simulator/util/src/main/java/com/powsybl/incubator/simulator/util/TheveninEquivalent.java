@@ -28,19 +28,16 @@ public class TheveninEquivalent {
 
     private final TheveninEquivalentParameters parameters;
 
+    private final Network network;
+
     private final List<LfNetwork> networks;
-
-    private Network network;
-
-    private final ShortCircuitNetwork shortCircuitNetwork;
 
     public  AdmittanceLinearResolution admittanceLinearResolution;
 
-    public TheveninEquivalent(Network network, ShortCircuitNetwork shortCircuitNetwork, TheveninEquivalentParameters parameters) {
+    public TheveninEquivalent(Network network, TheveninEquivalentParameters parameters) {
+        this.network = Objects.requireNonNull(network);
         this.networks = LfNetwork.load(network, new LfNetworkLoaderImpl(), new LfNetworkParameters(new FirstSlackBusSelector()));
         this.parameters = Objects.requireNonNull(parameters);
-        this.shortCircuitNetwork = shortCircuitNetwork;
-        this.network = network;
     }
 
     public AdmittanceLinearResolution getAdmittanceLinearResolution() {
@@ -50,7 +47,7 @@ public class TheveninEquivalent {
     public void run() {
 
         AdmittanceLinearResolutionParameters parameters = generateAdmittanceLinearResolutionParam();
-        AdmittanceLinearResolution thEq = new AdmittanceLinearResolution(network, shortCircuitNetwork,  parameters);
+        AdmittanceLinearResolution thEq = new AdmittanceLinearResolution(network, parameters);
         thEq.run();
 
         this.admittanceLinearResolution = thEq;

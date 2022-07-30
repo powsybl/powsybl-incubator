@@ -26,8 +26,6 @@ public abstract class AbstractAdmittanceEquationTerm extends AbstractNamedEquati
 
     private final LfBranch branch;
 
-    private final ShortCircuitNetwork shortCircuitNetwork;
-
     protected final Variable<VariableType> v1rVar;
 
     protected final Variable<VariableType> v1iVar;
@@ -126,9 +124,8 @@ public abstract class AbstractAdmittanceEquationTerm extends AbstractNamedEquati
         }
     }
 
-    public AbstractAdmittanceEquationTerm(LfBranch branch, LfBus bus1, LfBus bus2, VariableSet<VariableType> variableSet, MatrixFactory mf, ShortCircuitNetwork shortCircuitNetwork) {
+    public AbstractAdmittanceEquationTerm(LfBranch branch, LfBus bus1, LfBus bus2, VariableSet<VariableType> variableSet, MatrixFactory mf) {
         this.branch = Objects.requireNonNull(branch);
-        this.shortCircuitNetwork = shortCircuitNetwork;
         Objects.requireNonNull(bus1);
         Objects.requireNonNull(bus2);
         Objects.requireNonNull(variableSet);
@@ -190,8 +187,7 @@ public abstract class AbstractAdmittanceEquationTerm extends AbstractNamedEquati
 
         if (branch.getBranchType() == LfBranch.BranchType.LINE) {
             // branch is a line and homopolar data available
-            String lineIidmId = branch.getOriginalIds().get(0);
-            ShortCircuitNetworkLine shortCircuitNetworkLine = shortCircuitNetwork.getLineInfo().get(lineIidmId);
+            ShortCircuitNetworkLine shortCircuitNetworkLine = (ShortCircuitNetworkLine) branch.getProperty(ShortCircuitNetwork.NAME);
             double rCoeff = shortCircuitNetworkLine.getCoeffRo();
             double xCoeff = shortCircuitNetworkLine.getCoeffXo();
             homopolarExtension.ro = r * rCoeff;
@@ -201,8 +197,7 @@ public abstract class AbstractAdmittanceEquationTerm extends AbstractNamedEquati
 
         } else if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_2) {
             // branch is a 2 windings transformer and homopolar data available
-            String tfo2wIidmId = branch.getOriginalIds().get(0);
-            ShortCircuitNetworkT2W shortCircuitNetworkT2W = shortCircuitNetwork.getTransfo2wInfo().get(tfo2wIidmId);
+            ShortCircuitNetworkT2W shortCircuitNetworkT2W = (ShortCircuitNetworkT2W) branch.getProperty(ShortCircuitNetwork.NAME);
             double rCoeff = shortCircuitNetworkT2W.getCoeffRo();
             double xCoeff = shortCircuitNetworkT2W.getCoeffXo();
             homopolarExtension.ro = r * rCoeff;
@@ -217,8 +212,7 @@ public abstract class AbstractAdmittanceEquationTerm extends AbstractNamedEquati
                 || branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_3) {
             // branch is leg1 of a 3 windings transformer and homopolar data available
             //throw new IllegalArgumentException("Branch " + branch.getId() + " has a not yet supported type");
-            String tfo3WIidmId = branch.getOriginalIds().get(0);
-            ShortCircuitNetworkT3W shortCircuitNetworkT3W = shortCircuitNetwork.getTransfo3wInfo().get(tfo3WIidmId);
+            ShortCircuitNetworkT3W shortCircuitNetworkT3W = (ShortCircuitNetworkT3W) branch.getProperty(ShortCircuitNetwork.NAME);
             double rCoeff = 1.0;
             double xCoeff = 1.0;
             if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_1) {

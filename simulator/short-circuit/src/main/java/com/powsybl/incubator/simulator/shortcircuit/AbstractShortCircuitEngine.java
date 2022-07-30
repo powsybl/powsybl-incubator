@@ -36,8 +36,6 @@ public abstract class AbstractShortCircuitEngine {
 
     protected final List<LfNetwork> lfNetworks;
 
-    protected ShortCircuitNetwork shortCircuitNetwork; // built in complement to "Network network" to access structured data for shortCircuit computation
-
     public Map<ShortCircuitFault, ShortCircuitResult> resultsPerFault = new HashMap<>();
 
     public List<ShortCircuitResult> resultsAllBusses;
@@ -48,9 +46,8 @@ public abstract class AbstractShortCircuitEngine {
         this.network = Objects.requireNonNull(network);
         this.parameters = Objects.requireNonNull(parameters);
         this.lfNetworks = LfNetwork.load(network, new LfNetworkLoaderImpl(), new LfNetworkParameters(new FirstSlackBusSelector()));
-        this.shortCircuitNetwork = new ShortCircuitNetwork(network, parameters.getAdditionalDataInfo());
         this.acLoadFlowParameters = getAcLoadFlowParametersFromParam();
-        ShortCircuitNetwork.postProcessLoading(network, lfNetworks, parameters.getAdditionalDataInfo());
+        ShortCircuitNetwork.addExtensions(network, lfNetworks, parameters.getAdditionalDataInfo());
     }
 
     protected AcLoadFlowParameters getAcLoadFlowParametersFromParam() {

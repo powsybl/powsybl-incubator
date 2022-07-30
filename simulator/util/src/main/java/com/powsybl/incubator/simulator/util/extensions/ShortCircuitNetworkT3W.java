@@ -45,4 +45,16 @@ public class ShortCircuitNetworkT3W {
     public ShortCircuitNetworkTransformerLeg getLeg3() {
         return leg3;
     }
+
+    public double getkT1() {
+        return kT1;
+    }
+
+    public double getkT2() {
+        return kT2;
+    }
+
+    public double getkT3() {
+        return kT3;
+    }
 }

@@ -59,4 +59,12 @@ public class ShortCircuitNetworkTransformerLeg {
     public boolean isFreeFluxes() {
         return freeFluxes;
     }
+
+    public double getrGround() {
+        return rGround;
+    }
+
+    public double getxGround() {
+        return xGround;
+    }
 }

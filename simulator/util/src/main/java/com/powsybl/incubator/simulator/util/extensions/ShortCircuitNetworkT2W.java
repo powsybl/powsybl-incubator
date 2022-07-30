@@ -6,33 +6,42 @@
  */
 package com.powsybl.incubator.simulator.util.extensions;
 
+import java.util.Objects;
+
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
 public class ShortCircuitNetworkT2W {
 
-    ShortCircuitNetworkTransformerLeg leg1;
-    ShortCircuitNetworkTransformerLeg leg2;
+    private final ShortCircuitNetworkTransformerLeg leg1;
+    private final ShortCircuitNetworkTransformerLeg leg2;
 
-    double coeffXo; // Xo = Xd * coeffXo : value of the homopolar admittance (in ohms) expressed at the leg2 side
-    double coeffRo; // Ro = Rd * coeffRo : value of the homopolar resistance (in ohms) expressed at the leg2 side
+    private final double coeffXo; // Xo = Xd * coeffXo : value of the homopolar admittance (in ohms) expressed at the leg2 side
+    private final double coeffRo; // Ro = Rd * coeffRo : value of the homopolar resistance (in ohms) expressed at the leg2 side
 
-    double kT; //correction factor of the Two Windings Transformer
+    private final boolean freeFluxes;
 
-    boolean isFreeFluxes;
+    private final double kT; //correction factor of the Two Windings Transformer
 
-    ShortCircuitNetworkT2W(ShortCircuitNetworkTransformerLeg leg1, ShortCircuitNetworkTransformerLeg leg2, double coeffRo, double coeffXo, boolean isFreeFluxes) {
-        this.leg1 = leg1;
-        this.leg2 = leg2;
-        double kT = 1.0;
-        this.coeffRo = coeffRo;
-        this.coeffXo = coeffXo;
-        this.isFreeFluxes = isFreeFluxes;
+    ShortCircuitNetworkT2W(ShortCircuitNetworkTransformerLeg leg1, ShortCircuitNetworkTransformerLeg leg2, double coeffRo, double coeffXo, boolean freeFluxes) {
+        this(leg1, leg2, coeffRo, coeffXo, freeFluxes, 1d);
     }
 
-    ShortCircuitNetworkT2W(ShortCircuitNetworkTransformerLeg leg1, ShortCircuitNetworkTransformerLeg leg2, double coeffRo, double coeffXo, boolean isFreeFluxes, double kT) {
-        this(leg1, leg2, coeffRo, coeffXo, isFreeFluxes);
+    ShortCircuitNetworkT2W(ShortCircuitNetworkTransformerLeg leg1, ShortCircuitNetworkTransformerLeg leg2, double coeffRo, double coeffXo, boolean freeFluxes, double kT) {
+        this.leg1 = Objects.requireNonNull(leg1);
+        this.leg2 = Objects.requireNonNull(leg2);
+        this.coeffRo = coeffRo;
+        this.coeffXo = coeffXo;
+        this.freeFluxes = freeFluxes;
         this.kT = kT;
+    }
+
+    public ShortCircuitNetworkTransformerLeg getLeg1() {
+        return leg1;
+    }
+
+    public ShortCircuitNetworkTransformerLeg getLeg2() {
+        return leg2;
     }
 
     public double getCoeffXo() {
@@ -43,11 +52,11 @@ public class ShortCircuitNetworkT2W {
         return coeffRo;
     }
 
-    public ShortCircuitNetworkTransformerLeg getLeg1() {
-        return leg1;
+    public boolean isFreeFluxes() {
+        return freeFluxes;
     }
 
-    public ShortCircuitNetworkTransformerLeg getLeg2() {
-        return leg2;
+    public double getkT() {
+        return kT;
     }
 }

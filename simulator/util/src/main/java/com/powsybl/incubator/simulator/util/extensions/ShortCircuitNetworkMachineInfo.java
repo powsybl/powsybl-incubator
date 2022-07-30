@@ -18,62 +18,36 @@ public class ShortCircuitNetworkMachineInfo {
         ASYNCHRONOUS_MOTOR;
     }
 
-    private double transXd;
-    private double transRd;
+    private final double transXd;
+    private final double transRd;
 
-    private double subTransXd;
-    private double subTransRd;
+    private final double subTransXd;
+    private final double subTransRd;
 
-    private double stepUpTfoX;
-    private double stepUpTfoR;
+    private final double stepUpTfoX;
+    private final double stepUpTfoR;
 
-    private boolean isGrounded;
-    private double groundR;
-    private double groundX;
+    private final boolean grounded;
+    private final double groundR;
+    private final double groundX;
 
-    private double coeffRo; // coeff used to get Ro from Rd
-    private double coeffXo; // coeff used to get Xo from Xd
+    private final double coeffRo; // coeff used to get Ro from Rd
+    private final double coeffXo; // coeff used to get Xo from Xd
 
-    private MachineType machineType;
-
-    public ShortCircuitNetworkMachineInfo(double transXd, MachineType machineType) {
-        this.transXd = transXd;
-        this.stepUpTfoX = 0.;
-        this.machineType = machineType;
-        this.transRd = 0.;
-        this.subTransXd = 0.;
-        this.subTransRd = 0.;
-        this.isGrounded = false;
-        this.groundR = 0.;
-        this.groundX = 0.;
-        this.stepUpTfoR = 0.;
-        this.coeffRo = 1.;
-        this.coeffXo = 1.;
-    }
-
-    public ShortCircuitNetworkMachineInfo(double transXd, double stepUpTfoX, MachineType machineType) {
-        this(transXd, machineType);
-        this.stepUpTfoX = stepUpTfoX;
-    }
-
-    public ShortCircuitNetworkMachineInfo(double transXd, double stepUpTfoX, MachineType machineType, boolean isGrounded) {
-        this(transXd, stepUpTfoX, machineType);
-        this.isGrounded = isGrounded;
-    }
-
-    public ShortCircuitNetworkMachineInfo(double transXd, double stepUpTfoX, MachineType machineType, boolean isGrounded, double transRd) {
-        this(transXd, stepUpTfoX, machineType, isGrounded);
-        this.transRd = transRd;
-    }
+    private final MachineType machineType;
 
     public ShortCircuitNetworkMachineInfo(double transXd, double stepUpTfoX, MachineType machineType, double transRd, double stepUpTfoR, double subTransRd, double subTransXd,
-                               boolean isGrounded, double groundR, double groundX, double coeffRo, double coeffXo) {
-        this(transXd, stepUpTfoX, machineType, isGrounded, transRd);
+                                          boolean grounded, double groundR, double groundX, double coeffRo, double coeffXo) {
+        this.transXd = transXd;
+        this.stepUpTfoX = stepUpTfoX;
+        this.machineType = machineType;
+        this.transRd = transRd;
+        this.stepUpTfoR = stepUpTfoR;
         this.subTransRd = subTransRd;
+        this.subTransXd = subTransXd;
+        this.grounded = grounded;
         this.groundR = groundR;
         this.groundX = groundX;
-        this.stepUpTfoR = stepUpTfoR;
-        this.subTransXd = subTransXd;
         this.coeffRo = coeffRo;
         this.coeffXo = coeffXo;
     }
@@ -103,7 +77,15 @@ public class ShortCircuitNetworkMachineInfo {
     }
 
     public boolean isGrounded() {
-        return  isGrounded;
+        return grounded;
+    }
+
+    public double getGroundR() {
+        return groundR;
+    }
+
+    public double getGroundX() {
+        return groundX;
     }
 
     public double getCoeffRo() {
@@ -117,6 +99,6 @@ public class ShortCircuitNetworkMachineInfo {
     public void printInfos() {
         System.out.println(" transXd =" + transXd + " transRd="  + transRd);
         System.out.println(" subTransXd =" + subTransXd + " subtransRd="  + subTransRd);
-        System.out.println(" Machine Type =" + machineType + " isGrounded="  + isGrounded);
+        System.out.println(" Machine Type =" + machineType + " isGrounded="  + grounded);
     }
 }

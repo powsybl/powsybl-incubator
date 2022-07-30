@@ -21,14 +21,14 @@ import java.util.Objects;
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
-public final class ShortCircuitNetwork {
+public final class ShortCircuitExtensions {
 
-    public static final String NAME = "ShortCircuit";
+    public static final String PROPERTY_NAME = "ShortCircuit";
 
-    private ShortCircuitNetwork() {
+    private ShortCircuitExtensions() {
     }
 
-    public static void addExtensions(Network network, List<LfNetwork> lfNetworks, AdditionalDataInfo additionalDataInfo) {
+    public static void add(Network network, List<LfNetwork> lfNetworks, AdditionalDataInfo additionalDataInfo) {
         Objects.requireNonNull(network);
         Objects.requireNonNull(lfNetworks);
         Objects.requireNonNull(additionalDataInfo);
@@ -156,7 +156,7 @@ public final class ShortCircuitNetwork {
         }
 
         ShortCircuitNetworkT3W shortCircuitNetworkT3W = new ShortCircuitNetworkT3W(leg1, leg2, leg3);
-        lfBranch.setProperty(NAME, shortCircuitNetworkT3W);
+        lfBranch.setProperty(PROPERTY_NAME, shortCircuitNetworkT3W);
     }
 
     private static void addLineExtension(AdditionalDataInfo additionalDataInfo, LfBranch lfBranch) {
@@ -176,7 +176,7 @@ public final class ShortCircuitNetwork {
             }
         }
         ShortCircuitNetworkLine shortCircuitNetworkLine = new ShortCircuitNetworkLine(coeffRo, coeffXo);
-        lfBranch.setProperty(NAME, shortCircuitNetworkLine);
+        lfBranch.setProperty(PROPERTY_NAME, shortCircuitNetworkLine);
     }
 
     private static void addTransfo2Extension(AdditionalDataInfo additionalDataInfo, LfBranch lfBranch) {
@@ -227,7 +227,7 @@ public final class ShortCircuitNetwork {
         }
 
         ShortCircuitNetworkT2W shortCircuitNetworkT2W = new ShortCircuitNetworkT2W(leg1, leg2, coeffRo, coeffXo, isFreeFluxes);
-        lfBranch.setProperty(NAME, shortCircuitNetworkT2W);
+        lfBranch.setProperty(PROPERTY_NAME, shortCircuitNetworkT2W);
     }
 
     private static void addGeneratorExtension(Network network, AdditionalDataInfo additionalDataInfo, LfGenerator lfGenerator) {
@@ -271,6 +271,6 @@ public final class ShortCircuitNetwork {
         }
 
         ShortCircuitNetworkMachineInfo rotatingMachineInfo = new ShortCircuitNetworkMachineInfo(transX, stepUpTfoX, ShortCircuitNetworkMachineInfo.MachineType.SYNCHRONOUS_GEN, transRd, 0., subTransRd, subtransX, isToGround, 0., 0., coeffRo, coeffXo); // TODO: set the right type when info available
-        lfGenerator.setProperty(NAME, rotatingMachineInfo);
+        lfGenerator.setProperty(PROPERTY_NAME, rotatingMachineInfo);
     }
 }

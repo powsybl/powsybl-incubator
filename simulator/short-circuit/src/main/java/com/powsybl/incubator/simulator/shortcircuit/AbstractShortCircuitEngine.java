@@ -13,7 +13,7 @@ import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.ThreeWindingsTransformer;
 import com.powsybl.incubator.simulator.util.AdmittanceEquationSystem;
 import com.powsybl.incubator.simulator.util.ShortCircuitFault;
-import com.powsybl.incubator.simulator.util.ShortCircuitNetwork;
+import com.powsybl.incubator.simulator.util.ShortCircuitExtensions;
 import com.powsybl.incubator.simulator.util.ShortCircuitResult;
 import com.powsybl.openloadflow.OpenLoadFlowParameters;
 import com.powsybl.openloadflow.ac.outerloop.AcLoadFlowParameters;
@@ -47,7 +47,7 @@ public abstract class AbstractShortCircuitEngine {
         this.parameters = Objects.requireNonNull(parameters);
         this.lfNetworks = LfNetwork.load(network, new LfNetworkLoaderImpl(), new LfNetworkParameters(new FirstSlackBusSelector()));
         this.acLoadFlowParameters = getAcLoadFlowParametersFromParam();
-        ShortCircuitNetwork.addExtensions(network, lfNetworks, parameters.getAdditionalDataInfo());
+        ShortCircuitExtensions.add(network, lfNetworks, parameters.getAdditionalDataInfo());
     }
 
     protected AcLoadFlowParameters getAcLoadFlowParametersFromParam() {

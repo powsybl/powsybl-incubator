@@ -187,7 +187,7 @@ public abstract class AbstractAdmittanceEquationTerm extends AbstractNamedEquati
 
         if (branch.getBranchType() == LfBranch.BranchType.LINE) {
             // branch is a line and homopolar data available
-            ShortCircuitNetworkLine shortCircuitNetworkLine = (ShortCircuitNetworkLine) branch.getProperty(ShortCircuitNetwork.NAME);
+            ShortCircuitNetworkLine shortCircuitNetworkLine = (ShortCircuitNetworkLine) branch.getProperty(ShortCircuitExtensions.PROPERTY_NAME);
             double rCoeff = shortCircuitNetworkLine.getCoeffRo();
             double xCoeff = shortCircuitNetworkLine.getCoeffXo();
             homopolarExtension.ro = r * rCoeff;
@@ -197,7 +197,7 @@ public abstract class AbstractAdmittanceEquationTerm extends AbstractNamedEquati
 
         } else if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_2) {
             // branch is a 2 windings transformer and homopolar data available
-            ShortCircuitNetworkT2W shortCircuitNetworkT2W = (ShortCircuitNetworkT2W) branch.getProperty(ShortCircuitNetwork.NAME);
+            ShortCircuitNetworkT2W shortCircuitNetworkT2W = (ShortCircuitNetworkT2W) branch.getProperty(ShortCircuitExtensions.PROPERTY_NAME);
             double rCoeff = shortCircuitNetworkT2W.getCoeffRo();
             double xCoeff = shortCircuitNetworkT2W.getCoeffXo();
             homopolarExtension.ro = r * rCoeff;
@@ -212,7 +212,7 @@ public abstract class AbstractAdmittanceEquationTerm extends AbstractNamedEquati
                 || branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_3) {
             // branch is leg1 of a 3 windings transformer and homopolar data available
             //throw new IllegalArgumentException("Branch " + branch.getId() + " has a not yet supported type");
-            ShortCircuitNetworkT3W shortCircuitNetworkT3W = (ShortCircuitNetworkT3W) branch.getProperty(ShortCircuitNetwork.NAME);
+            ShortCircuitNetworkT3W shortCircuitNetworkT3W = (ShortCircuitNetworkT3W) branch.getProperty(ShortCircuitExtensions.PROPERTY_NAME);
             double rCoeff = 1.0;
             double xCoeff = 1.0;
             if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_1) {

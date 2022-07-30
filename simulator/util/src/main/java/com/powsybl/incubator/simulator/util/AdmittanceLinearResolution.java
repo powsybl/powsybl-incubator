@@ -45,7 +45,7 @@ public  class AdmittanceLinearResolution {
     public AdmittanceLinearResolution(Network network, AdmittanceLinearResolutionParameters parameters) {
         this.networks = LfNetwork.load(network, new LfNetworkLoaderImpl(), new LfNetworkParameters(new FirstSlackBusSelector()));
         this.parameters = Objects.requireNonNull(parameters);
-        ShortCircuitNetwork.addExtensions(network, networks, parameters.getAdditionalDataInfo());
+        ShortCircuitExtensions.add(network, networks, parameters.getAdditionalDataInfo());
     }
 
     public class AdmittanceLinearResolutionResult {

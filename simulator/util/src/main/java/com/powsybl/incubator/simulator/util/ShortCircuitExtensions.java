@@ -16,6 +16,7 @@ import com.powsybl.openloadflow.network.LfGenerator;
 import com.powsybl.openloadflow.network.LfNetwork;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -54,180 +55,103 @@ public final class ShortCircuitExtensions {
                     case TRANSFO_3_LEG_3:
                         addTransfo3Extension(additionalDataInfo, lfBranch);
                         break;
+
+                    case DANGLING_LINE:
+                        // FIXME something to do?
+                        break;
                 }
             }
         }
     }
 
+    private static <T> T getParameterValue(Map<String, T> parameters, String id, T defaultValue) {
+        if (parameters != null) {
+            if (parameters.containsKey(id)) {
+                return parameters.get(id);
+            }
+        }
+        return defaultValue;
+    }
+
     private static void addTransfo3Extension(AdditionalDataInfo additionalDataInfo, LfBranch lfBranch) {
-        String idT3w = lfBranch.getOriginalIds().get(0);
+        String t3wId = lfBranch.getOriginalIds().get(0);
 
-        double coeffLeg1Ro = 1.0;
-        if (additionalDataInfo.getTfo3wIdToLeg1CoeffRo() != null) {
-            if (additionalDataInfo.getTfo3wIdToLeg1CoeffRo().containsKey(idT3w)) {
-                coeffLeg1Ro = additionalDataInfo.getTfo3wIdToLeg1CoeffRo().get(idT3w);
-            }
-        }
-        double coeffLeg1Xo = 1.0;
-        if (additionalDataInfo.getTfo3wIdToLeg1CoeffXo() != null) {
-            if (additionalDataInfo.getTfo3wIdToLeg1CoeffXo().containsKey(idT3w)) {
-                coeffLeg1Xo = additionalDataInfo.getTfo3wIdToLeg1CoeffXo().get(idT3w);
-            }
-        }
+        double coeffLeg1Ro = getParameterValue(additionalDataInfo.getTfo3wIdToLeg1CoeffRo(), t3wId, 1.0);
+        double coeffLeg1Xo = getParameterValue(additionalDataInfo.getTfo3wIdToLeg1CoeffXo(), t3wId, 1.0);
 
-        double coeffLeg2Ro = 1.0;
-        if (additionalDataInfo.getTfo3wIdToLeg2CoeffRo() != null) {
-            if (additionalDataInfo.getTfo3wIdToLeg2CoeffRo().containsKey(idT3w)) {
-                coeffLeg2Ro = additionalDataInfo.getTfo3wIdToLeg2CoeffRo().get(idT3w);
-            }
-        }
-        double coeffLeg2Xo = 1.0;
-        if (additionalDataInfo.getTfo3wIdToLeg2CoeffXo() != null) {
-            if (additionalDataInfo.getTfo3wIdToLeg2CoeffXo().containsKey(idT3w)) {
-                coeffLeg2Xo = additionalDataInfo.getTfo3wIdToLeg2CoeffXo().get(idT3w);
-            }
-        }
+        double coeffLeg2Ro = getParameterValue(additionalDataInfo.getTfo3wIdToLeg2CoeffRo(), t3wId, 1.0);
+        double coeffLeg2Xo = getParameterValue(additionalDataInfo.getTfo3wIdToLeg2CoeffXo(), t3wId, 1.0);
 
-        double coeffLeg3Ro = 1.0;
-        if (additionalDataInfo.getTfo3wIdToLeg3CoeffRo() != null) {
-            if (additionalDataInfo.getTfo3wIdToLeg3CoeffRo().containsKey(idT3w)) {
-                coeffLeg3Ro = additionalDataInfo.getTfo3wIdToLeg3CoeffRo().get(idT3w);
-            }
-        }
-        double coeffLeg3Xo = 1.0;
-        if (additionalDataInfo.getTfo3wIdToLeg3CoeffXo() != null) {
-            if (additionalDataInfo.getTfo3wIdToLeg3CoeffXo().containsKey(idT3w)) {
-                coeffLeg3Xo = additionalDataInfo.getTfo3wIdToLeg3CoeffXo().get(idT3w);
-            }
-        }
+        double coeffLeg3Ro = getParameterValue(additionalDataInfo.getTfo3wIdToLeg3CoeffRo(), t3wId, 1.0);
+        double coeffLeg3Xo = getParameterValue(additionalDataInfo.getTfo3wIdToLeg3CoeffXo(), t3wId, 1.0);
 
-        boolean isLeg1FreeFluxes = false;
-        boolean isLeg2FreeFluxes = false;
-        boolean isLeg3FreeFluxes = false;
-        if (additionalDataInfo.getTfo3wIdLeg1ToFreeFluxes() != null) {
-            if (additionalDataInfo.getTfo3wIdLeg1ToFreeFluxes().containsKey(idT3w)) {
-                isLeg1FreeFluxes = additionalDataInfo.getTfo3wIdLeg1ToFreeFluxes().get(idT3w);
-            }
-        }
-        if (additionalDataInfo.getTfo3wIdLeg2ToFreeFluxes() != null) {
-            if (additionalDataInfo.getTfo3wIdLeg2ToFreeFluxes().containsKey(idT3w)) {
-                isLeg2FreeFluxes = additionalDataInfo.getTfo3wIdLeg2ToFreeFluxes().get(idT3w);
-            }
-        }
-        if (additionalDataInfo.getTfo3wIdLeg3ToFreeFluxes() != null) {
-            if (additionalDataInfo.getTfo3wIdLeg3ToFreeFluxes().containsKey(idT3w)) {
-                isLeg3FreeFluxes = additionalDataInfo.getTfo3wIdLeg3ToFreeFluxes().get(idT3w);
-            }
-        }
+        boolean isLeg1FreeFluxes = getParameterValue(additionalDataInfo.getTfo3wIdLeg1ToFreeFluxes(), t3wId, false);
+        boolean isLeg2FreeFluxes = getParameterValue(additionalDataInfo.getTfo3wIdLeg2ToFreeFluxes(), t3wId, false);
+        boolean isLeg3FreeFluxes = getParameterValue(additionalDataInfo.getTfo3wIdLeg3ToFreeFluxes(), t3wId, false);
 
         ShortCircuitNetworkTransformerLeg leg1 = new ShortCircuitNetworkTransformerLeg(ShortCircuitNetworkTransformerLeg.LegConnectionType.DELTA, coeffLeg1Ro, coeffLeg1Xo, isLeg1FreeFluxes); // TODO : check if default connection acceptable
         ShortCircuitNetworkTransformerLeg leg2 = new ShortCircuitNetworkTransformerLeg(ShortCircuitNetworkTransformerLeg.LegConnectionType.Y_GROUNDED, coeffLeg2Ro, coeffLeg2Xo, isLeg2FreeFluxes); // TODO : check if default connection acceptable
         ShortCircuitNetworkTransformerLeg leg3 = new ShortCircuitNetworkTransformerLeg(ShortCircuitNetworkTransformerLeg.LegConnectionType.DELTA, coeffLeg3Ro, coeffLeg3Xo, isLeg3FreeFluxes);
 
-        if (additionalDataInfo.getLeg1type() != null) {
-            if (additionalDataInfo.getLeg1type().containsKey(idT3w)) {
-                AdditionalDataInfo.LegType legType = additionalDataInfo.getLeg1type().get(idT3w);
-                if (legType == AdditionalDataInfo.LegType.Y) {
-                    leg1.setLegConnectionType(ShortCircuitNetworkTransformerLeg.LegConnectionType.Y);
-                } else if (legType == AdditionalDataInfo.LegType.Y_GROUNDED) {
-                    leg1.setLegConnectionType(ShortCircuitNetworkTransformerLeg.LegConnectionType.Y_GROUNDED);
-                }
-            }
-        }
-        if (additionalDataInfo.getLeg2type() != null) {
-            if (additionalDataInfo.getLeg2type().containsKey(idT3w)) {
-                AdditionalDataInfo.LegType legType = additionalDataInfo.getLeg2type().get(idT3w);
-                if (legType == AdditionalDataInfo.LegType.Y) {
-                    leg2.setLegConnectionType(ShortCircuitNetworkTransformerLeg.LegConnectionType.Y);
-                } else if (legType == AdditionalDataInfo.LegType.DELTA) {
-                    leg2.setLegConnectionType(ShortCircuitNetworkTransformerLeg.LegConnectionType.DELTA);
-                }
-            }
-        }
-        if (additionalDataInfo.getLeg3type() != null) {
-            if (additionalDataInfo.getLeg3type().containsKey(idT3w)) {
-                AdditionalDataInfo.LegType legType = additionalDataInfo.getLeg3type().get(idT3w);
-                if (legType == AdditionalDataInfo.LegType.Y) {
-                    leg3.setLegConnectionType(ShortCircuitNetworkTransformerLeg.LegConnectionType.Y);
-                } else if (legType == AdditionalDataInfo.LegType.Y_GROUNDED) {
-                    leg3.setLegConnectionType(ShortCircuitNetworkTransformerLeg.LegConnectionType.Y_GROUNDED);
-                }
-            }
+        AdditionalDataInfo.LegType leg1Type = getParameterValue(additionalDataInfo.getLeg1type(), t3wId, null);
+        if (leg1Type == AdditionalDataInfo.LegType.Y) {
+            leg1.setLegConnectionType(ShortCircuitNetworkTransformerLeg.LegConnectionType.Y);
+        } else if (leg1Type == AdditionalDataInfo.LegType.Y_GROUNDED) {
+            leg1.setLegConnectionType(ShortCircuitNetworkTransformerLeg.LegConnectionType.Y_GROUNDED);
         }
 
-        ShortCircuitNetworkT3W shortCircuitNetworkT3W = new ShortCircuitNetworkT3W(leg1, leg2, leg3);
-        lfBranch.setProperty(PROPERTY_NAME, shortCircuitNetworkT3W);
+        AdditionalDataInfo.LegType leg2Type = getParameterValue(additionalDataInfo.getLeg2type(), t3wId, null);
+        if (leg2Type == AdditionalDataInfo.LegType.Y) {
+            leg2.setLegConnectionType(ShortCircuitNetworkTransformerLeg.LegConnectionType.Y);
+        } else if (leg2Type == AdditionalDataInfo.LegType.DELTA) {
+            leg2.setLegConnectionType(ShortCircuitNetworkTransformerLeg.LegConnectionType.DELTA);
+        }
+
+        AdditionalDataInfo.LegType leg3Type = getParameterValue(additionalDataInfo.getLeg3type(), t3wId, null);
+        if (leg3Type == AdditionalDataInfo.LegType.Y) {
+            leg3.setLegConnectionType(ShortCircuitNetworkTransformerLeg.LegConnectionType.Y);
+        } else if (leg3Type == AdditionalDataInfo.LegType.Y_GROUNDED) {
+            leg3.setLegConnectionType(ShortCircuitNetworkTransformerLeg.LegConnectionType.Y_GROUNDED);
+        }
+
+        lfBranch.setProperty(PROPERTY_NAME, new ShortCircuitNetworkT3W(leg1, leg2, leg3));
     }
 
     private static void addLineExtension(AdditionalDataInfo additionalDataInfo, LfBranch lfBranch) {
-        String idLine = lfBranch.getOriginalIds().get(0);
+        String lineId = lfBranch.getOriginalIds().get(0);
 
-        double coeffRo = 1.0;
-        if (additionalDataInfo.getLineIdToCoeffRo() != null) {
-            if (additionalDataInfo.getLineIdToCoeffRo().containsKey(idLine)) {
-                coeffRo = additionalDataInfo.getLineIdToCoeffRo().get(idLine);
-            }
-        }
+        double coeffRo = getParameterValue(additionalDataInfo.getLineIdToCoeffRo(), lineId, 1.0);
+        double coeffXo = getParameterValue(additionalDataInfo.getLineIdToCoeffXo(), lineId, 1.0);
 
-        double coeffXo = 1.0;
-        if (additionalDataInfo.getLineIdToCoeffXo() != null) {
-            if (additionalDataInfo.getLineIdToCoeffXo().containsKey(idLine)) {
-                coeffXo = additionalDataInfo.getLineIdToCoeffXo().get(idLine);
-            }
-        }
-        ShortCircuitNetworkLine shortCircuitNetworkLine = new ShortCircuitNetworkLine(coeffRo, coeffXo);
-        lfBranch.setProperty(PROPERTY_NAME, shortCircuitNetworkLine);
+        lfBranch.setProperty(PROPERTY_NAME, new ShortCircuitNetworkLine(coeffRo, coeffXo));
     }
 
     private static void addTransfo2Extension(AdditionalDataInfo additionalDataInfo, LfBranch lfBranch) {
-        String idT2w = lfBranch.getOriginalIds().get(0);
+        String t2wId = lfBranch.getOriginalIds().get(0);
 
-        double coeffRo = 1.0;
-        if (additionalDataInfo.getTfo2wIdToCoeffRo() != null) {
-            if (additionalDataInfo.getTfo2wIdToCoeffRo().containsKey(idT2w)) {
-                coeffRo = additionalDataInfo.getTfo2wIdToCoeffRo().get(idT2w);
-            }
-        }
-        double coeffXo = 1.0;
-        if (additionalDataInfo.getTfo2wIdToCoeffXo() != null) {
-            if (additionalDataInfo.getTfo2wIdToCoeffXo().containsKey(idT2w)) {
-                coeffXo = additionalDataInfo.getTfo2wIdToCoeffXo().get(idT2w);
-            }
-        }
+        double coeffRo = getParameterValue(additionalDataInfo.getTfo2wIdToCoeffRo(), t2wId, 1.0);
+        double coeffXo = getParameterValue(additionalDataInfo.getTfo2wIdToCoeffXo(), t2wId, 1.0);
 
         ShortCircuitNetworkTransformerLeg leg1 = new ShortCircuitNetworkTransformerLeg(ShortCircuitNetworkTransformerLeg.LegConnectionType.DELTA); // TODO : check if default connection acceptable
         ShortCircuitNetworkTransformerLeg leg2 = new ShortCircuitNetworkTransformerLeg(ShortCircuitNetworkTransformerLeg.LegConnectionType.Y_GROUNDED); // TODO : check if default connection acceptable
 
-        if (additionalDataInfo.getLeg1type() != null) {
-            if (additionalDataInfo.getLeg1type().containsKey(idT2w)) {
-                AdditionalDataInfo.LegType legType = additionalDataInfo.getLeg1type().get(idT2w);
-                if (legType == AdditionalDataInfo.LegType.Y) {
-                    leg1.setLegConnectionType(ShortCircuitNetworkTransformerLeg.LegConnectionType.Y);
-                } else if (legType == AdditionalDataInfo.LegType.Y_GROUNDED) {
-                    leg1.setLegConnectionType(ShortCircuitNetworkTransformerLeg.LegConnectionType.Y_GROUNDED);
-                }
-            }
-        }
-        if (additionalDataInfo.getLeg2type() != null) {
-            if (additionalDataInfo.getLeg2type().containsKey(idT2w)) {
-                AdditionalDataInfo.LegType legType = additionalDataInfo.getLeg2type().get(idT2w);
-                if (legType == AdditionalDataInfo.LegType.Y) {
-                    leg2.setLegConnectionType(ShortCircuitNetworkTransformerLeg.LegConnectionType.Y);
-                } else if (legType == AdditionalDataInfo.LegType.DELTA) {
-                    leg2.setLegConnectionType(ShortCircuitNetworkTransformerLeg.LegConnectionType.DELTA);
-                }
-            }
+        AdditionalDataInfo.LegType leg1Type = getParameterValue(additionalDataInfo.getLeg1type(), t2wId, null);
+        if (leg1Type == AdditionalDataInfo.LegType.Y) {
+            leg1.setLegConnectionType(ShortCircuitNetworkTransformerLeg.LegConnectionType.Y);
+        } else if (leg1Type == AdditionalDataInfo.LegType.Y_GROUNDED) {
+            leg1.setLegConnectionType(ShortCircuitNetworkTransformerLeg.LegConnectionType.Y_GROUNDED);
         }
 
-        boolean isFreeFluxes = false;
-        if (additionalDataInfo.getTfo2wIdToFreeFluxes() != null) {
-            if (additionalDataInfo.getTfo2wIdToFreeFluxes().containsKey(idT2w)) {
-                isFreeFluxes = additionalDataInfo.getTfo2wIdToFreeFluxes().get(idT2w);
-            }
+        AdditionalDataInfo.LegType leg2Type = getParameterValue(additionalDataInfo.getLeg2type(), t2wId, null);
+        if (leg2Type == AdditionalDataInfo.LegType.Y) {
+            leg2.setLegConnectionType(ShortCircuitNetworkTransformerLeg.LegConnectionType.Y);
+        } else if (leg2Type == AdditionalDataInfo.LegType.DELTA) {
+            leg2.setLegConnectionType(ShortCircuitNetworkTransformerLeg.LegConnectionType.DELTA);
         }
 
-        ShortCircuitNetworkT2W shortCircuitNetworkT2W = new ShortCircuitNetworkT2W(leg1, leg2, coeffRo, coeffXo, isFreeFluxes);
-        lfBranch.setProperty(PROPERTY_NAME, shortCircuitNetworkT2W);
+        boolean freeFluxes = getParameterValue(additionalDataInfo.getTfo2wIdToFreeFluxes(), t2wId, false);
+
+        lfBranch.setProperty(PROPERTY_NAME, new ShortCircuitNetworkT2W(leg1, leg2, coeffRo, coeffXo, freeFluxes));
     }
 
     private static void addGeneratorExtension(Network network, AdditionalDataInfo additionalDataInfo, LfGenerator lfGenerator) {
@@ -241,36 +165,23 @@ public final class ShortCircuitExtensions {
         double subtransX = extension.getDirectSubtransX();
         double stepUpTfoX = extension.getStepUpTransformerX();
 
-        double transRd = 0.;
-        if (additionalDataInfo.getMachineIdToTransRd().containsKey(generator.getId())) {
-            transRd = additionalDataInfo.getMachineIdToTransRd().get(generator.getId());
-        }
+        double transRd = getParameterValue(additionalDataInfo.getMachineIdToTransRd(), generator.getId(), 0.);
+        double subTransRd = getParameterValue(additionalDataInfo.getMachineIdToSubTransRd(), generator.getId(), 0.);
+        boolean toGround = getParameterValue(additionalDataInfo.getMachineToGround(), generator.getId(), false);
+        double coeffRo = getParameterValue(additionalDataInfo.getMachineCoeffRo(), generator.getId(), 1.);
+        double coeffXo = getParameterValue(additionalDataInfo.getMachineCoeffXo(), generator.getId(), 1.);
 
-        double subTransRd = 0.;
-        if (additionalDataInfo.getMachineIdToSubTransRd().containsKey(generator.getId())) {
-            subTransRd = additionalDataInfo.getMachineIdToSubTransRd().get(generator.getId());
-        }
-
-        boolean isToGround = false;
-        if (additionalDataInfo.getMachineToGround().containsKey(generator.getId())) {
-            isToGround = additionalDataInfo.getMachineToGround().get(generator.getId());
-        }
-
-        double coeffRo = 1.;
-        if (additionalDataInfo.getMachineCoeffRo() != null) {
-            if (additionalDataInfo.getMachineCoeffRo().containsKey(generator.getId())) {
-                coeffRo = additionalDataInfo.getMachineCoeffRo().get(generator.getId());
-            }
-        }
-
-        double coeffXo = 1.;
-        if (additionalDataInfo.getMachineCoeffXo() != null) {
-            if (additionalDataInfo.getMachineCoeffXo().containsKey(generator.getId())) {
-                coeffXo = additionalDataInfo.getMachineCoeffXo().get(generator.getId());
-            }
-        }
-
-        ShortCircuitNetworkMachineInfo rotatingMachineInfo = new ShortCircuitNetworkMachineInfo(transX, stepUpTfoX, ShortCircuitNetworkMachineInfo.MachineType.SYNCHRONOUS_GEN, transRd, 0., subTransRd, subtransX, isToGround, 0., 0., coeffRo, coeffXo); // TODO: set the right type when info available
-        lfGenerator.setProperty(PROPERTY_NAME, rotatingMachineInfo);
+        lfGenerator.setProperty(PROPERTY_NAME, new ShortCircuitNetworkMachineInfo(transX,
+                                                                                  stepUpTfoX,
+                                                                                  ShortCircuitNetworkMachineInfo.MachineType.SYNCHRONOUS_GEN,
+                                                                                  transRd,
+                                                                                  0.,
+                                                                                  subTransRd,
+                                                                                  subtransX,
+                                                                                  toGround,
+                                                                                  0.,
+                                                                                  0.,
+                                                                                  coeffRo,
+                                                                                  coeffXo)); // TODO: set the right type when info available
     }
 }

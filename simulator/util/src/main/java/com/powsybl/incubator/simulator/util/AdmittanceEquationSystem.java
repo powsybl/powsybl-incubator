@@ -6,6 +6,8 @@
  */
 package com.powsybl.incubator.simulator.util;
 
+import com.powsybl.incubator.simulator.util.extensions.ShortCircuitExtensions;
+import com.powsybl.incubator.simulator.util.extensions.ShortCircuitGenerator;
 import com.powsybl.math.matrix.MatrixFactory;
 import com.powsybl.openloadflow.ac.outerloop.AcLoadFlowContext;
 import com.powsybl.openloadflow.ac.outerloop.AcLoadFlowParameters;
@@ -20,7 +22,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
@@ -38,20 +39,20 @@ public final class AdmittanceEquationSystem {
 
     //Equations are created based on the branches connections
     private static void createImpedantBranch(VariableSet<VariableType> variableSet, EquationSystem<VariableType, EquationType> equationSystem,
-                                             LfBranch branch, LfBus bus1, LfBus bus2, AdmittanceType admittanceType, MatrixFactory mf, ShortCircuitNetwork shortCircuitNetwork) {
+                                             LfBranch branch, LfBus bus1, LfBus bus2, AdmittanceType admittanceType, MatrixFactory mf) {
         if (bus1 != null && bus2 != null) { //TODO: check case when one bus is OK
             // Equation system Y*V = I (expressed in cartesian coordinates x,y)
             equationSystem.createEquation(bus1.getNum(), EquationType.BUS_YR)
-                    .addTerm(new AdmittanceRealPartSide1EquationTerm(branch, bus1, bus2, variableSet, admittanceType, mf, shortCircuitNetwork));
+                    .addTerm(new AdmittanceRealPartSide1EquationTerm(branch, bus1, bus2, variableSet, admittanceType, mf));
 
             equationSystem.createEquation(bus1.getNum(), EquationType.BUS_YI)
-                    .addTerm(new AdmittanceImgPartSide1EquationTerm(branch, bus1, bus2, variableSet, admittanceType, mf, shortCircuitNetwork));
+                    .addTerm(new AdmittanceImgPartSide1EquationTerm(branch, bus1, bus2, variableSet, admittanceType, mf));
 
             equationSystem.createEquation(bus2.getNum(), EquationType.BUS_YR)
-                    .addTerm(new AdmittanceRealPartSide2EquationTerm(branch, bus1, bus2, variableSet, admittanceType, mf, shortCircuitNetwork));
+                    .addTerm(new AdmittanceRealPartSide2EquationTerm(branch, bus1, bus2, variableSet, admittanceType, mf));
 
             equationSystem.createEquation(bus2.getNum(), EquationType.BUS_YI)
-                    .addTerm(new AdmittanceImgPartSide2EquationTerm(branch, bus1, bus2, variableSet, admittanceType, mf, shortCircuitNetwork));
+                    .addTerm(new AdmittanceImgPartSide2EquationTerm(branch, bus1, bus2, variableSet, admittanceType, mf));
         }
     }
 
@@ -75,7 +76,7 @@ public final class AdmittanceEquationSystem {
         ADM_STEADY_STATE, // all external  nodal injections are transformed into passive shunt elements included in the Y matrix (then [Ie] should be [0])
     }
 
-    private static void createBranches(LfNetwork network, VariableSet<VariableType> variableSet, EquationSystem<VariableType, EquationType> equationSystem, AdmittanceType admittanceType, MatrixFactory mf, ShortCircuitNetwork shortCircuitNetwork) {
+    private static void createBranches(LfNetwork network, VariableSet<VariableType> variableSet, EquationSystem<VariableType, EquationType> equationSystem, AdmittanceType admittanceType, MatrixFactory mf) {
         for (LfBranch branch : network.getBranches()) {
             LfBus bus1 = branch.getBus1();
             LfBus bus2 = branch.getBus2();
@@ -87,7 +88,7 @@ public final class AdmittanceEquationSystem {
                 }
             } else {
                 //System.out.println("X(" + branch.getId() + ")= " + piModel.getX());
-                createImpedantBranch(variableSet, equationSystem, branch, bus1, bus2, admittanceType, mf, shortCircuitNetwork);
+                createImpedantBranch(variableSet, equationSystem, branch, bus1, bus2, admittanceType, mf);
             }
         }
     }
@@ -117,45 +118,43 @@ public final class AdmittanceEquationSystem {
         return tmpB;
     }
 
-    private static Pair<Double, Double> getYtransfromRdXd(LfBus bus, Map<String, ShortCircuitNetworkMachineInfo> rotatingMachineInfo, AdmittancePeriodType admittancePeriodType, List<ShortCircuitEquationSystemFeeder> feederList, AdmittanceType admittanceType) {
+    private static Pair<Double, Double> getYtransfromRdXd(LfBus bus, AdmittancePeriodType admittancePeriodType, List<ShortCircuitEquationSystemFeeder> feederList, AdmittanceType admittanceType) {
         double vnomVl = bus.getNominalV();
 
         double tmpG = 0.;
         double tmpB = 0.;
         for (LfGenerator lfgen : bus.getGenerators()) { //compute R'd or R"d from generators at bus
-            if (rotatingMachineInfo.containsKey(lfgen.getId())) {
-                ShortCircuitNetworkMachineInfo machineInfo = rotatingMachineInfo.get(lfgen.getId());
-                double rd = machineInfo.getTransRd() + machineInfo.getStepUpTfoR();
-                double xd = machineInfo.getTransXd() + machineInfo.getStepUpTfoX();
-                if (admittancePeriodType == AdmittancePeriodType.ADM_SUB_TRANSIENT) {
-                    xd = machineInfo.getSubTransXd() + machineInfo.getStepUpTfoX();
-                    rd = machineInfo.getSubTransRd() + machineInfo.getStepUpTfoR();
+            ShortCircuitGenerator scGen = (ShortCircuitGenerator) lfgen.getProperty(ShortCircuitExtensions.PROPERTY_NAME);
+            double rd = scGen.getTransRd() + scGen.getStepUpTfoR();
+            double xd = scGen.getTransXd() + scGen.getStepUpTfoX();
+            if (admittancePeriodType == AdmittancePeriodType.ADM_SUB_TRANSIENT) {
+                xd = scGen.getSubTransXd() + scGen.getStepUpTfoX();
+                rd = scGen.getSubTransRd() + scGen.getStepUpTfoR();
+            }
+
+            double coeffR = 1.0; // coeff used to deduce Ro from Rd. It is equal to 1.0 if we are looking for direct values. If the machine is not grounded, homopolar values are zero, then we set coeffs to 0.
+            double coeffX = 1.0;
+            if (admittanceType == AdmittanceType.ADM_THEVENIN_HOMOPOLAR) {
+                coeffR = 0.;
+                coeffX = 0.;
+                if (scGen.isGrounded()) {
+                    coeffR = scGen.getCoeffRo();
+                    coeffX = scGen.getCoeffXo();
                 }
+            }
 
-                double coeffR = 1.0; // coeff used to deduce Ro from Rd. It is equal to 1.0 if we are looking for direct values. If the machine is not grounded, homopolar values are zero, then we set coeffs to 0.
-                double coeffX = 1.0;
-                if (admittanceType == AdmittanceType.ADM_THEVENIN_HOMOPOLAR) {
-                    coeffR = 0.;
-                    coeffX = 0.;
-                    if (machineInfo.isGrounded()) {
-                        coeffR = machineInfo.getCoeffRo();
-                        coeffX = machineInfo.getCoeffXo();
-                    }
-                }
+            double epsilon = 0.0000001;
 
-                double epsilon = 0.0000001;
+            rd = rd * coeffR;
+            xd = xd * coeffX;
 
-                rd = rd * coeffR;
-                xd = xd * coeffX;
-
-                if (Math.abs(rd) > epsilon || Math.abs(xd) > epsilon) {
-                    double gGen = (vnomVl * vnomVl / SB) * rd / (rd * rd + xd * xd);
-                    double bGen = -(vnomVl * vnomVl / SB) * xd / (rd * rd + xd * xd);
-                    tmpG = tmpG + gGen;
-                    tmpB = tmpB + bGen; // TODO: check: for now X'd = 0 not allowed
-                    ShortCircuitEquationSystemFeeder shuntFeeder = new ShortCircuitEquationSystemFeeder(bGen, gGen, lfgen.getId(), ShortCircuitEquationSystemFeeder.FeederType.GENERATOR);
-                    feederList.add(shuntFeeder);
-                }
+            if (Math.abs(rd) > epsilon || Math.abs(xd) > epsilon) {
+                double gGen = (vnomVl * vnomVl / SB) * rd / (rd * rd + xd * xd);
+                double bGen = -(vnomVl * vnomVl / SB) * xd / (rd * rd + xd * xd);
+                tmpG = tmpG + gGen;
+                tmpB = tmpB + bGen; // TODO: check: for now X'd = 0 not allowed
+                ShortCircuitEquationSystemFeeder shuntFeeder = new ShortCircuitEquationSystemFeeder(bGen, gGen, lfgen.getId(), ShortCircuitEquationSystemFeeder.FeederType.GENERATOR);
+                feederList.add(shuntFeeder);
             }
         }
 
@@ -165,7 +164,7 @@ public final class AdmittanceEquationSystem {
 
     private static void createShunts(LfNetwork network, VariableSet<VariableType> variableSet, EquationSystem<VariableType, EquationType> equationSystem, AdmittanceType admittanceType,
                                      AdmittanceVoltageProfileType admittanceVoltageProfileType, AdmittancePeriodType admittancePeriodType,
-                                     Map<String, ShortCircuitNetworkMachineInfo> rotatingMachineInfo, boolean isShuntsIgnore, ShortCircuitNetwork shortCircuitNetwork, ShortCircuitEquationSystemFeeders feeders) {
+                                     boolean isShuntsIgnore, ShortCircuitEquationSystemFeeders feeders) {
         for (LfBus bus : network.getBuses()) {
 
             //total shunt at bus to be integrated in the admittance matrix
@@ -222,7 +221,7 @@ public final class AdmittanceEquationSystem {
                 ShortCircuitEquationSystemFeeder shuntFeeder = new ShortCircuitEquationSystemFeeder(bLoadEq, gLoadEq, bus.getId(), ShortCircuitEquationSystemFeeder.FeederType.LOAD);
                 feederList.add(shuntFeeder);
 
-                Pair<Double, Double> bAndG = getYtransfromRdXd(bus, rotatingMachineInfo, admittancePeriodType, feederList, admittanceType); // ! updates feederList
+                Pair<Double, Double> bAndG = getYtransfromRdXd(bus, admittancePeriodType, feederList, admittanceType); // ! updates feederList
                 bGenEq = bAndG.getValue(); //TODO : check how the verify that the generators are operating
                 gGenEq = bAndG.getKey();
 
@@ -234,7 +233,7 @@ public final class AdmittanceEquationSystem {
 
                 List<ShortCircuitEquationSystemFeeder> feederList = new ArrayList<>(); // not used yet in homopolar
 
-                Pair<Double, Double> bAndG = getYtransfromRdXd(bus, rotatingMachineInfo, admittancePeriodType, feederList, admittanceType); // ! updates feederList
+                Pair<Double, Double> bAndG = getYtransfromRdXd(bus, admittancePeriodType, feederList, admittanceType); // ! updates feederList
                 bGenEq = bAndG.getValue(); //TODO : check how the verify that the generators are operating
                 gGenEq = bAndG.getKey();
 
@@ -261,22 +260,20 @@ public final class AdmittanceEquationSystem {
 
         // Following data Not needed for reduction methods
         AdmittanceEquationSystem.AdmittancePeriodType admittancePeriodType = AdmittanceEquationSystem.AdmittancePeriodType.ADM_TRANSIENT; //TODO: not relevant for reduction: see how to improve that
-        ShortCircuitNetwork shortCircuitNetwork = new ShortCircuitNetwork();
         ShortCircuitEquationSystemFeeders equationsSystemFeeders = new ShortCircuitEquationSystemFeeders();
         boolean isShuntsIgnore = false;
 
-        return create(network, shortCircuitNetwork, mf, variableSet,
+        return create(network, mf, variableSet,
                 admittanceType, admittanceVoltageProfileType, admittancePeriodType, isShuntsIgnore,
                 equationsSystemFeeders, acLoadFlowParameters);
     }
 
-    public static EquationSystem<VariableType, EquationType> create(LfNetwork network, ShortCircuitNetwork shortCircuitNetwork, MatrixFactory mf, VariableSet<VariableType> variableSet,
+    public static EquationSystem<VariableType, EquationType> create(LfNetwork network, MatrixFactory mf, VariableSet<VariableType> variableSet,
                                                                     AdmittanceType admittanceType, AdmittanceVoltageProfileType admittanceVoltageProfileType,
                                                                     AdmittancePeriodType admittancePeriodType, boolean isShuntsIgnore, ShortCircuitEquationSystemFeeders feeders,
                                                                     AcLoadFlowParameters acLoadFlowParameters) {
 
         EquationSystem<VariableType, EquationType> equationSystem = new EquationSystem<>();
-        Map<String, ShortCircuitNetworkMachineInfo> rotatingMachineInfo = shortCircuitNetwork.getMachinesInfo();
 
         if (admittanceType == AdmittanceType.ADM_ADMIT) {
             try (AcLoadFlowContext context = new AcLoadFlowContext(network, acLoadFlowParameters)) {
@@ -285,9 +282,9 @@ public final class AdmittanceEquationSystem {
             }
         }
 
-        createBranches(network, variableSet, equationSystem, admittanceType, mf, shortCircuitNetwork);
+        createBranches(network, variableSet, equationSystem, admittanceType, mf);
         if (admittanceType != AdmittanceType.ADM_INJ) { //shunts created in the admittance matrix are only those that really exist in the network
-            createShunts(network, variableSet, equationSystem, admittanceType, admittanceVoltageProfileType, admittancePeriodType, rotatingMachineInfo, isShuntsIgnore, shortCircuitNetwork, feeders); // TODO : shuntIgnore was set at false
+            createShunts(network, variableSet, equationSystem, admittanceType, admittanceVoltageProfileType, admittancePeriodType, isShuntsIgnore, feeders); // TODO : shuntIgnore was set at false
         }
 
         return equationSystem;

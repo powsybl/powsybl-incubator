@@ -6,6 +6,7 @@
  */
 package com.powsybl.incubator.simulator.util;
 
+import com.powsybl.incubator.simulator.util.extensions.*;
 import com.powsybl.math.matrix.DenseMatrix;
 import com.powsybl.math.matrix.MatrixFactory;
 import com.powsybl.openloadflow.equations.AbstractNamedEquationTerm;
@@ -25,8 +26,6 @@ import java.util.Objects;
 public abstract class AbstractAdmittanceEquationTerm extends AbstractNamedEquationTerm<VariableType, EquationType> implements LinearEquationTerm {
 
     private final LfBranch branch;
-
-    private final ShortCircuitNetwork shortCircuitNetwork;
 
     protected final Variable<VariableType> v1rVar;
 
@@ -96,8 +95,8 @@ public abstract class AbstractAdmittanceEquationTerm extends AbstractNamedEquati
 
         protected double zoInvSquare;
 
-        ShortCircuitNetworkTransformerLeg.LegConnectionType leg1ConnectionType;
-        ShortCircuitNetworkTransformerLeg.LegConnectionType leg2ConnectionType;
+        ShortCircuitTransformerLeg.LegConnectionType leg1ConnectionType;
+        ShortCircuitTransformerLeg.LegConnectionType leg2ConnectionType;
 
         boolean isFreeFluxes;
 
@@ -116,8 +115,8 @@ public abstract class AbstractAdmittanceEquationTerm extends AbstractNamedEquati
 
             zoInvSquare = 0.;
 
-            leg1ConnectionType = ShortCircuitNetworkTransformerLeg.LegConnectionType.Y_GROUNDED;
-            leg2ConnectionType = ShortCircuitNetworkTransformerLeg.LegConnectionType.Y_GROUNDED;
+            leg1ConnectionType = ShortCircuitTransformerLeg.LegConnectionType.Y_GROUNDED;
+            leg2ConnectionType = ShortCircuitTransformerLeg.LegConnectionType.Y_GROUNDED;
 
             isFreeFluxes = false;
 
@@ -126,9 +125,8 @@ public abstract class AbstractAdmittanceEquationTerm extends AbstractNamedEquati
         }
     }
 
-    public AbstractAdmittanceEquationTerm(LfBranch branch, LfBus bus1, LfBus bus2, VariableSet<VariableType> variableSet, MatrixFactory mf, ShortCircuitNetwork shortCircuitNetwork) {
+    public AbstractAdmittanceEquationTerm(LfBranch branch, LfBus bus1, LfBus bus2, VariableSet<VariableType> variableSet, MatrixFactory mf) {
         this.branch = Objects.requireNonNull(branch);
-        this.shortCircuitNetwork = shortCircuitNetwork;
         Objects.requireNonNull(bus1);
         Objects.requireNonNull(bus2);
         Objects.requireNonNull(variableSet);
@@ -183,17 +181,16 @@ public abstract class AbstractAdmittanceEquationTerm extends AbstractNamedEquati
         homopolarExtension.rgb = 0.;
         homopolarExtension.xgb = 0.;
 
-        homopolarExtension.leg1ConnectionType = ShortCircuitNetworkTransformerLeg.LegConnectionType.Y_GROUNDED; // if the branch is not a transfo, then it is the correct default behaviour
-        homopolarExtension.leg2ConnectionType = ShortCircuitNetworkTransformerLeg.LegConnectionType.Y_GROUNDED;
+        homopolarExtension.leg1ConnectionType = ShortCircuitTransformerLeg.LegConnectionType.Y_GROUNDED; // if the branch is not a transfo, then it is the correct default behaviour
+        homopolarExtension.leg2ConnectionType = ShortCircuitTransformerLeg.LegConnectionType.Y_GROUNDED;
 
         homopolarExtension.isFreeFluxes = false;
 
         if (branch.getBranchType() == LfBranch.BranchType.LINE) {
             // branch is a line and homopolar data available
-            String lineIidmId = branch.getOriginalIds().get(0);
-            ShortCircuitNetworkLine shortCircuitNetworkLine = shortCircuitNetwork.getLineInfo().get(lineIidmId);
-            double rCoeff = shortCircuitNetworkLine.getCoeffRo();
-            double xCoeff = shortCircuitNetworkLine.getCoeffXo();
+            ShortCircuitLine shortCircuitLine = (ShortCircuitLine) branch.getProperty(ShortCircuitExtensions.PROPERTY_NAME);
+            double rCoeff = shortCircuitLine.getCoeffRo();
+            double xCoeff = shortCircuitLine.getCoeffXo();
             homopolarExtension.ro = r * rCoeff;
             homopolarExtension.xo = x * xCoeff;
             homopolarExtension.gom = gPi1 / rCoeff; //TODO : adapt
@@ -201,41 +198,39 @@ public abstract class AbstractAdmittanceEquationTerm extends AbstractNamedEquati
 
         } else if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_2) {
             // branch is a 2 windings transformer and homopolar data available
-            String tfo2wIidmId = branch.getOriginalIds().get(0);
-            ShortCircuitNetworkT2W shortCircuitNetworkT2W = shortCircuitNetwork.getTransfo2wInfo().get(tfo2wIidmId);
-            double rCoeff = shortCircuitNetworkT2W.getCoeffRo();
-            double xCoeff = shortCircuitNetworkT2W.getCoeffXo();
+            ShortCircuitT2W shortCircuitT2W = (ShortCircuitT2W) branch.getProperty(ShortCircuitExtensions.PROPERTY_NAME);
+            double rCoeff = shortCircuitT2W.getCoeffRo();
+            double xCoeff = shortCircuitT2W.getCoeffXo();
             homopolarExtension.ro = r * rCoeff;
             homopolarExtension.xo = x * xCoeff;
             homopolarExtension.gom = gPi1 / rCoeff; //TODO : adapt
             homopolarExtension.bom = bPi1 / xCoeff;  //TODO : adapt
 
-            homopolarExtension.leg1ConnectionType =  shortCircuitNetworkT2W.getLeg1().getLegConnectionType();
-            homopolarExtension.leg2ConnectionType =  shortCircuitNetworkT2W.getLeg2().getLegConnectionType();
+            homopolarExtension.leg1ConnectionType =  shortCircuitT2W.getLeg1().getLegConnectionType();
+            homopolarExtension.leg2ConnectionType =  shortCircuitT2W.getLeg2().getLegConnectionType();
         } else if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_1
                 || branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_2
                 || branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_3) {
             // branch is leg1 of a 3 windings transformer and homopolar data available
             //throw new IllegalArgumentException("Branch " + branch.getId() + " has a not yet supported type");
-            String tfo3WIidmId = branch.getOriginalIds().get(0);
-            ShortCircuitNetworkT3W shortCircuitNetworkT3W = shortCircuitNetwork.getTransfo3wInfo().get(tfo3WIidmId);
+            ShortCircuitT3W shortCircuitT3W = (ShortCircuitT3W) branch.getProperty(ShortCircuitExtensions.PROPERTY_NAME);
             double rCoeff = 1.0;
             double xCoeff = 1.0;
             if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_1) {
-                rCoeff = shortCircuitNetworkT3W.leg1.coeffRo;
-                xCoeff = shortCircuitNetworkT3W.leg1.coeffXo;
-                homopolarExtension.leg1ConnectionType = shortCircuitNetworkT3W.leg1.getLegConnectionType();
-                homopolarExtension.isFreeFluxes = shortCircuitNetworkT3W.leg1.isFreeFluxes();
+                rCoeff = shortCircuitT3W.getLeg1().getCoeffRo();
+                xCoeff = shortCircuitT3W.getLeg1().getCoeffXo();
+                homopolarExtension.leg1ConnectionType = shortCircuitT3W.getLeg1().getLegConnectionType();
+                homopolarExtension.isFreeFluxes = shortCircuitT3W.getLeg1().isFreeFluxes();
             } else if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_2) {
-                rCoeff = shortCircuitNetworkT3W.leg2.coeffRo;
-                xCoeff = shortCircuitNetworkT3W.leg2.coeffXo;
-                homopolarExtension.leg1ConnectionType = shortCircuitNetworkT3W.leg2.getLegConnectionType();
-                homopolarExtension.isFreeFluxes = shortCircuitNetworkT3W.leg2.isFreeFluxes();
+                rCoeff = shortCircuitT3W.getLeg2().getCoeffRo();
+                xCoeff = shortCircuitT3W.getLeg2().getCoeffXo();
+                homopolarExtension.leg1ConnectionType = shortCircuitT3W.getLeg2().getLegConnectionType();
+                homopolarExtension.isFreeFluxes = shortCircuitT3W.getLeg2().isFreeFluxes();
             } else if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_3) {
-                rCoeff = shortCircuitNetworkT3W.leg3.coeffRo;
-                xCoeff = shortCircuitNetworkT3W.leg3.coeffXo;
-                homopolarExtension.leg1ConnectionType = shortCircuitNetworkT3W.leg3.getLegConnectionType();
-                homopolarExtension.isFreeFluxes = shortCircuitNetworkT3W.leg3.isFreeFluxes();
+                rCoeff = shortCircuitT3W.getLeg3().getCoeffRo();
+                xCoeff = shortCircuitT3W.getLeg3().getCoeffXo();
+                homopolarExtension.leg1ConnectionType = shortCircuitT3W.getLeg3().getLegConnectionType();
+                homopolarExtension.isFreeFluxes = shortCircuitT3W.getLeg3().isFreeFluxes();
             } else {
                 throw new IllegalArgumentException("Branch " + branch.getId() + " has unknown 3-winding leg number");
             }
@@ -274,19 +269,19 @@ public abstract class AbstractAdmittanceEquationTerm extends AbstractNamedEquati
         double xob = homopolarExtension.xo / 2.;
 
         // we suppose that all impedance and admittance terms of the homopolar extension are per-unitized on Sbase = 100 MVA and Vnom = Vnom on B side
-        if ((homopolarExtension.leg1ConnectionType == ShortCircuitNetworkTransformerLeg.LegConnectionType.Y && homopolarExtension.leg2ConnectionType == ShortCircuitNetworkTransformerLeg.LegConnectionType.Y)
-                || (homopolarExtension.leg1ConnectionType == ShortCircuitNetworkTransformerLeg.LegConnectionType.Y && homopolarExtension.leg2ConnectionType == ShortCircuitNetworkTransformerLeg.LegConnectionType.DELTA)
-                || (homopolarExtension.leg1ConnectionType == ShortCircuitNetworkTransformerLeg.LegConnectionType.DELTA && homopolarExtension.leg2ConnectionType == ShortCircuitNetworkTransformerLeg.LegConnectionType.Y)
-                || (homopolarExtension.leg1ConnectionType == ShortCircuitNetworkTransformerLeg.LegConnectionType.DELTA && homopolarExtension.leg2ConnectionType == ShortCircuitNetworkTransformerLeg.LegConnectionType.DELTA)
-                || (homopolarExtension.leg1ConnectionType == ShortCircuitNetworkTransformerLeg.LegConnectionType.Y_GROUNDED && homopolarExtension.leg2ConnectionType == ShortCircuitNetworkTransformerLeg.LegConnectionType.Y && homopolarExtension.isFreeFluxes)
-                || (homopolarExtension.leg1ConnectionType == ShortCircuitNetworkTransformerLeg.LegConnectionType.Y && homopolarExtension.leg2ConnectionType == ShortCircuitNetworkTransformerLeg.LegConnectionType.Y_GROUNDED && homopolarExtension.isFreeFluxes)) {
+        if ((homopolarExtension.leg1ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.Y && homopolarExtension.leg2ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.Y)
+                || (homopolarExtension.leg1ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.Y && homopolarExtension.leg2ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.DELTA)
+                || (homopolarExtension.leg1ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.DELTA && homopolarExtension.leg2ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.Y)
+                || (homopolarExtension.leg1ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.DELTA && homopolarExtension.leg2ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.DELTA)
+                || (homopolarExtension.leg1ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.Y_GROUNDED && homopolarExtension.leg2ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.Y && homopolarExtension.isFreeFluxes)
+                || (homopolarExtension.leg1ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.Y && homopolarExtension.leg2ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.Y_GROUNDED && homopolarExtension.isFreeFluxes)) {
             // homopolar admittance matrix is zero-Matrix
             mo.set(0, 0, infiniteImpedanceAdmittance);
             mo.set(1, 1, infiniteImpedanceAdmittance);
             mo.set(2, 2, infiniteImpedanceAdmittance);
             mo.set(3, 3, infiniteImpedanceAdmittance);
 
-        } else if (homopolarExtension.leg1ConnectionType == ShortCircuitNetworkTransformerLeg.LegConnectionType.Y_GROUNDED && homopolarExtension.leg2ConnectionType == ShortCircuitNetworkTransformerLeg.LegConnectionType.Y) {
+        } else if (homopolarExtension.leg1ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.Y_GROUNDED && homopolarExtension.leg2ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.Y) {
             // we suppose that Zoa = Zo given in input for the transformer
             // we suppose that if Yom given in input is zero, then Zom = is zero : TODO : see if there is a more robust way to handle this
 
@@ -303,7 +298,7 @@ public abstract class AbstractAdmittanceEquationTerm extends AbstractNamedEquati
             mo.set(1, 1, go11);
             mo.set(2, 2, infiniteImpedanceAdmittance);
             mo.set(3, 3, infiniteImpedanceAdmittance);
-        } else if (homopolarExtension.leg1ConnectionType == ShortCircuitNetworkTransformerLeg.LegConnectionType.Y && homopolarExtension.leg2ConnectionType == ShortCircuitNetworkTransformerLeg.LegConnectionType.Y_GROUNDED) {
+        } else if (homopolarExtension.leg1ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.Y && homopolarExtension.leg2ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.Y_GROUNDED) {
             // we suppose that zob = Zo given in input for the transformer
             // we suppose that if Yom given in input is zero, then Zom = is zero : TODO : see if there is a more robust way to handle this
 
@@ -320,7 +315,7 @@ public abstract class AbstractAdmittanceEquationTerm extends AbstractNamedEquati
             mo.set(2, 3, -bo22);
             mo.set(3, 2, bo22);
             mo.set(3, 3, go22);
-        } else if (homopolarExtension.leg1ConnectionType == ShortCircuitNetworkTransformerLeg.LegConnectionType.Y_GROUNDED && homopolarExtension.leg2ConnectionType == ShortCircuitNetworkTransformerLeg.LegConnectionType.DELTA) {
+        } else if (homopolarExtension.leg1ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.Y_GROUNDED && homopolarExtension.leg2ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.DELTA) {
 
             // we suppose that if Yom given in input is zero, then Zom = is zero : TODO : see if there is a more robust way to handle this
 
@@ -356,7 +351,7 @@ public abstract class AbstractAdmittanceEquationTerm extends AbstractNamedEquati
             mo.set(2, 2, infiniteImpedanceAdmittance);
             mo.set(3, 3, infiniteImpedanceAdmittance);
 
-        } else if (homopolarExtension.leg1ConnectionType == ShortCircuitNetworkTransformerLeg.LegConnectionType.DELTA && homopolarExtension.leg2ConnectionType == ShortCircuitNetworkTransformerLeg.LegConnectionType.Y_GROUNDED) {
+        } else if (homopolarExtension.leg1ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.DELTA && homopolarExtension.leg2ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.Y_GROUNDED) {
 
             // we have yo22 = 1 / ( 3Zga(pu) + Zob(pu) + 1/(1/Zom(pu)+1/Zoa(pu)) )
             // and yo12 = yo11 = yo21 = 0.
@@ -390,7 +385,7 @@ public abstract class AbstractAdmittanceEquationTerm extends AbstractNamedEquati
             mo.set(3, 2, bo22);
             mo.set(3, 3, go22);
 
-        } else if (homopolarExtension.leg1ConnectionType == ShortCircuitNetworkTransformerLeg.LegConnectionType.Y_GROUNDED && homopolarExtension.leg2ConnectionType == ShortCircuitNetworkTransformerLeg.LegConnectionType.Y_GROUNDED) {
+        } else if (homopolarExtension.leg1ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.Y_GROUNDED && homopolarExtension.leg2ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.Y_GROUNDED) {
 
             double go11 = 0.;
             double bo11 = 0.;

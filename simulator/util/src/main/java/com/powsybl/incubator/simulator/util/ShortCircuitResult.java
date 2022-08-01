@@ -83,8 +83,6 @@ public class ShortCircuitResult {
 
     private LfNetwork lfNetwork;
 
-    private ShortCircuitNetwork shortCircuitNetwork;
-
     private ShortCircuitNorm norm;
 
     private double rd; // equivalent direct impedance
@@ -123,14 +121,13 @@ public class ShortCircuitResult {
     private CommonSupportResult commonSupportResult; // used only for biphased with common support faults
 
     public ShortCircuitResult(String shortCircuitVoltageLevelLocation, String shortCircuitLfbusLocation, ShortCircuitFault shortCircuitFault, double ifr, double ifi, LfBus lfBus, double rth, double xth, double ethr, double ethi, double dvr, double dvi,
-                              MatrixFactory matrixFactory, ShortCircuitNetwork shortCircuitNetwork, ShortCircuitEquationSystemFeeders eqSysFeeders, ShortCircuitNorm norm) {
+                              MatrixFactory matrixFactory, ShortCircuitEquationSystemFeeders eqSysFeeders, ShortCircuitNorm norm) {
         //case of a triphased fault
         //this.fault = fault;
         this.matrixFactory = Objects.requireNonNull(matrixFactory);
         this.shortCircuitVoltageLevelLocation = shortCircuitVoltageLevelLocation;
         this.shortCircuitLfbusLocation = shortCircuitLfbusLocation;
         this.lfBus = lfBus;
-        this.shortCircuitNetwork = shortCircuitNetwork;
         this.eqSysFeedersDirect = eqSysFeeders;
         this.shortCircuitFault = shortCircuitFault;
         this.norm = norm;

@@ -4,17 +4,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.powsybl.incubator.simulator.util;
+package com.powsybl.incubator.simulator.util.extensions;
 
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
-public class ShortCircuitNetworkLine {
+public class ShortCircuitLine {
 
-    double coeffXo; // Xo = Xd * coeffXo : value of the homopolar admittance (in ohms) expressed at the leg2 side
-    double coeffRo; // Ro = Rd * coeffRo : value of the homopolar resistance (in ohms) expressed at the leg2 side
+    private final double coeffXo; // Xo = Xd * coeffXo : value of the homopolar admittance (in ohms) expressed at the leg2 side
+    private final double coeffRo; // Ro = Rd * coeffRo : value of the homopolar resistance (in ohms) expressed at the leg2 side
 
-    ShortCircuitNetworkLine(double coeffRo, double coeffXo) {
+    ShortCircuitLine(double coeffRo, double coeffXo) {
         this.coeffRo = coeffRo;
         this.coeffXo = coeffXo;
     }

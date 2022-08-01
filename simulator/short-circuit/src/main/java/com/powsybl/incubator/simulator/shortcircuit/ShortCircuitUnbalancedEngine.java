@@ -94,8 +94,8 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
                 getAdmittanceVoltageProfileTypeFromParam(), getAdmittancePeriodTypeFromParam(), AdmittanceEquationSystem.AdmittanceType.ADM_THEVENIN,
                 parameters.isIgnoreShunts(), parameters.getAdditionalDataInfo(), parameters.getNorm(), biphasedFaultList);
 
-        AdmittanceLinearResolution directResolution = new AdmittanceLinearResolution(network, shortCircuitNetwork, admittanceLinearResolutionParametersDirect);
-        AdmittanceLinearResolution homopolarResolution = new AdmittanceLinearResolution(network, shortCircuitNetwork, admittanceLinearResolutionParametersHomopolar);
+        AdmittanceLinearResolution directResolution = new AdmittanceLinearResolution(network, admittanceLinearResolutionParametersDirect);
+        AdmittanceLinearResolution homopolarResolution = new AdmittanceLinearResolution(network, admittanceLinearResolutionParametersHomopolar);
 
         directResolution.run();
         homopolarResolution.run();

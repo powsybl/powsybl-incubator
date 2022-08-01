@@ -77,10 +77,9 @@ class ReductionTest {
         AcLoadFlowParameters acLoadFlowParameters = OpenLoadFlowParameters.createAcParameters(network, loadFlowParameters, loadflowParametersExt, matrixFactory, new EvenShiloachGraphDecrementalConnectivityFactory<>(), Reporter.NO_OP);
         AdmittanceEquationSystem.AdmittanceVoltageProfileType admittanceVoltageProfileType = AdmittanceEquationSystem.AdmittanceVoltageProfileType.CALCULATED;
         //AdditionalDataInfo additionalDataInfo = new AdditionalDataInfo();
-        ShortCircuitNetwork shortCircuitNetwork = new ShortCircuitNetwork();
         AdmittanceEquationSystem.AdmittancePeriodType admittancePeriodType = AdmittanceEquationSystem.AdmittancePeriodType.ADM_TRANSIENT;
         ShortCircuitEquationSystemFeeders feeders = new ShortCircuitEquationSystemFeeders();
-        EquationSystem<VariableType, EquationType> equationSystem = AdmittanceEquationSystem.create(lfNetwork, shortCircuitNetwork, matrixFactory, new VariableSet<>(), AdmittanceEquationSystem.AdmittanceType.ADM_INJ, admittanceVoltageProfileType, admittancePeriodType, false, feeders, acLoadFlowParameters);
+        EquationSystem<VariableType, EquationType> equationSystem = AdmittanceEquationSystem.create(lfNetwork, matrixFactory, new VariableSet<>(), AdmittanceEquationSystem.AdmittanceType.ADM_INJ, admittanceVoltageProfileType, admittancePeriodType, false, feeders, acLoadFlowParameters);
 
         VoltageInitializer voltageInitializer = reductionParameters.getVoltageInitializer();
 
@@ -120,9 +119,8 @@ class ReductionTest {
         AdmittanceEquationSystem.AdmittanceVoltageProfileType admittanceVoltageProfileType = AdmittanceEquationSystem.AdmittanceVoltageProfileType.CALCULATED;
         AdmittanceEquationSystem.AdmittancePeriodType admittancePeriodType = AdmittanceEquationSystem.AdmittancePeriodType.ADM_TRANSIENT;
         //AdditionalDataInfo additionalDataInfo = new AdditionalDataInfo();
-        ShortCircuitNetwork shortCircuitNetwork = new ShortCircuitNetwork();
         ShortCircuitEquationSystemFeeders feeders = new ShortCircuitEquationSystemFeeders();
-        EquationSystem<VariableType, EquationType> equationSystem = AdmittanceEquationSystem.create(lfNetwork, shortCircuitNetwork, matrixFactory, new VariableSet<>(), AdmittanceEquationSystem.AdmittanceType.ADM_INJ, admittanceVoltageProfileType, admittancePeriodType, false, feeders, acLoadFlowParameters);
+        EquationSystem<VariableType, EquationType> equationSystem = AdmittanceEquationSystem.create(lfNetwork, matrixFactory, new VariableSet<>(), AdmittanceEquationSystem.AdmittanceType.ADM_INJ, admittanceVoltageProfileType, admittancePeriodType, false, feeders, acLoadFlowParameters);
 
         VoltageInitializer voltageInitializer = reductionParameters.getVoltageInitializer();
 

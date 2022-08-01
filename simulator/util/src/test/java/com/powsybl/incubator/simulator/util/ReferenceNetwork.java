@@ -8,6 +8,7 @@ package com.powsybl.incubator.simulator.util;
 
 import com.powsybl.iidm.network.*;
 import com.powsybl.iidm.network.extensions.GeneratorShortCircuitAdder;
+import com.powsybl.incubator.simulator.util.extensions.AdditionalDataInfo;
 import org.apache.commons.math3.util.Pair;
 import org.joda.time.DateTime;
 

@@ -8,7 +8,7 @@ package com.powsybl.incubator.simulator.shortcircuit;
 
 import com.google.auto.service.AutoService;
 import com.google.common.base.Stopwatch;
-import com.powsybl.incubator.simulator.util.AdditionalDataInfo;
+import com.powsybl.incubator.simulator.util.extensions.AdditionalDataInfo;
 import com.powsybl.incubator.simulator.util.ShortCircuitFault;
 import com.powsybl.incubator.simulator.util.ShortCircuitNormCourcirc;
 import com.powsybl.incubator.simulator.util.ShortCircuitResult;

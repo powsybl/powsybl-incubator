@@ -26,8 +26,8 @@ public class AdmittanceRealPartSide2EquationTerm extends AbstractAdmittanceEquat
 
     protected double b2b21sum;
 
-    public AdmittanceRealPartSide2EquationTerm(LfBranch branch, LfBus bus1, LfBus bus2, VariableSet<VariableType> variableSet, AdmittanceEquationSystem.AdmittanceType admittanceType, MatrixFactory mf, ShortCircuitNetwork shortCircuitNetwork) {
-        super(branch, bus1, bus2, variableSet, mf, shortCircuitNetwork);
+    public AdmittanceRealPartSide2EquationTerm(LfBranch branch, LfBus bus1, LfBus bus2, VariableSet<VariableType> variableSet, AdmittanceEquationSystem.AdmittanceType admittanceType, MatrixFactory mf) {
+        super(branch, bus1, bus2, variableSet, mf);
         // Direct component:
         // I2x = -g21 * V1x + b21 * V1y + (g2 + g21)V2x - (b2 + b21)V2y
         double g12 = rho * zInvSquare * (r * cosA + x * sinA);

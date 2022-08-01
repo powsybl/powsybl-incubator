@@ -26,8 +26,8 @@ public class AdmittanceImgPartSide1EquationTerm extends AbstractAdmittanceEquati
 
     protected double b1b12sum;
 
-    public AdmittanceImgPartSide1EquationTerm(LfBranch branch, LfBus bus1, LfBus bus2, VariableSet<VariableType> variableSet, AdmittanceEquationSystem.AdmittanceType admittanceType, MatrixFactory mf, ShortCircuitNetwork shortCircuitNetwork) {
-        super(branch, bus1, bus2, variableSet, mf, shortCircuitNetwork);
+    public AdmittanceImgPartSide1EquationTerm(LfBranch branch, LfBus bus1, LfBus bus2, VariableSet<VariableType> variableSet, AdmittanceEquationSystem.AdmittanceType admittanceType, MatrixFactory mf) {
+        super(branch, bus1, bus2, variableSet, mf);
         // Direct component:
         // I1y = (b1 + b12)V1x + (g1 + g12)V1y - b12 * V2x - g12 * V2y
         g12 = rho * zInvSquare * (r * cosA + x * sinA);

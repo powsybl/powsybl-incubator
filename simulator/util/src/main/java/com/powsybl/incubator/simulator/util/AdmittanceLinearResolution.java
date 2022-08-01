@@ -7,6 +7,7 @@
 package com.powsybl.incubator.simulator.util;
 
 import com.powsybl.iidm.network.Network;
+import com.powsybl.incubator.simulator.util.extensions.ShortCircuitExtensions;
 import com.powsybl.math.matrix.DenseMatrix;
 import com.powsybl.openloadflow.equations.EquationSystem;
 import com.powsybl.openloadflow.equations.VariableSet;
@@ -36,18 +37,16 @@ public  class AdmittanceLinearResolution {
 
     private final List<LfNetwork> networks;
 
-    private final ShortCircuitNetwork shortCircuitNetwork;
-
     private final AdmittanceLinearResolutionParameters parameters;
 
     public List<AdmittanceLinearResolutionResult> results = new ArrayList<>();
 
     public LfNetwork lfNetworkResult;
 
-    public AdmittanceLinearResolution(Network network, ShortCircuitNetwork shortCircuitNetwork, AdmittanceLinearResolutionParameters parameters) {
+    public AdmittanceLinearResolution(Network network, AdmittanceLinearResolutionParameters parameters) {
         this.networks = LfNetwork.load(network, new LfNetworkLoaderImpl(), new LfNetworkParameters(new FirstSlackBusSelector()));
         this.parameters = Objects.requireNonNull(parameters);
-        this.shortCircuitNetwork = shortCircuitNetwork;
+        ShortCircuitExtensions.add(network, networks, parameters.getAdditionalDataInfo());
     }
 
     public class AdmittanceLinearResolutionResult {
@@ -353,7 +352,7 @@ public  class AdmittanceLinearResolution {
 
         ShortCircuitEquationSystemFeeders equationsSystemFeeders = new ShortCircuitEquationSystemFeeders();
         EquationSystem<VariableType, EquationType> equationSystem
-                = AdmittanceEquationSystem.create(lfNetwork, shortCircuitNetwork, parameters.getMatrixFactory(), new VariableSet<>(), parameters.getAdmittanceType(), parameters.getTheveninVoltageProfileType(), parameters.getTheveninPeriodType(), parameters.isTheveninIgnoreShunts(), equationsSystemFeeders, parameters.getAcLoadFlowParameters());
+                = AdmittanceEquationSystem.create(lfNetwork, parameters.getMatrixFactory(), new VariableSet<>(), parameters.getAdmittanceType(), parameters.getTheveninVoltageProfileType(), parameters.getTheveninPeriodType(), parameters.isTheveninIgnoreShunts(), equationsSystemFeeders, parameters.getAcLoadFlowParameters());
 
         //Get bus by voltage level
         List<LfBus> inputBusses = new ArrayList<>();

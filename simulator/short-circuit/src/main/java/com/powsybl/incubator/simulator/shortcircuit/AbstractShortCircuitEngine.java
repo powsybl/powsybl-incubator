@@ -6,15 +6,15 @@
  */
 package com.powsybl.incubator.simulator.shortcircuit;
 
-import com.powsybl.incubator.simulator.util.AdmittanceEquationSystem;
-import com.powsybl.incubator.simulator.util.ShortCircuitFault;
-import com.powsybl.incubator.simulator.util.ShortCircuitNetwork;
-import com.powsybl.incubator.simulator.util.ShortCircuitResult;
 import com.powsybl.commons.reporter.Reporter;
 import com.powsybl.iidm.network.Branch;
 import com.powsybl.iidm.network.Bus;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.ThreeWindingsTransformer;
+import com.powsybl.incubator.simulator.util.AdmittanceEquationSystem;
+import com.powsybl.incubator.simulator.util.ShortCircuitFault;
+import com.powsybl.incubator.simulator.util.extensions.ShortCircuitExtensions;
+import com.powsybl.incubator.simulator.util.ShortCircuitResult;
 import com.powsybl.openloadflow.OpenLoadFlowParameters;
 import com.powsybl.openloadflow.ac.outerloop.AcLoadFlowParameters;
 import com.powsybl.openloadflow.graph.EvenShiloachGraphDecrementalConnectivityFactory;
@@ -36,8 +36,6 @@ public abstract class AbstractShortCircuitEngine {
 
     protected final List<LfNetwork> lfNetworks;
 
-    protected ShortCircuitNetwork shortCircuitNetwork; // built in complement to "Network network" to access structured data for shortCircuit computation
-
     public Map<ShortCircuitFault, ShortCircuitResult> resultsPerFault = new HashMap<>();
 
     public List<ShortCircuitResult> resultsAllBusses;
@@ -48,8 +46,8 @@ public abstract class AbstractShortCircuitEngine {
         this.network = Objects.requireNonNull(network);
         this.parameters = Objects.requireNonNull(parameters);
         this.lfNetworks = LfNetwork.load(network, new LfNetworkLoaderImpl(), new LfNetworkParameters(new FirstSlackBusSelector()));
-        this.shortCircuitNetwork = new ShortCircuitNetwork(network, parameters.getAdditionalDataInfo());
         this.acLoadFlowParameters = getAcLoadFlowParametersFromParam();
+        ShortCircuitExtensions.add(network, lfNetworks, parameters.getAdditionalDataInfo());
     }
 
     protected AcLoadFlowParameters getAcLoadFlowParametersFromParam() {

@@ -9,7 +9,7 @@ package com.powsybl.incubator.simulator.util.extensions;
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
-public class ShortCircuitNetworkMachineInfo {
+public class ShortCircuitGenerator {
 
     public enum MachineType {
         SYNCHRONOUS_GEN,
@@ -36,8 +36,8 @@ public class ShortCircuitNetworkMachineInfo {
 
     private final MachineType machineType;
 
-    public ShortCircuitNetworkMachineInfo(double transXd, double stepUpTfoX, MachineType machineType, double transRd, double stepUpTfoR, double subTransRd, double subTransXd,
-                                          boolean grounded, double groundR, double groundX, double coeffRo, double coeffXo) {
+    public ShortCircuitGenerator(double transXd, double stepUpTfoX, MachineType machineType, double transRd, double stepUpTfoR, double subTransRd, double subTransXd,
+                                 boolean grounded, double groundR, double groundX, double coeffRo, double coeffXo) {
         this.transXd = transXd;
         this.stepUpTfoX = stepUpTfoX;
         this.machineType = machineType;

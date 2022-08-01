@@ -7,7 +7,7 @@
 package com.powsybl.incubator.simulator.util;
 
 import com.powsybl.incubator.simulator.util.extensions.ShortCircuitExtensions;
-import com.powsybl.incubator.simulator.util.extensions.ShortCircuitNetworkMachineInfo;
+import com.powsybl.incubator.simulator.util.extensions.ShortCircuitGenerator;
 import com.powsybl.math.matrix.MatrixFactory;
 import com.powsybl.openloadflow.ac.outerloop.AcLoadFlowContext;
 import com.powsybl.openloadflow.ac.outerloop.AcLoadFlowParameters;
@@ -124,12 +124,12 @@ public final class AdmittanceEquationSystem {
         double tmpG = 0.;
         double tmpB = 0.;
         for (LfGenerator lfgen : bus.getGenerators()) { //compute R'd or R"d from generators at bus
-            ShortCircuitNetworkMachineInfo machineInfo = (ShortCircuitNetworkMachineInfo) lfgen.getProperty(ShortCircuitExtensions.PROPERTY_NAME);
-            double rd = machineInfo.getTransRd() + machineInfo.getStepUpTfoR();
-            double xd = machineInfo.getTransXd() + machineInfo.getStepUpTfoX();
+            ShortCircuitGenerator scGen = (ShortCircuitGenerator) lfgen.getProperty(ShortCircuitExtensions.PROPERTY_NAME);
+            double rd = scGen.getTransRd() + scGen.getStepUpTfoR();
+            double xd = scGen.getTransXd() + scGen.getStepUpTfoX();
             if (admittancePeriodType == AdmittancePeriodType.ADM_SUB_TRANSIENT) {
-                xd = machineInfo.getSubTransXd() + machineInfo.getStepUpTfoX();
-                rd = machineInfo.getSubTransRd() + machineInfo.getStepUpTfoR();
+                xd = scGen.getSubTransXd() + scGen.getStepUpTfoX();
+                rd = scGen.getSubTransRd() + scGen.getStepUpTfoR();
             }
 
             double coeffR = 1.0; // coeff used to deduce Ro from Rd. It is equal to 1.0 if we are looking for direct values. If the machine is not grounded, homopolar values are zero, then we set coeffs to 0.
@@ -137,9 +137,9 @@ public final class AdmittanceEquationSystem {
             if (admittanceType == AdmittanceType.ADM_THEVENIN_HOMOPOLAR) {
                 coeffR = 0.;
                 coeffX = 0.;
-                if (machineInfo.isGrounded()) {
-                    coeffR = machineInfo.getCoeffRo();
-                    coeffX = machineInfo.getCoeffXo();
+                if (scGen.isGrounded()) {
+                    coeffR = scGen.getCoeffRo();
+                    coeffX = scGen.getCoeffXo();
                 }
             }
 

@@ -11,7 +11,7 @@ import java.util.Objects;
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
-public class ShortCircuitNetworkTransformerLeg {
+public class ShortCircuitTransformerLeg {
 
     public enum LegConnectionType {
         Y,
@@ -29,11 +29,11 @@ public class ShortCircuitNetworkTransformerLeg {
     private final double rGround = 0;
     private final double xGround = 0;
 
-    public ShortCircuitNetworkTransformerLeg(LegConnectionType legConnectionType) {
+    public ShortCircuitTransformerLeg(LegConnectionType legConnectionType) {
         this(legConnectionType, 0, 0, false);
     }
 
-    public ShortCircuitNetworkTransformerLeg(LegConnectionType legConnectionType, double coeffRo, double coeffXo, boolean freeFluxes) {
+    public ShortCircuitTransformerLeg(LegConnectionType legConnectionType, double coeffRo, double coeffXo, boolean freeFluxes) {
         this.legConnectionType = legConnectionType;
         this.coeffRo = coeffRo;
         this.coeffXo = coeffXo;

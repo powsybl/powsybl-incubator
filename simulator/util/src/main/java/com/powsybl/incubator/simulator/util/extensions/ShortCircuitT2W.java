@@ -11,10 +11,10 @@ import java.util.Objects;
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
-public class ShortCircuitNetworkT2W {
+public class ShortCircuitT2W {
 
-    private final ShortCircuitNetworkTransformerLeg leg1;
-    private final ShortCircuitNetworkTransformerLeg leg2;
+    private final ShortCircuitTransformerLeg leg1;
+    private final ShortCircuitTransformerLeg leg2;
 
     private final double coeffXo; // Xo = Xd * coeffXo : value of the homopolar admittance (in ohms) expressed at the leg2 side
     private final double coeffRo; // Ro = Rd * coeffRo : value of the homopolar resistance (in ohms) expressed at the leg2 side
@@ -23,11 +23,11 @@ public class ShortCircuitNetworkT2W {
 
     private final double kT; //correction factor of the Two Windings Transformer
 
-    ShortCircuitNetworkT2W(ShortCircuitNetworkTransformerLeg leg1, ShortCircuitNetworkTransformerLeg leg2, double coeffRo, double coeffXo, boolean freeFluxes) {
+    ShortCircuitT2W(ShortCircuitTransformerLeg leg1, ShortCircuitTransformerLeg leg2, double coeffRo, double coeffXo, boolean freeFluxes) {
         this(leg1, leg2, coeffRo, coeffXo, freeFluxes, 1d);
     }
 
-    ShortCircuitNetworkT2W(ShortCircuitNetworkTransformerLeg leg1, ShortCircuitNetworkTransformerLeg leg2, double coeffRo, double coeffXo, boolean freeFluxes, double kT) {
+    ShortCircuitT2W(ShortCircuitTransformerLeg leg1, ShortCircuitTransformerLeg leg2, double coeffRo, double coeffXo, boolean freeFluxes, double kT) {
         this.leg1 = Objects.requireNonNull(leg1);
         this.leg2 = Objects.requireNonNull(leg2);
         this.coeffRo = coeffRo;
@@ -36,11 +36,11 @@ public class ShortCircuitNetworkT2W {
         this.kT = kT;
     }
 
-    public ShortCircuitNetworkTransformerLeg getLeg1() {
+    public ShortCircuitTransformerLeg getLeg1() {
         return leg1;
     }
 
-    public ShortCircuitNetworkTransformerLeg getLeg2() {
+    public ShortCircuitTransformerLeg getLeg2() {
         return leg2;
     }
 

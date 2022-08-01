@@ -9,12 +9,12 @@ package com.powsybl.incubator.simulator.util.extensions;
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
-public class ShortCircuitNetworkLine {
+public class ShortCircuitLine {
 
     private final double coeffXo; // Xo = Xd * coeffXo : value of the homopolar admittance (in ohms) expressed at the leg2 side
     private final double coeffRo; // Ro = Rd * coeffRo : value of the homopolar resistance (in ohms) expressed at the leg2 side
 
-    ShortCircuitNetworkLine(double coeffRo, double coeffXo) {
+    ShortCircuitLine(double coeffRo, double coeffXo) {
         this.coeffRo = coeffRo;
         this.coeffXo = coeffXo;
     }

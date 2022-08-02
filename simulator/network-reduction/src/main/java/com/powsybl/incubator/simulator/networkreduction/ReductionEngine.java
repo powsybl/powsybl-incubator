@@ -472,7 +472,7 @@ public class ReductionEngine {
     }
 
     // Example to compute full sytem nodal current injectors I = Y*V
-    public void computeCurrentInjections(AdmittanceEquationSystem.AdmittanceType admittanceType) {
+    /*public void computeCurrentInjections(AdmittanceEquationSystem.AdmittanceType admittanceType) {
         //test with full sytem compute I = Y*V
 
         LfNetwork lfNetwork = lfNetworks.get(0);
@@ -494,7 +494,7 @@ public class ReductionEngine {
         Matrix mI = mV.times(a1);
         System.out.println("i = ");
         mI.print(System.out);
-    }
+    }*/
 
     public void generateReductionHypotheses() {
 

@@ -102,8 +102,13 @@ public class ShortCircuitBalancedTest {
 
         List<FaultResult> frs = scar.getFaultResults();
 
+        String providerName = provider.getName();
+        String providerVersion = provider.getVersion();
+
         assertEquals(4.646530628204346, frs.get(1).getCurrent().getDirectMagnitude(), 0.00001);
         assertEquals(5.100971698760986, frs.get(0).getCurrent().getDirectMagnitude(), 0.00001);
+        assertEquals("OpenShortCircuit", providerName);
+        assertEquals("0.1", providerVersion);
 
     }
 

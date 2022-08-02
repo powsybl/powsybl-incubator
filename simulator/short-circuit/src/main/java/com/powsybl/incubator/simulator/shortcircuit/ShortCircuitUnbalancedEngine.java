@@ -105,6 +105,7 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
         resultsAllBusses  = new ArrayList<>();
         processAdmittanceLinearResolutionResults(directResolution, homopolarResolution, ShortCircuitFault.ShortCircuitType.MONOPHASED);
         processAdmittanceLinearResolutionResults(directResolution, homopolarResolution, ShortCircuitFault.ShortCircuitType.BIPHASED);
+        processAdmittanceLinearResolutionResults(directResolution, homopolarResolution, ShortCircuitFault.ShortCircuitType.BIPHASED_GROUND);
         processAdmittanceLinearResolutionResults(directResolution, homopolarResolution, ShortCircuitFault.ShortCircuitType.BIPHASED_COMMON_SUPPORT);
     }
 
@@ -176,6 +177,7 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
                     mId = biphasedCalculator.getmId();
                     mIi = biphasedCalculator.getmIi();
                 } else if (shortCircuitType == ShortCircuitFault.ShortCircuitType.BIPHASED_GROUND) {
+                    System.out.println(" ----------------> Test biphased ground ");
                     BiphasedGroundShortCircuitCalculator biphasedGrCalculator = new BiphasedGroundShortCircuitCalculator(rdf, xdf, rof, xof, rf, xf, v1dxInit, v1dyInit, mf);
                     biphasedGrCalculator.computeCurrents();
 

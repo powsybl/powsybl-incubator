@@ -6,7 +6,6 @@
  */
 package com.powsybl.incubator.simulator.shortcircuit;
 
-import com.powsybl.incubator.simulator.util.AdmittanceMatrix;
 import com.powsybl.math.matrix.DenseMatrix;
 import com.powsybl.math.matrix.Matrix;
 import com.powsybl.math.matrix.MatrixFactory;
@@ -64,15 +63,6 @@ public abstract class AbstractShortCircuitCalculator {
 
     public abstract void computeCurrents();
 
-    public DenseMatrix getImpedanceMatrix(Matrix tM, AdmittanceMatrix y, Matrix m) {
-        DenseMatrix dM = m.toDense();
-        y.solveTransposed(dM);
-        Matrix z = tM.times(dM);
-        DenseMatrix dZ = z.toDense();
-
-        return dZ;
-    }
-
     public enum BlocType {
         A,
         A2,
@@ -83,13 +73,6 @@ public abstract class AbstractShortCircuitCalculator {
     public static Matrix getMatrixByType(BlocType bt, double scalar, MatrixFactory mf) {
         Matrix m = mf.create(2, 2, 2);
         addMatrixBlocByType(m, bt, scalar);
-        return m;
-    }
-
-    public static Matrix getMatrixByType(BlocType bt1, double scalar1, BlocType bt2, double scalar2, MatrixFactory mf) {
-        Matrix m = mf.create(4, 2, 2);
-        addMatrixBlocByType(m, bt1, scalar1);
-        addMatrixBlocByType(m, bt2, scalar2);
         return m;
     }
 

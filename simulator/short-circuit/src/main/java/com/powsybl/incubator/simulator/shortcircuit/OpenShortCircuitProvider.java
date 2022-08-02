@@ -19,7 +19,6 @@ import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
 import com.powsybl.math.matrix.MatrixFactory;
-import com.powsybl.math.matrix.SparseMatrixFactory;
 import com.powsybl.openloadflow.OpenLoadFlowProvider;
 import com.powsybl.security.LimitViolation;
 import com.powsybl.shortcircuit.*;
@@ -43,9 +42,9 @@ public class OpenShortCircuitProvider implements ShortCircuitAnalysisProvider {
 
     private final MatrixFactory matrixFactory;
 
-    public OpenShortCircuitProvider() {
-        this(new SparseMatrixFactory());
-    }
+    //public OpenShortCircuitProvider() {
+    //    this(new SparseMatrixFactory());
+    //}
 
     public OpenShortCircuitProvider(MatrixFactory matrixFactory) {
         this.matrixFactory = Objects.requireNonNull(matrixFactory);

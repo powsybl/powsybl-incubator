@@ -177,7 +177,6 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
                     mId = biphasedCalculator.getmId();
                     mIi = biphasedCalculator.getmIi();
                 } else if (shortCircuitType == ShortCircuitFault.ShortCircuitType.BIPHASED_GROUND) {
-                    System.out.println(" ----------------> Test biphased ground ");
                     BiphasedGroundShortCircuitCalculator biphasedGrCalculator = new BiphasedGroundShortCircuitCalculator(rdf, xdf, rof, xof, rf, xf, v1dxInit, v1dyInit, mf);
                     biphasedGrCalculator.computeCurrents();
 

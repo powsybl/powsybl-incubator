@@ -40,6 +40,10 @@ public abstract class AbstractShortCircuitEngine {
 
     public List<ShortCircuitResult> resultsAllBusses;
 
+    protected List<ShortCircuitFault> solverFaultList; // list of faults provided to the solver (not including biphased common support faults)
+
+    protected List<ShortCircuitFault> solverBiphasedFaultList; // list of biphased common support faults provided to the solver
+
     protected final AcLoadFlowParameters acLoadFlowParameters;
 
     public AbstractShortCircuitEngine(Network network, ShortCircuitEngineParameters parameters) {

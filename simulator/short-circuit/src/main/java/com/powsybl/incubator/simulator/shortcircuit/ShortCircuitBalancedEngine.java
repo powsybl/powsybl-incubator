@@ -35,10 +35,10 @@ public class ShortCircuitBalancedEngine extends AbstractShortCircuitEngine {
             buildSystematicList(ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
         }
 
-        List<ShortCircuitFault> faultList = buildFaultListsFromInputs().getKey();
+        solverFaultList = buildFaultListsFromInputs().getKey();
 
         AdmittanceLinearResolutionParameters linearResolutionParameters = new AdmittanceLinearResolutionParameters(acLoadFlowParameters,
-                parameters.getMatrixFactory(), faultList, parameters.isVoltageUpdate(), getAdmittanceVoltageProfileTypeFromParam(), getAdmittancePeriodTypeFromParam(), AdmittanceEquationSystem.AdmittanceType.ADM_THEVENIN,
+                parameters.getMatrixFactory(), solverFaultList, parameters.isVoltageUpdate(), getAdmittanceVoltageProfileTypeFromParam(), getAdmittancePeriodTypeFromParam(), AdmittanceEquationSystem.AdmittanceType.ADM_THEVENIN,
                 parameters.isIgnoreShunts(), parameters.getAdditionalDataInfo(), parameters.getNorm());
 
         AdmittanceLinearResolution directResolution = new AdmittanceLinearResolution(network,  linearResolutionParameters);
@@ -56,9 +56,8 @@ public class ShortCircuitBalancedEngine extends AbstractShortCircuitEngine {
 
         for (AdmittanceLinearResolution.AdmittanceLinearResolutionResult linearResolutionResult : directResolution.results) {
             LfBus bus = linearResolutionResult.getBus();
-            String tmpBusId = bus.getId();
             ShortCircuitFault scf = null; // = parameters.getShortCircuitFaults().get(tmpVl);
-            for (ShortCircuitFault scfe : parameters.getShortCircuitFaults()) { //TODO : improve to avoid double loop
+            for (ShortCircuitFault scfe : solverFaultList) { //TODO : improve to avoid double loop
                 if (bus.getId().equals(scfe.getLfBusInfo())) {
                     scf = scfe;
                 }
@@ -87,7 +86,7 @@ public class ShortCircuitBalancedEngine extends AbstractShortCircuitEngine {
             double dvr = -ifr * linearResolutionResult.getEnBus().get(0, 0) + ifi * linearResolutionResult.getEnBus().get(1, 0);
             double dvi = -ifr * linearResolutionResult.getEnBus().get(1, 0) - ifi * linearResolutionResult.getEnBus().get(0, 0);
 
-            ShortCircuitResult res = new ShortCircuitResult(bus.getId(), tmpBusId, scf, ifr, ifi, bus, rth, xth, vxInit, vyInit, dvr, dvi, parameters.getMatrixFactory(), linearResolutionResult.getEqSysFeeders(), parameters.getNorm());
+            ShortCircuitResult res = new ShortCircuitResult(bus.getId(), bus.getId(), scf, ifr, ifi, bus, rth, xth, vxInit, vyInit, dvr, dvi, parameters.getMatrixFactory(), linearResolutionResult.getEqSysFeeders(), parameters.getNorm());
             if (parameters.voltageUpdate) {
                 //we get the lfNetwork to process the results
                 res.addLfNetwork(directResolution.lfNetworkResult);

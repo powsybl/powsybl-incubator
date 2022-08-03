@@ -78,9 +78,9 @@ public class ShortCircuitResult {
 
     private double rd; // equivalent direct impedance
 
-    private double xd; // equivalent direct impedance
+    private double xd;
 
-    private double ri; // equivalent direct impedance
+    private double ri; // equivalent inverse impedance
 
     private double xi;
 
@@ -242,7 +242,7 @@ public class ShortCircuitResult {
 
     }
 
-    public void updateVoltageResult() {
+    public void updateFeedersResult() {
         //System.out.println(" VL name = " + shortCircuitVoltageLevelLocation);
         //System.out.println(" bus name = " + shortCircuitLfbusLocation);
         //System.out.println(" Icc = " + getIcc());
@@ -265,11 +265,11 @@ public class ShortCircuitResult {
             feedersAtBusResultsDirect = new HashMap<>(); // TODO : homopolar
 
             for (LfBus bus : lfNetwork.getBuses()) {
-                int busNum = bus.getNum();
-                double dvx = busNum2Dv.get(busNum).get(2, 0);
-                double dvy = busNum2Dv.get(busNum).get(3, 0);
-                double vx = dvx + ethx;
-                double vy = dvy + ethy;
+                //int busNum = bus.getNum();
+                //double dvx = busNum2Dv.get(busNum).get(2, 0);
+                //double dvy = busNum2Dv.get(busNum).get(3, 0);
+                //double vx = dvx + ethx;
+                //double vy = dvy + ethy;
 
                 //System.out.println(" dVd(" + bus.getId() + ") = " + dvx + " + j(" + dvy + ")  Module = " + bus.getNominalV() * Math.sqrt(vx * vx + vy * vy));
                 //System.out.println(" dVo(" + bus.getId() + ") = " + bus2dv.get(busNum).get(0, 0) + " + j(" + bus2dv.get(busNum).get(1, 0) + ")");
@@ -357,18 +357,17 @@ public class ShortCircuitResult {
         return Math.sqrt(3) * getIcc() * lfBus.getV() * lfBus.getNominalV(); //TODO: check formula
     }
 
-    public void setVoltageProfileUpdate() {
+    public void setTrueVoltageProfileUpdate() {
         isVoltageProfileUpdated = true;
     }
 
-    public List<DenseMatrix> createEmptyFortescueVoltageVector(int nbBusses) {
+    public void createEmptyFortescueVoltageVector(int nbBusses) {
         List<DenseMatrix> busNum2Dv = new ArrayList<>();
         for (int i = 0;  i < nbBusses; i++) {
             DenseMatrix mdV = matrixFactory.create(6, 1, 6).toDense();
             busNum2Dv.add(mdV);
         }
         this.busNum2Dv = busNum2Dv;
-        return busNum2Dv;
     }
 
     public void fillVoltageInFortescueVector(int busNum, double dVdx, double dVdy) {
@@ -385,61 +384,8 @@ public class ShortCircuitResult {
         this.busNum2Dv.get(busNum).add(5, 0, dViy);
     }
 
-    public void setBusNum2Dv(List<DenseMatrix> busNum2Dv) {
-        this.busNum2Dv = busNum2Dv;
-    }
-
-    public void addLfNetwork(LfNetwork lfNetwork) {
+    public void setLfNetwork(LfNetwork lfNetwork) {
         this.lfNetwork = lfNetwork;
-    }
-
-    static DenseMatrix getFortescueMatrix(MatrixFactory matrixFactory) {
-
-        // [G1]   [ 1  1  1 ]   [Gh]
-        // [G2] = [ 1  a²  a] * [Gd]
-        // [G3]   [ 1  a  a²]   [Gi]
-
-        Matrix mFortescue = matrixFactory.create(6, 6, 6);
-        //column 1
-        mFortescue.add(0, 0, 1.);
-        mFortescue.add(1, 1, 1.);
-
-        mFortescue.add(2, 0, 1.);
-        mFortescue.add(3, 1, 1.);
-
-        mFortescue.add(4, 0, 1.);
-        mFortescue.add(5, 1, 1.);
-
-        //column 2
-        mFortescue.add(0, 2, 1.);
-        mFortescue.add(1, 3, 1.);
-
-        mFortescue.add(2, 2, 1. / 2.);
-        mFortescue.add(2, 3, -Math.sqrt(3.) / 2.);
-        mFortescue.add(3, 2, Math.sqrt(3.) / 2.);
-        mFortescue.add(3, 3, 1. / 2.);
-
-        mFortescue.add(4, 2, -1. / 2.);
-        mFortescue.add(4, 3, -Math.sqrt(3.) / 2.);
-        mFortescue.add(5, 2, Math.sqrt(3.) / 2.);
-        mFortescue.add(5, 3, -1. / 2.);
-
-        //column 3
-        mFortescue.add(0, 4, 1.);
-        mFortescue.add(1, 5, 1.);
-
-        mFortescue.add(2, 4, -1. / 2.);
-        mFortescue.add(2, 5, -Math.sqrt(3.) / 2.);
-        mFortescue.add(3, 4, Math.sqrt(3.) / 2.);
-        mFortescue.add(3, 5, -1. / 2.);
-
-        mFortescue.add(4, 4, 1. / 2.);
-        mFortescue.add(4, 5, -Math.sqrt(3.) / 2.);
-        mFortescue.add(5, 4, Math.sqrt(3.) / 2.);
-        mFortescue.add(5, 5, 1. / 2.);
-
-        return mFortescue.toDense();
-
     }
 
     static DenseMatrix getAdmittanceMatrixBranch(LfBranch branch, LfBus bus1, LfBus bus2, MatrixFactory matrixFactory,

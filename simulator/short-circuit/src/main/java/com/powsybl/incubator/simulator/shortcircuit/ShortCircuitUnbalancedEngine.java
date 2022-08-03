@@ -219,7 +219,7 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
                     throw new IllegalArgumentException(" Post-processing of short circuit type = " + shortCircuitType + "not yet implemented");
                 }
 
-                res.updateVoltageResult();
+                res.updateFeedersResult(); // feeders are updated only if voltageUpdate is made. TODO : see if update of homopolar feeders are to be updated
                 resultsPerFault.put(scf, res);
                 resultsAllBusses.add(res);
             }
@@ -259,9 +259,8 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
                 mf, equationSystemFeedersDirect, equationSystemFeedersHomopolar, parameters.getNorm());
 
         if (parameters.voltageUpdate) {
-            res.addLfNetwork(directResolution.lfNetworkResult);
-            //res.setBus2dv(new HashMap<>());
-            res.setVoltageProfileUpdate();
+            res.setLfNetwork(directResolution.lfNetworkResult);
+            res.setTrueVoltageProfileUpdate();
             // The post-fault voltage values for the network busses are computed as follow :
             // [ Vof ] = -inv(Yo) * M * [ Iof ]
             // [ Vdf ] = -inv(Yd) * M * [ Idf ] + [ V(init) ]
@@ -270,7 +269,7 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
             // dMd = inv(Yd) * M
 
             int nbBusses = directResolution.lfNetworkResult.getBuses().size();
-            List<DenseMatrix> busNum2Dv = res.createEmptyFortescueVoltageVector(nbBusses);
+            res.createEmptyFortescueVoltageVector(nbBusses);
 
             for (Map.Entry<Integer, DenseMatrix> vd : directResult.getDv().entrySet()) {
                 int busNum = vd.getKey();
@@ -344,9 +343,8 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
                 lfBus2);
 
         if (parameters.voltageUpdate) {
-            res.addLfNetwork(directResolution.lfNetworkResult);
-            //res.setBus2dv(new HashMap<>());
-            res.setVoltageProfileUpdate();
+            res.setLfNetwork(directResolution.lfNetworkResult);
+            res.setTrueVoltageProfileUpdate();
             // The post-fault voltage values for the network busses are computed as follow :
             // [ Vof ] = -inv(Yo) * M * [ Iof ]
             // [ Vdf ] = -inv(Yd) * M * [ Idf ] + [ V(init) ]
@@ -355,7 +353,7 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
             // dMd = inv(Yd) * M
 
             int nbBusses = directResolution.lfNetworkResult.getBuses().size();
-            List<DenseMatrix> busNum2Dv = res.createEmptyFortescueVoltageVector(nbBusses);
+            res.createEmptyFortescueVoltageVector(nbBusses);
 
             for (Map.Entry<Integer, DenseMatrix> vd : directResult.getDv().entrySet()) {
                 int busNum = vd.getKey();

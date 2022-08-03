@@ -69,7 +69,7 @@ public class ShortCircuitBalancedTest {
 
         scbEngine.run();
 
-        scbEngine.resultsPerFault.get(sc2).updateVoltageResult();
+        scbEngine.resultsPerFault.get(sc2).updateFeedersResult();
 
         assertEquals(-0.4316661015058293, scbEngine.resultsPerFault.get(sc2).getIdx(), 0.000001);
         assertEquals(-4.617486568622836, scbEngine.resultsPerFault.get(sc2).getIdy(), 0.000001);

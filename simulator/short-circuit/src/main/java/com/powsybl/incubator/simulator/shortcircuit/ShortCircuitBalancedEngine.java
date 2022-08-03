@@ -13,7 +13,6 @@ import com.powsybl.openloadflow.network.LfBus;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -96,15 +95,15 @@ public class ShortCircuitBalancedEngine extends AbstractShortCircuitEngine {
                 ShortCircuitResult res = new ShortCircuitResult(scf, bus, ifr, ifi, rth, xth, vxInit, vyInit, dvr, dvi, parameters.getMatrixFactory(), linearResolutionResult.getEqSysFeeders(), parameters.getNorm());
                 if (parameters.voltageUpdate) {
                     //we get the lfNetwork to process the results
-                    res.addLfNetwork(directResolution.lfNetworkResult);
+                    res.setLfNetwork(directResolution.lfNetworkResult);
 
-                    res.setVoltageProfileUpdate();
+                    res.setTrueVoltageProfileUpdate();
                     // The post-fault voltage values are computed as follow :
                     // [Vr] = [Vr_init] - ifr * [e_dVr] + ifi * [e_dVi]
                     // [Vi] = [Vi_init] - ifr * [e_dVi] - ifi * [e_dVr]
                     // we compute the delta values to be added to Vinit if we want the post-fault voltage :
                     int nbBusses = directResolution.lfNetworkResult.getBuses().size();
-                    List<DenseMatrix> busNum2Dv = res.createEmptyFortescueVoltageVector(nbBusses);
+                    res.createEmptyFortescueVoltageVector(nbBusses);
 
                     for (Map.Entry<Integer, DenseMatrix> vd : linearResolutionResult.getDv().entrySet()) {
                         int busNum = vd.getKey();
@@ -118,7 +117,7 @@ public class ShortCircuitBalancedEngine extends AbstractShortCircuitEngine {
                     }
                 }
 
-                res.updateVoltageResult();
+                res.updateFeedersResult(); // feeders are updated only if voltageUpdate is made
                 resultsPerFault.put(scf, res);
                 resultsAllBusses.add(res);
             }

@@ -56,7 +56,7 @@ public class ShotCircuitBiphasedCommonSupportTest {
         MatrixFactory  matrixFactory = new DenseMatrixFactory();
 
         List<ShortCircuitFault> faultList = new ArrayList<>();
-        ShortCircuitFault sc1 = new ShortCircuitFault("B2", "B3", 0., 0., ShortCircuitFault.ShortCircuitType.BIPHASED_COMMON_SUPPORT, true, ShortCircuitFault.ShortCircuitBiphasedType.C1_A2);
+        ShortCircuitFault sc1 = new ShortCircuitFault("B2", "B3", "sc1", 0., 0., ShortCircuitFault.ShortCircuitType.BIPHASED_COMMON_SUPPORT, true, ShortCircuitFault.ShortCircuitBiphasedType.C1_A2);
         faultList.add(sc1);
 
         ShortCircuitEngineParameters.PeriodType periodType = ShortCircuitEngineParameters.PeriodType.SUB_TRANSIENT;
@@ -89,8 +89,8 @@ public class ShotCircuitBiphasedCommonSupportTest {
         MatrixFactory  matrixFactory = new DenseMatrixFactory();
 
         List<ShortCircuitFault> faultList = new ArrayList<>();
-        ShortCircuitFault sc1 = new ShortCircuitFault("B2", "B3", 0., 0., ShortCircuitFault.ShortCircuitType.BIPHASED_COMMON_SUPPORT, true, ShortCircuitFault.ShortCircuitBiphasedType.C1_B2);
-        ShortCircuitFault sc2 = new ShortCircuitFault("B4", "B5", 0., 0., ShortCircuitFault.ShortCircuitType.BIPHASED_COMMON_SUPPORT, true, ShortCircuitFault.ShortCircuitBiphasedType.C1_C2);
+        ShortCircuitFault sc1 = new ShortCircuitFault("B2", "B3", "sc1", 0., 0., ShortCircuitFault.ShortCircuitType.BIPHASED_COMMON_SUPPORT, true, ShortCircuitFault.ShortCircuitBiphasedType.C1_B2);
+        ShortCircuitFault sc2 = new ShortCircuitFault("B4", "B5", "sc2", 0., 0., ShortCircuitFault.ShortCircuitType.BIPHASED_COMMON_SUPPORT, true, ShortCircuitFault.ShortCircuitBiphasedType.C1_C2);
         // TODO : a list that contains BIPHASED_COMMON_SUPPORT with the same nodes is not supported yet : FIX_ME
         faultList.add(sc1);
         faultList.add(sc2);

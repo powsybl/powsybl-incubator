@@ -57,8 +57,8 @@ public class TheveninTest {
         LoadFlowResult resultnt4 = loadFlowRunner.run(network, parameters);
 
         List<ShortCircuitFault> faultsList = new ArrayList<>();
-        ShortCircuitFault f1 = new ShortCircuitFault("B4", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND, true);
-        ShortCircuitFault f2 = new ShortCircuitFault("B2", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND, true);
+        ShortCircuitFault f1 = new ShortCircuitFault("B4", "f1", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND, true);
+        ShortCircuitFault f2 = new ShortCircuitFault("B2", "f2", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND, true);
         faultsList.add(f1);
         faultsList.add(f2);
 
@@ -92,10 +92,10 @@ public class TheveninTest {
         AdditionalDataInfo additionalDataInfo = result.getValue();
 
         List<ShortCircuitFault> faultsList = new ArrayList<>();
-        ShortCircuitFault f1 = new ShortCircuitFault("B2", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND, true);
-        ShortCircuitFault f2 = new ShortCircuitFault("B5", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND, true);
-        ShortCircuitFault f3 = new ShortCircuitFault("B7", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND, true);
-        ShortCircuitFault f4 = new ShortCircuitFault("B8", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND, true);
+        ShortCircuitFault f1 = new ShortCircuitFault("B2", "f1", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND, true);
+        ShortCircuitFault f2 = new ShortCircuitFault("B5", "f2", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND, true);
+        ShortCircuitFault f3 = new ShortCircuitFault("B7", "f3", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND, true);
+        ShortCircuitFault f4 = new ShortCircuitFault("B8", "f4", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND, true);
         faultsList.add(f1);
         faultsList.add(f2);
         faultsList.add(f3);
@@ -129,10 +129,10 @@ public class TheveninTest {
         AdditionalDataInfo additionalDataInfo = result.getValue();
 
         List<ShortCircuitFault> faultsList = new ArrayList<>();
-        ShortCircuitFault f1 = new ShortCircuitFault("B2", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND, true);
-        ShortCircuitFault f2 = new ShortCircuitFault("B5", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND, true);
-        ShortCircuitFault f3 = new ShortCircuitFault("B7", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND, true);
-        ShortCircuitFault f4 = new ShortCircuitFault("B8", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND, true);
+        ShortCircuitFault f1 = new ShortCircuitFault("B2", "f1", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND, true);
+        ShortCircuitFault f2 = new ShortCircuitFault("B5", "f2", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND, true);
+        ShortCircuitFault f3 = new ShortCircuitFault("B7", "f3", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND, true);
+        ShortCircuitFault f4 = new ShortCircuitFault("B8", "f4", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND, true);
         faultsList.add(f1);
         faultsList.add(f2);
         faultsList.add(f3);

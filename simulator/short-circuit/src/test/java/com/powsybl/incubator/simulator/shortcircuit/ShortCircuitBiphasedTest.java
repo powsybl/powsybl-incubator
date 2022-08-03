@@ -50,7 +50,7 @@ public class ShortCircuitBiphasedTest {
         MatrixFactory  matrixFactory = new DenseMatrixFactory();
 
         List<ShortCircuitFault> faultList = new ArrayList<>();
-        ShortCircuitFault sc1 = new ShortCircuitFault("B3", 0., 0., ShortCircuitFault.ShortCircuitType.BIPHASED, false);
+        ShortCircuitFault sc1 = new ShortCircuitFault("B3", "sc1", 0., 0., ShortCircuitFault.ShortCircuitType.BIPHASED, false);
         faultList.add(sc1);
 
         ShortCircuitEngineParameters.PeriodType periodType = ShortCircuitEngineParameters.PeriodType.SUB_TRANSIENT;

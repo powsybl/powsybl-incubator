@@ -113,7 +113,7 @@ public class OpenShortCircuitProvider implements ShortCircuitAnalysisProvider {
             double xFault = fault.getXToGround();
             Bus bus = network.getBusBreakerView().getBus(elementId);
             String busId = bus.getId();
-            ShortCircuitFault sc = new ShortCircuitFault(busId, rFault, xFault, ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND, true);
+            ShortCircuitFault sc = new ShortCircuitFault(busId, busId, rFault, xFault, ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND, true);
             scList.add(sc);
 
             // TODO improve:

@@ -13,7 +13,7 @@ import org.apache.commons.math3.util.Pair;
  */
 public class ShortCircuitFault {
 
-    public ShortCircuitFault(String input, double zfr, double zfi, ShortCircuitType type, boolean voltageUpdate) {
+    public ShortCircuitFault(String input, String faultId, double zfr, double zfi, ShortCircuitType type, boolean voltageUpdate) {
         this.zfr = zfr;
         this.zfi = zfi;
         this.voltageUpdate = voltageUpdate;
@@ -23,10 +23,11 @@ public class ShortCircuitFault {
         this.busLocationBiPhased = "";
         this.type = type;
         this.inputByBus = false;
+        this.faultId = faultId;
     }
 
-    public ShortCircuitFault(String input, String input2, double zfr, double zfi, ShortCircuitType type, boolean voltageUpdate, ShortCircuitBiphasedType biphasedType) {
-        this(input, zfr, zfi, type, voltageUpdate);
+    public ShortCircuitFault(String input, String input2, String faultId, double zfr, double zfi, ShortCircuitType type, boolean voltageUpdate, ShortCircuitBiphasedType biphasedType) {
+        this(input, faultId, zfr, zfi, type, voltageUpdate);
         this.busLocationBiPhased = input2;
         this.biphasedType = biphasedType;
     }
@@ -49,6 +50,8 @@ public class ShortCircuitFault {
     // TODO : remove once input by bus is OK
     private String shortCircuitVoltageLevelLocation;
     private String shortCircuitVoltageLevelLocationBiPhased;
+
+    private String faultId;
 
     private boolean inputByBus; // true if input given by bus
 
@@ -124,5 +127,9 @@ public class ShortCircuitFault {
 
     public String getLfBusInfo() {
         return lfBusInfo;
+    }
+
+    public String getFaultId() {
+        return faultId;
     }
 }

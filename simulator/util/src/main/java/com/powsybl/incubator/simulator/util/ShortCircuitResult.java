@@ -23,10 +23,6 @@ public class ShortCircuitResult {
 
     public class CommonSupportResult {
 
-        private String shortCircuitVoltageLevel2Location;
-
-        private String shortCircuitLfbus2Location;
-
         private LfBus lfBus2; // FIXME : might be wrongly overwritten in the "resultsPerFault" presentation
 
         private double eth2x;
@@ -37,10 +33,9 @@ public class ShortCircuitResult {
 
         private DenseMatrix v2Fortescue; //fortescue vector of voltages
 
-        CommonSupportResult(String shortCircuitVoltageLevel2Location, String shortCircuitLfbus2Location, LfBus lfBus2, double eth2x, double eth2y, double i2dx, double i2dy, double i2ox, double i2oy, double i2ix, double i2iy,
+        CommonSupportResult(LfBus lfBus2, double eth2x, double eth2y,
+                            double i2dx, double i2dy, double i2ox, double i2oy, double i2ix, double i2iy,
                             double dv2dx, double dv2dy, double dv2ox, double dv2oy, double dv2ix, double dv2iy) {
-            this.shortCircuitLfbus2Location = shortCircuitLfbus2Location;
-            this.shortCircuitVoltageLevel2Location = shortCircuitVoltageLevel2Location;
             this.lfBus2 = lfBus2;
             this.eth2x = eth2x;
             this.eth2y = eth2y;
@@ -74,10 +69,6 @@ public class ShortCircuitResult {
     }
 
     private final MatrixFactory matrixFactory;
-
-    private String shortCircuitVoltageLevelLocation;
-
-    private String shortCircuitLfbusLocation;
 
     private LfBus lfBus; // FIXME : might be wrongly overwritten in the "resultsPerFault" presentation
 
@@ -120,13 +111,11 @@ public class ShortCircuitResult {
 
     private CommonSupportResult commonSupportResult; // used only for biphased with common support faults
 
-    public ShortCircuitResult(String shortCircuitVoltageLevelLocation, String shortCircuitLfbusLocation, ShortCircuitFault shortCircuitFault, double ifr, double ifi, LfBus lfBus, double rth, double xth, double ethr, double ethi, double dvr, double dvi,
+    public ShortCircuitResult(ShortCircuitFault shortCircuitFault, LfBus lfBus,
+                              double ifr, double ifi,
+                              double rth, double xth, double ethr, double ethi, double dvr, double dvi,
                               MatrixFactory matrixFactory, ShortCircuitEquationSystemFeeders eqSysFeeders, ShortCircuitNorm norm) {
-        //case of a triphased fault
-        //this.fault = fault;
         this.matrixFactory = Objects.requireNonNull(matrixFactory);
-        this.shortCircuitVoltageLevelLocation = shortCircuitVoltageLevelLocation;
-        this.shortCircuitLfbusLocation = shortCircuitLfbusLocation;
         this.lfBus = lfBus;
         this.eqSysFeedersDirect = eqSysFeeders;
         this.shortCircuitFault = shortCircuitFault;
@@ -180,16 +169,12 @@ public class ShortCircuitResult {
 
     }
 
-    public ShortCircuitResult(String shortCircuitVoltageLevelLocation, String shortCircuitLfbusLocation, ShortCircuitFault shortCircuitFault,
+    public ShortCircuitResult(ShortCircuitFault shortCircuitFault, LfBus lfBus,
                               double idx, double idy, double iox, double ioy, double iix, double iiy,
-                              LfBus lfBus, double rd, double xd, double ro, double xo, double ri, double xi,
+                              double rd, double xd, double ro, double xo, double ri, double xi,
                               double vdxinit, double vdyinit, double dvdx, double dvdy, double dvox, double dvoy, double dvix, double dviy,
                               MatrixFactory matrixFactory, ShortCircuitEquationSystemFeeders eqSysFeedersDirect, ShortCircuitEquationSystemFeeders eqSysFeedersHomopolar, ShortCircuitNorm norm) {
-        //case of a triphased fault
-        //this.fault = fault;
         this.matrixFactory = Objects.requireNonNull(matrixFactory);
-        this.shortCircuitVoltageLevelLocation = shortCircuitVoltageLevelLocation;
-        this.shortCircuitLfbusLocation = shortCircuitLfbusLocation;
         this.lfBus = lfBus;
         this.eqSysFeedersDirect = eqSysFeedersDirect;
         this.eqSysFeedersHomopolar = eqSysFeedersHomopolar;
@@ -237,22 +222,23 @@ public class ShortCircuitResult {
 
     }
 
-    public ShortCircuitResult(String shortCircuitVoltageLevelLocation, String shortCircuitLfbusLocation, ShortCircuitFault shortCircuitFault,
+    public ShortCircuitResult(ShortCircuitFault shortCircuitFault, LfBus lfBus,
                               double idx, double idy, double iox, double ioy, double iix, double iiy,
-                              LfBus lfBus, double rd, double xd, double ro, double xo, double ri, double xi,
+                              double rd, double xd, double ro, double xo, double ri, double xi,
                               double vdxinit, double vdyinit, double dvdx, double dvdy, double dvox, double dvoy, double dvix, double dviy,
                               MatrixFactory matrixFactory, ShortCircuitEquationSystemFeeders eqSysFeedersDirect, ShortCircuitEquationSystemFeeders eqSysFeedersHomopolar, ShortCircuitNorm norm,
                               double i2dx, double i2dy, double i2ox, double i2oy, double i2ix, double i2iy,
                               double v2dxinit, double v2dyinit, double dv2dx, double dv2dy, double dv2ox, double dv2oy, double dv2ix, double dv2iy,
-                              LfBus lfBus2, String shortCircuitVoltageLevel2Location, String shortCircuitLfbus2Location) {
-        this(shortCircuitVoltageLevelLocation, shortCircuitLfbusLocation, shortCircuitFault,
+                              LfBus lfBus2) {
+        this(shortCircuitFault, lfBus,
                 idx, idy, iox, ioy, iix, iiy,
-                lfBus, rd, xd, ro, xo, ri, xi,
+                rd, xd, ro, xo, ri, xi,
                 vdxinit, vdyinit, dvdx, dvdy, dvox, dvoy, dvix, dviy,
                 matrixFactory, eqSysFeedersDirect, eqSysFeedersHomopolar, norm);
 
-        this.commonSupportResult = new CommonSupportResult(shortCircuitVoltageLevel2Location, shortCircuitLfbus2Location, lfBus2,
-                v2dxinit, v2dyinit, i2dx, i2dy, i2ox, i2oy, i2ix,  i2iy, dv2dx, dv2dy, dv2ox, dv2oy, dv2ix, dv2iy);
+        this.commonSupportResult = new CommonSupportResult(lfBus2, v2dxinit, v2dyinit,
+                i2dx, i2dy, i2ox, i2oy, i2ix,  i2iy,
+                dv2dx, dv2dy, dv2ox, dv2oy, dv2ix, dv2iy);
 
     }
 

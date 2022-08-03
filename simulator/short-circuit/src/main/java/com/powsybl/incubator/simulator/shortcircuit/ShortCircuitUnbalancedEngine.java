@@ -149,7 +149,7 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
 
                     res =  buildUnbalancedResult(mId, mIo, mIi, rdf, xdf, rof, xof, mf,
                             directResult, homopolarResult,
-                            lfBus1.getId(), lfBus1.getId(), scf, lfBus1, v1dxInit, v1dyInit, directResolution);
+                            scf, lfBus1, v1dxInit, v1dyInit, directResolution);
 
                 } else if (shortCircuitType == ShortCircuitFault.ShortCircuitType.BIPHASED_COMMON_SUPPORT) {
                     // TODO : We only handle the first biphased of the list for now, check how to handle this in the final version
@@ -206,16 +206,14 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
                     Matrix mdVi = biphasedCommonCalculator.getmVi();
 
                     LfBus lfBus2 = biphasedDirectResult.getBus2();
-                    String tmpVl2 = lfBus2.getVoltageLevelId();
-                    String tmpBus2Id = lfBus2.getId();
 
                     double v2dxInit = biphasedDirectResult.getV2x();
                     double v2dyInit = biphasedDirectResult.getV2y();
 
                     res =  buildUnbalancedCommunSuppportResult(mId, mIo, mIi, mI2d, mI2o, mI2i, mdVd, mdVo, mdVi, rdf, xdf, rof, xof, mf,
                             directResult, homopolarResult, scf,
-                            lfBus1, lfBus1.getId(), lfBus1.getId(), v1dxInit, v1dyInit, directResolution,
-                            lfBus2, tmpVl2, tmpBus2Id, v2dxInit, v2dyInit, biphasedDirectResult, biphasedHomopolarResult);
+                            lfBus1, v1dxInit, v1dyInit, directResolution,
+                            lfBus2, v2dxInit, v2dyInit, biphasedDirectResult, biphasedHomopolarResult);
 
                 } else {
                     throw new IllegalArgumentException(" Post-processing of short circuit type = " + shortCircuitType + "not yet implemented");
@@ -232,7 +230,7 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
     public ShortCircuitResult buildUnbalancedResult(Matrix mId, Matrix mIo, Matrix mIi, double rdf, double xdf, double rof, double xof, MatrixFactory mf,
                                                     AdmittanceLinearResolution.AdmittanceLinearResolutionResult directResult,
                                                     AdmittanceLinearResolution.AdmittanceLinearResolutionResult homopolarResult,
-                                                    String tmpVl, String tmpBusId, ShortCircuitFault scf, LfBus lfBus1, double v1dxInit, double v1dyInit, AdmittanceLinearResolution directResolution) {
+                                                    ShortCircuitFault scf, LfBus lfBus1, double v1dxInit, double v1dyInit, AdmittanceLinearResolution directResolution) {
         //get the voltage vectors
         // Vo :
         // [vox]      [ rof  -xof ]   [ iox ]
@@ -249,11 +247,11 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
         ShortCircuitEquationSystemFeeders equationSystemFeedersDirect =  directResult.getEqSysFeeders();
         ShortCircuitEquationSystemFeeders equationSystemFeedersHomopolar =  homopolarResult.getEqSysFeeders();
 
-        ShortCircuitResult res = new ShortCircuitResult(tmpVl, tmpBusId, scf,
+        ShortCircuitResult res = new ShortCircuitResult(scf, lfBus1,
                 mId.toDense().get(0, 0), mId.toDense().get(1, 0),
                 mIo.toDense().get(0, 0), mIo.toDense().get(1, 0),
                 mIi.toDense().get(0, 0), mIi.toDense().get(1, 0),
-                lfBus1, rdf, xdf, rof, xof, rdf, xdf,
+                rdf, xdf, rof, xof, rdf, xdf,
                 v1dxInit, v1dyInit,
                 -minusVd.toDense().get(0, 0), -minusVd.toDense().get(1, 0),
                 -minusVo.toDense().get(0, 0), -minusVo.toDense().get(1, 0),
@@ -316,8 +314,8 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
     public ShortCircuitResult buildUnbalancedCommunSuppportResult(Matrix mId, Matrix mIo, Matrix mIi, Matrix mI2d, Matrix mI2o, Matrix mI2i, Matrix mVd, Matrix mVo, Matrix mVi, double rdf, double xdf, double rof, double xof, MatrixFactory mf,
                                                     AdmittanceLinearResolution.AdmittanceLinearResolutionResult directResult,
                                                     AdmittanceLinearResolution.AdmittanceLinearResolutionResult homopolarResult, ShortCircuitFault scf,
-                                                                  LfBus lfBus1, String tmpVl, String tmpBusId, double v1dxInit, double v1dyInit, AdmittanceLinearResolution directResolution,
-                                                                  LfBus lfBus2, String tmpVl2, String tmpBus2Id, double v2dxInit, double v2dyInit,
+                                                                  LfBus lfBus1, double v1dxInit, double v1dyInit, AdmittanceLinearResolution directResolution,
+                                                                  LfBus lfBus2, double v2dxInit, double v2dyInit,
                                                                   AdmittanceLinearResolution.AdmittanceLinearResolutionResult.AdmittanceLinearResolutionResultBiphased biphasedDirectResult,
                                                                   AdmittanceLinearResolution.AdmittanceLinearResolutionResult.AdmittanceLinearResolutionResultBiphased biphasedHomopolarResult) {
 
@@ -326,11 +324,11 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
         ShortCircuitEquationSystemFeeders equationSystemFeedersHomopolar =  homopolarResult.getEqSysFeeders();
         // TODO : adapt in case of a biphased common support
 
-        ShortCircuitResult res = new ShortCircuitResult(tmpVl, tmpBusId, scf,
+        ShortCircuitResult res = new ShortCircuitResult(scf, lfBus1,
                 mId.toDense().get(0, 0), mId.toDense().get(1, 0),
                 mIo.toDense().get(0, 0), mIo.toDense().get(1, 0),
                 mIi.toDense().get(0, 0), mIi.toDense().get(1, 0),
-                lfBus1, rdf, xdf, rof, xof, rdf, xdf,
+                rdf, xdf, rof, xof, rdf, xdf,
                 v1dxInit, v1dyInit,
                 mVd.toDense().get(0, 0), mVd.toDense().get(1, 0),
                 mVo.toDense().get(0, 0), mVo.toDense().get(1, 0),
@@ -343,7 +341,7 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
                 mVd.toDense().get(2, 0), mVd.toDense().get(3, 0),
                 mVo.toDense().get(2, 0), mVo.toDense().get(3, 0),
                 mVi.toDense().get(2, 0), mVi.toDense().get(3, 0),
-                lfBus2, tmpVl2, tmpBus2Id);
+                lfBus2);
 
         if (parameters.voltageUpdate) {
             res.addLfNetwork(directResolution.lfNetworkResult);

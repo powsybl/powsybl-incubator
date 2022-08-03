@@ -10,7 +10,6 @@ import com.powsybl.iidm.network.Network;
 import com.powsybl.incubator.simulator.util.*;
 import com.powsybl.math.matrix.DenseMatrix;
 import com.powsybl.openloadflow.network.LfBus;
-//import org.apache.commons.math3.util.Pair;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -94,7 +93,7 @@ public class ShortCircuitBalancedEngine extends AbstractShortCircuitEngine {
                 double dvr = -ifr * linearResolutionResult.getEnBus().get(0, 0) + ifi * linearResolutionResult.getEnBus().get(1, 0);
                 double dvi = -ifr * linearResolutionResult.getEnBus().get(1, 0) - ifi * linearResolutionResult.getEnBus().get(0, 0);
 
-                ShortCircuitResult res = new ShortCircuitResult(bus.getId(), bus.getId(), scf, ifr, ifi, bus, rth, xth, vxInit, vyInit, dvr, dvi, parameters.getMatrixFactory(), linearResolutionResult.getEqSysFeeders(), parameters.getNorm());
+                ShortCircuitResult res = new ShortCircuitResult(scf, bus, ifr, ifi, rth, xth, vxInit, vyInit, dvr, dvi, parameters.getMatrixFactory(), linearResolutionResult.getEqSysFeeders(), parameters.getNorm());
                 if (parameters.voltageUpdate) {
                     //we get the lfNetwork to process the results
                     res.addLfNetwork(directResolution.lfNetworkResult);

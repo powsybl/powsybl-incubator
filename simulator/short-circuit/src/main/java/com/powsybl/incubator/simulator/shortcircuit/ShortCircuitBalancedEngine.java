@@ -10,7 +10,7 @@ import com.powsybl.iidm.network.Network;
 import com.powsybl.incubator.simulator.util.*;
 import com.powsybl.math.matrix.DenseMatrix;
 import com.powsybl.openloadflow.network.LfBus;
-import org.apache.commons.math3.util.Pair;
+//import org.apache.commons.math3.util.Pair;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -35,20 +35,7 @@ public class ShortCircuitBalancedEngine extends AbstractShortCircuitEngine {
             buildSystematicList(ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
         }
 
-        List<ShortCircuitFault> faultList = new ArrayList<>();
-        for (ShortCircuitFault scfe : parameters.getShortCircuitFaults()) {
-            String busName = scfe.getBusLocation();
-            Pair<String, Integer > branchFaultInfo = buildFaultBranchFromBusId(busName, network);
-
-            if (branchFaultInfo.getKey().equals("")) {
-                // Bus not found in branches, try three windings transformers
-                branchFaultInfo = buildFaultT3WbranchFromBusId(busName, network);
-            }
-            if (scfe.getType() == ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND) {
-                scfe.setIidmBusInfo(branchFaultInfo);
-                faultList.add(scfe);
-            }
-        }
+        List<ShortCircuitFault> faultList = buildFaultListsFromInputs().getKey();
 
         AdmittanceLinearResolutionParameters linearResolutionParameters = new AdmittanceLinearResolutionParameters(acLoadFlowParameters,
                 parameters.getMatrixFactory(), faultList, parameters.isVoltageUpdate(), getAdmittanceVoltageProfileTypeFromParam(), getAdmittancePeriodTypeFromParam(), AdmittanceEquationSystem.AdmittanceType.ADM_THEVENIN,

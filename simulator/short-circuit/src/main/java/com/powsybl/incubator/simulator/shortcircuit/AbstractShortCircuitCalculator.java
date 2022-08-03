@@ -132,14 +132,8 @@ public abstract class AbstractShortCircuitCalculator {
     public static Matrix getInvZt(Matrix m, MatrixFactory mf) {
         double r = m.toDense().get(0, 0);
         double x = m.toDense().get(1, 0);
-        double detZ = r * r + x * x;
-        Matrix invZ = mf.create(2, 2, 2);
-        invZ.add(0, 0, r / detZ);
-        invZ.add(0, 1, x / detZ);
-        invZ.add(1, 0, -x / detZ);
-        invZ.add(1, 1, r / detZ);
 
-        return invZ;
+        return getInvZt(r, x, mf);
     }
 
     public static Matrix getZ(double r, double x, MatrixFactory mf) {

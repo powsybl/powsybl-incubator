@@ -35,54 +35,14 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
             // Biphased common support faults will not be supported yet in systematic
         }
 
-        List<ShortCircuitFault> faultList = new ArrayList<>();
-        List<ShortCircuitFault> biphasedFaultList = new ArrayList<>();
-        Map<String, Pair<String, Integer >> tmpListBus1 = new HashMap<>();
-        for (ShortCircuitFault scfe : parameters.getShortCircuitFaults()) {
-            String busName = scfe.getBusLocation();
-            String bus2Name = scfe.getBusLocationBiPhased();
+        // We handle a pre-treatement of faults given in input:
+        // - filtering of some inconsistencies on the bus identification
+        // - addition of info in each fault to ease the identification in LfNetwork of iidm info
 
-            if (bus2Name.isEmpty()) { // TODO : adapt
-                // TODO : put a condition that it is an unbalanced shortCircuit
-                if (scfe.getType() == ShortCircuitFault.ShortCircuitType.BIPHASED_COMMON_SUPPORT) {
-                    throw new IllegalArgumentException(" short circuit fault : " + busName + " must have a second voltage level defined because it is a common support fault");
-                }
-                Pair<String, Integer> branchFaultInfo = buildFaultBranchFromBusId(busName, network);
-                if (branchFaultInfo.getKey().equals("")) {
-                    // Bus not found in branches, try three windings transformers
-                    branchFaultInfo = buildFaultT3WbranchFromBusId(busName, network);
-                }
-                scfe.setIidmBusInfo(branchFaultInfo);
-                faultList.add(scfe);
+        Pair<List<ShortCircuitFault>, List<ShortCircuitFault>> faultLists = buildFaultListsFromInputs();
 
-            } else {
-                if (scfe.getType() != ShortCircuitFault.ShortCircuitType.BIPHASED_COMMON_SUPPORT) {
-                    throw new IllegalArgumentException(" short circuit fault : " + busName + " has a second bus defined : " + bus2Name + " but is not a common support fault");
-                }
-
-                // Step 1 : get info at bus 1 initialization of bus 2 list
-                if (!tmpListBus1.containsKey(busName)) {
-                    Pair<String, Integer> branchBus1FaultInfo = buildFaultBranchFromBusId(busName, network);
-                    if (branchBus1FaultInfo.getKey().equals("")) {
-                        // Bus not found in branches, try three windings transformers
-                        branchBus1FaultInfo = buildFaultT3WbranchFromBusId(busName, network);
-                    }
-                    tmpListBus1.put(busName, branchBus1FaultInfo);
-                }
-
-                // step 2 : get info at bus 2
-                Pair<String, Integer > branchBus2FaultInfo = buildFaultBranchFromBusId(bus2Name, network);
-                if (branchBus2FaultInfo.getKey().equals("")) {
-                    // Bus not found in branches, try three windings transformers
-                    branchBus2FaultInfo = buildFaultT3WbranchFromBusId(bus2Name, network);
-                }
-                Pair<String, Integer > branchBus1FaultInfo = tmpListBus1.get(busName);
-
-                scfe.setIidmBusInfo(branchBus1FaultInfo);
-                scfe.setIidmBus2Info(branchBus2FaultInfo);
-                biphasedFaultList.add(scfe);
-            }
-        }
+        List<ShortCircuitFault> faultList = faultLists.getKey();
+        List<ShortCircuitFault> biphasedFaultList = faultLists.getValue();
 
         AdmittanceLinearResolutionParameters admittanceLinearResolutionParametersHomopolar = new AdmittanceLinearResolutionParameters(acLoadFlowParameters,
                 parameters.getMatrixFactory(), faultList, parameters.isVoltageUpdate(),

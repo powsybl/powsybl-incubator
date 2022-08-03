@@ -56,65 +56,73 @@ public class ShortCircuitBalancedEngine extends AbstractShortCircuitEngine {
 
         for (AdmittanceLinearResolution.AdmittanceLinearResolutionResult linearResolutionResult : directResolution.results) {
             LfBus bus = linearResolutionResult.getBus();
-            ShortCircuitFault scf = null; // = parameters.getShortCircuitFaults().get(tmpVl);
-            for (ShortCircuitFault scfe : solverFaultList) { //TODO : improve to avoid double loop
-                if (bus.getId().equals(scfe.getLfBusInfo())) {
-                    scf = scfe;
-                }
-            }
 
+            // For each contingency that matches the given bus of the linear resolution we compute:
             // If = Eth / (Zth + Zf) gives:
             //
             //        ethi*(xf+xth) + ethr*(rf+rth) + j*[ethi*(rf+rth) - ethr*(xf+xth)]
             // If = --------------------------------------------------------------------
             //                          (rf+rth)² + (xf+xth)²
             //
+
+            // values that does not change for a given bus in input
             double vxInit = linearResolutionResult.getEthr();
             double vyInit = linearResolutionResult.getEthi();
 
             double rth = linearResolutionResult.getRthz11();
             double xth = linearResolutionResult.getXthz12();
-            double rf = scf.getZfr();
-            double xf = scf.getZfi();
 
-            double denom = (rf + rth) * (rf + rth) + (xf + xth) * (xf + xth);
-            double ifr = (vyInit * (xf + xth) + vxInit * (rf + rth)) / denom;
-            double ifi = (vyInit * (rf + rth) - vxInit * (xf + xth)) / denom;
-            // The post-fault voltage values at faulted bus are computed as follow :
-            // [Vr] = [Vr_init] - ifr * [e_dVr] + ifi * [e_dVi]
-            // [Vi] = [Vi_init] - ifr * [e_dVi] - ifi * [e_dVr]
-            double dvr = -ifr * linearResolutionResult.getEnBus().get(0, 0) + ifi * linearResolutionResult.getEnBus().get(1, 0);
-            double dvi = -ifr * linearResolutionResult.getEnBus().get(1, 0) - ifi * linearResolutionResult.getEnBus().get(0, 0);
+            for (ShortCircuitFault scfe : solverFaultList) {
+                ShortCircuitFault scf = null;
+                if (bus.getId().equals(scfe.getLfBusInfo())) {
+                    scf = scfe;
+                }
 
-            ShortCircuitResult res = new ShortCircuitResult(bus.getId(), bus.getId(), scf, ifr, ifi, bus, rth, xth, vxInit, vyInit, dvr, dvi, parameters.getMatrixFactory(), linearResolutionResult.getEqSysFeeders(), parameters.getNorm());
-            if (parameters.voltageUpdate) {
-                //we get the lfNetwork to process the results
-                res.addLfNetwork(directResolution.lfNetworkResult);
+                if (scf == null) {
+                    continue;
+                }
 
-                res.setVoltageProfileUpdate();
-                // The post-fault voltage values are computed as follow :
+                double rf = scf.getZfr();
+                double xf = scf.getZfi();
+
+                double denom = (rf + rth) * (rf + rth) + (xf + xth) * (xf + xth);
+                double ifr = (vyInit * (xf + xth) + vxInit * (rf + rth)) / denom;
+                double ifi = (vyInit * (rf + rth) - vxInit * (xf + xth)) / denom;
+                // The post-fault voltage values at faulted bus are computed as follow :
                 // [Vr] = [Vr_init] - ifr * [e_dVr] + ifi * [e_dVi]
                 // [Vi] = [Vi_init] - ifr * [e_dVi] - ifi * [e_dVr]
-                // we compute the delta values to be added to Vinit if we want the post-fault voltage :
-                int nbBusses = directResolution.lfNetworkResult.getBuses().size();
-                List<DenseMatrix> busNum2Dv = res.createEmptyFortescueVoltageVector(nbBusses);
+                double dvr = -ifr * linearResolutionResult.getEnBus().get(0, 0) + ifi * linearResolutionResult.getEnBus().get(1, 0);
+                double dvi = -ifr * linearResolutionResult.getEnBus().get(1, 0) - ifi * linearResolutionResult.getEnBus().get(0, 0);
 
-                for (Map.Entry<Integer, DenseMatrix> vd : linearResolutionResult.getDv().entrySet()) {
-                    int busNum = vd.getKey();
-                    double edVr = vd.getValue().get(0, 0);
-                    double edVi = vd.getValue().get(1, 0);
-                    //System.out.println(" dVth(" + vdr.getKey() + ") = " + edVr + " + j(" + edVi + ")");
-                    double deltaVr = -ifr * edVr + ifi * edVi;
-                    double deltaVi = -ifr * edVi - ifi * edVr;
+                ShortCircuitResult res = new ShortCircuitResult(bus.getId(), bus.getId(), scf, ifr, ifi, bus, rth, xth, vxInit, vyInit, dvr, dvi, parameters.getMatrixFactory(), linearResolutionResult.getEqSysFeeders(), parameters.getNorm());
+                if (parameters.voltageUpdate) {
+                    //we get the lfNetwork to process the results
+                    res.addLfNetwork(directResolution.lfNetworkResult);
 
-                    res.fillVoltageInFortescueVector(busNum, deltaVr, deltaVi);
+                    res.setVoltageProfileUpdate();
+                    // The post-fault voltage values are computed as follow :
+                    // [Vr] = [Vr_init] - ifr * [e_dVr] + ifi * [e_dVi]
+                    // [Vi] = [Vi_init] - ifr * [e_dVi] - ifi * [e_dVr]
+                    // we compute the delta values to be added to Vinit if we want the post-fault voltage :
+                    int nbBusses = directResolution.lfNetworkResult.getBuses().size();
+                    List<DenseMatrix> busNum2Dv = res.createEmptyFortescueVoltageVector(nbBusses);
+
+                    for (Map.Entry<Integer, DenseMatrix> vd : linearResolutionResult.getDv().entrySet()) {
+                        int busNum = vd.getKey();
+                        double edVr = vd.getValue().get(0, 0);
+                        double edVi = vd.getValue().get(1, 0);
+                        //System.out.println(" dVth(" + vdr.getKey() + ") = " + edVr + " + j(" + edVi + ")");
+                        double deltaVr = -ifr * edVr + ifi * edVi;
+                        double deltaVi = -ifr * edVi - ifi * edVr;
+
+                        res.fillVoltageInFortescueVector(busNum, deltaVr, deltaVi);
+                    }
                 }
-            }
 
-            resultsPerFault.put(scf, res);
-            resultsAllBusses.add(res);
-            res.updateVoltageResult();
+                res.updateVoltageResult();
+                resultsPerFault.put(scf, res);
+                resultsAllBusses.add(res);
+            }
         }
     }
-
 }

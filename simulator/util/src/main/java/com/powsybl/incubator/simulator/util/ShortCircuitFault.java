@@ -74,10 +74,6 @@ public class ShortCircuitFault {
         return shortCircuitVoltageLevelLocation;
     }
 
-    public String getShortCircuitVoltageLevelLocationBiPhased() {
-        return shortCircuitVoltageLevelLocationBiPhased;
-    }
-
     public String getBusLocation() {
         return busLocation;
     }

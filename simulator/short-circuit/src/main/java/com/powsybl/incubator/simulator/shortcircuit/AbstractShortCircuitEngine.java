@@ -38,8 +38,6 @@ public abstract class AbstractShortCircuitEngine {
 
     public Map<ShortCircuitFault, ShortCircuitResult> resultsPerFault = new HashMap<>();
 
-    public List<ShortCircuitResult> resultsAllBusses;
-
     protected List<ShortCircuitFault> solverFaultList; // list of faults provided to the solver (not including biphased common support faults)
 
     protected List<ShortCircuitFault> solverBiphasedFaultList; // list of biphased common support faults provided to the solver

@@ -11,7 +11,6 @@ import com.powsybl.incubator.simulator.util.*;
 import com.powsybl.math.matrix.DenseMatrix;
 import com.powsybl.openloadflow.network.LfBus;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -45,7 +44,6 @@ public class ShortCircuitBalancedEngine extends AbstractShortCircuitEngine {
 
         //Build the ShortCircuit results using the Thevenin computation results
         resultsPerFault = new LinkedHashMap<>();
-        resultsAllBusses  = new ArrayList<>(); // TODO : see which one to keep depending onthe improvement of the short circuit API
         processAdmittanceLinearResolutionResults(directResolution);
 
     }
@@ -119,7 +117,6 @@ public class ShortCircuitBalancedEngine extends AbstractShortCircuitEngine {
 
                 res.updateFeedersResult(); // feeders are updated only if voltageUpdate is made
                 resultsPerFault.put(scf, res);
-                resultsAllBusses.add(res);
             }
         }
     }

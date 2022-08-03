@@ -110,8 +110,8 @@ public class ShortCircuitMonophasedTest {
 
         scbEngine.run();
         List<Double> values = new ArrayList<>();
-        for (ShortCircuitResult res : scbEngine.resultsAllBusses) {
-            values.add(res.getIk());
+        for (Map.Entry<ShortCircuitFault, ShortCircuitResult> res : scbEngine.resultsPerFault.entrySet()) {
+            values.add(res.getValue().getIk());
         }
 
         //I"k = sqrt(3) * cmax * Un /(Zeq)

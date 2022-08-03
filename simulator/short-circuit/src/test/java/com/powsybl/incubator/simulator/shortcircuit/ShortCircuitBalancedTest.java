@@ -322,9 +322,8 @@ public class ShortCircuitBalancedTest {
 
         scbEngine.run();
         List<Double> values = new ArrayList<>();
-        for (ShortCircuitResult res : scbEngine.resultsAllBusses) {
-            values.add(res.getIk());
-            //System.out.println(" node name  = " + res.getLfBus().getId());
+        for (Map.Entry<ShortCircuitFault, ShortCircuitResult> res : scbEngine.resultsPerFault.entrySet()) {
+            values.add(res.getValue().getIk());
         }
 
         // I"k = 1/sqrt(3) * cmax * Un /(Zeq)

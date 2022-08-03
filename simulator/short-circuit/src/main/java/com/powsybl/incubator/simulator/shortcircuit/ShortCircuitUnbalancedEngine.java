@@ -61,7 +61,6 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
 
         //Build the ShortCircuit results using the linear resolution computation results
         resultsPerFault = new LinkedHashMap<>();
-        resultsAllBusses  = new ArrayList<>();
         processAdmittanceLinearResolutionResults(directResolution, homopolarResolution, ShortCircuitFault.ShortCircuitType.MONOPHASED);
         processAdmittanceLinearResolutionResults(directResolution, homopolarResolution, ShortCircuitFault.ShortCircuitType.BIPHASED);
         processAdmittanceLinearResolutionResults(directResolution, homopolarResolution, ShortCircuitFault.ShortCircuitType.BIPHASED_GROUND);
@@ -221,7 +220,6 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
 
                 res.updateFeedersResult(); // feeders are updated only if voltageUpdate is made. TODO : see if update of homopolar feeders are to be updated
                 resultsPerFault.put(scf, res);
-                resultsAllBusses.add(res);
             }
 
         }

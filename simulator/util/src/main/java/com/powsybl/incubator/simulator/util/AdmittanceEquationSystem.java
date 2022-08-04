@@ -43,16 +43,16 @@ public final class AdmittanceEquationSystem {
         if (bus1 != null && bus2 != null) { //TODO: check case when one bus is OK
             // Equation system Y*V = I (expressed in cartesian coordinates x,y)
             equationSystem.createEquation(bus1.getNum(), EquationType.BUS_YR)
-                    .addTerm(new AdmittanceRealPartSide1EquationTerm(branch, bus1, bus2, variableSet, admittanceType, mf));
+                    .addTerm(new AdmittanceEquationTermX1(branch, bus1, bus2, variableSet, admittanceType, mf));
 
             equationSystem.createEquation(bus1.getNum(), EquationType.BUS_YI)
-                    .addTerm(new AdmittanceImgPartSide1EquationTerm(branch, bus1, bus2, variableSet, admittanceType, mf));
+                    .addTerm(new AdmittanceEquationTermY1(branch, bus1, bus2, variableSet, admittanceType, mf));
 
             equationSystem.createEquation(bus2.getNum(), EquationType.BUS_YR)
-                    .addTerm(new AdmittanceRealPartSide2EquationTerm(branch, bus1, bus2, variableSet, admittanceType, mf));
+                    .addTerm(new AdmittanceEquationTermX2(branch, bus1, bus2, variableSet, admittanceType, mf));
 
             equationSystem.createEquation(bus2.getNum(), EquationType.BUS_YI)
-                    .addTerm(new AdmittanceImgPartSide2EquationTerm(branch, bus1, bus2, variableSet, admittanceType, mf));
+                    .addTerm(new AdmittanceEquationTermY2(branch, bus1, bus2, variableSet, admittanceType, mf));
         }
     }
 

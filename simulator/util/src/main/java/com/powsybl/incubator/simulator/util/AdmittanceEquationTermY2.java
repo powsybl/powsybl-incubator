@@ -16,42 +16,43 @@ import com.powsybl.openloadflow.network.LfBus;
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
-public class AdmittanceRealPartSide1EquationTerm extends AbstractAdmittanceEquationTerm {
+public class AdmittanceEquationTermY2 extends AbstractAdmittanceEquationTerm {
 
-    protected double g12;
+    protected double g21;
 
-    protected double b12;
+    protected double b21;
 
-    protected double g1g12sum;
+    protected double g2g21sum;
 
-    protected double b1b12sum;
+    protected double b2b21sum;
 
-    public AdmittanceRealPartSide1EquationTerm(LfBranch branch, LfBus bus1, LfBus bus2, VariableSet<VariableType> variableSet, AdmittanceEquationSystem.AdmittanceType admittanceType, MatrixFactory mf) {
+    public AdmittanceEquationTermY2(LfBranch branch, LfBus bus1, LfBus bus2, VariableSet<VariableType> variableSet, AdmittanceEquationSystem.AdmittanceType admittanceType, MatrixFactory mf) {
         super(branch, bus1, bus2, variableSet, mf);
         // Direct component:
-        // I1x = (g1 + g12)V1x - (b1 + b12)V1y - g12 * V2x + b12 * V2y
-        g12 = rho * zInvSquare * (r * cosA + x * sinA);
-        b12 = -rho * zInvSquare * (x * cosA + r * sinA);
-        g1g12sum = rho * rho * (gPi1 + r * zInvSquare);
-        b1b12sum = rho * rho * (bPi1 - x * zInvSquare);
+        // I2y = -b21 * V1x - g21 * V1y + (b2 + b21)V2x + (g2 + g21)V2y
+        double g12 = rho * zInvSquare * (r * cosA + x * sinA);
+        g21 = g12;
+        b21 = rho * zInvSquare * (r * sinA - x * cosA);
+        g2g21sum = r * zInvSquare + gPi2;
+        b2b21sum = -x * zInvSquare + bPi2;
         if (admittanceType == AdmittanceEquationSystem.AdmittanceType.ADM_THEVENIN_HOMOPOLAR) {
             setHomopolarAttributes();
             if (branch.getBranchType() == LfBranch.BranchType.LINE) {
-                // default if branch type is a line
-                g12 = rho * homopolarExtension.zoInvSquare * (homopolarExtension.ro * cosA + homopolarExtension.xo * sinA);
-                b12 = -rho * homopolarExtension.zoInvSquare * (homopolarExtension.xo * cosA + homopolarExtension.ro * sinA);
-                g1g12sum = rho * rho * (homopolarExtension.gom + homopolarExtension.ro * homopolarExtension.zoInvSquare);
-                b1b12sum = rho * rho * (homopolarExtension.bom - homopolarExtension.xo * homopolarExtension.zoInvSquare);
+                // case where branch is a line with available homopolar parameters
+                g21 = rho * homopolarExtension.zoInvSquare * (homopolarExtension.ro * cosA + homopolarExtension.xo * sinA);
+                b21 = rho * homopolarExtension.zoInvSquare * (homopolarExtension.ro * sinA - homopolarExtension.xo * cosA);
+                g2g21sum = homopolarExtension.ro * homopolarExtension.zoInvSquare + gPi2 * AdmittanceConstants.COEF_XO_XD;
+                b2b21sum = -homopolarExtension.xo * homopolarExtension.zoInvSquare + bPi2 * AdmittanceConstants.COEF_XO_XD;
             } else if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_2
                     || branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_1
                     || branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_2
                     || branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_3) {
                 // case where branch is part of a transformer
                 DenseMatrix mo = computeHomopolarAdmittanceMatrix();
-                b1b12sum = -mo.get(0, 1);
-                g1g12sum = mo.get(0, 0);
-                b12 = mo.get(0, 3);
-                g12 = -mo.get(0, 2);
+                b2b21sum = mo.get(3, 2);
+                g2g21sum = mo.get(3, 3);
+                b21 = -mo.get(3, 0);
+                g21 = -mo.get(3, 1);
             } else {
                 throw new IllegalArgumentException("branch type not yet handled");
             }
@@ -61,13 +62,13 @@ public class AdmittanceRealPartSide1EquationTerm extends AbstractAdmittanceEquat
     @Override
     public double getCoefficient(Variable<VariableType> variable) {
         if (variable.equals(v1rVar)) {
-            return g1g12sum;
+            return -b21;
         } else if (variable.equals(v2rVar)) {
-            return -g12;
+            return b2b21sum;
         } else if (variable.equals(v1iVar)) {
-            return -b1b12sum;
+            return -g21;
         } else if (variable.equals(v2iVar)) {
-            return b12;
+            return g2g21sum;
         } else {
             throw new IllegalArgumentException("Unknown variable " + variable);
         }
@@ -75,6 +76,6 @@ public class AdmittanceRealPartSide1EquationTerm extends AbstractAdmittanceEquat
 
     @Override
     protected String getName() {
-        return "yr1";
+        return "yi2";
     }
 }

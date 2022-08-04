@@ -16,7 +16,7 @@ import com.powsybl.openloadflow.network.LfBus;
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
-public class AdmittanceImgPartSide1EquationTerm extends AbstractAdmittanceEquationTerm {
+public class AdmittanceEquationTermX1 extends AbstractAdmittanceEquationTerm {
 
     protected double g12;
 
@@ -26,10 +26,10 @@ public class AdmittanceImgPartSide1EquationTerm extends AbstractAdmittanceEquati
 
     protected double b1b12sum;
 
-    public AdmittanceImgPartSide1EquationTerm(LfBranch branch, LfBus bus1, LfBus bus2, VariableSet<VariableType> variableSet, AdmittanceEquationSystem.AdmittanceType admittanceType, MatrixFactory mf) {
+    public AdmittanceEquationTermX1(LfBranch branch, LfBus bus1, LfBus bus2, VariableSet<VariableType> variableSet, AdmittanceEquationSystem.AdmittanceType admittanceType, MatrixFactory mf) {
         super(branch, bus1, bus2, variableSet, mf);
         // Direct component:
-        // I1y = (b1 + b12)V1x + (g1 + g12)V1y - b12 * V2x - g12 * V2y
+        // I1x = (g1 + g12)V1x - (b1 + b12)V1y - g12 * V2x + b12 * V2y
         g12 = rho * zInvSquare * (r * cosA + x * sinA);
         b12 = -rho * zInvSquare * (x * cosA + r * sinA);
         g1g12sum = rho * rho * (gPi1 + r * zInvSquare);
@@ -37,7 +37,7 @@ public class AdmittanceImgPartSide1EquationTerm extends AbstractAdmittanceEquati
         if (admittanceType == AdmittanceEquationSystem.AdmittanceType.ADM_THEVENIN_HOMOPOLAR) {
             setHomopolarAttributes();
             if (branch.getBranchType() == LfBranch.BranchType.LINE) {
-                // case where branch is a line with available homopolar parameters
+                // default if branch type is a line
                 g12 = rho * homopolarExtension.zoInvSquare * (homopolarExtension.ro * cosA + homopolarExtension.xo * sinA);
                 b12 = -rho * homopolarExtension.zoInvSquare * (homopolarExtension.xo * cosA + homopolarExtension.ro * sinA);
                 g1g12sum = rho * rho * (homopolarExtension.gom + homopolarExtension.ro * homopolarExtension.zoInvSquare);
@@ -48,10 +48,10 @@ public class AdmittanceImgPartSide1EquationTerm extends AbstractAdmittanceEquati
                     || branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_3) {
                 // case where branch is part of a transformer
                 DenseMatrix mo = computeHomopolarAdmittanceMatrix();
-                b1b12sum = mo.get(1, 0);
-                g1g12sum = mo.get(1, 1);
-                b12 = -mo.get(1, 2);
-                g12 = -mo.get(1, 3);
+                b1b12sum = -mo.get(0, 1);
+                g1g12sum = mo.get(0, 0);
+                b12 = mo.get(0, 3);
+                g12 = -mo.get(0, 2);
             } else {
                 throw new IllegalArgumentException("branch type not yet handled");
             }
@@ -61,13 +61,13 @@ public class AdmittanceImgPartSide1EquationTerm extends AbstractAdmittanceEquati
     @Override
     public double getCoefficient(Variable<VariableType> variable) {
         if (variable.equals(v1rVar)) {
-            return b1b12sum;
-        } else if (variable.equals(v2rVar)) {
-            return -b12;
-        } else if (variable.equals(v1iVar)) {
             return g1g12sum;
-        } else if (variable.equals(v2iVar)) {
+        } else if (variable.equals(v2rVar)) {
             return -g12;
+        } else if (variable.equals(v1iVar)) {
+            return -b1b12sum;
+        } else if (variable.equals(v2iVar)) {
+            return b12;
         } else {
             throw new IllegalArgumentException("Unknown variable " + variable);
         }
@@ -75,6 +75,6 @@ public class AdmittanceImgPartSide1EquationTerm extends AbstractAdmittanceEquati
 
     @Override
     protected String getName() {
-        return "yi1";
+        return "yr1";
     }
 }

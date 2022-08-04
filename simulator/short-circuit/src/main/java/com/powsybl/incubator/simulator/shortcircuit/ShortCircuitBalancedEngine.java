@@ -34,11 +34,11 @@ public class ShortCircuitBalancedEngine extends AbstractShortCircuitEngine {
 
         solverFaultList = buildFaultListsFromInputs().getKey();
 
-        AdmittanceLinearResolutionParameters linearResolutionParameters = new AdmittanceLinearResolutionParameters(acLoadFlowParameters,
+        ImpedanceLinearResolutionParameters linearResolutionParameters = new ImpedanceLinearResolutionParameters(acLoadFlowParameters,
                 parameters.getMatrixFactory(), solverFaultList, parameters.isVoltageUpdate(), getAdmittanceVoltageProfileTypeFromParam(), getAdmittancePeriodTypeFromParam(), AdmittanceEquationSystem.AdmittanceType.ADM_THEVENIN,
                 parameters.isIgnoreShunts(), parameters.getAdditionalDataInfo());
 
-        AdmittanceLinearResolution directResolution = new AdmittanceLinearResolution(network,  linearResolutionParameters);
+        ImpedanceLinearResolution directResolution = new ImpedanceLinearResolution(network,  linearResolutionParameters);
 
         directResolution.run();
 
@@ -48,9 +48,9 @@ public class ShortCircuitBalancedEngine extends AbstractShortCircuitEngine {
 
     }
 
-    protected void processAdmittanceLinearResolutionResults(AdmittanceLinearResolution directResolution) {
+    protected void processAdmittanceLinearResolutionResults(ImpedanceLinearResolution directResolution) {
 
-        for (AdmittanceLinearResolution.AdmittanceLinearResolutionResult linearResolutionResult : directResolution.results) {
+        for (ImpedanceLinearResolution.ImpedanceLinearResolutionResult linearResolutionResult : directResolution.results) {
             LfBus bus = linearResolutionResult.getBus();
 
             // For each contingency that matches the given bus of the linear resolution we compute:

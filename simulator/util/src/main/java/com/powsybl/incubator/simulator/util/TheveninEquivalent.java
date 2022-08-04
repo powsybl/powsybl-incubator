@@ -32,7 +32,7 @@ public class TheveninEquivalent {
 
     private final List<LfNetwork> networks;
 
-    public  AdmittanceLinearResolution admittanceLinearResolution;
+    public ImpedanceLinearResolution admittanceLinearResolution;
 
     public TheveninEquivalent(Network network, TheveninEquivalentParameters parameters) {
         this.network = Objects.requireNonNull(network);
@@ -40,14 +40,14 @@ public class TheveninEquivalent {
         this.parameters = Objects.requireNonNull(parameters);
     }
 
-    public AdmittanceLinearResolution getAdmittanceLinearResolution() {
+    public ImpedanceLinearResolution getAdmittanceLinearResolution() {
         return admittanceLinearResolution;
     }
 
     public void run() {
 
-        AdmittanceLinearResolutionParameters parameters = generateAdmittanceLinearResolutionParam();
-        AdmittanceLinearResolution thEq = new AdmittanceLinearResolution(network, parameters);
+        ImpedanceLinearResolutionParameters parameters = generateAdmittanceLinearResolutionParam();
+        ImpedanceLinearResolution thEq = new ImpedanceLinearResolution(network, parameters);
         thEq.run();
 
         this.admittanceLinearResolution = thEq;
@@ -119,7 +119,7 @@ public class TheveninEquivalent {
         return new Pair<>(branchId, legNum);
     }
 
-    private AdmittanceLinearResolutionParameters generateAdmittanceLinearResolutionParam() {
+    private ImpedanceLinearResolutionParameters generateAdmittanceLinearResolutionParam() {
 
         boolean voltageUpdate = parameters.isVoltageUpdate(); // TODO: check that in example, no voltage update is asked
 
@@ -151,7 +151,7 @@ public class TheveninEquivalent {
             locations.add(calculationLocation);
         }
 
-        return new AdmittanceLinearResolutionParameters(acLoadFlowParameters, parameters.getMatrixFactory(),
+        return new ImpedanceLinearResolutionParameters(acLoadFlowParameters, parameters.getMatrixFactory(),
                 locations, voltageUpdate, admittanceVoltageProfileType, periodType,
                 AdmittanceEquationSystem.AdmittanceType.ADM_THEVENIN, parameters.isTheveninIgnoreShunts(),
                 parameters.getAdditionalDataInfo());

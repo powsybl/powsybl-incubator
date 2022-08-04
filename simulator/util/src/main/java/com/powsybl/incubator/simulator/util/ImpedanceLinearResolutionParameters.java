@@ -16,7 +16,7 @@ import java.util.Objects;
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
-public class AdmittanceLinearResolutionParameters {
+public class ImpedanceLinearResolutionParameters {
 
     /*public enum AdmittanceLinearVoltageProfileType {
         CALCULATED, // use the computed values at nodes to compute Zth and Eth
@@ -51,9 +51,9 @@ public class AdmittanceLinearResolutionParameters {
 
     private final AdmittanceEquationSystem.AdmittanceType admittanceType;
 
-    public AdmittanceLinearResolutionParameters(AcLoadFlowParameters acLoadFlowParameters, MatrixFactory matrixFactory, List<CalculationLocation> calculationLocations, boolean voltageUpdate,
-                                                AdmittanceEquationSystem.AdmittanceVoltageProfileType theveninVoltageProfileType, AdmittanceEquationSystem.AdmittancePeriodType theveninPeriodType, AdmittanceEquationSystem.AdmittanceType admittanceType,
-                                                boolean theveninIgnoreShunts, AdditionalDataInfo additionalDataInfo) {
+    public ImpedanceLinearResolutionParameters(AcLoadFlowParameters acLoadFlowParameters, MatrixFactory matrixFactory, List<CalculationLocation> calculationLocations, boolean voltageUpdate,
+                                               AdmittanceEquationSystem.AdmittanceVoltageProfileType theveninVoltageProfileType, AdmittanceEquationSystem.AdmittancePeriodType theveninPeriodType, AdmittanceEquationSystem.AdmittanceType admittanceType,
+                                               boolean theveninIgnoreShunts, AdditionalDataInfo additionalDataInfo) {
         this.acLoadFlowParameters = Objects.requireNonNull(acLoadFlowParameters);
         this.matrixFactory = Objects.requireNonNull(matrixFactory);
         this.calculationLocations = Objects.requireNonNull(calculationLocations);
@@ -65,9 +65,9 @@ public class AdmittanceLinearResolutionParameters {
         this.admittanceType = admittanceType;
     }
 
-    public AdmittanceLinearResolutionParameters(AcLoadFlowParameters acLoadFlowParameters, MatrixFactory matrixFactory, List<CalculationLocation> calculationLocations, boolean voltageUpdate,
-                                                AdmittanceEquationSystem.AdmittanceVoltageProfileType theveninVoltageProfileType, AdmittanceEquationSystem.AdmittancePeriodType theveninPeriodType, AdmittanceEquationSystem.AdmittanceType admittanceType,
-                                                boolean theveninIgnoreShunts, AdditionalDataInfo additionalDataInfo, List<CalculationLocation> biphasedVoltageLevelLocation) {
+    public ImpedanceLinearResolutionParameters(AcLoadFlowParameters acLoadFlowParameters, MatrixFactory matrixFactory, List<CalculationLocation> calculationLocations, boolean voltageUpdate,
+                                               AdmittanceEquationSystem.AdmittanceVoltageProfileType theveninVoltageProfileType, AdmittanceEquationSystem.AdmittancePeriodType theveninPeriodType, AdmittanceEquationSystem.AdmittanceType admittanceType,
+                                               boolean theveninIgnoreShunts, AdditionalDataInfo additionalDataInfo, List<CalculationLocation> biphasedVoltageLevelLocation) {
         this(acLoadFlowParameters, matrixFactory, calculationLocations, voltageUpdate, theveninVoltageProfileType, theveninPeriodType, admittanceType, theveninIgnoreShunts, additionalDataInfo);
         this.biphasedCalculationLocations = biphasedVoltageLevelLocation;
 

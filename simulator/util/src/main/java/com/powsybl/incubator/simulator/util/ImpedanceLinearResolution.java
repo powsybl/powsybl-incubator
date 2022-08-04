@@ -23,7 +23,7 @@ import java.util.Objects;
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
-public  class AdmittanceLinearResolution {
+public  class ImpedanceLinearResolution {
 
     // This class is used to resolve problems with a similar structure
     // [ Vof ] = -tM * inv(Yo) * M * [ Iof ]
@@ -37,19 +37,19 @@ public  class AdmittanceLinearResolution {
 
     private final List<LfNetwork> networks;
 
-    private final AdmittanceLinearResolutionParameters parameters;
+    private final ImpedanceLinearResolutionParameters parameters;
 
-    public List<AdmittanceLinearResolutionResult> results = new ArrayList<>();
+    public List<ImpedanceLinearResolutionResult> results = new ArrayList<>();
 
     public LfNetwork lfNetworkResult;
 
-    public AdmittanceLinearResolution(Network network, AdmittanceLinearResolutionParameters parameters) {
+    public ImpedanceLinearResolution(Network network, ImpedanceLinearResolutionParameters parameters) {
         this.networks = LfNetwork.load(network, new LfNetworkLoaderImpl(), new LfNetworkParameters(new FirstSlackBusSelector()));
         this.parameters = Objects.requireNonNull(parameters);
         ShortCircuitExtensions.add(network, networks, parameters.getAdditionalDataInfo());
     }
 
-    public class AdmittanceLinearResolutionResult {
+    public class ImpedanceLinearResolutionResult {
 
         private LfBus bus;
 
@@ -67,9 +67,9 @@ public  class AdmittanceLinearResolution {
 
         private EquationSystemFeeders eqSysFeeders;
 
-        private List<AdmittanceLinearResolutionResultBiphased> biphasedResultsAtBus; // we store here all necessary information for all biphased common ground faults with first bus equal to LfBus = bus
+        private List<ImpedanceLinearResolutionResultBiphased> biphasedResultsAtBus; // we store here all necessary information for all biphased common ground faults with first bus equal to LfBus = bus
 
-        public class AdmittanceLinearResolutionResultBiphased {
+        public class ImpedanceLinearResolutionResultBiphased {
 
             private LfBus bus2;
 
@@ -96,7 +96,7 @@ public  class AdmittanceLinearResolution {
             private Map<Integer, DenseMatrix> dE2; // store necessary data to compute voltage delta of the full grid for a common support biphased fault
             // the key stores the number of the bus2 for a biphased common support fault, the value stores the resolved value [Res] = inv(Y)*[En], with n of vector [En] corresponding to the studied short circuit fault and values at lines of [Res] corresponding real and imaginary parts at bus2 in key
 
-            AdmittanceLinearResolutionResultBiphased(LfBus bus2, double v2x, double v2y, double z22txx, double z22txy, double z22tyx, double z22tyy,
+            ImpedanceLinearResolutionResultBiphased(LfBus bus2, double v2x, double v2y, double z22txx, double z22txy, double z22tyx, double z22tyy,
                                                      double z21txx, double z21txy, double z21tyx, double z21tyy,
                                                      double z12txx, double z12txy, double z12tyx, double z12tyy, int numBus2Fault) {
                 this.bus2 = bus2;
@@ -197,7 +197,7 @@ public  class AdmittanceLinearResolution {
             }
         }
 
-        AdmittanceLinearResolutionResult(LfBus bus, double rEq11, double rEq22, double xEq12, double xEq21, double ethx, double ethy) {
+        ImpedanceLinearResolutionResult(LfBus bus, double rEq11, double rEq22, double xEq12, double xEq21, double ethx, double ethy) {
             this.bus = bus;
             this.rEq11 = rEq11;
             this.rEq22 = rEq22;
@@ -242,7 +242,7 @@ public  class AdmittanceLinearResolution {
             return eqSysFeeders;
         }
 
-        public List<AdmittanceLinearResolutionResultBiphased> getBiphasedResultsAtBus() {
+        public List<ImpedanceLinearResolutionResultBiphased> getBiphasedResultsAtBus() {
             return biphasedResultsAtBus;
         }
 
@@ -289,7 +289,7 @@ public  class AdmittanceLinearResolution {
                                       double z21txx, double z21txy, double z21tyx, double z21tyy,
                                       double z12txx, double z12txy, double z12tyx, double z12tyy, int numBus2Fault) {
             // numBus2Fault is store to easily get the extraction vector for the second bus, in order to compute the full voltage exprt if required
-            AdmittanceLinearResolutionResult.AdmittanceLinearResolutionResultBiphased biphasedResult = new AdmittanceLinearResolutionResult.AdmittanceLinearResolutionResultBiphased(bus2, initV2x, initV2y, z22txx, z22txy, z22tyx, z22tyy,
+            ImpedanceLinearResolutionResult.ImpedanceLinearResolutionResultBiphased biphasedResult = new ImpedanceLinearResolutionResult.ImpedanceLinearResolutionResultBiphased(bus2, initV2x, initV2y, z22txx, z22txy, z22tyx, z22tyy,
                     z21txx, z21txy, z21tyx, z21tyy,
                     z12txx, z12txy, z12tyx, z12tyy, numBus2Fault);
 
@@ -473,7 +473,7 @@ public  class AdmittanceLinearResolution {
             }
 
             //this is equivalent to get the diagonal blocks of tEn * inv(Y) * En but taking advantage of the sparsity of tEn
-            AdmittanceLinearResolutionResult res = new AdmittanceLinearResolutionResult(lfBus,
+            ImpedanceLinearResolutionResult res = new ImpedanceLinearResolutionResult(lfBus,
                     en.get(tEn2Col.get(2 * numBusFault), 2 * numBusFault),
                     en.get(tEn2Col.get(1 + 2 * numBusFault), 1 + 2 * numBusFault),
                     -en.get(tEn2Col.get(2 * numBusFault), 1 + 2 * numBusFault),
@@ -552,7 +552,7 @@ public  class AdmittanceLinearResolution {
                 res.updateWithVoltagesdelta(yd, en, numBusFault, equationsSystemFeeders);
                 if (res.biphasedResultsAtBus != null) {
                     // update for each biphased common support fault
-                    for (AdmittanceLinearResolutionResult.AdmittanceLinearResolutionResultBiphased biphasedResultPart : res.biphasedResultsAtBus) {
+                    for (ImpedanceLinearResolutionResult.ImpedanceLinearResolutionResultBiphased biphasedResultPart : res.biphasedResultsAtBus) {
                         biphasedResultPart.updateWithVoltagesdelta2(yd, en);
                     }
                 }

@@ -43,18 +43,18 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
         solverFaultList = faultLists.getKey();
         solverBiphasedFaultList = faultLists.getValue();
 
-        AdmittanceLinearResolutionParameters admittanceLinearResolutionParametersHomopolar = new AdmittanceLinearResolutionParameters(acLoadFlowParameters,
+        ImpedanceLinearResolutionParameters admittanceLinearResolutionParametersHomopolar = new ImpedanceLinearResolutionParameters(acLoadFlowParameters,
                 parameters.getMatrixFactory(), solverFaultList, parameters.isVoltageUpdate(),
                 getAdmittanceVoltageProfileTypeFromParam(), getAdmittancePeriodTypeFromParam(), AdmittanceEquationSystem.AdmittanceType.ADM_THEVENIN_HOMOPOLAR,
                 parameters.isIgnoreShunts(), parameters.getAdditionalDataInfo(), solverBiphasedFaultList);
 
-        AdmittanceLinearResolutionParameters admittanceLinearResolutionParametersDirect = new AdmittanceLinearResolutionParameters(acLoadFlowParameters,
+        ImpedanceLinearResolutionParameters admittanceLinearResolutionParametersDirect = new ImpedanceLinearResolutionParameters(acLoadFlowParameters,
                 parameters.getMatrixFactory(), solverFaultList, parameters.isVoltageUpdate(),
                 getAdmittanceVoltageProfileTypeFromParam(), getAdmittancePeriodTypeFromParam(), AdmittanceEquationSystem.AdmittanceType.ADM_THEVENIN,
                 parameters.isIgnoreShunts(), parameters.getAdditionalDataInfo(), solverBiphasedFaultList);
 
-        AdmittanceLinearResolution directResolution = new AdmittanceLinearResolution(network, admittanceLinearResolutionParametersDirect);
-        AdmittanceLinearResolution homopolarResolution = new AdmittanceLinearResolution(network, admittanceLinearResolutionParametersHomopolar);
+        ImpedanceLinearResolution directResolution = new ImpedanceLinearResolution(network, admittanceLinearResolutionParametersDirect);
+        ImpedanceLinearResolution homopolarResolution = new ImpedanceLinearResolution(network, admittanceLinearResolutionParametersHomopolar);
 
         directResolution.run();
         homopolarResolution.run();
@@ -67,12 +67,12 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
         processAdmittanceLinearResolutionResults(directResolution, homopolarResolution, ShortCircuitFault.ShortCircuitType.BIPHASED_COMMON_SUPPORT);
     }
 
-    public void processAdmittanceLinearResolutionResults(AdmittanceLinearResolution directResolution, AdmittanceLinearResolution homopolarResolution, ShortCircuitFault.ShortCircuitType shortCircuitType) {
+    public void processAdmittanceLinearResolutionResults(ImpedanceLinearResolution directResolution, ImpedanceLinearResolution homopolarResolution, ShortCircuitFault.ShortCircuitType shortCircuitType) {
 
         int numResult = 0;
-        for (AdmittanceLinearResolution.AdmittanceLinearResolutionResult directResult : directResolution.results) {
+        for (ImpedanceLinearResolution.ImpedanceLinearResolutionResult directResult : directResolution.results) {
 
-            AdmittanceLinearResolution.AdmittanceLinearResolutionResult homopolarResult = homopolarResolution.results.get(numResult);
+            ImpedanceLinearResolution.ImpedanceLinearResolutionResult homopolarResult = homopolarResolution.results.get(numResult);
             numResult++;
 
             LfBus lfBus1 = directResult.getBus();
@@ -154,8 +154,8 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
 
                 } else if (shortCircuitType == ShortCircuitFault.ShortCircuitType.BIPHASED_COMMON_SUPPORT) {
                     // TODO : We only handle the first biphased of the list for now, check how to handle this in the final version
-                    AdmittanceLinearResolution.AdmittanceLinearResolutionResult.AdmittanceLinearResolutionResultBiphased biphasedDirectResult = directResult.getBiphasedResultsAtBus().get(0);
-                    AdmittanceLinearResolution.AdmittanceLinearResolutionResult.AdmittanceLinearResolutionResultBiphased biphasedHomopolarResult = homopolarResult.getBiphasedResultsAtBus().get(0);
+                    ImpedanceLinearResolution.ImpedanceLinearResolutionResult.ImpedanceLinearResolutionResultBiphased biphasedDirectResult = directResult.getBiphasedResultsAtBus().get(0);
+                    ImpedanceLinearResolution.ImpedanceLinearResolutionResult.ImpedanceLinearResolutionResultBiphased biphasedHomopolarResult = homopolarResult.getBiphasedResultsAtBus().get(0);
 
                     double ro12 = biphasedHomopolarResult.getZ12txx(); // TODO : add some tests to check consistency with Z12tyy and Z12tyx
                     double xo12 = -biphasedHomopolarResult.getZ12txy();
@@ -228,9 +228,9 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
     }
 
     public ShortCircuitResult buildUnbalancedResult(Matrix mId, Matrix mIo, Matrix mIi, double rdf, double xdf, double rof, double xof, MatrixFactory mf,
-                                                    AdmittanceLinearResolution.AdmittanceLinearResolutionResult directResult,
-                                                    AdmittanceLinearResolution.AdmittanceLinearResolutionResult homopolarResult,
-                                                    ShortCircuitFault scf, LfBus lfBus1, double v1dxInit, double v1dyInit, AdmittanceLinearResolution directResolution) {
+                                                    ImpedanceLinearResolution.ImpedanceLinearResolutionResult directResult,
+                                                    ImpedanceLinearResolution.ImpedanceLinearResolutionResult homopolarResult,
+                                                    ShortCircuitFault scf, LfBus lfBus1, double v1dxInit, double v1dyInit, ImpedanceLinearResolution directResolution) {
         //get the voltage vectors
         // Vo :
         // [vox]      [ rof  -xof ]   [ iox ]
@@ -311,12 +311,12 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
     }
 
     public ShortCircuitResult buildUnbalancedCommunSuppportResult(Matrix mId, Matrix mIo, Matrix mIi, Matrix mI2d, Matrix mI2o, Matrix mI2i, Matrix mVd, Matrix mVo, Matrix mVi, double rdf, double xdf, double rof, double xof, MatrixFactory mf,
-                                                    AdmittanceLinearResolution.AdmittanceLinearResolutionResult directResult,
-                                                    AdmittanceLinearResolution.AdmittanceLinearResolutionResult homopolarResult, ShortCircuitFault scf,
-                                                                  LfBus lfBus1, double v1dxInit, double v1dyInit, AdmittanceLinearResolution directResolution,
+                                                                  ImpedanceLinearResolution.ImpedanceLinearResolutionResult directResult,
+                                                                  ImpedanceLinearResolution.ImpedanceLinearResolutionResult homopolarResult, ShortCircuitFault scf,
+                                                                  LfBus lfBus1, double v1dxInit, double v1dyInit, ImpedanceLinearResolution directResolution,
                                                                   LfBus lfBus2, double v2dxInit, double v2dyInit,
-                                                                  AdmittanceLinearResolution.AdmittanceLinearResolutionResult.AdmittanceLinearResolutionResultBiphased biphasedDirectResult,
-                                                                  AdmittanceLinearResolution.AdmittanceLinearResolutionResult.AdmittanceLinearResolutionResultBiphased biphasedHomopolarResult) {
+                                                                  ImpedanceLinearResolution.ImpedanceLinearResolutionResult.ImpedanceLinearResolutionResultBiphased biphasedDirectResult,
+                                                                  ImpedanceLinearResolution.ImpedanceLinearResolutionResult.ImpedanceLinearResolutionResultBiphased biphasedHomopolarResult) {
 
         //record the results
         EquationSystemFeeders equationSystemFeedersDirect =  directResult.getEqSysFeeders();

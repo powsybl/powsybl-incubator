@@ -137,8 +137,8 @@ public class TheveninEquivalent {
             periodType = AdmittanceEquationSystem.AdmittancePeriodType.ADM_STEADY_STATE;
         }
 
-        List<CalculationLocation> faultList = new ArrayList<>();
-        for (CalculationLocation calculationLocation : parameters.getFaults()) {
+        List<CalculationLocation> locations = new ArrayList<>();
+        for (CalculationLocation calculationLocation : parameters.getLocations()) {
             String busName = calculationLocation.getBusLocation();
             Pair<String, Integer > branchFaultInfo = buildFaultBranchFromBusId(busName, network);
 
@@ -148,11 +148,11 @@ public class TheveninEquivalent {
             }
 
             calculationLocation.setIidmBusInfo(branchFaultInfo);
-            faultList.add(calculationLocation);
+            locations.add(calculationLocation);
         }
 
         return new AdmittanceLinearResolutionParameters(acLoadFlowParameters, parameters.getMatrixFactory(),
-                faultList, voltageUpdate, admittanceVoltageProfileType, periodType,
+                locations, voltageUpdate, admittanceVoltageProfileType, periodType,
                 AdmittanceEquationSystem.AdmittanceType.ADM_THEVENIN, parameters.isTheveninIgnoreShunts(),
                 parameters.getAdditionalDataInfo());
     }

@@ -300,7 +300,7 @@ public  class AdmittanceLinearResolution {
         }
     }
 
-    public LfBus getLfBusFromIidmBranch(String iidmBranchId, int branchSide, LfNetwork lfNetwork) {
+    public static LfBus getLfBusFromIidmBranch(String iidmBranchId, int branchSide, LfNetwork lfNetwork) {
         LfBus bus = null;
         for (LfBranch lfBranch : lfNetwork.getBranches()) {
             String branchId = lfBranch.getId();

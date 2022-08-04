@@ -37,7 +37,7 @@ public class TheveninEquivalentParameters {
 
     private final MatrixFactory matrixFactory;
 
-    private final List<CalculationLocation> theveninVoltageLevelLocation;
+    private final List<CalculationLocation> theveninCalculationLocation;
 
     private AdditionalDataInfo additionalDataInfo;
 
@@ -50,7 +50,7 @@ public class TheveninEquivalentParameters {
     public TheveninEquivalentParameters(AcLoadFlowParameters acLoadFlowParameters, MatrixFactory matrixFactory, List<CalculationLocation> voltageLevels, boolean voltageUpdate, TheveninVoltageProfileType theveninVoltageProfileType, TheveninPeriodType theveninPeriodType, boolean theveninIgnoreShunts, AdditionalDataInfo additionalDataInfo) {
         this.acLoadFlowParameters = Objects.requireNonNull(acLoadFlowParameters);
         this.matrixFactory = Objects.requireNonNull(matrixFactory);
-        this.theveninVoltageLevelLocation = Objects.requireNonNull(voltageLevels);
+        this.theveninCalculationLocation = Objects.requireNonNull(voltageLevels);
         this.voltageUpdate = voltageUpdate;
         this.theveninIgnoreShunts = theveninIgnoreShunts;
         this.theveninVoltageProfileType = theveninVoltageProfileType;
@@ -66,8 +66,8 @@ public class TheveninEquivalentParameters {
         return matrixFactory;
     }
 
-    public List<CalculationLocation> getFaults() {
-        return theveninVoltageLevelLocation;
+    public List<CalculationLocation> getLocations() {
+        return theveninCalculationLocation;
     }
 
     public boolean isVoltageUpdate() {

@@ -95,10 +95,9 @@ public abstract class AbstractShortCircuitEngine {
         List<CalculationLocation> faultList = new ArrayList<>();
         List<CalculationLocation> biphasedFaultList = new ArrayList<>();
         Map<String, Pair<String, Integer >> tmpListBus1 = new HashMap<>();
-        for (CalculationLocation calculationLocation : parameters.getShortCircuitFaults()) {
-            String busName = calculationLocation.getBusLocation();
-            String bus2Name = calculationLocation.getBusLocationBiPhased();
-            ShortCircuitFault scfe = (ShortCircuitFault) calculationLocation; // TODO : better check but here calculation Location must be shortCircuit Faults
+        for (ShortCircuitFault scfe : parameters.getShortCircuitFaults()) {
+            String busName = scfe.getBusLocation();
+            String bus2Name = scfe.getBusLocationBiPhased();
 
             if (bus2Name.isEmpty()) { // TODO : adapt
                 // TODO : put a condition that it is an unbalanced shortCircuit

@@ -37,7 +37,6 @@ public class AdmittanceLinearResolutionParameters {
 
     private final MatrixFactory matrixFactory;
 
-    //private final List<String> theveninLocations; // TODO: compute Thevenin for a list of nodes in input
     private final List<CalculationLocation> calculationLocations;
 
     private List<CalculationLocation>  biphasedCalculationLocations;

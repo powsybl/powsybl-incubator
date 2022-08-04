@@ -38,9 +38,9 @@ public class AdmittanceLinearResolutionParameters {
     private final MatrixFactory matrixFactory;
 
     //private final List<String> theveninLocations; // TODO: compute Thevenin for a list of nodes in input
-    private final List<CalculationLocation> voltageLevelLocation;
+    private final List<CalculationLocation> calculationLocations;
 
-    private List<CalculationLocation>  biphasedVoltageLevelLocation;
+    private List<CalculationLocation>  biphasedCalculationLocations;
 
     private AdditionalDataInfo additionalDataInfo;
 
@@ -52,12 +52,12 @@ public class AdmittanceLinearResolutionParameters {
 
     private final AdmittanceEquationSystem.AdmittanceType admittanceType;
 
-    public AdmittanceLinearResolutionParameters(AcLoadFlowParameters acLoadFlowParameters, MatrixFactory matrixFactory, List<CalculationLocation> voltageLevels, boolean voltageUpdate,
+    public AdmittanceLinearResolutionParameters(AcLoadFlowParameters acLoadFlowParameters, MatrixFactory matrixFactory, List<CalculationLocation> calculationLocations, boolean voltageUpdate,
                                                 AdmittanceEquationSystem.AdmittanceVoltageProfileType theveninVoltageProfileType, AdmittanceEquationSystem.AdmittancePeriodType theveninPeriodType, AdmittanceEquationSystem.AdmittanceType admittanceType,
                                                 boolean theveninIgnoreShunts, AdditionalDataInfo additionalDataInfo) {
         this.acLoadFlowParameters = Objects.requireNonNull(acLoadFlowParameters);
         this.matrixFactory = Objects.requireNonNull(matrixFactory);
-        this.voltageLevelLocation = Objects.requireNonNull(voltageLevels);
+        this.calculationLocations = Objects.requireNonNull(calculationLocations);
         this.voltageUpdate = voltageUpdate;
         this.ignoreShunts = theveninIgnoreShunts;
         this.voltageProfileType = theveninVoltageProfileType;
@@ -66,11 +66,11 @@ public class AdmittanceLinearResolutionParameters {
         this.admittanceType = admittanceType;
     }
 
-    public AdmittanceLinearResolutionParameters(AcLoadFlowParameters acLoadFlowParameters, MatrixFactory matrixFactory, List<CalculationLocation> voltageLevels, boolean voltageUpdate,
+    public AdmittanceLinearResolutionParameters(AcLoadFlowParameters acLoadFlowParameters, MatrixFactory matrixFactory, List<CalculationLocation> calculationLocations, boolean voltageUpdate,
                                                 AdmittanceEquationSystem.AdmittanceVoltageProfileType theveninVoltageProfileType, AdmittanceEquationSystem.AdmittancePeriodType theveninPeriodType, AdmittanceEquationSystem.AdmittanceType admittanceType,
                                                 boolean theveninIgnoreShunts, AdditionalDataInfo additionalDataInfo, List<CalculationLocation> biphasedVoltageLevelLocation) {
-        this(acLoadFlowParameters, matrixFactory, voltageLevels, voltageUpdate, theveninVoltageProfileType, theveninPeriodType, admittanceType, theveninIgnoreShunts, additionalDataInfo);
-        this.biphasedVoltageLevelLocation = biphasedVoltageLevelLocation;
+        this(acLoadFlowParameters, matrixFactory, calculationLocations, voltageUpdate, theveninVoltageProfileType, theveninPeriodType, admittanceType, theveninIgnoreShunts, additionalDataInfo);
+        this.biphasedCalculationLocations = biphasedVoltageLevelLocation;
 
     }
 
@@ -82,8 +82,8 @@ public class AdmittanceLinearResolutionParameters {
         return matrixFactory;
     }
 
-    public List<CalculationLocation> getVoltageLevelLocation() {
-        return voltageLevelLocation;
+    public List<CalculationLocation> getCalculationLocations() {
+        return calculationLocations;
     }
 
     public boolean isVoltageUpdate() {
@@ -98,8 +98,8 @@ public class AdmittanceLinearResolutionParameters {
         return voltageProfileType;
     }
 
-    public List<CalculationLocation>  getBiphasedVoltageLevelLocation() {
-        return biphasedVoltageLevelLocation;
+    public List<CalculationLocation>  getBiphasedCalculationLocations() {
+        return biphasedCalculationLocations;
     }
 
     public AdditionalDataInfo getAdditionalDataInfo() {

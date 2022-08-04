@@ -356,7 +356,7 @@ public  class AdmittanceLinearResolution {
 
         //Get bus by voltage level
         List<LfBus> inputBusses = new ArrayList<>();
-        for (CalculationLocation faultBranchLocationInfo : parameters.getVoltageLevelLocation()) {
+        for (CalculationLocation faultBranchLocationInfo : parameters.getCalculationLocations()) {
             String iidmBranchId = faultBranchLocationInfo.getIidmBusInfo().getKey();
             int branchSide = faultBranchLocationInfo.getIidmBusInfo().getValue();
 
@@ -369,8 +369,8 @@ public  class AdmittanceLinearResolution {
 
         // case it is a biphased common support input, supposing that the number of such input contingencies is low
         List<Pair<LfBus, LfBus>> biphasedinputBusses = new ArrayList<>();
-        if (parameters.getBiphasedVoltageLevelLocation() != null) { // TODO : change name
-            for (CalculationLocation biphasedFaultBranchLocationInfo : parameters.getBiphasedVoltageLevelLocation()) {
+        if (parameters.getBiphasedCalculationLocations() != null) { // TODO : change name
+            for (CalculationLocation biphasedFaultBranchLocationInfo : parameters.getBiphasedCalculationLocations()) {
 
                 String iidmBranchId = biphasedFaultBranchLocationInfo.getIidmBusInfo().getKey();
                 int branchSide = biphasedFaultBranchLocationInfo.getIidmBusInfo().getValue();
@@ -378,7 +378,7 @@ public  class AdmittanceLinearResolution {
                 String iidmBranch2Id = biphasedFaultBranchLocationInfo.getIidmBus2Info().getKey();
                 int branch2Side = biphasedFaultBranchLocationInfo.getIidmBus2Info().getValue();
 
-                LfBus bus1 = getLfBusFromIidmBranch(iidmBranchId, branch2Side, lfNetwork);
+                LfBus bus1 = getLfBusFromIidmBranch(iidmBranchId, branchSide, lfNetwork);
                 LfBus bus2 = getLfBusFromIidmBranch(iidmBranch2Id, branch2Side, lfNetwork);
 
                 if (bus1 != null && bus2 != null) {

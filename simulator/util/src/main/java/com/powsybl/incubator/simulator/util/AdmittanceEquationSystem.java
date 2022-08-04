@@ -247,9 +247,9 @@ public final class AdmittanceEquationSystem {
 
             if (Math.abs(g) > EPSILON || Math.abs(b) > EPSILON) {
                 equationSystem.createEquation(bus.getNum(), EquationType.BUS_YR)
-                        .addTerm(new AdmittanceShuntEquationTerm(g, b, bus, variableSet, true));
+                        .addTerm(new AdmittanceEquationTermShunt(g, b, bus, variableSet, true));
                 equationSystem.createEquation(bus.getNum(), EquationType.BUS_YI)
-                        .addTerm(new AdmittanceShuntEquationTerm(g, b, bus, variableSet, false));
+                        .addTerm(new AdmittanceEquationTermShunt(g, b, bus, variableSet, false));
             }
         }
     }

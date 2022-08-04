@@ -18,7 +18,7 @@ import java.util.Objects;
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
-public class AdmittanceShuntEquationTerm extends AbstractNamedEquationTerm<VariableType, EquationType> implements LinearEquationTerm {
+public class AdmittanceEquationTermShunt extends AbstractNamedEquationTerm<VariableType, EquationType> implements LinearEquationTerm {
 
     private final LfBus bus;
 
@@ -38,7 +38,7 @@ public class AdmittanceShuntEquationTerm extends AbstractNamedEquationTerm<Varia
     //Eq1r - [ y1r1r y1r1i ]   [ g  -b ]
     //Eq1i - [ y1i1r y1i1i ] = [ b   g ] =
 
-    public AdmittanceShuntEquationTerm(double g, double b, LfBus bus, VariableSet<VariableType> variableSet, boolean isReal) {
+    public AdmittanceEquationTermShunt(double g, double b, LfBus bus, VariableSet<VariableType> variableSet, boolean isReal) {
         this.bus = Objects.requireNonNull(bus);
         Objects.requireNonNull(variableSet);
 

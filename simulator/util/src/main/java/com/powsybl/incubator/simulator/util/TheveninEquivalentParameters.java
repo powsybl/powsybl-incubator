@@ -37,8 +37,7 @@ public class TheveninEquivalentParameters {
 
     private final MatrixFactory matrixFactory;
 
-    //private final List<String> theveninLocations; // TODO: compute Thevenin for a list of nodes in input
-    private final List<ShortCircuitFault> theveninVoltageLevelLocation;
+    private final List<CalculationLocation> theveninVoltageLevelLocation;
 
     private AdditionalDataInfo additionalDataInfo;
 
@@ -50,7 +49,7 @@ public class TheveninEquivalentParameters {
 
     private ShortCircuitNorm norm;
 
-    public TheveninEquivalentParameters(AcLoadFlowParameters acLoadFlowParameters, MatrixFactory matrixFactory, List<ShortCircuitFault> voltageLevels, boolean voltageUpdate, TheveninVoltageProfileType theveninVoltageProfileType, TheveninPeriodType theveninPeriodType, boolean theveninIgnoreShunts, AdditionalDataInfo additionalDataInfo, ShortCircuitNorm norm) {
+    public TheveninEquivalentParameters(AcLoadFlowParameters acLoadFlowParameters, MatrixFactory matrixFactory, List<CalculationLocation> voltageLevels, boolean voltageUpdate, TheveninVoltageProfileType theveninVoltageProfileType, TheveninPeriodType theveninPeriodType, boolean theveninIgnoreShunts, AdditionalDataInfo additionalDataInfo, ShortCircuitNorm norm) {
         this.acLoadFlowParameters = Objects.requireNonNull(acLoadFlowParameters);
         this.matrixFactory = Objects.requireNonNull(matrixFactory);
         this.theveninVoltageLevelLocation = Objects.requireNonNull(voltageLevels);
@@ -70,7 +69,7 @@ public class TheveninEquivalentParameters {
         return matrixFactory;
     }
 
-    public List<ShortCircuitFault> getFaults() {
+    public List<CalculationLocation> getFaults() {
         return theveninVoltageLevelLocation;
     }
 

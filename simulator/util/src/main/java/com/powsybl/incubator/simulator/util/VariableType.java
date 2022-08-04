@@ -13,8 +13,8 @@ import com.powsybl.openloadflow.network.ElementType;
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at gmail.com>
  */
 public enum VariableType implements Quantity {
-    BUS_VR("vr"),
-    BUS_VI("vi");
+    BUS_VR("vr"), // real part
+    BUS_VI("vi"); // imaginary part
 
     private final String symbol;
 

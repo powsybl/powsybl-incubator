@@ -65,7 +65,7 @@ public  class AdmittanceLinearResolution {
 
         private Map<Integer, DenseMatrix> dE; // the key stores the number of the bus, the value stores the resolved value [Res] = inv(Y)*[En], with n of vector [En] corresponding to the studied short circuit fault and values at lines of [Res] corresponding real and imaginary parts at bus in key
 
-        private ShortCircuitEquationSystemFeeders eqSysFeeders;
+        private EquationSystemFeeders eqSysFeeders;
 
         private List<AdmittanceLinearResolutionResultBiphased> biphasedResultsAtBus; // we store here all necessary information for all biphased common ground faults with first bus equal to LfBus = bus
 
@@ -238,7 +238,7 @@ public  class AdmittanceLinearResolution {
             return  enBus;
         }
 
-        public ShortCircuitEquationSystemFeeders getEqSysFeeders() {
+        public EquationSystemFeeders getEqSysFeeders() {
             return eqSysFeeders;
         }
 
@@ -265,7 +265,7 @@ public  class AdmittanceLinearResolution {
             enBus.add(1, 1, enBus22);
         }
 
-        public void updateWithVoltagesdelta(AdmittanceMatrix y, DenseMatrix dEn, int numDef, ShortCircuitEquationSystemFeeders feeders) {
+        public void updateWithVoltagesdelta(AdmittanceMatrix y, DenseMatrix dEn, int numDef, EquationSystemFeeders feeders) {
             dE = y.getDeltaV(dEn, numDef);
             eqSysFeeders = feeders; // contains necessary data to update the contribution of feeders for each short circuit
         }
@@ -350,7 +350,7 @@ public  class AdmittanceLinearResolution {
         LfNetwork lfNetwork = networks.get(0);
         lfNetworkResult = lfNetwork;
 
-        ShortCircuitEquationSystemFeeders equationsSystemFeeders = new ShortCircuitEquationSystemFeeders();
+        EquationSystemFeeders equationsSystemFeeders = new EquationSystemFeeders();
         EquationSystem<VariableType, EquationType> equationSystem
                 = AdmittanceEquationSystem.create(lfNetwork, parameters.getMatrixFactory(), new VariableSet<>(), parameters.getAdmittanceType(), parameters.getTheveninVoltageProfileType(), parameters.getTheveninPeriodType(), parameters.isTheveninIgnoreShunts(), equationsSystemFeeders, parameters.getAcLoadFlowParameters());
 

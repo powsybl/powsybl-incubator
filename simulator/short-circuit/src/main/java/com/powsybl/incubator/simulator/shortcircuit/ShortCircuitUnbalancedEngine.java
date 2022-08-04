@@ -242,8 +242,8 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
         Matrix minusVi = zdf.times(mIi);
 
         //record the results
-        ShortCircuitEquationSystemFeeders equationSystemFeedersDirect =  directResult.getEqSysFeeders();
-        ShortCircuitEquationSystemFeeders equationSystemFeedersHomopolar =  homopolarResult.getEqSysFeeders();
+        EquationSystemFeeders equationSystemFeedersDirect =  directResult.getEqSysFeeders();
+        EquationSystemFeeders equationSystemFeedersHomopolar =  homopolarResult.getEqSysFeeders();
 
         ShortCircuitResult res = new ShortCircuitResult(scf, lfBus1,
                 mId.toDense().get(0, 0), mId.toDense().get(1, 0),
@@ -317,8 +317,8 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
                                                                   AdmittanceLinearResolution.AdmittanceLinearResolutionResult.AdmittanceLinearResolutionResultBiphased biphasedHomopolarResult) {
 
         //record the results
-        ShortCircuitEquationSystemFeeders equationSystemFeedersDirect =  directResult.getEqSysFeeders();
-        ShortCircuitEquationSystemFeeders equationSystemFeedersHomopolar =  homopolarResult.getEqSysFeeders();
+        EquationSystemFeeders equationSystemFeedersDirect =  directResult.getEqSysFeeders();
+        EquationSystemFeeders equationSystemFeedersHomopolar =  homopolarResult.getEqSysFeeders();
         // TODO : adapt in case of a biphased common support
 
         ShortCircuitResult res = new ShortCircuitResult(scf, lfBus1,

@@ -94,23 +94,23 @@ public final class AdmittanceEquationSystem {
     }
 
     private static double getBfromShunt(LfBus bus) {
-        List<ShortCircuitEquationSystemFeeder> feederList = new ArrayList<>();
+        List<EquationSystemFeeder> feederList = new ArrayList<>();
         return getBfromShunt(bus, feederList);
     }
 
-    private static double getBfromShunt(LfBus bus, List<ShortCircuitEquationSystemFeeder> feederList) {
+    private static double getBfromShunt(LfBus bus, List<EquationSystemFeeder> feederList) {
         LfShunt shunt = bus.getShunt().orElse(null);
         double tmpB = 0.;
         if (shunt != null) {
             tmpB += shunt.getB();
-            ShortCircuitEquationSystemFeeder shuntFeeder = new ShortCircuitEquationSystemFeeder(shunt.getB(), 0., shunt.getId(), ShortCircuitEquationSystemFeeder.FeederType.SHUNT);
+            EquationSystemFeeder shuntFeeder = new EquationSystemFeeder(shunt.getB(), 0., shunt.getId(), EquationSystemFeeder.FeederType.SHUNT);
             feederList.add(shuntFeeder);
             //check if g will be implemented
         }
         LfShunt controllerShunt = bus.getControllerShunt().orElse(null);
         if (controllerShunt != null) {
             tmpB += controllerShunt.getB();
-            ShortCircuitEquationSystemFeeder shuntFeeder = new ShortCircuitEquationSystemFeeder(shunt.getB(), 0., shunt.getId(), ShortCircuitEquationSystemFeeder.FeederType.CONTROLLED_SHUNT);
+            EquationSystemFeeder shuntFeeder = new EquationSystemFeeder(shunt.getB(), 0., shunt.getId(), EquationSystemFeeder.FeederType.CONTROLLED_SHUNT);
             feederList.add(shuntFeeder);
             //check if g will be implemented
         }
@@ -118,7 +118,7 @@ public final class AdmittanceEquationSystem {
         return tmpB;
     }
 
-    private static Pair<Double, Double> getYtransfromRdXd(LfBus bus, AdmittancePeriodType admittancePeriodType, List<ShortCircuitEquationSystemFeeder> feederList, AdmittanceType admittanceType) {
+    private static Pair<Double, Double> getYtransfromRdXd(LfBus bus, AdmittancePeriodType admittancePeriodType, List<EquationSystemFeeder> feederList, AdmittanceType admittanceType) {
         double vnomVl = bus.getNominalV();
 
         double tmpG = 0.;
@@ -153,7 +153,7 @@ public final class AdmittanceEquationSystem {
                 double bGen = -(vnomVl * vnomVl / SB) * xd / (rd * rd + xd * xd);
                 tmpG = tmpG + gGen;
                 tmpB = tmpB + bGen; // TODO: check: for now X'd = 0 not allowed
-                ShortCircuitEquationSystemFeeder shuntFeeder = new ShortCircuitEquationSystemFeeder(bGen, gGen, lfgen.getId(), ShortCircuitEquationSystemFeeder.FeederType.GENERATOR);
+                EquationSystemFeeder shuntFeeder = new EquationSystemFeeder(bGen, gGen, lfgen.getId(), EquationSystemFeeder.FeederType.GENERATOR);
                 feederList.add(shuntFeeder);
             }
         }
@@ -164,7 +164,7 @@ public final class AdmittanceEquationSystem {
 
     private static void createShunts(LfNetwork network, VariableSet<VariableType> variableSet, EquationSystem<VariableType, EquationType> equationSystem, AdmittanceType admittanceType,
                                      AdmittanceVoltageProfileType admittanceVoltageProfileType, AdmittancePeriodType admittancePeriodType,
-                                     boolean isShuntsIgnore, ShortCircuitEquationSystemFeeders feeders) {
+                                     boolean isShuntsIgnore, EquationSystemFeeders feeders) {
         for (LfBus bus : network.getBuses()) {
 
             //total shunt at bus to be integrated in the admittance matrix
@@ -209,7 +209,7 @@ public final class AdmittanceEquationSystem {
                 }
             } else if (admittanceType == AdmittanceType.ADM_THEVENIN) {
 
-                List<ShortCircuitEquationSystemFeeder> feederList = new ArrayList<>();
+                List<EquationSystemFeeder> feederList = new ArrayList<>();
 
                 if (!isShuntsIgnore) {
                     // Handling shunts that physically exist
@@ -218,7 +218,7 @@ public final class AdmittanceEquationSystem {
                 gLoadEq = bus.getLoadTargetP() / (vr * vr + vi * vi); // Handling transformation of bus loads into equivalent shunts
                 bLoadEq = -bus.getLoadTargetQ() / (vr * vr + vi * vi);
 
-                ShortCircuitEquationSystemFeeder shuntFeeder = new ShortCircuitEquationSystemFeeder(bLoadEq, gLoadEq, bus.getId(), ShortCircuitEquationSystemFeeder.FeederType.LOAD);
+                EquationSystemFeeder shuntFeeder = new EquationSystemFeeder(bLoadEq, gLoadEq, bus.getId(), EquationSystemFeeder.FeederType.LOAD);
                 feederList.add(shuntFeeder);
 
                 Pair<Double, Double> bAndG = getYtransfromRdXd(bus, admittancePeriodType, feederList, admittanceType); // ! updates feederList
@@ -226,12 +226,12 @@ public final class AdmittanceEquationSystem {
                 gGenEq = bAndG.getKey();
 
                 //shortCircuitNetwork.busToFeeder.put(bus, feederList);
-                ShortCircuitEquationSystemBusFeeders shortCircuitEquationSystemBusFeeders = new ShortCircuitEquationSystemBusFeeders(feederList, bus);
+                EquationSystemBusFeeders shortCircuitEquationSystemBusFeeders = new EquationSystemBusFeeders(feederList, bus);
                 feeders.busToFeeders.put(bus, shortCircuitEquationSystemBusFeeders);
 
             } else if (admittanceType == AdmittanceType.ADM_THEVENIN_HOMOPOLAR) {
 
-                List<ShortCircuitEquationSystemFeeder> feederList = new ArrayList<>(); // not used yet in homopolar
+                List<EquationSystemFeeder> feederList = new ArrayList<>(); // not used yet in homopolar
 
                 Pair<Double, Double> bAndG = getYtransfromRdXd(bus, admittancePeriodType, feederList, admittanceType); // ! updates feederList
                 bGenEq = bAndG.getValue(); //TODO : check how the verify that the generators are operating
@@ -260,7 +260,7 @@ public final class AdmittanceEquationSystem {
 
         // Following data Not needed for reduction methods
         AdmittanceEquationSystem.AdmittancePeriodType admittancePeriodType = AdmittanceEquationSystem.AdmittancePeriodType.ADM_TRANSIENT; //TODO: not relevant for reduction: see how to improve that
-        ShortCircuitEquationSystemFeeders equationsSystemFeeders = new ShortCircuitEquationSystemFeeders();
+        EquationSystemFeeders equationsSystemFeeders = new EquationSystemFeeders();
         boolean isShuntsIgnore = false;
 
         return create(network, mf, variableSet,
@@ -270,7 +270,7 @@ public final class AdmittanceEquationSystem {
 
     public static EquationSystem<VariableType, EquationType> create(LfNetwork network, MatrixFactory mf, VariableSet<VariableType> variableSet,
                                                                     AdmittanceType admittanceType, AdmittanceVoltageProfileType admittanceVoltageProfileType,
-                                                                    AdmittancePeriodType admittancePeriodType, boolean isShuntsIgnore, ShortCircuitEquationSystemFeeders feeders,
+                                                                    AdmittancePeriodType admittancePeriodType, boolean isShuntsIgnore, EquationSystemFeeders feeders,
                                                                     AcLoadFlowParameters acLoadFlowParameters) {
 
         EquationSystem<VariableType, EquationType> equationSystem = new EquationSystem<>();

@@ -8,19 +8,24 @@ package com.powsybl.incubator.simulator.util;
 
 import com.powsybl.openloadflow.network.LfBus;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
-// This class aims at organizing the information related to the feeders for a given equation system
-public class ShortCircuitEquationSystemFeeders {
+public class EquationSystemBusFeeders {
 
-    public ShortCircuitEquationSystemFeeders() {
-        this.busToFeeders = new HashMap<>();
+    private List<EquationSystemFeeder> feeders;
+
+    private LfBus feedersBus;
+
+    public EquationSystemBusFeeders(List<EquationSystemFeeder> feeders, LfBus bus) {
+        this.feeders = feeders;
+        this.feedersBus = bus;
     }
 
-    public Map<LfBus, ShortCircuitEquationSystemBusFeeders> busToFeeders;
+    public List<EquationSystemFeeder> getFeeders() {
+        return feeders;
+    }
 
 }

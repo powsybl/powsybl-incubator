@@ -99,13 +99,13 @@ public class ShortCircuitResult {
     private boolean isVoltageProfileUpdated;
     private List<DenseMatrix>  busNum2Dv;
 
-    private ShortCircuitEquationSystemFeeders eqSysFeedersDirect;
+    private EquationSystemFeeders eqSysFeedersDirect;
 
-    private ShortCircuitEquationSystemFeeders eqSysFeedersHomopolar;
+    private EquationSystemFeeders eqSysFeedersHomopolar;
 
-    private Map<LfBus, ShortCircuitResultBusFeeders> feedersAtBusResultsDirect;
+    private Map<LfBus, EquationSystemBusFeedersResult> feedersAtBusResultsDirect;
 
-    private Map<LfBus, ShortCircuitResultBusFeeders> feedersAtBusResultsHomopolar;
+    private Map<LfBus, EquationSystemBusFeedersResult> feedersAtBusResultsHomopolar;
 
     private ShortCircuitFault shortCircuitFault;
 
@@ -114,7 +114,7 @@ public class ShortCircuitResult {
     public ShortCircuitResult(ShortCircuitFault shortCircuitFault, LfBus lfBus,
                               double ifr, double ifi,
                               double rth, double xth, double ethr, double ethi, double dvr, double dvi,
-                              MatrixFactory matrixFactory, ShortCircuitEquationSystemFeeders eqSysFeeders, ShortCircuitNorm norm) {
+                              MatrixFactory matrixFactory, EquationSystemFeeders eqSysFeeders, ShortCircuitNorm norm) {
         this.matrixFactory = Objects.requireNonNull(matrixFactory);
         this.lfBus = lfBus;
         this.eqSysFeedersDirect = eqSysFeeders;
@@ -173,7 +173,7 @@ public class ShortCircuitResult {
                               double idx, double idy, double iox, double ioy, double iix, double iiy,
                               double rd, double xd, double ro, double xo, double ri, double xi,
                               double vdxinit, double vdyinit, double dvdx, double dvdy, double dvox, double dvoy, double dvix, double dviy,
-                              MatrixFactory matrixFactory, ShortCircuitEquationSystemFeeders eqSysFeedersDirect, ShortCircuitEquationSystemFeeders eqSysFeedersHomopolar, ShortCircuitNorm norm) {
+                              MatrixFactory matrixFactory, EquationSystemFeeders eqSysFeedersDirect, EquationSystemFeeders eqSysFeedersHomopolar, ShortCircuitNorm norm) {
         this.matrixFactory = Objects.requireNonNull(matrixFactory);
         this.lfBus = lfBus;
         this.eqSysFeedersDirect = eqSysFeedersDirect;
@@ -226,7 +226,7 @@ public class ShortCircuitResult {
                               double idx, double idy, double iox, double ioy, double iix, double iiy,
                               double rd, double xd, double ro, double xo, double ri, double xi,
                               double vdxinit, double vdyinit, double dvdx, double dvdy, double dvox, double dvoy, double dvix, double dviy,
-                              MatrixFactory matrixFactory, ShortCircuitEquationSystemFeeders eqSysFeedersDirect, ShortCircuitEquationSystemFeeders eqSysFeedersHomopolar, ShortCircuitNorm norm,
+                              MatrixFactory matrixFactory, EquationSystemFeeders eqSysFeedersDirect, EquationSystemFeeders eqSysFeedersHomopolar, ShortCircuitNorm norm,
                               double i2dx, double i2dy, double i2ox, double i2oy, double i2ix, double i2iy,
                               double v2dxinit, double v2dyinit, double dv2dx, double dv2dy, double dv2ox, double dv2oy, double dv2ix, double dv2iy,
                               LfBus lfBus2) {
@@ -276,8 +276,8 @@ public class ShortCircuitResult {
                 //System.out.println(" dVi(" + bus.getId() + ") = " + bus2dv.get(busNum).get(4, 0) + " + j(" + bus2dv.get(busNum).get(5, 0) + ")");
 
                 // Init of feeder results
-                ShortCircuitEquationSystemBusFeeders busFeeders = eqSysFeedersDirect.busToFeeders.get(bus);
-                ShortCircuitResultBusFeeders resultBusFeeders = new ShortCircuitResultBusFeeders(busFeeders.getFeeders(), bus);
+                EquationSystemBusFeeders busFeeders = eqSysFeedersDirect.busToFeeders.get(bus);
+                EquationSystemBusFeedersResult resultBusFeeders = new EquationSystemBusFeedersResult(busFeeders.getFeeders(), bus);
                 feedersAtBusResultsDirect.put(bus, resultBusFeeders);  // TODO : homopolar
 
             }
@@ -304,8 +304,8 @@ public class ShortCircuitResult {
 
                     // Feeders :
                     // compute the sum of currents from branches at each bus
-                    ShortCircuitResultBusFeeders resultBus1Feeders = feedersAtBusResultsDirect.get(bus1); // TODO : homopolar
-                    ShortCircuitResultBusFeeders resultBus2Feeders = feedersAtBusResultsDirect.get(bus2); // TODO : homopolar
+                    EquationSystemBusFeedersResult resultBus1Feeders = feedersAtBusResultsDirect.get(bus1); // TODO : homopolar
+                    EquationSystemBusFeedersResult resultBus2Feeders = feedersAtBusResultsDirect.get(bus2); // TODO : homopolar
 
                     resultBus1Feeders.addIfeeders(i12.get(0, 0), i12.get(1, 0));
                     resultBus2Feeders.addIfeeders(i12.get(2, 0), i12.get(3, 0));
@@ -315,7 +315,7 @@ public class ShortCircuitResult {
 
             // computing feeders contribution
             for (LfBus bus : lfNetwork.getBuses()) {
-                ShortCircuitResultBusFeeders busFeeders = feedersAtBusResultsDirect.get(bus); // TODO : homopolar
+                EquationSystemBusFeedersResult busFeeders = feedersAtBusResultsDirect.get(bus); // TODO : homopolar
                 busFeeders.updateContributions();
             }
         }
@@ -460,9 +460,9 @@ public class ShortCircuitResult {
         double ix = 0.;
         for (LfBus bus : lfNetwork.getBuses()) {
             if (bus.getId().equals(busId)) {
-                ShortCircuitResultBusFeeders resultFeeder = feedersAtBusResultsDirect.get(bus); // TODO : homopolar
-                List<ShortCircuitResultFeeder> busFeedersResults = resultFeeder.getBusFeedersResults();
-                for (ShortCircuitResultFeeder feeder : busFeedersResults) {
+                EquationSystemBusFeedersResult resultFeeder = feedersAtBusResultsDirect.get(bus); // TODO : homopolar
+                List<EquationSystemResultFeeder> busFeedersResults = resultFeeder.getBusFeedersResults();
+                for (EquationSystemResultFeeder feeder : busFeedersResults) {
                     if (feeder.getId().equals(feederId)) {
                         ix = feeder.getIxContribution();
                     }

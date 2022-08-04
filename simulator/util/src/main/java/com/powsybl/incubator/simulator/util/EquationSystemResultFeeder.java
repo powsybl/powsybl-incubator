@@ -11,7 +11,7 @@ import com.powsybl.openloadflow.network.LfBus;
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
-public class ShortCircuitResultFeeder {
+public class EquationSystemResultFeeder {
 
     private double b;
 
@@ -19,13 +19,13 @@ public class ShortCircuitResultFeeder {
 
     private String id; // id in LfNetwork
 
-    private ShortCircuitEquationSystemFeeder.FeederType feederType;
+    private EquationSystemFeeder.FeederType feederType;
 
     private double ixContribution;
 
     private double iyContribution;
 
-    public ShortCircuitResultFeeder(String id, ShortCircuitEquationSystemFeeder.FeederType feederType, double ix, double iy, double g, double b) {
+    public EquationSystemResultFeeder(String id, EquationSystemFeeder.FeederType feederType, double ix, double iy, double g, double b) {
         this.id = id;
         this.feederType = feederType;
         this.ixContribution = ix;
@@ -34,7 +34,7 @@ public class ShortCircuitResultFeeder {
         this.b = b;
     }
 
-    public ShortCircuitEquationSystemFeeder.FeederType getFeederType() {
+    public EquationSystemFeeder.FeederType getFeederType() {
         return feederType;
     }
 

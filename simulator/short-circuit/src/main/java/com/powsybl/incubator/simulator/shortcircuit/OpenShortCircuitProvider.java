@@ -149,7 +149,6 @@ public class OpenShortCircuitProvider implements ShortCircuitAnalysisProvider {
         // TODO : see how this could be improved by allowing results per electrical bus on the short circuit provider
         for (Map.Entry<ShortCircuitFault, ShortCircuitResult> scResult : scbEngine.resultsPerFault.entrySet()) {
             ShortCircuitFault scFault = scResult.getKey();
-            String vlLocation = scFault.getShortCircuitVoltageLevelLocation();
             double ir = scResult.getValue().getIdx();
             double ii = scResult.getValue().getIdy();
             double icc = Math.sqrt(ir * ir + ii * ii);

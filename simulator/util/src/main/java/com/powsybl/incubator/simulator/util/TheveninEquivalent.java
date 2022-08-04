@@ -137,19 +137,18 @@ public class TheveninEquivalent {
             periodType = AdmittanceEquationSystem.AdmittancePeriodType.ADM_STEADY_STATE;
         }
 
-        List<ShortCircuitFault> faultList = new ArrayList<>();
-        for (ShortCircuitFault scfe : parameters.getFaults()) {
-            String busName = scfe.getBusLocation();
+        List<CalculationLocation> faultList = new ArrayList<>();
+        for (CalculationLocation calculationLocation : parameters.getFaults()) {
+            String busName = calculationLocation.getBusLocation();
             Pair<String, Integer > branchFaultInfo = buildFaultBranchFromBusId(busName, network);
 
             if (branchFaultInfo.getKey().equals("")) {
                 // Bus not found in branches, try three windings transformers
                 branchFaultInfo = buildFaultT3WbranchFromBusId(busName, network);
             }
-            if (scfe.getType() == ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND) {
-                scfe.setIidmBusInfo(branchFaultInfo);
-                faultList.add(scfe);
-            }
+
+            calculationLocation.setIidmBusInfo(branchFaultInfo);
+            faultList.add(calculationLocation);
         }
 
         return new AdmittanceLinearResolutionParameters(acLoadFlowParameters, parameters.getMatrixFactory(),

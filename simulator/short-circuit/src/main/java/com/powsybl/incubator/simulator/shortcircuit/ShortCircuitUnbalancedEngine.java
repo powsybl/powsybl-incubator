@@ -38,7 +38,7 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
         // We handle a pre-treatement of faults given in input:
         // - filtering of some inconsistencies on the bus identification
         // - addition of info in each fault to ease the identification in LfNetwork of iidm info
-        Pair<List<ShortCircuitFault>, List<ShortCircuitFault>> faultLists = buildFaultListsFromInputs();
+        Pair<List<CalculationLocation>, List<CalculationLocation>> faultLists = buildFaultListsFromInputs();
 
         solverFaultList = faultLists.getKey();
         solverBiphasedFaultList = faultLists.getValue();
@@ -82,7 +82,8 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
             if (shortCircuitType == ShortCircuitFault.ShortCircuitType.MONOPHASED
                     || shortCircuitType == ShortCircuitFault.ShortCircuitType.BIPHASED
                     || shortCircuitType == ShortCircuitFault.ShortCircuitType.BIPHASED_GROUND) {
-                for (ShortCircuitFault scfe : solverFaultList) {
+                for (CalculationLocation calculationLocation : solverFaultList) {
+                    ShortCircuitFault scfe = (ShortCircuitFault) calculationLocation; // TODO : better check but calculationLocation must be a ShortCircuitFault
                     if (lfBus1.getId().equals(scfe.getLfBusInfo()) && scfe.getType() == shortCircuitType) {
                         matchingFaults.add(scfe);
                     }
@@ -90,7 +91,8 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
             }
 
             if (shortCircuitType == ShortCircuitFault.ShortCircuitType.BIPHASED_COMMON_SUPPORT) {
-                for (ShortCircuitFault scfe : solverBiphasedFaultList) {
+                for (CalculationLocation calculationLocation : solverBiphasedFaultList) {
+                    ShortCircuitFault scfe = (ShortCircuitFault) calculationLocation; // TODO : better check but calculationLocation must be a ShortCircuitFault
                     if (lfBus1.getId().equals(scfe.getLfBusInfo()) && scfe.getType() == shortCircuitType) {
                         matchingFaults.add(scfe);
                     }

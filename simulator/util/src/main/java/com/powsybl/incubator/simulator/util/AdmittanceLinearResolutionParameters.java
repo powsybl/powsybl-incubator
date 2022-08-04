@@ -38,9 +38,9 @@ public class AdmittanceLinearResolutionParameters {
     private final MatrixFactory matrixFactory;
 
     //private final List<String> theveninLocations; // TODO: compute Thevenin for a list of nodes in input
-    private final List<ShortCircuitFault> voltageLevelLocation;
+    private final List<CalculationLocation> voltageLevelLocation;
 
-    private List<ShortCircuitFault>  biphasedVoltageLevelLocation;
+    private List<CalculationLocation>  biphasedVoltageLevelLocation;
 
     private AdditionalDataInfo additionalDataInfo;
 
@@ -54,7 +54,7 @@ public class AdmittanceLinearResolutionParameters {
 
     private ShortCircuitNorm norm;
 
-    public AdmittanceLinearResolutionParameters(AcLoadFlowParameters acLoadFlowParameters, MatrixFactory matrixFactory, List<ShortCircuitFault> voltageLevels, boolean voltageUpdate,
+    public AdmittanceLinearResolutionParameters(AcLoadFlowParameters acLoadFlowParameters, MatrixFactory matrixFactory, List<CalculationLocation> voltageLevels, boolean voltageUpdate,
                                                 AdmittanceEquationSystem.AdmittanceVoltageProfileType theveninVoltageProfileType, AdmittanceEquationSystem.AdmittancePeriodType theveninPeriodType, AdmittanceEquationSystem.AdmittanceType admittanceType,
                                                 boolean theveninIgnoreShunts, AdditionalDataInfo additionalDataInfo, ShortCircuitNorm norm) {
         this.acLoadFlowParameters = Objects.requireNonNull(acLoadFlowParameters);
@@ -69,9 +69,9 @@ public class AdmittanceLinearResolutionParameters {
         this.admittanceType = admittanceType;
     }
 
-    public AdmittanceLinearResolutionParameters(AcLoadFlowParameters acLoadFlowParameters, MatrixFactory matrixFactory, List<ShortCircuitFault> voltageLevels, boolean voltageUpdate,
+    public AdmittanceLinearResolutionParameters(AcLoadFlowParameters acLoadFlowParameters, MatrixFactory matrixFactory, List<CalculationLocation> voltageLevels, boolean voltageUpdate,
                                                 AdmittanceEquationSystem.AdmittanceVoltageProfileType theveninVoltageProfileType, AdmittanceEquationSystem.AdmittancePeriodType theveninPeriodType, AdmittanceEquationSystem.AdmittanceType admittanceType,
-                                                boolean theveninIgnoreShunts, AdditionalDataInfo additionalDataInfo, ShortCircuitNorm norm, List<ShortCircuitFault> biphasedVoltageLevelLocation) {
+                                                boolean theveninIgnoreShunts, AdditionalDataInfo additionalDataInfo, ShortCircuitNorm norm, List<CalculationLocation> biphasedVoltageLevelLocation) {
         this(acLoadFlowParameters, matrixFactory, voltageLevels, voltageUpdate, theveninVoltageProfileType, theveninPeriodType, admittanceType, theveninIgnoreShunts, additionalDataInfo, norm);
         this.biphasedVoltageLevelLocation = biphasedVoltageLevelLocation;
 
@@ -85,7 +85,7 @@ public class AdmittanceLinearResolutionParameters {
         return matrixFactory;
     }
 
-    public List<ShortCircuitFault> getVoltageLevelLocation() {
+    public List<CalculationLocation> getVoltageLevelLocation() {
         return voltageLevelLocation;
     }
 
@@ -101,7 +101,7 @@ public class AdmittanceLinearResolutionParameters {
         return voltageProfileType;
     }
 
-    public List<ShortCircuitFault>  getBiphasedVoltageLevelLocation() {
+    public List<CalculationLocation>  getBiphasedVoltageLevelLocation() {
         return biphasedVoltageLevelLocation;
     }
 

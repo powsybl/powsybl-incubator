@@ -6,29 +6,27 @@
  */
 package com.powsybl.incubator.simulator.util;
 
-import org.apache.commons.math3.util.Pair;
-
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
-public class ShortCircuitFault {
+public class ShortCircuitFault extends CalculationLocation {
 
     public ShortCircuitFault(String input, String faultId, double zfr, double zfi, ShortCircuitType type, boolean voltageUpdate) {
+        super(input, voltageUpdate);
         this.zfr = zfr;
         this.zfi = zfi;
-        this.voltageUpdate = voltageUpdate;
-        this.shortCircuitVoltageLevelLocation = "";
-        this.shortCircuitVoltageLevelLocationBiPhased = "";
-        this.busLocation = input;
-        this.busLocationBiPhased = "";
         this.type = type;
         this.inputByBus = false;
         this.faultId = faultId;
     }
 
     public ShortCircuitFault(String input, String input2, String faultId, double zfr, double zfi, ShortCircuitType type, boolean voltageUpdate, ShortCircuitBiphasedType biphasedType) {
-        this(input, faultId, zfr, zfi, type, voltageUpdate);
-        this.busLocationBiPhased = input2;
+        super(input, input2, voltageUpdate);
+        this.zfr = zfr;
+        this.zfi = zfi;
+        this.type = type;
+        this.inputByBus = false;
+        this.faultId = faultId;
         this.biphasedType = biphasedType;
     }
 
@@ -48,42 +46,17 @@ public class ShortCircuitFault {
     }
 
     // TODO : remove once input by bus is OK
-    private String shortCircuitVoltageLevelLocation;
-    private String shortCircuitVoltageLevelLocationBiPhased;
 
     private String faultId;
 
     private boolean inputByBus; // true if input given by bus
 
-    private String busLocation;
-    private String busLocationBiPhased;
-
     private double zfr; //real part of the short circuit impedance Zf
     private double zfi; //imaginary part of the short circuit impedance Zf
-
-    private boolean voltageUpdate;
 
     private ShortCircuitType type;
 
     private ShortCircuitBiphasedType biphasedType;
-
-    private Pair<String, Integer > iidmBusInfo; // additional iidm info to make the correspondence between iidm info and lfNetwork info
-
-    private Pair<String, Integer > iidmBus2Info; // additional iidm info to make the correspondence between iidm info and lfNetwork info in case of a biphased common support fault
-
-    private String lfBusInfo; // additional info to have the correspondence between iidm and lfNetwork
-
-    public String getShortCircuitVoltageLevelLocation() {
-        return shortCircuitVoltageLevelLocation;
-    }
-
-    public String getBusLocation() {
-        return busLocation;
-    }
-
-    public String getBusLocationBiPhased() {
-        return busLocationBiPhased;
-    }
 
     public boolean isInputByBus() {
         return inputByBus;
@@ -103,30 +76,6 @@ public class ShortCircuitFault {
 
     public ShortCircuitBiphasedType getBiphasedType() {
         return biphasedType;
-    }
-
-    public void setIidmBusInfo(Pair<String, Integer> iidmBusInfo) {
-        this.iidmBusInfo = iidmBusInfo;
-    }
-
-    public void setIidmBus2Info(Pair<String, Integer> iidmBus2Info) {
-        this.iidmBus2Info = iidmBus2Info;
-    }
-
-    public Pair<String, Integer> getIidmBus2Info() {
-        return iidmBus2Info;
-    }
-
-    public Pair<String, Integer> getIidmBusInfo() {
-        return iidmBusInfo;
-    }
-
-    public void setLfBusInfo(String lfBusInfo) {
-        this.lfBusInfo = lfBusInfo;
-    }
-
-    public String getLfBusInfo() {
-        return lfBusInfo;
     }
 
     public String getFaultId() {

@@ -6,8 +6,8 @@
  */
 package com.powsybl.incubator.simulator.shortcircuit;
 
-import com.powsybl.incubator.simulator.util.extensions.AdditionalDataInfo;
 import com.powsybl.incubator.simulator.util.ShortCircuitFault;
+import com.powsybl.incubator.simulator.util.extensions.AdditionalDataInfo;
 import com.powsybl.incubator.simulator.util.ShortCircuitNorm;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.math.matrix.MatrixFactory;

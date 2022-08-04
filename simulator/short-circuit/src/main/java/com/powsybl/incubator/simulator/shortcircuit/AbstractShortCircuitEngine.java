@@ -12,6 +12,7 @@ import com.powsybl.iidm.network.Bus;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.ThreeWindingsTransformer;
 import com.powsybl.incubator.simulator.util.AdmittanceEquationSystem;
+import com.powsybl.incubator.simulator.util.CalculationLocation;
 import com.powsybl.incubator.simulator.util.ShortCircuitFault;
 import com.powsybl.incubator.simulator.util.extensions.ShortCircuitExtensions;
 import com.powsybl.incubator.simulator.util.ShortCircuitResult;
@@ -38,9 +39,9 @@ public abstract class AbstractShortCircuitEngine {
 
     public Map<ShortCircuitFault, ShortCircuitResult> resultsPerFault = new HashMap<>();
 
-    protected List<ShortCircuitFault> solverFaultList; // list of faults provided to the solver (not including biphased common support faults)
+    protected List<CalculationLocation> solverFaultList; // list of faults provided to the solver (not including biphased common support faults)
 
-    protected List<ShortCircuitFault> solverBiphasedFaultList; // list of biphased common support faults provided to the solver
+    protected List<CalculationLocation> solverBiphasedFaultList; // list of biphased common support faults provided to the solver
 
     protected final AcLoadFlowParameters acLoadFlowParameters;
 
@@ -86,17 +87,18 @@ public abstract class AbstractShortCircuitEngine {
         parameters.setShortCircuitFaults(scfSystematic);
     }
 
-    protected Pair<List<ShortCircuitFault>, List<ShortCircuitFault>> buildFaultListsFromInputs() {
+    protected Pair<List<CalculationLocation>, List<CalculationLocation>> buildFaultListsFromInputs() {
         // We handle a pre-treatement of faults given in input:
         // - filtering faults because of some inconsistencies on the bus identification
         // - addition of info in each fault to ease the identification in LfNetwork of iidm info
 
-        List<ShortCircuitFault> faultList = new ArrayList<>();
-        List<ShortCircuitFault> biphasedFaultList = new ArrayList<>();
+        List<CalculationLocation> faultList = new ArrayList<>();
+        List<CalculationLocation> biphasedFaultList = new ArrayList<>();
         Map<String, Pair<String, Integer >> tmpListBus1 = new HashMap<>();
-        for (ShortCircuitFault scfe : parameters.getShortCircuitFaults()) {
-            String busName = scfe.getBusLocation();
-            String bus2Name = scfe.getBusLocationBiPhased();
+        for (CalculationLocation calculationLocation : parameters.getShortCircuitFaults()) {
+            String busName = calculationLocation.getBusLocation();
+            String bus2Name = calculationLocation.getBusLocationBiPhased();
+            ShortCircuitFault scfe = (ShortCircuitFault) calculationLocation; // TODO : better check but here calculation Location must be shortCircuit Faults
 
             if (bus2Name.isEmpty()) { // TODO : adapt
                 // TODO : put a condition that it is an unbalanced shortCircuit

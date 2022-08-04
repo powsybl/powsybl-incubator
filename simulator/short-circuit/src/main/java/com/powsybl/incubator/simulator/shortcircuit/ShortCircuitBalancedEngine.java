@@ -68,7 +68,8 @@ public class ShortCircuitBalancedEngine extends AbstractShortCircuitEngine {
             double rth = linearResolutionResult.getRthz11();
             double xth = linearResolutionResult.getXthz12();
 
-            for (ShortCircuitFault scfe : solverFaultList) {
+            for (CalculationLocation calculationLocation : solverFaultList) {
+                ShortCircuitFault scfe = (ShortCircuitFault) calculationLocation; // TODO : better check but calculationLocation must be a ShortCircuitFault
                 ShortCircuitFault scf = null;
                 if (bus.getId().equals(scfe.getLfBusInfo())) {
                     scf = scfe;

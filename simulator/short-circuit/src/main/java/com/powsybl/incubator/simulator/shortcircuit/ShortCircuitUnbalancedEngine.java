@@ -46,12 +46,12 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
         AdmittanceLinearResolutionParameters admittanceLinearResolutionParametersHomopolar = new AdmittanceLinearResolutionParameters(acLoadFlowParameters,
                 parameters.getMatrixFactory(), solverFaultList, parameters.isVoltageUpdate(),
                 getAdmittanceVoltageProfileTypeFromParam(), getAdmittancePeriodTypeFromParam(), AdmittanceEquationSystem.AdmittanceType.ADM_THEVENIN_HOMOPOLAR,
-                parameters.isIgnoreShunts(), parameters.getAdditionalDataInfo(), parameters.getNorm(), solverBiphasedFaultList);
+                parameters.isIgnoreShunts(), parameters.getAdditionalDataInfo(), solverBiphasedFaultList);
 
         AdmittanceLinearResolutionParameters admittanceLinearResolutionParametersDirect = new AdmittanceLinearResolutionParameters(acLoadFlowParameters,
                 parameters.getMatrixFactory(), solverFaultList, parameters.isVoltageUpdate(),
                 getAdmittanceVoltageProfileTypeFromParam(), getAdmittancePeriodTypeFromParam(), AdmittanceEquationSystem.AdmittanceType.ADM_THEVENIN,
-                parameters.isIgnoreShunts(), parameters.getAdditionalDataInfo(), parameters.getNorm(), solverBiphasedFaultList);
+                parameters.isIgnoreShunts(), parameters.getAdditionalDataInfo(), solverBiphasedFaultList);
 
         AdmittanceLinearResolution directResolution = new AdmittanceLinearResolution(network, admittanceLinearResolutionParametersDirect);
         AdmittanceLinearResolution homopolarResolution = new AdmittanceLinearResolution(network, admittanceLinearResolutionParametersHomopolar);

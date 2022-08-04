@@ -47,9 +47,7 @@ public class TheveninEquivalentParameters {
 
     private final TheveninPeriodType theveninPeriodType;
 
-    private ShortCircuitNorm norm;
-
-    public TheveninEquivalentParameters(AcLoadFlowParameters acLoadFlowParameters, MatrixFactory matrixFactory, List<CalculationLocation> voltageLevels, boolean voltageUpdate, TheveninVoltageProfileType theveninVoltageProfileType, TheveninPeriodType theveninPeriodType, boolean theveninIgnoreShunts, AdditionalDataInfo additionalDataInfo, ShortCircuitNorm norm) {
+    public TheveninEquivalentParameters(AcLoadFlowParameters acLoadFlowParameters, MatrixFactory matrixFactory, List<CalculationLocation> voltageLevels, boolean voltageUpdate, TheveninVoltageProfileType theveninVoltageProfileType, TheveninPeriodType theveninPeriodType, boolean theveninIgnoreShunts, AdditionalDataInfo additionalDataInfo) {
         this.acLoadFlowParameters = Objects.requireNonNull(acLoadFlowParameters);
         this.matrixFactory = Objects.requireNonNull(matrixFactory);
         this.theveninVoltageLevelLocation = Objects.requireNonNull(voltageLevels);
@@ -58,7 +56,6 @@ public class TheveninEquivalentParameters {
         this.theveninVoltageProfileType = theveninVoltageProfileType;
         this.additionalDataInfo = additionalDataInfo;
         this.theveninPeriodType = theveninPeriodType;
-        this.norm = norm;
     }
 
     public AcLoadFlowParameters getAcLoadFlowParameters() {
@@ -93,7 +90,4 @@ public class TheveninEquivalentParameters {
         return theveninPeriodType;
     }
 
-    public ShortCircuitNorm getNorm() {
-        return norm;
-    }
 }

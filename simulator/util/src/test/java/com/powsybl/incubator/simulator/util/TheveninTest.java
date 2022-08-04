@@ -69,8 +69,7 @@ public class TheveninTest {
 
         TheveninEquivalentParameters.TheveninVoltageProfileType avp = TheveninEquivalentParameters.TheveninVoltageProfileType.CALCULATED;
         TheveninEquivalentParameters.TheveninPeriodType periodType = TheveninEquivalentParameters.TheveninPeriodType.THEVENIN_TRANSIENT;
-        ShortCircuitNormCourcirc shortCircuitNormCourcirc = new ShortCircuitNormCourcirc();
-        TheveninEquivalentParameters thParameters = new TheveninEquivalentParameters(acLoadFlowParameters, matrixFactory, faultsList, true, avp, periodType, false, additionalDataInfo, shortCircuitNormCourcirc); // check how to give a Network bus in input
+        TheveninEquivalentParameters thParameters = new TheveninEquivalentParameters(acLoadFlowParameters, matrixFactory, faultsList, true, avp, periodType, false, additionalDataInfo); // check how to give a Network bus in input
         TheveninEquivalent thEq = new TheveninEquivalent(network, thParameters);
 
         thEq.run();
@@ -106,8 +105,7 @@ public class TheveninTest {
 
         TheveninEquivalentParameters.TheveninVoltageProfileType avp = TheveninEquivalentParameters.TheveninVoltageProfileType.NOMINAL;
         TheveninEquivalentParameters.TheveninPeriodType periodType = TheveninEquivalentParameters.TheveninPeriodType.THEVENIN_TRANSIENT;
-        ShortCircuitNormCourcirc shortCircuitNormCourcirc = new ShortCircuitNormCourcirc();
-        TheveninEquivalentParameters thParameters = new TheveninEquivalentParameters(acLoadFlowParameters, matrixFactory, faultsList, true, avp, periodType, false, additionalDataInfo, shortCircuitNormCourcirc); // check how to give a Network bus in input
+        TheveninEquivalentParameters thParameters = new TheveninEquivalentParameters(acLoadFlowParameters, matrixFactory, faultsList, true, avp, periodType, false, additionalDataInfo); // check how to give a Network bus in input
         TheveninEquivalent thEq = new TheveninEquivalent(network, thParameters);
 
         thEq.run();
@@ -143,8 +141,7 @@ public class TheveninTest {
 
         TheveninEquivalentParameters.TheveninVoltageProfileType avp = TheveninEquivalentParameters.TheveninVoltageProfileType.NOMINAL;
         TheveninEquivalentParameters.TheveninPeriodType periodType = TheveninEquivalentParameters.TheveninPeriodType.THEVENIN_SUB_TRANSIENT;
-        ShortCircuitNormCourcirc shortCircuitNormCourcirc = new ShortCircuitNormCourcirc();
-        TheveninEquivalentParameters thParameters = new TheveninEquivalentParameters(acLoadFlowParameters, matrixFactory, faultsList, true, avp, periodType, false, additionalDataInfo, shortCircuitNormCourcirc); // check how to give a Network bus in input
+        TheveninEquivalentParameters thParameters = new TheveninEquivalentParameters(acLoadFlowParameters, matrixFactory, faultsList, true, avp, periodType, false, additionalDataInfo); // check how to give a Network bus in input
         TheveninEquivalent thEq = new TheveninEquivalent(network, thParameters);
 
         thEq.run();

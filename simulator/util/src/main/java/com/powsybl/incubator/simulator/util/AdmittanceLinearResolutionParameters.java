@@ -52,11 +52,9 @@ public class AdmittanceLinearResolutionParameters {
 
     private final AdmittanceEquationSystem.AdmittanceType admittanceType;
 
-    private ShortCircuitNorm norm;
-
     public AdmittanceLinearResolutionParameters(AcLoadFlowParameters acLoadFlowParameters, MatrixFactory matrixFactory, List<CalculationLocation> voltageLevels, boolean voltageUpdate,
                                                 AdmittanceEquationSystem.AdmittanceVoltageProfileType theveninVoltageProfileType, AdmittanceEquationSystem.AdmittancePeriodType theveninPeriodType, AdmittanceEquationSystem.AdmittanceType admittanceType,
-                                                boolean theveninIgnoreShunts, AdditionalDataInfo additionalDataInfo, ShortCircuitNorm norm) {
+                                                boolean theveninIgnoreShunts, AdditionalDataInfo additionalDataInfo) {
         this.acLoadFlowParameters = Objects.requireNonNull(acLoadFlowParameters);
         this.matrixFactory = Objects.requireNonNull(matrixFactory);
         this.voltageLevelLocation = Objects.requireNonNull(voltageLevels);
@@ -65,14 +63,13 @@ public class AdmittanceLinearResolutionParameters {
         this.voltageProfileType = theveninVoltageProfileType;
         this.additionalDataInfo = additionalDataInfo;
         this.periodType = theveninPeriodType;
-        this.norm = norm;
         this.admittanceType = admittanceType;
     }
 
     public AdmittanceLinearResolutionParameters(AcLoadFlowParameters acLoadFlowParameters, MatrixFactory matrixFactory, List<CalculationLocation> voltageLevels, boolean voltageUpdate,
                                                 AdmittanceEquationSystem.AdmittanceVoltageProfileType theveninVoltageProfileType, AdmittanceEquationSystem.AdmittancePeriodType theveninPeriodType, AdmittanceEquationSystem.AdmittanceType admittanceType,
-                                                boolean theveninIgnoreShunts, AdditionalDataInfo additionalDataInfo, ShortCircuitNorm norm, List<CalculationLocation> biphasedVoltageLevelLocation) {
-        this(acLoadFlowParameters, matrixFactory, voltageLevels, voltageUpdate, theveninVoltageProfileType, theveninPeriodType, admittanceType, theveninIgnoreShunts, additionalDataInfo, norm);
+                                                boolean theveninIgnoreShunts, AdditionalDataInfo additionalDataInfo, List<CalculationLocation> biphasedVoltageLevelLocation) {
+        this(acLoadFlowParameters, matrixFactory, voltageLevels, voltageUpdate, theveninVoltageProfileType, theveninPeriodType, admittanceType, theveninIgnoreShunts, additionalDataInfo);
         this.biphasedVoltageLevelLocation = biphasedVoltageLevelLocation;
 
     }

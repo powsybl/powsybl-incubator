@@ -874,8 +874,8 @@ public final class IidmProtobuf {
             if (s.getName() != null) {
                 shBuilder.setName(s.getName());
             }
-            shBuilder.setBPerSection(s.getbPerSection());
-            shBuilder.setCurrentSectionCount(s.getCurrentSectionCount());
+            shBuilder.setBPerSection(s.getB());
+            shBuilder.setCurrentSectionCount(s.getSectionCount());
             shBuilder.setMaximumSectionCount(s.getMaximumSectionCount());
 
             addNodeOrBus(shBuilder, topologyKind, vl, s);
@@ -1609,7 +1609,7 @@ public final class IidmProtobuf {
         rtcAdder.add();
     }
 
-    private static void readRatioTapChanger(ThreeWindingsTransformer.Leg2or3 twl, Iidm.RatioTapChanger prtc, Network network) {
+    private static void readRatioTapChanger(ThreeWindingsTransformer.Leg twl, Iidm.RatioTapChanger prtc, Network network) {
         RatioTapChangerAdder rtcAdder = twl.newRatioTapChanger();
         rtcAdder.setLowTapPosition(prtc.getLowTapPosition());
         rtcAdder.setTapPosition(prtc.getTapPosition());
@@ -1879,9 +1879,11 @@ public final class IidmProtobuf {
             if (pshunt.hasName()) {
                 adder.setName(pshunt.getName());
             }
-            adder.setbPerSection(pshunt.getBPerSection());
-            adder.setCurrentSectionCount(pshunt.getCurrentSectionCount());
-            adder.setMaximumSectionCount(pshunt.getMaximumSectionCount());
+            adder.newLinearModel()
+                    .setBPerSection(pshunt.getBPerSection())
+                    .setMaximumSectionCount(pshunt.getMaximumSectionCount())
+                    .add()
+                .setSectionCount(pshunt.getCurrentSectionCount());
 
             if (pshunt.hasBus()) {
                 adder.setBus(pshunt.getBus());

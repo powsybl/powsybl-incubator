@@ -28,41 +28,4 @@
         <module>iidm-avro-converter</module>
     </modules>
 
-    <properties>
-        <jimfs.version>1.1</jimfs.version>
-        <protobuf.version>2.5.0</protobuf.version>
-        <protobuf.maven.plugin>0.6.1</protobuf.maven.plugin>
-        <os.maven.plugin>1.6.0</os.maven.plugin>
-        <staxutils.version>20070216</staxutils.version>
-        <xmlunit.version>2.3.0</xmlunit.version>
-    </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>com.google.protobuf</groupId>
-                <artifactId>protobuf-java</artifactId>
-                <version>${protobuf.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.jimfs</groupId>
-                <artifactId>jimfs</artifactId>
-                <version>${jimfs.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.xmlunit</groupId>
-                <artifactId>xmlunit-core</artifactId>
-                <version>${xmlunit.version}</version>
-                <scope>test</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
 </project>

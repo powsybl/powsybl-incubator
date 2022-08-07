@@ -6,7 +6,6 @@
  */
 package com.powsybl.incubator.simulator.util;
 
-import com.powsybl.math.matrix.MatrixFactory;
 import com.powsybl.openloadflow.equations.AbstractNamedEquationTerm;
 import com.powsybl.openloadflow.equations.Variable;
 import com.powsybl.openloadflow.equations.VariableSet;
@@ -59,10 +58,6 @@ public abstract class AbstractAdmittanceEquationTerm extends AbstractNamedEquati
 
     protected double bPi2;
 
-    protected HomopolarModel homopolarModel;
-
-    protected MatrixFactory mf;
-
     // zero sequence additional attributes
     //
     // Proposed Transformer model :
@@ -76,14 +71,11 @@ public abstract class AbstractAdmittanceEquationTerm extends AbstractNamedEquati
     //                    |                 |         |
     //                  /////             /////     /////                     A' and B' are connected to Yg, Y or D depending on the winding connection type (Y to ground, Y or Delta)
     //
-
-    public AbstractAdmittanceEquationTerm(LfBranch branch, LfBus bus1, LfBus bus2, VariableSet<VariableType> variableSet, MatrixFactory mf) {
+    protected AbstractAdmittanceEquationTerm(LfBranch branch, LfBus bus1, LfBus bus2, VariableSet<VariableType> variableSet) {
         this.branch = Objects.requireNonNull(branch);
         Objects.requireNonNull(bus1);
         Objects.requireNonNull(bus2);
         Objects.requireNonNull(variableSet);
-
-        this.mf = mf;
 
         v1rVar = variableSet.getVariable(bus1.getNum(), VariableType.BUS_VR);
         v2rVar = variableSet.getVariable(bus2.getNum(), VariableType.BUS_VR);

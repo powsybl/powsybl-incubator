@@ -352,7 +352,7 @@ public  class ImpedanceLinearResolution {
 
         EquationSystemFeeders equationsSystemFeeders = new EquationSystemFeeders();
         EquationSystem<VariableType, EquationType> equationSystem
-                = AdmittanceEquationSystem.create(lfNetwork, parameters.getMatrixFactory(), new VariableSet<>(), parameters.getAdmittanceType(), parameters.getTheveninVoltageProfileType(), parameters.getTheveninPeriodType(), parameters.isTheveninIgnoreShunts(), equationsSystemFeeders, parameters.getAcLoadFlowParameters());
+                = AdmittanceEquationSystem.create(lfNetwork, new VariableSet<>(), parameters.getAdmittanceType(), parameters.getTheveninVoltageProfileType(), parameters.getTheveninPeriodType(), parameters.isTheveninIgnoreShunts(), equationsSystemFeeders, parameters.getAcLoadFlowParameters());
 
         //Get bus by voltage level
         List<LfBus> inputBusses = new ArrayList<>();

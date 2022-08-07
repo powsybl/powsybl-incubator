@@ -305,7 +305,7 @@ public class ReductionEngine {
         OpenLoadFlowParameters loadflowParametersExt = OpenLoadFlowParameters.get(parameters.getLoadFlowParameters());
         AcLoadFlowParameters acLoadFlowParameters = OpenLoadFlowParameters.createAcParameters(network, parameters.getLoadFlowParameters(), loadflowParametersExt, parameters.getMatrixFactory(), new EvenShiloachGraphDecrementalConnectivityFactory<>(), Reporter.NO_OP);
 
-        EquationSystem<VariableType, EquationType> equationSystem = AdmittanceEquationSystem.create(lfNetwork, parameters.getMatrixFactory(), new VariableSet<>(), admittanceType, admittanceVoltageProfileType, acLoadFlowParameters);
+        EquationSystem<VariableType, EquationType> equationSystem = AdmittanceEquationSystem.create(lfNetwork, new VariableSet<>(), admittanceType, admittanceVoltageProfileType, acLoadFlowParameters);
 
         // Reduction problem:
         // The Grid is decomposed in 3 zones: internal (i), border (b), external (e) which is to be reduced

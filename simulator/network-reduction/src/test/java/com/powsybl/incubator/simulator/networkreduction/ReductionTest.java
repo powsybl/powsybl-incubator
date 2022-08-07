@@ -79,7 +79,7 @@ class ReductionTest {
         //AdditionalDataInfo additionalDataInfo = new AdditionalDataInfo();
         AdmittanceEquationSystem.AdmittancePeriodType admittancePeriodType = AdmittanceEquationSystem.AdmittancePeriodType.ADM_TRANSIENT;
         EquationSystemFeeders feeders = new EquationSystemFeeders();
-        EquationSystem<VariableType, EquationType> equationSystem = AdmittanceEquationSystem.create(lfNetwork, matrixFactory, new VariableSet<>(), AdmittanceEquationSystem.AdmittanceType.ADM_INJ, admittanceVoltageProfileType, admittancePeriodType, false, feeders, acLoadFlowParameters);
+        EquationSystem<VariableType, EquationType> equationSystem = AdmittanceEquationSystem.create(lfNetwork, new VariableSet<>(), AdmittanceEquationSystem.AdmittanceType.ADM_INJ, admittanceVoltageProfileType, admittancePeriodType, false, feeders, acLoadFlowParameters);
 
         VoltageInitializer voltageInitializer = reductionParameters.getVoltageInitializer();
 
@@ -120,7 +120,7 @@ class ReductionTest {
         AdmittanceEquationSystem.AdmittancePeriodType admittancePeriodType = AdmittanceEquationSystem.AdmittancePeriodType.ADM_TRANSIENT;
         //AdditionalDataInfo additionalDataInfo = new AdditionalDataInfo();
         EquationSystemFeeders feeders = new EquationSystemFeeders();
-        EquationSystem<VariableType, EquationType> equationSystem = AdmittanceEquationSystem.create(lfNetwork, matrixFactory, new VariableSet<>(), AdmittanceEquationSystem.AdmittanceType.ADM_INJ, admittanceVoltageProfileType, admittancePeriodType, false, feeders, acLoadFlowParameters);
+        EquationSystem<VariableType, EquationType> equationSystem = AdmittanceEquationSystem.create(lfNetwork, new VariableSet<>(), AdmittanceEquationSystem.AdmittanceType.ADM_INJ, admittanceVoltageProfileType, admittancePeriodType, false, feeders, acLoadFlowParameters);
 
         VoltageInitializer voltageInitializer = reductionParameters.getVoltageInitializer();
 

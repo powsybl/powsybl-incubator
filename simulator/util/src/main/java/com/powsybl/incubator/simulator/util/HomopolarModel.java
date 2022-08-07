@@ -8,7 +8,6 @@ package com.powsybl.incubator.simulator.util;
 
 import com.powsybl.incubator.simulator.util.extensions.*;
 import com.powsybl.math.matrix.DenseMatrix;
-import com.powsybl.math.matrix.DenseMatrixFactory;
 import com.powsybl.openloadflow.network.LfBranch;
 
 import java.util.Objects;
@@ -175,7 +174,7 @@ public class HomopolarModel {
     }
 
     public DenseMatrix computeHomopolarAdmittanceMatrix() {
-        DenseMatrix mo = new DenseMatrixFactory().create(4, 4, 16);
+        DenseMatrix mo = new DenseMatrix(4, 4);
 
         var piModel = branch.getPiModel();
         double rho = piModel.getR1();

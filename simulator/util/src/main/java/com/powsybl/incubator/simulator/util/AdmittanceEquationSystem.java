@@ -8,7 +8,6 @@ package com.powsybl.incubator.simulator.util;
 
 import com.powsybl.incubator.simulator.util.extensions.ShortCircuitExtensions;
 import com.powsybl.incubator.simulator.util.extensions.ShortCircuitGenerator;
-import com.powsybl.math.matrix.MatrixFactory;
 import com.powsybl.openloadflow.ac.outerloop.AcLoadFlowContext;
 import com.powsybl.openloadflow.ac.outerloop.AcLoadFlowParameters;
 import com.powsybl.openloadflow.ac.outerloop.AcloadFlowEngine;
@@ -39,20 +38,20 @@ public final class AdmittanceEquationSystem {
 
     //Equations are created based on the branches connections
     private static void createImpedantBranch(VariableSet<VariableType> variableSet, EquationSystem<VariableType, EquationType> equationSystem,
-                                             LfBranch branch, LfBus bus1, LfBus bus2, AdmittanceType admittanceType, MatrixFactory mf) {
+                                             LfBranch branch, LfBus bus1, LfBus bus2, AdmittanceType admittanceType) {
         if (bus1 != null && bus2 != null) { //TODO: check case when one bus is OK
             // Equation system Y*V = I (expressed in cartesian coordinates x,y)
             equationSystem.createEquation(bus1.getNum(), EquationType.BUS_YR)
-                    .addTerm(new AdmittanceEquationTermX1(branch, bus1, bus2, variableSet, admittanceType, mf));
+                    .addTerm(new AdmittanceEquationTermX1(branch, bus1, bus2, variableSet, admittanceType));
 
             equationSystem.createEquation(bus1.getNum(), EquationType.BUS_YI)
-                    .addTerm(new AdmittanceEquationTermY1(branch, bus1, bus2, variableSet, admittanceType, mf));
+                    .addTerm(new AdmittanceEquationTermY1(branch, bus1, bus2, variableSet, admittanceType));
 
             equationSystem.createEquation(bus2.getNum(), EquationType.BUS_YR)
-                    .addTerm(new AdmittanceEquationTermX2(branch, bus1, bus2, variableSet, admittanceType, mf));
+                    .addTerm(new AdmittanceEquationTermX2(branch, bus1, bus2, variableSet, admittanceType));
 
             equationSystem.createEquation(bus2.getNum(), EquationType.BUS_YI)
-                    .addTerm(new AdmittanceEquationTermY2(branch, bus1, bus2, variableSet, admittanceType, mf));
+                    .addTerm(new AdmittanceEquationTermY2(branch, bus1, bus2, variableSet, admittanceType));
         }
     }
 
@@ -76,7 +75,7 @@ public final class AdmittanceEquationSystem {
         ADM_STEADY_STATE, // all external  nodal injections are transformed into passive shunt elements included in the Y matrix (then [Ie] should be [0])
     }
 
-    private static void createBranches(LfNetwork network, VariableSet<VariableType> variableSet, EquationSystem<VariableType, EquationType> equationSystem, AdmittanceType admittanceType, MatrixFactory mf) {
+    private static void createBranches(LfNetwork network, VariableSet<VariableType> variableSet, EquationSystem<VariableType, EquationType> equationSystem, AdmittanceType admittanceType) {
         for (LfBranch branch : network.getBranches()) {
             LfBus bus1 = branch.getBus1();
             LfBus bus2 = branch.getBus2();
@@ -88,7 +87,7 @@ public final class AdmittanceEquationSystem {
                 }
             } else {
                 //System.out.println("X(" + branch.getId() + ")= " + piModel.getX());
-                createImpedantBranch(variableSet, equationSystem, branch, bus1, bus2, admittanceType, mf);
+                createImpedantBranch(variableSet, equationSystem, branch, bus1, bus2, admittanceType);
             }
         }
     }
@@ -254,7 +253,7 @@ public final class AdmittanceEquationSystem {
         }
     }
 
-    public static EquationSystem<VariableType, EquationType> create(LfNetwork network, MatrixFactory mf, VariableSet<VariableType> variableSet,
+    public static EquationSystem<VariableType, EquationType> create(LfNetwork network, VariableSet<VariableType> variableSet,
                                                                     AdmittanceType admittanceType, AdmittanceVoltageProfileType admittanceVoltageProfileType,
                                                                     AcLoadFlowParameters acLoadFlowParameters) {
 
@@ -263,12 +262,12 @@ public final class AdmittanceEquationSystem {
         EquationSystemFeeders equationsSystemFeeders = new EquationSystemFeeders();
         boolean isShuntsIgnore = false;
 
-        return create(network, mf, variableSet,
+        return create(network, variableSet,
                 admittanceType, admittanceVoltageProfileType, admittancePeriodType, isShuntsIgnore,
                 equationsSystemFeeders, acLoadFlowParameters);
     }
 
-    public static EquationSystem<VariableType, EquationType> create(LfNetwork network, MatrixFactory mf, VariableSet<VariableType> variableSet,
+    public static EquationSystem<VariableType, EquationType> create(LfNetwork network, VariableSet<VariableType> variableSet,
                                                                     AdmittanceType admittanceType, AdmittanceVoltageProfileType admittanceVoltageProfileType,
                                                                     AdmittancePeriodType admittancePeriodType, boolean isShuntsIgnore, EquationSystemFeeders feeders,
                                                                     AcLoadFlowParameters acLoadFlowParameters) {
@@ -282,7 +281,7 @@ public final class AdmittanceEquationSystem {
             }
         }
 
-        createBranches(network, variableSet, equationSystem, admittanceType, mf);
+        createBranches(network, variableSet, equationSystem, admittanceType);
         if (admittanceType != AdmittanceType.ADM_INJ) { //shunts created in the admittance matrix are only those that really exist in the network
             createShunts(network, variableSet, equationSystem, admittanceType, admittanceVoltageProfileType, admittancePeriodType, isShuntsIgnore, feeders); // TODO : shuntIgnore was set at false
         }

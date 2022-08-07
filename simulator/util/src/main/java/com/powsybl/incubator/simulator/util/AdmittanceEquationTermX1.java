@@ -7,7 +7,6 @@
 package com.powsybl.incubator.simulator.util;
 
 import com.powsybl.math.matrix.DenseMatrix;
-import com.powsybl.math.matrix.MatrixFactory;
 import com.powsybl.openloadflow.equations.Variable;
 import com.powsybl.openloadflow.equations.VariableSet;
 import com.powsybl.openloadflow.network.LfBranch;
@@ -26,8 +25,8 @@ public class AdmittanceEquationTermX1 extends AbstractAdmittanceEquationTerm {
 
     protected double b1b12sum;
 
-    public AdmittanceEquationTermX1(LfBranch branch, LfBus bus1, LfBus bus2, VariableSet<VariableType> variableSet, AdmittanceEquationSystem.AdmittanceType admittanceType, MatrixFactory mf) {
-        super(branch, bus1, bus2, variableSet, mf);
+    public AdmittanceEquationTermX1(LfBranch branch, LfBus bus1, LfBus bus2, VariableSet<VariableType> variableSet, AdmittanceEquationSystem.AdmittanceType admittanceType) {
+        super(branch, bus1, bus2, variableSet);
         // Direct component:
         // I1x = (g1 + g12)V1x - (b1 + b12)V1y - g12 * V2x + b12 * V2y
         if (admittanceType == AdmittanceEquationSystem.AdmittanceType.ADM_THEVENIN_HOMOPOLAR) {

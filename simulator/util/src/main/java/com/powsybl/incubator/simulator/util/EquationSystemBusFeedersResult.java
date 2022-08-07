@@ -70,7 +70,7 @@ public class EquationSystemBusFeedersResult {
         }
     }
 
-    List<EquationSystemResultFeeder> getBusFeedersResults() {
+    public List<EquationSystemResultFeeder> getBusFeedersResults() {
         return busFeedersResults;
     }
 }

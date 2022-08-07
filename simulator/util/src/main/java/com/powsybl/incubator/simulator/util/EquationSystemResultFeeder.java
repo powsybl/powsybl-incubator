@@ -56,11 +56,11 @@ public class EquationSystemResultFeeder {
         return g;
     }
 
-    String getId() {
+    public String getId() {
         return id;
     }
 
-    double getIxContribution() {
+    public double getIxContribution() {
         return ixContribution;
     }
 }

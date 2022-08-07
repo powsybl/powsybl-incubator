@@ -14,18 +14,20 @@ import java.util.List;
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
-public class ShortCircuitResultBusFeeders {
+public class EquationSystemBusFeedersResult {
+
+    private static final double EPSILON = 0.000001;
 
     private double ixFeedersSum; //sum of currents coming from branches, which is also the sum of feeders'currents
     private double iyFeedersSum;
 
-    private List<ShortCircuitEquationSystemFeeder> feedersInputData; // input data of feeders at bus
+    private List<EquationSystemFeeder> feedersInputData; // input data of feeders at bus
 
-    private List<ShortCircuitResultFeeder> busFeedersResults; // output data of feeders at bus
+    private List<EquationSystemResultFeeder> busFeedersResults; // output data of feeders at bus
 
     private LfBus feedersBus;
 
-    public ShortCircuitResultBusFeeders(List<ShortCircuitEquationSystemFeeder> feeders, LfBus bus) {
+    public EquationSystemBusFeedersResult(List<EquationSystemFeeder> feeders, LfBus bus) {
         this.ixFeedersSum = 0.;
         this.iyFeedersSum = 0.;
         this.feedersInputData = feeders;
@@ -33,8 +35,8 @@ public class ShortCircuitResultBusFeeders {
         this.busFeedersResults = new ArrayList<>();
 
         // init on feeder results based on equation system feeders
-        for (ShortCircuitEquationSystemFeeder feeder : feedersInputData) {
-            ShortCircuitResultFeeder feederResult = new ShortCircuitResultFeeder(feeder.getId(), feeder.getFeederType(), 0., 0., feeder.getG(), feeder.getB());
+        for (EquationSystemFeeder feeder : feedersInputData) {
+            EquationSystemResultFeeder feederResult = new EquationSystemResultFeeder(feeder.getId(), feeder.getFeederType(), 0., 0., feeder.getG(), feeder.getB());
             busFeedersResults.add(feederResult);
         }
     }
@@ -48,29 +50,26 @@ public class ShortCircuitResultBusFeeders {
         double bSum = 0.;
         double gSum = 0.;
 
-        for (ShortCircuitResultFeeder feeder : busFeedersResults) {
+        for (EquationSystemResultFeeder feeder : busFeedersResults) {
             bSum = bSum + feeder.getB();
             gSum = gSum + feeder.getG();
         }
 
-        for (ShortCircuitResultFeeder feederResult : busFeedersResults) {
-            double epsilon = 0.000001;
-            if (Math.abs(gSum) > epsilon || Math.abs(bSum) > epsilon) {
-                double det = 1 / (gSum * gSum + bSum * bSum);
+        if (Math.abs(gSum) > EPSILON || Math.abs(bSum) > EPSILON) {
+            double det = 1 / (gSum * gSum + bSum * bSum);
+            for (EquationSystemResultFeeder feederResult : busFeedersResults) {
                 double gk = feederResult.getG();
                 double bk = feederResult.getB();
                 double ixk = det * ((gk * gSum + bk * bSum) * ixFeedersSum + (gk * bSum - gSum * bk) * iyFeedersSum);
                 double iyk = det * ((-gk * bSum + gSum * bk) * ixFeedersSum + (gk * gSum + bk * bSum) * iyFeedersSum);
 
                 feederResult.updateIcontribution(ixk, iyk);
-                //ShortCircuitResultFeeder feederResult = new ShortCircuitResultFeeder(feeder.getId(), feeder.getFeederType(), ixk, iyk);
                 feederResult.printContributions(feedersBus);
-                //busFeedersResults.add(feederResult);
             }
         }
     }
 
-    List<ShortCircuitResultFeeder> getBusFeedersResults() {
+    public List<EquationSystemResultFeeder> getBusFeedersResults() {
         return busFeedersResults;
     }
 }

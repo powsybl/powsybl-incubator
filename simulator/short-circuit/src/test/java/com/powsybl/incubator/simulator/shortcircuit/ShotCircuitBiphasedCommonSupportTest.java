@@ -56,7 +56,7 @@ public class ShotCircuitBiphasedCommonSupportTest {
         MatrixFactory  matrixFactory = new DenseMatrixFactory();
 
         List<ShortCircuitFault> faultList = new ArrayList<>();
-        ShortCircuitFault sc1 = new ShortCircuitFault("B2", "B3", 0., 0., ShortCircuitFault.ShortCircuitType.BIPHASED_COMMON_SUPPORT, true, ShortCircuitFault.ShortCircuitBiphasedType.C1_A2);
+        ShortCircuitFault sc1 = new ShortCircuitFault("B2", "B3", true, "sc1", 0., 0., ShortCircuitFault.ShortCircuitType.BIPHASED_COMMON_SUPPORT, ShortCircuitFault.ShortCircuitBiphasedType.C1_A2);
         faultList.add(sc1);
 
         ShortCircuitEngineParameters.PeriodType periodType = ShortCircuitEngineParameters.PeriodType.SUB_TRANSIENT;
@@ -72,6 +72,43 @@ public class ShotCircuitBiphasedCommonSupportTest {
         }
 
         assertEquals(31.16265030753145, 3 * val.get(0), 0.00001); // TODO : check manually result
+
+    }
+
+    @Test
+    void shortCircuitIec31MultiBiphasedCommonSupport() {
+
+        LoadFlowParameters loadFlowParameters = LoadFlowParameters.load();
+        loadFlowParameters.setTwtSplitShuntAdmittance(true);
+
+        Pair<Network, AdditionalDataInfo> result = ReferenceNetwork.createShortCircuitIec31();
+        Network network = result.getKey();
+
+        AdditionalDataInfo additionalDataInfo = result.getValue();
+
+        MatrixFactory  matrixFactory = new DenseMatrixFactory();
+
+        List<ShortCircuitFault> faultList = new ArrayList<>();
+        ShortCircuitFault sc1 = new ShortCircuitFault("B2", "B3", true, "sc1", 0., 0., ShortCircuitFault.ShortCircuitType.BIPHASED_COMMON_SUPPORT, ShortCircuitFault.ShortCircuitBiphasedType.C1_B2);
+        ShortCircuitFault sc2 = new ShortCircuitFault("B4", "B5", true, "sc2", 0., 0., ShortCircuitFault.ShortCircuitType.BIPHASED_COMMON_SUPPORT, ShortCircuitFault.ShortCircuitBiphasedType.C1_C2);
+        // TODO : a list that contains BIPHASED_COMMON_SUPPORT with the same nodes is not supported yet : FIX_ME
+        faultList.add(sc1);
+        faultList.add(sc2);
+
+        ShortCircuitEngineParameters.PeriodType periodType = ShortCircuitEngineParameters.PeriodType.SUB_TRANSIENT;
+        ShortCircuitNormIec shortCircuitNormIec = new ShortCircuitNormIec();
+        ShortCircuitEngineParameters scbParameters = new ShortCircuitEngineParameters(loadFlowParameters, matrixFactory, ShortCircuitEngineParameters.AnalysisType.SELECTIVE, faultList, true, ShortCircuitEngineParameters.VoltageProfileType.NOMINAL, false, periodType, additionalDataInfo, shortCircuitNormIec);
+        ShortCircuitUnbalancedEngine scbEngine = new ShortCircuitUnbalancedEngine(network, scbParameters);
+
+        scbEngine.run();
+
+        List<Double> val = new ArrayList<>();
+        for (Map.Entry<ShortCircuitFault, ShortCircuitResult> res : scbEngine.resultsPerFault.entrySet()) {
+            val.add(res.getValue().getIk());
+        }
+
+        assertEquals(31.16265030753145, 3 * val.get(0), 0.00001); // TODO : check manually result
+        assertEquals(0., 3 * val.get(1), 0.00001); // TODO : check manually result
 
     }
 

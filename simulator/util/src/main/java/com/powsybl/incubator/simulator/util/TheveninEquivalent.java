@@ -11,10 +11,6 @@ import com.powsybl.iidm.network.Bus;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.ThreeWindingsTransformer;
 import com.powsybl.openloadflow.ac.outerloop.AcLoadFlowParameters;
-import com.powsybl.openloadflow.network.FirstSlackBusSelector;
-import com.powsybl.openloadflow.network.LfNetwork;
-import com.powsybl.openloadflow.network.LfNetworkParameters;
-import com.powsybl.openloadflow.network.impl.LfNetworkLoaderImpl;
 import org.apache.commons.math3.util.Pair;
 
 import java.util.ArrayList;
@@ -26,31 +22,24 @@ import java.util.Objects;
  */
 public class TheveninEquivalent {
 
-    private final TheveninEquivalentParameters parameters;
-
     private final Network network;
 
-    private final List<LfNetwork> networks;
+    private final TheveninEquivalentParameters parameters;
 
-    public  AdmittanceLinearResolution admittanceLinearResolution;
+    public ImpedanceLinearResolution impedanceLinearResolution;
 
     public TheveninEquivalent(Network network, TheveninEquivalentParameters parameters) {
         this.network = Objects.requireNonNull(network);
-        this.networks = LfNetwork.load(network, new LfNetworkLoaderImpl(), new LfNetworkParameters(new FirstSlackBusSelector()));
         this.parameters = Objects.requireNonNull(parameters);
+        impedanceLinearResolution = new ImpedanceLinearResolution(network, generateAdmittanceLinearResolutionParam(network, parameters));
     }
 
-    public AdmittanceLinearResolution getAdmittanceLinearResolution() {
-        return admittanceLinearResolution;
+    public ImpedanceLinearResolution getImpedanceLinearResolution() {
+        return impedanceLinearResolution;
     }
 
     public void run() {
-
-        AdmittanceLinearResolutionParameters parameters = generateAdmittanceLinearResolutionParam();
-        AdmittanceLinearResolution thEq = new AdmittanceLinearResolution(network, parameters);
-        thEq.run();
-
-        this.admittanceLinearResolution = thEq;
+        impedanceLinearResolution.run();
 
     }
 
@@ -119,7 +108,7 @@ public class TheveninEquivalent {
         return new Pair<>(branchId, legNum);
     }
 
-    private AdmittanceLinearResolutionParameters generateAdmittanceLinearResolutionParam() {
+    private static ImpedanceLinearResolutionParameters generateAdmittanceLinearResolutionParam(Network network, TheveninEquivalentParameters parameters) {
 
         boolean voltageUpdate = parameters.isVoltageUpdate(); // TODO: check that in example, no voltage update is asked
 
@@ -137,24 +126,23 @@ public class TheveninEquivalent {
             periodType = AdmittanceEquationSystem.AdmittancePeriodType.ADM_STEADY_STATE;
         }
 
-        List<ShortCircuitFault> faultList = new ArrayList<>();
-        for (ShortCircuitFault scfe : parameters.getFaults()) {
-            String busName = scfe.getBusLocation();
+        List<CalculationLocation> locations = new ArrayList<>();
+        for (CalculationLocation calculationLocation : parameters.getLocations()) {
+            String busName = calculationLocation.getBusLocation();
             Pair<String, Integer > branchFaultInfo = buildFaultBranchFromBusId(busName, network);
 
             if (branchFaultInfo.getKey().equals("")) {
                 // Bus not found in branches, try three windings transformers
                 branchFaultInfo = buildFaultT3WbranchFromBusId(busName, network);
             }
-            if (scfe.getType() == ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND) {
-                scfe.setIidmBusInfo(branchFaultInfo);
-                faultList.add(scfe);
-            }
+
+            calculationLocation.setIidmBusInfo(branchFaultInfo);
+            locations.add(calculationLocation);
         }
 
-        return new AdmittanceLinearResolutionParameters(acLoadFlowParameters, parameters.getMatrixFactory(),
-                faultList, voltageUpdate, admittanceVoltageProfileType, periodType,
+        return new ImpedanceLinearResolutionParameters(acLoadFlowParameters, parameters.getMatrixFactory(),
+                locations, voltageUpdate, admittanceVoltageProfileType, periodType,
                 AdmittanceEquationSystem.AdmittanceType.ADM_THEVENIN, parameters.isTheveninIgnoreShunts(),
-                parameters.getAdditionalDataInfo(), parameters.getNorm());
+                parameters.getAdditionalDataInfo());
     }
 }

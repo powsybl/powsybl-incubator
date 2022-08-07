@@ -35,106 +35,68 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
             // Biphased common support faults will not be supported yet in systematic
         }
 
-        List<ShortCircuitFault> faultList = new ArrayList<>();
-        List<ShortCircuitFault> biphasedFaultList = new ArrayList<>();
-        Map<String, Pair<String, Integer >> tmpListBus1 = new HashMap<>();
-        for (ShortCircuitFault scfe : parameters.getShortCircuitFaults()) {
-            String busName = scfe.getBusLocation();
-            String bus2Name = scfe.getBusLocationBiPhased();
+        // We handle a pre-treatement of faults given in input:
+        // - filtering of some inconsistencies on the bus identification
+        // - addition of info in each fault to ease the identification in LfNetwork of iidm info
+        Pair<List<CalculationLocation>, List<CalculationLocation>> faultLists = buildFaultListsFromInputs();
 
-            if (bus2Name.isEmpty()) { // TODO : adapt
-                // TODO : put a condition that it is an unbalanced shortCircuit
-                if (scfe.getType() == ShortCircuitFault.ShortCircuitType.BIPHASED_COMMON_SUPPORT) {
-                    throw new IllegalArgumentException(" short circuit fault : " + busName + " must have a second voltage level defined because it is a common support fault");
-                }
-                Pair<String, Integer> branchFaultInfo = buildFaultBranchFromBusId(busName, network);
-                if (branchFaultInfo.getKey().equals("")) {
-                    // Bus not found in branches, try three windings transformers
-                    branchFaultInfo = buildFaultT3WbranchFromBusId(busName, network);
-                }
-                scfe.setIidmBusInfo(branchFaultInfo);
-                faultList.add(scfe);
+        solverFaultList = faultLists.getKey();
+        solverBiphasedFaultList = faultLists.getValue();
 
-            } else {
-                if (scfe.getType() != ShortCircuitFault.ShortCircuitType.BIPHASED_COMMON_SUPPORT) {
-                    throw new IllegalArgumentException(" short circuit fault : " + busName + " has a second bus defined : " + bus2Name + " but is not a common support fault");
-                }
-
-                // Step 1 : get info at bus 1 initialization of bus 2 list
-                if (!tmpListBus1.containsKey(busName)) {
-                    Pair<String, Integer> branchBus1FaultInfo = buildFaultBranchFromBusId(busName, network);
-                    if (branchBus1FaultInfo.getKey().equals("")) {
-                        // Bus not found in branches, try three windings transformers
-                        branchBus1FaultInfo = buildFaultT3WbranchFromBusId(busName, network);
-                    }
-                    tmpListBus1.put(busName, branchBus1FaultInfo);
-                }
-
-                // step 2 : get info at bus 2
-                Pair<String, Integer > branchBus2FaultInfo = buildFaultBranchFromBusId(bus2Name, network);
-                if (branchBus2FaultInfo.getKey().equals("")) {
-                    // Bus not found in branches, try three windings transformers
-                    branchBus2FaultInfo = buildFaultT3WbranchFromBusId(bus2Name, network);
-                }
-                Pair<String, Integer > branchBus1FaultInfo = tmpListBus1.get(busName);
-
-                scfe.setIidmBusInfo(branchBus1FaultInfo);
-                scfe.setIidmBus2Info(branchBus2FaultInfo);
-                biphasedFaultList.add(scfe);
-            }
-        }
-
-        AdmittanceLinearResolutionParameters admittanceLinearResolutionParametersHomopolar = new AdmittanceLinearResolutionParameters(acLoadFlowParameters,
-                parameters.getMatrixFactory(), faultList, parameters.isVoltageUpdate(),
+        ImpedanceLinearResolutionParameters admittanceLinearResolutionParametersHomopolar = new ImpedanceLinearResolutionParameters(acLoadFlowParameters,
+                parameters.getMatrixFactory(), solverFaultList, parameters.isVoltageUpdate(),
                 getAdmittanceVoltageProfileTypeFromParam(), getAdmittancePeriodTypeFromParam(), AdmittanceEquationSystem.AdmittanceType.ADM_THEVENIN_HOMOPOLAR,
-                parameters.isIgnoreShunts(), parameters.getAdditionalDataInfo(), parameters.getNorm(), biphasedFaultList);
+                parameters.isIgnoreShunts(), parameters.getAdditionalDataInfo(), solverBiphasedFaultList);
 
-        AdmittanceLinearResolutionParameters admittanceLinearResolutionParametersDirect = new AdmittanceLinearResolutionParameters(acLoadFlowParameters,
-                parameters.getMatrixFactory(), faultList, parameters.isVoltageUpdate(),
+        ImpedanceLinearResolutionParameters admittanceLinearResolutionParametersDirect = new ImpedanceLinearResolutionParameters(acLoadFlowParameters,
+                parameters.getMatrixFactory(), solverFaultList, parameters.isVoltageUpdate(),
                 getAdmittanceVoltageProfileTypeFromParam(), getAdmittancePeriodTypeFromParam(), AdmittanceEquationSystem.AdmittanceType.ADM_THEVENIN,
-                parameters.isIgnoreShunts(), parameters.getAdditionalDataInfo(), parameters.getNorm(), biphasedFaultList);
+                parameters.isIgnoreShunts(), parameters.getAdditionalDataInfo(), solverBiphasedFaultList);
 
-        AdmittanceLinearResolution directResolution = new AdmittanceLinearResolution(network, admittanceLinearResolutionParametersDirect);
-        AdmittanceLinearResolution homopolarResolution = new AdmittanceLinearResolution(network, admittanceLinearResolutionParametersHomopolar);
+        ImpedanceLinearResolution directResolution = new ImpedanceLinearResolution(network, admittanceLinearResolutionParametersDirect);
+        ImpedanceLinearResolution homopolarResolution = new ImpedanceLinearResolution(network, admittanceLinearResolutionParametersHomopolar);
 
         directResolution.run();
         homopolarResolution.run();
 
         //Build the ShortCircuit results using the linear resolution computation results
         resultsPerFault = new LinkedHashMap<>();
-        resultsAllBusses  = new ArrayList<>();
         processAdmittanceLinearResolutionResults(directResolution, homopolarResolution, ShortCircuitFault.ShortCircuitType.MONOPHASED);
         processAdmittanceLinearResolutionResults(directResolution, homopolarResolution, ShortCircuitFault.ShortCircuitType.BIPHASED);
+        processAdmittanceLinearResolutionResults(directResolution, homopolarResolution, ShortCircuitFault.ShortCircuitType.BIPHASED_GROUND);
         processAdmittanceLinearResolutionResults(directResolution, homopolarResolution, ShortCircuitFault.ShortCircuitType.BIPHASED_COMMON_SUPPORT);
     }
 
-    public void processAdmittanceLinearResolutionResults(AdmittanceLinearResolution directResolution, AdmittanceLinearResolution homopolarResolution, ShortCircuitFault.ShortCircuitType shortCircuitType) {
+    public void processAdmittanceLinearResolutionResults(ImpedanceLinearResolution directResolution, ImpedanceLinearResolution homopolarResolution, ShortCircuitFault.ShortCircuitType shortCircuitType) {
 
         int numResult = 0;
-        for (AdmittanceLinearResolution.AdmittanceLinearResolutionResult directResult : directResolution.results) {
+        for (ImpedanceLinearResolution.ImpedanceLinearResolutionResult directResult : directResolution.results) {
 
-            AdmittanceLinearResolution.AdmittanceLinearResolutionResult homopolarResult = homopolarResolution.results.get(numResult);
+            ImpedanceLinearResolution.ImpedanceLinearResolutionResult homopolarResult = homopolarResolution.results.get(numResult);
             numResult++;
 
             LfBus lfBus1 = directResult.getBus();
-            String tmpBusId = lfBus1.getId();
-            ShortCircuitFault scf = null; // = parameters.getShortCircuitFaults().get(tmpVl);
-            for (ShortCircuitFault scfe : parameters.getShortCircuitFaults()) { //TODO : improve to avoid double loop
-                if (lfBus1.getId().equals(scfe.getLfBusInfo()) && scfe.getType() == shortCircuitType) {
-                    if (shortCircuitType == ShortCircuitFault.ShortCircuitType.MONOPHASED
-                            || shortCircuitType == ShortCircuitFault.ShortCircuitType.BIPHASED
-                            || shortCircuitType == ShortCircuitFault.ShortCircuitType.BIPHASED_GROUND) {
-                        scf = scfe;
-                    } else if (shortCircuitType == ShortCircuitFault.ShortCircuitType.BIPHASED_COMMON_SUPPORT) {
-                        // TODO : handle possibility of several biphased common support faults at same bus 1
-                        scf = scfe;
+
+            List<ShortCircuitFault> matchingFaults = new ArrayList<>();
+
+            if (shortCircuitType == ShortCircuitFault.ShortCircuitType.MONOPHASED
+                    || shortCircuitType == ShortCircuitFault.ShortCircuitType.BIPHASED
+                    || shortCircuitType == ShortCircuitFault.ShortCircuitType.BIPHASED_GROUND) {
+                for (CalculationLocation calculationLocation : solverFaultList) {
+                    ShortCircuitFault scfe = (ShortCircuitFault) calculationLocation; // TODO : better check but calculationLocation must be a ShortCircuitFault
+                    if (lfBus1.getId().equals(scfe.getLfBusInfo()) && scfe.getType() == shortCircuitType) {
+                        matchingFaults.add(scfe);
                     }
-
                 }
-
             }
-            if (scf == null) {
-                continue;
+
+            if (shortCircuitType == ShortCircuitFault.ShortCircuitType.BIPHASED_COMMON_SUPPORT) {
+                for (CalculationLocation calculationLocation : solverBiphasedFaultList) {
+                    ShortCircuitFault scfe = (ShortCircuitFault) calculationLocation; // TODO : better check but calculationLocation must be a ShortCircuitFault
+                    if (lfBus1.getId().equals(scfe.getLfBusInfo()) && scfe.getType() == shortCircuitType) {
+                        matchingFaults.add(scfe);
+                    }
+                }
             }
 
             double v1dxInit = directResult.getEthr();
@@ -146,128 +108,129 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
             double rof = homopolarResult.getRthz11();
             double xof = homopolarResult.getXthz12();
 
-            double rf = scf.getZfr();
-            double xf = scf.getZfi();
+            for (ShortCircuitFault scf : matchingFaults) {
 
-            MatrixFactory mf = parameters.getMatrixFactory();
+                double rf = scf.getZfr();
+                double xf = scf.getZfi();
 
-            Matrix mIo = mf.create(2, 1, 2);
-            Matrix mId = mf.create(2, 1, 2);
-            Matrix mIi = mf.create(2, 1, 2);
+                MatrixFactory mf = parameters.getMatrixFactory();
 
-            ShortCircuitResult res;
+                Matrix mIo = mf.create(2, 1, 2);
+                Matrix mId = mf.create(2, 1, 2);
+                Matrix mIi = mf.create(2, 1, 2);
 
-            if (shortCircuitType == ShortCircuitFault.ShortCircuitType.MONOPHASED
-                    || shortCircuitType == ShortCircuitFault.ShortCircuitType.BIPHASED
-                    || shortCircuitType == ShortCircuitFault.ShortCircuitType.BIPHASED_GROUND) {
-                if (shortCircuitType == ShortCircuitFault.ShortCircuitType.MONOPHASED) {
-                    MonophasedShortCircuitCalculator monophasedCalculator = new MonophasedShortCircuitCalculator(rdf, xdf, rof, xof, rf, xf, v1dxInit, v1dyInit, mf);
-                    monophasedCalculator.computeCurrents();
+                ShortCircuitResult res;
 
-                    mIo = monophasedCalculator.getmIo();
-                    mId = monophasedCalculator.getmId();
-                    mIi = monophasedCalculator.getmIi();
+                if (shortCircuitType == ShortCircuitFault.ShortCircuitType.MONOPHASED
+                        || shortCircuitType == ShortCircuitFault.ShortCircuitType.BIPHASED
+                        || shortCircuitType == ShortCircuitFault.ShortCircuitType.BIPHASED_GROUND) {
+                    if (shortCircuitType == ShortCircuitFault.ShortCircuitType.MONOPHASED) {
+                        MonophasedShortCircuitCalculator monophasedCalculator = new MonophasedShortCircuitCalculator(rdf, xdf, rof, xof, rf, xf, v1dxInit, v1dyInit, mf);
+                        monophasedCalculator.computeCurrents();
 
-                } else if (shortCircuitType == ShortCircuitFault.ShortCircuitType.BIPHASED) {
-                    BiphasedShortCircuitCalculator biphasedCalculator = new BiphasedShortCircuitCalculator(rdf, xdf, rof, xof, rf, xf, v1dxInit, v1dyInit, mf);
-                    biphasedCalculator.computeCurrents();
+                        mIo = monophasedCalculator.getmIo();
+                        mId = monophasedCalculator.getmId();
+                        mIi = monophasedCalculator.getmIi();
 
-                    mIo = biphasedCalculator.getmIo();
-                    mId = biphasedCalculator.getmId();
-                    mIi = biphasedCalculator.getmIi();
-                } else if (shortCircuitType == ShortCircuitFault.ShortCircuitType.BIPHASED_GROUND) {
-                    BiphasedGroundShortCircuitCalculator biphasedGrCalculator = new BiphasedGroundShortCircuitCalculator(rdf, xdf, rof, xof, rf, xf, v1dxInit, v1dyInit, mf);
-                    biphasedGrCalculator.computeCurrents();
+                    } else if (shortCircuitType == ShortCircuitFault.ShortCircuitType.BIPHASED) {
+                        BiphasedShortCircuitCalculator biphasedCalculator = new BiphasedShortCircuitCalculator(rdf, xdf, rof, xof, rf, xf, v1dxInit, v1dyInit, mf);
+                        biphasedCalculator.computeCurrents();
 
-                    mIo = biphasedGrCalculator.getmIo();
-                    mId = biphasedGrCalculator.getmId();
-                    mIi = biphasedGrCalculator.getmIi();
-                }
+                        mIo = biphasedCalculator.getmIo();
+                        mId = biphasedCalculator.getmId();
+                        mIi = biphasedCalculator.getmIi();
+                    } else if (shortCircuitType == ShortCircuitFault.ShortCircuitType.BIPHASED_GROUND) {
+                        BiphasedGroundShortCircuitCalculator biphasedGrCalculator = new BiphasedGroundShortCircuitCalculator(rdf, xdf, rof, xof, rf, xf, v1dxInit, v1dyInit, mf);
+                        biphasedGrCalculator.computeCurrents();
 
-                res =  buildUnbalancedResult(mId, mIo, mIi, rdf, xdf, rof, xof, mf,
-                        directResult, homopolarResult,
-                        tmpBusId, tmpBusId, scf, lfBus1, v1dxInit, v1dyInit, directResolution);
+                        mIo = biphasedGrCalculator.getmIo();
+                        mId = biphasedGrCalculator.getmId();
+                        mIi = biphasedGrCalculator.getmIi();
+                    }
 
-            } else if (shortCircuitType == ShortCircuitFault.ShortCircuitType.BIPHASED_COMMON_SUPPORT) {
-                // TODO : We only handle the first biphased of the list for now, check how to handle this in the final version
-                AdmittanceLinearResolution.AdmittanceLinearResolutionResult.AdmittanceLinearResolutionResultBiphased biphasedDirectResult = directResult.getBiphasedResultsAtBus().get(0);
-                AdmittanceLinearResolution.AdmittanceLinearResolutionResult.AdmittanceLinearResolutionResultBiphased biphasedHomopolarResult = homopolarResult.getBiphasedResultsAtBus().get(0);
+                    res =  buildUnbalancedResult(mId, mIo, mIi, rdf, xdf, rof, xof, mf,
+                            directResult, homopolarResult,
+                            scf, lfBus1, v1dxInit, v1dyInit, directResolution);
 
-                double ro12 = biphasedHomopolarResult.getZ12txx(); // TODO : add some tests to check consistency with Z12tyy and Z12tyx
-                double xo12 = -biphasedHomopolarResult.getZ12txy();
-                double ro22 = biphasedHomopolarResult.getZ22txx();
-                double xo22 = -biphasedHomopolarResult.getZ22txy();
-                double ro21 = biphasedHomopolarResult.getZ21txx();
-                double xo21 = -biphasedHomopolarResult.getZ21txy();
+                } else if (shortCircuitType == ShortCircuitFault.ShortCircuitType.BIPHASED_COMMON_SUPPORT) {
+                    // TODO : We only handle the first biphased of the list for now, check how to handle this in the final version
+                    ImpedanceLinearResolution.ImpedanceLinearResolutionResult.ImpedanceLinearResolutionResultBiphased biphasedDirectResult = directResult.getBiphasedResultsAtBus().get(0);
+                    ImpedanceLinearResolution.ImpedanceLinearResolutionResult.ImpedanceLinearResolutionResultBiphased biphasedHomopolarResult = homopolarResult.getBiphasedResultsAtBus().get(0);
 
-                double rd12 = biphasedDirectResult.getZ12txx();
-                double xd12 = -biphasedDirectResult.getZ12txy();
-                double rd22 = biphasedDirectResult.getZ22txx();
-                double xd22 = -biphasedDirectResult.getZ22txy();
-                double rd21 = biphasedDirectResult.getZ21txx();
-                double xd21 = -biphasedDirectResult.getZ21txy();
+                    double ro12 = biphasedHomopolarResult.getZ12txx(); // TODO : add some tests to check consistency with Z12tyy and Z12tyx
+                    double xo12 = -biphasedHomopolarResult.getZ12txy();
+                    double ro22 = biphasedHomopolarResult.getZ22txx();
+                    double xo22 = -biphasedHomopolarResult.getZ22txy();
+                    double ro21 = biphasedHomopolarResult.getZ21txx();
+                    double xo21 = -biphasedHomopolarResult.getZ21txy();
 
-                BiphasedCommonSupportShortCircuitCalculator biphasedCommonCalculator;
-                if (scf.getBiphasedType() == ShortCircuitFault.ShortCircuitBiphasedType.C1_A2) {
-                    biphasedCommonCalculator = new BiphasedC1A2Calculator(rdf, xdf, rof, xof, rf, xf, v1dxInit, v1dyInit, mf,
-                            biphasedDirectResult.getV2x(), biphasedDirectResult.getV2y(),
-                            ro12, xo12, ro22, xo22, ro21, xo21,
-                            rd12, xd12, rd22, xd22, rd21, xd21); // TODO : check cast is OK and then add other types
-                } else if (scf.getBiphasedType() == ShortCircuitFault.ShortCircuitBiphasedType.C1_B2) {
-                    biphasedCommonCalculator = new BiphasedC1B2Calculator(rdf, xdf, rof, xof, rf, xf, v1dxInit, v1dyInit, mf,
-                            biphasedDirectResult.getV2x(), biphasedDirectResult.getV2y(),
-                            ro12, xo12, ro22, xo22, ro21, xo21,
-                            rd12, xd12, rd22, xd22, rd21, xd21);
-                } else if (scf.getBiphasedType() == ShortCircuitFault.ShortCircuitBiphasedType.C1_C2) {
-                    biphasedCommonCalculator = new BiphasedC1C2Calculator(rdf, xdf, rof, xof, rf, xf, v1dxInit, v1dyInit, mf,
-                            biphasedDirectResult.getV2x(), biphasedDirectResult.getV2y(),
-                            ro12, xo12, ro22, xo22, ro21, xo21,
-                            rd12, xd12, rd22, xd22, rd21, xd21);
+                    double rd12 = biphasedDirectResult.getZ12txx();
+                    double xd12 = -biphasedDirectResult.getZ12txy();
+                    double rd22 = biphasedDirectResult.getZ22txx();
+                    double xd22 = -biphasedDirectResult.getZ22txy();
+                    double rd21 = biphasedDirectResult.getZ21txx();
+                    double xd21 = -biphasedDirectResult.getZ21txy();
+
+                    BiphasedCommonSupportShortCircuitCalculator biphasedCommonCalculator;
+                    if (scf.getBiphasedType() == ShortCircuitFault.ShortCircuitBiphasedType.C1_A2) {
+                        biphasedCommonCalculator = new BiphasedC1A2Calculator(rdf, xdf, rof, xof, rf, xf, v1dxInit, v1dyInit, mf,
+                                biphasedDirectResult.getV2x(), biphasedDirectResult.getV2y(),
+                                ro12, xo12, ro22, xo22, ro21, xo21,
+                                rd12, xd12, rd22, xd22, rd21, xd21);
+                    } else if (scf.getBiphasedType() == ShortCircuitFault.ShortCircuitBiphasedType.C1_B2) {
+                        biphasedCommonCalculator = new BiphasedC1B2Calculator(rdf, xdf, rof, xof, rf, xf, v1dxInit, v1dyInit, mf,
+                                biphasedDirectResult.getV2x(), biphasedDirectResult.getV2y(),
+                                ro12, xo12, ro22, xo22, ro21, xo21,
+                                rd12, xd12, rd22, xd22, rd21, xd21);
+                    } else if (scf.getBiphasedType() == ShortCircuitFault.ShortCircuitBiphasedType.C1_C2) {
+                        biphasedCommonCalculator = new BiphasedC1C2Calculator(rdf, xdf, rof, xof, rf, xf, v1dxInit, v1dyInit, mf,
+                                biphasedDirectResult.getV2x(), biphasedDirectResult.getV2y(),
+                                ro12, xo12, ro22, xo22, ro21, xo21,
+                                rd12, xd12, rd22, xd22, rd21, xd21);
+                    } else {
+                        throw new IllegalArgumentException(" short circuit fault of type : " + scf.getBiphasedType() + " not yet handled");
+                    }
+
+                    //biphasedCommonCalculator.computeCurrents();
+                    mIo = biphasedCommonCalculator.getmIo();
+                    mId = biphasedCommonCalculator.getmId();
+                    mIi = biphasedCommonCalculator.getmIi();
+
+                    // TODO : check if we need to make a separate function to handle biphased common support
+                    Matrix mI2o = biphasedCommonCalculator.getmI2o();
+                    Matrix mI2d = biphasedCommonCalculator.getmI2d();
+                    Matrix mI2i = biphasedCommonCalculator.getmI2i();
+
+                    //biphasedCommonCalculator.computeVoltages();
+                    Matrix mdVo = biphasedCommonCalculator.getmVo(); // Contains variations of voltages, without Vinit
+                    Matrix mdVd = biphasedCommonCalculator.getmVd(); // each voltage vector contains [V1x; V1y; V2x; V2y]
+                    Matrix mdVi = biphasedCommonCalculator.getmVi();
+
+                    LfBus lfBus2 = biphasedDirectResult.getBus2();
+
+                    double v2dxInit = biphasedDirectResult.getV2x();
+                    double v2dyInit = biphasedDirectResult.getV2y();
+
+                    res =  buildUnbalancedCommunSuppportResult(mId, mIo, mIi, mI2d, mI2o, mI2i, mdVd, mdVo, mdVi, rdf, xdf, rof, xof, mf,
+                            directResult, homopolarResult, scf,
+                            lfBus1, v1dxInit, v1dyInit, directResolution,
+                            lfBus2, v2dxInit, v2dyInit, biphasedDirectResult, biphasedHomopolarResult);
+
                 } else {
-                    throw new IllegalArgumentException(" short circuit fault of type : " + scf.getBiphasedType() + " not yet handled");
+                    throw new IllegalArgumentException(" Post-processing of short circuit type = " + shortCircuitType + "not yet implemented");
                 }
 
-                //biphasedCommonCalculator.computeCurrents();
-                mIo = biphasedCommonCalculator.getmIo();
-                mId = biphasedCommonCalculator.getmId();
-                mIi = biphasedCommonCalculator.getmIi();
-
-                // TODO : check if we need to make a separate function to handle biphased common support
-                Matrix mI2o = biphasedCommonCalculator.getmI2o();
-                Matrix mI2d = biphasedCommonCalculator.getmI2d();
-                Matrix mI2i = biphasedCommonCalculator.getmI2i();
-
-                //biphasedCommonCalculator.computeVoltages();
-                Matrix mdVo = biphasedCommonCalculator.getmVo(); // Contains variations of voltages, without Vinit
-                Matrix mdVd = biphasedCommonCalculator.getmVd(); // each voltage vector contains [V1x; V1y; V2x; V2y]
-                Matrix mdVi = biphasedCommonCalculator.getmVi();
-
-                LfBus lfBus2 = biphasedDirectResult.getBus2();
-                String tmpVl2 = lfBus2.getVoltageLevelId();
-                String tmpBus2Id = lfBus2.getId();
-
-                double v2dxInit = biphasedDirectResult.getV2x();
-                double v2dyInit = biphasedDirectResult.getV2y();
-
-                res =  buildUnbalancedCommunSuppportResult(mId, mIo, mIi, mI2d, mI2o, mI2i, mdVd, mdVo, mdVi, rdf, xdf, rof, xof, mf,
-                        directResult, homopolarResult, scf,
-                        lfBus1, tmpBusId, tmpBusId, v1dxInit, v1dyInit, directResolution,
-                        lfBus2, tmpVl2, tmpBus2Id, v2dxInit, v2dyInit, biphasedDirectResult, biphasedHomopolarResult);
-
-            } else {
-                throw new IllegalArgumentException(" Post-processing of short circuit type = " + shortCircuitType + "not yet implemented");
+                res.updateFeedersResult(); // feeders are updated only if voltageUpdate is made. TODO : see if update of homopolar feeders are to be updated
+                resultsPerFault.put(scf, res);
             }
 
-            resultsPerFault.put(scf, res);
-            resultsAllBusses.add(res);
-            res.updateVoltageResult();
         }
     }
 
     public ShortCircuitResult buildUnbalancedResult(Matrix mId, Matrix mIo, Matrix mIi, double rdf, double xdf, double rof, double xof, MatrixFactory mf,
-                                                    AdmittanceLinearResolution.AdmittanceLinearResolutionResult directResult,
-                                                    AdmittanceLinearResolution.AdmittanceLinearResolutionResult homopolarResult,
-                                                    String tmpVl, String tmpBusId, ShortCircuitFault scf, LfBus lfBus1, double v1dxInit, double v1dyInit, AdmittanceLinearResolution directResolution) {
+                                                    ImpedanceLinearResolution.ImpedanceLinearResolutionResult directResult,
+                                                    ImpedanceLinearResolution.ImpedanceLinearResolutionResult homopolarResult,
+                                                    ShortCircuitFault scf, LfBus lfBus1, double v1dxInit, double v1dyInit, ImpedanceLinearResolution directResolution) {
         //get the voltage vectors
         // Vo :
         // [vox]      [ rof  -xof ]   [ iox ]
@@ -281,14 +244,14 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
         Matrix minusVi = zdf.times(mIi);
 
         //record the results
-        ShortCircuitEquationSystemFeeders equationSystemFeedersDirect =  directResult.getEqSysFeeders();
-        ShortCircuitEquationSystemFeeders equationSystemFeedersHomopolar =  homopolarResult.getEqSysFeeders();
+        EquationSystemFeeders equationSystemFeedersDirect =  directResult.getEqSysFeeders();
+        EquationSystemFeeders equationSystemFeedersHomopolar =  homopolarResult.getEqSysFeeders();
 
-        ShortCircuitResult res = new ShortCircuitResult(tmpVl, tmpBusId, scf,
+        ShortCircuitResult res = new ShortCircuitResult(scf, lfBus1,
                 mId.toDense().get(0, 0), mId.toDense().get(1, 0),
                 mIo.toDense().get(0, 0), mIo.toDense().get(1, 0),
                 mIi.toDense().get(0, 0), mIi.toDense().get(1, 0),
-                lfBus1, rdf, xdf, rof, xof, rdf, xdf,
+                rdf, xdf, rof, xof, rdf, xdf,
                 v1dxInit, v1dyInit,
                 -minusVd.toDense().get(0, 0), -minusVd.toDense().get(1, 0),
                 -minusVo.toDense().get(0, 0), -minusVo.toDense().get(1, 0),
@@ -296,9 +259,8 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
                 mf, equationSystemFeedersDirect, equationSystemFeedersHomopolar, parameters.getNorm());
 
         if (parameters.voltageUpdate) {
-            res.addLfNetwork(directResolution.lfNetworkResult);
-            //res.setBus2dv(new HashMap<>());
-            res.setVoltageProfileUpdate();
+            res.setLfNetwork(directResolution.lfNetworkResult);
+            res.setTrueVoltageProfileUpdate();
             // The post-fault voltage values for the network busses are computed as follow :
             // [ Vof ] = -inv(Yo) * M * [ Iof ]
             // [ Vdf ] = -inv(Yd) * M * [ Idf ] + [ V(init) ]
@@ -307,7 +269,7 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
             // dMd = inv(Yd) * M
 
             int nbBusses = directResolution.lfNetworkResult.getBuses().size();
-            List<DenseMatrix> busNum2Dv = res.createEmptyFortescueVoltageVector(nbBusses);
+            res.createEmptyFortescueVoltageVector(nbBusses);
 
             for (Map.Entry<Integer, DenseMatrix> vd : directResult.getDv().entrySet()) {
                 int busNum = vd.getKey();
@@ -349,23 +311,23 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
     }
 
     public ShortCircuitResult buildUnbalancedCommunSuppportResult(Matrix mId, Matrix mIo, Matrix mIi, Matrix mI2d, Matrix mI2o, Matrix mI2i, Matrix mVd, Matrix mVo, Matrix mVi, double rdf, double xdf, double rof, double xof, MatrixFactory mf,
-                                                    AdmittanceLinearResolution.AdmittanceLinearResolutionResult directResult,
-                                                    AdmittanceLinearResolution.AdmittanceLinearResolutionResult homopolarResult, ShortCircuitFault scf,
-                                                                  LfBus lfBus1, String tmpVl, String tmpBusId, double v1dxInit, double v1dyInit, AdmittanceLinearResolution directResolution,
-                                                                  LfBus lfBus2, String tmpVl2, String tmpBus2Id, double v2dxInit, double v2dyInit,
-                                                                  AdmittanceLinearResolution.AdmittanceLinearResolutionResult.AdmittanceLinearResolutionResultBiphased biphasedDirectResult,
-                                                                  AdmittanceLinearResolution.AdmittanceLinearResolutionResult.AdmittanceLinearResolutionResultBiphased biphasedHomopolarResult) {
+                                                                  ImpedanceLinearResolution.ImpedanceLinearResolutionResult directResult,
+                                                                  ImpedanceLinearResolution.ImpedanceLinearResolutionResult homopolarResult, ShortCircuitFault scf,
+                                                                  LfBus lfBus1, double v1dxInit, double v1dyInit, ImpedanceLinearResolution directResolution,
+                                                                  LfBus lfBus2, double v2dxInit, double v2dyInit,
+                                                                  ImpedanceLinearResolution.ImpedanceLinearResolutionResult.ImpedanceLinearResolutionResultBiphased biphasedDirectResult,
+                                                                  ImpedanceLinearResolution.ImpedanceLinearResolutionResult.ImpedanceLinearResolutionResultBiphased biphasedHomopolarResult) {
 
         //record the results
-        ShortCircuitEquationSystemFeeders equationSystemFeedersDirect =  directResult.getEqSysFeeders();
-        ShortCircuitEquationSystemFeeders equationSystemFeedersHomopolar =  homopolarResult.getEqSysFeeders();
+        EquationSystemFeeders equationSystemFeedersDirect =  directResult.getEqSysFeeders();
+        EquationSystemFeeders equationSystemFeedersHomopolar =  homopolarResult.getEqSysFeeders();
         // TODO : adapt in case of a biphased common support
 
-        ShortCircuitResult res = new ShortCircuitResult(tmpVl, tmpBusId, scf,
+        ShortCircuitResult res = new ShortCircuitResult(scf, lfBus1,
                 mId.toDense().get(0, 0), mId.toDense().get(1, 0),
                 mIo.toDense().get(0, 0), mIo.toDense().get(1, 0),
                 mIi.toDense().get(0, 0), mIi.toDense().get(1, 0),
-                lfBus1, rdf, xdf, rof, xof, rdf, xdf,
+                rdf, xdf, rof, xof, rdf, xdf,
                 v1dxInit, v1dyInit,
                 mVd.toDense().get(0, 0), mVd.toDense().get(1, 0),
                 mVo.toDense().get(0, 0), mVo.toDense().get(1, 0),
@@ -378,12 +340,11 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
                 mVd.toDense().get(2, 0), mVd.toDense().get(3, 0),
                 mVo.toDense().get(2, 0), mVo.toDense().get(3, 0),
                 mVi.toDense().get(2, 0), mVi.toDense().get(3, 0),
-                lfBus2, tmpVl2, tmpBus2Id);
+                lfBus2);
 
         if (parameters.voltageUpdate) {
-            res.addLfNetwork(directResolution.lfNetworkResult);
-            //res.setBus2dv(new HashMap<>());
-            res.setVoltageProfileUpdate();
+            res.setLfNetwork(directResolution.lfNetworkResult);
+            res.setTrueVoltageProfileUpdate();
             // The post-fault voltage values for the network busses are computed as follow :
             // [ Vof ] = -inv(Yo) * M * [ Iof ]
             // [ Vdf ] = -inv(Yd) * M * [ Idf ] + [ V(init) ]
@@ -392,7 +353,7 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
             // dMd = inv(Yd) * M
 
             int nbBusses = directResolution.lfNetworkResult.getBuses().size();
-            List<DenseMatrix> busNum2Dv = res.createEmptyFortescueVoltageVector(nbBusses);
+            res.createEmptyFortescueVoltageVector(nbBusses);
 
             for (Map.Entry<Integer, DenseMatrix> vd : directResult.getDv().entrySet()) {
                 int busNum = vd.getKey();

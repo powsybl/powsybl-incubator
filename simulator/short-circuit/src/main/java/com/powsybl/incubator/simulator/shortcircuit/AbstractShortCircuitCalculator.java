@@ -6,7 +6,6 @@
  */
 package com.powsybl.incubator.simulator.shortcircuit;
 
-import com.powsybl.incubator.simulator.util.AdmittanceMatrix;
 import com.powsybl.math.matrix.DenseMatrix;
 import com.powsybl.math.matrix.Matrix;
 import com.powsybl.math.matrix.MatrixFactory;
@@ -64,15 +63,6 @@ public abstract class AbstractShortCircuitCalculator {
 
     public abstract void computeCurrents();
 
-    public DenseMatrix getImpedanceMatrix(Matrix tM, AdmittanceMatrix y, Matrix m) {
-        DenseMatrix dM = m.toDense();
-        y.solveTransposed(dM);
-        Matrix z = tM.times(dM);
-        DenseMatrix dZ = z.toDense();
-
-        return dZ;
-    }
-
     public enum BlocType {
         A,
         A2,
@@ -83,13 +73,6 @@ public abstract class AbstractShortCircuitCalculator {
     public static Matrix getMatrixByType(BlocType bt, double scalar, MatrixFactory mf) {
         Matrix m = mf.create(2, 2, 2);
         addMatrixBlocByType(m, bt, scalar);
-        return m;
-    }
-
-    public static Matrix getMatrixByType(BlocType bt1, double scalar1, BlocType bt2, double scalar2, MatrixFactory mf) {
-        Matrix m = mf.create(4, 2, 2);
-        addMatrixBlocByType(m, bt1, scalar1);
-        addMatrixBlocByType(m, bt2, scalar2);
         return m;
     }
 
@@ -149,14 +132,8 @@ public abstract class AbstractShortCircuitCalculator {
     public static Matrix getInvZt(Matrix m, MatrixFactory mf) {
         double r = m.toDense().get(0, 0);
         double x = m.toDense().get(1, 0);
-        double detZ = r * r + x * x;
-        Matrix invZ = mf.create(2, 2, 2);
-        invZ.add(0, 0, r / detZ);
-        invZ.add(0, 1, x / detZ);
-        invZ.add(1, 0, -x / detZ);
-        invZ.add(1, 1, r / detZ);
 
-        return invZ;
+        return getInvZt(r, x, mf);
     }
 
     public static Matrix getZ(double r, double x, MatrixFactory mf) {

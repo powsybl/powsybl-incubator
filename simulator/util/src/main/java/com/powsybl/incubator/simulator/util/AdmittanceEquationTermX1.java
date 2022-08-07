@@ -7,7 +7,6 @@
 package com.powsybl.incubator.simulator.util;
 
 import com.powsybl.math.matrix.DenseMatrix;
-import com.powsybl.math.matrix.MatrixFactory;
 import com.powsybl.openloadflow.equations.Variable;
 import com.powsybl.openloadflow.equations.VariableSet;
 import com.powsybl.openloadflow.network.LfBranch;
@@ -16,38 +15,34 @@ import com.powsybl.openloadflow.network.LfBus;
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
-public class AdmittanceRealPartSide1EquationTerm extends AbstractAdmittanceEquationTerm {
+public class AdmittanceEquationTermX1 extends AbstractAdmittanceEquationTerm {
 
-    protected double g12;
+    private final double g12;
 
-    protected double b12;
+    private final double b12;
 
-    protected double g1g12sum;
+    private final double g1g12sum;
 
-    protected double b1b12sum;
+    private final double b1b12sum;
 
-    public AdmittanceRealPartSide1EquationTerm(LfBranch branch, LfBus bus1, LfBus bus2, VariableSet<VariableType> variableSet, AdmittanceEquationSystem.AdmittanceType admittanceType, MatrixFactory mf) {
-        super(branch, bus1, bus2, variableSet, mf);
+    public AdmittanceEquationTermX1(LfBranch branch, LfBus bus1, LfBus bus2, VariableSet<VariableType> variableSet, AdmittanceEquationSystem.AdmittanceType admittanceType) {
+        super(branch, bus1, bus2, variableSet);
         // Direct component:
         // I1x = (g1 + g12)V1x - (b1 + b12)V1y - g12 * V2x + b12 * V2y
-        g12 = rho * zInvSquare * (r * cosA + x * sinA);
-        b12 = -rho * zInvSquare * (x * cosA + r * sinA);
-        g1g12sum = rho * rho * (gPi1 + r * zInvSquare);
-        b1b12sum = rho * rho * (bPi1 - x * zInvSquare);
         if (admittanceType == AdmittanceEquationSystem.AdmittanceType.ADM_THEVENIN_HOMOPOLAR) {
-            setHomopolarAttributes();
+            HomopolarModel homopolarModel = HomopolarModel.build(branch);
             if (branch.getBranchType() == LfBranch.BranchType.LINE) {
                 // default if branch type is a line
-                g12 = rho * homopolarExtension.zoInvSquare * (homopolarExtension.ro * cosA + homopolarExtension.xo * sinA);
-                b12 = -rho * homopolarExtension.zoInvSquare * (homopolarExtension.xo * cosA + homopolarExtension.ro * sinA);
-                g1g12sum = rho * rho * (homopolarExtension.gom + homopolarExtension.ro * homopolarExtension.zoInvSquare);
-                b1b12sum = rho * rho * (homopolarExtension.bom - homopolarExtension.xo * homopolarExtension.zoInvSquare);
+                g12 = rho * homopolarModel.getZoInvSquare() * (homopolarModel.getRo() * cosA + homopolarModel.getXo() * sinA);
+                b12 = -rho * homopolarModel.getZoInvSquare() * (homopolarModel.getXo() * cosA + homopolarModel.getRo() * sinA);
+                g1g12sum = rho * rho * (homopolarModel.getGom() + homopolarModel.getRo() * homopolarModel.getZoInvSquare());
+                b1b12sum = rho * rho * (homopolarModel.getBom() - homopolarModel.getXo() * homopolarModel.getZoInvSquare());
             } else if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_2
                     || branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_1
                     || branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_2
                     || branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_3) {
                 // case where branch is part of a transformer
-                DenseMatrix mo = computeHomopolarAdmittanceMatrix();
+                DenseMatrix mo = homopolarModel.computeHomopolarAdmittanceMatrix();
                 b1b12sum = -mo.get(0, 1);
                 g1g12sum = mo.get(0, 0);
                 b12 = mo.get(0, 3);
@@ -55,6 +50,11 @@ public class AdmittanceRealPartSide1EquationTerm extends AbstractAdmittanceEquat
             } else {
                 throw new IllegalArgumentException("branch type not yet handled");
             }
+        } else {
+            g12 = rho * zInvSquare * (r * cosA + x * sinA);
+            b12 = -rho * zInvSquare * (x * cosA + r * sinA);
+            g1g12sum = rho * rho * (gPi1 + r * zInvSquare);
+            b1b12sum = rho * rho * (bPi1 - x * zInvSquare);
         }
     }
 

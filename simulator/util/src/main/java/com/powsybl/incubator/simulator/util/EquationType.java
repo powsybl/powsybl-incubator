@@ -13,8 +13,8 @@ import com.powsybl.openloadflow.network.ElementType;
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at gmail.com>
  */
 public enum EquationType implements Quantity {
-    BUS_YR("yr"),
-    BUS_YI("yi");
+    BUS_YR("yr"), // real part
+    BUS_YI("yi"); // imaginary part
 
     private final String symbol;
 

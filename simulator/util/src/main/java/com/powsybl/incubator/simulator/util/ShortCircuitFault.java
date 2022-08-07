@@ -11,8 +11,8 @@ package com.powsybl.incubator.simulator.util;
  */
 public class ShortCircuitFault extends CalculationLocation {
 
-    public ShortCircuitFault(String input, String faultId, double zfr, double zfi, ShortCircuitType type, boolean voltageUpdate) {
-        super(input, voltageUpdate);
+    public ShortCircuitFault(String busLocation, boolean voltageUpdate, String faultId, double zfr, double zfi, ShortCircuitType type) {
+        super(busLocation, voltageUpdate);
         this.zfr = zfr;
         this.zfi = zfi;
         this.type = type;
@@ -20,8 +20,8 @@ public class ShortCircuitFault extends CalculationLocation {
         this.faultId = faultId;
     }
 
-    public ShortCircuitFault(String input, String input2, String faultId, double zfr, double zfi, ShortCircuitType type, boolean voltageUpdate, ShortCircuitBiphasedType biphasedType) {
-        super(input, input2, voltageUpdate);
+    public ShortCircuitFault(String busLocation, String busLocationBiPhased, boolean voltageUpdate, String faultId, double zfr, double zfi, ShortCircuitType type, ShortCircuitBiphasedType biphasedType) {
+        super(busLocation, busLocationBiPhased, voltageUpdate);
         this.zfr = zfr;
         this.zfi = zfi;
         this.type = type;

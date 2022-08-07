@@ -1,3 +1,9 @@
+/**
+ * Copyright (c) 2022, Jean-Baptiste Heyberger & Geoffroy Jamgotchian
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 package com.powsybl.incubator.simulator.shortcircuit;
 
 import com.powsybl.iidm.network.Network;
@@ -18,6 +24,9 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
+ */
 public class ShortCircuitBiphasedGroundTest {
 
     private LoadFlowParameters parameters;
@@ -47,7 +56,7 @@ public class ShortCircuitBiphasedGroundTest {
         MatrixFactory  matrixFactory = new DenseMatrixFactory();
 
         List<ShortCircuitFault> faultList = new ArrayList<>();
-        ShortCircuitFault sc1 = new ShortCircuitFault("B3", "sc1", 0., 0., ShortCircuitFault.ShortCircuitType.BIPHASED_GROUND, false);
+        ShortCircuitFault sc1 = new ShortCircuitFault("B3", false, "sc1", 0., 0., ShortCircuitFault.ShortCircuitType.BIPHASED_GROUND);
         faultList.add(sc1);
 
         ShortCircuitEngineParameters.PeriodType periodType = ShortCircuitEngineParameters.PeriodType.SUB_TRANSIENT;

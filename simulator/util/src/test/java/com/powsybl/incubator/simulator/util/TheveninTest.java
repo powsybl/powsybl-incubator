@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
-public class TheveninTest {
+class TheveninTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TheveninTest.class);
 

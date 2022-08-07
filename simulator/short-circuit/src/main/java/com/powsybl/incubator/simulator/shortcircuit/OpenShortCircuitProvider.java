@@ -134,8 +134,8 @@ public class OpenShortCircuitProvider implements ShortCircuitAnalysisProvider {
         AdditionalDataInfo additionalDataInfo = new AdditionalDataInfo(); //no extra data handled in the provider, we need to enrich the input API if necessary
 
         LoadFlowParameters loadFlowParameters = new LoadFlowParameters();
-        ShortCircuitNormCourcirc shortCircuitNormCourcirc = new ShortCircuitNormCourcirc();
-        ShortCircuitEngineParameters scbParameters = new ShortCircuitEngineParameters(loadFlowParameters, matrixFactory, at, scList, true, vp, false, periodType, additionalDataInfo, shortCircuitNormCourcirc);
+        ShortCircuitNorm shortCircuitNorm = new ShortCircuitNorm();
+        ShortCircuitEngineParameters scbParameters = new ShortCircuitEngineParameters(loadFlowParameters, matrixFactory, at, scList, true, vp, false, periodType, additionalDataInfo, shortCircuitNorm);
         ShortCircuitBalancedEngine scbEngine = new ShortCircuitBalancedEngine(network, scbParameters);
 
         scbEngine.run();

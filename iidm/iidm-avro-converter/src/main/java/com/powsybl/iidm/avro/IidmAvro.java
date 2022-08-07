@@ -1088,8 +1088,8 @@ public final class IidmAvro {
         if (s.getName() != null) {
             shBuilder.setName(s.getName());
         }
-        shBuilder.setBPerSection(s.getbPerSection());
-        shBuilder.setCurrentSectionCount(s.getCurrentSectionCount());
+        shBuilder.setBPerSection(s.getB());
+        shBuilder.setCurrentSectionCount(s.getSectionCount());
         shBuilder.setMaximumSectionCount(s.getMaximumSectionCount());
 
         addNodeOrBus(shBuilder, topologyKind, s);
@@ -1597,9 +1597,11 @@ public final class IidmAvro {
             if (pshunt.getName() != null) {
                 adder.setName(pshunt.getName());
             }
-            adder.setbPerSection(pshunt.getBPerSection());
-            adder.setCurrentSectionCount(pshunt.getCurrentSectionCount());
-            adder.setMaximumSectionCount(pshunt.getMaximumSectionCount());
+            adder.newLinearModel()
+                    .setBPerSection(pshunt.getBPerSection())
+                    .setMaximumSectionCount(pshunt.getMaximumSectionCount())
+                    .add()
+                    .setSectionCount(pshunt.getCurrentSectionCount());
 
             if (pshunt.getBus() != null) {
                 adder.setBus(pshunt.getBus());
@@ -1796,7 +1798,7 @@ public final class IidmAvro {
 
     }
 
-    private static void readRatioTapChanger(ThreeWindingsTransformer.Leg2or3 twl, ARatioTapChanger prtc, Network network) {
+    private static void readRatioTapChanger(ThreeWindingsTransformer.Leg twl, ARatioTapChanger prtc, Network network) {
         RatioTapChangerAdder rtcAdder = twl.newRatioTapChanger();
         rtcAdder.setLowTapPosition(prtc.getLowTapPosition());
         rtcAdder.setTapPosition(prtc.getTapPosition());

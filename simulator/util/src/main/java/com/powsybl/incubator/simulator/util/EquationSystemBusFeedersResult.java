@@ -16,6 +16,8 @@ import java.util.List;
  */
 public class EquationSystemBusFeedersResult {
 
+    private static final double EPSILON = 0.000001;
+
     private double ixFeedersSum; //sum of currents coming from branches, which is also the sum of feeders'currents
     private double iyFeedersSum;
 
@@ -53,19 +55,16 @@ public class EquationSystemBusFeedersResult {
             gSum = gSum + feeder.getG();
         }
 
-        for (EquationSystemResultFeeder feederResult : busFeedersResults) {
-            double epsilon = 0.000001;
-            if (Math.abs(gSum) > epsilon || Math.abs(bSum) > epsilon) {
-                double det = 1 / (gSum * gSum + bSum * bSum);
+        if (Math.abs(gSum) > EPSILON || Math.abs(bSum) > EPSILON) {
+            double det = 1 / (gSum * gSum + bSum * bSum);
+            for (EquationSystemResultFeeder feederResult : busFeedersResults) {
                 double gk = feederResult.getG();
                 double bk = feederResult.getB();
                 double ixk = det * ((gk * gSum + bk * bSum) * ixFeedersSum + (gk * bSum - gSum * bk) * iyFeedersSum);
                 double iyk = det * ((-gk * bSum + gSum * bk) * ixFeedersSum + (gk * gSum + bk * bSum) * iyFeedersSum);
 
                 feederResult.updateIcontribution(ixk, iyk);
-                //ShortCircuitResultFeeder feederResult = new ShortCircuitResultFeeder(feeder.getId(), feeder.getFeederType(), ixk, iyk);
                 feederResult.printContributions(feedersBus);
-                //busFeedersResults.add(feederResult);
             }
         }
     }

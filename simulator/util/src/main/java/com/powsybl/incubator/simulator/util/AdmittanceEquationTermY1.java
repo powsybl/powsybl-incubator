@@ -30,24 +30,20 @@ public class AdmittanceEquationTermY1 extends AbstractAdmittanceEquationTerm {
         super(branch, bus1, bus2, variableSet, mf);
         // Direct component:
         // I1y = (b1 + b12)V1x + (g1 + g12)V1y - b12 * V2x - g12 * V2y
-        g12 = rho * zInvSquare * (r * cosA + x * sinA);
-        b12 = -rho * zInvSquare * (x * cosA + r * sinA);
-        g1g12sum = rho * rho * (gPi1 + r * zInvSquare);
-        b1b12sum = rho * rho * (bPi1 - x * zInvSquare);
         if (admittanceType == AdmittanceEquationSystem.AdmittanceType.ADM_THEVENIN_HOMOPOLAR) {
-            setHomopolarAttributes();
+            HomopolarModel homopolarModel = HomopolarModel.build(branch);
             if (branch.getBranchType() == LfBranch.BranchType.LINE) {
                 // case where branch is a line with available homopolar parameters
-                g12 = rho * homopolarExtension.zoInvSquare * (homopolarExtension.ro * cosA + homopolarExtension.xo * sinA);
-                b12 = -rho * homopolarExtension.zoInvSquare * (homopolarExtension.xo * cosA + homopolarExtension.ro * sinA);
-                g1g12sum = rho * rho * (homopolarExtension.gom + homopolarExtension.ro * homopolarExtension.zoInvSquare);
-                b1b12sum = rho * rho * (homopolarExtension.bom - homopolarExtension.xo * homopolarExtension.zoInvSquare);
+                g12 = rho * homopolarModel.getZoInvSquare() * (homopolarModel.getRo() * cosA + homopolarModel.getXo() * sinA);
+                b12 = -rho * homopolarModel.getZoInvSquare() * (homopolarModel.getXo() * cosA + homopolarModel.getRo() * sinA);
+                g1g12sum = rho * rho * (homopolarModel.getGom() + homopolarModel.getRo() * homopolarModel.getZoInvSquare());
+                b1b12sum = rho * rho * (homopolarModel.getBom() - homopolarModel.getXo() * homopolarModel.getZoInvSquare());
             } else if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_2
                     || branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_1
                     || branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_2
                     || branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_3) {
                 // case where branch is part of a transformer
-                DenseMatrix mo = computeHomopolarAdmittanceMatrix();
+                DenseMatrix mo = homopolarModel.computeHomopolarAdmittanceMatrix();
                 b1b12sum = mo.get(1, 0);
                 g1g12sum = mo.get(1, 1);
                 b12 = -mo.get(1, 2);
@@ -55,6 +51,11 @@ public class AdmittanceEquationTermY1 extends AbstractAdmittanceEquationTerm {
             } else {
                 throw new IllegalArgumentException("branch type not yet handled");
             }
+        } else {
+            g12 = rho * zInvSquare * (r * cosA + x * sinA);
+            b12 = -rho * zInvSquare * (x * cosA + r * sinA);
+            g1g12sum = rho * rho * (gPi1 + r * zInvSquare);
+            b1b12sum = rho * rho * (bPi1 - x * zInvSquare);
         }
     }
 

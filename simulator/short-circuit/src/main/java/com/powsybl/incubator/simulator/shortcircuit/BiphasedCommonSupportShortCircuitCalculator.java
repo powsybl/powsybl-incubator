@@ -269,14 +269,6 @@ public class BiphasedCommonSupportShortCircuitCalculator extends AbstractShortCi
 
     }
 
-    public double getV2dxInit() {
-        return v2dxInit;
-    }
-
-    public double getV2dyInit() {
-        return v2dyInit;
-    }
-
     public Matrix getmI2d() {
         return mI2d;
     }

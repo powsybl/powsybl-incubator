@@ -97,17 +97,15 @@ public class BiphasedC1B2Calculator extends BiphasedCommonSupportShortCircuitCal
         //compute the numerator matrix = a * V1d(init) - a² * V2d(init)
         Matrix ma = getMatrixByType(AbstractShortCircuitCalculator.BlocType.A, 1.0, mf);
 
-        Matrix mVd1Init = mf.create(2, 1, 2);
-        mVd1Init.add(0, 0, initVx);
-        mVd1Init.add(1, 0, initVy);
-        Matrix maVd1 = ma.times(mVd1Init);
-
         Matrix mVd2Init = mf.create(2, 1, 2);
-        mVd2Init.add(0, 0, v2dxInit);
-        mVd2Init.add(1, 0, v2dyInit);
-        Matrix ma2Vd2 = ma.times(mVd2Init);
+        mVd2Init.add(0, 0, -v2dxInit);
+        mVd2Init.add(1, 0, -v2dyInit);
+        Matrix maVd2 = ma.times(mVd2Init);
 
-        DenseMatrix numerator = addMatrices22(maVd1.toDense(), ma2Vd2.toDense(), mf);
+        maVd2.add(0, 0, initVx);
+        maVd2.add(1, 0, initVy);
+
+        DenseMatrix numerator = ma.times(maVd2).toDense();
 
         // get Ic by multiplying the numerator to inv(Zt)
         Matrix invZt = getInvZt(rt, xt, mf);
@@ -116,6 +114,7 @@ public class BiphasedC1B2Calculator extends BiphasedCommonSupportShortCircuitCal
 
     @Override
     public void computeZt() {
+
         // Zf + 1/3*(Zd_11 - a²*Zd_12 + Zd_22 - a*Zd_21 + Zo_11 - Zo_21 + Zo_22 - Zo_12 + Zi_22 - a*Zi_12 + Zi_11 - a²*Zi_21)
         Matrix a2 = getMatrixByType(AbstractShortCircuitCalculator.BlocType.A2, 1.0, mf);
         Matrix a = getMatrixByType(AbstractShortCircuitCalculator.BlocType.A, 1.0, mf);
@@ -162,6 +161,7 @@ public class BiphasedC1B2Calculator extends BiphasedCommonSupportShortCircuitCal
 
         rt = zt.get(0, 0);
         xt = zt.get(1, 0);
+
     }
 
     @Override

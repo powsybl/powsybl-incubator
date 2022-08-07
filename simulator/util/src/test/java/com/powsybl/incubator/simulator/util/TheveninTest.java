@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
-public class TheveninTest {
+class TheveninTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TheveninTest.class);
 
@@ -56,9 +56,9 @@ public class TheveninTest {
         Network network = Networks.create4n();
         LoadFlowResult resultnt4 = loadFlowRunner.run(network, parameters);
 
-        List<ShortCircuitFault> faultsList = new ArrayList<>();
-        ShortCircuitFault f1 = new ShortCircuitFault("B4", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND, true);
-        ShortCircuitFault f2 = new ShortCircuitFault("B2", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND, true);
+        List<CalculationLocation> faultsList = new ArrayList<>();
+        CalculationLocation f1 = new CalculationLocation("B4", true);
+        CalculationLocation f2 = new CalculationLocation("B2", true);
         faultsList.add(f1);
         faultsList.add(f2);
 
@@ -69,16 +69,15 @@ public class TheveninTest {
 
         TheveninEquivalentParameters.TheveninVoltageProfileType avp = TheveninEquivalentParameters.TheveninVoltageProfileType.CALCULATED;
         TheveninEquivalentParameters.TheveninPeriodType periodType = TheveninEquivalentParameters.TheveninPeriodType.THEVENIN_TRANSIENT;
-        ShortCircuitNormCourcirc shortCircuitNormCourcirc = new ShortCircuitNormCourcirc();
-        TheveninEquivalentParameters thParameters = new TheveninEquivalentParameters(acLoadFlowParameters, matrixFactory, faultsList, true, avp, periodType, false, additionalDataInfo, shortCircuitNormCourcirc); // check how to give a Network bus in input
+        TheveninEquivalentParameters thParameters = new TheveninEquivalentParameters(acLoadFlowParameters, matrixFactory, faultsList, true, avp, periodType, false, additionalDataInfo); // check how to give a Network bus in input
         TheveninEquivalent thEq = new TheveninEquivalent(network, thParameters);
 
         thEq.run();
 
-        assertEquals(0.0027661335620416884, thEq.getAdmittanceLinearResolution().results.get(1).getRthz11(), 0.000001);
-        assertEquals(0.16629396899928067, thEq.getAdmittanceLinearResolution().results.get(1).getXthz12(), 0.000001);
-        assertEquals(0.0030247992008329934, thEq.getAdmittanceLinearResolution().results.get(0).getRthz11(), 0.000001);
-        assertEquals(0.1833452236067607, thEq.getAdmittanceLinearResolution().results.get(0).getXthz12(), 0.000001);
+        assertEquals(0.0027661335620416884, thEq.getImpedanceLinearResolution().results.get(1).getRthz11(), 0.000001);
+        assertEquals(0.16629396899928067, thEq.getImpedanceLinearResolution().results.get(1).getXthz12(), 0.000001);
+        assertEquals(0.0030247992008329934, thEq.getImpedanceLinearResolution().results.get(0).getRthz11(), 0.000001);
+        assertEquals(0.1833452236067607, thEq.getImpedanceLinearResolution().results.get(0).getXthz12(), 0.000001);
         //assertEquals(0.16522876711663945, thEq.results.get(0).getDvr1().get(0), 0.000001);
 
     }
@@ -91,11 +90,11 @@ public class TheveninTest {
 
         AdditionalDataInfo additionalDataInfo = result.getValue();
 
-        List<ShortCircuitFault> faultsList = new ArrayList<>();
-        ShortCircuitFault f1 = new ShortCircuitFault("B2", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND, true);
-        ShortCircuitFault f2 = new ShortCircuitFault("B5", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND, true);
-        ShortCircuitFault f3 = new ShortCircuitFault("B7", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND, true);
-        ShortCircuitFault f4 = new ShortCircuitFault("B8", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND, true);
+        List<CalculationLocation> faultsList = new ArrayList<>();
+        CalculationLocation f1 = new CalculationLocation("B2", true);
+        CalculationLocation f2 = new CalculationLocation("B5", true);
+        CalculationLocation f3 = new CalculationLocation("B7", true);
+        CalculationLocation f4 = new CalculationLocation("B8", true);
         faultsList.add(f1);
         faultsList.add(f2);
         faultsList.add(f3);
@@ -106,17 +105,16 @@ public class TheveninTest {
 
         TheveninEquivalentParameters.TheveninVoltageProfileType avp = TheveninEquivalentParameters.TheveninVoltageProfileType.NOMINAL;
         TheveninEquivalentParameters.TheveninPeriodType periodType = TheveninEquivalentParameters.TheveninPeriodType.THEVENIN_TRANSIENT;
-        ShortCircuitNormCourcirc shortCircuitNormCourcirc = new ShortCircuitNormCourcirc();
-        TheveninEquivalentParameters thParameters = new TheveninEquivalentParameters(acLoadFlowParameters, matrixFactory, faultsList, true, avp, periodType, false, additionalDataInfo, shortCircuitNormCourcirc); // check how to give a Network bus in input
+        TheveninEquivalentParameters thParameters = new TheveninEquivalentParameters(acLoadFlowParameters, matrixFactory, faultsList, true, avp, periodType, false, additionalDataInfo); // check how to give a Network bus in input
         TheveninEquivalent thEq = new TheveninEquivalent(network, thParameters);
 
         thEq.run();
 
         // results here are with Sbase = 100 MVA we convert them into Sbase = 15 MVA to be in line with the reference doc result :
-        assertEquals(0.003683374391319212, thEq.getAdmittanceLinearResolution().results.get(0).getRthz11() * 15. / 100., 0.000001); //F1 : doc result = Zth(Sbase15) ~ 0.0036+j0.0712
-        assertEquals(0.07118802892811232, thEq.getAdmittanceLinearResolution().results.get(0).getXthz12() * 15. / 100., 0.000001);
-        assertEquals(0.019949496420349225, thEq.getAdmittanceLinearResolution().results.get(1).getRthz11() * 15. / 100., 0.000001); //F2 : doc result = Zth(Sbase15) ~ 0.0199+j0.2534
-        assertEquals(0.2534161781273357, thEq.getAdmittanceLinearResolution().results.get(1).getXthz12() * 15. / 100., 0.000001);
+        assertEquals(0.003683374391319212, thEq.getImpedanceLinearResolution().results.get(0).getRthz11() * 15. / 100., 0.000001); //F1 : doc result = Zth(Sbase15) ~ 0.0036+j0.0712
+        assertEquals(0.07118802892811232, thEq.getImpedanceLinearResolution().results.get(0).getXthz12() * 15. / 100., 0.000001);
+        assertEquals(0.019949496420349225, thEq.getImpedanceLinearResolution().results.get(1).getRthz11() * 15. / 100., 0.000001); //F2 : doc result = Zth(Sbase15) ~ 0.0199+j0.2534
+        assertEquals(0.2534161781273357, thEq.getImpedanceLinearResolution().results.get(1).getXthz12() * 15. / 100., 0.000001);
 
     }
 
@@ -128,11 +126,11 @@ public class TheveninTest {
 
         AdditionalDataInfo additionalDataInfo = result.getValue();
 
-        List<ShortCircuitFault> faultsList = new ArrayList<>();
-        ShortCircuitFault f1 = new ShortCircuitFault("B2", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND, true);
-        ShortCircuitFault f2 = new ShortCircuitFault("B5", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND, true);
-        ShortCircuitFault f3 = new ShortCircuitFault("B7", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND, true);
-        ShortCircuitFault f4 = new ShortCircuitFault("B8", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND, true);
+        List<CalculationLocation> faultsList = new ArrayList<>();
+        CalculationLocation f1 = new CalculationLocation("B2", true);
+        CalculationLocation f2 = new CalculationLocation("B5", true);
+        CalculationLocation f3 = new CalculationLocation("B7", true);
+        CalculationLocation f4 = new CalculationLocation("B8", true);
         faultsList.add(f1);
         faultsList.add(f2);
         faultsList.add(f3);
@@ -143,19 +141,18 @@ public class TheveninTest {
 
         TheveninEquivalentParameters.TheveninVoltageProfileType avp = TheveninEquivalentParameters.TheveninVoltageProfileType.NOMINAL;
         TheveninEquivalentParameters.TheveninPeriodType periodType = TheveninEquivalentParameters.TheveninPeriodType.THEVENIN_SUB_TRANSIENT;
-        ShortCircuitNormCourcirc shortCircuitNormCourcirc = new ShortCircuitNormCourcirc();
-        TheveninEquivalentParameters thParameters = new TheveninEquivalentParameters(acLoadFlowParameters, matrixFactory, faultsList, true, avp, periodType, false, additionalDataInfo, shortCircuitNormCourcirc); // check how to give a Network bus in input
+        TheveninEquivalentParameters thParameters = new TheveninEquivalentParameters(acLoadFlowParameters, matrixFactory, faultsList, true, avp, periodType, false, additionalDataInfo); // check how to give a Network bus in input
         TheveninEquivalent thEq = new TheveninEquivalent(network, thParameters);
 
         thEq.run();
 
         // results here are with Sbase = 100 MVA we convert them into Sbase = 15 MVA to be in line with the reference doc result :
-        assertEquals(0.0035803351059196286, thEq.getAdmittanceLinearResolution().results.get(0).getRthz11() * 15. / 100., 0.000001); //F1 : doc result = Zth(Sbase15) ~ 0.0035+j0.0666
-        assertEquals(0.0666102621341282, thEq.getAdmittanceLinearResolution().results.get(0).getXthz12() * 15. / 100., 0.000001);
-        assertEquals(0.01766454025768954, thEq.getAdmittanceLinearResolution().results.get(1).getRthz11() * 15. / 100., 0.000001); //F2 : doc result = Zth(Sbase15) ~ 0.0175+j0.2313
-        assertEquals(0.2313127317660599, thEq.getAdmittanceLinearResolution().results.get(1).getXthz12() * 15. / 100., 0.000001);
-        assertEquals(0.07967413109647312, thEq.getAdmittanceLinearResolution().results.get(2).getRthz11() * 15. / 100., 0.000001); //F2 : doc result = Zth(Sbase15) ~ 0.0796+j0.5
-        assertEquals(0.4997813218278794, thEq.getAdmittanceLinearResolution().results.get(2).getXthz12() * 15. / 100., 0.000001);
+        assertEquals(0.0035803351059196286, thEq.getImpedanceLinearResolution().results.get(0).getRthz11() * 15. / 100., 0.000001); //F1 : doc result = Zth(Sbase15) ~ 0.0035+j0.0666
+        assertEquals(0.0666102621341282, thEq.getImpedanceLinearResolution().results.get(0).getXthz12() * 15. / 100., 0.000001);
+        assertEquals(0.01766454025768954, thEq.getImpedanceLinearResolution().results.get(1).getRthz11() * 15. / 100., 0.000001); //F2 : doc result = Zth(Sbase15) ~ 0.0175+j0.2313
+        assertEquals(0.2313127317660599, thEq.getImpedanceLinearResolution().results.get(1).getXthz12() * 15. / 100., 0.000001);
+        assertEquals(0.07967413109647312, thEq.getImpedanceLinearResolution().results.get(2).getRthz11() * 15. / 100., 0.000001); //F2 : doc result = Zth(Sbase15) ~ 0.0796+j0.5
+        assertEquals(0.4997813218278794, thEq.getImpedanceLinearResolution().results.get(2).getXthz12() * 15. / 100., 0.000001);
 
     }
 

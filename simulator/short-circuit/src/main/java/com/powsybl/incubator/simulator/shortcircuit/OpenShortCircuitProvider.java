@@ -9,9 +9,6 @@ package com.powsybl.incubator.simulator.shortcircuit;
 import com.google.auto.service.AutoService;
 import com.google.common.base.Stopwatch;
 import com.powsybl.incubator.simulator.util.extensions.AdditionalDataInfo;
-import com.powsybl.incubator.simulator.util.ShortCircuitFault;
-import com.powsybl.incubator.simulator.util.ShortCircuitNormCourcirc;
-import com.powsybl.incubator.simulator.util.ShortCircuitResult;
 import com.powsybl.computation.ComputationManager;
 import com.powsybl.iidm.network.Bus;
 import com.powsybl.iidm.network.Network;
@@ -114,7 +111,7 @@ public class OpenShortCircuitProvider implements ShortCircuitAnalysisProvider {
             double xFault = fault.getXToGround();
             Bus bus = network.getBusBreakerView().getBus(elementId);
             String busId = bus.getId();
-            ShortCircuitFault sc = new ShortCircuitFault(busId, rFault, xFault, ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND, true);
+            ShortCircuitFault sc = new ShortCircuitFault(busId, true, busId, rFault, xFault, ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
             scList.add(sc);
 
             // TODO improve:
@@ -150,7 +147,6 @@ public class OpenShortCircuitProvider implements ShortCircuitAnalysisProvider {
         // TODO : see how this could be improved by allowing results per electrical bus on the short circuit provider
         for (Map.Entry<ShortCircuitFault, ShortCircuitResult> scResult : scbEngine.resultsPerFault.entrySet()) {
             ShortCircuitFault scFault = scResult.getKey();
-            String vlLocation = scFault.getShortCircuitVoltageLevelLocation();
             double ir = scResult.getValue().getIdx();
             double ii = scResult.getValue().getIdy();
             double icc = Math.sqrt(ir * ir + ii * ii);

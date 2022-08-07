@@ -4,8 +4,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.powsybl.incubator.simulator.util;
+package com.powsybl.incubator.simulator.shortcircuit;
 
+import com.powsybl.incubator.simulator.util.*;
 import com.powsybl.math.matrix.DenseMatrix;
 import com.powsybl.math.matrix.Matrix;
 import com.powsybl.math.matrix.MatrixFactory;
@@ -23,10 +24,6 @@ public class ShortCircuitResult {
 
     public class CommonSupportResult {
 
-        private String shortCircuitVoltageLevel2Location;
-
-        private String shortCircuitLfbus2Location;
-
         private LfBus lfBus2; // FIXME : might be wrongly overwritten in the "resultsPerFault" presentation
 
         private double eth2x;
@@ -37,10 +34,9 @@ public class ShortCircuitResult {
 
         private DenseMatrix v2Fortescue; //fortescue vector of voltages
 
-        CommonSupportResult(String shortCircuitVoltageLevel2Location, String shortCircuitLfbus2Location, LfBus lfBus2, double eth2x, double eth2y, double i2dx, double i2dy, double i2ox, double i2oy, double i2ix, double i2iy,
+        CommonSupportResult(LfBus lfBus2, double eth2x, double eth2y,
+                            double i2dx, double i2dy, double i2ox, double i2oy, double i2ix, double i2iy,
                             double dv2dx, double dv2dy, double dv2ox, double dv2oy, double dv2ix, double dv2iy) {
-            this.shortCircuitLfbus2Location = shortCircuitLfbus2Location;
-            this.shortCircuitVoltageLevel2Location = shortCircuitVoltageLevel2Location;
             this.lfBus2 = lfBus2;
             this.eth2x = eth2x;
             this.eth2y = eth2y;
@@ -75,10 +71,6 @@ public class ShortCircuitResult {
 
     private final MatrixFactory matrixFactory;
 
-    private String shortCircuitVoltageLevelLocation;
-
-    private String shortCircuitLfbusLocation;
-
     private LfBus lfBus; // FIXME : might be wrongly overwritten in the "resultsPerFault" presentation
 
     private LfNetwork lfNetwork;
@@ -87,9 +79,9 @@ public class ShortCircuitResult {
 
     private double rd; // equivalent direct impedance
 
-    private double xd; // equivalent direct impedance
+    private double xd;
 
-    private double ri; // equivalent direct impedance
+    private double ri; // equivalent inverse impedance
 
     private double xi;
 
@@ -108,25 +100,23 @@ public class ShortCircuitResult {
     private boolean isVoltageProfileUpdated;
     private List<DenseMatrix>  busNum2Dv;
 
-    private ShortCircuitEquationSystemFeeders eqSysFeedersDirect;
+    private EquationSystemFeeders eqSysFeedersDirect;
 
-    private ShortCircuitEquationSystemFeeders eqSysFeedersHomopolar;
+    private EquationSystemFeeders eqSysFeedersHomopolar;
 
-    private Map<LfBus, ShortCircuitResultBusFeeders> feedersAtBusResultsDirect;
+    private Map<LfBus, EquationSystemBusFeedersResult> feedersAtBusResultsDirect;
 
-    private Map<LfBus, ShortCircuitResultBusFeeders> feedersAtBusResultsHomopolar;
+    private Map<LfBus, EquationSystemBusFeedersResult> feedersAtBusResultsHomopolar;
 
     private ShortCircuitFault shortCircuitFault;
 
     private CommonSupportResult commonSupportResult; // used only for biphased with common support faults
 
-    public ShortCircuitResult(String shortCircuitVoltageLevelLocation, String shortCircuitLfbusLocation, ShortCircuitFault shortCircuitFault, double ifr, double ifi, LfBus lfBus, double rth, double xth, double ethr, double ethi, double dvr, double dvi,
-                              MatrixFactory matrixFactory, ShortCircuitEquationSystemFeeders eqSysFeeders, ShortCircuitNorm norm) {
-        //case of a triphased fault
-        //this.fault = fault;
+    public ShortCircuitResult(ShortCircuitFault shortCircuitFault, LfBus lfBus,
+                              double ifr, double ifi,
+                              double rth, double xth, double ethr, double ethi, double dvr, double dvi,
+                              MatrixFactory matrixFactory, EquationSystemFeeders eqSysFeeders, ShortCircuitNorm norm) {
         this.matrixFactory = Objects.requireNonNull(matrixFactory);
-        this.shortCircuitVoltageLevelLocation = shortCircuitVoltageLevelLocation;
-        this.shortCircuitLfbusLocation = shortCircuitLfbusLocation;
         this.lfBus = lfBus;
         this.eqSysFeedersDirect = eqSysFeeders;
         this.shortCircuitFault = shortCircuitFault;
@@ -180,16 +170,12 @@ public class ShortCircuitResult {
 
     }
 
-    public ShortCircuitResult(String shortCircuitVoltageLevelLocation, String shortCircuitLfbusLocation, ShortCircuitFault shortCircuitFault,
+    public ShortCircuitResult(ShortCircuitFault shortCircuitFault, LfBus lfBus,
                               double idx, double idy, double iox, double ioy, double iix, double iiy,
-                              LfBus lfBus, double rd, double xd, double ro, double xo, double ri, double xi,
+                              double rd, double xd, double ro, double xo, double ri, double xi,
                               double vdxinit, double vdyinit, double dvdx, double dvdy, double dvox, double dvoy, double dvix, double dviy,
-                              MatrixFactory matrixFactory, ShortCircuitEquationSystemFeeders eqSysFeedersDirect, ShortCircuitEquationSystemFeeders eqSysFeedersHomopolar, ShortCircuitNorm norm) {
-        //case of a triphased fault
-        //this.fault = fault;
+                              MatrixFactory matrixFactory, EquationSystemFeeders eqSysFeedersDirect, EquationSystemFeeders eqSysFeedersHomopolar, ShortCircuitNorm norm) {
         this.matrixFactory = Objects.requireNonNull(matrixFactory);
-        this.shortCircuitVoltageLevelLocation = shortCircuitVoltageLevelLocation;
-        this.shortCircuitLfbusLocation = shortCircuitLfbusLocation;
         this.lfBus = lfBus;
         this.eqSysFeedersDirect = eqSysFeedersDirect;
         this.eqSysFeedersHomopolar = eqSysFeedersHomopolar;
@@ -237,26 +223,27 @@ public class ShortCircuitResult {
 
     }
 
-    public ShortCircuitResult(String shortCircuitVoltageLevelLocation, String shortCircuitLfbusLocation, ShortCircuitFault shortCircuitFault,
+    public ShortCircuitResult(ShortCircuitFault shortCircuitFault, LfBus lfBus,
                               double idx, double idy, double iox, double ioy, double iix, double iiy,
-                              LfBus lfBus, double rd, double xd, double ro, double xo, double ri, double xi,
+                              double rd, double xd, double ro, double xo, double ri, double xi,
                               double vdxinit, double vdyinit, double dvdx, double dvdy, double dvox, double dvoy, double dvix, double dviy,
-                              MatrixFactory matrixFactory, ShortCircuitEquationSystemFeeders eqSysFeedersDirect, ShortCircuitEquationSystemFeeders eqSysFeedersHomopolar, ShortCircuitNorm norm,
+                              MatrixFactory matrixFactory, EquationSystemFeeders eqSysFeedersDirect, EquationSystemFeeders eqSysFeedersHomopolar, ShortCircuitNorm norm,
                               double i2dx, double i2dy, double i2ox, double i2oy, double i2ix, double i2iy,
                               double v2dxinit, double v2dyinit, double dv2dx, double dv2dy, double dv2ox, double dv2oy, double dv2ix, double dv2iy,
-                              LfBus lfBus2, String shortCircuitVoltageLevel2Location, String shortCircuitLfbus2Location) {
-        this(shortCircuitVoltageLevelLocation, shortCircuitLfbusLocation, shortCircuitFault,
+                              LfBus lfBus2) {
+        this(shortCircuitFault, lfBus,
                 idx, idy, iox, ioy, iix, iiy,
-                lfBus, rd, xd, ro, xo, ri, xi,
+                rd, xd, ro, xo, ri, xi,
                 vdxinit, vdyinit, dvdx, dvdy, dvox, dvoy, dvix, dviy,
                 matrixFactory, eqSysFeedersDirect, eqSysFeedersHomopolar, norm);
 
-        this.commonSupportResult = new CommonSupportResult(shortCircuitVoltageLevel2Location, shortCircuitLfbus2Location, lfBus2,
-                v2dxinit, v2dyinit, i2dx, i2dy, i2ox, i2oy, i2ix,  i2iy, dv2dx, dv2dy, dv2ox, dv2oy, dv2ix, dv2iy);
+        this.commonSupportResult = new CommonSupportResult(lfBus2, v2dxinit, v2dyinit,
+                i2dx, i2dy, i2ox, i2oy, i2ix,  i2iy,
+                dv2dx, dv2dy, dv2ox, dv2oy, dv2ix, dv2iy);
 
     }
 
-    public void updateVoltageResult() {
+    public void updateFeedersResult() {
         //System.out.println(" VL name = " + shortCircuitVoltageLevelLocation);
         //System.out.println(" bus name = " + shortCircuitLfbusLocation);
         //System.out.println(" Icc = " + getIcc());
@@ -279,19 +266,19 @@ public class ShortCircuitResult {
             feedersAtBusResultsDirect = new HashMap<>(); // TODO : homopolar
 
             for (LfBus bus : lfNetwork.getBuses()) {
-                int busNum = bus.getNum();
-                double dvx = busNum2Dv.get(busNum).get(2, 0);
-                double dvy = busNum2Dv.get(busNum).get(3, 0);
-                double vx = dvx + ethx;
-                double vy = dvy + ethy;
+                //int busNum = bus.getNum();
+                //double dvx = busNum2Dv.get(busNum).get(2, 0);
+                //double dvy = busNum2Dv.get(busNum).get(3, 0);
+                //double vx = dvx + ethx;
+                //double vy = dvy + ethy;
 
                 //System.out.println(" dVd(" + bus.getId() + ") = " + dvx + " + j(" + dvy + ")  Module = " + bus.getNominalV() * Math.sqrt(vx * vx + vy * vy));
                 //System.out.println(" dVo(" + bus.getId() + ") = " + bus2dv.get(busNum).get(0, 0) + " + j(" + bus2dv.get(busNum).get(1, 0) + ")");
                 //System.out.println(" dVi(" + bus.getId() + ") = " + bus2dv.get(busNum).get(4, 0) + " + j(" + bus2dv.get(busNum).get(5, 0) + ")");
 
                 // Init of feeder results
-                ShortCircuitEquationSystemBusFeeders busFeeders = eqSysFeedersDirect.busToFeeders.get(bus);
-                ShortCircuitResultBusFeeders resultBusFeeders = new ShortCircuitResultBusFeeders(busFeeders.getFeeders(), bus);
+                EquationSystemBusFeeders busFeeders = eqSysFeedersDirect.busToFeeders.get(bus);
+                EquationSystemBusFeedersResult resultBusFeeders = new EquationSystemBusFeedersResult(busFeeders.getFeeders(), bus);
                 feedersAtBusResultsDirect.put(bus, resultBusFeeders);  // TODO : homopolar
 
             }
@@ -318,8 +305,8 @@ public class ShortCircuitResult {
 
                     // Feeders :
                     // compute the sum of currents from branches at each bus
-                    ShortCircuitResultBusFeeders resultBus1Feeders = feedersAtBusResultsDirect.get(bus1); // TODO : homopolar
-                    ShortCircuitResultBusFeeders resultBus2Feeders = feedersAtBusResultsDirect.get(bus2); // TODO : homopolar
+                    EquationSystemBusFeedersResult resultBus1Feeders = feedersAtBusResultsDirect.get(bus1); // TODO : homopolar
+                    EquationSystemBusFeedersResult resultBus2Feeders = feedersAtBusResultsDirect.get(bus2); // TODO : homopolar
 
                     resultBus1Feeders.addIfeeders(i12.get(0, 0), i12.get(1, 0));
                     resultBus2Feeders.addIfeeders(i12.get(2, 0), i12.get(3, 0));
@@ -329,7 +316,7 @@ public class ShortCircuitResult {
 
             // computing feeders contribution
             for (LfBus bus : lfNetwork.getBuses()) {
-                ShortCircuitResultBusFeeders busFeeders = feedersAtBusResultsDirect.get(bus); // TODO : homopolar
+                EquationSystemBusFeedersResult busFeeders = feedersAtBusResultsDirect.get(bus); // TODO : homopolar
                 busFeeders.updateContributions();
             }
         }
@@ -371,18 +358,17 @@ public class ShortCircuitResult {
         return Math.sqrt(3) * getIcc() * lfBus.getV() * lfBus.getNominalV(); //TODO: check formula
     }
 
-    public void setVoltageProfileUpdate() {
+    public void setTrueVoltageProfileUpdate() {
         isVoltageProfileUpdated = true;
     }
 
-    public List<DenseMatrix> createEmptyFortescueVoltageVector(int nbBusses) {
+    public void createEmptyFortescueVoltageVector(int nbBusses) {
         List<DenseMatrix> busNum2Dv = new ArrayList<>();
         for (int i = 0;  i < nbBusses; i++) {
             DenseMatrix mdV = matrixFactory.create(6, 1, 6).toDense();
             busNum2Dv.add(mdV);
         }
         this.busNum2Dv = busNum2Dv;
-        return busNum2Dv;
     }
 
     public void fillVoltageInFortescueVector(int busNum, double dVdx, double dVdy) {
@@ -399,61 +385,8 @@ public class ShortCircuitResult {
         this.busNum2Dv.get(busNum).add(5, 0, dViy);
     }
 
-    public void setBusNum2Dv(List<DenseMatrix> busNum2Dv) {
-        this.busNum2Dv = busNum2Dv;
-    }
-
-    public void addLfNetwork(LfNetwork lfNetwork) {
+    public void setLfNetwork(LfNetwork lfNetwork) {
         this.lfNetwork = lfNetwork;
-    }
-
-    static DenseMatrix getFortescueMatrix(MatrixFactory matrixFactory) {
-
-        // [G1]   [ 1  1  1 ]   [Gh]
-        // [G2] = [ 1  a²  a] * [Gd]
-        // [G3]   [ 1  a  a²]   [Gi]
-
-        Matrix mFortescue = matrixFactory.create(6, 6, 6);
-        //column 1
-        mFortescue.add(0, 0, 1.);
-        mFortescue.add(1, 1, 1.);
-
-        mFortescue.add(2, 0, 1.);
-        mFortescue.add(3, 1, 1.);
-
-        mFortescue.add(4, 0, 1.);
-        mFortescue.add(5, 1, 1.);
-
-        //column 2
-        mFortescue.add(0, 2, 1.);
-        mFortescue.add(1, 3, 1.);
-
-        mFortescue.add(2, 2, 1. / 2.);
-        mFortescue.add(2, 3, -Math.sqrt(3.) / 2.);
-        mFortescue.add(3, 2, Math.sqrt(3.) / 2.);
-        mFortescue.add(3, 3, 1. / 2.);
-
-        mFortescue.add(4, 2, -1. / 2.);
-        mFortescue.add(4, 3, -Math.sqrt(3.) / 2.);
-        mFortescue.add(5, 2, Math.sqrt(3.) / 2.);
-        mFortescue.add(5, 3, -1. / 2.);
-
-        //column 3
-        mFortescue.add(0, 4, 1.);
-        mFortescue.add(1, 5, 1.);
-
-        mFortescue.add(2, 4, -1. / 2.);
-        mFortescue.add(2, 5, -Math.sqrt(3.) / 2.);
-        mFortescue.add(3, 4, Math.sqrt(3.) / 2.);
-        mFortescue.add(3, 5, -1. / 2.);
-
-        mFortescue.add(4, 4, 1. / 2.);
-        mFortescue.add(4, 5, -Math.sqrt(3.) / 2.);
-        mFortescue.add(5, 4, Math.sqrt(3.) / 2.);
-        mFortescue.add(5, 5, 1. / 2.);
-
-        return mFortescue.toDense();
-
     }
 
     static DenseMatrix getAdmittanceMatrixBranch(LfBranch branch, LfBus bus1, LfBus bus2, MatrixFactory matrixFactory,
@@ -528,9 +461,9 @@ public class ShortCircuitResult {
         double ix = 0.;
         for (LfBus bus : lfNetwork.getBuses()) {
             if (bus.getId().equals(busId)) {
-                ShortCircuitResultBusFeeders resultFeeder = feedersAtBusResultsDirect.get(bus); // TODO : homopolar
-                List<ShortCircuitResultFeeder> busFeedersResults = resultFeeder.getBusFeedersResults();
-                for (ShortCircuitResultFeeder feeder : busFeedersResults) {
+                EquationSystemBusFeedersResult resultFeeder = feedersAtBusResultsDirect.get(bus); // TODO : homopolar
+                List<EquationSystemResultFeeder> busFeedersResults = resultFeeder.getBusFeedersResults();
+                for (EquationSystemResultFeeder feeder : busFeedersResults) {
                     if (feeder.getId().equals(feederId)) {
                         ix = feeder.getIxContribution();
                     }

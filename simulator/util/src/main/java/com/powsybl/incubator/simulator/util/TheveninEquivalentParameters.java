@@ -37,8 +37,7 @@ public class TheveninEquivalentParameters {
 
     private final MatrixFactory matrixFactory;
 
-    //private final List<String> theveninLocations; // TODO: compute Thevenin for a list of nodes in input
-    private final List<ShortCircuitFault> theveninVoltageLevelLocation;
+    private final List<CalculationLocation> theveninCalculationLocation;
 
     private AdditionalDataInfo additionalDataInfo;
 
@@ -48,18 +47,15 @@ public class TheveninEquivalentParameters {
 
     private final TheveninPeriodType theveninPeriodType;
 
-    private ShortCircuitNorm norm;
-
-    public TheveninEquivalentParameters(AcLoadFlowParameters acLoadFlowParameters, MatrixFactory matrixFactory, List<ShortCircuitFault> voltageLevels, boolean voltageUpdate, TheveninVoltageProfileType theveninVoltageProfileType, TheveninPeriodType theveninPeriodType, boolean theveninIgnoreShunts, AdditionalDataInfo additionalDataInfo, ShortCircuitNorm norm) {
+    public TheveninEquivalentParameters(AcLoadFlowParameters acLoadFlowParameters, MatrixFactory matrixFactory, List<CalculationLocation> voltageLevels, boolean voltageUpdate, TheveninVoltageProfileType theveninVoltageProfileType, TheveninPeriodType theveninPeriodType, boolean theveninIgnoreShunts, AdditionalDataInfo additionalDataInfo) {
         this.acLoadFlowParameters = Objects.requireNonNull(acLoadFlowParameters);
         this.matrixFactory = Objects.requireNonNull(matrixFactory);
-        this.theveninVoltageLevelLocation = Objects.requireNonNull(voltageLevels);
+        this.theveninCalculationLocation = Objects.requireNonNull(voltageLevels);
         this.voltageUpdate = voltageUpdate;
         this.theveninIgnoreShunts = theveninIgnoreShunts;
         this.theveninVoltageProfileType = theveninVoltageProfileType;
         this.additionalDataInfo = additionalDataInfo;
         this.theveninPeriodType = theveninPeriodType;
-        this.norm = norm;
     }
 
     public AcLoadFlowParameters getAcLoadFlowParameters() {
@@ -70,8 +66,8 @@ public class TheveninEquivalentParameters {
         return matrixFactory;
     }
 
-    public List<ShortCircuitFault> getFaults() {
-        return theveninVoltageLevelLocation;
+    public List<CalculationLocation> getLocations() {
+        return theveninCalculationLocation;
     }
 
     public boolean isVoltageUpdate() {
@@ -94,7 +90,4 @@ public class TheveninEquivalentParameters {
         return theveninPeriodType;
     }
 
-    public ShortCircuitNorm getNorm() {
-        return norm;
-    }
 }

@@ -10,11 +10,8 @@ import com.powsybl.iidm.network.Network;
 import com.powsybl.incubator.simulator.util.*;
 import com.powsybl.math.matrix.DenseMatrix;
 import com.powsybl.openloadflow.network.LfBus;
-import org.apache.commons.math3.util.Pair;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,100 +32,93 @@ public class ShortCircuitBalancedEngine extends AbstractShortCircuitEngine {
             buildSystematicList(ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
         }
 
-        List<ShortCircuitFault> faultList = new ArrayList<>();
-        for (ShortCircuitFault scfe : parameters.getShortCircuitFaults()) {
-            String busName = scfe.getBusLocation();
-            Pair<String, Integer > branchFaultInfo = buildFaultBranchFromBusId(busName, network);
+        solverFaultList = buildFaultListsFromInputs().getKey();
 
-            if (branchFaultInfo.getKey().equals("")) {
-                // Bus not found in branches, try three windings transformers
-                branchFaultInfo = buildFaultT3WbranchFromBusId(busName, network);
-            }
-            if (scfe.getType() == ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND) {
-                scfe.setIidmBusInfo(branchFaultInfo);
-                faultList.add(scfe);
-            }
-        }
+        ImpedanceLinearResolutionParameters linearResolutionParameters = new ImpedanceLinearResolutionParameters(acLoadFlowParameters,
+                parameters.getMatrixFactory(), solverFaultList, parameters.isVoltageUpdate(), getAdmittanceVoltageProfileTypeFromParam(), getAdmittancePeriodTypeFromParam(), AdmittanceEquationSystem.AdmittanceType.ADM_THEVENIN,
+                parameters.isIgnoreShunts(), parameters.getAdditionalDataInfo());
 
-        AdmittanceLinearResolutionParameters linearResolutionParameters = new AdmittanceLinearResolutionParameters(acLoadFlowParameters,
-                parameters.getMatrixFactory(), faultList, parameters.isVoltageUpdate(), getAdmittanceVoltageProfileTypeFromParam(), getAdmittancePeriodTypeFromParam(), AdmittanceEquationSystem.AdmittanceType.ADM_THEVENIN,
-                parameters.isIgnoreShunts(), parameters.getAdditionalDataInfo(), parameters.getNorm());
-
-        AdmittanceLinearResolution directResolution = new AdmittanceLinearResolution(network,  linearResolutionParameters);
+        ImpedanceLinearResolution directResolution = new ImpedanceLinearResolution(network,  linearResolutionParameters);
 
         directResolution.run();
 
         //Build the ShortCircuit results using the Thevenin computation results
         resultsPerFault = new LinkedHashMap<>();
-        resultsAllBusses  = new ArrayList<>(); // TODO : see which one to keep depending onthe improvement of the short circuit API
         processAdmittanceLinearResolutionResults(directResolution);
 
     }
 
-    protected void processAdmittanceLinearResolutionResults(AdmittanceLinearResolution directResolution) {
+    protected void processAdmittanceLinearResolutionResults(ImpedanceLinearResolution directResolution) {
 
-        for (AdmittanceLinearResolution.AdmittanceLinearResolutionResult linearResolutionResult : directResolution.results) {
+        for (ImpedanceLinearResolution.ImpedanceLinearResolutionResult linearResolutionResult : directResolution.results) {
             LfBus bus = linearResolutionResult.getBus();
-            String tmpBusId = bus.getId();
-            ShortCircuitFault scf = null; // = parameters.getShortCircuitFaults().get(tmpVl);
-            for (ShortCircuitFault scfe : parameters.getShortCircuitFaults()) { //TODO : improve to avoid double loop
-                if (bus.getId().equals(scfe.getLfBusInfo())) {
-                    scf = scfe;
-                }
-            }
 
+            // For each contingency that matches the given bus of the linear resolution we compute:
             // If = Eth / (Zth + Zf) gives:
             //
             //        ethi*(xf+xth) + ethr*(rf+rth) + j*[ethi*(rf+rth) - ethr*(xf+xth)]
             // If = --------------------------------------------------------------------
             //                          (rf+rth)² + (xf+xth)²
             //
+
+            // values that does not change for a given bus in input
             double vxInit = linearResolutionResult.getEthr();
             double vyInit = linearResolutionResult.getEthi();
 
             double rth = linearResolutionResult.getRthz11();
             double xth = linearResolutionResult.getXthz12();
-            double rf = scf.getZfr();
-            double xf = scf.getZfi();
 
-            double denom = (rf + rth) * (rf + rth) + (xf + xth) * (xf + xth);
-            double ifr = (vyInit * (xf + xth) + vxInit * (rf + rth)) / denom;
-            double ifi = (vyInit * (rf + rth) - vxInit * (xf + xth)) / denom;
-            // The post-fault voltage values at faulted bus are computed as follow :
-            // [Vr] = [Vr_init] - ifr * [e_dVr] + ifi * [e_dVi]
-            // [Vi] = [Vi_init] - ifr * [e_dVi] - ifi * [e_dVr]
-            double dvr = -ifr * linearResolutionResult.getEnBus().get(0, 0) + ifi * linearResolutionResult.getEnBus().get(1, 0);
-            double dvi = -ifr * linearResolutionResult.getEnBus().get(1, 0) - ifi * linearResolutionResult.getEnBus().get(0, 0);
+            for (CalculationLocation calculationLocation : solverFaultList) {
+                ShortCircuitFault scfe = (ShortCircuitFault) calculationLocation; // TODO : better check but calculationLocation must be a ShortCircuitFault
+                ShortCircuitFault scf = null;
+                if (bus.getId().equals(scfe.getLfBusInfo())) {
+                    scf = scfe;
+                }
 
-            ShortCircuitResult res = new ShortCircuitResult(bus.getId(), tmpBusId, scf, ifr, ifi, bus, rth, xth, vxInit, vyInit, dvr, dvi, parameters.getMatrixFactory(), linearResolutionResult.getEqSysFeeders(), parameters.getNorm());
-            if (parameters.voltageUpdate) {
-                //we get the lfNetwork to process the results
-                res.addLfNetwork(directResolution.lfNetworkResult);
+                if (scf == null) {
+                    continue;
+                }
 
-                res.setVoltageProfileUpdate();
-                // The post-fault voltage values are computed as follow :
+                double rf = scf.getZfr();
+                double xf = scf.getZfi();
+
+                double denom = (rf + rth) * (rf + rth) + (xf + xth) * (xf + xth);
+                double ifr = (vyInit * (xf + xth) + vxInit * (rf + rth)) / denom;
+                double ifi = (vyInit * (rf + rth) - vxInit * (xf + xth)) / denom;
+                // The post-fault voltage values at faulted bus are computed as follow :
                 // [Vr] = [Vr_init] - ifr * [e_dVr] + ifi * [e_dVi]
                 // [Vi] = [Vi_init] - ifr * [e_dVi] - ifi * [e_dVr]
-                // we compute the delta values to be added to Vinit if we want the post-fault voltage :
-                int nbBusses = directResolution.lfNetworkResult.getBuses().size();
-                List<DenseMatrix> busNum2Dv = res.createEmptyFortescueVoltageVector(nbBusses);
+                double dvr = -ifr * linearResolutionResult.getEnBus().get(0, 0) + ifi * linearResolutionResult.getEnBus().get(1, 0);
+                double dvi = -ifr * linearResolutionResult.getEnBus().get(1, 0) - ifi * linearResolutionResult.getEnBus().get(0, 0);
 
-                for (Map.Entry<Integer, DenseMatrix> vd : linearResolutionResult.getDv().entrySet()) {
-                    int busNum = vd.getKey();
-                    double edVr = vd.getValue().get(0, 0);
-                    double edVi = vd.getValue().get(1, 0);
-                    //System.out.println(" dVth(" + vdr.getKey() + ") = " + edVr + " + j(" + edVi + ")");
-                    double deltaVr = -ifr * edVr + ifi * edVi;
-                    double deltaVi = -ifr * edVi - ifi * edVr;
+                ShortCircuitResult res = new ShortCircuitResult(scf, bus, ifr, ifi, rth, xth, vxInit, vyInit, dvr, dvi, parameters.getMatrixFactory(), linearResolutionResult.getEqSysFeeders(), parameters.getNorm());
+                if (parameters.voltageUpdate) {
+                    //we get the lfNetwork to process the results
+                    res.setLfNetwork(directResolution.lfNetworkResult);
 
-                    res.fillVoltageInFortescueVector(busNum, deltaVr, deltaVi);
+                    res.setTrueVoltageProfileUpdate();
+                    // The post-fault voltage values are computed as follow :
+                    // [Vr] = [Vr_init] - ifr * [e_dVr] + ifi * [e_dVi]
+                    // [Vi] = [Vi_init] - ifr * [e_dVi] - ifi * [e_dVr]
+                    // we compute the delta values to be added to Vinit if we want the post-fault voltage :
+                    int nbBusses = directResolution.lfNetworkResult.getBuses().size();
+                    res.createEmptyFortescueVoltageVector(nbBusses);
+
+                    for (Map.Entry<Integer, DenseMatrix> vd : linearResolutionResult.getDv().entrySet()) {
+                        int busNum = vd.getKey();
+                        double edVr = vd.getValue().get(0, 0);
+                        double edVi = vd.getValue().get(1, 0);
+                        //System.out.println(" dVth(" + vdr.getKey() + ") = " + edVr + " + j(" + edVi + ")");
+                        double deltaVr = -ifr * edVr + ifi * edVi;
+                        double deltaVi = -ifr * edVi - ifi * edVr;
+
+                        res.fillVoltageInFortescueVector(busNum, deltaVr, deltaVi);
+                    }
                 }
-            }
 
-            resultsPerFault.put(scf, res);
-            resultsAllBusses.add(res);
-            res.updateVoltageResult();
+                res.updateFeedersResult(); // feeders are updated only if voltageUpdate is made
+                resultsPerFault.put(scf, res);
+            }
         }
     }
-
 }

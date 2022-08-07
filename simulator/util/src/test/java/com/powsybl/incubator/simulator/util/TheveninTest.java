@@ -74,10 +74,10 @@ class TheveninTest {
 
         thEq.run();
 
-        assertEquals(0.0027661335620416884, thEq.getAdmittanceLinearResolution().results.get(1).getRthz11(), 0.000001);
-        assertEquals(0.16629396899928067, thEq.getAdmittanceLinearResolution().results.get(1).getXthz12(), 0.000001);
-        assertEquals(0.0030247992008329934, thEq.getAdmittanceLinearResolution().results.get(0).getRthz11(), 0.000001);
-        assertEquals(0.1833452236067607, thEq.getAdmittanceLinearResolution().results.get(0).getXthz12(), 0.000001);
+        assertEquals(0.0027661335620416884, thEq.getImpedanceLinearResolution().results.get(1).getRthz11(), 0.000001);
+        assertEquals(0.16629396899928067, thEq.getImpedanceLinearResolution().results.get(1).getXthz12(), 0.000001);
+        assertEquals(0.0030247992008329934, thEq.getImpedanceLinearResolution().results.get(0).getRthz11(), 0.000001);
+        assertEquals(0.1833452236067607, thEq.getImpedanceLinearResolution().results.get(0).getXthz12(), 0.000001);
         //assertEquals(0.16522876711663945, thEq.results.get(0).getDvr1().get(0), 0.000001);
 
     }
@@ -111,10 +111,10 @@ class TheveninTest {
         thEq.run();
 
         // results here are with Sbase = 100 MVA we convert them into Sbase = 15 MVA to be in line with the reference doc result :
-        assertEquals(0.003683374391319212, thEq.getAdmittanceLinearResolution().results.get(0).getRthz11() * 15. / 100., 0.000001); //F1 : doc result = Zth(Sbase15) ~ 0.0036+j0.0712
-        assertEquals(0.07118802892811232, thEq.getAdmittanceLinearResolution().results.get(0).getXthz12() * 15. / 100., 0.000001);
-        assertEquals(0.019949496420349225, thEq.getAdmittanceLinearResolution().results.get(1).getRthz11() * 15. / 100., 0.000001); //F2 : doc result = Zth(Sbase15) ~ 0.0199+j0.2534
-        assertEquals(0.2534161781273357, thEq.getAdmittanceLinearResolution().results.get(1).getXthz12() * 15. / 100., 0.000001);
+        assertEquals(0.003683374391319212, thEq.getImpedanceLinearResolution().results.get(0).getRthz11() * 15. / 100., 0.000001); //F1 : doc result = Zth(Sbase15) ~ 0.0036+j0.0712
+        assertEquals(0.07118802892811232, thEq.getImpedanceLinearResolution().results.get(0).getXthz12() * 15. / 100., 0.000001);
+        assertEquals(0.019949496420349225, thEq.getImpedanceLinearResolution().results.get(1).getRthz11() * 15. / 100., 0.000001); //F2 : doc result = Zth(Sbase15) ~ 0.0199+j0.2534
+        assertEquals(0.2534161781273357, thEq.getImpedanceLinearResolution().results.get(1).getXthz12() * 15. / 100., 0.000001);
 
     }
 
@@ -147,12 +147,12 @@ class TheveninTest {
         thEq.run();
 
         // results here are with Sbase = 100 MVA we convert them into Sbase = 15 MVA to be in line with the reference doc result :
-        assertEquals(0.0035803351059196286, thEq.getAdmittanceLinearResolution().results.get(0).getRthz11() * 15. / 100., 0.000001); //F1 : doc result = Zth(Sbase15) ~ 0.0035+j0.0666
-        assertEquals(0.0666102621341282, thEq.getAdmittanceLinearResolution().results.get(0).getXthz12() * 15. / 100., 0.000001);
-        assertEquals(0.01766454025768954, thEq.getAdmittanceLinearResolution().results.get(1).getRthz11() * 15. / 100., 0.000001); //F2 : doc result = Zth(Sbase15) ~ 0.0175+j0.2313
-        assertEquals(0.2313127317660599, thEq.getAdmittanceLinearResolution().results.get(1).getXthz12() * 15. / 100., 0.000001);
-        assertEquals(0.07967413109647312, thEq.getAdmittanceLinearResolution().results.get(2).getRthz11() * 15. / 100., 0.000001); //F2 : doc result = Zth(Sbase15) ~ 0.0796+j0.5
-        assertEquals(0.4997813218278794, thEq.getAdmittanceLinearResolution().results.get(2).getXthz12() * 15. / 100., 0.000001);
+        assertEquals(0.0035803351059196286, thEq.getImpedanceLinearResolution().results.get(0).getRthz11() * 15. / 100., 0.000001); //F1 : doc result = Zth(Sbase15) ~ 0.0035+j0.0666
+        assertEquals(0.0666102621341282, thEq.getImpedanceLinearResolution().results.get(0).getXthz12() * 15. / 100., 0.000001);
+        assertEquals(0.01766454025768954, thEq.getImpedanceLinearResolution().results.get(1).getRthz11() * 15. / 100., 0.000001); //F2 : doc result = Zth(Sbase15) ~ 0.0175+j0.2313
+        assertEquals(0.2313127317660599, thEq.getImpedanceLinearResolution().results.get(1).getXthz12() * 15. / 100., 0.000001);
+        assertEquals(0.07967413109647312, thEq.getImpedanceLinearResolution().results.get(2).getRthz11() * 15. / 100., 0.000001); //F2 : doc result = Zth(Sbase15) ~ 0.0796+j0.5
+        assertEquals(0.4997813218278794, thEq.getImpedanceLinearResolution().results.get(2).getXthz12() * 15. / 100., 0.000001);
 
     }
 

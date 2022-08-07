@@ -11,10 +11,6 @@ import com.powsybl.iidm.network.Bus;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.ThreeWindingsTransformer;
 import com.powsybl.openloadflow.ac.outerloop.AcLoadFlowParameters;
-import com.powsybl.openloadflow.network.FirstSlackBusSelector;
-import com.powsybl.openloadflow.network.LfNetwork;
-import com.powsybl.openloadflow.network.LfNetworkParameters;
-import com.powsybl.openloadflow.network.impl.LfNetworkLoaderImpl;
 import org.apache.commons.math3.util.Pair;
 
 import java.util.ArrayList;
@@ -26,31 +22,24 @@ import java.util.Objects;
  */
 public class TheveninEquivalent {
 
-    private final TheveninEquivalentParameters parameters;
-
     private final Network network;
 
-    private final List<LfNetwork> networks;
+    private final TheveninEquivalentParameters parameters;
 
-    public ImpedanceLinearResolution admittanceLinearResolution;
+    public ImpedanceLinearResolution impedanceLinearResolution;
 
     public TheveninEquivalent(Network network, TheveninEquivalentParameters parameters) {
         this.network = Objects.requireNonNull(network);
-        this.networks = LfNetwork.load(network, new LfNetworkLoaderImpl(), new LfNetworkParameters(new FirstSlackBusSelector()));
         this.parameters = Objects.requireNonNull(parameters);
+        impedanceLinearResolution = new ImpedanceLinearResolution(network, generateAdmittanceLinearResolutionParam(network, parameters));
     }
 
-    public ImpedanceLinearResolution getAdmittanceLinearResolution() {
-        return admittanceLinearResolution;
+    public ImpedanceLinearResolution getImpedanceLinearResolution() {
+        return impedanceLinearResolution;
     }
 
     public void run() {
-
-        ImpedanceLinearResolutionParameters parameters = generateAdmittanceLinearResolutionParam();
-        ImpedanceLinearResolution thEq = new ImpedanceLinearResolution(network, parameters);
-        thEq.run();
-
-        this.admittanceLinearResolution = thEq;
+        impedanceLinearResolution.run();
 
     }
 
@@ -119,7 +108,7 @@ public class TheveninEquivalent {
         return new Pair<>(branchId, legNum);
     }
 
-    private ImpedanceLinearResolutionParameters generateAdmittanceLinearResolutionParam() {
+    private static ImpedanceLinearResolutionParameters generateAdmittanceLinearResolutionParam(Network network, TheveninEquivalentParameters parameters) {
 
         boolean voltageUpdate = parameters.isVoltageUpdate(); // TODO: check that in example, no voltage update is asked
 

@@ -8,8 +8,6 @@ package com.powsybl.incubator.simulator.shortcircuit;
 
 import com.powsybl.incubator.simulator.util.*;
 import com.powsybl.math.matrix.DenseMatrix;
-import com.powsybl.math.matrix.Matrix;
-import com.powsybl.math.matrix.MatrixFactory;
 import com.powsybl.openloadflow.network.LfBranch;
 import com.powsybl.openloadflow.network.LfBus;
 import com.powsybl.openloadflow.network.LfNetwork;
@@ -41,7 +39,7 @@ public class ShortCircuitResult {
             this.eth2x = eth2x;
             this.eth2y = eth2y;
 
-            Matrix mI2 = matrixFactory.create(6, 1, 6);
+            DenseMatrix mI2 = new DenseMatrix(6, 1);
             mI2.add(0, 0, i2ox);
             mI2.add(1, 0, i2oy);
             mI2.add(2, 0, i2dx);
@@ -58,7 +56,7 @@ public class ShortCircuitResult {
             double vix = dv2ix;
             double viy = dv2iy;
 
-            Matrix mV2 = matrixFactory.create(6, 1, 6);
+            DenseMatrix mV2 = new DenseMatrix(6, 1);
             mV2.add(0, 0, vhx);
             mV2.add(1, 0, vhy);
             mV2.add(2, 0, vdx);
@@ -68,8 +66,6 @@ public class ShortCircuitResult {
             this.v2Fortescue = mV2.toDense();
         }
     }
-
-    private final MatrixFactory matrixFactory;
 
     private LfBus lfBus; // FIXME : might be wrongly overwritten in the "resultsPerFault" presentation
 
@@ -115,8 +111,7 @@ public class ShortCircuitResult {
     public ShortCircuitResult(ShortCircuitFault shortCircuitFault, LfBus lfBus,
                               double ifr, double ifi,
                               double rth, double xth, double ethr, double ethi, double dvr, double dvi,
-                              MatrixFactory matrixFactory, EquationSystemFeeders eqSysFeeders, ShortCircuitNorm norm) {
-        this.matrixFactory = Objects.requireNonNull(matrixFactory);
+                              EquationSystemFeeders eqSysFeeders, ShortCircuitNorm norm) {
         this.lfBus = lfBus;
         this.eqSysFeedersDirect = eqSysFeeders;
         this.shortCircuitFault = shortCircuitFault;
@@ -140,7 +135,7 @@ public class ShortCircuitResult {
         double ihx = 0.;
         double ihy = 0.;
 
-        Matrix mI = matrixFactory.create(6, 1, 6);
+        DenseMatrix mI = new DenseMatrix(6, 1);
         mI.add(0, 0, ihx);
         mI.add(1, 0, ihy);
         mI.add(2, 0, idx);
@@ -157,7 +152,7 @@ public class ShortCircuitResult {
         double vix = 0.;
         double viy = 0.;
 
-        Matrix mV = matrixFactory.create(6, 1, 6);
+        DenseMatrix mV = new DenseMatrix(6, 1);
         mV.add(0, 0, vhx);
         mV.add(1, 0, vhy);
         mV.add(2, 0, vdx);
@@ -174,8 +169,7 @@ public class ShortCircuitResult {
                               double idx, double idy, double iox, double ioy, double iix, double iiy,
                               double rd, double xd, double ro, double xo, double ri, double xi,
                               double vdxinit, double vdyinit, double dvdx, double dvdy, double dvox, double dvoy, double dvix, double dviy,
-                              MatrixFactory matrixFactory, EquationSystemFeeders eqSysFeedersDirect, EquationSystemFeeders eqSysFeedersHomopolar, ShortCircuitNorm norm) {
-        this.matrixFactory = Objects.requireNonNull(matrixFactory);
+                              EquationSystemFeeders eqSysFeedersDirect, EquationSystemFeeders eqSysFeedersHomopolar, ShortCircuitNorm norm) {
         this.lfBus = lfBus;
         this.eqSysFeedersDirect = eqSysFeedersDirect;
         this.eqSysFeedersHomopolar = eqSysFeedersHomopolar;
@@ -193,7 +187,7 @@ public class ShortCircuitResult {
         this.ethy = vdyinit;
 
         //construction of the fortescue vector iFortescue = t[Ih, Id, Ii]
-        Matrix mI = matrixFactory.create(6, 1, 6);
+        DenseMatrix mI = new DenseMatrix(6, 1);
         mI.add(0, 0, iox);
         mI.add(1, 0, ioy);
         mI.add(2, 0, idx);
@@ -210,7 +204,7 @@ public class ShortCircuitResult {
         double vix = dvix;
         double viy = dviy;
 
-        Matrix mV = matrixFactory.create(6, 1, 6);
+        DenseMatrix mV = new DenseMatrix(6, 1);
         mV.add(0, 0, vhx);
         mV.add(1, 0, vhy);
         mV.add(2, 0, vdx);
@@ -227,7 +221,7 @@ public class ShortCircuitResult {
                               double idx, double idy, double iox, double ioy, double iix, double iiy,
                               double rd, double xd, double ro, double xo, double ri, double xi,
                               double vdxinit, double vdyinit, double dvdx, double dvdy, double dvox, double dvoy, double dvix, double dviy,
-                              MatrixFactory matrixFactory, EquationSystemFeeders eqSysFeedersDirect, EquationSystemFeeders eqSysFeedersHomopolar, ShortCircuitNorm norm,
+                              EquationSystemFeeders eqSysFeedersDirect, EquationSystemFeeders eqSysFeedersHomopolar, ShortCircuitNorm norm,
                               double i2dx, double i2dy, double i2ox, double i2oy, double i2ix, double i2iy,
                               double v2dxinit, double v2dyinit, double dv2dx, double dv2dy, double dv2ox, double dv2oy, double dv2ix, double dv2iy,
                               LfBus lfBus2) {
@@ -235,7 +229,7 @@ public class ShortCircuitResult {
                 idx, idy, iox, ioy, iix, iiy,
                 rd, xd, ro, xo, ri, xi,
                 vdxinit, vdyinit, dvdx, dvdy, dvox, dvoy, dvix, dviy,
-                matrixFactory, eqSysFeedersDirect, eqSysFeedersHomopolar, norm);
+                eqSysFeedersDirect, eqSysFeedersHomopolar, norm);
 
         this.commonSupportResult = new CommonSupportResult(lfBus2, v2dxinit, v2dyinit,
                 i2dx, i2dy, i2ox, i2oy, i2ix,  i2iy,
@@ -287,14 +281,14 @@ public class ShortCircuitResult {
                 LfBus bus1 = branch.getBus1();
                 LfBus bus2 = branch.getBus2();
                 if (bus1 != null && bus2 != null) {
-                    DenseMatrix yd12 = getAdmittanceMatrixBranch(branch, bus1, bus2, matrixFactory, AdmittanceEquationSystem.AdmittanceType.ADM_THEVENIN);
+                    DenseMatrix yd12 = getAdmittanceMatrixBranch(branch, bus1, bus2, AdmittanceEquationSystem.AdmittanceType.ADM_THEVENIN);
                     int busNum1 = bus1.getNum();
                     double dvx1 = busNum2Dv.get(busNum1).get(2, 0);
                     double dvy1 = busNum2Dv.get(busNum1).get(3, 0);
                     int busNum2 = bus2.getNum();
                     double dvx2 = busNum2Dv.get(busNum2).get(2, 0);
                     double dvy2 = busNum2Dv.get(busNum2).get(3, 0);
-                    DenseMatrix v12 = matrixFactory.create(4, 1, 4).toDense();
+                    DenseMatrix v12 = new DenseMatrix(4, 1);
                     v12.add(0, 0, dvx1 + 0.); //TODO : replace 1. by initial value
                     v12.add(1, 0, dvy1 + 0.); //TODO : replace 0. by initial value
                     v12.add(2, 0, dvx2 + 0.); //TODO : replace 1. by initial value
@@ -365,7 +359,7 @@ public class ShortCircuitResult {
     public void createEmptyFortescueVoltageVector(int nbBusses) {
         List<DenseMatrix> busNum2Dv = new ArrayList<>();
         for (int i = 0;  i < nbBusses; i++) {
-            DenseMatrix mdV = matrixFactory.create(6, 1, 6).toDense();
+            DenseMatrix mdV = new DenseMatrix(6, 1);
             busNum2Dv.add(mdV);
         }
         this.busNum2Dv = busNum2Dv;
@@ -389,7 +383,7 @@ public class ShortCircuitResult {
         this.lfNetwork = lfNetwork;
     }
 
-    static DenseMatrix getAdmittanceMatrixBranch(LfBranch branch, LfBus bus1, LfBus bus2, MatrixFactory matrixFactory,
+    static DenseMatrix getAdmittanceMatrixBranch(LfBranch branch, LfBus bus1, LfBus bus2,
                                                  AdmittanceEquationSystem.AdmittanceType admittanceType) {
 
         // TODO : code duplicated with the admittance equation system, should be un-duplicated
@@ -434,7 +428,7 @@ public class ShortCircuitResult {
             b2b21sum = b2b21sum * AdmittanceConstants.COEF_XO_XD;
         }
 
-        DenseMatrix mAdmittance = matrixFactory.create(4, 4, 16).toDense();
+        DenseMatrix mAdmittance = new DenseMatrix(4, 4);
         mAdmittance.add(0, 0, g1g12sum);
         mAdmittance.add(0, 1, -b1b12sum);
         mAdmittance.add(0, 2, -g12);

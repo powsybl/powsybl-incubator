@@ -91,7 +91,7 @@ public class ShortCircuitBalancedEngine extends AbstractShortCircuitEngine {
                 double dvr = -ifr * linearResolutionResult.getEnBus().get(0, 0) + ifi * linearResolutionResult.getEnBus().get(1, 0);
                 double dvi = -ifr * linearResolutionResult.getEnBus().get(1, 0) - ifi * linearResolutionResult.getEnBus().get(0, 0);
 
-                ShortCircuitResult res = new ShortCircuitResult(scf, bus, ifr, ifi, rth, xth, vxInit, vyInit, dvr, dvi, parameters.getMatrixFactory(), linearResolutionResult.getEqSysFeeders(), parameters.getNorm());
+                ShortCircuitResult res = new ShortCircuitResult(scf, bus, ifr, ifi, rth, xth, vxInit, vyInit, dvr, dvi, linearResolutionResult.getEqSysFeeders(), parameters.getNorm());
                 if (parameters.voltageUpdate) {
                     //we get the lfNetwork to process the results
                     res.setLfNetwork(directResolution.lfNetworkResult);

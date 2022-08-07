@@ -6,8 +6,7 @@
  */
 package com.powsybl.incubator.simulator.shortcircuit;
 
-import com.powsybl.math.matrix.Matrix;
-import com.powsybl.math.matrix.MatrixFactory;
+import com.powsybl.math.matrix.DenseMatrix;
 
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
@@ -15,8 +14,8 @@ import com.powsybl.math.matrix.MatrixFactory;
 public class BiphasedGroundShortCircuitCalculator extends AbstractShortCircuitCalculator {
 
     public BiphasedGroundShortCircuitCalculator(double rdf, double xdf, double rof, double xof, double rg, double xg,
-                                            double initVx, double initVy, MatrixFactory mf) {
-        super(rdf, xdf, rof, xof, rg, xg, initVx, initVy, mf);
+                                            double initVx, double initVy) {
+        super(rdf, xdf, rof, xof, rg, xg, initVx, initVy);
 
     }
 
@@ -58,8 +57,8 @@ public class BiphasedGroundShortCircuitCalculator extends AbstractShortCircuitCa
         // From computed Ic1 we get complex values : I1o, I1d, I1i, I2o, I2d, I2i using step 1 formulas expressed with Ic1
         // Then compute the voltages from current values
 
-        Matrix zof = getZ(rof, xof, mf);
-        Matrix zdf = getZ(rdf, xdf, mf);
+        DenseMatrix zof = getZ(rof, xof);
+        DenseMatrix zdf = getZ(rdf, xdf);
 
         //         (zof + zdf) * [Vinit]
         // Id = ---------------------------
@@ -77,29 +76,29 @@ public class BiphasedGroundShortCircuitCalculator extends AbstractShortCircuitCa
         // Va = ---------------------
         //          Zdf + 2 * Zof
 
-        Matrix vdInit = mf.create(2, 1, 2);
+        DenseMatrix vdInit = new DenseMatrix(2, 1);
         vdInit.add(0, 0, initVx);
         vdInit.add(1, 0, initVy);
 
-        Matrix twoId = getMatrixByType(BlocType.Id, 2., mf);
-        Matrix minusId = getMatrixByType(BlocType.Id, -1., mf);
-        Matrix threeId = getMatrixByType(BlocType.Id, 3., mf);
+        DenseMatrix twoId = getMatrixByType(BlocType.Id, 2.);
+        DenseMatrix minusId = getMatrixByType(BlocType.Id, -1.);
+        DenseMatrix threeId = getMatrixByType(BlocType.Id, 3.);
 
-        Matrix twoZof = twoId.times(zof);
-        Matrix zdf2Zof = addMatrices22(zdf.toDense(), twoZof.toDense(), mf);
-        Matrix zdfZof = addMatrices22(zdf.toDense(), zof.toDense(), mf);
-        Matrix minusZof = zof.times(minusId);
-        Matrix minusZdf = zdf.times(minusId);
+        DenseMatrix twoZof = twoId.times(zof).toDense();
+        DenseMatrix zdf2Zof = addMatrices22(zdf.toDense(), twoZof.toDense());
+        DenseMatrix zdfZof = addMatrices22(zdf.toDense(), zof.toDense());
+        DenseMatrix minusZof = zof.times(minusId).toDense();
+        DenseMatrix minusZdf = zdf.times(minusId).toDense();
 
-        Matrix numId = zdfZof.times(vdInit);
-        Matrix numIo = minusZdf.times(vdInit);
-        Matrix numIi = minusZof.times(vdInit);
+        DenseMatrix numId = zdfZof.times(vdInit).toDense();
+        DenseMatrix numIo = minusZdf.times(vdInit).toDense();
+        DenseMatrix numIi = minusZof.times(vdInit).toDense();
 
-        Matrix demonI = zdf.times(zdf2Zof);
-        Matrix invDemonI = getInvZt(demonI, mf);
+        DenseMatrix demonI = zdf.times(zdf2Zof).toDense();
+        DenseMatrix invDemonI = getInvZt(demonI.get(0, 0), demonI.get(1, 0));
 
-        mId = invDemonI.times(numId);
-        mIo = invDemonI.times(numIo);
-        mIi = invDemonI.times(numIi);
+        mId = invDemonI.times(numId).toDense();
+        mIo = invDemonI.times(numIo).toDense();
+        mIi = invDemonI.times(numIi).toDense();
     }
 }

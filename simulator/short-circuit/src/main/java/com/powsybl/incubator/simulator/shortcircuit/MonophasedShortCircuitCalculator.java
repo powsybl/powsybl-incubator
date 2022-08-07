@@ -6,8 +6,7 @@
  */
 package com.powsybl.incubator.simulator.shortcircuit;
 
-import com.powsybl.math.matrix.Matrix;
-import com.powsybl.math.matrix.MatrixFactory;
+import com.powsybl.math.matrix.DenseMatrix;
 
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
@@ -15,8 +14,8 @@ import com.powsybl.math.matrix.MatrixFactory;
 public class MonophasedShortCircuitCalculator extends AbstractShortCircuitCalculator {
 
     public MonophasedShortCircuitCalculator(double rdf, double xdf, double rof, double xof, double rg, double xg,
-                                            double initVx, double initVy, MatrixFactory mf) {
-        super(rdf, xdf, rof, xof, rg, xg, initVx, initVy, mf);
+                                            double initVx, double initVy) {
+        super(rdf, xdf, rof, xof, rg, xg, initVx, initVy);
 
     }
 
@@ -76,17 +75,17 @@ public class MonophasedShortCircuitCalculator extends AbstractShortCircuitCalcul
         // [icx] = inv([Zt]) * [a] * [vdx] = ------------ * [ rt xt ] * [ -1/2  -sqrt(3)/2 ] * [vdx]
         // [icy]                     [vdy]   (rt² + xt²)    [-xt rt ]   [ sqrt(3)/2  -1/2  ]   [vdy]
 
-        Matrix vdInit = mf.create(2, 1, 2);
+        DenseMatrix vdInit = new DenseMatrix(2, 1);
         vdInit.add(0, 0, initVx);
         vdInit.add(1, 0, initVy);
 
-        Matrix ma = getMatrixByType(BlocType.A, 1.0, mf);
-        Matrix ma2 = getMatrixByType(BlocType.A2, 1.0, mf);
+        DenseMatrix ma = getMatrixByType(BlocType.A, 1.0);
+        DenseMatrix ma2 = getMatrixByType(BlocType.A2, 1.0);
 
-        Matrix invZt = getInvZt(rt, xt, mf);
+        DenseMatrix invZt = getInvZt(rt, xt);
 
-        Matrix tmpaVd = ma.times(vdInit);
-        Matrix mIc = invZt.times(tmpaVd);
+        DenseMatrix tmpaVd = ma.times(vdInit).toDense();
+        DenseMatrix mIc = invZt.times(tmpaVd).toDense();
 
         System.out.println(" Vinit = " + initVx + " + j(" + initVy + ")");
         System.out.println(" Ic = " + mIc.toDense().get(0, 0) + " + j(" + mIc.toDense().get(1, 0) + ")");
@@ -108,11 +107,11 @@ public class MonophasedShortCircuitCalculator extends AbstractShortCircuitCalcul
 
         //double icy = (-rt * (v1dxInit * Math.sqrt(3) - v1dyInit) + xt * (v1dxInit + v1dyInit * Math.sqrt(3))) / (2 * detZt);
 
-        Matrix mIdiv3 = getMatrixByType(BlocType.Id, 1. / 3., mf);
+        DenseMatrix mIdiv3 = getMatrixByType(BlocType.Id, 1. / 3.);
 
-        mIo = mIdiv3.times(mIc);
-        mId = ma2.times(mIo);
-        mIi = ma.times(mIo);
+        mIo = mIdiv3.times(mIc).toDense();
+        mId = ma2.times(mIo).toDense();
+        mIi = ma.times(mIo).toDense();
 
     }
 }

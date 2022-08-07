@@ -22,6 +22,8 @@ import com.powsybl.openloadflow.network.LfNetwork;
 import com.powsybl.openloadflow.network.LfNetworkParameters;
 import com.powsybl.openloadflow.network.impl.LfNetworkLoaderImpl;
 import org.apache.commons.math3.util.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -29,6 +31,9 @@ import java.util.*;
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
 public abstract class AbstractShortCircuitEngine {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractShortCircuitEngine.class);
+
     protected final Network network;
 
     protected final ShortCircuitEngineParameters parameters;
@@ -162,7 +167,7 @@ public abstract class AbstractShortCircuitEngine {
         }
 
         if (!isFound) {
-            System.out.println(" input CC Bus " +  busId + " could not be associated with a bipole");
+            LOGGER.warn(" input CC Bus " +  busId + " could not be associated with a bipole");
         }
 
         return new Pair<>(branchId, branchSide);
@@ -198,7 +203,7 @@ public abstract class AbstractShortCircuitEngine {
         }
 
         if (!isFound) {
-            System.out.println(" Bus " +  busId + " could not be associated with a tripole");
+            LOGGER.warn(" input CC Bus " +  busId + " could not be associated with a tripole");
         }
 
         return new Pair<>(branchId, legNum);

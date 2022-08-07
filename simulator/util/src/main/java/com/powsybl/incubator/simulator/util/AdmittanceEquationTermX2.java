@@ -17,13 +17,13 @@ import com.powsybl.openloadflow.network.LfBus;
  */
 public class AdmittanceEquationTermX2 extends AbstractAdmittanceEquationTerm {
 
-    protected double g21;
+    private final double g21;
 
-    protected double b21;
+    private final double b21;
 
-    protected double g2g21sum;
+    private final double g2g21sum;
 
-    protected double b2b21sum;
+    private final double b2b21sum;
 
     public AdmittanceEquationTermX2(LfBranch branch, LfBus bus1, LfBus bus2, VariableSet<VariableType> variableSet, AdmittanceEquationSystem.AdmittanceType admittanceType) {
         super(branch, bus1, bus2, variableSet);

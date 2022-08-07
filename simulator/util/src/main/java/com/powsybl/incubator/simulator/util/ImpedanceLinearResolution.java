@@ -419,151 +419,151 @@ public  class ImpedanceLinearResolution {
         //  - En_y_k is the vector t[ 0 0 ... 0 0 0 1 0 0 ... 0 0 ] where 1 corresponds to the line/column of the bus k where the imaginary part of Z matrix is modelled
 
         // Step 1 : build the extraction vectors
-        AdmittanceMatrix yd = new AdmittanceMatrix(equationSystem, parameters.getMatrixFactory(), lfNetwork);
+        try (AdmittanceMatrix yd = new AdmittanceMatrix(equationSystem, parameters.getMatrixFactory(), lfNetwork)) {
 
-        DenseMatrix en = new DenseMatrix(yd.getRowCount(), 2 * inputBusses.size());
-        List<Integer> tEn2Col = new ArrayList<>();
+            DenseMatrix en = new DenseMatrix(yd.getRowCount(), 2 * inputBusses.size());
+            List<Integer> tEn2Col = new ArrayList<>();
 
-        int numBusFault = 0;
-        for (LfBus lfBus : inputBusses) {
+            int numBusFault = 0;
+            for (LfBus lfBus : inputBusses) {
 
-            int yRowx = yd.getRowBus(lfBus.getNum(), EquationType.BUS_YR);
-            int yColx = yd.getColBus(lfBus.getNum(), VariableType.BUS_VR);
-            int yRowy = yd.getRowBus(lfBus.getNum(), EquationType.BUS_YI);
-            int yColy = yd.getColBus(lfBus.getNum(), VariableType.BUS_VI);
+                int yRowx = yd.getRowBus(lfBus.getNum(), EquationType.BUS_YR);
+                int yColx = yd.getColBus(lfBus.getNum(), VariableType.BUS_VR);
+                int yRowy = yd.getRowBus(lfBus.getNum(), EquationType.BUS_YI);
+                int yColy = yd.getColBus(lfBus.getNum(), VariableType.BUS_VI);
 
-            //Step 2: fill the extraction matrices based on each extraction vector
-            // [tEn_x][1,j]= 1 if j = yColRth and 0 else
-            // [tEn_y][1,j]= 1 if j = yColXth and 0 else
-            //tEn.add(2 * numBusFault, yColx, 1.0);
-            //tEn.add(2 * numBusFault + 1, yColy, 1.0);
+                //Step 2: fill the extraction matrices based on each extraction vector
+                // [tEn_x][1,j]= 1 if j = yColRth and 0 else
+                // [tEn_y][1,j]= 1 if j = yColXth and 0 else
+                //tEn.add(2 * numBusFault, yColx, 1.0);
+                //tEn.add(2 * numBusFault + 1, yColy, 1.0);
 
-            //the extraction matrix tEn is replaced by a list to directly get the elements rth and xth in inv(Y) * En as tEn is very sparse
-            tEn2Col.add(yColx);
-            tEn2Col.add(yColy);
+                //the extraction matrix tEn is replaced by a list to directly get the elements rth and xth in inv(Y) * En as tEn is very sparse
+                tEn2Col.add(yColx);
+                tEn2Col.add(yColy);
 
-            // [En_x][i,1]= 1 if i = yRowRth and 0 else
-            // [En_y][i,1]= 1 if i = yRowXth and 0 else
-            en.add(yRowx, 2 * numBusFault, 1.0);
-            en.add(yRowy, 2 * numBusFault + 1, 1.0);
+                // [En_x][i,1]= 1 if i = yRowRth and 0 else
+                // [En_y][i,1]= 1 if i = yRowXth and 0 else
+                en.add(yRowx, 2 * numBusFault, 1.0);
+                en.add(yRowy, 2 * numBusFault + 1, 1.0);
 
-            numBusFault++;
-        }
-
-        //Step 3 : use the LU inversion of Y to get Rth and Xth
-        yd.solveTransposed(en);
-
-        // Each diagonal bloc of tEn * inv(Y) * En is:
-        //     [Zkk] = [ r -x ]
-        //             [ x  r ]
-
-        //DenseMatrix z = (DenseMatrix) tEn.times(en);
-
-        double ethx = 1.0;
-        double ethy = 0.0;
-        numBusFault = 0;
-        for (LfBus lfBus : inputBusses) {
-
-            int yRow1x = yd.getRowBus(lfBus.getNum(), EquationType.BUS_YR);
-            int yRow1y = yd.getRowBus(lfBus.getNum(), EquationType.BUS_YI);
-
-            if (parameters.getTheveninVoltageProfileType() == AdmittanceEquationSystem.AdmittanceVoltageProfileType.CALCULATED) {
-                ethx = lfBus.getV() * Math.cos(lfBus.getAngle());
-                ethy = lfBus.getV() * Math.sin(lfBus.getAngle());
+                numBusFault++;
             }
 
-            //this is equivalent to get the diagonal blocks of tEn * inv(Y) * En but taking advantage of the sparsity of tEn
-            ImpedanceLinearResolutionResult res = new ImpedanceLinearResolutionResult(lfBus,
-                    en.get(tEn2Col.get(2 * numBusFault), 2 * numBusFault),
-                    en.get(tEn2Col.get(1 + 2 * numBusFault), 1 + 2 * numBusFault),
-                    -en.get(tEn2Col.get(2 * numBusFault), 1 + 2 * numBusFault),
-                    en.get(tEn2Col.get(1 + 2 * numBusFault), 2 * numBusFault),
-                    ethx,
-                    ethy);
+            //Step 3 : use the LU inversion of Y to get Rth and Xth
+            yd.solveTransposed(en);
 
-            //step 4 : add deltaVoltage vectors if required
-            //extract values at the faulting bus that will be used to compute the post-fault voltage delta at bus
-            // This equivalent to compute  t[En]*inv(Y)*[En] in :
-            // [ Vx ]                        [ Ix ]           [ Vx_init ]
-            // [ Vy ] = -t[En]*inv(Y)*[En] * [ Iy ] + t[En] * [ Vy_init ]
-            double enBusxx = en.get(yRow1x, 2 * numBusFault);
-            double enBusyx = en.get(yRow1x, 2 * numBusFault + 1);
-            double enBusxy = en.get(yRow1y, 2 * numBusFault);
-            double enBusyy = en.get(yRow1y, 2 * numBusFault + 1);
+            // Each diagonal bloc of tEn * inv(Y) * En is:
+            //     [Zkk] = [ r -x ]
+            //             [ x  r ]
 
-            res.updateEnBus(enBusxx, enBusyx, enBusxy, enBusyy);
+            //DenseMatrix z = (DenseMatrix) tEn.times(en);
 
-            // handle biphased common support faults extra data
-            for (Pair<LfBus, LfBus> pairBusses : biphasedinputBusses) {
-                LfBus bus1 = pairBusses.getKey();
-                if (bus1 == lfBus) {
-                    // lfbus is also the first bus for a biphased common support, we store as an extension necessary additional data for the linear resolution post-processing
-                    LfBus bus2 = pairBusses.getValue();
-                    int yCol1x = yd.getColBus(lfBus.getNum(), VariableType.BUS_VR);
-                    int yCol1y = yd.getColBus(lfBus.getNum(), VariableType.BUS_VI);
-                    int yCol2x = yd.getColBus(bus2.getNum(), VariableType.BUS_VR);
-                    int yCol2y = yd.getColBus(bus2.getNum(), VariableType.BUS_VI);
+            double ethx = 1.0;
+            double ethy = 0.0;
+            numBusFault = 0;
+            for (LfBus lfBus : inputBusses) {
 
-                    int numBus2Fault = 0; // get the right column of extraction matrix of bus2
-                    boolean bus2found = false;
-                    for (LfBus lfBus2 : inputBusses) {
-                        if (lfBus2 == bus2) {
-                            bus2found = true;
-                            break;
+                int yRow1x = yd.getRowBus(lfBus.getNum(), EquationType.BUS_YR);
+                int yRow1y = yd.getRowBus(lfBus.getNum(), EquationType.BUS_YI);
+
+                if (parameters.getTheveninVoltageProfileType() == AdmittanceEquationSystem.AdmittanceVoltageProfileType.CALCULATED) {
+                    ethx = lfBus.getV() * Math.cos(lfBus.getAngle());
+                    ethy = lfBus.getV() * Math.sin(lfBus.getAngle());
+                }
+
+                //this is equivalent to get the diagonal blocks of tEn * inv(Y) * En but taking advantage of the sparsity of tEn
+                ImpedanceLinearResolutionResult res = new ImpedanceLinearResolutionResult(lfBus,
+                        en.get(tEn2Col.get(2 * numBusFault), 2 * numBusFault),
+                        en.get(tEn2Col.get(1 + 2 * numBusFault), 1 + 2 * numBusFault),
+                        -en.get(tEn2Col.get(2 * numBusFault), 1 + 2 * numBusFault),
+                        en.get(tEn2Col.get(1 + 2 * numBusFault), 2 * numBusFault),
+                        ethx,
+                        ethy);
+
+                //step 4 : add deltaVoltage vectors if required
+                //extract values at the faulting bus that will be used to compute the post-fault voltage delta at bus
+                // This equivalent to compute  t[En]*inv(Y)*[En] in :
+                // [ Vx ]                        [ Ix ]           [ Vx_init ]
+                // [ Vy ] = -t[En]*inv(Y)*[En] * [ Iy ] + t[En] * [ Vy_init ]
+                double enBusxx = en.get(yRow1x, 2 * numBusFault);
+                double enBusyx = en.get(yRow1x, 2 * numBusFault + 1);
+                double enBusxy = en.get(yRow1y, 2 * numBusFault);
+                double enBusyy = en.get(yRow1y, 2 * numBusFault + 1);
+
+                res.updateEnBus(enBusxx, enBusyx, enBusxy, enBusyy);
+
+                // handle biphased common support faults extra data
+                for (Pair<LfBus, LfBus> pairBusses : biphasedinputBusses) {
+                    LfBus bus1 = pairBusses.getKey();
+                    if (bus1 == lfBus) {
+                        // lfbus is also the first bus for a biphased common support, we store as an extension necessary additional data for the linear resolution post-processing
+                        LfBus bus2 = pairBusses.getValue();
+                        int yCol1x = yd.getColBus(lfBus.getNum(), VariableType.BUS_VR);
+                        int yCol1y = yd.getColBus(lfBus.getNum(), VariableType.BUS_VI);
+                        int yCol2x = yd.getColBus(bus2.getNum(), VariableType.BUS_VR);
+                        int yCol2y = yd.getColBus(bus2.getNum(), VariableType.BUS_VI);
+
+                        int numBus2Fault = 0; // get the right column of extraction matrix of bus2
+                        boolean bus2found = false;
+                        for (LfBus lfBus2 : inputBusses) {
+                            if (lfBus2 == bus2) {
+                                bus2found = true;
+                                break;
+                            }
+                            numBus2Fault++;
                         }
-                        numBus2Fault++;
-                    }
 
-                    if (!bus2found) {
-                        throw new IllegalArgumentException(" Biphased fault second bus = " + bus2.getId() + " : not found in the extraction matrix");
-                    }
+                        if (!bus2found) {
+                            throw new IllegalArgumentException(" Biphased fault second bus = " + bus2.getId() + " : not found in the extraction matrix");
+                        }
 
-                    double enZ22txx = en.get(yCol2x, 2 * numBus2Fault);
-                    double enZ22tyx = en.get(yCol2y, 2 * numBus2Fault);
-                    double enZ22txy = en.get(yCol2x, 2 * numBus2Fault + 1);
-                    double enZ22tyy = en.get(yCol2y, 2 * numBus2Fault + 1);
+                        double enZ22txx = en.get(yCol2x, 2 * numBus2Fault);
+                        double enZ22tyx = en.get(yCol2y, 2 * numBus2Fault);
+                        double enZ22txy = en.get(yCol2x, 2 * numBus2Fault + 1);
+                        double enZ22tyy = en.get(yCol2y, 2 * numBus2Fault + 1);
 
-                    double enZ21txx = en.get(yCol2x, 2 * numBusFault);
-                    double enZ21tyx = en.get(yCol2y, 2 * numBusFault);
-                    double enZ21txy = en.get(yCol2x, 2 * numBusFault + 1);
-                    double enZ21tyy = en.get(yCol2y, 2 * numBusFault + 1);
+                        double enZ21txx = en.get(yCol2x, 2 * numBusFault);
+                        double enZ21tyx = en.get(yCol2y, 2 * numBusFault);
+                        double enZ21txy = en.get(yCol2x, 2 * numBusFault + 1);
+                        double enZ21tyy = en.get(yCol2y, 2 * numBusFault + 1);
 
-                    double enZ12txx = en.get(yCol1x, 2 * numBus2Fault);
-                    double enZ12tyx = en.get(yCol1y, 2 * numBus2Fault);
-                    double enZ12txy = en.get(yCol1x, 2 * numBus2Fault + 1);
-                    double enZ12tyy = en.get(yCol1y, 2 * numBus2Fault + 1);
+                        double enZ12txx = en.get(yCol1x, 2 * numBus2Fault);
+                        double enZ12tyx = en.get(yCol1y, 2 * numBus2Fault);
+                        double enZ12txy = en.get(yCol1x, 2 * numBus2Fault + 1);
+                        double enZ12tyy = en.get(yCol1y, 2 * numBus2Fault + 1);
 
-                    double eth2x = 1.0;
-                    double eth2y = 0.;
-                    if (parameters.getTheveninVoltageProfileType() == AdmittanceEquationSystem.AdmittanceVoltageProfileType.CALCULATED) {
-                        eth2x = bus2.getV() * Math.cos(lfBus.getAngle());
-                        eth2y = bus2.getV() * Math.sin(lfBus.getAngle());
-                    }
+                        double eth2x = 1.0;
+                        double eth2y = 0.;
+                        if (parameters.getTheveninVoltageProfileType() == AdmittanceEquationSystem.AdmittanceVoltageProfileType.CALCULATED) {
+                            eth2x = bus2.getV() * Math.cos(lfBus.getAngle());
+                            eth2y = bus2.getV() * Math.sin(lfBus.getAngle());
+                        }
 
-                    res.addBiphasedResult(bus2, eth2x, eth2y, enZ22txx, enZ22txy, enZ22tyx, enZ22tyy,
-                            enZ21txx, enZ21txy, enZ21tyx, enZ21tyy,
-                            enZ12txx, enZ12txy, enZ12tyx, enZ12tyy, numBus2Fault);
-                }
-            }
-
-            //if required, do the same for all busses from the grid
-            if (parameters.isVoltageUpdate()) {
-                // This equivalent to store  inv(Y)*[En]
-                res.updateWithVoltagesdelta(yd, en, numBusFault, equationsSystemFeeders);
-                if (res.biphasedResultsAtBus != null) {
-                    // update for each biphased common support fault
-                    for (ImpedanceLinearResolutionResult.ImpedanceLinearResolutionResultBiphased biphasedResultPart : res.biphasedResultsAtBus) {
-                        biphasedResultPart.updateWithVoltagesdelta2(yd, en);
+                        res.addBiphasedResult(bus2, eth2x, eth2y, enZ22txx, enZ22txy, enZ22tyx, enZ22tyy,
+                                enZ21txx, enZ21txy, enZ21tyx, enZ21tyy,
+                                enZ12txx, enZ12txy, enZ12tyx, enZ12tyy, numBus2Fault);
                     }
                 }
+
+                //if required, do the same for all busses from the grid
+                if (parameters.isVoltageUpdate()) {
+                    // This equivalent to store  inv(Y)*[En]
+                    res.updateWithVoltagesdelta(yd, en, numBusFault, equationsSystemFeeders);
+                    if (res.biphasedResultsAtBus != null) {
+                        // update for each biphased common support fault
+                        for (ImpedanceLinearResolutionResult.ImpedanceLinearResolutionResultBiphased biphasedResultPart : res.biphasedResultsAtBus) {
+                            biphasedResultPart.updateWithVoltagesdelta2(yd, en);
+                        }
+                    }
+                }
+
+                //res.printResult();
+
+                this.results.add(res);
+                numBusFault++;
             }
-
-            //res.printResult();
-
-            this.results.add(res);
-            numBusFault++;
         }
-
     }
 
 }

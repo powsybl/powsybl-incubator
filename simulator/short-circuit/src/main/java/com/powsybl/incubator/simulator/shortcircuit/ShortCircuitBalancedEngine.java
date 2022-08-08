@@ -107,7 +107,7 @@ public class ShortCircuitBalancedEngine extends AbstractShortCircuitEngine {
                         int busNum = vd.getKey();
                         double edVr = vd.getValue().get(0, 0);
                         double edVi = vd.getValue().get(1, 0);
-                        //System.out.println(" dVth(" + vdr.getKey() + ") = " + edVr + " + j(" + edVi + ")");
+
                         double deltaVr = -ifr * edVr + ifi * edVi;
                         double deltaVi = -ifr * edVi - ifi * edVr;
 

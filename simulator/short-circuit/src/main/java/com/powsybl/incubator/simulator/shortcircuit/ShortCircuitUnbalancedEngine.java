@@ -151,7 +151,7 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
                     ImpedanceLinearResolution.ImpedanceLinearResolutionResult.ImpedanceLinearResolutionResultBiphased biphasedDirectResult = directResult.getBiphasedResultsAtBus().get(0);
                     ImpedanceLinearResolution.ImpedanceLinearResolutionResult.ImpedanceLinearResolutionResultBiphased biphasedHomopolarResult = homopolarResult.getBiphasedResultsAtBus().get(0);
 
-                    double ro12 = biphasedHomopolarResult.getZ12txx(); // TODO : add some tests to check consistency with Z12tyy and Z12tyx
+                    double ro12 = biphasedHomopolarResult.getZ12txx();
                     double xo12 = -biphasedHomopolarResult.getZ12txy();
                     double ro22 = biphasedHomopolarResult.getZ22txx();
                     double xo22 = -biphasedHomopolarResult.getZ22txy();
@@ -190,7 +190,6 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
                     mId = biphasedCommonCalculator.getmId();
                     mIi = biphasedCommonCalculator.getmIi();
 
-                    // TODO : check if we need to make a separate function to handle biphased common support
                     DenseMatrix mI2o = biphasedCommonCalculator.getmI2o();
                     DenseMatrix mI2d = biphasedCommonCalculator.getmI2d();
                     DenseMatrix mI2i = biphasedCommonCalculator.getmI2i();
@@ -315,7 +314,6 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
         //record the results
         EquationSystemFeeders equationSystemFeedersDirect =  directResult.getEqSysFeeders();
         EquationSystemFeeders equationSystemFeedersHomopolar =  homopolarResult.getEqSysFeeders();
-        // TODO : adapt in case of a biphased common support
 
         ShortCircuitResult res = new ShortCircuitResult(scf, lfBus1,
                 mId.toDense().get(0, 0), mId.toDense().get(1, 0),
@@ -351,8 +349,6 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
 
             for (Map.Entry<Integer, DenseMatrix> vd : directResult.getDv().entrySet()) {
                 int busNum = vd.getKey();
-
-                //int numBus2 = biphasedDirectResult.getNumBus2Fault();
 
                 //direct
                 double edVr = vd.getValue().get(0, 0);
@@ -390,8 +386,6 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
 
                 double deltaVor = -ior * eoVr + ioi * eoVi - i2or * eoV2r + i2oi * eoV2i;
                 double deltaVoi = -ior * eoVi - ioi * eoVr - i2or * eoV2i - i2oi * eoV2r;
-
-                //System.out.println(" dVth(" + vdr.getKey() + ") = " + edVr + " + j(" + edVi + ")");
 
                 res.fillVoltageInFortescueVector(busNum, deltaVdr, deltaVdi, deltaVor, deltaVoi, deltaVir, deltaVii);
             }

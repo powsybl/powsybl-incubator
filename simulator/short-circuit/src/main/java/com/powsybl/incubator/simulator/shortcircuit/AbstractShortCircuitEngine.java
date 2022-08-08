@@ -100,10 +100,9 @@ public abstract class AbstractShortCircuitEngine {
         Map<String, Pair<String, Integer >> tmpListBus1 = new HashMap<>();
         for (ShortCircuitFault scfe : parameters.getShortCircuitFaults()) {
             String busName = scfe.getBusLocation();
-            String bus2Name = scfe.getBusLocationBiPhased();
+            String bus2Name = scfe.getBus2Location();
 
-            if (bus2Name.isEmpty()) { // TODO : adapt
-                // TODO : put a condition that it is an unbalanced shortCircuit
+            if (bus2Name.isEmpty()) {
                 if (scfe.getType() == ShortCircuitFault.ShortCircuitType.BIPHASED_COMMON_SUPPORT) {
                     throw new IllegalArgumentException(" short circuit fault : " + busName + " must have a second voltage level defined because it is a common support fault");
                 }
@@ -145,7 +144,7 @@ public abstract class AbstractShortCircuitEngine {
     }
 
     protected static Pair<String, Integer > buildFaultDipoleFromBusId(String busId, Network tmpNetwork) {
-        // TODO : improve with direct correspondence between iidm busses and lfBusses when available, because this loop is not very efficient
+        // improve with direct correspondence between iidm busses and lfBusses when available in PowSyBl, because this loop is not very efficient
         Bus bus = tmpNetwork.getBusBreakerView().getBus(busId);
         String branchId = "";
         int branchSide = 0;
@@ -174,7 +173,7 @@ public abstract class AbstractShortCircuitEngine {
     }
 
     protected static Pair<String, Integer> buildFaultT3WbranchFromBusId(String busId, Network tmpNetwork) {
-        // TODO : improve with direct correspondence between iidm busses and lfBusses when available, because this loop is not very efficient
+        // improve with direct correspondence between iidm busses and lfBusses when available in PowSyBl, because this loop is not very efficient
         Bus bus = tmpNetwork.getBusBreakerView().getBus(busId);
         String branchId = "";
         int legNum = 0;

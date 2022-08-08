@@ -17,7 +17,7 @@ public class CalculationLocation {
 
     private final String busLocation;
 
-    private final String busLocationBiPhased;
+    private final String bus2Location; // used in case computations need 2 busses in input: for example in biphased common support short circuit computations
 
     private Pair<String, Integer > iidmBusInfo; // additional iidm info to make the correspondence between iidm info and lfNetwork info
 
@@ -31,15 +31,15 @@ public class CalculationLocation {
 
     public CalculationLocation(String busLocation, String busLocationBiPhased) {
         this.busLocation = Objects.requireNonNull(busLocation);
-        this.busLocationBiPhased = Objects.requireNonNull(busLocationBiPhased);
+        this.bus2Location = Objects.requireNonNull(busLocationBiPhased);
     }
 
     public String getBusLocation() {
         return busLocation;
     }
 
-    public String getBusLocationBiPhased() {
-        return busLocationBiPhased;
+    public String getBus2Location() {
+        return bus2Location;
     }
 
     public void setIidmBusInfo(Pair<String, Integer> iidmBusInfo) {

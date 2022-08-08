@@ -140,28 +140,12 @@ public  class ImpedanceLinearResolution {
                 return z12txy;
             }
 
-            public double getZ12tyx() {
-                return z12tyx;
-            }
-
-            public double getZ12tyy() {
-                return z12tyy;
-            }
-
             public double getZ21txx() {
                 return z21txx;
             }
 
             public double getZ21txy() {
                 return z21txy;
-            }
-
-            public double getZ21tyx() {
-                return z21tyx;
-            }
-
-            public double getZ21tyy() {
-                return z21tyy;
             }
 
             public double getZ22txx() {
@@ -172,24 +156,12 @@ public  class ImpedanceLinearResolution {
                 return z22txy;
             }
 
-            public double getZ22tyx() {
-                return z22tyx;
-            }
-
-            public double getZ22tyy() {
-                return z22tyy;
-            }
-
             public double getV2x() {
                 return v2x;
             }
 
             public double getV2y() {
                 return v2y;
-            }
-
-            public int getNumBus2Fault() {
-                return numBus2Fault;
             }
 
             public Map<Integer, DenseMatrix> getDv2() {
@@ -288,7 +260,7 @@ public  class ImpedanceLinearResolution {
         public void addBiphasedResult(LfBus bus2, double initV2x, double initV2y, double z22txx, double z22txy, double z22tyx, double z22tyy,
                                       double z21txx, double z21txy, double z21tyx, double z21tyy,
                                       double z12txx, double z12txy, double z12tyx, double z12tyy, int numBus2Fault) {
-            // numBus2Fault is store to easily get the extraction vector for the second bus, in order to compute the full voltage exprt if required
+            // numBus2Fault is store to easily get the extraction vector for the second bus, in order to compute the full voltage export if required
             ImpedanceLinearResolutionResult.ImpedanceLinearResolutionResultBiphased biphasedResult = new ImpedanceLinearResolutionResult.ImpedanceLinearResolutionResultBiphased(bus2, initV2x, initV2y, z22txx, z22txy, z22tyx, z22tyy,
                     z21txx, z21txy, z21tyx, z21tyy,
                     z12txx, z12txy, z12tyx, z12tyy, numBus2Fault);
@@ -319,7 +291,7 @@ public  class ImpedanceLinearResolution {
             } else if (lfType == LfBranch.BranchType.TRANSFO_3_LEG_1) {
                 String legId = iidmBranchId + "_leg_1";
                 if (legId.equals(branchId) && branchSide == 1) {
-                    // TODO : check that for each leg, side 2 bus is always the star bus of the T3W
+                    // assumption made: side 2 bus is always the star bus of the T3W
                     bus = lfBranch.getBus1();
                     break;
                 }
@@ -327,7 +299,7 @@ public  class ImpedanceLinearResolution {
             } else if (lfType == LfBranch.BranchType.TRANSFO_3_LEG_2) {
                 String legId = iidmBranchId + "_leg_2";
                 if (legId.equals(branchId) && branchSide == 2) {
-                    // TODO : check that for each leg, side 2 bus is always the star bus of the T3W
+                    // assumption made: side 2 bus is always the star bus of the T3W
                     bus = lfBranch.getBus1();
                     break;
                 }
@@ -335,7 +307,7 @@ public  class ImpedanceLinearResolution {
             } else if (lfType == LfBranch.BranchType.TRANSFO_3_LEG_3) {
                 String legId = iidmBranchId + "_leg_3";
                 if (legId.equals(branchId) && branchSide == 3) {
-                    // TODO : check that for each leg, side 2 bus is always the star bus of the T3W
+                    // assumption made: side 2 bus is always the star bus of the T3W
                     bus = lfBranch.getBus1();
                     break;
                 }
@@ -369,7 +341,7 @@ public  class ImpedanceLinearResolution {
 
         // case it is a biphased common support input, supposing that the number of such input contingencies is low
         List<Pair<LfBus, LfBus>> biphasedinputBusses = new ArrayList<>();
-        if (parameters.getBiphasedCalculationLocations() != null) { // TODO : change name
+        if (parameters.getBiphasedCalculationLocations() != null) {
             for (CalculationLocation biphasedFaultBranchLocationInfo : parameters.getBiphasedCalculationLocations()) {
 
                 String iidmBranchId = biphasedFaultBranchLocationInfo.getIidmBusInfo().getKey();
@@ -389,7 +361,7 @@ public  class ImpedanceLinearResolution {
             }
         }
 
-        // Addition of biphased faults in the inputBusses : TODO : check how biphased inputs are not used for other faults
+        // Addition of biphased faults in the inputBusses
         for (Pair<LfBus, LfBus> pairBusses : biphasedinputBusses) {
             LfBus bus1 = pairBusses.getKey();
             LfBus bus2 = pairBusses.getValue();

@@ -281,7 +281,7 @@ public class ShortCircuitResult {
                 LfBus bus1 = branch.getBus1();
                 LfBus bus2 = branch.getBus2();
                 if (bus1 != null && bus2 != null) {
-                    DenseMatrix yd12 = getAdmittanceMatrixBranch(branch, bus1, bus2, AdmittanceEquationSystem.AdmittanceType.ADM_THEVENIN);
+                    DenseMatrix yd12 = getAdmittanceMatrixBranch(branch, AdmittanceEquationSystem.AdmittanceType.ADM_THEVENIN);
                     int busNum1 = bus1.getNum();
                     double dvx1 = busNum2Dv.get(busNum1).get(2, 0);
                     double dvy1 = busNum2Dv.get(busNum1).get(3, 0);
@@ -343,10 +343,6 @@ public class ShortCircuitResult {
         return Math.sqrt((getIdx() * getIdx() + getIdy() * getIdy()) / 3) * 100.  / lfBus.getNominalV() * norm.getCmaxVoltageFactor(lfBus.getNominalV());
     }
 
-    public LfBus getLfBus() {
-        return lfBus;
-    }
-
     public double getPcc() {
         //Pcc = |Eth|*Icc*sqrt(3)
         return Math.sqrt(3) * getIcc() * lfBus.getV() * lfBus.getNominalV(); //TODO: check formula
@@ -383,7 +379,7 @@ public class ShortCircuitResult {
         this.lfNetwork = lfNetwork;
     }
 
-    static DenseMatrix getAdmittanceMatrixBranch(LfBranch branch, LfBus bus1, LfBus bus2,
+    static DenseMatrix getAdmittanceMatrixBranch(LfBranch branch,
                                                  AdmittanceEquationSystem.AdmittanceType admittanceType) {
 
         // TODO : code duplicated with the admittance equation system, should be un-duplicated

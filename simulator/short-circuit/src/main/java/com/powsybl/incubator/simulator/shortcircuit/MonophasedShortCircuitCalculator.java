@@ -87,12 +87,6 @@ public class MonophasedShortCircuitCalculator extends AbstractShortCircuitCalcul
         DenseMatrix tmpaVd = ma.times(vdInit).toDense();
         DenseMatrix mIc = invZt.times(tmpaVd).toDense();
 
-        System.out.println(" Vinit = " + initVx + " + j(" + initVy + ")");
-        System.out.println(" Ic = " + mIc.toDense().get(0, 0) + " + j(" + mIc.toDense().get(1, 0) + ")");
-        System.out.println(" Zo = " + rof + " + j(" + xof + ")");
-        System.out.println(" Zd = " + rdf + " + j(" + xdf + ")");
-
-        // TODO : check this is equivalent to :
         //
         //        -rt*(vdxi + vdyi*sqrt(3)) + xt*(vdxi*sqrt(3)-vdyi)
         //Icx =  ----------------------------------------------------

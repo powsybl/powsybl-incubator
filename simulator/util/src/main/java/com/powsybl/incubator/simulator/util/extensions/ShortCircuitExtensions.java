@@ -141,10 +141,7 @@ public final class ShortCircuitExtensions {
             leg2ConnectionType = extensions.getLeg2ConnectionType();
         }
 
-        ShortCircuitTransformerLeg leg1 = new ShortCircuitTransformerLeg(leg1ConnectionType);
-        ShortCircuitTransformerLeg leg2 = new ShortCircuitTransformerLeg(leg2ConnectionType);
-
-        lfBranch.setProperty(PROPERTY_NAME, new ShortCircuitT2W(leg1, leg2, coeffRo, coeffXo, freeFluxes));
+        lfBranch.setProperty(PROPERTY_NAME, new ShortCircuitT2W(leg1ConnectionType, leg2ConnectionType, coeffRo, coeffXo, freeFluxes));
     }
 
     private static void addGeneratorExtension(Network network, LfGenerator lfGenerator) {

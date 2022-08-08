@@ -131,8 +131,8 @@ public class HomopolarModel {
                 homopolarExtension.gom = gPi1 / rCoeff; //TODO : adapt
                 homopolarExtension.bom = bPi1 / xCoeff;  //TODO : adapt
 
-                homopolarExtension.leg1ConnectionType = shortCircuitT2W.getLeg1().getLegConnectionType();
-                homopolarExtension.leg2ConnectionType = shortCircuitT2W.getLeg2().getLegConnectionType();
+                homopolarExtension.leg1ConnectionType = shortCircuitT2W.getLeg1ConnectionType();
+                homopolarExtension.leg2ConnectionType = shortCircuitT2W.getLeg2ConnectionType();
             }
         } else if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_1
                 || branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_2

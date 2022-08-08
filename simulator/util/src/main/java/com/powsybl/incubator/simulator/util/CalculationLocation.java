@@ -25,6 +25,8 @@ public class CalculationLocation {
 
     private String lfBusInfo; // additional info to have the correspondence between iidm and lfNetwork
 
+    private String lfBus2Info; // additional info to have the correspondence between iidm and lfNetwork for bus 2
+
     public CalculationLocation(String busLocation) {
         this(busLocation, "");
     }
@@ -62,8 +64,16 @@ public class CalculationLocation {
         this.lfBusInfo = lfBusInfo;
     }
 
+    public void setBus2Location(String lfBus2Info) {
+        this.lfBus2Info = lfBus2Info;
+    }
+
     public String getLfBusInfo() {
         return lfBusInfo;
+    }
+
+    public String getLfBus2Info() {
+        return lfBus2Info;
     }
 
 }

@@ -10,6 +10,7 @@ import com.powsybl.iidm.network.*;
 import com.powsybl.iidm.network.extensions.GeneratorShortCircuitAdder;
 import com.powsybl.incubator.simulator.util.extensions.AdditionalDataInfo;
 import com.powsybl.incubator.simulator.util.extensions.iidm.GeneratorShortCircuitAdder2;
+import com.powsybl.incubator.simulator.util.extensions.iidm.LineShortCircuitAdder;
 import org.apache.commons.math3.util.Pair;
 import org.joda.time.DateTime;
 
@@ -578,10 +579,40 @@ public final class ReferenceNetwork {
                 .setQ0(qEquivalentFeeder)
                 .add();
 
-        ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) substation123.newTwoWindingsTransformer().setId("T1")).setVoltageLevel1(vl1.getId())).setBus1(bus1.getId())).setConnectableBus1(bus1.getId())).setRatedU1(bus1Vnom).setVoltageLevel2(vl3.getId())).setBus2(bus3.getId())).setConnectableBus2(bus3.getId())).setRatedU2(ratedV2).setR(rT1).setX(xT1).setG(0.0D).setB(0.0D).setRatedS(630.).add();
-        ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) substation123.newTwoWindingsTransformer().setId("T2")).setVoltageLevel1(vl1.getId())).setBus1(bus1.getId())).setConnectableBus1(bus1.getId())).setRatedU1(bus1Vnom).setVoltageLevel2(vl2.getId())).setBus2(bus2.getId())).setConnectableBus2(bus2.getId())).setRatedU2(ratedV2).setR(rT2).setX(xT2).setG(0.0D).setB(0.0D).setRatedS(400.).add();
+        substation123.newTwoWindingsTransformer()
+                .setId("T1")
+                .setVoltageLevel1(vl1.getId())
+                .setBus1(bus1.getId())
+                .setConnectableBus1(bus1.getId())
+                .setRatedU1(bus1Vnom)
+                .setVoltageLevel2(vl3.getId())
+                .setBus2(bus3.getId())
+                .setConnectableBus2(bus3.getId())
+                .setRatedU2(ratedV2)
+                .setR(rT1)
+                .setX(xT1)
+                .setG(0.0D)
+                .setB(0.0D)
+                .setRatedS(630.)
+                .add();
+        substation123.newTwoWindingsTransformer()
+                .setId("T2")
+                .setVoltageLevel1(vl1.getId())
+                .setBus1(bus1.getId())
+                .setConnectableBus1(bus1.getId())
+                .setRatedU1(bus1Vnom)
+                .setVoltageLevel2(vl2.getId())
+                .setBus2(bus2.getId())
+                .setConnectableBus2(bus2.getId())
+                .setRatedU2(ratedV2)
+                .setR(rT2)
+                .setX(xT2)
+                .setG(0.0D)
+                .setB(0.0D)
+                .setRatedS(400.)
+                .add();
 
-        network.newLine()
+        Line l2 = network.newLine()
                 .setId("L2_B2_B4")
                 .setVoltageLevel1(vl2.getId())
                 .setBus1(bus2.getId())
@@ -597,7 +628,7 @@ public final class ReferenceNetwork {
                 .setB2(0.0)
                 .add();
 
-        network.newLine()
+        Line l1 = network.newLine()
                 .setId("L1_B3_B4")
                 .setVoltageLevel1(vl3.getId())
                 .setBus1(bus3.getId())
@@ -613,7 +644,7 @@ public final class ReferenceNetwork {
                 .setB2(0.0)
                 .add();
 
-        network.newLine()
+        Line l3 = network.newLine()
                 .setId("L3_B4_B5")
                 .setVoltageLevel1(vl4.getId())
                 .setBus1(bus4.getId())
@@ -629,7 +660,7 @@ public final class ReferenceNetwork {
                 .setB2(0.0)
                 .add();
 
-        network.newLine()
+        Line l4 = network.newLine()
                 .setId("L4_B5_B6")
                 .setVoltageLevel1(vl5.getId())
                 .setBus1(bus5.getId())
@@ -654,26 +685,31 @@ public final class ReferenceNetwork {
         leg2type.put("T1", AdditionalDataInfo.LegType.Y_GROUNDED);
         leg2type.put("T2", AdditionalDataInfo.LegType.Y_GROUNDED);
 
-        Map<String, Double> lineIdToCoeffRo = new HashMap<>();
-        Map<String, Double> lineIdToCoeffXo = new HashMap<>();
+        l1.newExtension(LineShortCircuitAdder.class)
+                .withCoeffRo(coeffRoL1)
+                .withCoeffXo(coeffXoL1)
+                .add();
+        l2.newExtension(LineShortCircuitAdder.class)
+                .withCoeffRo(coeffRoL2)
+                .withCoeffXo(coeffXoL2)
+                .add();
+        l3.newExtension(LineShortCircuitAdder.class)
+                .withCoeffRo(coeffRoL3)
+                .withCoeffXo(coeffXoL3)
+                .add();
+        l4.newExtension(LineShortCircuitAdder.class)
+                .withCoeffRo(coeffRoL4)
+                .withCoeffXo(coeffXoL4)
+                .add();
+
         Map<String, Double> tfo2wIdToCoeffRo = new HashMap<>();
         Map<String, Double> tfo2wIdToCoeffXo = new HashMap<>();
-        lineIdToCoeffRo.put("L2_B2_B4", coeffRoL2);
-        lineIdToCoeffRo.put("L1_B3_B4", coeffRoL1);
-        lineIdToCoeffRo.put("L3_B4_B5", coeffRoL3);
-        lineIdToCoeffRo.put("L4_B5_B6", coeffRoL4);
-
-        lineIdToCoeffXo.put("L2_B2_B4", coeffXoL2);
-        lineIdToCoeffXo.put("L1_B3_B4", coeffXoL1);
-        lineIdToCoeffXo.put("L3_B4_B5", coeffXoL3);
-        lineIdToCoeffXo.put("L4_B5_B6", coeffXoL4);
-
         tfo2wIdToCoeffRo.put("T1", coeffRoT1);
         tfo2wIdToCoeffRo.put("T2", coeffRoT2);
         tfo2wIdToCoeffXo.put("T1", coeffXoT1);
         tfo2wIdToCoeffXo.put("T2", coeffXoT2);
 
-        AdditionalDataInfo additionalDataInfo = new AdditionalDataInfo(leg1type, leg2type, lineIdToCoeffRo, lineIdToCoeffXo, tfo2wIdToCoeffRo, tfo2wIdToCoeffXo);
+        AdditionalDataInfo additionalDataInfo = new AdditionalDataInfo(leg1type, leg2type, tfo2wIdToCoeffRo, tfo2wIdToCoeffXo);
 
         return new Pair<>(network, additionalDataInfo);
     }
@@ -1013,7 +1049,7 @@ public final class ReferenceNetwork {
                 .withStepUpTransformerX(0.)
                 .add();
 
-        network.newLine()
+        Line l1 = network.newLine()
                 .setId("L1_B2_B3")
                 .setVoltageLevel1(vl2.getId())
                 .setBus1(bus2.getId())
@@ -1029,7 +1065,7 @@ public final class ReferenceNetwork {
                 .setB2(0.0)
                 .add();
 
-        network.newLine()
+        Line l2 = network.newLine()
                 .setId("L2_B3_B4")
                 .setVoltageLevel1(vl3.getId())
                 .setBus1(bus3.getId())
@@ -1045,7 +1081,7 @@ public final class ReferenceNetwork {
                 .setB2(0.0)
                 .add();
 
-        network.newLine()
+        Line l3 = network.newLine()
                 .setId("L3_B2_B5")
                 .setVoltageLevel1(vl2.getId())
                 .setBus1(bus2.getId())
@@ -1061,7 +1097,7 @@ public final class ReferenceNetwork {
                 .setB2(0.0)
                 .add();
 
-        network.newLine()
+        Line l4 = network.newLine()
                 .setId("L4_B5_B3")
                 .setVoltageLevel1(vl5.getId())
                 .setBus1(bus5.getId())
@@ -1077,7 +1113,7 @@ public final class ReferenceNetwork {
                 .setB2(0.0)
                 .add();
 
-        network.newLine()
+        Line l5 = network.newLine()
                 .setId("L5_B5_B4")
                 .setVoltageLevel1(vl5.getId())
                 .setBus1(bus5.getId())
@@ -1093,7 +1129,7 @@ public final class ReferenceNetwork {
                 .setB2(0.0)
                 .add();
 
-        network.newLine()
+        Line l6 = network.newLine()
                 .setId("L6_B6_B7")
                 .setVoltageLevel1(vl6.getId())
                 .setBus1(bus6.getId())
@@ -1279,32 +1315,34 @@ public final class ReferenceNetwork {
         tfo3wIdLeg3ToFreeFluxes.put("T4", true);
 
         // Lines :
-        Map<String, Double> lineIdToCoeffRo = new HashMap<>();
-        Map<String, Double> lineIdToCoeffXo = new HashMap<>();
-
-        lineIdToCoeffRo.put("L1_B2_B3", coeffRoL1);
-        lineIdToCoeffRo.put("L2_B3_B4", coeffRoL2);
-        lineIdToCoeffRo.put("L3_B2_B5", coeffRoL3);
-        lineIdToCoeffRo.put("L4_B5_B3", coeffRoL4);
-        lineIdToCoeffRo.put("L5_B5_B4", coeffRoL5);
-        lineIdToCoeffRo.put("L6_B6_B7", coeffRoL6);
-
-        lineIdToCoeffXo.put("L1_B2_B3", coeffXoL1);
-        lineIdToCoeffXo.put("L2_B3_B4", coeffXoL2);
-        lineIdToCoeffXo.put("L3_B2_B5", coeffXoL3);
-        lineIdToCoeffXo.put("L4_B5_B3", coeffXoL4);
-        lineIdToCoeffXo.put("L5_B5_B4", coeffXoL5);
-        lineIdToCoeffXo.put("L6_B6_B7", coeffXoL6);
-
-        // Feeders :
-        Map<String, Double> feederIdToCoeffRo = new HashMap<>(); // we suppose that if no info is provided, the feeder is not grounded
-        Map<String, Double> feederIdToCoeffXo = new HashMap<>();
-        //feederIdToCoeffRo.put("LOAD_FEEDER2", coeffF2Ro);
-        //feederIdToCoeffXo.put("LOAD_FEEDER2", coeffF2Xo);
+        l1.newExtension(LineShortCircuitAdder.class)
+                .withCoeffRo(coeffRoL1)
+                .withCoeffXo(coeffXoL1)
+                .add();
+        l2.newExtension(LineShortCircuitAdder.class)
+                .withCoeffRo(coeffRoL2)
+                .withCoeffXo(coeffXoL2)
+                .add();
+        l3.newExtension(LineShortCircuitAdder.class)
+                .withCoeffRo(coeffRoL3)
+                .withCoeffXo(coeffXoL3)
+                .add();
+        l4.newExtension(LineShortCircuitAdder.class)
+                .withCoeffRo(coeffRoL4)
+                .withCoeffXo(coeffXoL4)
+                .add();
+        l5.newExtension(LineShortCircuitAdder.class)
+                .withCoeffRo(coeffRoL5)
+                .withCoeffXo(coeffXoL5)
+                .add();
+        l6.newExtension(LineShortCircuitAdder.class)
+                .withCoeffRo(coeffRoL6)
+                .withCoeffXo(coeffXoL6)
+                .add();
 
         AdditionalDataInfo additionalDataInfo = new AdditionalDataInfo(
-                leg1type, leg2type, lineIdToCoeffRo, lineIdToCoeffXo, tfo2wIdToCoeffRo, tfo2wIdToCoeffXo,
-                feederIdToCoeffRo, feederIdToCoeffXo, leg3type,
+                leg1type, leg2type, tfo2wIdToCoeffRo, tfo2wIdToCoeffXo,
+                leg3type,
                 tfo3wIdToLeg1CoeffRo, tfo3wIdToLeg1CoeffXo,
                 tfo3wIdToLeg2CoeffRo, tfo3wIdToLeg2CoeffXo,
                 tfo3wIdToLeg3CoeffRo, tfo3wIdToLeg3CoeffXo,

@@ -8,10 +8,13 @@ package com.powsybl.incubator.simulator.util.extensions;
 
 import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.Generator;
+import com.powsybl.iidm.network.Line;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.extensions.GeneratorShortCircuit;
 import com.powsybl.incubator.simulator.util.extensions.iidm.GeneratorShortCircuit2;
 import com.powsybl.incubator.simulator.util.extensions.iidm.GeneratorShortCircuitAdder2;
+import com.powsybl.incubator.simulator.util.extensions.iidm.LineShortCircuit;
+import com.powsybl.incubator.simulator.util.extensions.iidm.LineShortCircuitAdder;
 import com.powsybl.openloadflow.network.LfBranch;
 import com.powsybl.openloadflow.network.LfBus;
 import com.powsybl.openloadflow.network.LfGenerator;
@@ -38,14 +41,14 @@ public final class ShortCircuitExtensions {
         for (LfNetwork lfNetwork : lfNetworks) {
             for (LfBus lfBus : lfNetwork.getBuses()) {
                 for (LfGenerator lfGenerator : lfBus.getGenerators()) {
-                    addGeneratorExtension(network, additionalDataInfo, lfGenerator);
+                    addGeneratorExtension(network, lfGenerator);
                 }
             }
 
             for (LfBranch lfBranch : lfNetwork.getBranches()) {
                 switch (lfBranch.getBranchType()) {
                     case LINE:
-                        addLineExtension(additionalDataInfo, lfBranch);
+                        addLineExtension(network, lfBranch);
                         break;
 
                     case TRANSFO_2:
@@ -119,11 +122,17 @@ public final class ShortCircuitExtensions {
         lfBranch.setProperty(PROPERTY_NAME, new ShortCircuitT3W(leg1, leg2, leg3));
     }
 
-    private static void addLineExtension(AdditionalDataInfo additionalDataInfo, LfBranch lfBranch) {
+    private static void addLineExtension(Network network, LfBranch lfBranch) {
         String lineId = lfBranch.getOriginalIds().get(0);
+        Line line = network.getLine(lineId);
 
-        double coeffRo = getParameterValue(additionalDataInfo.getLineIdToCoeffRo(), lineId, 1.0);
-        double coeffXo = getParameterValue(additionalDataInfo.getLineIdToCoeffXo(), lineId, 1.0);
+        double coeffRo = LineShortCircuitAdder.DEFAULT_COEFF_RO;
+        double coeffXo = LineShortCircuitAdder.DEFAULT_COEFF_XO;
+        LineShortCircuit extensions = line.getExtension(LineShortCircuit.class);
+        if (extensions != null) {
+            coeffRo = extensions.getCoeffRo();
+            coeffXo = extensions.getCoeffXo();
+        }
 
         lfBranch.setProperty(PROPERTY_NAME, new ShortCircuitLine(coeffRo, coeffXo));
     }
@@ -156,7 +165,7 @@ public final class ShortCircuitExtensions {
         lfBranch.setProperty(PROPERTY_NAME, new ShortCircuitT2W(leg1, leg2, coeffRo, coeffXo, freeFluxes));
     }
 
-    private static void addGeneratorExtension(Network network, AdditionalDataInfo additionalDataInfo, LfGenerator lfGenerator) {
+    private static void addGeneratorExtension(Network network, LfGenerator lfGenerator) {
         Generator generator = network.getGenerator(lfGenerator.getOriginalId());
 
         GeneratorShortCircuit extension = generator.getExtension(GeneratorShortCircuit.class);
@@ -183,7 +192,7 @@ public final class ShortCircuitExtensions {
 
         lfGenerator.setProperty(PROPERTY_NAME, new ShortCircuitGenerator(transX,
                                                                          stepUpTfoX,
-                                                                          ShortCircuitGenerator.MachineType.SYNCHRONOUS_GEN,
+                                                                         ShortCircuitGenerator.MachineType.SYNCHRONOUS_GEN,
                                                                          transRd,
                                                                          0.,
                                                                          subTransRd,

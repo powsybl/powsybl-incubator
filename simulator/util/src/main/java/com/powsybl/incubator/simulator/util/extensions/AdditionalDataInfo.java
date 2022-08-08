@@ -24,14 +24,8 @@ public class AdditionalDataInfo {
     private Map<String, LegType> leg2type;
     private Map<String, LegType> leg3type;
 
-    private Map<String, Double> lineIdToCoeffRo; // Ro = Rd * CoeffRo
-    private Map<String, Double> lineIdToCoeffXo;
-
     private Map<String, Double> tfo2wIdToCoeffRo;
     private Map<String, Double> tfo2wIdToCoeffXo;
-
-    private Map<String, Double> feederIdToCoeffRo;
-    private Map<String, Double> feederIdToCoeffXo;
 
     private Map<String, Double> tfo3wIdToLeg1CoeffRo;
     private Map<String, Double> tfo3wIdToLeg1CoeffXo;
@@ -53,24 +47,20 @@ public class AdditionalDataInfo {
         this.leg2type = leg2type;
     }
 
-    public AdditionalDataInfo(Map<String, LegType> leg1type, Map<String, LegType> leg2type, Map<String, Double> lineIdToCoeffRo, Map<String, Double> lineIdToCoeffXo, Map<String, Double> tfo2wIdToCoeffRo, Map<String, Double> tfo2wIdToCoeffXo) {
+    public AdditionalDataInfo(Map<String, LegType> leg1type, Map<String, LegType> leg2type, Map<String, Double> tfo2wIdToCoeffRo, Map<String, Double> tfo2wIdToCoeffXo) {
         this(leg1type, leg2type);
-        this.lineIdToCoeffRo = lineIdToCoeffRo;
-        this.lineIdToCoeffXo = lineIdToCoeffXo;
         this.tfo2wIdToCoeffRo = tfo2wIdToCoeffRo;
         this.tfo2wIdToCoeffXo = tfo2wIdToCoeffXo;
 
     }
 
-    public AdditionalDataInfo(Map<String, LegType> leg1type, Map<String, LegType> leg2type, Map<String, Double> lineIdToCoeffRo, Map<String, Double> lineIdToCoeffXo, Map<String, Double> tfo2wIdToCoeffRo, Map<String, Double> tfo2wIdToCoeffXo,
-                              Map<String, Double> feederIdToCoeffRo, Map<String, Double> feederIdToCoeffXo, Map<String, LegType> leg3type,
+    public AdditionalDataInfo(Map<String, LegType> leg1type, Map<String, LegType> leg2type, Map<String, Double> tfo2wIdToCoeffRo, Map<String, Double> tfo2wIdToCoeffXo,
+                              Map<String, LegType> leg3type,
                               Map<String, Double> tfo3wIdToLeg1CoeffRo, Map<String, Double> tfo3wIdToLeg1CoeffXo,
                               Map<String, Double> tfo3wIdToLeg2CoeffRo, Map<String, Double> tfo3wIdToLeg2CoeffXo,
                               Map<String, Double> tfo3wIdToLeg3CoeffRo, Map<String, Double> tfo3wIdToLeg3CoeffXo,
                               Map<String, Boolean> tfo2wIdToFreeFluxes, Map<String, Boolean> tfo3wIdLeg1ToFreeFluxes, Map<String, Boolean> tfo3wIdLeg2ToFreeFluxes, Map<String, Boolean> tfo3wIdLeg3ToFreeFluxes) {
-        this(leg1type, leg2type, lineIdToCoeffRo, lineIdToCoeffXo, tfo2wIdToCoeffRo, tfo2wIdToCoeffXo);
-        this.feederIdToCoeffRo = feederIdToCoeffRo; // not used yet, grounded loads are modelled as machines for now
-        this.feederIdToCoeffXo = feederIdToCoeffXo; // not used yet, grounded loads are modelled as machines for now
+        this(leg1type, leg2type, tfo2wIdToCoeffRo, tfo2wIdToCoeffXo);
         this.leg3type = leg3type;
         this.tfo3wIdToLeg1CoeffRo = tfo3wIdToLeg1CoeffRo;
         this.tfo3wIdToLeg1CoeffXo = tfo3wIdToLeg1CoeffXo;
@@ -95,14 +85,6 @@ public class AdditionalDataInfo {
 
     public Map<String, LegType> getLeg3type() {
         return leg3type;
-    }
-
-    public Map<String, Double> getLineIdToCoeffRo() {
-        return lineIdToCoeffRo;
-    }
-
-    public Map<String, Double> getLineIdToCoeffXo() {
-        return lineIdToCoeffXo;
     }
 
     public Map<String, Double> getTfo2wIdToCoeffRo() {

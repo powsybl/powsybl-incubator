@@ -11,6 +11,7 @@ import com.powsybl.iidm.network.extensions.GeneratorShortCircuitAdder;
 import com.powsybl.incubator.simulator.util.ReferenceNetwork;
 import com.powsybl.incubator.simulator.util.extensions.AdditionalDataInfo;
 import com.powsybl.incubator.simulator.util.extensions.iidm.GeneratorShortCircuitAdder2;
+import com.powsybl.incubator.simulator.util.extensions.iidm.LineShortCircuitAdder;
 import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
@@ -286,7 +287,7 @@ public class ShortCircuitMonophasedTest {
                 .withStepUpTransformerX(0.)
                 .add();
 
-        network.newLine()
+        Line babp = network.newLine()
                 .setId("BA_BP")
                 .setVoltageLevel1(vlA.getId())
                 .setBus1(busA.getId())
@@ -302,7 +303,7 @@ public class ShortCircuitMonophasedTest {
                 .setB2(0.0)
                 .add();
 
-        network.newLine()
+        Line bpbb = network.newLine()
                 .setId("BP_BB")
                 .setVoltageLevel1(vlP.getId())
                 .setBus1(busP.getId())
@@ -321,15 +322,17 @@ public class ShortCircuitMonophasedTest {
         Map<String, AdditionalDataInfo.LegType> leg1type =  new HashMap<>();
         Map<String, AdditionalDataInfo.LegType> leg2type =  new HashMap<>();
 
-        Map<String, Double> lineIdToCoeffRo = new HashMap<>();
-        Map<String, Double> lineIdToCoeffXo = new HashMap<>();
         Map<String, Double> tfo2wIdToCoeffRo = new HashMap<>();
         Map<String, Double> tfo2wIdToCoeffXo = new HashMap<>();
 
-        lineIdToCoeffXo.put("BA_BP", coeffXo1);
-        lineIdToCoeffXo.put("BP_BB", coeffXo2);
+        babp.newExtension(LineShortCircuitAdder.class)
+                .withCoeffXo(coeffXo1)
+                .add();
+        bpbb.newExtension(LineShortCircuitAdder.class)
+                .withCoeffXo(coeffXo2)
+                .add();
 
-        AdditionalDataInfo additionalDataInfo = new AdditionalDataInfo(leg1type, leg2type, lineIdToCoeffRo, lineIdToCoeffXo, tfo2wIdToCoeffRo, tfo2wIdToCoeffXo);
+        AdditionalDataInfo additionalDataInfo = new AdditionalDataInfo(leg1type, leg2type, tfo2wIdToCoeffRo, tfo2wIdToCoeffXo);
 
         return new Pair<>(network, additionalDataInfo);
     }

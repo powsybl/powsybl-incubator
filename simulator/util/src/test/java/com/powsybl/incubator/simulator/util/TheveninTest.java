@@ -57,8 +57,8 @@ class TheveninTest {
         LoadFlowResult resultnt4 = loadFlowRunner.run(network, parameters);
 
         List<CalculationLocation> faultsList = new ArrayList<>();
-        CalculationLocation f1 = new CalculationLocation("B4", true);
-        CalculationLocation f2 = new CalculationLocation("B2", true);
+        CalculationLocation f1 = new CalculationLocation("B4");
+        CalculationLocation f2 = new CalculationLocation("B2");
         faultsList.add(f1);
         faultsList.add(f2);
 
@@ -91,10 +91,10 @@ class TheveninTest {
         AdditionalDataInfo additionalDataInfo = result.getValue();
 
         List<CalculationLocation> faultsList = new ArrayList<>();
-        CalculationLocation f1 = new CalculationLocation("B2", true);
-        CalculationLocation f2 = new CalculationLocation("B5", true);
-        CalculationLocation f3 = new CalculationLocation("B7", true);
-        CalculationLocation f4 = new CalculationLocation("B8", true);
+        CalculationLocation f1 = new CalculationLocation("B2");
+        CalculationLocation f2 = new CalculationLocation("B5");
+        CalculationLocation f3 = new CalculationLocation("B7");
+        CalculationLocation f4 = new CalculationLocation("B8");
         faultsList.add(f1);
         faultsList.add(f2);
         faultsList.add(f3);
@@ -127,10 +127,10 @@ class TheveninTest {
         AdditionalDataInfo additionalDataInfo = result.getValue();
 
         List<CalculationLocation> faultsList = new ArrayList<>();
-        CalculationLocation f1 = new CalculationLocation("B2", true);
-        CalculationLocation f2 = new CalculationLocation("B5", true);
-        CalculationLocation f3 = new CalculationLocation("B7", true);
-        CalculationLocation f4 = new CalculationLocation("B8", true);
+        CalculationLocation f1 = new CalculationLocation("B2");
+        CalculationLocation f2 = new CalculationLocation("B5");
+        CalculationLocation f3 = new CalculationLocation("B7");
+        CalculationLocation f4 = new CalculationLocation("B8");
         faultsList.add(f1);
         faultsList.add(f2);
         faultsList.add(f3);

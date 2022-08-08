@@ -84,7 +84,7 @@ public abstract class AbstractShortCircuitEngine {
         List<ShortCircuitFault> scfSystematic = new ArrayList<>();
         parameters.setVoltageUpdate(false);
         for (Bus bus : network.getBusBreakerView().getBuses()) {
-            ShortCircuitFault sc = new ShortCircuitFault(bus.getId(), false, bus.getId(),  0., 0., type); //TODO : check validity of voltage levels if no connexity
+            ShortCircuitFault sc = new ShortCircuitFault(bus.getId(), bus.getId(),  0., 0., type); //TODO : check validity of voltage levels if no connexity
             scfSystematic.add(sc);
         }
         parameters.setShortCircuitFaults(scfSystematic);

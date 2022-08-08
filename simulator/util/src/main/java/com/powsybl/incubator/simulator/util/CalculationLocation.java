@@ -19,22 +19,19 @@ public class CalculationLocation {
 
     private final String busLocationBiPhased;
 
-    private final boolean voltageUpdate;
-
     private Pair<String, Integer > iidmBusInfo; // additional iidm info to make the correspondence between iidm info and lfNetwork info
 
     private Pair<String, Integer > iidmBus2Info; // additional iidm info to make the correspondence between iidm info and lfNetwork info in case of a biphased common support fault
 
     private String lfBusInfo; // additional info to have the correspondence between iidm and lfNetwork
 
-    public CalculationLocation(String busLocation, boolean voltageUpdate) {
-        this(busLocation, "", voltageUpdate);
+    public CalculationLocation(String busLocation) {
+        this(busLocation, "");
     }
 
-    public CalculationLocation(String busLocation, String busLocationBiPhased, boolean voltageUpdate) {
+    public CalculationLocation(String busLocation, String busLocationBiPhased) {
         this.busLocation = Objects.requireNonNull(busLocation);
         this.busLocationBiPhased = Objects.requireNonNull(busLocationBiPhased);
-        this.voltageUpdate = voltageUpdate;
     }
 
     public String getBusLocation() {

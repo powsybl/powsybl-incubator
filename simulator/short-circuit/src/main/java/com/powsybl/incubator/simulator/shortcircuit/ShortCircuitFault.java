@@ -13,16 +13,16 @@ import com.powsybl.incubator.simulator.util.CalculationLocation;
  */
 public class ShortCircuitFault extends CalculationLocation {
 
-    public ShortCircuitFault(String busLocation, boolean voltageUpdate, String faultId, double zfr, double zfi, ShortCircuitType type) {
-        super(busLocation, voltageUpdate);
+    public ShortCircuitFault(String busLocation, String faultId, double zfr, double zfi, ShortCircuitType type) {
+        super(busLocation);
         this.zfr = zfr;
         this.zfi = zfi;
         this.type = type;
         this.faultId = faultId;
     }
 
-    public ShortCircuitFault(String busLocation, String busLocationBiPhased, boolean voltageUpdate, String faultId, double zfr, double zfi, ShortCircuitType type, ShortCircuitBiphasedType biphasedType) {
-        super(busLocation, busLocationBiPhased, voltageUpdate);
+    public ShortCircuitFault(String busLocation, String busLocationBiPhased, String faultId, double zfr, double zfi, ShortCircuitType type, ShortCircuitBiphasedType biphasedType) {
+        super(busLocation, busLocationBiPhased);
         this.zfr = zfr;
         this.zfi = zfi;
         this.type = type;

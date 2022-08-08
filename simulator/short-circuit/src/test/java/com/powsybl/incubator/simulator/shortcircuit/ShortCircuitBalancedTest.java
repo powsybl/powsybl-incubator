@@ -52,7 +52,7 @@ public class ShortCircuitBalancedTest {
         LoadFlowResult resultnt2 = loadFlowRunner.run(nt2, parameters);
 
         List<ShortCircuitFault> tmpV = new ArrayList<>();
-        ShortCircuitFault sc2 = new ShortCircuitFault("B2", true, "sc2", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
+        ShortCircuitFault sc2 = new ShortCircuitFault("B2", "sc2", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
         tmpV.add(sc2);
 
         ShortCircuitEngineParameters.PeriodType periodType = ShortCircuitEngineParameters.PeriodType.TRANSIENT;
@@ -227,7 +227,7 @@ public class ShortCircuitBalancedTest {
         MatrixFactory  matrixFactory = new DenseMatrixFactory();
 
         List<ShortCircuitFault> faultList = new ArrayList<>();
-        ShortCircuitFault sc1 = new ShortCircuitFault("B7", true, "sc1", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
+        ShortCircuitFault sc1 = new ShortCircuitFault("B7", "sc1", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
         faultList.add(sc1);
 
         ShortCircuitEngineParameters.PeriodType periodType = ShortCircuitEngineParameters.PeriodType.SUB_TRANSIENT;
@@ -264,7 +264,7 @@ public class ShortCircuitBalancedTest {
         MatrixFactory  matrixFactory = new DenseMatrixFactory();
 
         List<ShortCircuitFault> faultList = new ArrayList<>();
-        ShortCircuitFault sc1 = new ShortCircuitFault("B3", true, "sc1",  0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
+        ShortCircuitFault sc1 = new ShortCircuitFault("B3", "sc1",  0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
         faultList.add(sc1);
 
         ShortCircuitEngineParameters.PeriodType periodType = ShortCircuitEngineParameters.PeriodType.SUB_TRANSIENT;
@@ -298,21 +298,21 @@ public class ShortCircuitBalancedTest {
         MatrixFactory  matrixFactory = new DenseMatrixFactory();
 
         List<ShortCircuitFault> faultList = new ArrayList<>();
-        ShortCircuitFault sc1 = new ShortCircuitFault("B1", true, "sc1", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
+        ShortCircuitFault sc1 = new ShortCircuitFault("B1", "sc1", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
         faultList.add(sc1);
-        ShortCircuitFault sc2 = new ShortCircuitFault("B2", true, "sc2", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
+        ShortCircuitFault sc2 = new ShortCircuitFault("B2", "sc2", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
         faultList.add(sc2);
-        ShortCircuitFault sc3 = new ShortCircuitFault("B3", true, "sc3", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
+        ShortCircuitFault sc3 = new ShortCircuitFault("B3", "sc3", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
         faultList.add(sc3);
-        ShortCircuitFault sc4 = new ShortCircuitFault("B4", true, "sc4", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
+        ShortCircuitFault sc4 = new ShortCircuitFault("B4", "sc4", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
         faultList.add(sc4);
-        ShortCircuitFault sc5 = new ShortCircuitFault("B5", true, "sc5", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
+        ShortCircuitFault sc5 = new ShortCircuitFault("B5", "sc5", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
         faultList.add(sc5);
-        ShortCircuitFault sc6 = new ShortCircuitFault("B6", true, "sc6", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
+        ShortCircuitFault sc6 = new ShortCircuitFault("B6", "sc6", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
         faultList.add(sc6);
-        ShortCircuitFault sc7 = new ShortCircuitFault("B7", true, "sc7", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
+        ShortCircuitFault sc7 = new ShortCircuitFault("B7", "sc7", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
         faultList.add(sc7);
-        ShortCircuitFault sc8 = new ShortCircuitFault("B8", true, "sc8", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
+        ShortCircuitFault sc8 = new ShortCircuitFault("B8", "sc8", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
         faultList.add(sc8);
 
         ShortCircuitEngineParameters.PeriodType periodType = ShortCircuitEngineParameters.PeriodType.TRANSIENT;

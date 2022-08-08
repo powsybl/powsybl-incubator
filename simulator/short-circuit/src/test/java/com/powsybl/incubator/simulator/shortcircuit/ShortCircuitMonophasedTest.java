@@ -57,7 +57,7 @@ public class ShortCircuitMonophasedTest {
         MatrixFactory  matrixFactory = new DenseMatrixFactory();
 
         List<ShortCircuitFault> faultList = new ArrayList<>();
-        ShortCircuitFault sc1 = new ShortCircuitFault("B3", false, "sc1", 0., 0., ShortCircuitFault.ShortCircuitType.MONOPHASED);
+        ShortCircuitFault sc1 = new ShortCircuitFault("B3", "sc1", 0., 0., ShortCircuitFault.ShortCircuitType.MONOPHASED);
         faultList.add(sc1);
 
         ShortCircuitEngineParameters.PeriodType periodType = ShortCircuitEngineParameters.PeriodType.SUB_TRANSIENT;
@@ -94,19 +94,19 @@ public class ShortCircuitMonophasedTest {
         MatrixFactory  matrixFactory = new DenseMatrixFactory();
 
         List<ShortCircuitFault> faultList = new ArrayList<>();
-        ShortCircuitFault sc1 = new ShortCircuitFault("B2", false, "sc1", 0., 0., ShortCircuitFault.ShortCircuitType.MONOPHASED);
+        ShortCircuitFault sc1 = new ShortCircuitFault("B2", "sc1", 0., 0., ShortCircuitFault.ShortCircuitType.MONOPHASED);
         faultList.add(sc1);
-        ShortCircuitFault sc2 = new ShortCircuitFault("B3", false, "sc2", 0., 0., ShortCircuitFault.ShortCircuitType.MONOPHASED);
+        ShortCircuitFault sc2 = new ShortCircuitFault("B3", "sc2", 0., 0., ShortCircuitFault.ShortCircuitType.MONOPHASED);
         faultList.add(sc2);
-        ShortCircuitFault sc3 = new ShortCircuitFault("B4", false, "sc3", 0., 0., ShortCircuitFault.ShortCircuitType.MONOPHASED);
+        ShortCircuitFault sc3 = new ShortCircuitFault("B4", "sc3", 0., 0., ShortCircuitFault.ShortCircuitType.MONOPHASED);
         faultList.add(sc3);
-        ShortCircuitFault sc4 = new ShortCircuitFault("B5", false, "sc4", 0., 0., ShortCircuitFault.ShortCircuitType.MONOPHASED);
+        ShortCircuitFault sc4 = new ShortCircuitFault("B5", "sc4", 0., 0., ShortCircuitFault.ShortCircuitType.MONOPHASED);
         faultList.add(sc4);
 
         // additional faults
-        ShortCircuitFault sc5 = new ShortCircuitFault("B2", false, "sc5", 0., 0., ShortCircuitFault.ShortCircuitType.BIPHASED);
+        ShortCircuitFault sc5 = new ShortCircuitFault("B2", "sc5", 0., 0., ShortCircuitFault.ShortCircuitType.BIPHASED);
         faultList.add(sc5);
-        ShortCircuitFault sc6 = new ShortCircuitFault("B3", false, "sc6", 0., 0., ShortCircuitFault.ShortCircuitType.BIPHASED_GROUND);
+        ShortCircuitFault sc6 = new ShortCircuitFault("B3", "sc6", 0., 0., ShortCircuitFault.ShortCircuitType.BIPHASED_GROUND);
         faultList.add(sc6);
 
         ShortCircuitEngineParameters.PeriodType periodType = ShortCircuitEngineParameters.PeriodType.TRANSIENT;
@@ -148,7 +148,7 @@ public class ShortCircuitMonophasedTest {
         additionalDataInfo.setMachineToGround(machineToGround);
 
         List<ShortCircuitFault> faultList = new ArrayList<>();
-        ShortCircuitFault sc1 = new ShortCircuitFault("BP", true, "sc1", 0., 0., ShortCircuitFault.ShortCircuitType.MONOPHASED);
+        ShortCircuitFault sc1 = new ShortCircuitFault("BP", "sc1", 0., 0., ShortCircuitFault.ShortCircuitType.MONOPHASED);
 
         faultList.add(sc1);
 

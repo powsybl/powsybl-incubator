@@ -56,7 +56,7 @@ public class ShortCircuitBiphasedGroundTest {
         MatrixFactory  matrixFactory = new DenseMatrixFactory();
 
         List<ShortCircuitFault> faultList = new ArrayList<>();
-        ShortCircuitFault sc1 = new ShortCircuitFault("B3", false, "sc1", 0., 0., ShortCircuitFault.ShortCircuitType.BIPHASED_GROUND);
+        ShortCircuitFault sc1 = new ShortCircuitFault("B3", "sc1", 0., 0., ShortCircuitFault.ShortCircuitType.BIPHASED_GROUND);
         faultList.add(sc1);
 
         ShortCircuitEngineParameters.PeriodType periodType = ShortCircuitEngineParameters.PeriodType.SUB_TRANSIENT;

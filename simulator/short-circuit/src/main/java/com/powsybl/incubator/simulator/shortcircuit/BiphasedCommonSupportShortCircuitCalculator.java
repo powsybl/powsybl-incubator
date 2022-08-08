@@ -122,11 +122,6 @@ public class BiphasedCommonSupportShortCircuitCalculator extends AbstractShortCi
         minusId.add(3, 0, -getmI2d().toDense().get(1, 0));
 
         mVd = zdf.times(minusId).toDense();
-        // TODO: mVd contains the delta values, not Vinit, this is why lines below are commented and will be removed
-        //mVd.add(0, 0, initVx);
-        //mVd.add(1, 0, initVy);
-        //mVd.add(2, 0, v2dxInit);
-        //mVd.add(3, 0, v2dyInit);
 
         // Vi :
         // [v1ix]          [ rdf_11  -xdf_11  rdf_12  -xdf_12 ]   [ i1dx ]

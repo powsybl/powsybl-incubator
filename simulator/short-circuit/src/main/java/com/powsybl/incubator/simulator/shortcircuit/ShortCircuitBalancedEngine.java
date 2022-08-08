@@ -27,7 +27,6 @@ public class ShortCircuitBalancedEngine extends AbstractShortCircuitEngine {
     public void run() { //can handle both selective and systematic analysis with one single matrix inversion
 
         // building a contingency list with all voltage levels
-        // TODO : generate a list with busses
         if (parameters.getAnalysisType() == ShortCircuitEngineParameters.AnalysisType.SYSTEMATIC) {
             buildSystematicList(ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
         }
@@ -69,7 +68,7 @@ public class ShortCircuitBalancedEngine extends AbstractShortCircuitEngine {
             double xth = linearResolutionResult.getXthz12();
 
             for (CalculationLocation calculationLocation : solverFaultList) {
-                ShortCircuitFault scfe = (ShortCircuitFault) calculationLocation; // TODO : better check but calculationLocation must be a ShortCircuitFault
+                ShortCircuitFault scfe = (ShortCircuitFault) calculationLocation;
                 ShortCircuitFault scf = null;
                 if (bus.getId().equals(scfe.getLfBusInfo())) {
                     scf = scfe;

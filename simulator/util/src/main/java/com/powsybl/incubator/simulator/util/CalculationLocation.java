@@ -45,10 +45,6 @@ public class CalculationLocation {
         return busLocationBiPhased;
     }
 
-    public boolean isVoltageUpdate() {
-        return voltageUpdate;
-    }
-
     public void setIidmBusInfo(Pair<String, Integer> iidmBusInfo) {
         this.iidmBusInfo = iidmBusInfo;
     }

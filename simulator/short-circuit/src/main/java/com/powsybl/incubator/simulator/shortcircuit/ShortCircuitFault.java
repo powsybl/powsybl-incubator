@@ -18,7 +18,6 @@ public class ShortCircuitFault extends CalculationLocation {
         this.zfr = zfr;
         this.zfi = zfi;
         this.type = type;
-        this.inputByBus = false;
         this.faultId = faultId;
     }
 
@@ -27,7 +26,6 @@ public class ShortCircuitFault extends CalculationLocation {
         this.zfr = zfr;
         this.zfi = zfi;
         this.type = type;
-        this.inputByBus = false;
         this.faultId = faultId;
         this.biphasedType = biphasedType;
     }
@@ -47,11 +45,7 @@ public class ShortCircuitFault extends CalculationLocation {
         C1_A2;
     }
 
-    // TODO : remove once input by bus is OK
-
     private String faultId;
-
-    private boolean inputByBus; // true if input given by bus
 
     private double zfr; //real part of the short circuit impedance Zf
     private double zfi; //imaginary part of the short circuit impedance Zf
@@ -59,10 +53,6 @@ public class ShortCircuitFault extends CalculationLocation {
     private ShortCircuitType type;
 
     private ShortCircuitBiphasedType biphasedType;
-
-    public boolean isInputByBus() {
-        return inputByBus;
-    }
 
     public ShortCircuitType getType() {
         return type;

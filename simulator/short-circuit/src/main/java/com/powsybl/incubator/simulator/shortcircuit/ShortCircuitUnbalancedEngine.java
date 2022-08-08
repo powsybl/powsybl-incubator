@@ -79,7 +79,7 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
                     || shortCircuitType == ShortCircuitFault.ShortCircuitType.BIPHASED
                     || shortCircuitType == ShortCircuitFault.ShortCircuitType.BIPHASED_GROUND) {
                 for (CalculationLocation calculationLocation : solverFaultList) {
-                    ShortCircuitFault scfe = (ShortCircuitFault) calculationLocation; // TODO : better check but calculationLocation must be a ShortCircuitFault
+                    ShortCircuitFault scfe = (ShortCircuitFault) calculationLocation;
                     if (lfBus1.getId().equals(scfe.getLfBusInfo()) && scfe.getType() == shortCircuitType) {
                         matchingFaults.add(scfe);
                     }
@@ -88,7 +88,7 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
 
             if (shortCircuitType == ShortCircuitFault.ShortCircuitType.BIPHASED_COMMON_SUPPORT) {
                 for (CalculationLocation calculationLocation : solverBiphasedFaultList) {
-                    ShortCircuitFault scfe = (ShortCircuitFault) calculationLocation; // TODO : better check but calculationLocation must be a ShortCircuitFault
+                    ShortCircuitFault scfe = (ShortCircuitFault) calculationLocation;
                     if (lfBus1.getId().equals(scfe.getLfBusInfo()) && scfe.getType() == shortCircuitType) {
                         matchingFaults.add(scfe);
                     }
@@ -357,8 +357,8 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
                 //direct
                 double edVr = vd.getValue().get(0, 0);
                 double edVi = vd.getValue().get(1, 0);
-                double edV2r = biphasedDirectResult.getDv2().get(busNum).get(0, 0); // TODO : check : probably wrong, should be busNum
-                double edV2i = biphasedDirectResult.getDv2().get(busNum).get(1, 0); // TODO : check order to access DV2 is OK
+                double edV2r = biphasedDirectResult.getDv2().get(busNum).get(0, 0);
+                double edV2i = biphasedDirectResult.getDv2().get(busNum).get(1, 0);
 
                 double idr = -mId.toDense().get(0, 0);
                 double idi = -mId.toDense().get(1, 0);

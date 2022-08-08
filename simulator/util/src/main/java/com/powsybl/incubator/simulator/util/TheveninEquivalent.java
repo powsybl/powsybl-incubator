@@ -12,6 +12,8 @@ import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.ThreeWindingsTransformer;
 import com.powsybl.openloadflow.ac.outerloop.AcLoadFlowParameters;
 import org.apache.commons.math3.util.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +23,8 @@ import java.util.Objects;
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
 public class TheveninEquivalent {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TheveninEquivalent.class);
 
     private final Network network;
 
@@ -44,7 +48,6 @@ public class TheveninEquivalent {
     }
 
     private static Pair<String, Integer > buildFaultBranchFromBusId(String busId, Network tmpNetwork) {
-        // TODO : remove code duplication with AbstractShortCircuitEngine
         Bus bus = tmpNetwork.getBusBreakerView().getBus(busId);
         String branchId = "";
         int branchSide = 0;
@@ -66,14 +69,13 @@ public class TheveninEquivalent {
         }
 
         if (!isFound) {
-            System.out.println(" input CC Bus " +  busId + " could not be associated with a bipole");
+            LOGGER.warn(" input CC Bus " +  busId + " could not be associated with a bipole");
         }
 
         return new Pair<>(branchId, branchSide);
     }
 
     private static Pair<String, Integer> buildFaultT3WbranchFromBusId(String busId, Network tmpNetwork) {
-        // TODO : remove code duplication with AbstractShortCircuitEngine
         Bus bus = tmpNetwork.getBusBreakerView().getBus(busId);
         String branchId = "";
         int legNum = 0;
@@ -102,7 +104,7 @@ public class TheveninEquivalent {
         }
 
         if (!isFound) {
-            System.out.println(" Bus " +  busId + " could not be associated with a tripole");
+            LOGGER.warn(" input CC Bus " +  busId + " could not be associated with a tripole");
         }
 
         return new Pair<>(branchId, legNum);

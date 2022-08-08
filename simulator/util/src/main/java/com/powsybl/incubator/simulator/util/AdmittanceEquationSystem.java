@@ -39,7 +39,7 @@ public final class AdmittanceEquationSystem {
     //Equations are created based on the branches connections
     private static void createImpedantBranch(VariableSet<VariableType> variableSet, EquationSystem<VariableType, EquationType> equationSystem,
                                              LfBranch branch, LfBus bus1, LfBus bus2, AdmittanceType admittanceType) {
-        if (bus1 != null && bus2 != null) { //TODO: check case when one bus is OK
+        if (bus1 != null && bus2 != null) {
             // Equation system Y*V = I (expressed in cartesian coordinates x,y)
             equationSystem.createEquation(bus1.getNum(), EquationType.BUS_YR)
                     .addTerm(new AdmittanceEquationTermX1(branch, bus1, bus2, variableSet, admittanceType));
@@ -86,7 +86,6 @@ public final class AdmittanceEquationSystem {
                             branch.getId());
                 }
             } else {
-                //System.out.println("X(" + branch.getId() + ")= " + piModel.getX());
                 createImpedantBranch(variableSet, equationSystem, branch, bus1, bus2, admittanceType);
             }
         }
@@ -241,9 +240,6 @@ public final class AdmittanceEquationSystem {
             g = g + gLoadEq + gGenEq;
             b = b + bLoadEq + bGenEq;
 
-            //System.out.println("result = g(" + bus.getId() + ")= " + g);
-            //System.out.println("result = b(" + bus.getId() + ")= " + b);
-
             if (Math.abs(g) > EPSILON || Math.abs(b) > EPSILON) {
                 equationSystem.createEquation(bus.getNum(), EquationType.BUS_YR)
                         .addTerm(new AdmittanceEquationTermShunt(g, b, bus, variableSet, true));
@@ -258,7 +254,7 @@ public final class AdmittanceEquationSystem {
                                                                     AcLoadFlowParameters acLoadFlowParameters) {
 
         // Following data Not needed for reduction methods
-        AdmittanceEquationSystem.AdmittancePeriodType admittancePeriodType = AdmittanceEquationSystem.AdmittancePeriodType.ADM_TRANSIENT; //TODO: not relevant for reduction: see how to improve that
+        AdmittanceEquationSystem.AdmittancePeriodType admittancePeriodType = AdmittanceEquationSystem.AdmittancePeriodType.ADM_TRANSIENT;
         EquationSystemFeeders equationsSystemFeeders = new EquationSystemFeeders();
         boolean isShuntsIgnore = false;
 
@@ -283,7 +279,7 @@ public final class AdmittanceEquationSystem {
 
         createBranches(network, variableSet, equationSystem, admittanceType);
         if (admittanceType != AdmittanceType.ADM_INJ) { //shunts created in the admittance matrix are only those that really exist in the network
-            createShunts(network, variableSet, equationSystem, admittanceType, admittanceVoltageProfileType, admittancePeriodType, isShuntsIgnore, feeders); // TODO : shuntIgnore was set at false
+            createShunts(network, variableSet, equationSystem, admittanceType, admittanceVoltageProfileType, admittancePeriodType, isShuntsIgnore, feeders);
         }
 
         return equationSystem;

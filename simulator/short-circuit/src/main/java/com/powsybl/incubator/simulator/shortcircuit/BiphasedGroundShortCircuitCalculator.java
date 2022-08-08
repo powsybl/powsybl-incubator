@@ -82,7 +82,6 @@ public class BiphasedGroundShortCircuitCalculator extends AbstractShortCircuitCa
 
         DenseMatrix twoId = getMatrixByType(BlocType.Id, 2.);
         DenseMatrix minusId = getMatrixByType(BlocType.Id, -1.);
-        DenseMatrix threeId = getMatrixByType(BlocType.Id, 3.);
 
         DenseMatrix twoZof = twoId.times(zof).toDense();
         DenseMatrix zdf2Zof = addMatrices22(zdf.toDense(), twoZof.toDense());

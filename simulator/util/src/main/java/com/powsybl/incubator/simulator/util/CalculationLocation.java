@@ -64,7 +64,7 @@ public class CalculationLocation {
         this.lfBusInfo = lfBusInfo;
     }
 
-    public void setBus2Location(String lfBus2Info) {
+    public void setLfBus2Info(String lfBus2Info) {
         this.lfBus2Info = lfBus2Info;
     }
 

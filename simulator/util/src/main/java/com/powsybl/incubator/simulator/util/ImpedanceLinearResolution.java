@@ -359,7 +359,7 @@ public  class ImpedanceLinearResolution {
                     Pair<LfBus, LfBus> bussesPair = new Pair<>(bus1, bus2);
                     biphasedinputBusses.add(bussesPair);
                     biphasedFaultBranchLocationInfo.setLfBusInfo(bus1.getId());
-                    biphasedFaultBranchLocationInfo.setBus2Location(bus2.getId());
+                    biphasedFaultBranchLocationInfo.setLfBus2Info(bus2.getId());
                 }
             }
         }

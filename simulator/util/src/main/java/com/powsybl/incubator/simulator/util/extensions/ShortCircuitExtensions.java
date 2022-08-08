@@ -10,6 +10,8 @@ import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.Generator;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.extensions.GeneratorShortCircuit;
+import com.powsybl.incubator.simulator.util.extensions.iidm.GeneratorShortCircuit2;
+import com.powsybl.incubator.simulator.util.extensions.iidm.GeneratorShortCircuitAdder2;
 import com.powsybl.openloadflow.network.LfBranch;
 import com.powsybl.openloadflow.network.LfBus;
 import com.powsybl.openloadflow.network.LfGenerator;
@@ -165,23 +167,31 @@ public final class ShortCircuitExtensions {
         double subtransX = extension.getDirectSubtransX();
         double stepUpTfoX = extension.getStepUpTransformerX();
 
-        double transRd = getParameterValue(additionalDataInfo.getMachineIdToTransRd(), generator.getId(), 0.);
-        double subTransRd = getParameterValue(additionalDataInfo.getMachineIdToSubTransRd(), generator.getId(), 0.);
-        boolean toGround = getParameterValue(additionalDataInfo.getMachineToGround(), generator.getId(), false);
-        double coeffRo = getParameterValue(additionalDataInfo.getMachineCoeffRo(), generator.getId(), 1.);
-        double coeffXo = getParameterValue(additionalDataInfo.getMachineCoeffXo(), generator.getId(), 1.);
+        double transRd = GeneratorShortCircuitAdder2.DEFAULT_TRANS_RD;
+        double subTransRd = GeneratorShortCircuitAdder2.DEFAULT_SUB_TRANS_RD;
+        boolean toGround = GeneratorShortCircuitAdder2.DEFAULT_TO_GROUND;
+        double coeffRo = GeneratorShortCircuitAdder2.DEFAULT_COEFF_RO;
+        double coeffXo = GeneratorShortCircuitAdder2.DEFAULT_COEFF_XO;
+        GeneratorShortCircuit2 extensions2 = generator.getExtension(GeneratorShortCircuit2.class);
+        if (extensions2 != null) {
+            transRd = extensions2.getTransRd();
+            subTransRd = extensions2.getSubTransRd();
+            toGround = extensions2.isToGround();
+            coeffRo = extensions2.getCoeffRo();
+            coeffXo = extensions2.getCoeffXo();
+        }
 
         lfGenerator.setProperty(PROPERTY_NAME, new ShortCircuitGenerator(transX,
-                                                                                  stepUpTfoX,
-                                                                                  ShortCircuitGenerator.MachineType.SYNCHRONOUS_GEN,
-                                                                                  transRd,
-                                                                                  0.,
-                                                                                  subTransRd,
-                                                                                  subtransX,
-                                                                                  toGround,
-                                                                                  0.,
-                                                                                  0.,
-                                                                                  coeffRo,
-                                                                                  coeffXo)); // TODO: set the right type when info available
+                                                                         stepUpTfoX,
+                                                                          ShortCircuitGenerator.MachineType.SYNCHRONOUS_GEN,
+                                                                         transRd,
+                                                                         0.,
+                                                                         subTransRd,
+                                                                         subtransX,
+                                                                         toGround,
+                                                                         0.,
+                                                                         0.,
+                                                                         coeffRo,
+                                                                         coeffXo)); // TODO: set the right type when info available
     }
 }

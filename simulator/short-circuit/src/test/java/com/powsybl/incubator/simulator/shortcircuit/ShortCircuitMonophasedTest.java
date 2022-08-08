@@ -8,8 +8,9 @@ package com.powsybl.incubator.simulator.shortcircuit;
 
 import com.powsybl.iidm.network.*;
 import com.powsybl.iidm.network.extensions.GeneratorShortCircuitAdder;
-import com.powsybl.incubator.simulator.util.*;
+import com.powsybl.incubator.simulator.util.ReferenceNetwork;
 import com.powsybl.incubator.simulator.util.extensions.AdditionalDataInfo;
+import com.powsybl.incubator.simulator.util.extensions.iidm.GeneratorShortCircuitAdder2;
 import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
@@ -141,11 +142,9 @@ public class ShortCircuitMonophasedTest {
 
         LoadFlowResult resultntg = loadFlowRunner.run(network, parameters);
 
-        Map<String, Boolean> machineToGround = new HashMap<>(); //true if the generating unit has its neutral linked to the ground
-        machineToGround.put("GA", false);
-        machineToGround.put("GB", true);
-
-        additionalDataInfo.setMachineToGround(machineToGround);
+        network.getGenerator("GB").newExtension(GeneratorShortCircuitAdder2.class)
+                .withToGround(true)
+                .add();
 
         List<ShortCircuitFault> faultList = new ArrayList<>();
         ShortCircuitFault sc1 = new ShortCircuitFault("BP", true, "sc1", 0., 0., ShortCircuitFault.ShortCircuitType.MONOPHASED);
@@ -319,10 +318,6 @@ public class ShortCircuitMonophasedTest {
                 .setB2(0.0)
                 .add();
 
-        Map<String, Double> machineToTransRd = new HashMap<>(); //map to store the real part of the transient impedance
-        Map<String, Double> machineToSubTransRd = new HashMap<>();
-        Map<String, Boolean> machineToGround =  new HashMap<>();
-
         Map<String, AdditionalDataInfo.LegType> leg1type =  new HashMap<>();
         Map<String, AdditionalDataInfo.LegType> leg2type =  new HashMap<>();
 
@@ -334,10 +329,8 @@ public class ShortCircuitMonophasedTest {
         lineIdToCoeffXo.put("BA_BP", coeffXo1);
         lineIdToCoeffXo.put("BP_BB", coeffXo2);
 
-        AdditionalDataInfo additionalDataInfo = new AdditionalDataInfo(machineToTransRd, machineToSubTransRd, machineToGround,
-                leg1type, leg2type, lineIdToCoeffRo, lineIdToCoeffXo, tfo2wIdToCoeffRo, tfo2wIdToCoeffXo);
+        AdditionalDataInfo additionalDataInfo = new AdditionalDataInfo(leg1type, leg2type, lineIdToCoeffRo, lineIdToCoeffXo, tfo2wIdToCoeffRo, tfo2wIdToCoeffXo);
 
-        Pair<Network, AdditionalDataInfo> result = new Pair<>(network, additionalDataInfo);
-        return result;
+        return new Pair<>(network, additionalDataInfo);
     }
 }

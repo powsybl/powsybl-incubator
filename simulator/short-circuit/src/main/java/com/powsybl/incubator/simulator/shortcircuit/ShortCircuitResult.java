@@ -12,6 +12,7 @@ import com.powsybl.openloadflow.network.LfBranch;
 import com.powsybl.openloadflow.network.LfBus;
 import com.powsybl.openloadflow.network.LfNetwork;
 import com.powsybl.openloadflow.network.PiModel;
+import org.apache.commons.math3.util.Pair;
 
 import java.util.*;
 
@@ -332,10 +333,14 @@ public class ShortCircuitResult {
         return iFortescue.get(1, 0);
     }
 
-    public double getIcc() {
+    public Pair<Double, Double> getIcc() {
         // Icc = 1/sqrt(3) * Eth(pu) / Zth(pu) * SB(MVA) * 10e6 / (VB(kV) * 10e3)
         //return Math.sqrt((getIdx() * getIdx() + getIdy() * getIdy()) / 3) * 1000. * 100. / lfBus.getNominalV();
-        return Math.sqrt((getIdx() * getIdx() + getIdy() * getIdy()) / 3) * 1000. * 100.;
+
+        double magnitudeIcc = Math.sqrt((getIdx() * getIdx() + getIdy() * getIdy()) / 3) * 1000. * 100.  / lfBus.getNominalV();
+        double angleIcc = Math.atan2(getIdy(), getIdx());
+
+        return new Pair<>(magnitudeIcc, angleIcc);
     }
 
     public double getIk() {
@@ -345,7 +350,7 @@ public class ShortCircuitResult {
 
     public double getPcc() {
         //Pcc = |Eth|*Icc*sqrt(3)
-        return Math.sqrt(3) * getIcc() * lfBus.getV() * lfBus.getNominalV(); //TODO: check formula
+        return Math.sqrt(3) * getIcc().getKey() * lfBus.getV() * lfBus.getNominalV(); //TODO: check formula
     }
 
     public void setTrueVoltageProfileUpdate() {

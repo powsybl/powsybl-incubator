@@ -105,8 +105,8 @@ public class ShortCircuitBalancedTest {
         String providerName = provider.getName();
         String providerVersion = provider.getVersion();
 
-        assertEquals(4.646530628204346, frs.get(1).getCurrent().getDirectMagnitude(), 0.00001);
-        assertEquals(5.100971698760986, frs.get(0).getCurrent().getDirectMagnitude(), 0.00001);
+        assertEquals(2.68267577453832, frs.get(1).getCurrent().getDirectMagnitude() / 1000., 0.00001); // expressed in kA and not A
+        assertEquals(2.945047378902121, frs.get(0).getCurrent().getDirectMagnitude() / 1000., 0.00001);
         assertEquals("OpenShortCircuit", providerName);
         assertEquals("0.1", providerVersion);
 
@@ -143,10 +143,10 @@ public class ShortCircuitBalancedTest {
 
         List<FaultResult> frs = scar.getFaultResults();
 
-        assertEquals(6.143869876861572, frs.get(0).getCurrent().getDirectMagnitude(), 0.00001);
-        assertEquals(6.491052150726318, frs.get(1).getCurrent().getDirectMagnitude(), 0.00001);
-        assertEquals(6.222183704376221, frs.get(2).getCurrent().getDirectMagnitude(), 0.00001);
-        assertEquals(5.909138679504394, frs.get(3).getCurrent().getDirectMagnitude(), 0.00001);
+        assertEquals(3.5471650598424766, frs.get(0).getCurrent().getDirectMagnitude() / 1000., 0.00001);
+        assertEquals(3.7476107037718006, frs.get(1).getCurrent().getDirectMagnitude() / 1000., 0.00001);
+        assertEquals(3.5923793102301785, frs.get(2).getCurrent().getDirectMagnitude() / 1000., 0.00001);
+        assertEquals(3.411642741114655, frs.get(3).getCurrent().getDirectMagnitude() / 1000., 0.00001);
 
     }
 
@@ -176,8 +176,8 @@ public class ShortCircuitBalancedTest {
 
         List<FaultResult> frs = scar.getFaultResults();
 
-        assertEquals(4.888257026672363, frs.get(1).getCurrent().getDirectMagnitude(), 0.00001);
-        assertEquals(5.100976467132568, frs.get(0).getCurrent().getDirectMagnitude(), 0.00001);
+        assertEquals(1.881491000035193, frs.get(1).getCurrent().getDirectMagnitude() / 1000., 0.00001);
+        assertEquals(2.945050248502227, frs.get(0).getCurrent().getDirectMagnitude() / 1000., 0.00001);
 
     }
 
@@ -239,14 +239,13 @@ public class ShortCircuitBalancedTest {
         scbEngine.run();
         List<Double> val = new ArrayList<>();
         for (Map.Entry<ShortCircuitFault, ShortCircuitResult> res : scbEngine.resultsPerFault.entrySet()) {
-            val.add(res.getValue().getIcc());
+            val.add(res.getValue().getIcc().getKey());
         }
 
         // here Icc = 1/sqrt(3)*Eth(pu)/Zth(pu100)*Sb100/Vb*1000
-        // here new Icc = 1/sqrt(3)*Eth(pu)/Zth(pu100)*Sb100*1000
         // and Idocumentation = Ib*Eth(pu)/Zth(pu15) then Idocumentation = Icc * Ib * sqrt(3) * Vb / (1000 * Sb15)  with Ib = 18.064
         // in the documentation, expected Idocumentation ~ 35.656 kA
-        assertEquals(35.69309945355154, val.get(0) * 18.064 * 0.277 * Math.sqrt(3) / (1000. * 15.) / 0.277, 0.00001);
+        assertEquals(35.69309945355154, val.get(0) * 18.064 * 0.277 * Math.sqrt(3) / (1000. * 15.), 0.00001);
 
     }
 

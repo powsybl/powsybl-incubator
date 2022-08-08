@@ -112,11 +112,11 @@ public class TheveninEquivalent {
 
     private static ImpedanceLinearResolutionParameters generateAdmittanceLinearResolutionParam(Network network, TheveninEquivalentParameters parameters) {
 
-        boolean voltageUpdate = parameters.isVoltageUpdate(); // TODO: check that in example, no voltage update is asked
+        boolean voltageUpdate = parameters.isVoltageUpdate();
 
         AcLoadFlowParameters acLoadFlowParameters = parameters.getAcLoadFlowParameters();
 
-        AdmittanceEquationSystem.AdmittanceVoltageProfileType admittanceVoltageProfileType = AdmittanceEquationSystem.AdmittanceVoltageProfileType.CALCULATED; //TODO: put nominal if Thevenin requires nominal voltage use
+        AdmittanceEquationSystem.AdmittanceVoltageProfileType admittanceVoltageProfileType = AdmittanceEquationSystem.AdmittanceVoltageProfileType.CALCULATED;
         if (parameters.getTheveninVoltageProfileType() == TheveninEquivalentParameters.TheveninVoltageProfileType.NOMINAL) {
             admittanceVoltageProfileType = AdmittanceEquationSystem.AdmittanceVoltageProfileType.NOMINAL;
         }

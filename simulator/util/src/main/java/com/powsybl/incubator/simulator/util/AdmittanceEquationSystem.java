@@ -61,7 +61,6 @@ public final class AdmittanceEquationSystem {
     }
 
     public enum AdmittanceType {
-        //TODO : adapt for the different kinds of admittance matrices
         ADM_INJ, // all external nodal injections that does not come from branches are considered as current injectors (including shunts elements)
         ADM_SHUNT, // all external  nodal injections that does not come from branches are considered as current injectors (but not shunt elements)
         ADM_ADMIT, // all external  nodal injections are transformed into passive shunt elements included in the Y matrix (then [Ie] should be [0])
@@ -220,7 +219,7 @@ public final class AdmittanceEquationSystem {
                 feederList.add(shuntFeeder);
 
                 Pair<Double, Double> bAndG = getYtransfromRdXd(bus, admittancePeriodType, feederList, admittanceType); // ! updates feederList
-                bGenEq = bAndG.getValue(); //TODO : check how the verify that the generators are operating
+                bGenEq = bAndG.getValue(); //TODO : check how to verify that the generators are operating
                 gGenEq = bAndG.getKey();
 
                 //shortCircuitNetwork.busToFeeder.put(bus, feederList);
@@ -232,7 +231,7 @@ public final class AdmittanceEquationSystem {
                 List<EquationSystemFeeder> feederList = new ArrayList<>(); // not used yet in homopolar
 
                 Pair<Double, Double> bAndG = getYtransfromRdXd(bus, admittancePeriodType, feederList, admittanceType); // ! updates feederList
-                bGenEq = bAndG.getValue(); //TODO : check how the verify that the generators are operating
+                bGenEq = bAndG.getValue(); //TODO : check how to verify that the generators are operating
                 gGenEq = bAndG.getKey();
 
             }

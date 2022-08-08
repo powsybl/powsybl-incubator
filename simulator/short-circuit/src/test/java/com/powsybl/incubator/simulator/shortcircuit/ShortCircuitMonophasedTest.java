@@ -319,12 +319,6 @@ public class ShortCircuitMonophasedTest {
                 .setB2(0.0)
                 .add();
 
-        Map<String, AdditionalDataInfo.LegType> leg1type =  new HashMap<>();
-        Map<String, AdditionalDataInfo.LegType> leg2type =  new HashMap<>();
-
-        Map<String, Double> tfo2wIdToCoeffRo = new HashMap<>();
-        Map<String, Double> tfo2wIdToCoeffXo = new HashMap<>();
-
         babp.newExtension(LineShortCircuitAdder.class)
                 .withCoeffXo(coeffXo1)
                 .add();
@@ -332,7 +326,7 @@ public class ShortCircuitMonophasedTest {
                 .withCoeffXo(coeffXo2)
                 .add();
 
-        AdditionalDataInfo additionalDataInfo = new AdditionalDataInfo(leg1type, leg2type, tfo2wIdToCoeffRo, tfo2wIdToCoeffXo);
+        AdditionalDataInfo additionalDataInfo = new AdditionalDataInfo();
 
         return new Pair<>(network, additionalDataInfo);
     }

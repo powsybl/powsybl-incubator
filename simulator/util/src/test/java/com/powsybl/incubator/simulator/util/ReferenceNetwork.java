@@ -9,8 +9,10 @@ package com.powsybl.incubator.simulator.util;
 import com.powsybl.iidm.network.*;
 import com.powsybl.iidm.network.extensions.GeneratorShortCircuitAdder;
 import com.powsybl.incubator.simulator.util.extensions.AdditionalDataInfo;
+import com.powsybl.incubator.simulator.util.extensions.LegConnectionType;
 import com.powsybl.incubator.simulator.util.extensions.iidm.GeneratorShortCircuitAdder2;
 import com.powsybl.incubator.simulator.util.extensions.iidm.LineShortCircuitAdder;
+import com.powsybl.incubator.simulator.util.extensions.iidm.TwoWindingsTransformerShortCircuitAdder;
 import org.apache.commons.math3.util.Pair;
 import org.joda.time.DateTime;
 
@@ -579,7 +581,7 @@ public final class ReferenceNetwork {
                 .setQ0(qEquivalentFeeder)
                 .add();
 
-        substation123.newTwoWindingsTransformer()
+        var t1 = substation123.newTwoWindingsTransformer()
                 .setId("T1")
                 .setVoltageLevel1(vl1.getId())
                 .setBus1(bus1.getId())
@@ -595,7 +597,7 @@ public final class ReferenceNetwork {
                 .setB(0.0D)
                 .setRatedS(630.)
                 .add();
-        substation123.newTwoWindingsTransformer()
+        var t2 = substation123.newTwoWindingsTransformer()
                 .setId("T2")
                 .setVoltageLevel1(vl1.getId())
                 .setBus1(bus1.getId())
@@ -678,13 +680,6 @@ public final class ReferenceNetwork {
 
         //additional data
 
-        Map<String, AdditionalDataInfo.LegType> leg1type =  new HashMap<>();
-        Map<String, AdditionalDataInfo.LegType> leg2type =  new HashMap<>();
-        leg1type.put("T1", AdditionalDataInfo.LegType.DELTA);
-        leg1type.put("T2", AdditionalDataInfo.LegType.DELTA);
-        leg2type.put("T1", AdditionalDataInfo.LegType.Y_GROUNDED);
-        leg2type.put("T2", AdditionalDataInfo.LegType.Y_GROUNDED);
-
         l1.newExtension(LineShortCircuitAdder.class)
                 .withCoeffRo(coeffRoL1)
                 .withCoeffXo(coeffXoL1)
@@ -702,14 +697,20 @@ public final class ReferenceNetwork {
                 .withCoeffXo(coeffXoL4)
                 .add();
 
-        Map<String, Double> tfo2wIdToCoeffRo = new HashMap<>();
-        Map<String, Double> tfo2wIdToCoeffXo = new HashMap<>();
-        tfo2wIdToCoeffRo.put("T1", coeffRoT1);
-        tfo2wIdToCoeffRo.put("T2", coeffRoT2);
-        tfo2wIdToCoeffXo.put("T1", coeffXoT1);
-        tfo2wIdToCoeffXo.put("T2", coeffXoT2);
+        t1.newExtension(TwoWindingsTransformerShortCircuitAdder.class)
+                .withCoeffRo(coeffRoT1)
+                .withCoeffXo(coeffXoT1)
+                .withLeg1ConnectionType(LegConnectionType.DELTA)
+                .withLeg2ConnectionType(LegConnectionType.Y_GROUNDED)
+                .add();
+        t2.newExtension(TwoWindingsTransformerShortCircuitAdder.class)
+                .withCoeffRo(coeffRoT2)
+                .withCoeffXo(coeffXoT2)
+                .withLeg1ConnectionType(LegConnectionType.DELTA)
+                .withLeg2ConnectionType(LegConnectionType.Y_GROUNDED)
+                .add();
 
-        AdditionalDataInfo additionalDataInfo = new AdditionalDataInfo(leg1type, leg2type, tfo2wIdToCoeffRo, tfo2wIdToCoeffXo);
+        AdditionalDataInfo additionalDataInfo = new AdditionalDataInfo();
 
         return new Pair<>(network, additionalDataInfo);
     }
@@ -1145,7 +1146,7 @@ public final class ReferenceNetwork {
                 .setB2(0.0)
                 .add();
 
-        substation56.newTwoWindingsTransformer()
+        var t5 = substation56.newTwoWindingsTransformer()
                 .setId("T5")
                 .setVoltageLevel1(vl5.getId())
                 .setBus1(bus5.getId())
@@ -1161,7 +1162,8 @@ public final class ReferenceNetwork {
                 .setB(0.0D)
                 .setRatedS(31.5)
                 .add();
-        substation56.newTwoWindingsTransformer()
+
+        var t6 = substation56.newTwoWindingsTransformer()
                 .setId("T6")
                 .setVoltageLevel1(vl5.getId())
                 .setBus1(bus5.getId())
@@ -1269,29 +1271,26 @@ public final class ReferenceNetwork {
                 .add();
 
         // transformers :
-        Map<String, AdditionalDataInfo.LegType> leg1type =  new HashMap<>();
-        Map<String, AdditionalDataInfo.LegType> leg2type =  new HashMap<>();
-        Map<String, AdditionalDataInfo.LegType> leg3type =  new HashMap<>(); // needed only for three windings transformers
+        Map<String, LegConnectionType> leg1type =  new HashMap<>();
+        Map<String, LegConnectionType> leg2type =  new HashMap<>();
+        Map<String, LegConnectionType> leg3type =  new HashMap<>(); // needed only for three windings transformers
 
-        leg1type.put("T5", AdditionalDataInfo.LegType.Y);
-        leg1type.put("T6", AdditionalDataInfo.LegType.Y);
-        leg2type.put("T5", AdditionalDataInfo.LegType.Y);
-        leg2type.put("T6", AdditionalDataInfo.LegType.Y_GROUNDED);
+        leg1type.put("T3", LegConnectionType.Y_GROUNDED);
+        leg1type.put("T4", LegConnectionType.Y);
+        leg2type.put("T3", LegConnectionType.Y);
+        leg2type.put("T4", LegConnectionType.Y_GROUNDED);
 
-        leg1type.put("T3", AdditionalDataInfo.LegType.Y_GROUNDED);
-        leg1type.put("T4", AdditionalDataInfo.LegType.Y);
-        leg2type.put("T3", AdditionalDataInfo.LegType.Y);
-        leg2type.put("T4", AdditionalDataInfo.LegType.Y_GROUNDED);
+        leg3type.put("T3", LegConnectionType.DELTA);
+        leg3type.put("T4", LegConnectionType.DELTA);
 
-        leg3type.put("T3", AdditionalDataInfo.LegType.DELTA);
-        leg3type.put("T4", AdditionalDataInfo.LegType.DELTA);
-
-        Map<String, Double> tfo2wIdToCoeffRo = new HashMap<>();
-        Map<String, Double> tfo2wIdToCoeffXo = new HashMap<>();
-        tfo2wIdToCoeffRo.put("T5", 1.); // TODO : remove if not used
-        tfo2wIdToCoeffRo.put("T6", 1.);
-        tfo2wIdToCoeffXo.put("T5", 1.);
-        tfo2wIdToCoeffXo.put("T6", 1.);
+        t5.newExtension(TwoWindingsTransformerShortCircuitAdder.class)
+                .withLeg1ConnectionType(LegConnectionType.Y)
+                .withLeg2ConnectionType(LegConnectionType.Y)
+                .add();
+        t6.newExtension(TwoWindingsTransformerShortCircuitAdder.class)
+                .withLeg1ConnectionType(LegConnectionType.Y)
+                .withLeg2ConnectionType(LegConnectionType.Y_GROUNDED)
+                .add();
 
         Map<String, Double> tfo3wIdToLeg1CoeffRo = new HashMap<>();
         Map<String, Double> tfo3wIdToLeg1CoeffXo = new HashMap<>();
@@ -1306,7 +1305,6 @@ public final class ReferenceNetwork {
         tfo3wIdToLeg3CoeffRo.put("T4", coeffRoT4);
         tfo3wIdToLeg3CoeffXo.put("T4", coeffXoT4);
 
-        Map<String, Boolean> tfo2wIdToFreeFluxes = new HashMap<>(); // free fluxes mean that magnetizing impedance Zm is infinite, by default, fluxes are forced and Zm exists
         Map<String, Boolean> tfo3wIdLeg1ToFreeFluxes = new HashMap<>();
         Map<String, Boolean> tfo3wIdLeg2ToFreeFluxes = new HashMap<>();
         Map<String, Boolean> tfo3wIdLeg3ToFreeFluxes = new HashMap<>();
@@ -1341,12 +1339,12 @@ public final class ReferenceNetwork {
                 .add();
 
         AdditionalDataInfo additionalDataInfo = new AdditionalDataInfo(
-                leg1type, leg2type, tfo2wIdToCoeffRo, tfo2wIdToCoeffXo,
+                leg1type, leg2type,
                 leg3type,
                 tfo3wIdToLeg1CoeffRo, tfo3wIdToLeg1CoeffXo,
                 tfo3wIdToLeg2CoeffRo, tfo3wIdToLeg2CoeffXo,
                 tfo3wIdToLeg3CoeffRo, tfo3wIdToLeg3CoeffXo,
-                tfo2wIdToFreeFluxes, tfo3wIdLeg1ToFreeFluxes, tfo3wIdLeg2ToFreeFluxes, tfo3wIdLeg3ToFreeFluxes);
+                tfo3wIdLeg1ToFreeFluxes, tfo3wIdLeg2ToFreeFluxes, tfo3wIdLeg3ToFreeFluxes);
 
         return new Pair<>(network, additionalDataInfo);
     }

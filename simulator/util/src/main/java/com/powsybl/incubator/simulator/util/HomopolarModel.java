@@ -34,8 +34,8 @@ public class HomopolarModel {
     private double xgb = 0;
 
     // if the branch is not a transfo, then it is the correct default behaviour
-    private ShortCircuitTransformerLeg.LegConnectionType leg1ConnectionType = ShortCircuitTransformerLeg.LegConnectionType.Y_GROUNDED;
-    private ShortCircuitTransformerLeg.LegConnectionType leg2ConnectionType = ShortCircuitTransformerLeg.LegConnectionType.Y_GROUNDED;
+    private LegConnectionType leg1ConnectionType = LegConnectionType.Y_GROUNDED;
+    private LegConnectionType leg2ConnectionType = LegConnectionType.Y_GROUNDED;
 
     private boolean freeFluxes = false;
 
@@ -75,11 +75,11 @@ public class HomopolarModel {
         return xgb;
     }
 
-    public ShortCircuitTransformerLeg.LegConnectionType getLeg1ConnectionType() {
+    public LegConnectionType getLeg1ConnectionType() {
         return leg1ConnectionType;
     }
 
-    public ShortCircuitTransformerLeg.LegConnectionType getLeg2ConnectionType() {
+    public LegConnectionType getLeg2ConnectionType() {
         return leg2ConnectionType;
     }
 
@@ -202,19 +202,19 @@ public class HomopolarModel {
         double xob = xo / 2.;
 
         // we suppose that all impedance and admittance terms of the homopolar extension are per-unitized on Sbase = 100 MVA and Vnom = Vnom on B side
-        if ((leg1ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.Y && leg2ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.Y)
-                || (leg1ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.Y && leg2ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.DELTA)
-                || (leg1ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.DELTA && leg2ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.Y)
-                || (leg1ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.DELTA && leg2ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.DELTA)
-                || (leg1ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.Y_GROUNDED && leg2ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.Y && freeFluxes)
-                || (leg1ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.Y && leg2ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.Y_GROUNDED && freeFluxes)) {
+        if ((leg1ConnectionType == LegConnectionType.Y && leg2ConnectionType == LegConnectionType.Y)
+                || (leg1ConnectionType == LegConnectionType.Y && leg2ConnectionType == LegConnectionType.DELTA)
+                || (leg1ConnectionType == LegConnectionType.DELTA && leg2ConnectionType == LegConnectionType.Y)
+                || (leg1ConnectionType == LegConnectionType.DELTA && leg2ConnectionType == LegConnectionType.DELTA)
+                || (leg1ConnectionType == LegConnectionType.Y_GROUNDED && leg2ConnectionType == LegConnectionType.Y && freeFluxes)
+                || (leg1ConnectionType == LegConnectionType.Y && leg2ConnectionType == LegConnectionType.Y_GROUNDED && freeFluxes)) {
             // homopolar admittance matrix is zero-Matrix
             mo.set(0, 0, infiniteImpedanceAdmittance);
             mo.set(1, 1, infiniteImpedanceAdmittance);
             mo.set(2, 2, infiniteImpedanceAdmittance);
             mo.set(3, 3, infiniteImpedanceAdmittance);
 
-        } else if (leg1ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.Y_GROUNDED && leg2ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.Y) {
+        } else if (leg1ConnectionType == LegConnectionType.Y_GROUNDED && leg2ConnectionType == LegConnectionType.Y) {
             // we suppose that Zoa = Zo given in input for the transformer
             // we suppose that if Yom given in input is zero, then Zom = is zero : TODO : see if there is a more robust way to handle this
 
@@ -231,7 +231,7 @@ public class HomopolarModel {
             mo.set(1, 1, go11);
             mo.set(2, 2, infiniteImpedanceAdmittance);
             mo.set(3, 3, infiniteImpedanceAdmittance);
-        } else if (leg1ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.Y && leg2ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.Y_GROUNDED) {
+        } else if (leg1ConnectionType == LegConnectionType.Y && leg2ConnectionType == LegConnectionType.Y_GROUNDED) {
             // we suppose that zob = Zo given in input for the transformer
             // we suppose that if Yom given in input is zero, then Zom = is zero : TODO : see if there is a more robust way to handle this
 
@@ -248,7 +248,7 @@ public class HomopolarModel {
             mo.set(2, 3, -bo22);
             mo.set(3, 2, bo22);
             mo.set(3, 3, go22);
-        } else if (leg1ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.Y_GROUNDED && leg2ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.DELTA) {
+        } else if (leg1ConnectionType == LegConnectionType.Y_GROUNDED && leg2ConnectionType == LegConnectionType.DELTA) {
 
             // we suppose that if Yom given in input is zero, then Zom = is zero : TODO : see if there is a more robust way to handle this
 
@@ -284,7 +284,7 @@ public class HomopolarModel {
             mo.set(2, 2, infiniteImpedanceAdmittance);
             mo.set(3, 3, infiniteImpedanceAdmittance);
 
-        } else if (leg1ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.DELTA && leg2ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.Y_GROUNDED) {
+        } else if (leg1ConnectionType == LegConnectionType.DELTA && leg2ConnectionType == LegConnectionType.Y_GROUNDED) {
 
             // we have yo22 = 1 / ( 3Zga(pu) + Zob(pu) + 1/(1/Zom(pu)+1/Zoa(pu)) )
             // and yo12 = yo11 = yo21 = 0.
@@ -318,7 +318,7 @@ public class HomopolarModel {
             mo.set(3, 2, bo22);
             mo.set(3, 3, go22);
 
-        } else if (leg1ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.Y_GROUNDED && leg2ConnectionType == ShortCircuitTransformerLeg.LegConnectionType.Y_GROUNDED) {
+        } else if (leg1ConnectionType == LegConnectionType.Y_GROUNDED && leg2ConnectionType == LegConnectionType.Y_GROUNDED) {
 
             double go11;
             double bo11;

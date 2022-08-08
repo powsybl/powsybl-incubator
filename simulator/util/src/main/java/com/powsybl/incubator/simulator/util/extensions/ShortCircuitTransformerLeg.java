@@ -13,12 +13,6 @@ import java.util.Objects;
  */
 public class ShortCircuitTransformerLeg {
 
-    public enum LegConnectionType {
-        Y,
-        Y_GROUNDED,
-        DELTA;
-    }
-
     private LegConnectionType legConnectionType;
 
     private final double coeffRo; // only used for now for 3 windings transformers

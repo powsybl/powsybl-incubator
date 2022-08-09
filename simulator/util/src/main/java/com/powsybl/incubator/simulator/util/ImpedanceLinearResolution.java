@@ -46,7 +46,7 @@ public  class ImpedanceLinearResolution {
     public ImpedanceLinearResolution(Network network, ImpedanceLinearResolutionParameters parameters) {
         this.networks = LfNetwork.load(network, new LfNetworkLoaderImpl(), new LfNetworkParameters(new FirstSlackBusSelector()));
         this.parameters = Objects.requireNonNull(parameters);
-        ShortCircuitExtensions.add(network, networks, parameters.getAdditionalDataInfo());
+        ShortCircuitExtensions.add(network, networks);
     }
 
     public class ImpedanceLinearResolutionResult {

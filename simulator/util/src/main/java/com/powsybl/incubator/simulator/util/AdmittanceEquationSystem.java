@@ -7,7 +7,7 @@
 package com.powsybl.incubator.simulator.util;
 
 import com.powsybl.incubator.simulator.util.extensions.ShortCircuitExtensions;
-import com.powsybl.incubator.simulator.util.extensions.ShortCircuitGenerator;
+import com.powsybl.incubator.simulator.util.extensions.ScGenerator;
 import com.powsybl.openloadflow.ac.outerloop.AcLoadFlowContext;
 import com.powsybl.openloadflow.ac.outerloop.AcLoadFlowParameters;
 import com.powsybl.openloadflow.ac.outerloop.AcloadFlowEngine;
@@ -121,7 +121,7 @@ public final class AdmittanceEquationSystem {
         double tmpG = 0.;
         double tmpB = 0.;
         for (LfGenerator lfgen : bus.getGenerators()) { //compute R'd or R"d from generators at bus
-            ShortCircuitGenerator scGen = (ShortCircuitGenerator) lfgen.getProperty(ShortCircuitExtensions.PROPERTY_NAME);
+            ScGenerator scGen = (ScGenerator) lfgen.getProperty(ShortCircuitExtensions.PROPERTY_NAME);
             double rd = scGen.getTransRd() + scGen.getStepUpTfoR();
             double xd = scGen.getTransXd() + scGen.getStepUpTfoX();
             if (admittancePeriodType == AdmittancePeriodType.ADM_SUB_TRANSIENT) {

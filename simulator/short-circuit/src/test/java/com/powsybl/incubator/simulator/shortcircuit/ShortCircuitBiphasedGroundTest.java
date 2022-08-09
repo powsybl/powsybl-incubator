@@ -7,14 +7,12 @@
 package com.powsybl.incubator.simulator.shortcircuit;
 
 import com.powsybl.iidm.network.Network;
-import com.powsybl.incubator.simulator.util.*;
-import com.powsybl.incubator.simulator.util.extensions.AdditionalDataInfo;
+import com.powsybl.incubator.simulator.util.ReferenceNetwork;
 import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.math.matrix.DenseMatrixFactory;
 import com.powsybl.math.matrix.MatrixFactory;
 import com.powsybl.openloadflow.OpenLoadFlowProvider;
-import org.apache.commons.math3.util.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -48,10 +46,7 @@ public class ShortCircuitBiphasedGroundTest {
         LoadFlowParameters loadFlowParameters = LoadFlowParameters.load();
         loadFlowParameters.setTwtSplitShuntAdmittance(true);
 
-        Pair<Network, AdditionalDataInfo> result = ReferenceNetwork.createShortCircuitIec31();
-        Network network = result.getKey();
-
-        AdditionalDataInfo additionalDataInfo = result.getValue();
+        Network network = ReferenceNetwork.createShortCircuitIec31();
 
         MatrixFactory  matrixFactory = new DenseMatrixFactory();
 
@@ -61,7 +56,7 @@ public class ShortCircuitBiphasedGroundTest {
 
         ShortCircuitEngineParameters.PeriodType periodType = ShortCircuitEngineParameters.PeriodType.SUB_TRANSIENT;
         ShortCircuitNormIec shortCircuitNormIec = new ShortCircuitNormIec();
-        ShortCircuitEngineParameters scbParameters = new ShortCircuitEngineParameters(loadFlowParameters, matrixFactory, ShortCircuitEngineParameters.AnalysisType.SELECTIVE, faultList, false, ShortCircuitEngineParameters.VoltageProfileType.NOMINAL, false, periodType, additionalDataInfo, shortCircuitNormIec);
+        ShortCircuitEngineParameters scbParameters = new ShortCircuitEngineParameters(loadFlowParameters, matrixFactory, ShortCircuitEngineParameters.AnalysisType.SELECTIVE, faultList, false, ShortCircuitEngineParameters.VoltageProfileType.NOMINAL, false, periodType, shortCircuitNormIec);
         ShortCircuitUnbalancedEngine scbEngine = new ShortCircuitUnbalancedEngine(network, scbParameters);
 
         scbEngine.run();

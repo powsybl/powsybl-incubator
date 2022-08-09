@@ -6,7 +6,6 @@
  */
 package com.powsybl.incubator.simulator.util;
 
-import com.powsybl.incubator.simulator.util.extensions.AdditionalDataInfo;
 import com.powsybl.math.matrix.MatrixFactory;
 import com.powsybl.openloadflow.ac.outerloop.AcLoadFlowParameters;
 
@@ -41,8 +40,6 @@ public class ImpedanceLinearResolutionParameters {
 
     private List<CalculationLocation>  biphasedCalculationLocations; // stores all calculation locations where 2 busses are required in input
 
-    private AdditionalDataInfo additionalDataInfo;
-
     private final boolean ignoreShunts;
 
     private final AdmittanceEquationSystem.AdmittanceVoltageProfileType voltageProfileType;
@@ -53,22 +50,21 @@ public class ImpedanceLinearResolutionParameters {
 
     public ImpedanceLinearResolutionParameters(AcLoadFlowParameters acLoadFlowParameters, MatrixFactory matrixFactory, List<CalculationLocation> calculationLocations, boolean voltageUpdate,
                                                AdmittanceEquationSystem.AdmittanceVoltageProfileType theveninVoltageProfileType, AdmittanceEquationSystem.AdmittancePeriodType theveninPeriodType, AdmittanceEquationSystem.AdmittanceType admittanceType,
-                                               boolean theveninIgnoreShunts, AdditionalDataInfo additionalDataInfo) {
+                                               boolean theveninIgnoreShunts) {
         this.acLoadFlowParameters = Objects.requireNonNull(acLoadFlowParameters);
         this.matrixFactory = Objects.requireNonNull(matrixFactory);
         this.calculationLocations = Objects.requireNonNull(calculationLocations);
         this.voltageUpdate = voltageUpdate;
         this.ignoreShunts = theveninIgnoreShunts;
         this.voltageProfileType = theveninVoltageProfileType;
-        this.additionalDataInfo = additionalDataInfo;
         this.periodType = theveninPeriodType;
         this.admittanceType = admittanceType;
     }
 
     public ImpedanceLinearResolutionParameters(AcLoadFlowParameters acLoadFlowParameters, MatrixFactory matrixFactory, List<CalculationLocation> calculationLocations, boolean voltageUpdate,
                                                AdmittanceEquationSystem.AdmittanceVoltageProfileType theveninVoltageProfileType, AdmittanceEquationSystem.AdmittancePeriodType theveninPeriodType, AdmittanceEquationSystem.AdmittanceType admittanceType,
-                                               boolean theveninIgnoreShunts, AdditionalDataInfo additionalDataInfo, List<CalculationLocation> biphasedVoltageLevelLocation) {
-        this(acLoadFlowParameters, matrixFactory, calculationLocations, voltageUpdate, theveninVoltageProfileType, theveninPeriodType, admittanceType, theveninIgnoreShunts, additionalDataInfo);
+                                               boolean theveninIgnoreShunts, List<CalculationLocation> biphasedVoltageLevelLocation) {
+        this(acLoadFlowParameters, matrixFactory, calculationLocations, voltageUpdate, theveninVoltageProfileType, theveninPeriodType, admittanceType, theveninIgnoreShunts);
         this.biphasedCalculationLocations = biphasedVoltageLevelLocation;
 
     }
@@ -99,10 +95,6 @@ public class ImpedanceLinearResolutionParameters {
 
     public List<CalculationLocation>  getBiphasedCalculationLocations() {
         return biphasedCalculationLocations;
-    }
-
-    public AdditionalDataInfo getAdditionalDataInfo() {
-        return additionalDataInfo;
     }
 
     public AdmittanceEquationSystem.AdmittancePeriodType getTheveninPeriodType() {

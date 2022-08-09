@@ -6,15 +6,17 @@
  */
 package com.powsybl.incubator.simulator.util.extensions;
 
+import com.powsybl.incubator.simulator.util.extensions.iidm.LegConnectionType;
+
 import java.util.Objects;
 
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
-public class ShortCircuitT2W {
+public class ScTransfo2W {
 
-    private final ShortCircuitTransformerLeg leg1;
-    private final ShortCircuitTransformerLeg leg2;
+    private final LegConnectionType leg1ConnectionType;
+    private final LegConnectionType leg2ConnectionType;
 
     private final double coeffXo; // Xo = Xd * coeffXo : value of the homopolar admittance (in ohms) expressed at the leg2 side
     private final double coeffRo; // Ro = Rd * coeffRo : value of the homopolar resistance (in ohms) expressed at the leg2 side
@@ -23,25 +25,25 @@ public class ShortCircuitT2W {
 
     private final double kT; //correction factor of the Two Windings Transformer
 
-    ShortCircuitT2W(ShortCircuitTransformerLeg leg1, ShortCircuitTransformerLeg leg2, double coeffRo, double coeffXo, boolean freeFluxes) {
-        this(leg1, leg2, coeffRo, coeffXo, freeFluxes, 1d);
+    ScTransfo2W(LegConnectionType leg1ConnectionType, LegConnectionType leg2ConnectionType, double coeffRo, double coeffXo, boolean freeFluxes) {
+        this(leg1ConnectionType, leg2ConnectionType, coeffRo, coeffXo, freeFluxes, 1d);
     }
 
-    ShortCircuitT2W(ShortCircuitTransformerLeg leg1, ShortCircuitTransformerLeg leg2, double coeffRo, double coeffXo, boolean freeFluxes, double kT) {
-        this.leg1 = Objects.requireNonNull(leg1);
-        this.leg2 = Objects.requireNonNull(leg2);
+    ScTransfo2W(LegConnectionType leg1ConnectionType, LegConnectionType leg2ConnectionType, double coeffRo, double coeffXo, boolean freeFluxes, double kT) {
+        this.leg1ConnectionType = Objects.requireNonNull(leg1ConnectionType);
+        this.leg2ConnectionType = Objects.requireNonNull(leg2ConnectionType);
         this.coeffRo = coeffRo;
         this.coeffXo = coeffXo;
         this.freeFluxes = freeFluxes;
         this.kT = kT;
     }
 
-    public ShortCircuitTransformerLeg getLeg1() {
-        return leg1;
+    public LegConnectionType getLeg1ConnectionType() {
+        return leg1ConnectionType;
     }
 
-    public ShortCircuitTransformerLeg getLeg2() {
-        return leg2;
+    public LegConnectionType getLeg2ConnectionType() {
+        return leg2ConnectionType;
     }
 
     public double getCoeffXo() {

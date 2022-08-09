@@ -8,12 +8,12 @@ package com.powsybl.incubator.simulator.util;
 
 import com.powsybl.iidm.network.*;
 import com.powsybl.iidm.network.extensions.GeneratorShortCircuitAdder;
-import com.powsybl.incubator.simulator.util.extensions.AdditionalDataInfo;
-import org.apache.commons.math3.util.Pair;
+import com.powsybl.incubator.simulator.util.extensions.iidm.LegConnectionType;
+import com.powsybl.incubator.simulator.util.extensions.iidm.GeneratorShortCircuitAdder2;
+import com.powsybl.incubator.simulator.util.extensions.iidm.LineShortCircuitAdder;
+import com.powsybl.incubator.simulator.util.extensions.iidm.ThreeWindingsTransformerShortCircuitAdder;
+import com.powsybl.incubator.simulator.util.extensions.iidm.TwoWindingsTransformerShortCircuitAdder;
 import org.joda.time.DateTime;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
@@ -23,7 +23,7 @@ public final class ReferenceNetwork {
     private ReferenceNetwork() {
     }
 
-    public static Pair<Network, AdditionalDataInfo> createShortCircuitReference() {
+    public static Network createShortCircuitReference() {
         Network network = Network.create("ShortCircuitReference", "reference");
         network.setCaseDate(DateTime.parse("2018-03-05T13:30:30.486+01:00"));
 
@@ -365,32 +365,77 @@ public final class ReferenceNetwork {
                 .setB2(0.0)
                 .add();
 
-        ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) substation12.newTwoWindingsTransformer().setId("T1")).setVoltageLevel1(vl1.getId())).setBus1(bus1.getId())).setConnectableBus1(bus1.getId())).setRatedU1(bus1Vnom).setVoltageLevel2(vl2.getId())).setBus2(bus2.getId())).setConnectableBus2(bus2.getId())).setRatedU2(bus2Vnom).setR(rT1).setX(xT1).setG(0.0D).setB(0.0D).add();
-        ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) substation45.newTwoWindingsTransformer().setId("T2")).setVoltageLevel1(vl4.getId())).setBus1(bus4.getId())).setConnectableBus1(bus4.getId())).setRatedU1(bus2Vnom).setVoltageLevel2(vl5.getId())).setBus2(bus5.getId())).setConnectableBus2(bus5.getId())).setRatedU2(bus5Vnom).setR(rT2).setX(xT2).setG(0.0D).setB(0.0D).add();
-        ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) substation67.newTwoWindingsTransformer().setId("T3")).setVoltageLevel1(vl6.getId())).setBus1(bus6.getId())).setConnectableBus1(bus6.getId())).setRatedU1(bus2Vnom).setVoltageLevel2(vl7.getId())).setBus2(bus7.getId())).setConnectableBus2(bus7.getId())).setRatedU2(bus7Vnom).setR(rT3).setX(xT3).setG(0.0D).setB(0.0D).add();
+        substation12.newTwoWindingsTransformer()
+                .setId("T1")
+                .setVoltageLevel1(vl1.getId())
+                .setBus1(bus1.getId())
+                .setConnectableBus1(bus1.getId())
+                .setRatedU1(bus1Vnom)
+                .setVoltageLevel2(vl2.getId())
+                .setBus2(bus2.getId())
+                .setConnectableBus2(bus2.getId())
+                .setRatedU2(bus2Vnom)
+                .setR(rT1)
+                .setX(xT1)
+                .setG(0.0D)
+                .setB(0.0D).add();
+        substation45.newTwoWindingsTransformer()
+                .setId("T2")
+                .setVoltageLevel1(vl4.getId())
+                .setBus1(bus4.getId())
+                .setConnectableBus1(bus4.getId())
+                .setRatedU1(bus2Vnom)
+                .setVoltageLevel2(vl5.getId())
+                .setBus2(bus5.getId())
+                .setConnectableBus2(bus5.getId())
+                .setRatedU2(bus5Vnom)
+                .setR(rT2)
+                .setX(xT2)
+                .setG(0.0D)
+                .setB(0.0D)
+                .add();
+        substation67.newTwoWindingsTransformer()
+                .setId("T3")
+                .setVoltageLevel1(vl6.getId())
+                .setBus1(bus6.getId())
+                .setConnectableBus1(bus6.getId())
+                .setRatedU1(bus2Vnom)
+                .setVoltageLevel2(vl7.getId())
+                .setBus2(bus7.getId())
+                .setConnectableBus2(bus7.getId())
+                .setRatedU2(bus7Vnom)
+                .setR(rT3)
+                .setX(xT3)
+                .setG(0.0D)
+                .setB(0.0D)
+                .add();
 
         //map to store the real part of the transient impedance
-        Map<String, Double> machineToTransRd = new HashMap<>();
-        machineToTransRd.put(utility.getId(), rdUtility);
-        machineToTransRd.put(m1.getId(), rM1 * 1.5);
-        machineToTransRd.put(m2.getId(), rM2 / 0.4);
-        machineToTransRd.put(m3.getId(), rM3 * 1.5);
-        machineToTransRd.put(m4.getId(), rM4Trans);
+        utility.newExtension(GeneratorShortCircuitAdder2.class)
+                .withTransRd(rdUtility)
+                .withSubTransRd(rdUtility)
+                .add();
+        m1.newExtension(GeneratorShortCircuitAdder2.class)
+                .withTransRd(rM1 * 1.5)
+                .withSubTransRd(rM1)
+                .add();
+        m2.newExtension(GeneratorShortCircuitAdder2.class)
+                .withTransRd(rM2 / 0.4)
+                .withSubTransRd(rM2)
+                .add();
+        m3.newExtension(GeneratorShortCircuitAdder2.class)
+                .withTransRd(rM3 * 1.5)
+                .withSubTransRd(rM3)
+                .add();
+        m4.newExtension(GeneratorShortCircuitAdder2.class)
+                .withTransRd(rM4Trans)
+                .withSubTransRd(rM4SubTrans)
+                .add();
 
-        Map<String, Double> machineToSubTransRd = new HashMap<>();
-        machineToSubTransRd.put(utility.getId(), rdUtility);
-        machineToSubTransRd.put(m1.getId(), rM1);
-        machineToSubTransRd.put(m2.getId(), rM2);
-        machineToSubTransRd.put(m3.getId(), rM3);
-        machineToSubTransRd.put(m4.getId(), rM4SubTrans);
-
-        AdditionalDataInfo additionalDataInfo = new AdditionalDataInfo(machineToTransRd, machineToSubTransRd);
-
-        Pair<Network, AdditionalDataInfo> result = new Pair<>(network, additionalDataInfo);
-        return result;
+        return network;
     }
 
-    public static Pair<Network, AdditionalDataInfo> createShortCircuitIec31() {
+    public static Network createShortCircuitIec31() {
         Network network = Network.create("ShortCircuit_IEC_3.1", "IEC_3.1");
         network.setCaseDate(DateTime.parse("2018-03-05T13:30:30.486+01:00"));
 
@@ -530,10 +575,40 @@ public final class ReferenceNetwork {
                 .setQ0(qEquivalentFeeder)
                 .add();
 
-        ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) substation123.newTwoWindingsTransformer().setId("T1")).setVoltageLevel1(vl1.getId())).setBus1(bus1.getId())).setConnectableBus1(bus1.getId())).setRatedU1(bus1Vnom).setVoltageLevel2(vl3.getId())).setBus2(bus3.getId())).setConnectableBus2(bus3.getId())).setRatedU2(ratedV2).setR(rT1).setX(xT1).setG(0.0D).setB(0.0D).setRatedS(630.).add();
-        ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) substation123.newTwoWindingsTransformer().setId("T2")).setVoltageLevel1(vl1.getId())).setBus1(bus1.getId())).setConnectableBus1(bus1.getId())).setRatedU1(bus1Vnom).setVoltageLevel2(vl2.getId())).setBus2(bus2.getId())).setConnectableBus2(bus2.getId())).setRatedU2(ratedV2).setR(rT2).setX(xT2).setG(0.0D).setB(0.0D).setRatedS(400.).add();
+        var t1 = substation123.newTwoWindingsTransformer()
+                .setId("T1")
+                .setVoltageLevel1(vl1.getId())
+                .setBus1(bus1.getId())
+                .setConnectableBus1(bus1.getId())
+                .setRatedU1(bus1Vnom)
+                .setVoltageLevel2(vl3.getId())
+                .setBus2(bus3.getId())
+                .setConnectableBus2(bus3.getId())
+                .setRatedU2(ratedV2)
+                .setR(rT1)
+                .setX(xT1)
+                .setG(0.0D)
+                .setB(0.0D)
+                .setRatedS(630.)
+                .add();
+        var t2 = substation123.newTwoWindingsTransformer()
+                .setId("T2")
+                .setVoltageLevel1(vl1.getId())
+                .setBus1(bus1.getId())
+                .setConnectableBus1(bus1.getId())
+                .setRatedU1(bus1Vnom)
+                .setVoltageLevel2(vl2.getId())
+                .setBus2(bus2.getId())
+                .setConnectableBus2(bus2.getId())
+                .setRatedU2(ratedV2)
+                .setR(rT2)
+                .setX(xT2)
+                .setG(0.0D)
+                .setB(0.0D)
+                .setRatedS(400.)
+                .add();
 
-        network.newLine()
+        Line l2 = network.newLine()
                 .setId("L2_B2_B4")
                 .setVoltageLevel1(vl2.getId())
                 .setBus1(bus2.getId())
@@ -549,7 +624,7 @@ public final class ReferenceNetwork {
                 .setB2(0.0)
                 .add();
 
-        network.newLine()
+        Line l1 = network.newLine()
                 .setId("L1_B3_B4")
                 .setVoltageLevel1(vl3.getId())
                 .setBus1(bus3.getId())
@@ -565,7 +640,7 @@ public final class ReferenceNetwork {
                 .setB2(0.0)
                 .add();
 
-        network.newLine()
+        Line l3 = network.newLine()
                 .setId("L3_B4_B5")
                 .setVoltageLevel1(vl4.getId())
                 .setBus1(bus4.getId())
@@ -581,7 +656,7 @@ public final class ReferenceNetwork {
                 .setB2(0.0)
                 .add();
 
-        network.newLine()
+        Line l4 = network.newLine()
                 .setId("L4_B5_B6")
                 .setVoltageLevel1(vl5.getId())
                 .setBus1(bus5.getId())
@@ -598,44 +673,41 @@ public final class ReferenceNetwork {
                 .add();
 
         //additional data
-        Map<String, Double> machineToTransRd = new HashMap<>(); //map to store the real part of the transient impedance
-        Map<String, Double> machineToSubTransRd = new HashMap<>();
-        Map<String, Boolean> machineToGround =  new HashMap<>();
 
-        Map<String, AdditionalDataInfo.LegType> leg1type =  new HashMap<>();
-        Map<String, AdditionalDataInfo.LegType> leg2type =  new HashMap<>();
-        leg1type.put("T1", AdditionalDataInfo.LegType.DELTA);
-        leg1type.put("T2", AdditionalDataInfo.LegType.DELTA);
-        leg2type.put("T1", AdditionalDataInfo.LegType.Y_GROUNDED);
-        leg2type.put("T2", AdditionalDataInfo.LegType.Y_GROUNDED);
+        l1.newExtension(LineShortCircuitAdder.class)
+                .withCoeffRo(coeffRoL1)
+                .withCoeffXo(coeffXoL1)
+                .add();
+        l2.newExtension(LineShortCircuitAdder.class)
+                .withCoeffRo(coeffRoL2)
+                .withCoeffXo(coeffXoL2)
+                .add();
+        l3.newExtension(LineShortCircuitAdder.class)
+                .withCoeffRo(coeffRoL3)
+                .withCoeffXo(coeffXoL3)
+                .add();
+        l4.newExtension(LineShortCircuitAdder.class)
+                .withCoeffRo(coeffRoL4)
+                .withCoeffXo(coeffXoL4)
+                .add();
 
-        Map<String, Double> lineIdToCoeffRo = new HashMap<>();
-        Map<String, Double> lineIdToCoeffXo = new HashMap<>();
-        Map<String, Double> tfo2wIdToCoeffRo = new HashMap<>();
-        Map<String, Double> tfo2wIdToCoeffXo = new HashMap<>();
-        lineIdToCoeffRo.put("L2_B2_B4", coeffRoL2);
-        lineIdToCoeffRo.put("L1_B3_B4", coeffRoL1);
-        lineIdToCoeffRo.put("L3_B4_B5", coeffRoL3);
-        lineIdToCoeffRo.put("L4_B5_B6", coeffRoL4);
+        t1.newExtension(TwoWindingsTransformerShortCircuitAdder.class)
+                .withCoeffRo(coeffRoT1)
+                .withCoeffXo(coeffXoT1)
+                .withLeg1ConnectionType(LegConnectionType.DELTA)
+                .withLeg2ConnectionType(LegConnectionType.Y_GROUNDED)
+                .add();
+        t2.newExtension(TwoWindingsTransformerShortCircuitAdder.class)
+                .withCoeffRo(coeffRoT2)
+                .withCoeffXo(coeffXoT2)
+                .withLeg1ConnectionType(LegConnectionType.DELTA)
+                .withLeg2ConnectionType(LegConnectionType.Y_GROUNDED)
+                .add();
 
-        lineIdToCoeffXo.put("L2_B2_B4", coeffXoL2);
-        lineIdToCoeffXo.put("L1_B3_B4", coeffXoL1);
-        lineIdToCoeffXo.put("L3_B4_B5", coeffXoL3);
-        lineIdToCoeffXo.put("L4_B5_B6", coeffXoL4);
-
-        tfo2wIdToCoeffRo.put("T1", coeffRoT1);
-        tfo2wIdToCoeffRo.put("T2", coeffRoT2);
-        tfo2wIdToCoeffXo.put("T1", coeffXoT1);
-        tfo2wIdToCoeffXo.put("T2", coeffXoT2);
-
-        AdditionalDataInfo additionalDataInfo = new AdditionalDataInfo(machineToTransRd, machineToSubTransRd, machineToGround,
-                leg1type, leg2type, lineIdToCoeffRo, lineIdToCoeffXo, tfo2wIdToCoeffRo, tfo2wIdToCoeffXo);
-
-        Pair<Network, AdditionalDataInfo> result = new Pair<>(network, additionalDataInfo);
-        return result;
+        return network;
     }
 
-    public static Pair<Network, AdditionalDataInfo> createShortCircuitIec31testNetwork() {
+    public static Network createShortCircuitIec31testNetwork() {
         Network network = Network.create("ShortCircuit_IEC_3.1", "IEC_3.1");
         network.setCaseDate(DateTime.parse("2018-03-05T13:30:30.486+01:00"));
 
@@ -863,7 +935,7 @@ public final class ReferenceNetwork {
                 .setQ0(qEquivalentFeeder2)
                 .add();*/
 
-        Generator feeder2 = vl5.newGenerator() //alternative modelling
+        Generator q2 = vl5.newGenerator() //alternative modelling
                 .setId("Q2")
                 .setBus(bus5.getId())
                 .setMinP(0.0)
@@ -876,7 +948,7 @@ public final class ReferenceNetwork {
 
         double xFeeder2 = 4.344543;
         double rFeeder2 = 0.434454;
-        feeder2.newExtension(GeneratorShortCircuitAdder.class)
+        q2.newExtension(GeneratorShortCircuitAdder.class)
                 .withDirectSubtransX(xFeeder2) // TODO : add table to store coeffs for homopolar values
                 .withDirectTransX(xFeeder2)
                 .withStepUpTransformerX(0.)
@@ -970,7 +1042,7 @@ public final class ReferenceNetwork {
                 .withStepUpTransformerX(0.)
                 .add();
 
-        network.newLine()
+        Line l1 = network.newLine()
                 .setId("L1_B2_B3")
                 .setVoltageLevel1(vl2.getId())
                 .setBus1(bus2.getId())
@@ -986,7 +1058,7 @@ public final class ReferenceNetwork {
                 .setB2(0.0)
                 .add();
 
-        network.newLine()
+        Line l2 = network.newLine()
                 .setId("L2_B3_B4")
                 .setVoltageLevel1(vl3.getId())
                 .setBus1(bus3.getId())
@@ -1002,7 +1074,7 @@ public final class ReferenceNetwork {
                 .setB2(0.0)
                 .add();
 
-        network.newLine()
+        Line l3 = network.newLine()
                 .setId("L3_B2_B5")
                 .setVoltageLevel1(vl2.getId())
                 .setBus1(bus2.getId())
@@ -1018,7 +1090,7 @@ public final class ReferenceNetwork {
                 .setB2(0.0)
                 .add();
 
-        network.newLine()
+        Line l4 = network.newLine()
                 .setId("L4_B5_B3")
                 .setVoltageLevel1(vl5.getId())
                 .setBus1(bus5.getId())
@@ -1034,7 +1106,7 @@ public final class ReferenceNetwork {
                 .setB2(0.0)
                 .add();
 
-        network.newLine()
+        Line l5 = network.newLine()
                 .setId("L5_B5_B4")
                 .setVoltageLevel1(vl5.getId())
                 .setBus1(bus5.getId())
@@ -1050,7 +1122,7 @@ public final class ReferenceNetwork {
                 .setB2(0.0)
                 .add();
 
-        network.newLine()
+        Line l6 = network.newLine()
                 .setId("L6_B6_B7")
                 .setVoltageLevel1(vl6.getId())
                 .setBus1(bus6.getId())
@@ -1066,116 +1138,185 @@ public final class ReferenceNetwork {
                 .setB2(0.0)
                 .add();
 
-        ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) substation56.newTwoWindingsTransformer().setId("T5")).setVoltageLevel1(vl5.getId())).setBus1(bus5.getId())).setConnectableBus1(bus5.getId())).setRatedU1(115.).setVoltageLevel2(vl6.getId())).setBus2(bus6.getId())).setConnectableBus2(bus6.getId())).setRatedU2(10.5).setR(rT5).setX(xT5).setG(0.0D).setB(0.0D).setRatedS(31.5).add();
-        ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) ((TwoWindingsTransformerAdder) substation56.newTwoWindingsTransformer().setId("T6")).setVoltageLevel1(vl5.getId())).setBus1(bus5.getId())).setConnectableBus1(bus5.getId())).setRatedU1(115.).setVoltageLevel2(vl6.getId())).setBus2(bus6.getId())).setConnectableBus2(bus6.getId())).setRatedU2(10.5).setR(rT6).setX(xT6).setG(0.0D).setB(0.0D).setRatedS(31.5).add();
+        var t5 = substation56.newTwoWindingsTransformer()
+                .setId("T5")
+                .setVoltageLevel1(vl5.getId())
+                .setBus1(bus5.getId())
+                .setConnectableBus1(bus5.getId())
+                .setRatedU1(115.)
+                .setVoltageLevel2(vl6.getId())
+                .setBus2(bus6.getId())
+                .setConnectableBus2(bus6.getId())
+                .setRatedU2(10.5)
+                .setR(rT5)
+                .setX(xT5)
+                .setG(0.0D)
+                .setB(0.0D)
+                .setRatedS(31.5)
+                .add();
 
-        ThreeWindingsTransformer twt3 = ((ThreeWindingsTransformerAdder) substation1289.newThreeWindingsTransformer().setId("T3")).setRatedU0(1.0D).newLeg1().setR(rT3a).setX(xT3a).setG(0.).setB(0.).setRatedU(400.0D).setVoltageLevel(vl1.getId()).setBus(bus1.getId()).add().newLeg2().setR(rT3b).setX(xT3b).setG(0.0D).setB(0.0D).setRatedU(120.0D).setVoltageLevel(vl2.getId()).setBus(bus2.getId()).add().newLeg3().setR(rT3c).setX(xT3c).setG(0.0D).setB(0.0D).setRatedU(30.).setVoltageLevel(vl8.getId()).setBus(bus8.getId()).add().add();
-        ThreeWindingsTransformer twt4 = ((ThreeWindingsTransformerAdder) substation1289.newThreeWindingsTransformer().setId("T4")).setRatedU0(1.0D).newLeg1().setR(rT3a).setX(xT3a).setG(0.).setB(0.).setRatedU(400.0D).setVoltageLevel(vl1.getId()).setBus(bus1.getId()).add().newLeg2().setR(rT3b).setX(xT3b).setG(0.0D).setB(0.0D).setRatedU(120.0D).setVoltageLevel(vl2.getId()).setBus(bus2.getId()).add().newLeg3().setR(rT3c).setX(xT3c).setG(0.0D).setB(0.0D).setRatedU(30.).setVoltageLevel(vl9.getId()).setBus(bus9.getId()).add().add();
-        //twt.getLeg2().newRatioTapChanger().beginStep().setRho(0.9D).setR(0.9801D).setX(0.09801D).setG(0.08264462809917356D).setB(0.008264462809917356D).endStep().beginStep().setRho(1.0D).setR(1.089D).setX(0.1089D).setG(0.09182736455463728D).setB(0.009182736455463728D).endStep().beginStep().setRho(1.1D).setR(1.1979D).setX(0.11979D).setG(0.10101010101010101D).setB(0.0101010101010101D).endStep().setTapPosition(2).setLoadTapChangingCapabilities(true).setRegulating(true).setTargetV(33.0D).setTargetDeadband(0.0D).setRegulationTerminal(load33.getTerminal()).add();
-        //twt.getLeg3().newRatioTapChanger().beginStep().setRho(0.9D).setR(0.1089D).setX(0.01089D).setG(0.8264462809917356D).setB(0.08264462809917356D).endStep().beginStep().setRho(1.0D).setR(0.121D).setX(0.0121D).setG(0.8264462809917356D).setB(0.08264462809917356D).endStep().beginStep().setRho(1.1D).setR(0.1331D).setX(0.01331D).setG(0.9090909090909092D).setB(0.09090909090909093D).endStep().setTapPosition(0).setLoadTapChangingCapabilities(true).setRegulating(false).setTargetV(11.0D).setRegulationTerminal(load11.getTerminal()).add();
+        var t6 = substation56.newTwoWindingsTransformer()
+                .setId("T6")
+                .setVoltageLevel1(vl5.getId())
+                .setBus1(bus5.getId())
+                .setConnectableBus1(bus5.getId())
+                .setRatedU1(115.)
+                .setVoltageLevel2(vl6.getId())
+                .setBus2(bus6.getId())
+                .setConnectableBus2(bus6.getId())
+                .setRatedU2(10.5)
+                .setR(rT6)
+                .setX(xT6)
+                .setG(0.0D)
+                .setB(0.0D)
+                .setRatedS(31.5)
+                .add();
+
+        ThreeWindingsTransformer twt3 = substation1289.newThreeWindingsTransformer()
+                .setId("T3")
+                .setRatedU0(1.0D)
+                .newLeg1()
+                .setR(rT3a)
+                .setX(xT3a)
+                .setG(0.)
+                .setB(0.)
+                .setRatedU(400.0D)
+                .setVoltageLevel(vl1.getId())
+                .setBus(bus1.getId())
+                .add()
+                .newLeg2()
+                .setR(rT3b)
+                .setX(xT3b)
+                .setG(0.0D)
+                .setB(0.0D)
+                .setRatedU(120.0D)
+                .setVoltageLevel(vl2.getId())
+                .setBus(bus2.getId())
+                .add()
+                .newLeg3()
+                .setR(rT3c)
+                .setX(xT3c)
+                .setG(0.0D)
+                .setB(0.0D)
+                .setRatedU(30.)
+                .setVoltageLevel(vl8.getId())
+                .setBus(bus8.getId())
+                .add()
+                .add();
+        ThreeWindingsTransformer twt4 = substation1289.newThreeWindingsTransformer()
+                .setId("T4")
+                .setRatedU0(1.0D)
+                .newLeg1()
+                .setR(rT3a)
+                .setX(xT3a)
+                .setG(0.)
+                .setB(0.)
+                .setRatedU(400.0D)
+                .setVoltageLevel(vl1.getId())
+                .setBus(bus1.getId())
+                .add()
+                .newLeg2()
+                .setR(rT3b)
+                .setX(xT3b)
+                .setG(0.0D)
+                .setB(0.0D)
+                .setRatedU(120.0D)
+                .setVoltageLevel(vl2.getId())
+                .setBus(bus2.getId())
+                .add()
+                .newLeg3()
+                .setR(rT3c)
+                .setX(xT3c)
+                .setG(0.0D)
+                .setB(0.0D)
+                .setRatedU(30.)
+                .setVoltageLevel(vl9.getId())
+                .setBus(bus9.getId())
+                .add()
+                .add();
 
         //additional data
         // Machines :
-        Map<String, Double> machineToTransRd = new HashMap<>(); //map to store the real part of the transient impedance
-        Map<String, Double> machineToSubTransRd = new HashMap<>();
-        Map<String, Boolean> machineToGround =  new HashMap<>();
-        machineToTransRd.put("G1", rG1);
-        machineToTransRd.put("G2", rG2);
-        machineToTransRd.put("G3", rG3);
-        machineToTransRd.put("M1", rM1);
-        machineToTransRd.put("M2", rM2);
-        machineToTransRd.put("Q2", rFeeder2);
-
-        machineToGround.put("G1", true);
-        machineToGround.put("Q2", true);
-
-        Map<String, Double> machineCoeffRo = new HashMap<>(); //map to store the real part of the transient impedance
-        Map<String, Double> machineCoeffXo = new HashMap<>();
-        machineCoeffRo.put("G1", coeffRoG1);
-        machineCoeffXo.put("G1", coeffXoG1);
-        machineCoeffRo.put("Q2", coeffF2Ro);
-        machineCoeffXo.put("Q2", coeffF2Xo);
+        g1.newExtension(GeneratorShortCircuitAdder2.class)
+                .withTransRd(rG1)
+                .withToGround(true)
+                .withCoeffRo(coeffRoG1)
+                .withCoeffXo(coeffXoG1)
+                .add();
+        g2.newExtension(GeneratorShortCircuitAdder2.class)
+                .withTransRd(rG2)
+                .add();
+        g3.newExtension(GeneratorShortCircuitAdder2.class)
+                .withTransRd(rG3)
+                .add();
+        m1.newExtension(GeneratorShortCircuitAdder2.class)
+                .withTransRd(rM1)
+                .add();
+        m2.newExtension(GeneratorShortCircuitAdder2.class)
+                .withTransRd(rM2)
+                .add();
+        q2.newExtension(GeneratorShortCircuitAdder2.class)
+                .withTransRd(rFeeder2)
+                .withToGround(true)
+                .withCoeffRo(coeffF2Ro)
+                .withCoeffXo(coeffF2Xo)
+                .add();
 
         // transformers :
-        Map<String, AdditionalDataInfo.LegType> leg1type =  new HashMap<>();
-        Map<String, AdditionalDataInfo.LegType> leg2type =  new HashMap<>();
-        Map<String, AdditionalDataInfo.LegType> leg3type =  new HashMap<>(); // needed only for three windings transformers
+        twt3.newExtension(ThreeWindingsTransformerShortCircuitAdder.class)
+                .withLeg1ConnectionType(LegConnectionType.Y_GROUNDED)
+                .withLeg2ConnectionType(LegConnectionType.Y)
+                .withLeg3ConnectionType(LegConnectionType.DELTA)
+                .add();
 
-        leg1type.put("T5", AdditionalDataInfo.LegType.Y);
-        leg1type.put("T6", AdditionalDataInfo.LegType.Y);
-        leg2type.put("T5", AdditionalDataInfo.LegType.Y);
-        leg2type.put("T6", AdditionalDataInfo.LegType.Y_GROUNDED);
+        twt4.newExtension(ThreeWindingsTransformerShortCircuitAdder.class)
+                .withLeg1FreeFluxes(true)
+                .withLeg1ConnectionType(LegConnectionType.Y)
+                .withLeg2FreeFluxes(true)
+                .withLeg2CoeffRo(coeffRoT4)
+                .withLeg2CoeffXo(coeffXoT4)
+                .withLeg2ConnectionType(LegConnectionType.Y_GROUNDED)
+                .withLeg3FreeFluxes(true)
+                .withLeg3CoeffRo(coeffRoT4)
+                .withLeg3CoeffXo(coeffXoT4)
+                .withLeg3ConnectionType(LegConnectionType.DELTA)
+                .add();
 
-        leg1type.put("T3", AdditionalDataInfo.LegType.Y_GROUNDED);
-        leg1type.put("T4", AdditionalDataInfo.LegType.Y);
-        leg2type.put("T3", AdditionalDataInfo.LegType.Y);
-        leg2type.put("T4", AdditionalDataInfo.LegType.Y_GROUNDED);
-
-        leg3type.put("T3", AdditionalDataInfo.LegType.DELTA);
-        leg3type.put("T4", AdditionalDataInfo.LegType.DELTA);
-
-        Map<String, Double> tfo2wIdToCoeffRo = new HashMap<>();
-        Map<String, Double> tfo2wIdToCoeffXo = new HashMap<>();
-        tfo2wIdToCoeffRo.put("T5", 1.); // TODO : remove if not used
-        tfo2wIdToCoeffRo.put("T6", 1.);
-        tfo2wIdToCoeffXo.put("T5", 1.);
-        tfo2wIdToCoeffXo.put("T6", 1.);
-
-        Map<String, Double> tfo3wIdToLeg1CoeffRo = new HashMap<>();
-        Map<String, Double> tfo3wIdToLeg1CoeffXo = new HashMap<>();
-
-        Map<String, Double> tfo3wIdToLeg2CoeffRo = new HashMap<>();
-        Map<String, Double> tfo3wIdToLeg2CoeffXo = new HashMap<>();
-        tfo3wIdToLeg2CoeffRo.put("T4", coeffRoT4);
-        tfo3wIdToLeg2CoeffXo.put("T4", coeffXoT4);
-
-        Map<String, Double> tfo3wIdToLeg3CoeffRo = new HashMap<>();
-        Map<String, Double> tfo3wIdToLeg3CoeffXo = new HashMap<>();
-        tfo3wIdToLeg3CoeffRo.put("T4", coeffRoT4);
-        tfo3wIdToLeg3CoeffXo.put("T4", coeffXoT4);
-
-        Map<String, Boolean> tfo2wIdToFreeFluxes = new HashMap<>(); // free fluxes mean that magnetizing impedance Zm is infinite, by default, fluxes are forced and Zm exists
-        Map<String, Boolean> tfo3wIdLeg1ToFreeFluxes = new HashMap<>();
-        Map<String, Boolean> tfo3wIdLeg2ToFreeFluxes = new HashMap<>();
-        Map<String, Boolean> tfo3wIdLeg3ToFreeFluxes = new HashMap<>();
-        tfo3wIdLeg1ToFreeFluxes.put("T4", true);
-        tfo3wIdLeg2ToFreeFluxes.put("T4", true);
-        tfo3wIdLeg3ToFreeFluxes.put("T4", true);
+        t5.newExtension(TwoWindingsTransformerShortCircuitAdder.class)
+                .withLeg1ConnectionType(LegConnectionType.Y)
+                .withLeg2ConnectionType(LegConnectionType.Y)
+                .add();
+        t6.newExtension(TwoWindingsTransformerShortCircuitAdder.class)
+                .withLeg1ConnectionType(LegConnectionType.Y)
+                .withLeg2ConnectionType(LegConnectionType.Y_GROUNDED)
+                .add();
 
         // Lines :
-        Map<String, Double> lineIdToCoeffRo = new HashMap<>();
-        Map<String, Double> lineIdToCoeffXo = new HashMap<>();
+        l1.newExtension(LineShortCircuitAdder.class)
+                .withCoeffRo(coeffRoL1)
+                .withCoeffXo(coeffXoL1)
+                .add();
+        l2.newExtension(LineShortCircuitAdder.class)
+                .withCoeffRo(coeffRoL2)
+                .withCoeffXo(coeffXoL2)
+                .add();
+        l3.newExtension(LineShortCircuitAdder.class)
+                .withCoeffRo(coeffRoL3)
+                .withCoeffXo(coeffXoL3)
+                .add();
+        l4.newExtension(LineShortCircuitAdder.class)
+                .withCoeffRo(coeffRoL4)
+                .withCoeffXo(coeffXoL4)
+                .add();
+        l5.newExtension(LineShortCircuitAdder.class)
+                .withCoeffRo(coeffRoL5)
+                .withCoeffXo(coeffXoL5)
+                .add();
+        l6.newExtension(LineShortCircuitAdder.class)
+                .withCoeffRo(coeffRoL6)
+                .withCoeffXo(coeffXoL6)
+                .add();
 
-        lineIdToCoeffRo.put("L1_B2_B3", coeffRoL1);
-        lineIdToCoeffRo.put("L2_B3_B4", coeffRoL2);
-        lineIdToCoeffRo.put("L3_B2_B5", coeffRoL3);
-        lineIdToCoeffRo.put("L4_B5_B3", coeffRoL4);
-        lineIdToCoeffRo.put("L5_B5_B4", coeffRoL5);
-        lineIdToCoeffRo.put("L6_B6_B7", coeffRoL6);
-
-        lineIdToCoeffXo.put("L1_B2_B3", coeffXoL1);
-        lineIdToCoeffXo.put("L2_B3_B4", coeffXoL2);
-        lineIdToCoeffXo.put("L3_B2_B5", coeffXoL3);
-        lineIdToCoeffXo.put("L4_B5_B3", coeffXoL4);
-        lineIdToCoeffXo.put("L5_B5_B4", coeffXoL5);
-        lineIdToCoeffXo.put("L6_B6_B7", coeffXoL6);
-
-        // Feeders :
-        Map<String, Double> feederIdToCoeffRo = new HashMap<>(); // we suppose that if no info is provided, the feeder is not grounded
-        Map<String, Double> feederIdToCoeffXo = new HashMap<>();
-        //feederIdToCoeffRo.put("LOAD_FEEDER2", coeffF2Ro);
-        //feederIdToCoeffXo.put("LOAD_FEEDER2", coeffF2Xo);
-
-        AdditionalDataInfo additionalDataInfo = new AdditionalDataInfo(machineToTransRd, machineToSubTransRd, machineToGround,
-                leg1type, leg2type, lineIdToCoeffRo, lineIdToCoeffXo, tfo2wIdToCoeffRo, tfo2wIdToCoeffXo,
-                feederIdToCoeffRo, feederIdToCoeffXo, machineCoeffRo, machineCoeffXo, leg3type,
-                tfo3wIdToLeg1CoeffRo, tfo3wIdToLeg1CoeffXo,
-                tfo3wIdToLeg2CoeffRo, tfo3wIdToLeg2CoeffXo,
-                tfo3wIdToLeg3CoeffRo, tfo3wIdToLeg3CoeffXo,
-                tfo2wIdToFreeFluxes, tfo3wIdLeg1ToFreeFluxes, tfo3wIdLeg2ToFreeFluxes, tfo3wIdLeg3ToFreeFluxes);
-
-        Pair<Network, AdditionalDataInfo> result = new Pair<>(network, additionalDataInfo);
-        return result;
-
+        return network;
     }
 }

@@ -144,7 +144,6 @@ public class TheveninEquivalent {
 
         return new ImpedanceLinearResolutionParameters(acLoadFlowParameters, parameters.getMatrixFactory(),
                 locations, voltageUpdate, admittanceVoltageProfileType, periodType,
-                AdmittanceEquationSystem.AdmittanceType.ADM_THEVENIN, parameters.isTheveninIgnoreShunts(),
-                parameters.getAdditionalDataInfo());
+                AdmittanceEquationSystem.AdmittanceType.ADM_THEVENIN, parameters.isTheveninIgnoreShunts());
     }
 }

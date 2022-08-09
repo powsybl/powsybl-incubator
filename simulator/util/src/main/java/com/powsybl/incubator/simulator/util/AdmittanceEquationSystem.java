@@ -121,7 +121,7 @@ public final class AdmittanceEquationSystem {
         double tmpG = 0.;
         double tmpB = 0.;
         for (LfGenerator lfgen : bus.getGenerators()) { //compute R'd or R"d from generators at bus
-            ScGenerator scGen = (ScGenerator) lfgen.getProperty(ShortCircuitExtensions.PROPERTY_NAME);
+            ScGenerator scGen = (ScGenerator) lfgen.getProperty(ShortCircuitExtensions.PROPERTY_SHORT_CIRCUIT);
             double rd = scGen.getTransRd() + scGen.getStepUpTfoR();
             double xd = scGen.getTransXd() + scGen.getStepUpTfoX();
             if (admittancePeriodType == AdmittancePeriodType.ADM_SUB_TRANSIENT) {

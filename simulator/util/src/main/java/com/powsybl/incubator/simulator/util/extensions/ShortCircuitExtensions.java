@@ -94,11 +94,11 @@ public final class ShortCircuitExtensions {
             leg3ConnectionType = extensions.getLeg3ConnectionType();
         }
 
-        ShortCircuitT3W.Leg leg1 = new ShortCircuitT3W.Leg(leg1ConnectionType, leg1CoeffRo, leg1CoeffXo, leg1FreeFluxes); // TODO : check if default connection acceptable
-        ShortCircuitT3W.Leg leg2 = new ShortCircuitT3W.Leg(leg2ConnectionType, leg2CoeffRo, leg2CoeffXo, leg2FreeFluxes); // TODO : check if default connection acceptable
-        ShortCircuitT3W.Leg leg3 = new ShortCircuitT3W.Leg(leg3ConnectionType, leg3CoeffRo, leg3CoeffXo, leg3FreeFluxes); // TODO : check if default connection acceptable
+        ScTransfo3W.Leg leg1 = new ScTransfo3W.Leg(leg1ConnectionType, leg1CoeffRo, leg1CoeffXo, leg1FreeFluxes); // TODO : check if default connection acceptable
+        ScTransfo3W.Leg leg2 = new ScTransfo3W.Leg(leg2ConnectionType, leg2CoeffRo, leg2CoeffXo, leg2FreeFluxes); // TODO : check if default connection acceptable
+        ScTransfo3W.Leg leg3 = new ScTransfo3W.Leg(leg3ConnectionType, leg3CoeffRo, leg3CoeffXo, leg3FreeFluxes); // TODO : check if default connection acceptable
 
-        lfBranch.setProperty(PROPERTY_NAME, new ShortCircuitT3W(leg1, leg2, leg3));
+        lfBranch.setProperty(PROPERTY_NAME, new ScTransfo3W(leg1, leg2, leg3));
     }
 
     private static void addLineExtension(Network network, LfBranch lfBranch) {
@@ -113,7 +113,7 @@ public final class ShortCircuitExtensions {
             coeffXo = extensions.getCoeffXo();
         }
 
-        lfBranch.setProperty(PROPERTY_NAME, new ShortCircuitLine(coeffRo, coeffXo));
+        lfBranch.setProperty(PROPERTY_NAME, new ScLine(coeffRo, coeffXo));
     }
 
     private static void addTransfo2Extension(Network network, LfBranch lfBranch) {
@@ -134,7 +134,7 @@ public final class ShortCircuitExtensions {
             leg2ConnectionType = extensions.getLeg2ConnectionType();
         }
 
-        lfBranch.setProperty(PROPERTY_NAME, new ShortCircuitT2W(leg1ConnectionType, leg2ConnectionType, coeffRo, coeffXo, freeFluxes));
+        lfBranch.setProperty(PROPERTY_NAME, new ScTransfo2W(leg1ConnectionType, leg2ConnectionType, coeffRo, coeffXo, freeFluxes));
     }
 
     private static void addGeneratorExtension(Network network, LfGenerator lfGenerator) {
@@ -162,17 +162,17 @@ public final class ShortCircuitExtensions {
             coeffXo = extensions2.getCoeffXo();
         }
 
-        lfGenerator.setProperty(PROPERTY_NAME, new ShortCircuitGenerator(transX,
-                                                                         stepUpTfoX,
-                                                                         ShortCircuitGenerator.MachineType.SYNCHRONOUS_GEN,
-                                                                         transRd,
-                                                                         0.,
-                                                                         subTransRd,
-                                                                         subtransX,
-                                                                         toGround,
-                                                                         0.,
-                                                                         0.,
-                                                                         coeffRo,
-                                                                         coeffXo)); // TODO: set the right type when info available
+        lfGenerator.setProperty(PROPERTY_NAME, new ScGenerator(transX,
+                                                               stepUpTfoX,
+                                                               ScGenerator.MachineType.SYNCHRONOUS_GEN,
+                                                               transRd,
+                                                               0.,
+                                                               subTransRd,
+                                                               subtransX,
+                                                               toGround,
+                                                               0.,
+                                                               0.,
+                                                               coeffRo,
+                                                               coeffXo)); // TODO: set the right type when info available
     }
 }

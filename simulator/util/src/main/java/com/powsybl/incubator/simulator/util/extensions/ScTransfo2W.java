@@ -13,7 +13,7 @@ import java.util.Objects;
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
-public class ShortCircuitT2W {
+public class ScTransfo2W {
 
     private final LegConnectionType leg1ConnectionType;
     private final LegConnectionType leg2ConnectionType;
@@ -25,11 +25,11 @@ public class ShortCircuitT2W {
 
     private final double kT; //correction factor of the Two Windings Transformer
 
-    ShortCircuitT2W(LegConnectionType leg1ConnectionType, LegConnectionType leg2ConnectionType, double coeffRo, double coeffXo, boolean freeFluxes) {
+    ScTransfo2W(LegConnectionType leg1ConnectionType, LegConnectionType leg2ConnectionType, double coeffRo, double coeffXo, boolean freeFluxes) {
         this(leg1ConnectionType, leg2ConnectionType, coeffRo, coeffXo, freeFluxes, 1d);
     }
 
-    ShortCircuitT2W(LegConnectionType leg1ConnectionType, LegConnectionType leg2ConnectionType, double coeffRo, double coeffXo, boolean freeFluxes, double kT) {
+    ScTransfo2W(LegConnectionType leg1ConnectionType, LegConnectionType leg2ConnectionType, double coeffRo, double coeffXo, boolean freeFluxes, double kT) {
         this.leg1ConnectionType = Objects.requireNonNull(leg1ConnectionType);
         this.leg2ConnectionType = Objects.requireNonNull(leg2ConnectionType);
         this.coeffRo = coeffRo;

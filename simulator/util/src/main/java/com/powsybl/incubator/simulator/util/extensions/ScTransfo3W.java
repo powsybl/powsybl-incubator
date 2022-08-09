@@ -13,7 +13,7 @@ import java.util.Objects;
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
-public class ShortCircuitT3W {
+public class ScTransfo3W {
 
     public static class Leg {
 
@@ -75,11 +75,11 @@ public class ShortCircuitT3W {
     private final double kT2;
     private final double kT3;
 
-    ShortCircuitT3W(Leg leg1, Leg leg2, Leg leg3) {
+    ScTransfo3W(Leg leg1, Leg leg2, Leg leg3) {
         this(leg1, leg2, leg3, 1d, 1d, 1d);
     }
 
-    ShortCircuitT3W(Leg leg1, Leg leg2, Leg leg3, double kT1, double kT2, double kT3) {
+    ScTransfo3W(Leg leg1, Leg leg2, Leg leg3, double kT1, double kT2, double kT3) {
         this.leg1 = Objects.requireNonNull(leg1);
         this.leg2 = Objects.requireNonNull(leg2);
         this.leg3 = Objects.requireNonNull(leg3);

@@ -112,10 +112,10 @@ public class HomopolarModel {
 
         if (branch.getBranchType() == LfBranch.BranchType.LINE) {
             // branch is a line and homopolar data available
-            ShortCircuitLine shortCircuitLine = (ShortCircuitLine) branch.getProperty(ShortCircuitExtensions.PROPERTY_NAME);
-            if (shortCircuitLine != null) {
-                double rCoeff = shortCircuitLine.getCoeffRo();
-                double xCoeff = shortCircuitLine.getCoeffXo();
+            ScLine scLine = (ScLine) branch.getProperty(ShortCircuitExtensions.PROPERTY_NAME);
+            if (scLine != null) {
+                double rCoeff = scLine.getCoeffRo();
+                double xCoeff = scLine.getCoeffXo();
                 homopolarExtension.ro = r * rCoeff;
                 homopolarExtension.xo = x * xCoeff;
                 homopolarExtension.gom = gPi1 / rCoeff; //TODO : adapt
@@ -123,41 +123,41 @@ public class HomopolarModel {
             }
         } else if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_2) {
             // branch is a 2 windings transformer and homopolar data available
-            ShortCircuitT2W shortCircuitT2W = (ShortCircuitT2W) branch.getProperty(ShortCircuitExtensions.PROPERTY_NAME);
-            if (shortCircuitT2W != null) {
-                double rCoeff = shortCircuitT2W.getCoeffRo();
-                double xCoeff = shortCircuitT2W.getCoeffXo();
+            ScTransfo2W scTransfo = (ScTransfo2W) branch.getProperty(ShortCircuitExtensions.PROPERTY_NAME);
+            if (scTransfo != null) {
+                double rCoeff = scTransfo.getCoeffRo();
+                double xCoeff = scTransfo.getCoeffXo();
                 homopolarExtension.ro = r * rCoeff;
                 homopolarExtension.xo = x * xCoeff;
                 homopolarExtension.gom = gPi1 / rCoeff; //TODO : adapt
                 homopolarExtension.bom = bPi1 / xCoeff;  //TODO : adapt
 
-                homopolarExtension.leg1ConnectionType = shortCircuitT2W.getLeg1ConnectionType();
-                homopolarExtension.leg2ConnectionType = shortCircuitT2W.getLeg2ConnectionType();
+                homopolarExtension.leg1ConnectionType = scTransfo.getLeg1ConnectionType();
+                homopolarExtension.leg2ConnectionType = scTransfo.getLeg2ConnectionType();
             }
         } else if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_1
                 || branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_2
                 || branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_3) {
             // branch is leg1 of a 3 windings transformer and homopolar data available
-            ShortCircuitT3W shortCircuitT3W = (ShortCircuitT3W) branch.getProperty(ShortCircuitExtensions.PROPERTY_NAME);
-            if (shortCircuitT3W != null) {
+            ScTransfo3W scTransfo = (ScTransfo3W) branch.getProperty(ShortCircuitExtensions.PROPERTY_NAME);
+            if (scTransfo != null) {
                 double rCoeff;
                 double xCoeff;
                 if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_1) {
-                    rCoeff = shortCircuitT3W.getLeg1().getCoeffRo();
-                    xCoeff = shortCircuitT3W.getLeg1().getCoeffXo();
-                    homopolarExtension.leg1ConnectionType = shortCircuitT3W.getLeg1().getLegConnectionType();
-                    homopolarExtension.freeFluxes = shortCircuitT3W.getLeg1().isFreeFluxes();
+                    rCoeff = scTransfo.getLeg1().getCoeffRo();
+                    xCoeff = scTransfo.getLeg1().getCoeffXo();
+                    homopolarExtension.leg1ConnectionType = scTransfo.getLeg1().getLegConnectionType();
+                    homopolarExtension.freeFluxes = scTransfo.getLeg1().isFreeFluxes();
                 } else if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_2) {
-                    rCoeff = shortCircuitT3W.getLeg2().getCoeffRo();
-                    xCoeff = shortCircuitT3W.getLeg2().getCoeffXo();
-                    homopolarExtension.leg1ConnectionType = shortCircuitT3W.getLeg2().getLegConnectionType();
-                    homopolarExtension.freeFluxes = shortCircuitT3W.getLeg2().isFreeFluxes();
+                    rCoeff = scTransfo.getLeg2().getCoeffRo();
+                    xCoeff = scTransfo.getLeg2().getCoeffXo();
+                    homopolarExtension.leg1ConnectionType = scTransfo.getLeg2().getLegConnectionType();
+                    homopolarExtension.freeFluxes = scTransfo.getLeg2().isFreeFluxes();
                 } else if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_3) {
-                    rCoeff = shortCircuitT3W.getLeg3().getCoeffRo();
-                    xCoeff = shortCircuitT3W.getLeg3().getCoeffXo();
-                    homopolarExtension.leg1ConnectionType = shortCircuitT3W.getLeg3().getLegConnectionType();
-                    homopolarExtension.freeFluxes = shortCircuitT3W.getLeg3().isFreeFluxes();
+                    rCoeff = scTransfo.getLeg3().getCoeffRo();
+                    xCoeff = scTransfo.getLeg3().getCoeffXo();
+                    homopolarExtension.leg1ConnectionType = scTransfo.getLeg3().getLegConnectionType();
+                    homopolarExtension.freeFluxes = scTransfo.getLeg3().isFreeFluxes();
                 } else {
                     throw new IllegalArgumentException("Branch " + branch.getId() + " has unknown 3-winding leg number");
                 }

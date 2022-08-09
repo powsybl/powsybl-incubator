@@ -6,6 +6,8 @@
  */
 package com.powsybl.incubator.simulator.util;
 
+import com.powsybl.incubator.simulator.util.extensions.HomopolarModel;
+import com.powsybl.incubator.simulator.util.extensions.ShortCircuitExtensions;
 import com.powsybl.math.matrix.DenseMatrix;
 import com.powsybl.openloadflow.equations.Variable;
 import com.powsybl.openloadflow.equations.VariableSet;
@@ -30,7 +32,7 @@ public class AdmittanceEquationTermX2 extends AbstractAdmittanceEquationTerm {
         // Direct component:
         // I2x = -g21 * V1x + b21 * V1y + (g2 + g21)V2x - (b2 + b21)V2y
         if (admittanceType == AdmittanceEquationSystem.AdmittanceType.ADM_THEVENIN_HOMOPOLAR) {
-            HomopolarModel homopolarModel = HomopolarModel.build(branch);
+            HomopolarModel homopolarModel = (HomopolarModel) branch.getProperty(ShortCircuitExtensions.PROPERTY_HOMOPOLAR_MODEL);
             if (branch.getBranchType() == LfBranch.BranchType.LINE) {
                 g21 = rho * homopolarModel.getZoInvSquare() * (homopolarModel.getRo() * cosA + homopolarModel.getXo() * sinA);
                 b21 = rho * homopolarModel.getZoInvSquare() * (homopolarModel.getRo() * sinA - homopolarModel.getXo() * cosA);

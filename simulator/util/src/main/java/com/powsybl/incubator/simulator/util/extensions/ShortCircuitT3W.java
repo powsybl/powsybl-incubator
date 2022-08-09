@@ -6,6 +6,8 @@
  */
 package com.powsybl.incubator.simulator.util.extensions;
 
+import com.powsybl.incubator.simulator.util.extensions.iidm.LegConnectionType;
+
 import java.util.Objects;
 
 /**
@@ -13,19 +15,71 @@ import java.util.Objects;
  */
 public class ShortCircuitT3W {
 
-    private final ShortCircuitTransformerLeg leg1;
-    private final ShortCircuitTransformerLeg leg2;
-    private final ShortCircuitTransformerLeg leg3;
+    public static class Leg {
+
+        private LegConnectionType legConnectionType;
+
+        private final double coeffRo; // only used for now for 3 windings transformers
+        private final double coeffXo;
+
+        private final boolean freeFluxes; // only used for now for 3 windings transformers
+
+        private final double rGround = 0;
+        private final double xGround = 0;
+
+        public Leg(LegConnectionType legConnectionType) {
+            this(legConnectionType, 0, 0, false);
+        }
+
+        public Leg(LegConnectionType legConnectionType, double coeffRo, double coeffXo, boolean freeFluxes) {
+            this.legConnectionType = legConnectionType;
+            this.coeffRo = coeffRo;
+            this.coeffXo = coeffXo;
+            this.freeFluxes = freeFluxes;
+        }
+
+        public LegConnectionType getLegConnectionType() {
+            return legConnectionType;
+        }
+
+        public void setLegConnectionType(LegConnectionType legConnectionType) {
+            this.legConnectionType = Objects.requireNonNull(legConnectionType);
+        }
+
+        public double getCoeffRo() {
+            return coeffRo;
+        }
+
+        public double getCoeffXo() {
+            return coeffXo;
+        }
+
+        public boolean isFreeFluxes() {
+            return freeFluxes;
+        }
+
+        public double getrGround() {
+            return rGround;
+        }
+
+        public double getxGround() {
+            return xGround;
+        }
+    }
+
+    private final Leg leg1;
+    private final Leg leg2;
+    private final Leg leg3;
 
     private final double kT1; //correction factor of the Two Windings Transformer
     private final double kT2;
     private final double kT3;
 
-    ShortCircuitT3W(ShortCircuitTransformerLeg leg1, ShortCircuitTransformerLeg leg2, ShortCircuitTransformerLeg leg3) {
+    ShortCircuitT3W(Leg leg1, Leg leg2, Leg leg3) {
         this(leg1, leg2, leg3, 1d, 1d, 1d);
     }
 
-    ShortCircuitT3W(ShortCircuitTransformerLeg leg1, ShortCircuitTransformerLeg leg2, ShortCircuitTransformerLeg leg3, double kT1, double kT2, double kT3) {
+    ShortCircuitT3W(Leg leg1, Leg leg2, Leg leg3, double kT1, double kT2, double kT3) {
         this.leg1 = Objects.requireNonNull(leg1);
         this.leg2 = Objects.requireNonNull(leg2);
         this.leg3 = Objects.requireNonNull(leg3);
@@ -34,15 +88,15 @@ public class ShortCircuitT3W {
         this.kT3 = kT3;
     }
 
-    public ShortCircuitTransformerLeg getLeg1() {
+    public Leg getLeg1() {
         return leg1;
     }
 
-    public ShortCircuitTransformerLeg getLeg2() {
+    public Leg getLeg2() {
         return leg2;
     }
 
-    public ShortCircuitTransformerLeg getLeg3() {
+    public Leg getLeg3() {
         return leg3;
     }
 

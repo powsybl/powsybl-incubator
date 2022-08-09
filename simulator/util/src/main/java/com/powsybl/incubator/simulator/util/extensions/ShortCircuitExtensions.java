@@ -94,9 +94,9 @@ public final class ShortCircuitExtensions {
             leg3ConnectionType = extensions.getLeg3ConnectionType();
         }
 
-        ShortCircuitTransformerLeg leg1 = new ShortCircuitTransformerLeg(leg1ConnectionType, leg1CoeffRo, leg1CoeffXo, leg1FreeFluxes); // TODO : check if default connection acceptable
-        ShortCircuitTransformerLeg leg2 = new ShortCircuitTransformerLeg(leg2ConnectionType, leg2CoeffRo, leg2CoeffXo, leg2FreeFluxes); // TODO : check if default connection acceptable
-        ShortCircuitTransformerLeg leg3 = new ShortCircuitTransformerLeg(leg3ConnectionType, leg3CoeffRo, leg3CoeffXo, leg3FreeFluxes); // TODO : check if default connection acceptable
+        ShortCircuitT3W.Leg leg1 = new ShortCircuitT3W.Leg(leg1ConnectionType, leg1CoeffRo, leg1CoeffXo, leg1FreeFluxes); // TODO : check if default connection acceptable
+        ShortCircuitT3W.Leg leg2 = new ShortCircuitT3W.Leg(leg2ConnectionType, leg2CoeffRo, leg2CoeffXo, leg2FreeFluxes); // TODO : check if default connection acceptable
+        ShortCircuitT3W.Leg leg3 = new ShortCircuitT3W.Leg(leg3ConnectionType, leg3CoeffRo, leg3CoeffXo, leg3FreeFluxes); // TODO : check if default connection acceptable
 
         lfBranch.setProperty(PROPERTY_NAME, new ShortCircuitT3W(leg1, leg2, leg3));
     }

@@ -27,7 +27,6 @@ public class ShortCircuitBalancedEngine extends AbstractShortCircuitEngine {
     public void run() { //can handle both selective and systematic analysis with one single matrix inversion
 
         // building a contingency list with all voltage levels
-        // TODO : generate a list with busses
         if (parameters.getAnalysisType() == ShortCircuitEngineParameters.AnalysisType.SYSTEMATIC) {
             buildSystematicList(ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
         }
@@ -69,7 +68,7 @@ public class ShortCircuitBalancedEngine extends AbstractShortCircuitEngine {
             double xth = linearResolutionResult.getXthz12();
 
             for (CalculationLocation calculationLocation : solverFaultList) {
-                ShortCircuitFault scfe = (ShortCircuitFault) calculationLocation; // TODO : better check but calculationLocation must be a ShortCircuitFault
+                ShortCircuitFault scfe = (ShortCircuitFault) calculationLocation;
                 ShortCircuitFault scf = null;
                 if (bus.getId().equals(scfe.getLfBusInfo())) {
                     scf = scfe;
@@ -91,7 +90,7 @@ public class ShortCircuitBalancedEngine extends AbstractShortCircuitEngine {
                 double dvr = -ifr * linearResolutionResult.getEnBus().get(0, 0) + ifi * linearResolutionResult.getEnBus().get(1, 0);
                 double dvi = -ifr * linearResolutionResult.getEnBus().get(1, 0) - ifi * linearResolutionResult.getEnBus().get(0, 0);
 
-                ShortCircuitResult res = new ShortCircuitResult(scf, bus, ifr, ifi, rth, xth, vxInit, vyInit, dvr, dvi, parameters.getMatrixFactory(), linearResolutionResult.getEqSysFeeders(), parameters.getNorm());
+                ShortCircuitResult res = new ShortCircuitResult(scf, bus, ifr, ifi, rth, xth, vxInit, vyInit, dvr, dvi, linearResolutionResult.getEqSysFeeders(), parameters.getNorm());
                 if (parameters.voltageUpdate) {
                     //we get the lfNetwork to process the results
                     res.setLfNetwork(directResolution.lfNetworkResult);
@@ -108,7 +107,7 @@ public class ShortCircuitBalancedEngine extends AbstractShortCircuitEngine {
                         int busNum = vd.getKey();
                         double edVr = vd.getValue().get(0, 0);
                         double edVi = vd.getValue().get(1, 0);
-                        //System.out.println(" dVth(" + vdr.getKey() + ") = " + edVr + " + j(" + edVi + ")");
+
                         double deltaVr = -ifr * edVr + ifi * edVi;
                         double deltaVi = -ifr * edVi - ifi * edVr;
 

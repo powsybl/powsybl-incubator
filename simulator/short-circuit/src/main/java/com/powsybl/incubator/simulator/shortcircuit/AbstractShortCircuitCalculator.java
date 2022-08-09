@@ -7,19 +7,17 @@
 package com.powsybl.incubator.simulator.shortcircuit;
 
 import com.powsybl.math.matrix.DenseMatrix;
-import com.powsybl.math.matrix.Matrix;
-import com.powsybl.math.matrix.MatrixFactory;
 
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
 public abstract class AbstractShortCircuitCalculator {
 
-    Matrix mIo;
-    Matrix mId;
-    Matrix mIi;
+    DenseMatrix mIo;
+    DenseMatrix mId;
+    DenseMatrix mIi;
 
-    Matrix mIk; //contains the shortcircuit values
+    DenseMatrix mIk; //contains the shortcircuit values
 
     double rdf;
     double xdf;
@@ -33,10 +31,8 @@ public abstract class AbstractShortCircuitCalculator {
     double initVx;
     double initVy;
 
-    MatrixFactory mf;
-
     public AbstractShortCircuitCalculator(double rdf, double xdf, double rof, double xof, double rg, double xg,
-                                          double initVx, double initVy, MatrixFactory mf) {
+                                          double initVx, double initVy) {
         this.rdf = rdf;
         this.xdf = xdf;
         this.rof = rof;
@@ -45,19 +41,18 @@ public abstract class AbstractShortCircuitCalculator {
         this.xg = xg;
         this.initVx = initVx;
         this.initVy = initVy;
-        this.mf = mf;
 
     }
 
-    Matrix getmIo() {
+    DenseMatrix getmIo() {
         return mIo;
     }
 
-    Matrix getmId() {
+    DenseMatrix getmId() {
         return mId;
     }
 
-    Matrix getmIi() {
+    DenseMatrix getmIi() {
         return mIi;
     }
 
@@ -70,45 +65,35 @@ public abstract class AbstractShortCircuitCalculator {
         J
     }
 
-    public static Matrix getMatrixByType(BlocType bt, double scalar, MatrixFactory mf) {
-        Matrix m = mf.create(2, 2, 2);
+    public static DenseMatrix getMatrixByType(BlocType bt, double scalar) {
+        DenseMatrix m = new DenseMatrix(2, 2);
         addMatrixBlocByType(m, bt, scalar);
         return m;
     }
 
-    public static void addMatrixBlocByType(Matrix m, BlocType bt, double scalar) {
+    public static void addMatrixBlocByType(DenseMatrix m, BlocType bt, double scalar) {
         if (bt == BlocType.A) {
-            addMatrixBloc(m, 1, -1. / 2. * scalar, -Math.sqrt(3.) / 2. * scalar, Math.sqrt(3.) / 2. * scalar, -1. / 2. * scalar);
+            addMatrixBloc(m, -1. / 2. * scalar, -Math.sqrt(3.) / 2. * scalar, Math.sqrt(3.) / 2. * scalar, -1. / 2. * scalar);
         } else if (bt == BlocType.A2) {
-            addMatrixBloc(m, 1, 1. / 2. * scalar, -Math.sqrt(3.) / 2. * scalar, Math.sqrt(3.) / 2. * scalar, 1. / 2. * scalar);
+            addMatrixBloc(m, 1. / 2. * scalar, -Math.sqrt(3.) / 2. * scalar, Math.sqrt(3.) / 2. * scalar, 1. / 2. * scalar);
         } else if (bt == BlocType.Id) {
-            addMatrixBloc(m, 1, scalar, 0., 0., scalar);
+            addMatrixBloc(m, scalar, 0., 0., scalar);
         } else if (bt == BlocType.J) {
-            addMatrixBloc(m, 1, 0., -scalar, scalar, 0.);
+            addMatrixBloc(m, 0., -scalar, scalar, 0.);
         } else {
             throw new IllegalArgumentException("Bloc type unknown ");
         }
     }
 
-    public static void addMatrixBloc(Matrix m, int numBloc, double m11, double m12, double m21, double m22) {
-
-        if (numBloc != 1 && numBloc != 2) {
-            throw new IllegalArgumentException("Bloc number must be either 1 or 2 ");
-        }
-
-        int iIndex = 0;
-        if (numBloc == 2) {
-            iIndex = 2;
-        }
-
-        m.add(iIndex, 0, m11);
-        m.add(iIndex, 1, m12);
-        m.add(iIndex + 1, 0, m21);
-        m.add(iIndex + 1, 1, m22);
+    public static void addMatrixBloc(DenseMatrix m, double m11, double m12, double m21, double m22) {
+        m.add(0, 0, m11);
+        m.add(0, 1, m12);
+        m.add(1, 0, m21);
+        m.add(1, 1, m22);
     }
 
-    public static DenseMatrix addMatrices22(DenseMatrix m1, DenseMatrix m2, MatrixFactory mf) {
-        Matrix m = mf.create(2, 2, 2);
+    public static DenseMatrix addMatrices22(DenseMatrix m1, DenseMatrix m2) {
+        DenseMatrix m = new DenseMatrix(2, 2);
 
         m.add(0, 0, m1.get(0, 0) + m2.get(0, 0));
         m.add(0, 1, m1.get(0, 1) + m2.get(0, 1));
@@ -118,9 +103,9 @@ public abstract class AbstractShortCircuitCalculator {
         return m.toDense();
     }
 
-    public static Matrix getInvZt(double r, double x, MatrixFactory mf) {
+    public static DenseMatrix getInvZt(double r, double x) {
         double detZ = r * r + x * x;
-        Matrix invZ = mf.create(2, 2, 2);
+        DenseMatrix invZ = new DenseMatrix(2, 2);
         invZ.add(0, 0, r / detZ);
         invZ.add(0, 1, x / detZ);
         invZ.add(1, 0, -x / detZ);
@@ -129,15 +114,8 @@ public abstract class AbstractShortCircuitCalculator {
         return invZ;
     }
 
-    public static Matrix getInvZt(Matrix m, MatrixFactory mf) {
-        double r = m.toDense().get(0, 0);
-        double x = m.toDense().get(1, 0);
-
-        return getInvZt(r, x, mf);
-    }
-
-    public static Matrix getZ(double r, double x, MatrixFactory mf) {
-        Matrix z =  mf.create(2, 2, 2);
+    public static DenseMatrix getZ(double r, double x) {
+        DenseMatrix z =  new DenseMatrix(2, 2);
         z.add(0, 0, r);
         z.add(0, 1, -x);
         z.add(1, 0, x);

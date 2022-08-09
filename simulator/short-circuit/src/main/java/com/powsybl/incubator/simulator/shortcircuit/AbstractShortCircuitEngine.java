@@ -22,6 +22,8 @@ import com.powsybl.openloadflow.network.LfNetwork;
 import com.powsybl.openloadflow.network.LfNetworkParameters;
 import com.powsybl.openloadflow.network.impl.LfNetworkLoaderImpl;
 import org.apache.commons.math3.util.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -29,6 +31,9 @@ import java.util.*;
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
 public abstract class AbstractShortCircuitEngine {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractShortCircuitEngine.class);
+
     protected final Network network;
 
     protected final ShortCircuitEngineParameters parameters;
@@ -79,7 +84,7 @@ public abstract class AbstractShortCircuitEngine {
         List<ShortCircuitFault> scfSystematic = new ArrayList<>();
         parameters.setVoltageUpdate(false);
         for (Bus bus : network.getBusBreakerView().getBuses()) {
-            ShortCircuitFault sc = new ShortCircuitFault(bus.getId(), false, bus.getId(),  0., 0., type); //TODO : check validity of voltage levels if no connexity
+            ShortCircuitFault sc = new ShortCircuitFault(bus.getId(), bus.getId(),  0., 0., type); //TODO : check validity of voltage levels if no connexity
             scfSystematic.add(sc);
         }
         parameters.setShortCircuitFaults(scfSystematic);
@@ -95,10 +100,9 @@ public abstract class AbstractShortCircuitEngine {
         Map<String, Pair<String, Integer >> tmpListBus1 = new HashMap<>();
         for (ShortCircuitFault scfe : parameters.getShortCircuitFaults()) {
             String busName = scfe.getBusLocation();
-            String bus2Name = scfe.getBusLocationBiPhased();
+            String bus2Name = scfe.getBus2Location();
 
-            if (bus2Name.isEmpty()) { // TODO : adapt
-                // TODO : put a condition that it is an unbalanced shortCircuit
+            if (bus2Name.isEmpty()) {
                 if (scfe.getType() == ShortCircuitFault.ShortCircuitType.BIPHASED_COMMON_SUPPORT) {
                     throw new IllegalArgumentException(" short circuit fault : " + busName + " must have a second voltage level defined because it is a common support fault");
                 }
@@ -140,7 +144,7 @@ public abstract class AbstractShortCircuitEngine {
     }
 
     protected static Pair<String, Integer > buildFaultDipoleFromBusId(String busId, Network tmpNetwork) {
-        // TODO : improve with direct correspondence between iidm busses and lfBusses when available, because this loop is not very efficient
+        // improve with direct correspondence between iidm busses and lfBusses when available in PowSyBl, because this loop is not very efficient
         Bus bus = tmpNetwork.getBusBreakerView().getBus(busId);
         String branchId = "";
         int branchSide = 0;
@@ -162,14 +166,14 @@ public abstract class AbstractShortCircuitEngine {
         }
 
         if (!isFound) {
-            System.out.println(" input CC Bus " +  busId + " could not be associated with a bipole");
+            LOGGER.warn(" input CC Bus " +  busId + " could not be associated with a bipole");
         }
 
         return new Pair<>(branchId, branchSide);
     }
 
     protected static Pair<String, Integer> buildFaultT3WbranchFromBusId(String busId, Network tmpNetwork) {
-        // TODO : improve with direct correspondence between iidm busses and lfBusses when available, because this loop is not very efficient
+        // improve with direct correspondence between iidm busses and lfBusses when available in PowSyBl, because this loop is not very efficient
         Bus bus = tmpNetwork.getBusBreakerView().getBus(busId);
         String branchId = "";
         int legNum = 0;
@@ -198,7 +202,7 @@ public abstract class AbstractShortCircuitEngine {
         }
 
         if (!isFound) {
-            System.out.println(" Bus " +  busId + " could not be associated with a tripole");
+            LOGGER.warn(" input CC Bus " +  busId + " could not be associated with a tripole");
         }
 
         return new Pair<>(branchId, legNum);

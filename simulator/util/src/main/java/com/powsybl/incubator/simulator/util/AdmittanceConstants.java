@@ -14,8 +14,6 @@ public final class AdmittanceConstants {
     private AdmittanceConstants() {
     }
 
-    public static final double XN_PU = 0.0173; //default value if data not available
-
     public static final double COEF_XO_XD = 0.33; // xd/xo = 1/3 and xmo/x"d = 1/3
 
     public static final double INFINITE_IMPEDANCE_ADMITTANCE_VALUE = 0.00000001;

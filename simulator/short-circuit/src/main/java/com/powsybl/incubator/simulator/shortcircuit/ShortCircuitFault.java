@@ -13,21 +13,19 @@ import com.powsybl.incubator.simulator.util.CalculationLocation;
  */
 public class ShortCircuitFault extends CalculationLocation {
 
-    public ShortCircuitFault(String busLocation, boolean voltageUpdate, String faultId, double zfr, double zfi, ShortCircuitType type) {
-        super(busLocation, voltageUpdate);
+    public ShortCircuitFault(String busLocation, String faultId, double zfr, double zfi, ShortCircuitType type) {
+        super(busLocation);
         this.zfr = zfr;
         this.zfi = zfi;
         this.type = type;
-        this.inputByBus = false;
         this.faultId = faultId;
     }
 
-    public ShortCircuitFault(String busLocation, String busLocationBiPhased, boolean voltageUpdate, String faultId, double zfr, double zfi, ShortCircuitType type, ShortCircuitBiphasedType biphasedType) {
-        super(busLocation, busLocationBiPhased, voltageUpdate);
+    public ShortCircuitFault(String busLocation, String busLocationBiPhased, String faultId, double zfr, double zfi, ShortCircuitType type, ShortCircuitBiphasedType biphasedType) {
+        super(busLocation, busLocationBiPhased);
         this.zfr = zfr;
         this.zfi = zfi;
         this.type = type;
-        this.inputByBus = false;
         this.faultId = faultId;
         this.biphasedType = biphasedType;
     }
@@ -47,11 +45,7 @@ public class ShortCircuitFault extends CalculationLocation {
         C1_A2;
     }
 
-    // TODO : remove once input by bus is OK
-
     private String faultId;
-
-    private boolean inputByBus; // true if input given by bus
 
     private double zfr; //real part of the short circuit impedance Zf
     private double zfi; //imaginary part of the short circuit impedance Zf
@@ -59,10 +53,6 @@ public class ShortCircuitFault extends CalculationLocation {
     private ShortCircuitType type;
 
     private ShortCircuitBiphasedType biphasedType;
-
-    public boolean isInputByBus() {
-        return inputByBus;
-    }
 
     public ShortCircuitType getType() {
         return type;

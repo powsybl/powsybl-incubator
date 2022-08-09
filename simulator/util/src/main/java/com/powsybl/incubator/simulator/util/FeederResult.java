@@ -11,31 +11,17 @@ import com.powsybl.openloadflow.network.LfBus;
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
-public class EquationSystemResultFeeder {
+public class FeederResult {
 
-    private double b;
-
-    private double g;
-
-    private String id; // id in LfNetwork
-
-    private EquationSystemFeeder.FeederType feederType;
+    private Feeder feeder;
 
     private double ixContribution;
-
     private double iyContribution;
 
-    public EquationSystemResultFeeder(String id, EquationSystemFeeder.FeederType feederType, double ix, double iy, double g, double b) {
-        this.id = id;
-        this.feederType = feederType;
+    public FeederResult(Feeder feeder, double ix, double iy) {
+        this.feeder = feeder;
         this.ixContribution = ix;
         this.iyContribution = iy;
-        this.g = g;
-        this.b = b;
-    }
-
-    public EquationSystemFeeder.FeederType getFeederType() {
-        return feederType;
     }
 
     public void updateIcontribution(double ix, double iy) {
@@ -44,23 +30,15 @@ public class EquationSystemResultFeeder {
     }
 
     public void printContributions(LfBus bus) {
-        System.out.println(" ix(" + id + ", " + feederType + ") = " + ixContribution + " + j(" + iyContribution + ")  Module I = "
+        System.out.println(" ix(" + feeder.getId() + ", " + feeder.getFeederType() + ") = " + ixContribution + " + j(" + iyContribution + ")  Module I = "
                 + 1000. * 100. / bus.getNominalV() * Math.sqrt((ixContribution * ixContribution + iyContribution * iyContribution) / 3.)); //TODO : issue with a 3x factor
-    }
-
-    double getB() {
-        return b;
-    }
-
-    double getG() {
-        return g;
-    }
-
-    public String getId() {
-        return id;
     }
 
     public double getIxContribution() {
         return ixContribution;
+    }
+
+    public Feeder getFeeder() {
+        return feeder;
     }
 }

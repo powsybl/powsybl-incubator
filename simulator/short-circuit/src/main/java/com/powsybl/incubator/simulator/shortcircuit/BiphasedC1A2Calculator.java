@@ -7,8 +7,6 @@
 package com.powsybl.incubator.simulator.shortcircuit;
 
 import com.powsybl.math.matrix.DenseMatrix;
-import com.powsybl.math.matrix.Matrix;
-import com.powsybl.math.matrix.MatrixFactory;
 
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
@@ -16,11 +14,11 @@ import com.powsybl.math.matrix.MatrixFactory;
 public class BiphasedC1A2Calculator extends BiphasedCommonSupportShortCircuitCalculator {
 
     public BiphasedC1A2Calculator(double rdf, double xdf, double rof, double xof, double rg, double xg,
-                                                       double initVx, double initVy, MatrixFactory mf,
+                                                       double initVx, double initVy,
                                                        double v2dxInit, double v2dyInit,
                                                        double ro12, double xo12, double ro22, double xo22, double ro21, double xo21,
                                                        double rd12, double xd12, double rd22, double xd22, double rd21, double xd21) {
-        super(rdf, xdf, rof, xof, rg, xg, initVx, initVy, mf, v2dxInit, v2dyInit, ro12, xo12, ro22, xo22, ro21, xo21, rd12, xd12, rd22, xd22, rd21, xd21);
+        super(rdf, xdf, rof, xof, rg, xg, initVx, initVy, v2dxInit, v2dyInit, ro12, xo12, ro22, xo22, ro21, xo21, rd12, xd12, rd22, xd22, rd21, xd21);
 
         //Description of the fault (short circuit between c1 and a2) :
         // a1 ---------------x------------------  by definition : Ia1 = Ib1 = Ib2 = Ic2 = 0
@@ -96,67 +94,67 @@ public class BiphasedC1A2Calculator extends BiphasedCommonSupportShortCircuitCal
         //
 
         //compute the numerator matrix = a * V1d(init) - V2d(init)
-        Matrix ma = getMatrixByType(AbstractShortCircuitCalculator.BlocType.A, 1.0, mf);
+        DenseMatrix ma = getMatrixByType(AbstractShortCircuitCalculator.BlocType.A, 1.0);
 
-        Matrix mVd1Init = mf.create(2, 1, 2);
+        DenseMatrix mVd1Init = new DenseMatrix(2, 1);
         mVd1Init.add(0, 0, initVx);
         mVd1Init.add(1, 0, initVy);
 
-        Matrix maVd = ma.times(mVd1Init);
+        DenseMatrix maVd = ma.times(mVd1Init).toDense();
 
         maVd.add(0, 0, -v2dxInit);
         maVd.add(1, 0, -v2dyInit);
 
         // get Ic by multiplying the numerator to inv(Zt)
-        Matrix invZt = getInvZt(rt, xt, mf);
-        mIc = invZt.times(maVd);
+        DenseMatrix invZt = getInvZt(rt, xt);
+        mIc = invZt.times(maVd).toDense();
     }
 
     @Override
     public void computeZt() {
         // Zf + 1/3*(Zd_11 - a*Zd_12 + Zd_22 -a²*Zd_21 + Zo_11 - Zo_21 + Zo_22 - Zo_12 + Zi_22 - a²*Zi_12 + Zi_11 - a*Zi_21)
-        Matrix a2 = getMatrixByType(AbstractShortCircuitCalculator.BlocType.A2, 1.0, mf);
-        Matrix a = getMatrixByType(AbstractShortCircuitCalculator.BlocType.A, 1.0, mf);
-        Matrix minusId = getMatrixByType(AbstractShortCircuitCalculator.BlocType.Id, -1.0, mf);
-        Matrix idDiv3 = getMatrixByType(AbstractShortCircuitCalculator.BlocType.Id, 1. / 3., mf);
+        DenseMatrix a2 = getMatrixByType(AbstractShortCircuitCalculator.BlocType.A2, 1.0);
+        DenseMatrix a = getMatrixByType(AbstractShortCircuitCalculator.BlocType.A, 1.0);
+        DenseMatrix minusId = getMatrixByType(AbstractShortCircuitCalculator.BlocType.Id, -1.0);
+        DenseMatrix idDiv3 = getMatrixByType(AbstractShortCircuitCalculator.BlocType.Id, 1. / 3.);
 
         // td12 = - a*Zd_12
-        Matrix tmpd12 = a.times(zdf12);
-        Matrix td12 = minusId.times(tmpd12);
+        DenseMatrix tmpd12 = a.times(zdf12).toDense();
+        DenseMatrix td12 = minusId.times(tmpd12).toDense();
 
         // td21 = -a²*Zd_21
-        Matrix tmpd21 = a2.times(zdf21);
-        Matrix td21 = minusId.times(tmpd21);
+        DenseMatrix tmpd21 = a2.times(zdf21).toDense();
+        DenseMatrix td21 = minusId.times(tmpd21).toDense();
 
         // to21 = -zof21 and to12 = -zof12
-        Matrix to21 = minusId.times(zof21);
-        Matrix to12 = minusId.times(zof12);
+        DenseMatrix to21 = minusId.times(zof21).toDense();
+        DenseMatrix to12 = minusId.times(zof12).toDense();
 
         // ti12 = -a²*Zi_12
-        Matrix tmpi12 = a2.times(zif12);
-        Matrix ti12 = minusId.times(tmpi12);
+        DenseMatrix tmpi12 = a2.times(zif12).toDense();
+        DenseMatrix ti12 = minusId.times(tmpi12).toDense();
 
         // ti21 = - a*Zi_21
-        Matrix tmpi21 = a.times(zif21);
-        Matrix ti21 = minusId.times(tmpi21);
+        DenseMatrix tmpi21 = a.times(zif21).toDense();
+        DenseMatrix ti21 = minusId.times(tmpi21).toDense();
 
-        DenseMatrix zt = addMatrices22(zdf11.toDense(), td12.toDense(), mf);
-        zt = addMatrices22(zt, zdf22.toDense(), mf);
-        zt = addMatrices22(zt, td21.toDense(), mf);
-        zt = addMatrices22(zt, zof11.toDense(), mf);
-        zt = addMatrices22(zt, to21.toDense(), mf);
-        zt = addMatrices22(zt, zof22.toDense(), mf);
-        zt = addMatrices22(zt, to12.toDense(), mf);
-        zt = addMatrices22(zt, zif22.toDense(), mf);
-        zt = addMatrices22(zt, ti12.toDense(), mf);
-        zt = addMatrices22(zt, zif11.toDense(), mf);
-        zt = addMatrices22(zt, ti21.toDense(), mf);
+        DenseMatrix zt = addMatrices22(zdf11, td12.toDense());
+        zt = addMatrices22(zt, zdf22);
+        zt = addMatrices22(zt, td21);
+        zt = addMatrices22(zt, zof11);
+        zt = addMatrices22(zt, to21);
+        zt = addMatrices22(zt, zof22);
+        zt = addMatrices22(zt, to12);
+        zt = addMatrices22(zt, zif22);
+        zt = addMatrices22(zt, ti12);
+        zt = addMatrices22(zt, zif11);
+        zt = addMatrices22(zt, ti21);
 
-        Matrix tmpzt = idDiv3.times(zt);
+        DenseMatrix tmpzt = idDiv3.times(zt).toDense();
 
-        Matrix zf = getZ(rg, xg, mf);
+        DenseMatrix zf = getZ(rg, xg);
 
-        zt = addMatrices22(tmpzt.toDense(), zf.toDense(), mf);
+        zt = addMatrices22(tmpzt.toDense(), zf.toDense());
 
         rt = zt.get(0, 0);
         xt = zt.get(1, 0);
@@ -174,16 +172,16 @@ public class BiphasedC1A2Calculator extends BiphasedCommonSupportShortCircuitCal
         // [ I2d ] = -1/3 *Ic1 * [ 1 ]
         // [ I2i ]               [ 1 ]
 
-        Matrix mI3 = getMatrixByType(AbstractShortCircuitCalculator.BlocType.Id, 1. / 3, mf);
-        Matrix ma2Div3 = getMatrixByType(AbstractShortCircuitCalculator.BlocType.A2, 1. / 3, mf);
-        Matrix maDiv3 = getMatrixByType(AbstractShortCircuitCalculator.BlocType.A, 1. / 3, mf);
-        Matrix mMinusI = getMatrixByType(AbstractShortCircuitCalculator.BlocType.Id, -1., mf);
+        DenseMatrix mI3 = getMatrixByType(AbstractShortCircuitCalculator.BlocType.Id, 1. / 3);
+        DenseMatrix ma2Div3 = getMatrixByType(AbstractShortCircuitCalculator.BlocType.A2, 1. / 3);
+        DenseMatrix maDiv3 = getMatrixByType(AbstractShortCircuitCalculator.BlocType.A, 1. / 3);
+        DenseMatrix mMinusI = getMatrixByType(AbstractShortCircuitCalculator.BlocType.Id, -1.);
 
-        mIo = mI3.times(mIc);
-        mId = ma2Div3.times(mIc);
-        mIi = maDiv3.times(mIc);
+        mIo = mI3.times(mIc).toDense();
+        mId = ma2Div3.times(mIc).toDense();
+        mIi = maDiv3.times(mIc).toDense();
 
-        mI2o = mMinusI.times(mIo);
+        mI2o = mMinusI.times(mIo).toDense();
         mI2d = mI2o;
         mI2i = mI2o;
     }

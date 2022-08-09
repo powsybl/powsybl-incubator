@@ -6,8 +6,6 @@
  */
 package com.powsybl.incubator.simulator.util;
 
-import com.powsybl.openloadflow.network.LfBus;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,35 +19,18 @@ public class FeedersAtBusResult {
     private double ixFeedersSum; //sum of currents coming from branches, which is also the sum of feeders'currents at the same LfBus
     private double iyFeedersSum;
 
-    private List<Feeder> feedersInputData; // input data of feeders at bus
-
     private List<FeederResult> busFeedersResult; // output data of feeders at bus
 
-    private LfBus feedersBus;
+    private FeedersAtBus feedersAtBus;
 
-    private FeedersAtBus feederAtBus;
-
-    public FeedersAtBusResult(FeedersAtBus feederAtBus) {
+    public FeedersAtBusResult(FeedersAtBus feedersAtBus) {
         this.ixFeedersSum = 0.;
         this.iyFeedersSum = 0.;
-        this.feederAtBus = feederAtBus;
-
-        // init on feeder results based on equation system feeders
-        for (Feeder feeder : feedersInputData) {
-            FeederResult feederResult = new FeederResult(feeder, 0., 0.);
-            busFeedersResult.add(feederResult);
-        }
-    }
-
-    public FeedersAtBusResult(List<Feeder> feeders, LfBus bus) {
-        this.ixFeedersSum = 0.;
-        this.iyFeedersSum = 0.;
-        this.feedersInputData = feeders;
-        this.feedersBus = bus;
         this.busFeedersResult = new ArrayList<>();
+        this.feedersAtBus = feedersAtBus;
 
         // init on feeder results based on equation system feeders
-        for (Feeder feeder : feedersInputData) {
+        for (Feeder feeder : feedersAtBus.getFeeders()) {
             FeederResult feederResult = new FeederResult(feeder, 0., 0.);
             busFeedersResult.add(feederResult);
         }
@@ -78,7 +59,7 @@ public class FeedersAtBusResult {
                 double iyk = det * ((-gk * bSum + gSum * bk) * ixFeedersSum + (gk * gSum + bk * bSum) * iyFeedersSum);
 
                 feederResult.updateIcontribution(ixk, iyk);
-                feederResult.printContributions(feedersBus);
+                feederResult.printContributions(feedersAtBus.getFeedersBus());
             }
         }
     }

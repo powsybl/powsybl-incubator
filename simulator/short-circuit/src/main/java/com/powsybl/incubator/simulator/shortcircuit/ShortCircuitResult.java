@@ -258,8 +258,8 @@ public class ShortCircuitResult {
                 System.out.println(" dVi(" + vd.getKey() + ") = " + vd.getValue().get(4, 0) + " + j(" + vd.getValue().get(5, 0) + ")");
             }*/
 
+            // Building the structure to support the feeders result
             feedersAtBusResultsDirect = new HashMap<>(); // TODO : homopolar
-
             for (LfBus bus : lfNetwork.getBuses()) {
                 //int busNum = bus.getNum();
                 //double dvx = busNum2Dv.get(busNum).get(2, 0);
@@ -273,11 +273,12 @@ public class ShortCircuitResult {
 
                 // Init of feeder results
                 FeedersAtBus busFeeders = eqSysFeedersDirect.busToFeeders.get(bus);
-                FeedersAtBusResult resultBusFeeders = new FeedersAtBusResult(busFeeders.getFeeders(), bus);
-                feedersAtBusResultsDirect.put(bus, resultBusFeeders);  // TODO : homopolar
+                FeedersAtBusResult feedersAtBusResult = new FeedersAtBusResult(busFeeders);
+                feedersAtBusResultsDirect.put(bus, feedersAtBusResult);  // TODO : homopolar
 
             }
 
+            // Building the sum of currents at busses from branches
             for (LfBranch branch : lfNetwork.getBranches()) {
                 LfBus bus1 = branch.getBus1();
                 LfBus bus2 = branch.getBus2();
@@ -309,7 +310,7 @@ public class ShortCircuitResult {
                 }
             }
 
-            // computing feeders contribution
+            // computing feeders contribution from the sum of currents at node and based on the admittance dispatch key of feeders
             for (LfBus bus : lfNetwork.getBuses()) {
                 FeedersAtBusResult busFeeders = feedersAtBusResultsDirect.get(bus); // TODO : homopolar
                 busFeeders.updateContributions();

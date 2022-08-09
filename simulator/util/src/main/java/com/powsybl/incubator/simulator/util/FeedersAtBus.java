@@ -28,4 +28,7 @@ public class FeedersAtBus {
         return feeders;
     }
 
+    public LfBus getFeedersBus() {
+        return feedersBus;
+    }
 }

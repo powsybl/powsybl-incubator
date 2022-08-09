@@ -12,36 +12,15 @@ import com.powsybl.iidm.network.TwoWindingsTransformer;
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
-public class ShortCircuitNorm {
+public interface ShortCircuitNorm {
 
-    public enum NormType {
-        NONE,
-        IEC,
-        RTE_COURCIRC;
-    }
+    double getCmaxVoltageFactor(double nominalVoltage);
 
-    ShortCircuitNorm() {
+    double getCminVoltageFactor(double nominalVoltage);
 
-    }
+    double getKtT2W(TwoWindingsTransformer t2w);
 
-    public double getCmaxVoltageFactor(double nominalVoltage) {
-        return 1.0;
-    }
+    double getKtT3W(ThreeWindingsTransformer t3w, int numLeg);
 
-    public double getCminVoltageFactor(double nominalVoltage) {
-        return 1.0;
-    }
-
-    public double getKtT2W(TwoWindingsTransformer t2w) {
-        return 1.0;
-    }
-
-    public double getKtT3W(ThreeWindingsTransformer t3w, int numLeg) {
-        return 1.0;
-    }
-
-    public NormType getNormType() {
-        return NormType.NONE;
-    }
-
+    String getNormType();
 }

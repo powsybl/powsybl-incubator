@@ -6,13 +6,12 @@
  */
 package com.powsybl.incubator.simulator.util;
 
-import com.powsybl.iidm.network.Network;
-import com.powsybl.incubator.simulator.util.extensions.ShortCircuitExtensions;
 import com.powsybl.math.matrix.DenseMatrix;
 import com.powsybl.openloadflow.equations.EquationSystem;
 import com.powsybl.openloadflow.equations.VariableSet;
-import com.powsybl.openloadflow.network.*;
-import com.powsybl.openloadflow.network.impl.LfNetworkLoaderImpl;
+import com.powsybl.openloadflow.network.LfBranch;
+import com.powsybl.openloadflow.network.LfBus;
+import com.powsybl.openloadflow.network.LfNetwork;
 import org.apache.commons.math3.util.Pair;
 
 import java.util.ArrayList;
@@ -35,18 +34,15 @@ public  class ImpedanceLinearResolution {
     // [ Vy ] = -t[En]*inv(Y)*[En] * [ Iy ] + t[En] * [ Vy_init ]
     //
 
-    private final List<LfNetwork> networks;
+    private final LfNetwork network;
 
     private final ImpedanceLinearResolutionParameters parameters;
 
-    public List<ImpedanceLinearResolutionResult> results = new ArrayList<>();
+    public final List<ImpedanceLinearResolutionResult> results = new ArrayList<>();
 
-    public LfNetwork lfNetworkResult;
-
-    public ImpedanceLinearResolution(Network network, ImpedanceLinearResolutionParameters parameters) {
-        this.networks = LfNetwork.load(network, new LfNetworkLoaderImpl(), new LfNetworkParameters(new FirstSlackBusSelector()));
+    public ImpedanceLinearResolution(LfNetwork network, ImpedanceLinearResolutionParameters parameters) {
+        this.network = Objects.requireNonNull(network);
         this.parameters = Objects.requireNonNull(parameters);
-        ShortCircuitExtensions.add(network, networks);
     }
 
     public class ImpedanceLinearResolutionResult {
@@ -321,12 +317,9 @@ public  class ImpedanceLinearResolution {
 
     public void run() {
 
-        LfNetwork lfNetwork = networks.get(0);
-        lfNetworkResult = lfNetwork;
-
         FeedersAtNetwork equationsSystemFeeders = new FeedersAtNetwork();
         EquationSystem<VariableType, EquationType> equationSystem
-                = AdmittanceEquationSystem.create(lfNetwork, new VariableSet<>(), parameters.getAdmittanceType(), parameters.getTheveninVoltageProfileType(), parameters.getTheveninPeriodType(), parameters.isTheveninIgnoreShunts(), equationsSystemFeeders, parameters.getAcLoadFlowParameters());
+                = AdmittanceEquationSystem.create(network, new VariableSet<>(), parameters.getAdmittanceType(), parameters.getTheveninVoltageProfileType(), parameters.getTheveninPeriodType(), parameters.isTheveninIgnoreShunts(), equationsSystemFeeders, parameters.getAcLoadFlowParameters());
 
         //Get bus by voltage level
         List<LfBus> inputBusses = new ArrayList<>();
@@ -334,7 +327,7 @@ public  class ImpedanceLinearResolution {
             String iidmBranchId = faultBranchLocationInfo.getIidmBusInfo().getKey();
             int branchSide = faultBranchLocationInfo.getIidmBusInfo().getValue();
 
-            LfBus bus = getLfBusFromIidmBranch(iidmBranchId, branchSide, lfNetwork);
+            LfBus bus = getLfBusFromIidmBranch(iidmBranchId, branchSide, network);
             if (bus != null) {
                 inputBusses.add(bus);
                 faultBranchLocationInfo.setLfBusInfo(bus.getId());
@@ -352,8 +345,8 @@ public  class ImpedanceLinearResolution {
                 String iidmBranch2Id = biphasedFaultBranchLocationInfo.getIidmBus2Info().getKey();
                 int branch2Side = biphasedFaultBranchLocationInfo.getIidmBus2Info().getValue();
 
-                LfBus bus1 = getLfBusFromIidmBranch(iidmBranchId, branchSide, lfNetwork);
-                LfBus bus2 = getLfBusFromIidmBranch(iidmBranch2Id, branch2Side, lfNetwork);
+                LfBus bus1 = getLfBusFromIidmBranch(iidmBranchId, branchSide, network);
+                LfBus bus2 = getLfBusFromIidmBranch(iidmBranch2Id, branch2Side, network);
 
                 if (bus1 != null && bus2 != null) {
                     Pair<LfBus, LfBus> bussesPair = new Pair<>(bus1, bus2);
@@ -394,7 +387,7 @@ public  class ImpedanceLinearResolution {
         //  - En_y_k is the vector t[ 0 0 ... 0 0 0 1 0 0 ... 0 0 ] where 1 corresponds to the line/column of the bus k where the imaginary part of Z matrix is modelled
 
         // Step 1 : build the extraction vectors
-        try (AdmittanceMatrix yd = new AdmittanceMatrix(equationSystem, parameters.getMatrixFactory(), lfNetwork)) {
+        try (AdmittanceMatrix yd = new AdmittanceMatrix(equationSystem, parameters.getMatrixFactory(), network)) {
 
             DenseMatrix en = new DenseMatrix(yd.getRowCount(), 2 * inputBusses.size());
             List<Integer> tEn2Col = new ArrayList<>();

@@ -102,7 +102,7 @@ public class OpenShortCircuitProvider implements ShortCircuitAnalysisProvider {
         ShortCircuitEngineParameters.PeriodType periodType = ShortCircuitEngineParameters.PeriodType.TRANSIENT;
 
         LoadFlowParameters loadFlowParameters = new LoadFlowParameters();
-        ShortCircuitNorm shortCircuitNorm = new ShortCircuitNorm();
+        ShortCircuitNorm shortCircuitNorm = new ShortCircuitNormNone();
 
         ShortCircuitEngineParameters scbParameters = new ShortCircuitEngineParameters(loadFlowParameters, matrixFactory, at, faultsList, true, voltageProfile, false, periodType, shortCircuitNorm);
 
@@ -178,24 +178,24 @@ public class OpenShortCircuitProvider implements ShortCircuitAnalysisProvider {
 
         for (Fault fault : faults) {
             if (fault.getType() == Fault.Type.BRANCH) {
-                LOGGER.warn("Short circuit of type BRANCH not yet supported, fault : " + fault.getId() + " is ignored");
+                LOGGER.warn("Short circuit of type BRANCH not yet supported, fault : {} is ignored", fault.getId());
                 continue;
             }
 
             if (fault.getFaultType() == Fault.FaultType.SINGLE_PHASE) {
                 existUnbalancedFaults = true;
-                LOGGER.warn(" Short circuit of type SINGLE_PHASE not yet supported, fault : " + fault.getId() + " is ignored");
+                LOGGER.warn(" Short circuit of type SINGLE_PHASE not yet supported, fault : {} is ignored", fault.getId());
                 continue;
             } else if (fault.getFaultType() == Fault.FaultType.THREE_PHASE) {
                 existBalancedFaults = true;
             } else {
-                LOGGER.warn(" Short circuit of unknown type, fault : " + fault.getId() + " is ignored");
+                LOGGER.warn(" Short circuit of unknown type, fault :  is ignored", fault.getId());
                 continue;
             }
 
             // TODO : transform parallel input into a series input
             if (fault.getConnectionType() == Fault.ConnectionType.PARALLEL) {
-                LOGGER.warn(" Short circuit connection of type PARALLEL not yet supported, fault : " + fault.getId() + " is ignored");
+                LOGGER.warn(" Short circuit connection of type PARALLEL not yet supported, fault : {} is ignored", fault.getId());
                 continue;
             }
 

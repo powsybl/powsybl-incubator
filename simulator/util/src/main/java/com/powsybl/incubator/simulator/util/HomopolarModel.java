@@ -14,24 +14,23 @@ import com.powsybl.openloadflow.network.LfBranch;
 import java.util.Objects;
 
 /**
+ * zero sequence additional attributes
+ *
+ * Proposed Transformer model :
+ *      Ia       Yg    A'  rho                 B'     Yg        Ib        Zga : grounding impedance on A side (in ohms expressed on A side)
+ *   A-->--3*Zga--+    +--(())--+--Zoa--+--Zob--+     +--3*ZGb--<--B      Zoa : leakage impedance of A-winding (in ohms expressed on B side)
+ *                Y +                   |           + Y                   Zob : leakage impdedance of B-winding (in ohms expressed on B side)
+ *                    + D              Zom        + D                     Zom : magnetizing impedance of the two windings (in ohms expressed on B side)
+ *                    |                 |         |                       Zgb : grounding impedance on B side (in ohms expressed on B side)
+ *                    |                 |         |                       rho might be a complex value
+ *                    |    free fluxes \          |
+ *                    |                 |         |
+ *                  /////             /////     /////                     A' and B' are connected to Yg, Y or D depending on the winding connection type (Y to ground, Y or Delta)
+ *
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at gmail.com>
  */
 public class HomopolarModel {
-
-    // zero sequence additional attributes
-    //
-    // Proposed Transformer model :
-    //      Ia       Yg    A'  rho                 B'     Yg        Ib        Zga : grounding impedance on A side (in ohms expressed on A side)
-    //   A-->--3*Zga--+    +--(())--+--Zoa--+--Zob--+     +--3*ZGb--<--B      Zoa : leakage impedance of A-winding (in ohms expressed on B side)
-    //                Y +                   |           + Y                   Zob : leakage impdedance of B-winding (in ohms expressed on B side)
-    //                    + D              Zom        + D                     Zom : magnetizing impedance of the two windings (in ohms expressed on B side)
-    //                    |                 |         |                       Zgb : grounding impedance on B side (in ohms expressed on B side)
-    //                    |                 |         |                       rho might be a complex value
-    //                    |    free fluxes \          |
-    //                    |                 |         |
-    //                  /////             /////     /////                     A' and B' are connected to Yg, Y or D depending on the winding connection type (Y to ground, Y or Delta)
-    //
 
     private final LfBranch branch;
 

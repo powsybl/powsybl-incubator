@@ -56,7 +56,7 @@ public class AdmittanceMatrix implements AutoCloseable {
                 }
             }
 
-            isSubAdmittance = numRowBusses.size() > 0 || numColBusses.size() > 0; //if false then build the full admittance system based on the equationSystem infos
+            isSubAdmittance = !numRowBusses.isEmpty() || !numColBusses.isEmpty(); //if false then build the full admittance system based on the equationSystem infos
 
             if (isSubAdmittance) {
                 int nbRow = 0;
@@ -197,15 +197,14 @@ public class AdmittanceMatrix implements AutoCloseable {
 
             if (!admSys.isSubAdmittance || admSys.eqToRowNum.containsKey(eq)) {
                 for (Map.Entry<Variable<VariableType>, List<EquationTerm<VariableType, EquationType>>> e2 : indexTermsByVariable(eq).entrySet()) {
-                    Variable<VariableType> var = e2.getKey();
-                    int yColumn = var.getRow(); // vars are the columns of Y (and the rows of "matrix", the transposed of Y)
-                    if (admSys.isSubAdmittance && admSys.varToColNum.containsKey(var)) {
-                        yColumn = admSys.varToColNum.get(var); // the matrix is the transposed of the admittance matrix
+                    Variable<VariableType> v = e2.getKey();
+                    int yColumn = v.getRow(); // vars are the columns of Y (and the rows of "matrix", the transposed of Y)
+                    if (admSys.isSubAdmittance && admSys.varToColNum.containsKey(v)) {
+                        yColumn = admSys.varToColNum.get(v); // the matrix is the transposed of the admittance matrix
                     }
-                    if (!admSys.isSubAdmittance || admSys.varToColNum.containsKey(var)) {
+                    if (!admSys.isSubAdmittance || admSys.varToColNum.containsKey(v)) {
                         for (EquationTerm<VariableType, EquationType> equationTerm : e2.getValue()) {
-                            double value = ((LinearEquationTerm) equationTerm).getCoefficient(var);
-                            //System.out.println(" add term i =  " + yRow + " j = " + yColumn + " value = " + value);
+                            double value = ((LinearEquationTerm) equationTerm).getCoefficient(v);
                             matrix.add(yColumn, yRow, value); //matrix is here the transposed of Y
                         }
                     }
@@ -214,13 +213,13 @@ public class AdmittanceMatrix implements AutoCloseable {
         }
 
         //Init of the column accessors
-        for (Variable<VariableType> var : equationSystem.getIndex().getSortedVariablesToFind()) {
-            int busNum = var.getElementNum();
-            VariableType varType = var.getType();
+        for (Variable<VariableType> v : equationSystem.getIndex().getSortedVariablesToFind()) {
+            int busNum = v.getElementNum();
+            VariableType varType = v.getType();
 
-            int yColumn = var.getRow(); // vars are the columns of Y (and the rows of "matrix", the transposed of Y)
-            if (admSys.isSubAdmittance && admSys.varToColNum.containsKey(var)) {
-                yColumn = admSys.varToColNum.get(var); // the matrix is the transposed of the admittance matrix
+            int yColumn = v.getRow(); // vars are the columns of Y (and the rows of "matrix", the transposed of Y)
+            if (admSys.isSubAdmittance && admSys.varToColNum.containsKey(v)) {
+                yColumn = admSys.varToColNum.get(v); // the matrix is the transposed of the admittance matrix
             }
             if (varType == VariableType.BUS_VR) {
                 busNumToColR.set(busNum, yColumn);
@@ -254,20 +253,20 @@ public class AdmittanceMatrix implements AutoCloseable {
         //if if no busses specified in input, we build the voltage vector of the full system
         int columnCount = getColCount();
 
-        double[] v = createStateVector(network, voltageInitializer);
+        double[] sv = createStateVector(network, voltageInitializer);
         double[] vPart = new double[columnCount];
         Matrix mV;
 
         if (admSys.isSubAdmittance) {
-            for (Variable<VariableType> var : equationSystem.getIndex().getSortedVariablesToFind()) {
-                int row = var.getRow();
-                if (admSys.varToColNum.containsKey(var)) {
-                    vPart[admSys.varToColNum.get(var)] = v[row];
+            for (Variable<VariableType> v : equationSystem.getIndex().getSortedVariablesToFind()) {
+                int row = v.getRow();
+                if (admSys.varToColNum.containsKey(v)) {
+                    vPart[admSys.varToColNum.get(v)] = sv[row];
                 }
             }
             mV = Matrix.createFromRow(vPart, matrixFactory);
         } else {
-            mV = Matrix.createFromRow(v, matrixFactory);
+            mV = Matrix.createFromRow(sv, matrixFactory);
         }
 
         return mV;
@@ -275,28 +274,28 @@ public class AdmittanceMatrix implements AutoCloseable {
 
     public Map<Integer, DenseMatrix> getDeltaV(DenseMatrix m, int numColumn) {
         Map<Integer, DenseMatrix> tmpV = new HashMap<>();
-        for (Variable<VariableType> var : equationSystem.getIndex().getSortedVariablesToFind()) {
-            int row = var.getRow();
-            VariableType type = var.getType();
+        for (Variable<VariableType> v : equationSystem.getIndex().getSortedVariablesToFind()) {
+            int row = v.getRow();
+            VariableType type = v.getType();
             if (admSys.isSubAdmittance) {
-                if (admSys.varToColNum.containsKey(var)) {
-                    row = admSys.varToColNum.get(var);
+                if (admSys.varToColNum.containsKey(v)) {
+                    row = admSys.varToColNum.get(v);
                 } else {
-                    throw new IllegalArgumentException("Could not update variable V num = " + var.getElementNum() + ", index not found in the subsystem");
+                    throw new IllegalArgumentException("Could not update variable V num = " + v.getElementNum() + ", index not found in the subsystem");
                 }
             }
 
             DenseMatrix tmpMat = this.matrixFactory.create(2, 2, 4).toDense();
-            if (!tmpV.containsKey(var.getElementNum())) {
-                tmpV.put(var.getElementNum(), tmpMat);
+            if (!tmpV.containsKey(v.getElementNum())) {
+                tmpV.put(v.getElementNum(), tmpMat);
             }
             if (type == VariableType.BUS_VR) {
-                tmpV.get(var.getElementNum()).add(0, 0, m.get(row, 2 * numColumn));
-                tmpV.get(var.getElementNum()).add(0, 1, m.get(row, 2 * numColumn + 1));
+                tmpV.get(v.getElementNum()).add(0, 0, m.get(row, 2 * numColumn));
+                tmpV.get(v.getElementNum()).add(0, 1, m.get(row, 2 * numColumn + 1));
 
             } else if (type == VariableType.BUS_VI) {
-                tmpV.get(var.getElementNum()).add(1, 0, m.get(row, 2 * numColumn));
-                tmpV.get(var.getElementNum()).add(1, 1, m.get(row, 2 * numColumn + 1));
+                tmpV.get(v.getElementNum()).add(1, 0, m.get(row, 2 * numColumn));
+                tmpV.get(v.getElementNum()).add(1, 1, m.get(row, 2 * numColumn + 1));
             }
 
         }
@@ -305,15 +304,15 @@ public class AdmittanceMatrix implements AutoCloseable {
     }
 
     public List<DenseMatrix> getDeltaVFortescue(List<DenseMatrix> busNum2Dv,  DenseMatrix md, DenseMatrix mo, DenseMatrix mi) {
-        for (Variable<VariableType> var : equationSystem.getIndex().getSortedVariablesToFind()) {
-            int row = var.getRow();
-            VariableType type = var.getType();
-            int busNum = var.getElementNum();
+        for (Variable<VariableType> v : equationSystem.getIndex().getSortedVariablesToFind()) {
+            int row = v.getRow();
+            VariableType type = v.getType();
+            int busNum = v.getElementNum();
             if (admSys.isSubAdmittance) {
-                if (admSys.varToColNum.containsKey(var)) {
-                    row = admSys.varToColNum.get(var);
+                if (admSys.varToColNum.containsKey(v)) {
+                    row = admSys.varToColNum.get(v);
                 } else {
-                    throw new IllegalArgumentException("Could not update variable V num = " + var.getElementNum() + ", index not found in the subsystem");
+                    throw new IllegalArgumentException("Could not update variable V num = " + v.getElementNum() + ", index not found in the subsystem");
                 }
             }
 

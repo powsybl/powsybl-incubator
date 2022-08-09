@@ -16,7 +16,7 @@ import java.util.Objects;
  */
 public class TwoWindingsTransformerShortCircuit extends AbstractExtension<TwoWindingsTransformer> {
 
-    public static String NAME = "twoWindingsTransformerShortCircuit";
+    public static final String NAME = "twoWindingsTransformerShortCircuit";
 
     private final double coeffRo; // Ro = Rd * CoeffRo
     private final double coeffXo;

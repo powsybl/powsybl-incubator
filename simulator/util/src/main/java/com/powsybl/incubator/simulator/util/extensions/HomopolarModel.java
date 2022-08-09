@@ -4,9 +4,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.powsybl.incubator.simulator.util;
+package com.powsybl.incubator.simulator.util.extensions;
 
-import com.powsybl.incubator.simulator.util.extensions.*;
+import com.powsybl.incubator.simulator.util.AdmittanceConstants;
 import com.powsybl.incubator.simulator.util.extensions.iidm.LegConnectionType;
 import com.powsybl.math.matrix.DenseMatrix;
 import com.powsybl.openloadflow.network.LfBranch;
@@ -125,7 +125,7 @@ public class HomopolarModel {
 
         if (branch.getBranchType() == LfBranch.BranchType.LINE) {
             // branch is a line and homopolar data available
-            ScLine scLine = (ScLine) branch.getProperty(ShortCircuitExtensions.PROPERTY_NAME);
+            ScLine scLine = (ScLine) branch.getProperty(ShortCircuitExtensions.PROPERTY_SHORT_CIRCUIT);
             if (scLine != null) {
                 double rCoeff = scLine.getCoeffRo();
                 double xCoeff = scLine.getCoeffXo();
@@ -136,7 +136,7 @@ public class HomopolarModel {
             }
         } else if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_2) {
             // branch is a 2 windings transformer and homopolar data available
-            ScTransfo2W scTransfo = (ScTransfo2W) branch.getProperty(ShortCircuitExtensions.PROPERTY_NAME);
+            ScTransfo2W scTransfo = (ScTransfo2W) branch.getProperty(ShortCircuitExtensions.PROPERTY_SHORT_CIRCUIT);
             if (scTransfo != null) {
                 double rCoeff = scTransfo.getCoeffRo();
                 double xCoeff = scTransfo.getCoeffXo();
@@ -152,7 +152,7 @@ public class HomopolarModel {
                 || branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_2
                 || branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_3) {
             // branch is leg1 of a 3 windings transformer and homopolar data available
-            ScTransfo3W scTransfo = (ScTransfo3W) branch.getProperty(ShortCircuitExtensions.PROPERTY_NAME);
+            ScTransfo3W scTransfo = (ScTransfo3W) branch.getProperty(ShortCircuitExtensions.PROPERTY_SHORT_CIRCUIT);
             if (scTransfo != null) {
                 double rCoeff;
                 double xCoeff;

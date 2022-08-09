@@ -8,7 +8,6 @@ package com.powsybl.incubator.simulator.util.extensions.iidm;
 
 import com.powsybl.commons.extensions.AbstractExtensionAdder;
 import com.powsybl.iidm.network.ThreeWindingsTransformer;
-import com.powsybl.incubator.simulator.util.extensions.LegConnectionType;
 
 import java.util.Objects;
 

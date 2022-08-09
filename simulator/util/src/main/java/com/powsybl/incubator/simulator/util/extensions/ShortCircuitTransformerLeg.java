@@ -6,6 +6,8 @@
  */
 package com.powsybl.incubator.simulator.util.extensions;
 
+import com.powsybl.incubator.simulator.util.extensions.iidm.LegConnectionType;
+
 import java.util.Objects;
 
 /**

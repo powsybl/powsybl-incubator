@@ -7,6 +7,7 @@
 package com.powsybl.incubator.simulator.util;
 
 import com.powsybl.incubator.simulator.util.extensions.*;
+import com.powsybl.incubator.simulator.util.extensions.iidm.LegConnectionType;
 import com.powsybl.math.matrix.DenseMatrix;
 import com.powsybl.openloadflow.network.LfBranch;
 

@@ -86,7 +86,7 @@ public class BiphasedShortCircuitCalculator extends AbstractShortCircuitCalculat
         // [Io] = 0
         DenseMatrix adiv3 = getMatrixByType(BlocType.A, 1. / 3.);
         DenseMatrix ma2div3 = getMatrixByType(BlocType.A2, -1. / 3);
-        DenseMatrix minusId = getMatrixByType(BlocType.Id, -1.);
+        DenseMatrix minusId = getMatrixByType(BlocType.I_D, -1.);
         DenseMatrix aa2div3 = addMatrices22(adiv3.toDense(), ma2div3.toDense());
 
         mId = aa2div3.times(mIb).toDense();

@@ -14,7 +14,7 @@ import com.powsybl.iidm.network.Generator;
  */
 public class GeneratorShortCircuit2 extends AbstractExtension<Generator> {
 
-    public static String NAME = "generatorShortCircuit2";
+    public static final String NAME = "generatorShortCircuit2";
 
     private final double transRd; // transient resistance
     private final double subTransRd; // sub-transient resistance

@@ -16,7 +16,7 @@ import java.util.Objects;
  */
 public class ThreeWindingsTransformerShortCircuit extends AbstractExtension<ThreeWindingsTransformer> {
 
-    public static String NAME = "threeWindingsTransformerShortCircuit";
+    public static final String NAME = "threeWindingsTransformerShortCircuit";
 
     private final double leg1CoeffRo;
     private final double leg2CoeffRo;

@@ -56,7 +56,7 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
         homopolarResolution.run();
 
         //Build the ShortCircuit results using the linear resolution computation results
-        resultsPerFault = new LinkedHashMap<>();
+        resultsPerFault.clear();
         processAdmittanceLinearResolutionResults(directResolution, homopolarResolution, ShortCircuitFault.ShortCircuitType.MONOPHASED);
         processAdmittanceLinearResolutionResults(directResolution, homopolarResolution, ShortCircuitFault.ShortCircuitType.BIPHASED);
         processAdmittanceLinearResolutionResults(directResolution, homopolarResolution, ShortCircuitFault.ShortCircuitType.BIPHASED_GROUND);
@@ -259,7 +259,7 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
                 -minusVi.get(0, 0), -minusVi.get(1, 0),
                 equationSystemFeedersDirect, equationSystemFeedersHomopolar, parameters.getNorm());
 
-        if (parameters.voltageUpdate) {
+        if (parameters.isVoltageUpdate()) {
             res.setLfNetwork(directResolution.lfNetworkResult);
             res.setTrueVoltageProfileUpdate();
             // The post-fault voltage values for the network busses are computed as follow :
@@ -342,7 +342,7 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
                 mVi.toDense().get(2, 0), mVi.toDense().get(3, 0),
                 lfBus2);
 
-        if (parameters.voltageUpdate) {
+        if (parameters.isVoltageUpdate()) {
             res.setLfNetwork(directResolution.lfNetworkResult);
             res.setTrueVoltageProfileUpdate();
             // The post-fault voltage values for the network busses are computed as follow :

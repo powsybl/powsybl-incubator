@@ -109,8 +109,8 @@ public class BiphasedC1C2Calculator extends BiphasedCommonSupportShortCircuitCal
     @Override
     public void computeZt() {
         //  Zf + 1/3*(Zd_11 - Zd_12 + Zd_22 - Zd_21 + Zo_11 - Zo_21 + Zo_22 - Zo_12 + Zi_22 - Zi_12 + Zi_11 - Zi_21)
-        DenseMatrix mId = getMatrixByType(AbstractShortCircuitCalculator.BlocType.Id, -1.0);
-        DenseMatrix idDiv3 = getMatrixByType(AbstractShortCircuitCalculator.BlocType.Id, 1. / 3.);
+        DenseMatrix mId = getMatrixByType(AbstractShortCircuitCalculator.BlocType.I_D, -1.0);
+        DenseMatrix idDiv3 = getMatrixByType(AbstractShortCircuitCalculator.BlocType.I_D, 1. / 3.);
 
         DenseMatrix td12 = mId.times(zdf12).toDense();
         DenseMatrix td21 = mId.times(zdf21).toDense();
@@ -155,10 +155,10 @@ public class BiphasedC1C2Calculator extends BiphasedCommonSupportShortCircuitCal
         // [ I2d ] = -1/3 *Ic1 * [ a²]
         // [ I2i ]               [ a ]
 
-        DenseMatrix mI3 = getMatrixByType(AbstractShortCircuitCalculator.BlocType.Id, 1. / 3);
+        DenseMatrix mI3 = getMatrixByType(AbstractShortCircuitCalculator.BlocType.I_D, 1. / 3);
         DenseMatrix ma2Div3 = getMatrixByType(AbstractShortCircuitCalculator.BlocType.A2, 1. / 3);
         DenseMatrix maDiv3 = getMatrixByType(AbstractShortCircuitCalculator.BlocType.A, 1. / 3);
-        DenseMatrix mMinusI = getMatrixByType(AbstractShortCircuitCalculator.BlocType.Id, -1.);
+        DenseMatrix mMinusI = getMatrixByType(AbstractShortCircuitCalculator.BlocType.I_D, -1.);
 
         mIo = mI3.times(mIc).toDense();
         mId = ma2Div3.times(mIc).toDense();

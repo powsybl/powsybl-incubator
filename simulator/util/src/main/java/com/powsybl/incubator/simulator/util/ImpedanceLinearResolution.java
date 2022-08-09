@@ -39,7 +39,7 @@ public  class ImpedanceLinearResolution {
 
     private final ImpedanceLinearResolutionParameters parameters;
 
-    public List<ImpedanceLinearResolutionResult> results = new ArrayList<>();
+    public final List<ImpedanceLinearResolutionResult> results = new ArrayList<>();
 
     public LfNetwork lfNetworkResult;
 

@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
-public class ShortCircuitBiphasedGroundTest {
+class ShortCircuitBiphasedGroundTest {
 
     private LoadFlowParameters parameters;
 

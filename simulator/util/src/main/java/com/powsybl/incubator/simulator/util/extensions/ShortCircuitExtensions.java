@@ -18,6 +18,8 @@ import com.powsybl.openloadflow.network.LfNetwork;
 import java.util.List;
 import java.util.Objects;
 
+import static com.powsybl.incubator.simulator.util.extensions.iidm.ShortCircuitConstants.*;
+
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
@@ -66,18 +68,18 @@ public final class ShortCircuitExtensions {
         String t3wId = lfBranch.getOriginalIds().get(0);
         ThreeWindingsTransformer twt = network.getThreeWindingsTransformer(t3wId);
 
-        double leg1CoeffRo = ThreeWindingsTransformerShortCircuitAdder.DEFAULT_COEFF_RO;
-        double leg2CoeffRo = ThreeWindingsTransformerShortCircuitAdder.DEFAULT_COEFF_RO;
-        double leg3CoeffRo = ThreeWindingsTransformerShortCircuitAdder.DEFAULT_COEFF_RO;
-        double leg1CoeffXo = ThreeWindingsTransformerShortCircuitAdder.DEFAULT_COEFF_XO;
-        double leg2CoeffXo = ThreeWindingsTransformerShortCircuitAdder.DEFAULT_COEFF_XO;
-        double leg3CoeffXo = ThreeWindingsTransformerShortCircuitAdder.DEFAULT_COEFF_XO;
-        boolean leg1FreeFluxes = ThreeWindingsTransformerShortCircuitAdder.DEFAULT_FREE_FLUXES;
-        boolean leg2FreeFluxes = ThreeWindingsTransformerShortCircuitAdder.DEFAULT_FREE_FLUXES;
-        boolean leg3FreeFluxes = ThreeWindingsTransformerShortCircuitAdder.DEFAULT_FREE_FLUXES;
-        LegConnectionType leg1ConnectionType = ThreeWindingsTransformerShortCircuitAdder.DEFAULT_LEG1_CONNECTION_TYPE;
-        LegConnectionType leg2ConnectionType = ThreeWindingsTransformerShortCircuitAdder.DEFAULT_LEG2_CONNECTION_TYPE;
-        LegConnectionType leg3ConnectionType = ThreeWindingsTransformerShortCircuitAdder.DEFAULT_LEG3_CONNECTION_TYPE;
+        double leg1CoeffRo = DEFAULT_COEFF_RO;
+        double leg2CoeffRo = DEFAULT_COEFF_RO;
+        double leg3CoeffRo = DEFAULT_COEFF_RO;
+        double leg1CoeffXo = DEFAULT_COEFF_XO;
+        double leg2CoeffXo = DEFAULT_COEFF_XO;
+        double leg3CoeffXo = DEFAULT_COEFF_XO;
+        boolean leg1FreeFluxes = DEFAULT_FREE_FLUXES;
+        boolean leg2FreeFluxes = DEFAULT_FREE_FLUXES;
+        boolean leg3FreeFluxes = DEFAULT_FREE_FLUXES;
+        LegConnectionType leg1ConnectionType = DEFAULT_LEG1_CONNECTION_TYPE;
+        LegConnectionType leg2ConnectionType = DEFAULT_LEG2_CONNECTION_TYPE;
+        LegConnectionType leg3ConnectionType = DEFAULT_LEG3_CONNECTION_TYPE;
         var extensions = twt.getExtension(ThreeWindingsTransformerShortCircuit.class);
         if (extensions != null) {
             leg1CoeffRo = extensions.getLeg1CoeffRo();
@@ -105,8 +107,8 @@ public final class ShortCircuitExtensions {
         String lineId = lfBranch.getOriginalIds().get(0);
         Line line = network.getLine(lineId);
 
-        double coeffRo = LineShortCircuitAdder.DEFAULT_COEFF_RO;
-        double coeffXo = LineShortCircuitAdder.DEFAULT_COEFF_XO;
+        double coeffRo = DEFAULT_COEFF_RO;
+        double coeffXo = DEFAULT_COEFF_XO;
         LineShortCircuit extensions = line.getExtension(LineShortCircuit.class);
         if (extensions != null) {
             coeffRo = extensions.getCoeffRo();
@@ -120,11 +122,11 @@ public final class ShortCircuitExtensions {
         String t2wId = lfBranch.getOriginalIds().get(0);
         TwoWindingsTransformer twt = network.getTwoWindingsTransformer(t2wId);
 
-        double coeffRo = TwoWindingsTransformerShortCircuitAdder.DEFAULT_COEFF_RO;
-        double coeffXo = TwoWindingsTransformerShortCircuitAdder.DEFAULT_COEFF_XO;
-        boolean freeFluxes = TwoWindingsTransformerShortCircuitAdder.DEFAULT_FREE_FLUXES;
-        LegConnectionType leg1ConnectionType = TwoWindingsTransformerShortCircuitAdder.DEFAULT_LEG1_CONNECTION_TYPE;
-        LegConnectionType leg2ConnectionType = TwoWindingsTransformerShortCircuitAdder.DEFAULT_LEG2_CONNECTION_TYPE;
+        double coeffRo = DEFAULT_COEFF_RO;
+        double coeffXo = DEFAULT_COEFF_XO;
+        boolean freeFluxes = DEFAULT_FREE_FLUXES;
+        LegConnectionType leg1ConnectionType = DEFAULT_LEG1_CONNECTION_TYPE;
+        LegConnectionType leg2ConnectionType = DEFAULT_LEG2_CONNECTION_TYPE;
         var extensions = twt.getExtension(TwoWindingsTransformerShortCircuit.class);
         if (extensions != null) {
             coeffRo = extensions.getCoeffRo();
@@ -148,11 +150,11 @@ public final class ShortCircuitExtensions {
         double subtransX = extension.getDirectSubtransX();
         double stepUpTfoX = extension.getStepUpTransformerX();
 
-        double transRd = GeneratorShortCircuitAdder2.DEFAULT_TRANS_RD;
-        double subTransRd = GeneratorShortCircuitAdder2.DEFAULT_SUB_TRANS_RD;
-        boolean toGround = GeneratorShortCircuitAdder2.DEFAULT_TO_GROUND;
-        double coeffRo = GeneratorShortCircuitAdder2.DEFAULT_COEFF_RO;
-        double coeffXo = GeneratorShortCircuitAdder2.DEFAULT_COEFF_XO;
+        double transRd = DEFAULT_TRANS_RD;
+        double subTransRd = DEFAULT_SUB_TRANS_RD;
+        boolean toGround = DEFAULT_TO_GROUND;
+        double coeffRo = DEFAULT_COEFF_RO;
+        double coeffXo = DEFAULT_COEFF_XO;
         GeneratorShortCircuit2 extensions2 = generator.getExtension(GeneratorShortCircuit2.class);
         if (extensions2 != null) {
             transRd = extensions2.getTransRd();

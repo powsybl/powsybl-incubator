@@ -59,7 +59,7 @@ public class ShortCircuitBalancedTest {
         ShortCircuitEngineParameters.AnalysisType at = ShortCircuitEngineParameters.AnalysisType.SELECTIVE;
 
         LoadFlowParameters loadFlowParameters = new LoadFlowParameters();
-        ShortCircuitNorm shortCircuitNorm = new ShortCircuitNorm();
+        ShortCircuitNorm shortCircuitNorm = new ShortCircuitNormNone();
         ShortCircuitEngineParameters scbParameters = new ShortCircuitEngineParameters(loadFlowParameters, matrixFactory, at, tmpV, true, vp, false, periodType, shortCircuitNorm);
         ShortCircuitBalancedEngine scbEngine = new ShortCircuitBalancedEngine(nt2, scbParameters);
 
@@ -192,7 +192,7 @@ public class ShortCircuitBalancedTest {
 
         ShortCircuitEngineParameters.PeriodType periodType = ShortCircuitEngineParameters.PeriodType.TRANSIENT;
 
-        ShortCircuitNorm shortCircuitNorm = new ShortCircuitNorm();
+        ShortCircuitNorm shortCircuitNorm = new ShortCircuitNormNone();
         ShortCircuitEngineParameters scbParameters = new ShortCircuitEngineParameters(loadFlowParameters, matrixFactory, ShortCircuitEngineParameters.AnalysisType.SYSTEMATIC, tmpV, false, ShortCircuitEngineParameters.VoltageProfileType.NOMINAL, false, periodType, shortCircuitNorm);
         ShortCircuitBalancedEngine scbEngine = new ShortCircuitBalancedEngine(nt2, scbParameters);
 
@@ -223,7 +223,7 @@ public class ShortCircuitBalancedTest {
 
         ShortCircuitEngineParameters.PeriodType periodType = ShortCircuitEngineParameters.PeriodType.SUB_TRANSIENT;
 
-        ShortCircuitNorm shortCircuitNorm = new ShortCircuitNorm();
+        ShortCircuitNorm shortCircuitNorm = new ShortCircuitNormNone();
         ShortCircuitEngineParameters scbParameters = new ShortCircuitEngineParameters(loadFlowParameters, matrixFactory, ShortCircuitEngineParameters.AnalysisType.SELECTIVE, faultList, true, ShortCircuitEngineParameters.VoltageProfileType.NOMINAL, false, periodType, shortCircuitNorm);
         ShortCircuitBalancedEngine scbEngine = new ShortCircuitBalancedEngine(network, scbParameters);
 

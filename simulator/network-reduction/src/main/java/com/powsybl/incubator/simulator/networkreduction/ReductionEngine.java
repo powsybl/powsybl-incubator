@@ -322,49 +322,50 @@ public class ReductionEngine {
         // Ib' = Ib + Ieq where Ieq = -Ybe * inv(Yee) * Ie
         // Resolving the reduction problem is equivalent to find Ieq and Yeq
 
-        AdmittanceMatrix yeb = new AdmittanceMatrix(equationSystem, parameters.getMatrixFactory(), extBusses, borderBusses, lfNetwork);
-        AdmittanceMatrix yee = new AdmittanceMatrix(equationSystem, parameters.getMatrixFactory(), extBusses, extBusses, lfNetwork);
-        AdmittanceMatrix ybe = new AdmittanceMatrix(equationSystem, parameters.getMatrixFactory(), borderBusses, extBusses, lfNetwork);
-        AdmittanceMatrix ybb = new AdmittanceMatrix(equationSystem, parameters.getMatrixFactory(), borderBusses, borderBusses, lfNetwork);
+        try (AdmittanceMatrix yeb = new AdmittanceMatrix(equationSystem, parameters.getMatrixFactory(), extBusses, borderBusses, lfNetwork);
+             AdmittanceMatrix yee = new AdmittanceMatrix(equationSystem, parameters.getMatrixFactory(), extBusses, extBusses, lfNetwork);
+             AdmittanceMatrix ybe = new AdmittanceMatrix(equationSystem, parameters.getMatrixFactory(), borderBusses, extBusses, lfNetwork);
+             AdmittanceMatrix ybb = new AdmittanceMatrix(equationSystem, parameters.getMatrixFactory(), borderBusses, borderBusses, lfNetwork)) {
 
-        // Step 1: Get [Ie]:
-        // [Ie] = [Yeb]*[Vb] + [Yee]*[Ve] or t[Ie] = t[Vb]*t[Yeb] + t[Ve]*t[Yee]
-        Matrix tmYeb = yeb.getMatrix(); //tmYeb is the transposed of [Yeb]
-        Matrix tmVb = yeb.getVoltageVector(lfNetwork, voltageInitializer); //tmVb is the transposed of the column vector [Vb]
+            // Step 1: Get [Ie]:
+            // [Ie] = [Yeb]*[Vb] + [Yee]*[Ve] or t[Ie] = t[Vb]*t[Yeb] + t[Ve]*t[Yee]
+            Matrix tmYeb = yeb.getMatrix(); //tmYeb is the transposed of [Yeb]
+            Matrix tmVb = yeb.getVoltageVector(lfNetwork, voltageInitializer); //tmVb is the transposed of the column vector [Vb]
 
-        Matrix tmYee = yee.getMatrix(); //tmYee is the transposed of [Yee]
-        Matrix tmVe = yee.getVoltageVector(lfNetwork, voltageInitializer); //tmVe is the transposed of the column vector [Ve]
+            Matrix tmYee = yee.getMatrix(); //tmYee is the transposed of [Yee]
+            Matrix tmVe = yee.getVoltageVector(lfNetwork, voltageInitializer); //tmVe is the transposed of the column vector [Ve]
 
-        Matrix tmYebVb = tmVb.times(tmYeb);
-        Matrix tmYeeVe = tmVe.times(tmYee);
+            Matrix tmYebVb = tmVb.times(tmYeb);
+            Matrix tmYeeVe = tmVe.times(tmYee);
 
-        Matrix tmIe = addRowVector(tmYebVb, tmYeeVe);
+            Matrix tmIe = addRowVector(tmYebVb, tmYeeVe);
 
-        //Step 2: Solve for [W] the following equation: [Yee]*[W] = [Yeb] or t[W]*t[Yee] = t[Yeb]
-        DenseMatrix dTmYeb = tmYeb.toDense();
+            //Step 2: Solve for [W] the following equation: [Yee]*[W] = [Yeb] or t[W]*t[Yee] = t[Yeb]
+            DenseMatrix dTmYeb = tmYeb.toDense();
 
-        DenseMatrix dYeb = yeb.transpose();
+            DenseMatrix dYeb = yeb.transpose();
 
-        yee.solveTransposed(dYeb);
+            yee.solveTransposed(dYeb);
 
-        DenseMatrix tmW = dYeb.transpose();
+            DenseMatrix tmW = dYeb.transpose();
 
-        //Step 3: Compute -[Yeq] = [Ybe]*[W] or -t[Yeq] = t[W]*t[Ybe]
-        Matrix tmYbe = ybe.getMatrix(); //tmYbe is the transposed of [Ybe]
-        Matrix tmMinusYeq = tmW.times(tmYbe);
+            //Step 3: Compute -[Yeq] = [Ybe]*[W] or -t[Yeq] = t[W]*t[Ybe]
+            Matrix tmYbe = ybe.getMatrix(); //tmYbe is the transposed of [Ybe]
+            Matrix tmMinusYeq = tmW.times(tmYbe);
 
-        //Step 4: Solve for [X] the following equation [Yee]*[X] = [Ie] or t[X]*t[Yee] = t[Ie]
-        double[] x = rowVectorToDouble(tmIe);
-        yee.solveTransposed(x);
+            //Step 4: Solve for [X] the following equation [Yee]*[X] = [Ie] or t[X]*t[Yee] = t[Ie]
+            double[] x = rowVectorToDouble(tmIe);
+            yee.solveTransposed(x);
 
-        //Step 5: Compute -[Ieq] = [Ybe]*[X] or -t[Ieq] = t[X]*t[Ybe]
-        Matrix mX = Matrix.createFromRow(x, parameters.getMatrixFactory());
-        Matrix tmMinusIeq = mX.times(tmYbe);
+            //Step 5: Compute -[Ieq] = [Ybe]*[X] or -t[Ieq] = t[X]*t[Ybe]
+            Matrix mX = Matrix.createFromRow(x, parameters.getMatrixFactory());
+            Matrix tmMinusIeq = mX.times(tmYbe);
 
-        // Reintegration of the Matrix results into the admittance system:
-        // [Ieq] and [Yeq] are of the dimension of [Ib] and [Ybb] respectively, we use Ybb admittance system as the structure for the reintegration of the results
-        results = new ReductionResults(tmMinusYeq);
-        processResults(ybb, rowVectorToDouble(tmMinusIeq), results);
+            // Reintegration of the Matrix results into the admittance system:
+            // [Ieq] and [Yeq] are of the dimension of [Ib] and [Ybb] respectively, we use Ybb admittance system as the structure for the reintegration of the results
+            results = new ReductionResults(tmMinusYeq);
+            processResults(ybb, rowVectorToDouble(tmMinusIeq), results);
+        }
 
         results.printReductionResults();
 

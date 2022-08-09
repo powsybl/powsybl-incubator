@@ -7,11 +7,13 @@
 package com.powsybl.incubator.simulator.shortcircuit;
 
 import com.powsybl.iidm.network.Network;
-import com.powsybl.incubator.simulator.util.*;
+import com.powsybl.incubator.simulator.util.AdmittanceEquationSystem;
+import com.powsybl.incubator.simulator.util.CalculationLocation;
+import com.powsybl.incubator.simulator.util.ImpedanceLinearResolution;
+import com.powsybl.incubator.simulator.util.ImpedanceLinearResolutionParameters;
 import com.powsybl.math.matrix.DenseMatrix;
 import com.powsybl.openloadflow.network.LfBus;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -42,7 +44,7 @@ public class ShortCircuitBalancedEngine extends AbstractShortCircuitEngine {
         directResolution.run();
 
         //Build the ShortCircuit results using the Thevenin computation results
-        resultsPerFault = new LinkedHashMap<>();
+        resultsPerFault.clear();
         processAdmittanceLinearResolutionResults(directResolution);
 
     }
@@ -91,7 +93,7 @@ public class ShortCircuitBalancedEngine extends AbstractShortCircuitEngine {
                 double dvi = -ifr * linearResolutionResult.getEnBus().get(1, 0) - ifi * linearResolutionResult.getEnBus().get(0, 0);
 
                 ShortCircuitResult res = new ShortCircuitResult(scf, bus, ifr, ifi, rth, xth, vxInit, vyInit, dvr, dvi, linearResolutionResult.getEqSysFeeders(), parameters.getNorm());
-                if (parameters.voltageUpdate) {
+                if (parameters.isVoltageUpdate()) {
                     //we get the lfNetwork to process the results
                     res.setLfNetwork(directResolution.lfNetworkResult);
 

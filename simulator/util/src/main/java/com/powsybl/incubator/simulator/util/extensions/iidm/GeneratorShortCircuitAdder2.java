@@ -9,16 +9,12 @@ package com.powsybl.incubator.simulator.util.extensions.iidm;
 import com.powsybl.commons.extensions.AbstractExtensionAdder;
 import com.powsybl.iidm.network.Generator;
 
+import static com.powsybl.incubator.simulator.util.extensions.iidm.ShortCircuitConstants.*;
+
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at gmail.com>
  */
 public class GeneratorShortCircuitAdder2 extends AbstractExtensionAdder<Generator, GeneratorShortCircuit2> {
-
-    public static final double DEFAULT_TRANS_RD = 0;
-    public static final double DEFAULT_SUB_TRANS_RD = 0;
-    public static final boolean DEFAULT_TO_GROUND = false;
-    public static final double DEFAULT_COEFF_RO = 1;
-    public static final double DEFAULT_COEFF_XO = 1;
 
     private double transRd = DEFAULT_TRANS_RD;
     private double subTransRd = DEFAULT_SUB_TRANS_RD;

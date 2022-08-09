@@ -17,10 +17,6 @@ import java.util.Map;
 // This class aims at organizing the information related to the feeders for a given equation system
 public class FeedersAtNetwork {
 
-    public FeedersAtNetwork() {
-        this.busToFeeders = new HashMap<>();
-    }
-
-    public Map<LfBus, FeedersAtBus> busToFeeders;
+    public final Map<LfBus, FeedersAtBus> busToFeeders = new HashMap<>();
 
 }

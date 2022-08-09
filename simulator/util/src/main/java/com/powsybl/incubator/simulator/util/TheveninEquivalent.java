@@ -30,7 +30,7 @@ public class TheveninEquivalent {
 
     private final TheveninEquivalentParameters parameters;
 
-    public ImpedanceLinearResolution impedanceLinearResolution;
+    private final ImpedanceLinearResolution impedanceLinearResolution;
 
     public TheveninEquivalent(Network network, TheveninEquivalentParameters parameters) {
         this.network = Objects.requireNonNull(network);
@@ -44,7 +44,6 @@ public class TheveninEquivalent {
 
     public void run() {
         impedanceLinearResolution.run();
-
     }
 
     private static Pair<String, Integer > buildFaultBranchFromBusId(String busId, Network tmpNetwork) {
@@ -52,7 +51,7 @@ public class TheveninEquivalent {
         String branchId = "";
         int branchSide = 0;
         boolean isFound = false;
-        for (Branch branch : tmpNetwork.getBranches()) {
+        for (Branch<?> branch : tmpNetwork.getBranches()) {
             Bus bus1 = branch.getTerminal1().getBusBreakerView().getBus();
             Bus bus2 = branch.getTerminal2().getBusBreakerView().getBus();
             if (bus == bus1) {
@@ -69,7 +68,7 @@ public class TheveninEquivalent {
         }
 
         if (!isFound) {
-            LOGGER.warn(" input CC Bus " +  busId + " could not be associated with a bipole");
+            LOGGER.warn(" input CC Bus {} could not be associated with a bipole", busId);
         }
 
         return new Pair<>(branchId, branchSide);
@@ -104,7 +103,7 @@ public class TheveninEquivalent {
         }
 
         if (!isFound) {
-            LOGGER.warn(" input CC Bus " +  busId + " could not be associated with a tripole");
+            LOGGER.warn(" input CC Bus {} could not be associated with a tripole", busId);
         }
 
         return new Pair<>(branchId, legNum);

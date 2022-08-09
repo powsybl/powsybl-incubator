@@ -31,8 +31,8 @@ public abstract class AbstractShortCircuitCalculator {
     double initVx;
     double initVy;
 
-    public AbstractShortCircuitCalculator(double rdf, double xdf, double rof, double xof, double rg, double xg,
-                                          double initVx, double initVy) {
+    protected AbstractShortCircuitCalculator(double rdf, double xdf, double rof, double xof, double rg, double xg,
+                                             double initVx, double initVy) {
         this.rdf = rdf;
         this.xdf = xdf;
         this.rof = rof;
@@ -61,7 +61,7 @@ public abstract class AbstractShortCircuitCalculator {
     public enum BlocType {
         A,
         A2,
-        Id,
+        I_D,
         J
     }
 
@@ -76,7 +76,7 @@ public abstract class AbstractShortCircuitCalculator {
             addMatrixBloc(m, -1. / 2. * scalar, -Math.sqrt(3.) / 2. * scalar, Math.sqrt(3.) / 2. * scalar, -1. / 2. * scalar);
         } else if (bt == BlocType.A2) {
             addMatrixBloc(m, 1. / 2. * scalar, -Math.sqrt(3.) / 2. * scalar, Math.sqrt(3.) / 2. * scalar, 1. / 2. * scalar);
-        } else if (bt == BlocType.Id) {
+        } else if (bt == BlocType.I_D) {
             addMatrixBloc(m, scalar, 0., 0., scalar);
         } else if (bt == BlocType.J) {
             addMatrixBloc(m, 0., -scalar, scalar, 0.);

@@ -14,7 +14,7 @@ import com.powsybl.iidm.network.Line;
  */
 public class LineShortCircuit extends AbstractExtension<Line> {
 
-    public static String NAME = "lineShortCircuit";
+    public static final String NAME = "lineShortCircuit";
 
     private final double coeffRo; // Ro = Rd * CoeffRo
     private final double coeffXo;

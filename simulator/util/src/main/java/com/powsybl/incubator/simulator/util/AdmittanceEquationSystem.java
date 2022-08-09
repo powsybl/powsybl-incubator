@@ -155,8 +155,7 @@ public final class AdmittanceEquationSystem {
             }
         }
 
-        Pair<Double, Double> result = new Pair<>(tmpG, tmpB);
-        return result;
+        return Pair.create(tmpG, tmpB);
     }
 
     private static void createShunts(LfNetwork network, VariableSet<VariableType> variableSet, EquationSystem<VariableType, EquationType> equationSystem, AdmittanceType admittanceType,
@@ -222,7 +221,6 @@ public final class AdmittanceEquationSystem {
                 bGenEq = bAndG.getValue(); //TODO : check how to verify that the generators are operating
                 gGenEq = bAndG.getKey();
 
-                //shortCircuitNetwork.busToFeeder.put(bus, feederList);
                 FeedersAtBus shortCircuitEquationSystemBusFeeders = new FeedersAtBus(feederList, bus);
                 feeders.busToFeeders.put(bus, shortCircuitEquationSystemBusFeeders);
 

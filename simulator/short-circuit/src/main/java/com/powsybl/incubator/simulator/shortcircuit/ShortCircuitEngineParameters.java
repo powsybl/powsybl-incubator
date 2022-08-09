@@ -44,7 +44,7 @@ public class ShortCircuitEngineParameters {
 
     private final AnalysisType analysisType;
 
-    public boolean voltageUpdate;
+    private boolean voltageUpdate;
 
     private PeriodType periodType;
 

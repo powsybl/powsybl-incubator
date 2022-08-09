@@ -7,11 +7,14 @@
 package com.powsybl.incubator.simulator.shortcircuit;
 
 import com.powsybl.iidm.network.Network;
-import com.powsybl.incubator.simulator.util.*;
+import com.powsybl.incubator.simulator.util.AdmittanceEquationSystem;
+import com.powsybl.incubator.simulator.util.CalculationLocation;
+import com.powsybl.incubator.simulator.util.ImpedanceLinearResolution;
+import com.powsybl.incubator.simulator.util.ImpedanceLinearResolutionParameters;
 import com.powsybl.math.matrix.DenseMatrix;
 import com.powsybl.openloadflow.network.LfBus;
+import com.powsybl.openloadflow.network.LfNetwork;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -25,6 +28,7 @@ public class ShortCircuitBalancedEngine extends AbstractShortCircuitEngine {
 
     @Override
     public void run() { //can handle both selective and systematic analysis with one single matrix inversion
+        LfNetwork lfNetwork = lfNetworks.get(0);
 
         // building a contingency list with all voltage levels
         if (parameters.getAnalysisType() == ShortCircuitEngineParameters.AnalysisType.SYSTEMATIC) {
@@ -37,17 +41,17 @@ public class ShortCircuitBalancedEngine extends AbstractShortCircuitEngine {
                 parameters.getMatrixFactory(), solverFaultList, parameters.isVoltageUpdate(), getAdmittanceVoltageProfileTypeFromParam(), getAdmittancePeriodTypeFromParam(), AdmittanceEquationSystem.AdmittanceType.ADM_THEVENIN,
                 parameters.isIgnoreShunts());
 
-        ImpedanceLinearResolution directResolution = new ImpedanceLinearResolution(network,  linearResolutionParameters);
+        ImpedanceLinearResolution directResolution = new ImpedanceLinearResolution(lfNetwork, linearResolutionParameters);
 
         directResolution.run();
 
         //Build the ShortCircuit results using the Thevenin computation results
-        resultsPerFault = new LinkedHashMap<>();
-        processAdmittanceLinearResolutionResults(directResolution);
+        resultsPerFault.clear();
+        processAdmittanceLinearResolutionResults(lfNetwork, directResolution);
 
     }
 
-    protected void processAdmittanceLinearResolutionResults(ImpedanceLinearResolution directResolution) {
+    protected void processAdmittanceLinearResolutionResults(LfNetwork lfNetwork, ImpedanceLinearResolution directResolution) {
 
         for (ImpedanceLinearResolution.ImpedanceLinearResolutionResult linearResolutionResult : directResolution.results) {
             LfBus bus = linearResolutionResult.getBus();
@@ -91,16 +95,16 @@ public class ShortCircuitBalancedEngine extends AbstractShortCircuitEngine {
                 double dvi = -ifr * linearResolutionResult.getEnBus().get(1, 0) - ifi * linearResolutionResult.getEnBus().get(0, 0);
 
                 ShortCircuitResult res = new ShortCircuitResult(scf, bus, ifr, ifi, rth, xth, vxInit, vyInit, dvr, dvi, linearResolutionResult.getEqSysFeeders(), parameters.getNorm());
-                if (parameters.voltageUpdate) {
+                if (parameters.isVoltageUpdate()) {
                     //we get the lfNetwork to process the results
-                    res.setLfNetwork(directResolution.lfNetworkResult);
+                    res.setLfNetwork(lfNetwork);
 
                     res.setTrueVoltageProfileUpdate();
                     // The post-fault voltage values are computed as follow :
                     // [Vr] = [Vr_init] - ifr * [e_dVr] + ifi * [e_dVi]
                     // [Vi] = [Vi_init] - ifr * [e_dVi] - ifi * [e_dVr]
                     // we compute the delta values to be added to Vinit if we want the post-fault voltage :
-                    int nbBusses = directResolution.lfNetworkResult.getBuses().size();
+                    int nbBusses = lfNetwork.getBuses().size();
                     res.createEmptyFortescueVoltageVector(nbBusses);
 
                     for (Map.Entry<Integer, DenseMatrix> vd : linearResolutionResult.getDv().entrySet()) {

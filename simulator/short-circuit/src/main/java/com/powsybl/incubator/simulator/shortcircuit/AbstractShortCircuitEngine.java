@@ -40,7 +40,7 @@ public abstract class AbstractShortCircuitEngine {
 
     protected final List<LfNetwork> lfNetworks;
 
-    public Map<ShortCircuitFault, ShortCircuitResult> resultsPerFault = new HashMap<>();
+    protected final Map<ShortCircuitFault, ShortCircuitResult> resultsPerFault = new LinkedHashMap<>();
 
     protected List<CalculationLocation> solverFaultList; // list of faults provided to the solver (not including biphased common support faults)
 
@@ -48,7 +48,7 @@ public abstract class AbstractShortCircuitEngine {
 
     protected final AcLoadFlowParameters acLoadFlowParameters;
 
-    public AbstractShortCircuitEngine(Network network, ShortCircuitEngineParameters parameters) {
+    protected AbstractShortCircuitEngine(Network network, ShortCircuitEngineParameters parameters) {
         this.network = Objects.requireNonNull(network);
         this.parameters = Objects.requireNonNull(parameters);
         this.lfNetworks = LfNetwork.load(network, new LfNetworkLoaderImpl(), new LfNetworkParameters(new FirstSlackBusSelector()));
@@ -58,8 +58,7 @@ public abstract class AbstractShortCircuitEngine {
 
     protected AcLoadFlowParameters getAcLoadFlowParametersFromParam() {
         OpenLoadFlowParameters loadflowParametersExt = OpenLoadFlowParameters.get(parameters.getLoadFlowParameters());
-        AcLoadFlowParameters acLoadFlowParameters = OpenLoadFlowParameters.createAcParameters(parameters.getLoadFlowParameters(), loadflowParametersExt, parameters.getMatrixFactory(), new EvenShiloachGraphDecrementalConnectivityFactory<>(), Reporter.NO_OP, false, false);
-        return acLoadFlowParameters;
+        return OpenLoadFlowParameters.createAcParameters(parameters.getLoadFlowParameters(), loadflowParametersExt, parameters.getMatrixFactory(), new EvenShiloachGraphDecrementalConnectivityFactory<>(), Reporter.NO_OP, false, false);
     }
 
     protected AdmittanceEquationSystem.AdmittancePeriodType getAdmittancePeriodTypeFromParam() {
@@ -116,10 +115,7 @@ public abstract class AbstractShortCircuitEngine {
                 }
 
                 // Step 1 : get info at bus 1 initialization of bus 2 list
-                if (!tmpListBus1.containsKey(busName)) {
-                    Pair<String, Integer> branchBus1FaultInfo = buildFaultBranchFromBusId(busName, network);
-                    tmpListBus1.put(busName, branchBus1FaultInfo);
-                }
+                tmpListBus1.computeIfAbsent(busName, k -> buildFaultBranchFromBusId(busName, network));
 
                 // step 2 : get info at bus 2
                 Pair<String, Integer > branchBus2FaultInfo = buildFaultBranchFromBusId(bus2Name, network);
@@ -149,7 +145,7 @@ public abstract class AbstractShortCircuitEngine {
         String branchId = "";
         int branchSide = 0;
         boolean isFound = false;
-        for (Branch branch : tmpNetwork.getBranches()) {
+        for (Branch<?> branch : tmpNetwork.getBranches()) {
             Bus bus1 = branch.getTerminal1().getBusBreakerView().getBus();
             Bus bus2 = branch.getTerminal2().getBusBreakerView().getBus();
             if (bus == bus1) {
@@ -166,7 +162,7 @@ public abstract class AbstractShortCircuitEngine {
         }
 
         if (!isFound) {
-            LOGGER.warn(" input CC Bus " +  busId + " could not be associated with a bipole");
+            LOGGER.warn(" input CC Bus {} could not be associated with a bipole", busId);
         }
 
         return new Pair<>(branchId, branchSide);
@@ -202,7 +198,7 @@ public abstract class AbstractShortCircuitEngine {
         }
 
         if (!isFound) {
-            LOGGER.warn(" input CC Bus " +  busId + " could not be associated with a tripole");
+            LOGGER.warn(" input CC Bus {} could not be associated with a tripole", busId);
         }
 
         return new Pair<>(branchId, legNum);

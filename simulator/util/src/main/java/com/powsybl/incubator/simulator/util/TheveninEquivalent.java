@@ -10,7 +10,12 @@ import com.powsybl.iidm.network.Branch;
 import com.powsybl.iidm.network.Bus;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.ThreeWindingsTransformer;
+import com.powsybl.incubator.simulator.util.extensions.ShortCircuitExtensions;
 import com.powsybl.openloadflow.ac.outerloop.AcLoadFlowParameters;
+import com.powsybl.openloadflow.network.FirstSlackBusSelector;
+import com.powsybl.openloadflow.network.LfNetwork;
+import com.powsybl.openloadflow.network.LfNetworkParameters;
+import com.powsybl.openloadflow.network.impl.LfNetworkLoaderImpl;
 import org.apache.commons.math3.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,16 +31,18 @@ public class TheveninEquivalent {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TheveninEquivalent.class);
 
-    private final Network network;
+    private final List<LfNetwork> lfNetworks;
 
     private final TheveninEquivalentParameters parameters;
 
-    public ImpedanceLinearResolution impedanceLinearResolution;
+    private final ImpedanceLinearResolution impedanceLinearResolution;
 
     public TheveninEquivalent(Network network, TheveninEquivalentParameters parameters) {
-        this.network = Objects.requireNonNull(network);
+        lfNetworks = LfNetwork.load(network, new LfNetworkLoaderImpl(), new LfNetworkParameters(new FirstSlackBusSelector()));
+        ShortCircuitExtensions.add(network, lfNetworks);
         this.parameters = Objects.requireNonNull(parameters);
-        impedanceLinearResolution = new ImpedanceLinearResolution(network, generateAdmittanceLinearResolutionParam(network, parameters));
+        LfNetwork lfNetwork = lfNetworks.get(0);
+        impedanceLinearResolution = new ImpedanceLinearResolution(lfNetwork, generateAdmittanceLinearResolutionParam(network, parameters));
     }
 
     public ImpedanceLinearResolution getImpedanceLinearResolution() {
@@ -44,15 +51,14 @@ public class TheveninEquivalent {
 
     public void run() {
         impedanceLinearResolution.run();
-
     }
 
-    private static Pair<String, Integer > buildFaultBranchFromBusId(String busId, Network tmpNetwork) {
-        Bus bus = tmpNetwork.getBusBreakerView().getBus(busId);
+    private static Pair<String, Integer > buildFaultBranchFromBusId(String busId, Network network) {
+        Bus bus = network.getBusBreakerView().getBus(busId);
         String branchId = "";
         int branchSide = 0;
         boolean isFound = false;
-        for (Branch branch : tmpNetwork.getBranches()) {
+        for (Branch<?> branch : network.getBranches()) {
             Bus bus1 = branch.getTerminal1().getBusBreakerView().getBus();
             Bus bus2 = branch.getTerminal2().getBusBreakerView().getBus();
             if (bus == bus1) {
@@ -69,7 +75,7 @@ public class TheveninEquivalent {
         }
 
         if (!isFound) {
-            LOGGER.warn(" input CC Bus " +  busId + " could not be associated with a bipole");
+            LOGGER.warn(" input CC Bus {} could not be associated with a bipole", busId);
         }
 
         return new Pair<>(branchId, branchSide);
@@ -104,7 +110,7 @@ public class TheveninEquivalent {
         }
 
         if (!isFound) {
-            LOGGER.warn(" input CC Bus " +  busId + " could not be associated with a tripole");
+            LOGGER.warn(" input CC Bus {} could not be associated with a tripole", busId);
         }
 
         return new Pair<>(branchId, legNum);

@@ -9,13 +9,12 @@ package com.powsybl.incubator.simulator.util.extensions.iidm;
 import com.powsybl.commons.extensions.AbstractExtensionAdder;
 import com.powsybl.iidm.network.Line;
 
+import static com.powsybl.incubator.simulator.util.extensions.iidm.ShortCircuitConstants.*;
+
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at gmail.com>
  */
 public class LineShortCircuitAdder extends AbstractExtensionAdder<Line, LineShortCircuit> {
-
-    public static final double DEFAULT_COEFF_RO = 1;
-    public static final double DEFAULT_COEFF_XO = 1;
 
     private double coeffRo = DEFAULT_COEFF_RO;
     private double coeffXo = DEFAULT_COEFF_XO;

@@ -101,7 +101,7 @@ public class MonophasedShortCircuitCalculator extends AbstractShortCircuitCalcul
 
         //double icy = (-rt * (v1dxInit * Math.sqrt(3) - v1dyInit) + xt * (v1dxInit + v1dyInit * Math.sqrt(3))) / (2 * detZt);
 
-        DenseMatrix mIdiv3 = getMatrixByType(BlocType.Id, 1. / 3.);
+        DenseMatrix mIdiv3 = getMatrixByType(BlocType.I_D, 1. / 3.);
 
         mIo = mIdiv3.times(mIc).toDense();
         mId = ma2.times(mIo).toDense();

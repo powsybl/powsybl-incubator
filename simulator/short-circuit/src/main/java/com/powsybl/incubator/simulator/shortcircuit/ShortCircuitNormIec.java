@@ -12,7 +12,7 @@ import com.powsybl.iidm.network.TwoWindingsTransformer;
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
-public class ShortCircuitNormIec extends ShortCircuitNorm {
+public class ShortCircuitNormIec implements ShortCircuitNorm {
 
     public static final double LOW_VOLTAGE_KV_THRESHOLD = 1.;
     public static final double MEDIUM_VOLTAGE_KV_THRESHOLD = 35.;
@@ -26,15 +26,11 @@ public class ShortCircuitNormIec extends ShortCircuitNorm {
     public static final double MEDIUM_VOLTAGE_CMIN = 1.0;
     public static final double HIGH_VOLTAGE_MAX_CMIN = 1.0;
 
-    public ShortCircuitNormIec() {
-        super();
-    }
-
     @Override
     public double getCmaxVoltageFactor(double nominalVoltage) {
-        double cmax = 1.0;
+        double cmax;
         if (nominalVoltage <= LOW_VOLTAGE_KV_THRESHOLD) {
-            cmax =  LOW_VOLTAGE_6PERCENT_CMAX; //TODO : make the distinction with 10% tolerance parameter
+            cmax = LOW_VOLTAGE_6PERCENT_CMAX; //TODO : make the distinction with 10% tolerance parameter
         } else if (nominalVoltage <= MEDIUM_VOLTAGE_KV_THRESHOLD) {
             cmax = MEDIUM_VOLTAGE_CMAX;
         } else {
@@ -45,7 +41,7 @@ public class ShortCircuitNormIec extends ShortCircuitNorm {
 
     @Override
     public double getCminVoltageFactor(double nominalVoltage) {
-        double cmin = 1.0;
+        double cmin;
         if (nominalVoltage <= LOW_VOLTAGE_KV_THRESHOLD) {
             cmin =  LOW_VOLTAGE_CMIN;
         } else if (nominalVoltage <= MEDIUM_VOLTAGE_KV_THRESHOLD) {
@@ -63,9 +59,7 @@ public class ShortCircuitNormIec extends ShortCircuitNorm {
         double ratedU2 = t2w.getRatedU2(); //TODO : check that the assumption to use ratedU2 is always correct
         double xt2w = t2w.getX();
 
-        double kt = 0.95 * cmax / (1 + 0.6 * xt2w * ratedSt2w / (ratedU2 * ratedU2));
-
-        return kt;
+        return 0.95 * cmax / (1 + 0.6 * xt2w * ratedSt2w / (ratedU2 * ratedU2));
     }
 
     @Override
@@ -87,14 +81,11 @@ public class ShortCircuitNormIec extends ShortCircuitNorm {
         double ratedU0 = t3w.getRatedU0(); // we suppose that all impedances are based on an impedance base (Sb_leg, U0)
         double xt3w = t3wLeg.getX();
 
-        double kt = 0.95 * cmax / (1 + 0.6 * xt3w * ratedSt3w / (ratedU0 * ratedU0));
-
-        return kt;
+        return 0.95 * cmax / (1 + 0.6 * xt3w * ratedSt3w / (ratedU0 * ratedU0));
     }
 
     @Override
-    public NormType getNormType() {
-        return NormType.IEC;
+    public String getNormType() {
+        return "IEC";
     }
-
 }

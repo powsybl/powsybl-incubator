@@ -95,10 +95,4 @@ public class ScGenerator {
     public double getCoeffXo() {
         return  coeffXo;
     }
-
-    public void printInfos() {
-        System.out.println(" transXd =" + transXd + " transRd="  + transRd);
-        System.out.println(" subTransXd =" + subTransXd + " subtransRd="  + subTransRd);
-        System.out.println(" Machine Type =" + machineType + " isGrounded="  + grounded);
-    }
 }

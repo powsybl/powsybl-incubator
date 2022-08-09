@@ -11,17 +11,12 @@ import com.powsybl.iidm.network.ThreeWindingsTransformer;
 
 import java.util.Objects;
 
+import static com.powsybl.incubator.simulator.util.extensions.iidm.ShortCircuitConstants.*;
+
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at gmail.com>
  */
 public class ThreeWindingsTransformerShortCircuitAdder extends AbstractExtensionAdder<ThreeWindingsTransformer, ThreeWindingsTransformerShortCircuit> {
-
-    public static final double DEFAULT_COEFF_RO = 1;
-    public static final double DEFAULT_COEFF_XO = 1;
-    public static final boolean DEFAULT_FREE_FLUXES = false;
-    public static final LegConnectionType DEFAULT_LEG1_CONNECTION_TYPE = LegConnectionType.DELTA; // TODO : check if default connection acceptable
-    public static final LegConnectionType DEFAULT_LEG2_CONNECTION_TYPE = LegConnectionType.Y_GROUNDED; // TODO : check if default connection acceptable
-    public static final LegConnectionType DEFAULT_LEG3_CONNECTION_TYPE = LegConnectionType.DELTA; // TODO : check if default connection acceptable
 
     private double leg1CoeffRo = DEFAULT_COEFF_RO;
     private double leg2CoeffRo = DEFAULT_COEFF_RO;

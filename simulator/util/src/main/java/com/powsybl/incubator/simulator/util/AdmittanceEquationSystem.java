@@ -107,7 +107,7 @@ public final class AdmittanceEquationSystem {
         LfShunt controllerShunt = bus.getControllerShunt().orElse(null);
         if (controllerShunt != null) {
             tmpB += controllerShunt.getB();
-            Feeder shuntFeeder = new Feeder(shunt.getB(), 0., shunt.getId(), Feeder.FeederType.CONTROLLED_SHUNT);
+            Feeder shuntFeeder = new Feeder(controllerShunt.getB(), 0., controllerShunt.getId(), Feeder.FeederType.CONTROLLED_SHUNT);
             feederList.add(shuntFeeder);
             //check if g will be implemented
         }

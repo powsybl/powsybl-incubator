@@ -50,7 +50,7 @@ public class ShortCircuitBalancedTest {
         LoadFlowResult resultnt2 = loadFlowRunner.run(nt2, parameters);
 
         List<ShortCircuitFault> tmpV = new ArrayList<>();
-        ShortCircuitFault sc2 = new ShortCircuitFault("B2", true, "sc2", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
+        ShortCircuitFault sc2 = new ShortCircuitFault("B2", "sc2", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
         tmpV.add(sc2);
 
         ShortCircuitEngineParameters.PeriodType periodType = ShortCircuitEngineParameters.PeriodType.TRANSIENT;
@@ -59,8 +59,8 @@ public class ShortCircuitBalancedTest {
         ShortCircuitEngineParameters.AnalysisType at = ShortCircuitEngineParameters.AnalysisType.SELECTIVE;
 
         LoadFlowParameters loadFlowParameters = new LoadFlowParameters();
-        ShortCircuitNormCourcirc shortCircuitNormCourcirc = new ShortCircuitNormCourcirc();
-        ShortCircuitEngineParameters scbParameters = new ShortCircuitEngineParameters(loadFlowParameters, matrixFactory, at, tmpV, true, vp, false, periodType, shortCircuitNormCourcirc);
+        ShortCircuitNorm shortCircuitNorm = new ShortCircuitNorm();
+        ShortCircuitEngineParameters scbParameters = new ShortCircuitEngineParameters(loadFlowParameters, matrixFactory, at, tmpV, true, vp, false, periodType, shortCircuitNorm);
         ShortCircuitBalancedEngine scbEngine = new ShortCircuitBalancedEngine(nt2, scbParameters);
 
         scbEngine.run();
@@ -101,8 +101,8 @@ public class ShortCircuitBalancedTest {
         String providerName = provider.getName();
         String providerVersion = provider.getVersion();
 
-        assertEquals(4.646530628204346, frs.get(1).getCurrent().getDirectMagnitude(), 0.00001);
-        assertEquals(5.100971698760986, frs.get(0).getCurrent().getDirectMagnitude(), 0.00001);
+        assertEquals(2.68267577453832, frs.get(1).getCurrent().getDirectMagnitude(), 0.00001); // expressed in kA and not A
+        assertEquals(2.945047378902121, frs.get(0).getCurrent().getDirectMagnitude(), 0.00001);
         assertEquals("OpenShortCircuit", providerName);
         assertEquals("0.1", providerVersion);
 
@@ -139,10 +139,10 @@ public class ShortCircuitBalancedTest {
 
         List<FaultResult> frs = scar.getFaultResults();
 
-        assertEquals(6.143869876861572, frs.get(0).getCurrent().getDirectMagnitude(), 0.00001);
-        assertEquals(6.491052150726318, frs.get(1).getCurrent().getDirectMagnitude(), 0.00001);
-        assertEquals(6.222183704376221, frs.get(2).getCurrent().getDirectMagnitude(), 0.00001);
-        assertEquals(5.909138679504394, frs.get(3).getCurrent().getDirectMagnitude(), 0.00001);
+        assertEquals(3.5471650598424766, frs.get(0).getCurrent().getDirectMagnitude(), 0.00001);
+        assertEquals(3.7476107037718006, frs.get(1).getCurrent().getDirectMagnitude(), 0.00001);
+        assertEquals(3.5923793102301785, frs.get(2).getCurrent().getDirectMagnitude(), 0.00001);
+        assertEquals(3.411642741114655, frs.get(3).getCurrent().getDirectMagnitude(), 0.00001);
 
     }
 
@@ -172,8 +172,8 @@ public class ShortCircuitBalancedTest {
 
         List<FaultResult> frs = scar.getFaultResults();
 
-        assertEquals(4.888257026672363, frs.get(1).getCurrent().getDirectMagnitude(), 0.00001);
-        assertEquals(5.100976467132568, frs.get(0).getCurrent().getDirectMagnitude(), 0.00001);
+        assertEquals(1.881491000035193, frs.get(1).getCurrent().getDirectMagnitude(), 0.00001);
+        assertEquals(2.945050248502227, frs.get(0).getCurrent().getDirectMagnitude(), 0.00001);
 
     }
 
@@ -192,8 +192,8 @@ public class ShortCircuitBalancedTest {
 
         ShortCircuitEngineParameters.PeriodType periodType = ShortCircuitEngineParameters.PeriodType.TRANSIENT;
 
-        ShortCircuitNormCourcirc shortCircuitNormCourcirc = new ShortCircuitNormCourcirc();
-        ShortCircuitEngineParameters scbParameters = new ShortCircuitEngineParameters(loadFlowParameters, matrixFactory, ShortCircuitEngineParameters.AnalysisType.SYSTEMATIC, tmpV, false, ShortCircuitEngineParameters.VoltageProfileType.NOMINAL, false, periodType, shortCircuitNormCourcirc);
+        ShortCircuitNorm shortCircuitNorm = new ShortCircuitNorm();
+        ShortCircuitEngineParameters scbParameters = new ShortCircuitEngineParameters(loadFlowParameters, matrixFactory, ShortCircuitEngineParameters.AnalysisType.SYSTEMATIC, tmpV, false, ShortCircuitEngineParameters.VoltageProfileType.NOMINAL, false, periodType, shortCircuitNorm);
         ShortCircuitBalancedEngine scbEngine = new ShortCircuitBalancedEngine(nt2, scbParameters);
 
         scbEngine.run();
@@ -218,26 +218,25 @@ public class ShortCircuitBalancedTest {
         MatrixFactory  matrixFactory = new DenseMatrixFactory();
 
         List<ShortCircuitFault> faultList = new ArrayList<>();
-        ShortCircuitFault sc1 = new ShortCircuitFault("B7", true, "sc1", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
+        ShortCircuitFault sc1 = new ShortCircuitFault("B7", "sc1", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
         faultList.add(sc1);
 
         ShortCircuitEngineParameters.PeriodType periodType = ShortCircuitEngineParameters.PeriodType.SUB_TRANSIENT;
 
-        ShortCircuitNormCourcirc shortCircuitNormCourcirc = new ShortCircuitNormCourcirc();
-        ShortCircuitEngineParameters scbParameters = new ShortCircuitEngineParameters(loadFlowParameters, matrixFactory, ShortCircuitEngineParameters.AnalysisType.SELECTIVE, faultList, true, ShortCircuitEngineParameters.VoltageProfileType.NOMINAL, false, periodType, shortCircuitNormCourcirc);
+        ShortCircuitNorm shortCircuitNorm = new ShortCircuitNorm();
+        ShortCircuitEngineParameters scbParameters = new ShortCircuitEngineParameters(loadFlowParameters, matrixFactory, ShortCircuitEngineParameters.AnalysisType.SELECTIVE, faultList, true, ShortCircuitEngineParameters.VoltageProfileType.NOMINAL, false, periodType, shortCircuitNorm);
         ShortCircuitBalancedEngine scbEngine = new ShortCircuitBalancedEngine(network, scbParameters);
 
         scbEngine.run();
         List<Double> val = new ArrayList<>();
         for (Map.Entry<ShortCircuitFault, ShortCircuitResult> res : scbEngine.resultsPerFault.entrySet()) {
-            val.add(res.getValue().getIcc());
+            val.add(res.getValue().getIcc().getKey());
         }
 
         // here Icc = 1/sqrt(3)*Eth(pu)/Zth(pu100)*Sb100/Vb*1000
-        // here new Icc = 1/sqrt(3)*Eth(pu)/Zth(pu100)*Sb100*1000
         // and Idocumentation = Ib*Eth(pu)/Zth(pu15) then Idocumentation = Icc * Ib * sqrt(3) * Vb / (1000 * Sb15)  with Ib = 18.064
         // in the documentation, expected Idocumentation ~ 35.656 kA
-        assertEquals(35.69309945355154, val.get(0) * 18.064 * 0.277 * Math.sqrt(3) / (1000. * 15.) / 0.277, 0.00001);
+        assertEquals(35.69309945355154, val.get(0) * 18.064 * 0.277 * Math.sqrt(3) / (1000. * 15.), 0.00001);
 
     }
 
@@ -252,7 +251,7 @@ public class ShortCircuitBalancedTest {
         MatrixFactory  matrixFactory = new DenseMatrixFactory();
 
         List<ShortCircuitFault> faultList = new ArrayList<>();
-        ShortCircuitFault sc1 = new ShortCircuitFault("B3", true, "sc1",  0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
+        ShortCircuitFault sc1 = new ShortCircuitFault("B3", "sc1",  0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
         faultList.add(sc1);
 
         ShortCircuitEngineParameters.PeriodType periodType = ShortCircuitEngineParameters.PeriodType.SUB_TRANSIENT;
@@ -263,7 +262,7 @@ public class ShortCircuitBalancedTest {
         scbEngine.run();
         List<Double> val = new ArrayList<>();
         for (Map.Entry<ShortCircuitFault, ShortCircuitResult> res : scbEngine.resultsPerFault.entrySet()) {
-            val.add(res.getValue().getIk());
+            val.add(res.getValue().getIk().getKey());
         }
 
         // here Icc = 1/sqrt(3)*Eth(pu)/Zth(pu100)*Sb100/Vb*1000
@@ -283,21 +282,21 @@ public class ShortCircuitBalancedTest {
         MatrixFactory  matrixFactory = new DenseMatrixFactory();
 
         List<ShortCircuitFault> faultList = new ArrayList<>();
-        ShortCircuitFault sc1 = new ShortCircuitFault("B1", true, "sc1", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
+        ShortCircuitFault sc1 = new ShortCircuitFault("B1", "sc1", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
         faultList.add(sc1);
-        ShortCircuitFault sc2 = new ShortCircuitFault("B2", true, "sc2", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
+        ShortCircuitFault sc2 = new ShortCircuitFault("B2", "sc2", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
         faultList.add(sc2);
-        ShortCircuitFault sc3 = new ShortCircuitFault("B3", true, "sc3", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
+        ShortCircuitFault sc3 = new ShortCircuitFault("B3", "sc3", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
         faultList.add(sc3);
-        ShortCircuitFault sc4 = new ShortCircuitFault("B4", true, "sc4", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
+        ShortCircuitFault sc4 = new ShortCircuitFault("B4", "sc4", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
         faultList.add(sc4);
-        ShortCircuitFault sc5 = new ShortCircuitFault("B5", true, "sc5", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
+        ShortCircuitFault sc5 = new ShortCircuitFault("B5", "sc5", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
         faultList.add(sc5);
-        ShortCircuitFault sc6 = new ShortCircuitFault("B6", true, "sc6", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
+        ShortCircuitFault sc6 = new ShortCircuitFault("B6", "sc6", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
         faultList.add(sc6);
-        ShortCircuitFault sc7 = new ShortCircuitFault("B7", true, "sc7", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
+        ShortCircuitFault sc7 = new ShortCircuitFault("B7", "sc7", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
         faultList.add(sc7);
-        ShortCircuitFault sc8 = new ShortCircuitFault("B8", true, "sc8", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
+        ShortCircuitFault sc8 = new ShortCircuitFault("B8", "sc8", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
         faultList.add(sc8);
 
         ShortCircuitEngineParameters.PeriodType periodType = ShortCircuitEngineParameters.PeriodType.TRANSIENT;
@@ -308,7 +307,7 @@ public class ShortCircuitBalancedTest {
         scbEngine.run();
         List<Double> values = new ArrayList<>();
         for (Map.Entry<ShortCircuitFault, ShortCircuitResult> res : scbEngine.resultsPerFault.entrySet()) {
-            values.add(res.getValue().getIk());
+            values.add(res.getValue().getIk().getKey());
         }
 
         // I"k = 1/sqrt(3) * cmax * Un /(Zeq)

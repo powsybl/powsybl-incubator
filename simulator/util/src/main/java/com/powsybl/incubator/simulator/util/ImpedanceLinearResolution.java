@@ -65,7 +65,7 @@ public  class ImpedanceLinearResolution {
 
         private Map<Integer, DenseMatrix> dE; // the key stores the number of the bus, the value stores the resolved value [Res] = inv(Y)*[En], with n of vector [En] corresponding to the studied short circuit fault and values at lines of [Res] corresponding real and imaginary parts at bus in key
 
-        private EquationSystemFeeders eqSysFeeders;
+        private FeedersAtNetwork eqSysFeeders;
 
         private List<ImpedanceLinearResolutionResultBiphased> biphasedResultsAtBus; // we store here all necessary information for all biphased common ground faults with first bus equal to LfBus = bus
 
@@ -80,25 +80,20 @@ public  class ImpedanceLinearResolution {
 
             private double z22txx; //additional impedance matrix terms to keep as they are needed for biphased common support faults
             private double z22txy;
-            private double z22tyx;
-            private double z22tyy;
 
             private double z21txx;
             private double z21txy;
-            private double z21tyx;
-            private double z21tyy;
 
             private double z12txx;
             private double z12txy;
-            private double z12tyx;
-            private double z12tyy;
 
             private Map<Integer, DenseMatrix> dE2; // store necessary data to compute voltage delta of the full grid for a common support biphased fault
             // the key stores the number of the bus2 for a biphased common support fault, the value stores the resolved value [Res] = inv(Y)*[En], with n of vector [En] corresponding to the studied short circuit fault and values at lines of [Res] corresponding real and imaginary parts at bus2 in key
 
-            ImpedanceLinearResolutionResultBiphased(LfBus bus2, double v2x, double v2y, double z22txx, double z22txy, double z22tyx, double z22tyy,
-                                                     double z21txx, double z21txy, double z21tyx, double z21tyy,
-                                                     double z12txx, double z12txy, double z12tyx, double z12tyy, int numBus2Fault) {
+            ImpedanceLinearResolutionResultBiphased(LfBus bus2, double v2x, double v2y,
+                                                    double z22txx, double z22txy,
+                                                    double z21txx, double z21txy,
+                                                    double z12txx, double z12txy, int numBus2Fault) {
                 this.bus2 = bus2;
 
                 this.numBus2Fault = numBus2Fault;
@@ -108,18 +103,12 @@ public  class ImpedanceLinearResolution {
 
                 this.z22txx = z22txx;
                 this.z22txy = z22txy;
-                this.z22tyx = z22tyx;
-                this.z22tyy = z22tyy;
 
                 this.z21txx = z21txx;
                 this.z21txy = z21txy;
-                this.z21tyx = z21tyx;
-                this.z21tyy = z21tyy;
 
                 this.z12txx = z12txx;
                 this.z12txy = z12txy;
-                this.z12tyx = z12tyx;
-                this.z12tyy = z12tyy;
 
             }
 
@@ -140,28 +129,12 @@ public  class ImpedanceLinearResolution {
                 return z12txy;
             }
 
-            public double getZ12tyx() {
-                return z12tyx;
-            }
-
-            public double getZ12tyy() {
-                return z12tyy;
-            }
-
             public double getZ21txx() {
                 return z21txx;
             }
 
             public double getZ21txy() {
                 return z21txy;
-            }
-
-            public double getZ21tyx() {
-                return z21tyx;
-            }
-
-            public double getZ21tyy() {
-                return z21tyy;
             }
 
             public double getZ22txx() {
@@ -172,24 +145,12 @@ public  class ImpedanceLinearResolution {
                 return z22txy;
             }
 
-            public double getZ22tyx() {
-                return z22tyx;
-            }
-
-            public double getZ22tyy() {
-                return z22tyy;
-            }
-
             public double getV2x() {
                 return v2x;
             }
 
             public double getV2y() {
                 return v2y;
-            }
-
-            public int getNumBus2Fault() {
-                return numBus2Fault;
             }
 
             public Map<Integer, DenseMatrix> getDv2() {
@@ -238,7 +199,7 @@ public  class ImpedanceLinearResolution {
             return  enBus;
         }
 
-        public EquationSystemFeeders getEqSysFeeders() {
+        public FeedersAtNetwork getEqSysFeeders() {
             return eqSysFeeders;
         }
 
@@ -247,14 +208,7 @@ public  class ImpedanceLinearResolution {
         }
 
         private void checkResults() {
-            double epsilon = 0.00001;
-            if (Math.abs(rEq11 - rEq22) > epsilon) {
-                throw new IllegalArgumentException("Impedance block values rth : z11 and Z22 of node {" + bus.getId() + "} have inconsitant values z11= " + rEq11 + " y1i2i=" + rEq22);
-            }
-
-            if (Math.abs(xEq12 - xEq21) > epsilon) {
-                throw new IllegalArgumentException("Impedance block values xth : z12 and Z21 of node {" + bus.getId() + "} have inconsitant values z12= " + xEq12 + " z21=" + xEq21);
-            }
+            checkBlocConsistency(rEq11, rEq22, -xEq12, xEq21, bus);
         }
 
         public void updateEnBus(double enBus11, double enBus12, double enBus21, double enBus22) {
@@ -265,7 +219,7 @@ public  class ImpedanceLinearResolution {
             enBus.add(1, 1, enBus22);
         }
 
-        public void updateWithVoltagesdelta(AdmittanceMatrix y, DenseMatrix dEn, int numDef, EquationSystemFeeders feeders) {
+        public void updateWithVoltagesdelta(AdmittanceMatrix y, DenseMatrix dEn, int numDef, FeedersAtNetwork feeders) {
             dE = y.getDeltaV(dEn, numDef);
             eqSysFeeders = feeders; // contains necessary data to update the contribution of feeders for each short circuit
         }
@@ -285,19 +239,39 @@ public  class ImpedanceLinearResolution {
             }
         }
 
-        public void addBiphasedResult(LfBus bus2, double initV2x, double initV2y, double z22txx, double z22txy, double z22tyx, double z22tyy,
-                                      double z21txx, double z21txy, double z21tyx, double z21tyy,
-                                      double z12txx, double z12txy, double z12tyx, double z12tyy, int numBus2Fault) {
-            // numBus2Fault is store to easily get the extraction vector for the second bus, in order to compute the full voltage exprt if required
-            ImpedanceLinearResolutionResult.ImpedanceLinearResolutionResultBiphased biphasedResult = new ImpedanceLinearResolutionResult.ImpedanceLinearResolutionResultBiphased(bus2, initV2x, initV2y, z22txx, z22txy, z22tyx, z22tyy,
-                    z21txx, z21txy, z21tyx, z21tyy,
-                    z12txx, z12txy, z12tyx, z12tyy, numBus2Fault);
+        public void addBiphasedResult(LfBus bus2, double initV2x, double initV2y, double z22txx, double z22txy,
+                                      double z21txx, double z21txy,
+                                      double z12txx, double z12txy, int numBus2Fault) {
+            // numBus2Fault is store to easily get the extraction vector for the second bus, in order to compute the full voltage export if required
+            ImpedanceLinearResolutionResult.ImpedanceLinearResolutionResultBiphased biphasedResult = new ImpedanceLinearResolutionResult.ImpedanceLinearResolutionResultBiphased(bus2, initV2x, initV2y,
+                    z22txx, z22txy, z21txx, z21txy, z12txx, z12txy, numBus2Fault);
 
             if (biphasedResultsAtBus == null) {
                 biphasedResultsAtBus = new ArrayList<>();
             }
             biphasedResultsAtBus.add(biphasedResult);
         }
+    }
+
+    public static void checkBlocConsistency(double rEq11, double rEq22, double minusXEq12, double xEq21, LfBus lfBus1, LfBus lfBus2) {
+        double epsilon = 0.00001;
+        double xEq12 = -minusXEq12;
+
+        String bus1Id = lfBus1.getId();
+        String bus2Id = lfBus2.getId();
+
+        if (Math.abs(rEq11 - rEq22) > epsilon) {
+            throw new IllegalArgumentException("Impedance block values rth : z11 and Z22 of nodes Bus1 = {" + bus1Id + "} and Bus2 = {" + bus2Id + "} have inconsitant values z11= " + rEq11 + " y1i2i=" + rEq22);
+        }
+
+        if (Math.abs(xEq12 - xEq21) > epsilon) {
+            throw new IllegalArgumentException("Impedance block values xth : z12 and Z21 of nodes Bus1 = {" + bus1Id + "} and Bus2 = {" + bus2Id + "} have inconsitant values z12= " + xEq12 + " z21=" + xEq21);
+        }
+    }
+
+    public static void checkBlocConsistency(double rEq11, double rEq22, double minusXEq12, double xEq21, LfBus lfBus1) {
+        // case of diagonal block
+        checkBlocConsistency(rEq11, rEq22, minusXEq12, xEq21, lfBus1, lfBus1);
     }
 
     public static LfBus getLfBusFromIidmBranch(String iidmBranchId, int branchSide, LfNetwork lfNetwork) {
@@ -319,7 +293,7 @@ public  class ImpedanceLinearResolution {
             } else if (lfType == LfBranch.BranchType.TRANSFO_3_LEG_1) {
                 String legId = iidmBranchId + "_leg_1";
                 if (legId.equals(branchId) && branchSide == 1) {
-                    // TODO : check that for each leg, side 2 bus is always the star bus of the T3W
+                    // assumption made: side 2 bus is always the star bus of the T3W
                     bus = lfBranch.getBus1();
                     break;
                 }
@@ -327,7 +301,7 @@ public  class ImpedanceLinearResolution {
             } else if (lfType == LfBranch.BranchType.TRANSFO_3_LEG_2) {
                 String legId = iidmBranchId + "_leg_2";
                 if (legId.equals(branchId) && branchSide == 2) {
-                    // TODO : check that for each leg, side 2 bus is always the star bus of the T3W
+                    // assumption made: side 2 bus is always the star bus of the T3W
                     bus = lfBranch.getBus1();
                     break;
                 }
@@ -335,7 +309,7 @@ public  class ImpedanceLinearResolution {
             } else if (lfType == LfBranch.BranchType.TRANSFO_3_LEG_3) {
                 String legId = iidmBranchId + "_leg_3";
                 if (legId.equals(branchId) && branchSide == 3) {
-                    // TODO : check that for each leg, side 2 bus is always the star bus of the T3W
+                    // assumption made: side 2 bus is always the star bus of the T3W
                     bus = lfBranch.getBus1();
                     break;
                 }
@@ -350,7 +324,7 @@ public  class ImpedanceLinearResolution {
         LfNetwork lfNetwork = networks.get(0);
         lfNetworkResult = lfNetwork;
 
-        EquationSystemFeeders equationsSystemFeeders = new EquationSystemFeeders();
+        FeedersAtNetwork equationsSystemFeeders = new FeedersAtNetwork();
         EquationSystem<VariableType, EquationType> equationSystem
                 = AdmittanceEquationSystem.create(lfNetwork, new VariableSet<>(), parameters.getAdmittanceType(), parameters.getTheveninVoltageProfileType(), parameters.getTheveninPeriodType(), parameters.isTheveninIgnoreShunts(), equationsSystemFeeders, parameters.getAcLoadFlowParameters());
 
@@ -369,7 +343,7 @@ public  class ImpedanceLinearResolution {
 
         // case it is a biphased common support input, supposing that the number of such input contingencies is low
         List<Pair<LfBus, LfBus>> biphasedinputBusses = new ArrayList<>();
-        if (parameters.getBiphasedCalculationLocations() != null) { // TODO : change name
+        if (parameters.getBiphasedCalculationLocations() != null) {
             for (CalculationLocation biphasedFaultBranchLocationInfo : parameters.getBiphasedCalculationLocations()) {
 
                 String iidmBranchId = biphasedFaultBranchLocationInfo.getIidmBusInfo().getKey();
@@ -385,11 +359,12 @@ public  class ImpedanceLinearResolution {
                     Pair<LfBus, LfBus> bussesPair = new Pair<>(bus1, bus2);
                     biphasedinputBusses.add(bussesPair);
                     biphasedFaultBranchLocationInfo.setLfBusInfo(bus1.getId());
+                    biphasedFaultBranchLocationInfo.setLfBus2Info(bus2.getId());
                 }
             }
         }
 
-        // Addition of biphased faults in the inputBusses : TODO : check how biphased inputs are not used for other faults
+        // Addition of biphased faults in the inputBusses
         for (Pair<LfBus, LfBus> pairBusses : biphasedinputBusses) {
             LfBus bus1 = pairBusses.getKey();
             LfBus bus2 = pairBusses.getValue();
@@ -533,6 +508,16 @@ public  class ImpedanceLinearResolution {
                         double enZ12txy = en.get(yCol1x, 2 * numBus2Fault + 1);
                         double enZ12tyy = en.get(yCol1y, 2 * numBus2Fault + 1);
 
+                        // By construction we have for each block
+                        //
+                        // Zij = [ rij  -xij ]
+                        //       [ xij   rij ]
+                        //
+                        // We need to check consistency of terms for each block
+                        checkBlocConsistency(enZ22txx, enZ22tyy, enZ22txy, enZ22tyx, lfBus, bus2);
+                        checkBlocConsistency(enZ21txx, enZ21tyy, enZ21txy, enZ21tyx, lfBus, bus2);
+                        checkBlocConsistency(enZ12txx, enZ12tyy, enZ12txy, enZ12tyx, lfBus, bus2);
+
                         double eth2x = 1.0;
                         double eth2y = 0.;
                         if (parameters.getTheveninVoltageProfileType() == AdmittanceEquationSystem.AdmittanceVoltageProfileType.CALCULATED) {
@@ -540,9 +525,7 @@ public  class ImpedanceLinearResolution {
                             eth2y = bus2.getV() * Math.sin(lfBus.getAngle());
                         }
 
-                        res.addBiphasedResult(bus2, eth2x, eth2y, enZ22txx, enZ22txy, enZ22tyx, enZ22tyy,
-                                enZ21txx, enZ21txy, enZ21tyx, enZ21tyy,
-                                enZ12txx, enZ12txy, enZ12tyx, enZ12tyy, numBus2Fault);
+                        res.addBiphasedResult(bus2, eth2x, eth2y, enZ22txx, enZ22txy, enZ21txx, enZ21txy, enZ12txx, enZ12txy, numBus2Fault);
                     }
                 }
 

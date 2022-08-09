@@ -17,9 +17,7 @@ public class CalculationLocation {
 
     private final String busLocation;
 
-    private final String busLocationBiPhased;
-
-    private final boolean voltageUpdate;
+    private final String bus2Location; // used in case computations need 2 busses in input: for example in biphased common support short circuit computations
 
     private Pair<String, Integer > iidmBusInfo; // additional iidm info to make the correspondence between iidm info and lfNetwork info
 
@@ -27,26 +25,23 @@ public class CalculationLocation {
 
     private String lfBusInfo; // additional info to have the correspondence between iidm and lfNetwork
 
-    public CalculationLocation(String busLocation, boolean voltageUpdate) {
-        this(busLocation, "", voltageUpdate);
+    private String lfBus2Info; // additional info to have the correspondence between iidm and lfNetwork for bus 2
+
+    public CalculationLocation(String busLocation) {
+        this(busLocation, "");
     }
 
-    public CalculationLocation(String busLocation, String busLocationBiPhased, boolean voltageUpdate) {
+    public CalculationLocation(String busLocation, String busLocationBiPhased) {
         this.busLocation = Objects.requireNonNull(busLocation);
-        this.busLocationBiPhased = Objects.requireNonNull(busLocationBiPhased);
-        this.voltageUpdate = voltageUpdate;
+        this.bus2Location = Objects.requireNonNull(busLocationBiPhased);
     }
 
     public String getBusLocation() {
         return busLocation;
     }
 
-    public String getBusLocationBiPhased() {
-        return busLocationBiPhased;
-    }
-
-    public boolean isVoltageUpdate() {
-        return voltageUpdate;
+    public String getBus2Location() {
+        return bus2Location;
     }
 
     public void setIidmBusInfo(Pair<String, Integer> iidmBusInfo) {
@@ -69,8 +64,16 @@ public class CalculationLocation {
         this.lfBusInfo = lfBusInfo;
     }
 
+    public void setLfBus2Info(String lfBus2Info) {
+        this.lfBus2Info = lfBus2Info;
+    }
+
     public String getLfBusInfo() {
         return lfBusInfo;
+    }
+
+    public String getLfBus2Info() {
+        return lfBus2Info;
     }
 
 }

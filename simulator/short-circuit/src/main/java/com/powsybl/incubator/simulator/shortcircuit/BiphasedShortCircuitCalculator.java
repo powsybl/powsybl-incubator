@@ -6,8 +6,7 @@
  */
 package com.powsybl.incubator.simulator.shortcircuit;
 
-import com.powsybl.math.matrix.Matrix;
-import com.powsybl.math.matrix.MatrixFactory;
+import com.powsybl.math.matrix.DenseMatrix;
 
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
@@ -15,8 +14,8 @@ import com.powsybl.math.matrix.MatrixFactory;
 public class BiphasedShortCircuitCalculator extends AbstractShortCircuitCalculator  {
 
     public BiphasedShortCircuitCalculator(double rdf, double xdf, double rof, double xof, double rg, double xg,
-                                            double initVx, double initVy, MatrixFactory mf) {
-        super(rdf, xdf, rof, xof, rg, xg, initVx, initVy, mf);
+                                            double initVx, double initVy) {
+        super(rdf, xdf, rof, xof, rg, xg, initVx, initVy);
 
     }
 
@@ -69,15 +68,15 @@ public class BiphasedShortCircuitCalculator extends AbstractShortCircuitCalculat
         // [ibx] = - inv([Zt]) * [j] *sqrt(3) * [vdx] = ------------ * [ rt xt ] * [ 0 -1 ] * [vdx]
         // [iby]                                [vdy]   (rt² + xt²)    [-xt rt ]   [ 1  0 ]   [vdy]
 
-        Matrix vdInit = mf.create(2, 1, 2);
+        DenseMatrix vdInit = new DenseMatrix(2, 1);
         vdInit.add(0, 0, initVx);
         vdInit.add(1, 0, initVy);
 
-        Matrix jmSqrt3 = getMatrixByType(BlocType.J, -Math.sqrt(3), mf);
-        Matrix invZt = getInvZt(rt, xt, mf);
+        DenseMatrix jmSqrt3 = getMatrixByType(BlocType.J, -Math.sqrt(3));
+        DenseMatrix invZt = getInvZt(rt, xt);
 
-        Matrix tmpjVd = jmSqrt3.times(vdInit);
-        Matrix mIb = invZt.times(tmpjVd);
+        DenseMatrix tmpjVd = jmSqrt3.times(vdInit).toDense();
+        DenseMatrix mIb = invZt.times(tmpjVd).toDense();
 
         // Compute the currents :
         // [ Io ]         [ 1  1  1 ]   [ 0  ]              [  0   ]
@@ -85,13 +84,13 @@ public class BiphasedShortCircuitCalculator extends AbstractShortCircuitCalculat
         // [ Ii ]         [ 1  a² a ]   [-Ib ]              [a²- a ]
 
         // [Io] = 0
-        Matrix adiv3 = getMatrixByType(BlocType.A, 1. / 3., mf);
-        Matrix ma2div3 = getMatrixByType(BlocType.A2, -1. / 3, mf);
-        Matrix minusId = getMatrixByType(BlocType.Id, -1., mf);
-        Matrix aa2div3 = addMatrices22(adiv3.toDense(), ma2div3.toDense(), mf);
+        DenseMatrix adiv3 = getMatrixByType(BlocType.A, 1. / 3.);
+        DenseMatrix ma2div3 = getMatrixByType(BlocType.A2, -1. / 3);
+        DenseMatrix minusId = getMatrixByType(BlocType.Id, -1.);
+        DenseMatrix aa2div3 = addMatrices22(adiv3.toDense(), ma2div3.toDense());
 
-        mId = aa2div3.times(mIb);
-        mIi = minusId.times(mId);
-        mIo = mf.create(2, 1, 2);
+        mId = aa2div3.times(mIb).toDense();
+        mIi = minusId.times(mId).toDense();
+        mIo = new DenseMatrix(2, 1);
     }
 }

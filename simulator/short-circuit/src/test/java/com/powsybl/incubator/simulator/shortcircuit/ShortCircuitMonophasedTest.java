@@ -54,7 +54,7 @@ public class ShortCircuitMonophasedTest {
         MatrixFactory  matrixFactory = new DenseMatrixFactory();
 
         List<ShortCircuitFault> faultList = new ArrayList<>();
-        ShortCircuitFault sc1 = new ShortCircuitFault("B3", false, "sc1", 0., 0., ShortCircuitFault.ShortCircuitType.MONOPHASED);
+        ShortCircuitFault sc1 = new ShortCircuitFault("B3", "sc1", 0., 0., ShortCircuitFault.ShortCircuitType.MONOPHASED);
         faultList.add(sc1);
 
         ShortCircuitEngineParameters.PeriodType periodType = ShortCircuitEngineParameters.PeriodType.SUB_TRANSIENT;
@@ -65,15 +65,14 @@ public class ShortCircuitMonophasedTest {
         scbEngine.run();
         List<Double> val = new ArrayList<>();
         for (Map.Entry<ShortCircuitFault, ShortCircuitResult> res : scbEngine.resultsPerFault.entrySet()) {
-            val.add(res.getValue().getIk());
+            val.add(res.getValue().getIk().getKey());
         }
 
         // here Icc = 1/sqrt(3)*Eth(pu)/Zth(pu100)*Sb100/Vb*1000
-        // here new Icc = 1/sqrt(3)*Eth(pu)/Zth(pu100)*Sb100*1000
         // and I"k = sqrt(3) * cmax * Un /(Zeq) and expected I"k = 35.64 kA with some approximations on the impedance values
 
         //assertEquals(35.70435548244156, 3 * val.get(0) * 1.05 / 1000. / 0.4, 0.00001);
-        assertEquals(35.70435548244156, 3 * val.get(0), 0.00001);
+        assertEquals(35.70435548244156, val.get(0), 0.00001);
 
     }
 
@@ -88,19 +87,19 @@ public class ShortCircuitMonophasedTest {
         MatrixFactory  matrixFactory = new DenseMatrixFactory();
 
         List<ShortCircuitFault> faultList = new ArrayList<>();
-        ShortCircuitFault sc1 = new ShortCircuitFault("B2", false, "sc1", 0., 0., ShortCircuitFault.ShortCircuitType.MONOPHASED);
+        ShortCircuitFault sc1 = new ShortCircuitFault("B2", "sc1", 0., 0., ShortCircuitFault.ShortCircuitType.MONOPHASED);
         faultList.add(sc1);
-        ShortCircuitFault sc2 = new ShortCircuitFault("B3", false, "sc2", 0., 0., ShortCircuitFault.ShortCircuitType.MONOPHASED);
+        ShortCircuitFault sc2 = new ShortCircuitFault("B3", "sc2", 0., 0., ShortCircuitFault.ShortCircuitType.MONOPHASED);
         faultList.add(sc2);
-        ShortCircuitFault sc3 = new ShortCircuitFault("B4", false, "sc3", 0., 0., ShortCircuitFault.ShortCircuitType.MONOPHASED);
+        ShortCircuitFault sc3 = new ShortCircuitFault("B4", "sc3", 0., 0., ShortCircuitFault.ShortCircuitType.MONOPHASED);
         faultList.add(sc3);
-        ShortCircuitFault sc4 = new ShortCircuitFault("B5", false, "sc4", 0., 0., ShortCircuitFault.ShortCircuitType.MONOPHASED);
+        ShortCircuitFault sc4 = new ShortCircuitFault("B5", "sc4", 0., 0., ShortCircuitFault.ShortCircuitType.MONOPHASED);
         faultList.add(sc4);
 
         // additional faults
-        ShortCircuitFault sc5 = new ShortCircuitFault("B2", false, "sc5", 0., 0., ShortCircuitFault.ShortCircuitType.BIPHASED);
+        ShortCircuitFault sc5 = new ShortCircuitFault("B2", "sc5", 0., 0., ShortCircuitFault.ShortCircuitType.BIPHASED);
         faultList.add(sc5);
-        ShortCircuitFault sc6 = new ShortCircuitFault("B3", false, "sc6", 0., 0., ShortCircuitFault.ShortCircuitType.BIPHASED_GROUND);
+        ShortCircuitFault sc6 = new ShortCircuitFault("B3", "sc6", 0., 0., ShortCircuitFault.ShortCircuitType.BIPHASED_GROUND);
         faultList.add(sc6);
 
         ShortCircuitEngineParameters.PeriodType periodType = ShortCircuitEngineParameters.PeriodType.TRANSIENT;
@@ -111,18 +110,18 @@ public class ShortCircuitMonophasedTest {
         scbEngine.run();
         Map<String, Double> values = new HashMap<>();
         for (Map.Entry<ShortCircuitFault, ShortCircuitResult> res : scbEngine.resultsPerFault.entrySet()) {
-            values.put(res.getKey().getFaultId(), res.getValue().getIk());
+            values.put(res.getKey().getFaultId(), res.getValue().getIk().getKey());
         }
 
         //I"k = sqrt(3) * cmax * Un /(Zeq)
-        assertEquals(15.9722, 3 * values.get("sc1"), 0.00001); // bus 2 : expected doc value : 15.9722 kA
-        assertEquals(10.410558286260768, 3 * values.get("sc2"), 0.00001); // bus 3 : expected doc value : 10.4106 kA
-        assertEquals(9.049787523396647, 3 * values.get("sc3"), 0.00001); // bus 4 : expected doc value : 9.0498 kA
-        assertEquals(17.0452, 3 * values.get("sc4"), 0.00001); // bus 5 : expected doc value : 17.0452 kA
+        assertEquals(15.9722, values.get("sc1"), 0.00001); // bus 2 : expected doc value : 15.9722 kA
+        assertEquals(10.410558286260768, values.get("sc2"), 0.00001); // bus 3 : expected doc value : 10.4106 kA
+        assertEquals(9.049787523396647, values.get("sc3"), 0.00001); // bus 4 : expected doc value : 9.0498 kA
+        assertEquals(17.0452, values.get("sc4"), 0.00001); // bus 5 : expected doc value : 17.0452 kA
 
         // test to check that non monophased faults does not have an impact on monophased results
-        assertEquals(57.48674948061683, 3 * values.get("sc5"), 0.00001); // biphased not in ref doc
-        assertEquals(25.21494837446988, 3 * values.get("sc6"), 0.00001); // biphased not in ref doc
+        assertEquals(57.48674948061683, values.get("sc5"), 0.00001); // biphased not in ref doc
+        assertEquals(25.21494837446988, values.get("sc6"), 0.00001); // biphased not in ref doc
 
     }
 
@@ -137,14 +136,14 @@ public class ShortCircuitMonophasedTest {
                 .add();
 
         List<ShortCircuitFault> faultList = new ArrayList<>();
-        ShortCircuitFault sc1 = new ShortCircuitFault("BP", true, "sc1", 0., 0., ShortCircuitFault.ShortCircuitType.MONOPHASED);
+        ShortCircuitFault sc1 = new ShortCircuitFault("BP", "sc1", 0., 0., ShortCircuitFault.ShortCircuitType.MONOPHASED);
 
         faultList.add(sc1);
 
         LoadFlowParameters loadFlowParameters = new LoadFlowParameters();
         ShortCircuitEngineParameters.PeriodType periodType = ShortCircuitEngineParameters.PeriodType.TRANSIENT;
-        ShortCircuitNormCourcirc shortCircuitNormCourcirc = new ShortCircuitNormCourcirc();
-        ShortCircuitEngineParameters scunbParameters = new ShortCircuitEngineParameters(loadFlowParameters, matrixFactory, ShortCircuitEngineParameters.AnalysisType.SELECTIVE, faultList, true, ShortCircuitEngineParameters.VoltageProfileType.CALCULATED, false, periodType, shortCircuitNormCourcirc);
+        ShortCircuitNorm shortCircuitNorm = new ShortCircuitNorm();
+        ShortCircuitEngineParameters scunbParameters = new ShortCircuitEngineParameters(loadFlowParameters, matrixFactory, ShortCircuitEngineParameters.AnalysisType.SELECTIVE, faultList, true, ShortCircuitEngineParameters.VoltageProfileType.CALCULATED, false, periodType, shortCircuitNorm);
         ShortCircuitUnbalancedEngine scunbEngine = new ShortCircuitUnbalancedEngine(network, scunbParameters);
 
         scunbEngine.run();

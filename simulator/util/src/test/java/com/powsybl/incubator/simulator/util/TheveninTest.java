@@ -8,7 +8,6 @@ package com.powsybl.incubator.simulator.util;
 
 import com.powsybl.commons.reporter.Reporter;
 import com.powsybl.iidm.network.Network;
-import com.powsybl.incubator.simulator.util.extensions.AdditionalDataInfo;
 import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
@@ -18,7 +17,6 @@ import com.powsybl.openloadflow.OpenLoadFlowParameters;
 import com.powsybl.openloadflow.OpenLoadFlowProvider;
 import com.powsybl.openloadflow.ac.outerloop.AcLoadFlowParameters;
 import com.powsybl.openloadflow.graph.EvenShiloachGraphDecrementalConnectivityFactory;
-import org.apache.commons.math3.util.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -62,14 +60,12 @@ class TheveninTest {
         faultsList.add(f1);
         faultsList.add(f2);
 
-        AdditionalDataInfo additionalDataInfo = new AdditionalDataInfo();
-
         AcLoadFlowParameters acLoadFlowParameters = OpenLoadFlowParameters.createAcParameters(network,
                 parameters, OpenLoadFlowParameters.get(parameters), matrixFactory, new EvenShiloachGraphDecrementalConnectivityFactory<>(), Reporter.NO_OP);
 
         TheveninEquivalentParameters.TheveninVoltageProfileType avp = TheveninEquivalentParameters.TheveninVoltageProfileType.CALCULATED;
         TheveninEquivalentParameters.TheveninPeriodType periodType = TheveninEquivalentParameters.TheveninPeriodType.THEVENIN_TRANSIENT;
-        TheveninEquivalentParameters thParameters = new TheveninEquivalentParameters(acLoadFlowParameters, matrixFactory, faultsList, true, avp, periodType, false, additionalDataInfo); // check how to give a Network bus in input
+        TheveninEquivalentParameters thParameters = new TheveninEquivalentParameters(acLoadFlowParameters, matrixFactory, faultsList, true, avp, periodType, false); // check how to give a Network bus in input
         TheveninEquivalent thEq = new TheveninEquivalent(network, thParameters);
 
         thEq.run();
@@ -84,11 +80,7 @@ class TheveninTest {
 
     @Test
     void referenceTransientTest() {
-        Pair<Network, AdditionalDataInfo>  result = ReferenceNetwork.createShortCircuitReference();
-
-        Network network = result.getKey();
-
-        AdditionalDataInfo additionalDataInfo = result.getValue();
+        Network network = ReferenceNetwork.createShortCircuitReference();
 
         List<CalculationLocation> faultsList = new ArrayList<>();
         CalculationLocation f1 = new CalculationLocation("B2", true);
@@ -105,7 +97,7 @@ class TheveninTest {
 
         TheveninEquivalentParameters.TheveninVoltageProfileType avp = TheveninEquivalentParameters.TheveninVoltageProfileType.NOMINAL;
         TheveninEquivalentParameters.TheveninPeriodType periodType = TheveninEquivalentParameters.TheveninPeriodType.THEVENIN_TRANSIENT;
-        TheveninEquivalentParameters thParameters = new TheveninEquivalentParameters(acLoadFlowParameters, matrixFactory, faultsList, true, avp, periodType, false, additionalDataInfo); // check how to give a Network bus in input
+        TheveninEquivalentParameters thParameters = new TheveninEquivalentParameters(acLoadFlowParameters, matrixFactory, faultsList, true, avp, periodType, false); // check how to give a Network bus in input
         TheveninEquivalent thEq = new TheveninEquivalent(network, thParameters);
 
         thEq.run();
@@ -120,11 +112,7 @@ class TheveninTest {
 
     @Test
     void referenceSubTransientTest() {
-        Pair<Network, AdditionalDataInfo>  result = ReferenceNetwork.createShortCircuitReference();
-
-        Network network = result.getKey();
-
-        AdditionalDataInfo additionalDataInfo = result.getValue();
+        Network network = ReferenceNetwork.createShortCircuitReference();
 
         List<CalculationLocation> faultsList = new ArrayList<>();
         CalculationLocation f1 = new CalculationLocation("B2", true);
@@ -141,7 +129,7 @@ class TheveninTest {
 
         TheveninEquivalentParameters.TheveninVoltageProfileType avp = TheveninEquivalentParameters.TheveninVoltageProfileType.NOMINAL;
         TheveninEquivalentParameters.TheveninPeriodType periodType = TheveninEquivalentParameters.TheveninPeriodType.THEVENIN_SUB_TRANSIENT;
-        TheveninEquivalentParameters thParameters = new TheveninEquivalentParameters(acLoadFlowParameters, matrixFactory, faultsList, true, avp, periodType, false, additionalDataInfo); // check how to give a Network bus in input
+        TheveninEquivalentParameters thParameters = new TheveninEquivalentParameters(acLoadFlowParameters, matrixFactory, faultsList, true, avp, periodType, false); // check how to give a Network bus in input
         TheveninEquivalent thEq = new TheveninEquivalent(network, thParameters);
 
         thEq.run();

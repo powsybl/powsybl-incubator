@@ -7,16 +7,15 @@
 package com.powsybl.incubator.simulator.util.extensions;
 
 import com.powsybl.commons.PowsyblException;
-import com.powsybl.iidm.network.Generator;
-import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.network.*;
 import com.powsybl.iidm.network.extensions.GeneratorShortCircuit;
+import com.powsybl.incubator.simulator.util.extensions.iidm.*;
 import com.powsybl.openloadflow.network.LfBranch;
 import com.powsybl.openloadflow.network.LfBus;
 import com.powsybl.openloadflow.network.LfGenerator;
 import com.powsybl.openloadflow.network.LfNetwork;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -29,31 +28,30 @@ public final class ShortCircuitExtensions {
     private ShortCircuitExtensions() {
     }
 
-    public static void add(Network network, List<LfNetwork> lfNetworks, AdditionalDataInfo additionalDataInfo) {
+    public static void add(Network network, List<LfNetwork> lfNetworks) {
         Objects.requireNonNull(network);
         Objects.requireNonNull(lfNetworks);
-        Objects.requireNonNull(additionalDataInfo);
         for (LfNetwork lfNetwork : lfNetworks) {
             for (LfBus lfBus : lfNetwork.getBuses()) {
                 for (LfGenerator lfGenerator : lfBus.getGenerators()) {
-                    addGeneratorExtension(network, additionalDataInfo, lfGenerator);
+                    addGeneratorExtension(network, lfGenerator);
                 }
             }
 
             for (LfBranch lfBranch : lfNetwork.getBranches()) {
                 switch (lfBranch.getBranchType()) {
                     case LINE:
-                        addLineExtension(additionalDataInfo, lfBranch);
+                        addLineExtension(network, lfBranch);
                         break;
 
                     case TRANSFO_2:
-                        addTransfo2Extension(additionalDataInfo, lfBranch);
+                        addTransfo2Extension(network, lfBranch);
                         break;
 
                     case TRANSFO_3_LEG_1:
                     case TRANSFO_3_LEG_2:
                     case TRANSFO_3_LEG_3:
-                        addTransfo3Extension(additionalDataInfo, lfBranch);
+                        addTransfo3Extension(network, lfBranch);
                         break;
 
                     case DANGLING_LINE:
@@ -64,97 +62,82 @@ public final class ShortCircuitExtensions {
         }
     }
 
-    private static <T> T getParameterValue(Map<String, T> parameters, String id, T defaultValue) {
-        if (parameters != null) {
-            if (parameters.containsKey(id)) {
-                return parameters.get(id);
-            }
-        }
-        return defaultValue;
-    }
-
-    private static void addTransfo3Extension(AdditionalDataInfo additionalDataInfo, LfBranch lfBranch) {
+    private static void addTransfo3Extension(Network network, LfBranch lfBranch) {
         String t3wId = lfBranch.getOriginalIds().get(0);
+        ThreeWindingsTransformer twt = network.getThreeWindingsTransformer(t3wId);
 
-        double coeffLeg1Ro = getParameterValue(additionalDataInfo.getTfo3wIdToLeg1CoeffRo(), t3wId, 1.0);
-        double coeffLeg1Xo = getParameterValue(additionalDataInfo.getTfo3wIdToLeg1CoeffXo(), t3wId, 1.0);
-
-        double coeffLeg2Ro = getParameterValue(additionalDataInfo.getTfo3wIdToLeg2CoeffRo(), t3wId, 1.0);
-        double coeffLeg2Xo = getParameterValue(additionalDataInfo.getTfo3wIdToLeg2CoeffXo(), t3wId, 1.0);
-
-        double coeffLeg3Ro = getParameterValue(additionalDataInfo.getTfo3wIdToLeg3CoeffRo(), t3wId, 1.0);
-        double coeffLeg3Xo = getParameterValue(additionalDataInfo.getTfo3wIdToLeg3CoeffXo(), t3wId, 1.0);
-
-        boolean leg1FreeFluxes = getParameterValue(additionalDataInfo.getTfo3wIdLeg1ToFreeFluxes(), t3wId, false);
-        boolean leg2FreeFluxes = getParameterValue(additionalDataInfo.getTfo3wIdLeg2ToFreeFluxes(), t3wId, false);
-        boolean leg3FreeFluxes = getParameterValue(additionalDataInfo.getTfo3wIdLeg3ToFreeFluxes(), t3wId, false);
-
-        ShortCircuitTransformerLeg leg1 = new ShortCircuitTransformerLeg(ShortCircuitTransformerLeg.LegConnectionType.DELTA, coeffLeg1Ro, coeffLeg1Xo, leg1FreeFluxes); // TODO : check if default connection acceptable
-        ShortCircuitTransformerLeg leg2 = new ShortCircuitTransformerLeg(ShortCircuitTransformerLeg.LegConnectionType.Y_GROUNDED, coeffLeg2Ro, coeffLeg2Xo, leg2FreeFluxes); // TODO : check if default connection acceptable
-        ShortCircuitTransformerLeg leg3 = new ShortCircuitTransformerLeg(ShortCircuitTransformerLeg.LegConnectionType.DELTA, coeffLeg3Ro, coeffLeg3Xo, leg3FreeFluxes);
-
-        AdditionalDataInfo.LegType leg1Type = getParameterValue(additionalDataInfo.getLeg1type(), t3wId, null);
-        if (leg1Type == AdditionalDataInfo.LegType.Y) {
-            leg1.setLegConnectionType(ShortCircuitTransformerLeg.LegConnectionType.Y);
-        } else if (leg1Type == AdditionalDataInfo.LegType.Y_GROUNDED) {
-            leg1.setLegConnectionType(ShortCircuitTransformerLeg.LegConnectionType.Y_GROUNDED);
+        double leg1CoeffRo = ThreeWindingsTransformerShortCircuitAdder.DEFAULT_COEFF_RO;
+        double leg2CoeffRo = ThreeWindingsTransformerShortCircuitAdder.DEFAULT_COEFF_RO;
+        double leg3CoeffRo = ThreeWindingsTransformerShortCircuitAdder.DEFAULT_COEFF_RO;
+        double leg1CoeffXo = ThreeWindingsTransformerShortCircuitAdder.DEFAULT_COEFF_XO;
+        double leg2CoeffXo = ThreeWindingsTransformerShortCircuitAdder.DEFAULT_COEFF_XO;
+        double leg3CoeffXo = ThreeWindingsTransformerShortCircuitAdder.DEFAULT_COEFF_XO;
+        boolean leg1FreeFluxes = ThreeWindingsTransformerShortCircuitAdder.DEFAULT_FREE_FLUXES;
+        boolean leg2FreeFluxes = ThreeWindingsTransformerShortCircuitAdder.DEFAULT_FREE_FLUXES;
+        boolean leg3FreeFluxes = ThreeWindingsTransformerShortCircuitAdder.DEFAULT_FREE_FLUXES;
+        LegConnectionType leg1ConnectionType = ThreeWindingsTransformerShortCircuitAdder.DEFAULT_LEG1_CONNECTION_TYPE;
+        LegConnectionType leg2ConnectionType = ThreeWindingsTransformerShortCircuitAdder.DEFAULT_LEG2_CONNECTION_TYPE;
+        LegConnectionType leg3ConnectionType = ThreeWindingsTransformerShortCircuitAdder.DEFAULT_LEG3_CONNECTION_TYPE;
+        var extensions = twt.getExtension(ThreeWindingsTransformerShortCircuit.class);
+        if (extensions != null) {
+            leg1CoeffRo = extensions.getLeg1CoeffRo();
+            leg2CoeffRo = extensions.getLeg2CoeffRo();
+            leg3CoeffRo = extensions.getLeg3CoeffRo();
+            leg1CoeffXo = extensions.getLeg1CoeffXo();
+            leg2CoeffXo = extensions.getLeg2CoeffXo();
+            leg3CoeffXo = extensions.getLeg3CoeffXo();
+            leg1FreeFluxes = extensions.isLeg1FreeFluxes();
+            leg2FreeFluxes = extensions.isLeg2FreeFluxes();
+            leg3FreeFluxes = extensions.isLeg3FreeFluxes();
+            leg1ConnectionType = extensions.getLeg1ConnectionType();
+            leg2ConnectionType = extensions.getLeg2ConnectionType();
+            leg3ConnectionType = extensions.getLeg3ConnectionType();
         }
 
-        AdditionalDataInfo.LegType leg2Type = getParameterValue(additionalDataInfo.getLeg2type(), t3wId, null);
-        if (leg2Type == AdditionalDataInfo.LegType.Y) {
-            leg2.setLegConnectionType(ShortCircuitTransformerLeg.LegConnectionType.Y);
-        } else if (leg2Type == AdditionalDataInfo.LegType.DELTA) {
-            leg2.setLegConnectionType(ShortCircuitTransformerLeg.LegConnectionType.DELTA);
-        }
+        ScTransfo3W.Leg leg1 = new ScTransfo3W.Leg(leg1ConnectionType, leg1CoeffRo, leg1CoeffXo, leg1FreeFluxes); // TODO : check if default connection acceptable
+        ScTransfo3W.Leg leg2 = new ScTransfo3W.Leg(leg2ConnectionType, leg2CoeffRo, leg2CoeffXo, leg2FreeFluxes); // TODO : check if default connection acceptable
+        ScTransfo3W.Leg leg3 = new ScTransfo3W.Leg(leg3ConnectionType, leg3CoeffRo, leg3CoeffXo, leg3FreeFluxes); // TODO : check if default connection acceptable
 
-        AdditionalDataInfo.LegType leg3Type = getParameterValue(additionalDataInfo.getLeg3type(), t3wId, null);
-        if (leg3Type == AdditionalDataInfo.LegType.Y) {
-            leg3.setLegConnectionType(ShortCircuitTransformerLeg.LegConnectionType.Y);
-        } else if (leg3Type == AdditionalDataInfo.LegType.Y_GROUNDED) {
-            leg3.setLegConnectionType(ShortCircuitTransformerLeg.LegConnectionType.Y_GROUNDED);
-        }
-
-        lfBranch.setProperty(PROPERTY_NAME, new ShortCircuitT3W(leg1, leg2, leg3));
+        lfBranch.setProperty(PROPERTY_NAME, new ScTransfo3W(leg1, leg2, leg3));
     }
 
-    private static void addLineExtension(AdditionalDataInfo additionalDataInfo, LfBranch lfBranch) {
+    private static void addLineExtension(Network network, LfBranch lfBranch) {
         String lineId = lfBranch.getOriginalIds().get(0);
+        Line line = network.getLine(lineId);
 
-        double coeffRo = getParameterValue(additionalDataInfo.getLineIdToCoeffRo(), lineId, 1.0);
-        double coeffXo = getParameterValue(additionalDataInfo.getLineIdToCoeffXo(), lineId, 1.0);
+        double coeffRo = LineShortCircuitAdder.DEFAULT_COEFF_RO;
+        double coeffXo = LineShortCircuitAdder.DEFAULT_COEFF_XO;
+        LineShortCircuit extensions = line.getExtension(LineShortCircuit.class);
+        if (extensions != null) {
+            coeffRo = extensions.getCoeffRo();
+            coeffXo = extensions.getCoeffXo();
+        }
 
-        lfBranch.setProperty(PROPERTY_NAME, new ShortCircuitLine(coeffRo, coeffXo));
+        lfBranch.setProperty(PROPERTY_NAME, new ScLine(coeffRo, coeffXo));
     }
 
-    private static void addTransfo2Extension(AdditionalDataInfo additionalDataInfo, LfBranch lfBranch) {
+    private static void addTransfo2Extension(Network network, LfBranch lfBranch) {
         String t2wId = lfBranch.getOriginalIds().get(0);
+        TwoWindingsTransformer twt = network.getTwoWindingsTransformer(t2wId);
 
-        double coeffRo = getParameterValue(additionalDataInfo.getTfo2wIdToCoeffRo(), t2wId, 1.0);
-        double coeffXo = getParameterValue(additionalDataInfo.getTfo2wIdToCoeffXo(), t2wId, 1.0);
-
-        ShortCircuitTransformerLeg leg1 = new ShortCircuitTransformerLeg(ShortCircuitTransformerLeg.LegConnectionType.DELTA); // TODO : check if default connection acceptable
-        ShortCircuitTransformerLeg leg2 = new ShortCircuitTransformerLeg(ShortCircuitTransformerLeg.LegConnectionType.Y_GROUNDED); // TODO : check if default connection acceptable
-
-        AdditionalDataInfo.LegType leg1Type = getParameterValue(additionalDataInfo.getLeg1type(), t2wId, null);
-        if (leg1Type == AdditionalDataInfo.LegType.Y) {
-            leg1.setLegConnectionType(ShortCircuitTransformerLeg.LegConnectionType.Y);
-        } else if (leg1Type == AdditionalDataInfo.LegType.Y_GROUNDED) {
-            leg1.setLegConnectionType(ShortCircuitTransformerLeg.LegConnectionType.Y_GROUNDED);
+        double coeffRo = TwoWindingsTransformerShortCircuitAdder.DEFAULT_COEFF_RO;
+        double coeffXo = TwoWindingsTransformerShortCircuitAdder.DEFAULT_COEFF_XO;
+        boolean freeFluxes = TwoWindingsTransformerShortCircuitAdder.DEFAULT_FREE_FLUXES;
+        LegConnectionType leg1ConnectionType = TwoWindingsTransformerShortCircuitAdder.DEFAULT_LEG1_CONNECTION_TYPE;
+        LegConnectionType leg2ConnectionType = TwoWindingsTransformerShortCircuitAdder.DEFAULT_LEG2_CONNECTION_TYPE;
+        var extensions = twt.getExtension(TwoWindingsTransformerShortCircuit.class);
+        if (extensions != null) {
+            coeffRo = extensions.getCoeffRo();
+            coeffXo = extensions.getCoeffXo();
+            freeFluxes = extensions.isFreeFluxes();
+            leg1ConnectionType = extensions.getLeg1ConnectionType();
+            leg2ConnectionType = extensions.getLeg2ConnectionType();
         }
 
-        AdditionalDataInfo.LegType leg2Type = getParameterValue(additionalDataInfo.getLeg2type(), t2wId, null);
-        if (leg2Type == AdditionalDataInfo.LegType.Y) {
-            leg2.setLegConnectionType(ShortCircuitTransformerLeg.LegConnectionType.Y);
-        } else if (leg2Type == AdditionalDataInfo.LegType.DELTA) {
-            leg2.setLegConnectionType(ShortCircuitTransformerLeg.LegConnectionType.DELTA);
-        }
-
-        boolean freeFluxes = getParameterValue(additionalDataInfo.getTfo2wIdToFreeFluxes(), t2wId, false);
-
-        lfBranch.setProperty(PROPERTY_NAME, new ShortCircuitT2W(leg1, leg2, coeffRo, coeffXo, freeFluxes));
+        lfBranch.setProperty(PROPERTY_NAME, new ScTransfo2W(leg1ConnectionType, leg2ConnectionType, coeffRo, coeffXo, freeFluxes));
     }
 
-    private static void addGeneratorExtension(Network network, AdditionalDataInfo additionalDataInfo, LfGenerator lfGenerator) {
+    private static void addGeneratorExtension(Network network, LfGenerator lfGenerator) {
         Generator generator = network.getGenerator(lfGenerator.getOriginalId());
 
         GeneratorShortCircuit extension = generator.getExtension(GeneratorShortCircuit.class);
@@ -165,23 +148,31 @@ public final class ShortCircuitExtensions {
         double subtransX = extension.getDirectSubtransX();
         double stepUpTfoX = extension.getStepUpTransformerX();
 
-        double transRd = getParameterValue(additionalDataInfo.getMachineIdToTransRd(), generator.getId(), 0.);
-        double subTransRd = getParameterValue(additionalDataInfo.getMachineIdToSubTransRd(), generator.getId(), 0.);
-        boolean toGround = getParameterValue(additionalDataInfo.getMachineToGround(), generator.getId(), false);
-        double coeffRo = getParameterValue(additionalDataInfo.getMachineCoeffRo(), generator.getId(), 1.);
-        double coeffXo = getParameterValue(additionalDataInfo.getMachineCoeffXo(), generator.getId(), 1.);
+        double transRd = GeneratorShortCircuitAdder2.DEFAULT_TRANS_RD;
+        double subTransRd = GeneratorShortCircuitAdder2.DEFAULT_SUB_TRANS_RD;
+        boolean toGround = GeneratorShortCircuitAdder2.DEFAULT_TO_GROUND;
+        double coeffRo = GeneratorShortCircuitAdder2.DEFAULT_COEFF_RO;
+        double coeffXo = GeneratorShortCircuitAdder2.DEFAULT_COEFF_XO;
+        GeneratorShortCircuit2 extensions2 = generator.getExtension(GeneratorShortCircuit2.class);
+        if (extensions2 != null) {
+            transRd = extensions2.getTransRd();
+            subTransRd = extensions2.getSubTransRd();
+            toGround = extensions2.isToGround();
+            coeffRo = extensions2.getCoeffRo();
+            coeffXo = extensions2.getCoeffXo();
+        }
 
-        lfGenerator.setProperty(PROPERTY_NAME, new ShortCircuitGenerator(transX,
-                                                                                  stepUpTfoX,
-                                                                                  ShortCircuitGenerator.MachineType.SYNCHRONOUS_GEN,
-                                                                                  transRd,
-                                                                                  0.,
-                                                                                  subTransRd,
-                                                                                  subtransX,
-                                                                                  toGround,
-                                                                                  0.,
-                                                                                  0.,
-                                                                                  coeffRo,
-                                                                                  coeffXo)); // TODO: set the right type when info available
+        lfGenerator.setProperty(PROPERTY_NAME, new ScGenerator(transX,
+                                                               stepUpTfoX,
+                                                               ScGenerator.MachineType.SYNCHRONOUS_GEN,
+                                                               transRd,
+                                                               0.,
+                                                               subTransRd,
+                                                               subtransX,
+                                                               toGround,
+                                                               0.,
+                                                               0.,
+                                                               coeffRo,
+                                                               coeffXo)); // TODO: set the right type when info available
     }
 }

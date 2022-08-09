@@ -48,7 +48,7 @@ public abstract class AbstractShortCircuitEngine {
         this.parameters = Objects.requireNonNull(parameters);
         this.lfNetworks = LfNetwork.load(network, new LfNetworkLoaderImpl(), new LfNetworkParameters(new FirstSlackBusSelector()));
         this.acLoadFlowParameters = getAcLoadFlowParametersFromParam();
-        ShortCircuitExtensions.add(network, lfNetworks, parameters.getAdditionalDataInfo());
+        ShortCircuitExtensions.add(network, lfNetworks);
     }
 
     protected AcLoadFlowParameters getAcLoadFlowParametersFromParam() {

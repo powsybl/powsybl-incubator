@@ -12,12 +12,10 @@ import com.powsybl.incubator.simulator.util.extensions.AdditionalDataInfo;
 import com.powsybl.incubator.simulator.util.extensions.LegConnectionType;
 import com.powsybl.incubator.simulator.util.extensions.iidm.GeneratorShortCircuitAdder2;
 import com.powsybl.incubator.simulator.util.extensions.iidm.LineShortCircuitAdder;
+import com.powsybl.incubator.simulator.util.extensions.iidm.ThreeWindingsTransformerShortCircuitAdder;
 import com.powsybl.incubator.simulator.util.extensions.iidm.TwoWindingsTransformerShortCircuitAdder;
 import org.apache.commons.math3.util.Pair;
 import org.joda.time.DateTime;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
@@ -1271,17 +1269,24 @@ public final class ReferenceNetwork {
                 .add();
 
         // transformers :
-        Map<String, LegConnectionType> leg1type =  new HashMap<>();
-        Map<String, LegConnectionType> leg2type =  new HashMap<>();
-        Map<String, LegConnectionType> leg3type =  new HashMap<>(); // needed only for three windings transformers
+        twt3.newExtension(ThreeWindingsTransformerShortCircuitAdder.class)
+                .withLeg1ConnectionType(LegConnectionType.Y_GROUNDED)
+                .withLeg2ConnectionType(LegConnectionType.Y)
+                .withLeg3ConnectionType(LegConnectionType.DELTA)
+                .add();
 
-        leg1type.put("T3", LegConnectionType.Y_GROUNDED);
-        leg1type.put("T4", LegConnectionType.Y);
-        leg2type.put("T3", LegConnectionType.Y);
-        leg2type.put("T4", LegConnectionType.Y_GROUNDED);
-
-        leg3type.put("T3", LegConnectionType.DELTA);
-        leg3type.put("T4", LegConnectionType.DELTA);
+        twt4.newExtension(ThreeWindingsTransformerShortCircuitAdder.class)
+                .withLeg1FreeFluxes(true)
+                .withLeg1ConnectionType(LegConnectionType.Y)
+                .withLeg2FreeFluxes(true)
+                .withLeg2CoeffRo(coeffRoT4)
+                .withLeg2CoeffXo(coeffXoT4)
+                .withLeg2ConnectionType(LegConnectionType.Y_GROUNDED)
+                .withLeg3FreeFluxes(true)
+                .withLeg3CoeffRo(coeffRoT4)
+                .withLeg3CoeffXo(coeffXoT4)
+                .withLeg3ConnectionType(LegConnectionType.DELTA)
+                .add();
 
         t5.newExtension(TwoWindingsTransformerShortCircuitAdder.class)
                 .withLeg1ConnectionType(LegConnectionType.Y)
@@ -1291,26 +1296,6 @@ public final class ReferenceNetwork {
                 .withLeg1ConnectionType(LegConnectionType.Y)
                 .withLeg2ConnectionType(LegConnectionType.Y_GROUNDED)
                 .add();
-
-        Map<String, Double> tfo3wIdToLeg1CoeffRo = new HashMap<>();
-        Map<String, Double> tfo3wIdToLeg1CoeffXo = new HashMap<>();
-
-        Map<String, Double> tfo3wIdToLeg2CoeffRo = new HashMap<>();
-        Map<String, Double> tfo3wIdToLeg2CoeffXo = new HashMap<>();
-        tfo3wIdToLeg2CoeffRo.put("T4", coeffRoT4);
-        tfo3wIdToLeg2CoeffXo.put("T4", coeffXoT4);
-
-        Map<String, Double> tfo3wIdToLeg3CoeffRo = new HashMap<>();
-        Map<String, Double> tfo3wIdToLeg3CoeffXo = new HashMap<>();
-        tfo3wIdToLeg3CoeffRo.put("T4", coeffRoT4);
-        tfo3wIdToLeg3CoeffXo.put("T4", coeffXoT4);
-
-        Map<String, Boolean> tfo3wIdLeg1ToFreeFluxes = new HashMap<>();
-        Map<String, Boolean> tfo3wIdLeg2ToFreeFluxes = new HashMap<>();
-        Map<String, Boolean> tfo3wIdLeg3ToFreeFluxes = new HashMap<>();
-        tfo3wIdLeg1ToFreeFluxes.put("T4", true);
-        tfo3wIdLeg2ToFreeFluxes.put("T4", true);
-        tfo3wIdLeg3ToFreeFluxes.put("T4", true);
 
         // Lines :
         l1.newExtension(LineShortCircuitAdder.class)
@@ -1338,13 +1323,7 @@ public final class ReferenceNetwork {
                 .withCoeffXo(coeffXoL6)
                 .add();
 
-        AdditionalDataInfo additionalDataInfo = new AdditionalDataInfo(
-                leg1type, leg2type,
-                leg3type,
-                tfo3wIdToLeg1CoeffRo, tfo3wIdToLeg1CoeffXo,
-                tfo3wIdToLeg2CoeffRo, tfo3wIdToLeg2CoeffXo,
-                tfo3wIdToLeg3CoeffRo, tfo3wIdToLeg3CoeffXo,
-                tfo3wIdLeg1ToFreeFluxes, tfo3wIdLeg2ToFreeFluxes, tfo3wIdLeg3ToFreeFluxes);
+        AdditionalDataInfo additionalDataInfo = new AdditionalDataInfo();
 
         return new Pair<>(network, additionalDataInfo);
     }

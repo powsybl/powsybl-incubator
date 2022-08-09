@@ -8,13 +8,11 @@ package com.powsybl.incubator.simulator.util;
 
 import com.powsybl.iidm.network.*;
 import com.powsybl.iidm.network.extensions.GeneratorShortCircuitAdder;
-import com.powsybl.incubator.simulator.util.extensions.AdditionalDataInfo;
 import com.powsybl.incubator.simulator.util.extensions.LegConnectionType;
 import com.powsybl.incubator.simulator.util.extensions.iidm.GeneratorShortCircuitAdder2;
 import com.powsybl.incubator.simulator.util.extensions.iidm.LineShortCircuitAdder;
 import com.powsybl.incubator.simulator.util.extensions.iidm.ThreeWindingsTransformerShortCircuitAdder;
 import com.powsybl.incubator.simulator.util.extensions.iidm.TwoWindingsTransformerShortCircuitAdder;
-import org.apache.commons.math3.util.Pair;
 import org.joda.time.DateTime;
 
 /**
@@ -25,7 +23,7 @@ public final class ReferenceNetwork {
     private ReferenceNetwork() {
     }
 
-    public static Pair<Network, AdditionalDataInfo> createShortCircuitReference() {
+    public static Network createShortCircuitReference() {
         Network network = Network.create("ShortCircuitReference", "reference");
         network.setCaseDate(DateTime.parse("2018-03-05T13:30:30.486+01:00"));
 
@@ -434,12 +432,10 @@ public final class ReferenceNetwork {
                 .withSubTransRd(rM4SubTrans)
                 .add();
 
-        AdditionalDataInfo additionalDataInfo = new AdditionalDataInfo();
-
-        return new Pair<>(network, additionalDataInfo);
+        return network;
     }
 
-    public static Pair<Network, AdditionalDataInfo> createShortCircuitIec31() {
+    public static Network createShortCircuitIec31() {
         Network network = Network.create("ShortCircuit_IEC_3.1", "IEC_3.1");
         network.setCaseDate(DateTime.parse("2018-03-05T13:30:30.486+01:00"));
 
@@ -708,12 +704,10 @@ public final class ReferenceNetwork {
                 .withLeg2ConnectionType(LegConnectionType.Y_GROUNDED)
                 .add();
 
-        AdditionalDataInfo additionalDataInfo = new AdditionalDataInfo();
-
-        return new Pair<>(network, additionalDataInfo);
+        return network;
     }
 
-    public static Pair<Network, AdditionalDataInfo> createShortCircuitIec31testNetwork() {
+    public static Network createShortCircuitIec31testNetwork() {
         Network network = Network.create("ShortCircuit_IEC_3.1", "IEC_3.1");
         network.setCaseDate(DateTime.parse("2018-03-05T13:30:30.486+01:00"));
 
@@ -1323,8 +1317,6 @@ public final class ReferenceNetwork {
                 .withCoeffXo(coeffXoL6)
                 .add();
 
-        AdditionalDataInfo additionalDataInfo = new AdditionalDataInfo();
-
-        return new Pair<>(network, additionalDataInfo);
+        return network;
     }
 }

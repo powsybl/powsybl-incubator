@@ -28,10 +28,9 @@ public final class ShortCircuitExtensions {
     private ShortCircuitExtensions() {
     }
 
-    public static void add(Network network, List<LfNetwork> lfNetworks, AdditionalDataInfo additionalDataInfo) {
+    public static void add(Network network, List<LfNetwork> lfNetworks) {
         Objects.requireNonNull(network);
         Objects.requireNonNull(lfNetworks);
-        Objects.requireNonNull(additionalDataInfo);
         for (LfNetwork lfNetwork : lfNetworks) {
             for (LfBus lfBus : lfNetwork.getBuses()) {
                 for (LfGenerator lfGenerator : lfBus.getGenerators()) {

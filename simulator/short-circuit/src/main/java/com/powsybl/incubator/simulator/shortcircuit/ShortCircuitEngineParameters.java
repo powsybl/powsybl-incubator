@@ -6,7 +6,6 @@
  */
 package com.powsybl.incubator.simulator.shortcircuit;
 
-import com.powsybl.incubator.simulator.util.extensions.AdditionalDataInfo;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.math.matrix.MatrixFactory;
 
@@ -47,13 +46,11 @@ public class ShortCircuitEngineParameters {
 
     public boolean voltageUpdate;
 
-    private AdditionalDataInfo additionalDataInfo;
-
     private PeriodType periodType;
 
     private ShortCircuitNorm norm;
 
-    public ShortCircuitEngineParameters(LoadFlowParameters loadFlowParameters, MatrixFactory matrixFactory, AnalysisType analysisType, List<ShortCircuitFault> faults, boolean isVoltageExport, VoltageProfileType vProfile, boolean ignoreShunts, PeriodType periodType, AdditionalDataInfo additionalDataInfo, ShortCircuitNorm norm) {
+    public ShortCircuitEngineParameters(LoadFlowParameters loadFlowParameters, MatrixFactory matrixFactory, AnalysisType analysisType, List<ShortCircuitFault> faults, boolean isVoltageExport, VoltageProfileType vProfile, boolean ignoreShunts, PeriodType periodType, ShortCircuitNorm norm) {
         this.loadFlowParameters = Objects.requireNonNull(loadFlowParameters);
         this.matrixFactory = Objects.requireNonNull(matrixFactory);
         this.shortCircuitFaults = Objects.requireNonNull(faults);
@@ -62,7 +59,6 @@ public class ShortCircuitEngineParameters {
         this.vProfile = vProfile;
         this.analysisType = analysisType;
         this.periodType = periodType;
-        this.additionalDataInfo = Objects.requireNonNull(additionalDataInfo);
         this.norm = norm;
     }
 
@@ -92,10 +88,6 @@ public class ShortCircuitEngineParameters {
 
     public void setShortCircuitFaults(List<ShortCircuitFault> faults) {
         shortCircuitFaults = faults;
-    }
-
-    public AdditionalDataInfo getAdditionalDataInfo() {
-        return additionalDataInfo;
     }
 
     public PeriodType getPeriodType() {

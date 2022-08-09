@@ -10,8 +10,7 @@ import com.powsybl.computation.ComputationManager;
 import com.powsybl.computation.local.LocalComputationManager;
 import com.powsybl.iidm.network.*;
 import com.powsybl.iidm.network.extensions.GeneratorShortCircuitAdder;
-import com.powsybl.incubator.simulator.util.*;
-import com.powsybl.incubator.simulator.util.extensions.AdditionalDataInfo;
+import com.powsybl.incubator.simulator.util.ReferenceNetwork;
 import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
@@ -19,7 +18,6 @@ import com.powsybl.math.matrix.DenseMatrixFactory;
 import com.powsybl.math.matrix.MatrixFactory;
 import com.powsybl.openloadflow.OpenLoadFlowProvider;
 import com.powsybl.shortcircuit.*;
-import org.apache.commons.math3.util.Pair;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -57,14 +55,12 @@ public class ShortCircuitBalancedTest {
 
         ShortCircuitEngineParameters.PeriodType periodType = ShortCircuitEngineParameters.PeriodType.TRANSIENT;
 
-        AdditionalDataInfo additionalDataInfo = new AdditionalDataInfo(); //No specific additional info needed in this test
-
         ShortCircuitEngineParameters.VoltageProfileType vp = ShortCircuitEngineParameters.VoltageProfileType.CALCULATED;
         ShortCircuitEngineParameters.AnalysisType at = ShortCircuitEngineParameters.AnalysisType.SELECTIVE;
 
         LoadFlowParameters loadFlowParameters = new LoadFlowParameters();
         ShortCircuitNormCourcirc shortCircuitNormCourcirc = new ShortCircuitNormCourcirc();
-        ShortCircuitEngineParameters scbParameters = new ShortCircuitEngineParameters(loadFlowParameters, matrixFactory, at, tmpV, true, vp, false, periodType, additionalDataInfo, shortCircuitNormCourcirc);
+        ShortCircuitEngineParameters scbParameters = new ShortCircuitEngineParameters(loadFlowParameters, matrixFactory, at, tmpV, true, vp, false, periodType, shortCircuitNormCourcirc);
         ShortCircuitBalancedEngine scbEngine = new ShortCircuitBalancedEngine(nt2, scbParameters);
 
         scbEngine.run();
@@ -196,10 +192,8 @@ public class ShortCircuitBalancedTest {
 
         ShortCircuitEngineParameters.PeriodType periodType = ShortCircuitEngineParameters.PeriodType.TRANSIENT;
 
-        AdditionalDataInfo additionalDataInfo = new AdditionalDataInfo(); //No specific additional info needed in this test
-
         ShortCircuitNormCourcirc shortCircuitNormCourcirc = new ShortCircuitNormCourcirc();
-        ShortCircuitEngineParameters scbParameters = new ShortCircuitEngineParameters(loadFlowParameters, matrixFactory, ShortCircuitEngineParameters.AnalysisType.SYSTEMATIC, tmpV, false, ShortCircuitEngineParameters.VoltageProfileType.NOMINAL, false, periodType, additionalDataInfo, shortCircuitNormCourcirc);
+        ShortCircuitEngineParameters scbParameters = new ShortCircuitEngineParameters(loadFlowParameters, matrixFactory, ShortCircuitEngineParameters.AnalysisType.SYSTEMATIC, tmpV, false, ShortCircuitEngineParameters.VoltageProfileType.NOMINAL, false, periodType, shortCircuitNormCourcirc);
         ShortCircuitBalancedEngine scbEngine = new ShortCircuitBalancedEngine(nt2, scbParameters);
 
         scbEngine.run();
@@ -219,10 +213,7 @@ public class ShortCircuitBalancedTest {
         LoadFlowParameters loadFlowParameters = LoadFlowParameters.load();
         loadFlowParameters.setTwtSplitShuntAdmittance(true);
 
-        Pair<Network, AdditionalDataInfo> result = ReferenceNetwork.createShortCircuitReference();
-        Network network = result.getKey();
-
-        AdditionalDataInfo additionalDataInfo = result.getValue();
+        Network network = ReferenceNetwork.createShortCircuitReference();
 
         MatrixFactory  matrixFactory = new DenseMatrixFactory();
 
@@ -233,7 +224,7 @@ public class ShortCircuitBalancedTest {
         ShortCircuitEngineParameters.PeriodType periodType = ShortCircuitEngineParameters.PeriodType.SUB_TRANSIENT;
 
         ShortCircuitNormCourcirc shortCircuitNormCourcirc = new ShortCircuitNormCourcirc();
-        ShortCircuitEngineParameters scbParameters = new ShortCircuitEngineParameters(loadFlowParameters, matrixFactory, ShortCircuitEngineParameters.AnalysisType.SELECTIVE, faultList, true, ShortCircuitEngineParameters.VoltageProfileType.NOMINAL, false, periodType, additionalDataInfo, shortCircuitNormCourcirc);
+        ShortCircuitEngineParameters scbParameters = new ShortCircuitEngineParameters(loadFlowParameters, matrixFactory, ShortCircuitEngineParameters.AnalysisType.SELECTIVE, faultList, true, ShortCircuitEngineParameters.VoltageProfileType.NOMINAL, false, periodType, shortCircuitNormCourcirc);
         ShortCircuitBalancedEngine scbEngine = new ShortCircuitBalancedEngine(network, scbParameters);
 
         scbEngine.run();
@@ -256,10 +247,7 @@ public class ShortCircuitBalancedTest {
         LoadFlowParameters loadFlowParameters = LoadFlowParameters.load();
         loadFlowParameters.setTwtSplitShuntAdmittance(true);
 
-        Pair<Network, AdditionalDataInfo> result = ReferenceNetwork.createShortCircuitIec31();
-        Network network = result.getKey();
-
-        AdditionalDataInfo additionalDataInfo = result.getValue();
+        Network network = ReferenceNetwork.createShortCircuitIec31();
 
         MatrixFactory  matrixFactory = new DenseMatrixFactory();
 
@@ -269,7 +257,7 @@ public class ShortCircuitBalancedTest {
 
         ShortCircuitEngineParameters.PeriodType periodType = ShortCircuitEngineParameters.PeriodType.SUB_TRANSIENT;
         ShortCircuitNormIec shortCircuitNormIec = new ShortCircuitNormIec();
-        ShortCircuitEngineParameters scbParameters = new ShortCircuitEngineParameters(loadFlowParameters, matrixFactory, ShortCircuitEngineParameters.AnalysisType.SELECTIVE, faultList, true, ShortCircuitEngineParameters.VoltageProfileType.NOMINAL, false, periodType, additionalDataInfo, shortCircuitNormIec);
+        ShortCircuitEngineParameters scbParameters = new ShortCircuitEngineParameters(loadFlowParameters, matrixFactory, ShortCircuitEngineParameters.AnalysisType.SELECTIVE, faultList, true, ShortCircuitEngineParameters.VoltageProfileType.NOMINAL, false, periodType, shortCircuitNormIec);
         ShortCircuitBalancedEngine scbEngine = new ShortCircuitBalancedEngine(network, scbParameters);
 
         scbEngine.run();
@@ -290,10 +278,7 @@ public class ShortCircuitBalancedTest {
         LoadFlowParameters loadFlowParameters = LoadFlowParameters.load();
         loadFlowParameters.setTwtSplitShuntAdmittance(true);
 
-        Pair<Network, AdditionalDataInfo> result = ReferenceNetwork.createShortCircuitIec31testNetwork();
-        Network network = result.getKey();
-
-        AdditionalDataInfo additionalDataInfo = result.getValue();
+        Network network = ReferenceNetwork.createShortCircuitIec31testNetwork();
 
         MatrixFactory  matrixFactory = new DenseMatrixFactory();
 
@@ -317,7 +302,7 @@ public class ShortCircuitBalancedTest {
 
         ShortCircuitEngineParameters.PeriodType periodType = ShortCircuitEngineParameters.PeriodType.TRANSIENT;
         ShortCircuitNormIec shortCircuitNormIec = new ShortCircuitNormIec();
-        ShortCircuitEngineParameters scbParameters = new ShortCircuitEngineParameters(loadFlowParameters, matrixFactory, ShortCircuitEngineParameters.AnalysisType.SELECTIVE, faultList, true, ShortCircuitEngineParameters.VoltageProfileType.NOMINAL, false, periodType, additionalDataInfo, shortCircuitNormIec);
+        ShortCircuitEngineParameters scbParameters = new ShortCircuitEngineParameters(loadFlowParameters, matrixFactory, ShortCircuitEngineParameters.AnalysisType.SELECTIVE, faultList, true, ShortCircuitEngineParameters.VoltageProfileType.NOMINAL, false, periodType, shortCircuitNormIec);
         ShortCircuitBalancedEngine scbEngine = new ShortCircuitBalancedEngine(network, scbParameters);
 
         scbEngine.run();

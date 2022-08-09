@@ -9,7 +9,6 @@ package com.powsybl.incubator.simulator.shortcircuit;
 import com.powsybl.iidm.network.*;
 import com.powsybl.iidm.network.extensions.GeneratorShortCircuitAdder;
 import com.powsybl.incubator.simulator.util.ReferenceNetwork;
-import com.powsybl.incubator.simulator.util.extensions.AdditionalDataInfo;
 import com.powsybl.incubator.simulator.util.extensions.iidm.GeneratorShortCircuitAdder2;
 import com.powsybl.incubator.simulator.util.extensions.iidm.LineShortCircuitAdder;
 import com.powsybl.loadflow.LoadFlow;
@@ -18,7 +17,6 @@ import com.powsybl.loadflow.LoadFlowResult;
 import com.powsybl.math.matrix.DenseMatrixFactory;
 import com.powsybl.math.matrix.MatrixFactory;
 import com.powsybl.openloadflow.OpenLoadFlowProvider;
-import org.apache.commons.math3.util.Pair;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,10 +49,7 @@ public class ShortCircuitMonophasedTest {
         LoadFlowParameters loadFlowParameters = LoadFlowParameters.load();
         loadFlowParameters.setTwtSplitShuntAdmittance(true);
 
-        Pair<Network, AdditionalDataInfo> result = ReferenceNetwork.createShortCircuitIec31();
-        Network network = result.getKey();
-
-        AdditionalDataInfo additionalDataInfo = result.getValue();
+        Network network = ReferenceNetwork.createShortCircuitIec31();
 
         MatrixFactory  matrixFactory = new DenseMatrixFactory();
 
@@ -64,7 +59,7 @@ public class ShortCircuitMonophasedTest {
 
         ShortCircuitEngineParameters.PeriodType periodType = ShortCircuitEngineParameters.PeriodType.SUB_TRANSIENT;
         ShortCircuitNormIec shortCircuitNormIec = new ShortCircuitNormIec();
-        ShortCircuitEngineParameters scbParameters = new ShortCircuitEngineParameters(loadFlowParameters, matrixFactory, ShortCircuitEngineParameters.AnalysisType.SELECTIVE, faultList, false, ShortCircuitEngineParameters.VoltageProfileType.NOMINAL, false, periodType, additionalDataInfo, shortCircuitNormIec);
+        ShortCircuitEngineParameters scbParameters = new ShortCircuitEngineParameters(loadFlowParameters, matrixFactory, ShortCircuitEngineParameters.AnalysisType.SELECTIVE, faultList, false, ShortCircuitEngineParameters.VoltageProfileType.NOMINAL, false, periodType, shortCircuitNormIec);
         ShortCircuitUnbalancedEngine scbEngine = new ShortCircuitUnbalancedEngine(network, scbParameters);
 
         scbEngine.run();
@@ -88,10 +83,7 @@ public class ShortCircuitMonophasedTest {
         LoadFlowParameters loadFlowParameters = LoadFlowParameters.load();
         loadFlowParameters.setTwtSplitShuntAdmittance(true);
 
-        Pair<Network, AdditionalDataInfo> result = ReferenceNetwork.createShortCircuitIec31testNetwork();
-        Network network = result.getKey();
-
-        AdditionalDataInfo additionalDataInfo = result.getValue();
+        Network network = ReferenceNetwork.createShortCircuitIec31testNetwork();
 
         MatrixFactory  matrixFactory = new DenseMatrixFactory();
 
@@ -113,7 +105,7 @@ public class ShortCircuitMonophasedTest {
 
         ShortCircuitEngineParameters.PeriodType periodType = ShortCircuitEngineParameters.PeriodType.TRANSIENT;
         ShortCircuitNormIec shortCircuitNormIec = new ShortCircuitNormIec();
-        ShortCircuitEngineParameters scbParameters = new ShortCircuitEngineParameters(loadFlowParameters, matrixFactory, ShortCircuitEngineParameters.AnalysisType.SELECTIVE, faultList, false, ShortCircuitEngineParameters.VoltageProfileType.NOMINAL, false, periodType, additionalDataInfo, shortCircuitNormIec);
+        ShortCircuitEngineParameters scbParameters = new ShortCircuitEngineParameters(loadFlowParameters, matrixFactory, ShortCircuitEngineParameters.AnalysisType.SELECTIVE, faultList, false, ShortCircuitEngineParameters.VoltageProfileType.NOMINAL, false, periodType, shortCircuitNormIec);
         ShortCircuitUnbalancedEngine scbEngine = new ShortCircuitUnbalancedEngine(network, scbParameters);
 
         scbEngine.run();
@@ -136,10 +128,7 @@ public class ShortCircuitMonophasedTest {
 
     @Test
     void computeIoTestNew() {
-        Pair<Network, AdditionalDataInfo> result = createGiard(NetworkFactory.findDefault());
-
-        Network network = result.getKey();
-        AdditionalDataInfo additionalDataInfo = result.getValue();
+        Network network = createGiard(NetworkFactory.findDefault());
 
         LoadFlowResult resultntg = loadFlowRunner.run(network, parameters);
 
@@ -155,7 +144,7 @@ public class ShortCircuitMonophasedTest {
         LoadFlowParameters loadFlowParameters = new LoadFlowParameters();
         ShortCircuitEngineParameters.PeriodType periodType = ShortCircuitEngineParameters.PeriodType.TRANSIENT;
         ShortCircuitNormCourcirc shortCircuitNormCourcirc = new ShortCircuitNormCourcirc();
-        ShortCircuitEngineParameters scunbParameters = new ShortCircuitEngineParameters(loadFlowParameters, matrixFactory, ShortCircuitEngineParameters.AnalysisType.SELECTIVE, faultList, true, ShortCircuitEngineParameters.VoltageProfileType.CALCULATED, false, periodType, additionalDataInfo, shortCircuitNormCourcirc);
+        ShortCircuitEngineParameters scunbParameters = new ShortCircuitEngineParameters(loadFlowParameters, matrixFactory, ShortCircuitEngineParameters.AnalysisType.SELECTIVE, faultList, true, ShortCircuitEngineParameters.VoltageProfileType.CALCULATED, false, periodType, shortCircuitNormCourcirc);
         ShortCircuitUnbalancedEngine scunbEngine = new ShortCircuitUnbalancedEngine(network, scunbParameters);
 
         scunbEngine.run();
@@ -167,7 +156,7 @@ public class ShortCircuitMonophasedTest {
 
     }
 
-    public static Pair<Network, AdditionalDataInfo>  createGiard(NetworkFactory networkFactory) {
+    public static Network createGiard(NetworkFactory networkFactory) {
 
         //   M1           P             M2            machine M1: isolated neutral with X'd1, Xmi1, Xmo1
         //  (~)-|---Xd1---|---Xd2---|--(~)            machine M2: grounded neutral through Xn, with X'd2, Xmi2, Xmo2
@@ -326,8 +315,6 @@ public class ShortCircuitMonophasedTest {
                 .withCoeffXo(coeffXo2)
                 .add();
 
-        AdditionalDataInfo additionalDataInfo = new AdditionalDataInfo();
-
-        return new Pair<>(network, additionalDataInfo);
+        return network;
     }
 }

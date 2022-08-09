@@ -97,13 +97,13 @@ public class ShortCircuitResult {
     private boolean isVoltageProfileUpdated;
     private List<DenseMatrix>  busNum2Dv;
 
-    private EquationSystemFeeders eqSysFeedersDirect;
+    private FeedersAtNetwork eqSysFeedersDirect;
 
-    private EquationSystemFeeders eqSysFeedersHomopolar;
+    private FeedersAtNetwork eqSysFeedersHomopolar;
 
-    private Map<LfBus, EquationSystemBusFeedersResult> feedersAtBusResultsDirect;
+    private Map<LfBus, FeedersAtBusResult> feedersAtBusResultsDirect;
 
-    private Map<LfBus, EquationSystemBusFeedersResult> feedersAtBusResultsHomopolar;
+    private Map<LfBus, FeedersAtBusResult> feedersAtBusResultsHomopolar;
 
     private ShortCircuitFault shortCircuitFault;
 
@@ -112,7 +112,7 @@ public class ShortCircuitResult {
     public ShortCircuitResult(ShortCircuitFault shortCircuitFault, LfBus lfBus,
                               double ifr, double ifi,
                               double rth, double xth, double ethr, double ethi, double dvr, double dvi,
-                              EquationSystemFeeders eqSysFeeders, ShortCircuitNorm norm) {
+                              FeedersAtNetwork eqSysFeeders, ShortCircuitNorm norm) {
         this.lfBus = lfBus;
         this.eqSysFeedersDirect = eqSysFeeders;
         this.shortCircuitFault = shortCircuitFault;
@@ -170,7 +170,7 @@ public class ShortCircuitResult {
                               double idx, double idy, double iox, double ioy, double iix, double iiy,
                               double rd, double xd, double ro, double xo, double ri, double xi,
                               double vdxinit, double vdyinit, double dvdx, double dvdy, double dvox, double dvoy, double dvix, double dviy,
-                              EquationSystemFeeders eqSysFeedersDirect, EquationSystemFeeders eqSysFeedersHomopolar, ShortCircuitNorm norm) {
+                              FeedersAtNetwork eqSysFeedersDirect, FeedersAtNetwork eqSysFeedersHomopolar, ShortCircuitNorm norm) {
         this.lfBus = lfBus;
         this.eqSysFeedersDirect = eqSysFeedersDirect;
         this.eqSysFeedersHomopolar = eqSysFeedersHomopolar;
@@ -222,7 +222,7 @@ public class ShortCircuitResult {
                               double idx, double idy, double iox, double ioy, double iix, double iiy,
                               double rd, double xd, double ro, double xo, double ri, double xi,
                               double vdxinit, double vdyinit, double dvdx, double dvdy, double dvox, double dvoy, double dvix, double dviy,
-                              EquationSystemFeeders eqSysFeedersDirect, EquationSystemFeeders eqSysFeedersHomopolar, ShortCircuitNorm norm,
+                              FeedersAtNetwork eqSysFeedersDirect, FeedersAtNetwork eqSysFeedersHomopolar, ShortCircuitNorm norm,
                               double i2dx, double i2dy, double i2ox, double i2oy, double i2ix, double i2iy,
                               double v2dxinit, double v2dyinit, double dv2dx, double dv2dy, double dv2ox, double dv2oy, double dv2ix, double dv2iy,
                               LfBus lfBus2) {
@@ -272,8 +272,8 @@ public class ShortCircuitResult {
                 //System.out.println(" dVi(" + bus.getId() + ") = " + bus2dv.get(busNum).get(4, 0) + " + j(" + bus2dv.get(busNum).get(5, 0) + ")");
 
                 // Init of feeder results
-                EquationSystemBusFeeders busFeeders = eqSysFeedersDirect.busToFeeders.get(bus);
-                EquationSystemBusFeedersResult resultBusFeeders = new EquationSystemBusFeedersResult(busFeeders.getFeeders(), bus);
+                FeedersAtBus busFeeders = eqSysFeedersDirect.busToFeeders.get(bus);
+                FeedersAtBusResult resultBusFeeders = new FeedersAtBusResult(busFeeders.getFeeders(), bus);
                 feedersAtBusResultsDirect.put(bus, resultBusFeeders);  // TODO : homopolar
 
             }
@@ -300,8 +300,8 @@ public class ShortCircuitResult {
 
                     // Feeders :
                     // compute the sum of currents from branches at each bus
-                    EquationSystemBusFeedersResult resultBus1Feeders = feedersAtBusResultsDirect.get(bus1); // TODO : homopolar
-                    EquationSystemBusFeedersResult resultBus2Feeders = feedersAtBusResultsDirect.get(bus2); // TODO : homopolar
+                    FeedersAtBusResult resultBus1Feeders = feedersAtBusResultsDirect.get(bus1); // TODO : homopolar
+                    FeedersAtBusResult resultBus2Feeders = feedersAtBusResultsDirect.get(bus2); // TODO : homopolar
 
                     resultBus1Feeders.addIfeeders(i12.get(0, 0), i12.get(1, 0));
                     resultBus2Feeders.addIfeeders(i12.get(2, 0), i12.get(3, 0));
@@ -311,7 +311,7 @@ public class ShortCircuitResult {
 
             // computing feeders contribution
             for (LfBus bus : lfNetwork.getBuses()) {
-                EquationSystemBusFeedersResult busFeeders = feedersAtBusResultsDirect.get(bus); // TODO : homopolar
+                FeedersAtBusResult busFeeders = feedersAtBusResultsDirect.get(bus); // TODO : homopolar
                 busFeeders.updateContributions();
             }
         }
@@ -468,11 +468,11 @@ public class ShortCircuitResult {
         double ix = 0.;
         for (LfBus bus : lfNetwork.getBuses()) {
             if (bus.getId().equals(busId)) {
-                EquationSystemBusFeedersResult resultFeeder = feedersAtBusResultsDirect.get(bus); // TODO : homopolar
-                List<EquationSystemResultFeeder> busFeedersResults = resultFeeder.getBusFeedersResults();
-                for (EquationSystemResultFeeder feeder : busFeedersResults) {
-                    if (feeder.getId().equals(feederId)) {
-                        ix = feeder.getIxContribution();
+                FeedersAtBusResult resultFeeder = feedersAtBusResultsDirect.get(bus); // TODO : homopolar
+                List<FeederResult> busFeedersResults = resultFeeder.getBusFeedersResult();
+                for (FeederResult feederResult : busFeedersResults) {
+                    if (feederResult.getFeeder().getId().equals(feederId)) {
+                        ix = feederResult.getIxContribution();
                     }
                 }
             }

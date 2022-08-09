@@ -65,7 +65,7 @@ public  class ImpedanceLinearResolution {
 
         private Map<Integer, DenseMatrix> dE; // the key stores the number of the bus, the value stores the resolved value [Res] = inv(Y)*[En], with n of vector [En] corresponding to the studied short circuit fault and values at lines of [Res] corresponding real and imaginary parts at bus in key
 
-        private EquationSystemFeeders eqSysFeeders;
+        private FeedersAtNetwork eqSysFeeders;
 
         private List<ImpedanceLinearResolutionResultBiphased> biphasedResultsAtBus; // we store here all necessary information for all biphased common ground faults with first bus equal to LfBus = bus
 
@@ -199,7 +199,7 @@ public  class ImpedanceLinearResolution {
             return  enBus;
         }
 
-        public EquationSystemFeeders getEqSysFeeders() {
+        public FeedersAtNetwork getEqSysFeeders() {
             return eqSysFeeders;
         }
 
@@ -219,7 +219,7 @@ public  class ImpedanceLinearResolution {
             enBus.add(1, 1, enBus22);
         }
 
-        public void updateWithVoltagesdelta(AdmittanceMatrix y, DenseMatrix dEn, int numDef, EquationSystemFeeders feeders) {
+        public void updateWithVoltagesdelta(AdmittanceMatrix y, DenseMatrix dEn, int numDef, FeedersAtNetwork feeders) {
             dE = y.getDeltaV(dEn, numDef);
             eqSysFeeders = feeders; // contains necessary data to update the contribution of feeders for each short circuit
         }
@@ -324,7 +324,7 @@ public  class ImpedanceLinearResolution {
         LfNetwork lfNetwork = networks.get(0);
         lfNetworkResult = lfNetwork;
 
-        EquationSystemFeeders equationsSystemFeeders = new EquationSystemFeeders();
+        FeedersAtNetwork equationsSystemFeeders = new FeedersAtNetwork();
         EquationSystem<VariableType, EquationType> equationSystem
                 = AdmittanceEquationSystem.create(lfNetwork, new VariableSet<>(), parameters.getAdmittanceType(), parameters.getTheveninVoltageProfileType(), parameters.getTheveninPeriodType(), parameters.isTheveninIgnoreShunts(), equationsSystemFeeders, parameters.getAcLoadFlowParameters());
 

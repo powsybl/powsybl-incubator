@@ -9,10 +9,10 @@ package com.powsybl.incubator.simulator.util;
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
-public class EquationSystemFeeder {
+public class Feeder {
 
     //Feeder class is used to post process the results of a short circuit computation to get the feeder contribution in short-circuit current
-    public EquationSystemFeeder(double b, double g, String id, EquationSystemFeeder.FeederType feederType) {
+    public Feeder(double b, double g, String id, Feeder.FeederType feederType) {
 
         this.b = b;
         this.g = g;
@@ -34,7 +34,7 @@ public class EquationSystemFeeder {
 
     private String id; // id in LfNetwork
 
-    private EquationSystemFeeder.FeederType feederType;
+    private Feeder.FeederType feederType;
 
     public double getB() {
         return b;
@@ -48,7 +48,7 @@ public class EquationSystemFeeder {
         return id;
     }
 
-    public EquationSystemFeeder.FeederType getFeederType() {
+    public Feeder.FeederType getFeederType() {
         return feederType;
     }
 

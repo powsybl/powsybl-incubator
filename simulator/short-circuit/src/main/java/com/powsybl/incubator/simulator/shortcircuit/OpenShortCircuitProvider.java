@@ -8,7 +8,6 @@ package com.powsybl.incubator.simulator.shortcircuit;
 
 import com.google.auto.service.AutoService;
 import com.google.common.base.Stopwatch;
-import com.powsybl.incubator.simulator.util.extensions.AdditionalDataInfo;
 import com.powsybl.computation.ComputationManager;
 import com.powsybl.iidm.network.Bus;
 import com.powsybl.iidm.network.Network;
@@ -131,11 +130,9 @@ public class OpenShortCircuitProvider implements ShortCircuitAnalysisProvider {
         // selection of the period of analysis
         ShortCircuitEngineParameters.PeriodType periodType = ShortCircuitEngineParameters.PeriodType.TRANSIENT;
 
-        AdditionalDataInfo additionalDataInfo = new AdditionalDataInfo(); //no extra data handled in the provider, we need to enrich the input API if necessary
-
         LoadFlowParameters loadFlowParameters = new LoadFlowParameters();
         ShortCircuitNormCourcirc shortCircuitNormCourcirc = new ShortCircuitNormCourcirc();
-        ShortCircuitEngineParameters scbParameters = new ShortCircuitEngineParameters(loadFlowParameters, matrixFactory, at, scList, true, vp, false, periodType, additionalDataInfo, shortCircuitNormCourcirc);
+        ShortCircuitEngineParameters scbParameters = new ShortCircuitEngineParameters(loadFlowParameters, matrixFactory, at, scList, true, vp, false, periodType, shortCircuitNormCourcirc);
         ShortCircuitBalancedEngine scbEngine = new ShortCircuitBalancedEngine(network, scbParameters);
 
         scbEngine.run();

@@ -104,7 +104,7 @@ public class OpenShortCircuitProvider implements ShortCircuitAnalysisProvider {
         LoadFlowParameters loadFlowParameters = new LoadFlowParameters();
         ShortCircuitNorm shortCircuitNorm = new ShortCircuitNorm();
 
-        ShortCircuitEngineParameters scbParameters = new ShortCircuitEngineParameters(loadFlowParameters, matrixFactory, at, faultsList, true, voltageProfile, false, periodType, additionalDataInfo, shortCircuitNorm);
+        ShortCircuitEngineParameters scbParameters = new ShortCircuitEngineParameters(loadFlowParameters, matrixFactory, at, faultsList, true, voltageProfile, false, periodType, shortCircuitNorm);
 
         // lists to store the results
         List<FaultResult> faultResults = new ArrayList<>();

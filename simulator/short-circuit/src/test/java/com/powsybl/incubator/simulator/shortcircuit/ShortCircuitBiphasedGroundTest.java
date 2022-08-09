@@ -67,10 +67,10 @@ public class ShortCircuitBiphasedGroundTest {
         scbEngine.run();
         List<Double> val = new ArrayList<>();
         for (Map.Entry<ShortCircuitFault, ShortCircuitResult> res : scbEngine.resultsPerFault.entrySet()) {
-            val.add(res.getValue().getIk());
+            val.add(res.getValue().getIk().getKey());
         }
 
-        assertEquals(52.3687065865033, 3 * val.get(0), 0.00001);
+        assertEquals(52.3687065865033, val.get(0), 0.00001);
 
     }
 }

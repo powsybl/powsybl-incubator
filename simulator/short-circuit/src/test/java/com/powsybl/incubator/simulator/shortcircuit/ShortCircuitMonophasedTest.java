@@ -68,15 +68,14 @@ public class ShortCircuitMonophasedTest {
         scbEngine.run();
         List<Double> val = new ArrayList<>();
         for (Map.Entry<ShortCircuitFault, ShortCircuitResult> res : scbEngine.resultsPerFault.entrySet()) {
-            val.add(res.getValue().getIk());
+            val.add(res.getValue().getIk().getKey());
         }
 
         // here Icc = 1/sqrt(3)*Eth(pu)/Zth(pu100)*Sb100/Vb*1000
-        // here new Icc = 1/sqrt(3)*Eth(pu)/Zth(pu100)*Sb100*1000
         // and I"k = sqrt(3) * cmax * Un /(Zeq) and expected I"k = 35.64 kA with some approximations on the impedance values
 
         //assertEquals(35.70435548244156, 3 * val.get(0) * 1.05 / 1000. / 0.4, 0.00001);
-        assertEquals(35.70435548244156, 3 * val.get(0), 0.00001);
+        assertEquals(35.70435548244156, val.get(0), 0.00001);
 
     }
 
@@ -117,18 +116,18 @@ public class ShortCircuitMonophasedTest {
         scbEngine.run();
         Map<String, Double> values = new HashMap<>();
         for (Map.Entry<ShortCircuitFault, ShortCircuitResult> res : scbEngine.resultsPerFault.entrySet()) {
-            values.put(res.getKey().getFaultId(), res.getValue().getIk());
+            values.put(res.getKey().getFaultId(), res.getValue().getIk().getKey());
         }
 
         //I"k = sqrt(3) * cmax * Un /(Zeq)
-        assertEquals(15.9722, 3 * values.get("sc1"), 0.00001); // bus 2 : expected doc value : 15.9722 kA
-        assertEquals(10.410558286260768, 3 * values.get("sc2"), 0.00001); // bus 3 : expected doc value : 10.4106 kA
-        assertEquals(9.049787523396647, 3 * values.get("sc3"), 0.00001); // bus 4 : expected doc value : 9.0498 kA
-        assertEquals(17.0452, 3 * values.get("sc4"), 0.00001); // bus 5 : expected doc value : 17.0452 kA
+        assertEquals(15.9722, values.get("sc1"), 0.00001); // bus 2 : expected doc value : 15.9722 kA
+        assertEquals(10.410558286260768, values.get("sc2"), 0.00001); // bus 3 : expected doc value : 10.4106 kA
+        assertEquals(9.049787523396647, values.get("sc3"), 0.00001); // bus 4 : expected doc value : 9.0498 kA
+        assertEquals(17.0452, values.get("sc4"), 0.00001); // bus 5 : expected doc value : 17.0452 kA
 
         // test to check that non monophased faults does not have an impact on monophased results
-        assertEquals(57.48674948061683, 3 * values.get("sc5"), 0.00001); // biphased not in ref doc
-        assertEquals(25.21494837446988, 3 * values.get("sc6"), 0.00001); // biphased not in ref doc
+        assertEquals(57.48674948061683, values.get("sc5"), 0.00001); // biphased not in ref doc
+        assertEquals(25.21494837446988, values.get("sc6"), 0.00001); // biphased not in ref doc
 
     }
 

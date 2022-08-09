@@ -68,10 +68,10 @@ public class ShotCircuitBiphasedCommonSupportTest {
 
         List<Double> val = new ArrayList<>();
         for (Map.Entry<ShortCircuitFault, ShortCircuitResult> res : scbEngine.resultsPerFault.entrySet()) {
-            val.add(res.getValue().getIk());
+            val.add(res.getValue().getIk().getKey());
         }
 
-        assertEquals(31.16265030753145, 3 * val.get(0), 0.00001); // TODO : check manually result
+        assertEquals(31.16265030753145, val.get(0), 0.00001); // TODO : check manually result
 
     }
 
@@ -104,11 +104,11 @@ public class ShotCircuitBiphasedCommonSupportTest {
 
         List<Double> val = new ArrayList<>();
         for (Map.Entry<ShortCircuitFault, ShortCircuitResult> res : scbEngine.resultsPerFault.entrySet()) {
-            val.add(res.getValue().getIk());
+            val.add(res.getValue().getIk().getKey());
         }
 
-        assertEquals(31.16265030753145, 3 * val.get(0), 0.00001); // TODO : check manually result
-        assertEquals(0., 3 * val.get(1), 0.00001); // TODO : check manually result
+        assertEquals(31.16265030753145, val.get(0), 0.00001); // TODO : check manually result
+        assertEquals(0., val.get(1), 0.00001); // TODO : check manually result
 
     }
 

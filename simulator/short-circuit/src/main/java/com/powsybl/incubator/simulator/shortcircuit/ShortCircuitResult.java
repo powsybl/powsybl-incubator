@@ -334,18 +334,30 @@ public class ShortCircuitResult {
     }
 
     public Pair<Double, Double> getIcc() {
-        // Icc = 1/sqrt(3) * Eth(pu) / Zth(pu) * SB(MVA) * 10e6 / (VB(kV) * 10e3)
-        //return Math.sqrt((getIdx() * getIdx() + getIdy() * getIdy()) / 3) * 1000. * 100. / lfBus.getNominalV();
-
-        double magnitudeIcc = Math.sqrt((getIdx() * getIdx() + getIdy() * getIdy()) / 3) * 1000. * 100.  / lfBus.getNominalV();
+        // IccBase = sqrt(3) * Eth(pu) / Zth(pu) * SB(MVA) * 10e6 / (VB(kV) * 10e3)
+        double magnitudeIccBase = Math.sqrt((getIdx() * getIdx() + getIdy() * getIdy()) * 3.) * 1000. * 100.  / lfBus.getNominalV();
         double angleIcc = Math.atan2(getIdy(), getIdx());
+
+        double magnitudeIcc = magnitudeIccBase;
+
+        // provided value will depend on the type of the fault
+        ShortCircuitFault.ShortCircuitType shortCircuitType = shortCircuitFault.getType();
+
+        if (shortCircuitType == ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND) {
+            // Icc = 1/sqrt(3) * Eth(pu) / Zth(pu) * SB(MVA) * 10e6 / (VB(kV) * 10e3)
+            //return Math.sqrt((getIdx() * getIdx() + getIdy() * getIdy()) / 3) * 1000. * 100. / lfBus.getNominalV();
+            magnitudeIcc = magnitudeIcc / 3.;
+
+        }
 
         return new Pair<>(magnitudeIcc, angleIcc);
     }
 
-    public double getIk() {
+    public Pair<Double, Double> getIk() {
         // Ik = c * Un / (sqrt(3) * Zk) = c / sqrt(3) * Eth(pu) / Zth(pu) * Sb / Vb
-        return Math.sqrt((getIdx() * getIdx() + getIdy() * getIdy()) / 3) * 100.  / lfBus.getNominalV() * norm.getCmaxVoltageFactor(lfBus.getNominalV());
+        // Equivalent to Math.sqrt((getIdx() * getIdx() + getIdy() * getIdy()) / 3) * 100.  / lfBus.getNominalV() * norm.getCmaxVoltageFactor(lfBus.getNominalV());
+        Pair<Double, Double> icc = getIcc();
+        return new Pair<>(icc.getKey() * norm.getCmaxVoltageFactor(lfBus.getNominalV()) / 1000., icc.getValue());
     }
 
     public double getPcc() {

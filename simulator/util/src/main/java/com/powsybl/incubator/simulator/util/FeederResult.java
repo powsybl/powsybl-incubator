@@ -38,6 +38,10 @@ public class FeederResult {
         return ixContribution;
     }
 
+    public double getIyContribution() {
+        return iyContribution;
+    }
+
     public Feeder getFeeder() {
         return feeder;
     }

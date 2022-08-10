@@ -11,12 +11,14 @@ import com.google.common.base.Stopwatch;
 import com.powsybl.computation.ComputationManager;
 import com.powsybl.iidm.network.Bus;
 import com.powsybl.iidm.network.Network;
+import com.powsybl.incubator.simulator.util.FeedersAtBusResult;
 import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
 import com.powsybl.math.matrix.MatrixFactory;
 import com.powsybl.math.matrix.SparseMatrixFactory;
 import com.powsybl.openloadflow.OpenLoadFlowProvider;
+import com.powsybl.openloadflow.network.LfBus;
 import com.powsybl.security.LimitViolation;
 import com.powsybl.shortcircuit.*;
 import com.powsybl.shortcircuit.interceptors.ShortCircuitAnalysisInterceptor;
@@ -152,23 +154,46 @@ public class OpenShortCircuitProvider implements ShortCircuitAnalysisProvider {
 
         // the results per faults might be inconsistent if many busses per voltage level
         // TODO : see how this could be improved by allowing results per electrical bus on the short circuit provider
-        for (Map.Entry<ShortCircuitFault, ShortCircuitResult> scResult : scbEngine.resultsPerFault.entrySet()) {
-            ShortCircuitFault scFault = scResult.getKey();
+        for (Map.Entry<ShortCircuitFault, ShortCircuitResult> scFaultResult : scbEngine.resultsPerFault.entrySet()) {
+            ShortCircuitFault scFault = scFaultResult.getKey();
+            ShortCircuitResult scResult = scFaultResult.getValue();
 
-            double iccMagnitude = scResult.getValue().getIk().getKey();
-            double iccAngle = scResult.getValue().getIk().getValue();
-            double pcc = scResult.getValue().getPcc();
+            double iccMagnitude = scResult.getIk().getKey();
+            double iccAngle = scResult.getIk().getValue();
+            double pcc = scResult.getPcc();
 
             Fault fault = scFaultToFault.get(scFault);
 
-            // TODO : put here additional results
-            List<FeederResult> feederResults = new ArrayList<>();
+            List<FeederResult> feederResultsProvider = new ArrayList<>();
+            fillFeederResults(feederResultsProvider, scResult);
+
             List<LimitViolation> limitViolations = new ArrayList<>();
             FortescueValue current = new FortescueValue(iccMagnitude, iccAngle);
 
-            FaultResult fr = new FaultResult(fault, pcc, feederResults, limitViolations, current);
+            FaultResult fr = new FaultResult(fault, pcc, feederResultsProvider, limitViolations, current);
             faultResults.add(fr);
         }
+    }
+
+    public void fillFeederResults(List<FeederResult> feederResultsProvider, ShortCircuitResult scResult) {
+        for (Map.Entry<LfBus, FeedersAtBusResult> busAndFeedersAtBusResult : scResult.getFeedersAtBusResultsDirect().entrySet()) {
+            LfBus lfBus = busAndFeedersAtBusResult.getKey();
+            FeedersAtBusResult feedersAtBusResult = busAndFeedersAtBusResult.getValue();
+            for (com.powsybl.incubator.simulator.util.FeederResult feederResult : feedersAtBusResult.getBusFeedersResult()) {
+                double ix = feederResult.getIxContribution();
+                double iy = feederResult.getIyContribution();
+
+                double magnitude = Math.sqrt(3. * (ix * ix + iy * iy)) * 100.  / lfBus.getNominalV(); // same dimension as Ik3
+                double angle = Math.atan2(iy, ix);
+                FortescueValue current = new FortescueValue(magnitude, angle);
+
+                String feederId = lfBus.getId() + "_" + feederResult.getFeeder().getId();
+
+                FeederResult feederResultProvider = new FeederResult(feederId, current);
+                feederResultsProvider.add(feederResultProvider);
+            }
+        }
+
     }
 
     public Pair<Boolean, Boolean>  buildFaultLists(Network network, List<Fault> faults, List<ShortCircuitFault> balancedFaultsList, Map<ShortCircuitFault, Fault> scFaultToFault) {
@@ -177,6 +202,7 @@ public class OpenShortCircuitProvider implements ShortCircuitAnalysisProvider {
         boolean existUnbalancedFaults = false;
 
         for (Fault fault : faults) {
+            ShortCircuitFault.ShortCircuitType scType = ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND; // Default type
             if (fault.getType() == Fault.Type.BRANCH) {
                 LOGGER.warn("Short circuit of type BRANCH not yet supported, fault : {} is ignored", fault.getId());
                 continue;
@@ -184,8 +210,7 @@ public class OpenShortCircuitProvider implements ShortCircuitAnalysisProvider {
 
             if (fault.getFaultType() == Fault.FaultType.SINGLE_PHASE) {
                 existUnbalancedFaults = true;
-                LOGGER.warn(" Short circuit of type SINGLE_PHASE not yet supported, fault : {} is ignored", fault.getId());
-                continue;
+                scType = ShortCircuitFault.ShortCircuitType.MONOPHASED;
             } else if (fault.getFaultType() == Fault.FaultType.THREE_PHASE) {
                 existBalancedFaults = true;
             } else {
@@ -206,7 +231,7 @@ public class OpenShortCircuitProvider implements ShortCircuitAnalysisProvider {
             double xFault = fault.getXToGround();
             Bus bus = network.getBusBreakerView().getBus(elementId);
             String busId = bus.getId();
-            ShortCircuitFault sc = new ShortCircuitFault(busId, busId, rFault, xFault, ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
+            ShortCircuitFault sc = new ShortCircuitFault(busId, busId, rFault, xFault, scType);
             balancedFaultsList.add(sc);
 
             // TODO improve:

@@ -28,6 +28,7 @@
         <module>network-reduction</module>
         <module>util</module>
         <module>short-circuit</module>
+        <module>short-circuit-cgmes</module>
     </modules>
 
     <properties>

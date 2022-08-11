@@ -122,22 +122,22 @@ public class BiphasedC1C2Calculator extends BiphasedCommonSupportShortCircuitCal
         DenseMatrix ti21 = mId.times(zif21).toDense();
 
         DenseMatrix zt = addMatrices22(zdf11.toDense(), td12.toDense());
-        zt = addMatrices22(zt, zdf22.toDense());
-        zt = addMatrices22(zt, td21.toDense());
-        zt = addMatrices22(zt, zof11.toDense());
-        zt = addMatrices22(zt, to21.toDense());
-        zt = addMatrices22(zt, zof22.toDense());
-        zt = addMatrices22(zt, to12.toDense());
-        zt = addMatrices22(zt, zif22.toDense());
-        zt = addMatrices22(zt, ti12.toDense());
-        zt = addMatrices22(zt, zif11.toDense());
-        zt = addMatrices22(zt, ti21.toDense());
+        zt = addMatrices22(zt, zdf22);
+        zt = addMatrices22(zt, td21);
+        zt = addMatrices22(zt, zof11);
+        zt = addMatrices22(zt, to21);
+        zt = addMatrices22(zt, zof22);
+        zt = addMatrices22(zt, to12);
+        zt = addMatrices22(zt, zif22);
+        zt = addMatrices22(zt, ti12);
+        zt = addMatrices22(zt, zif11);
+        zt = addMatrices22(zt, ti21);
 
         DenseMatrix tmpzt = idDiv3.times(zt).toDense();
 
         DenseMatrix zf = getZ(rg, xg);
 
-        zt = addMatrices22(tmpzt.toDense(), zf.toDense());
+        zt = addMatrices22(tmpzt.toDense(), zf);
 
         rt = zt.get(0, 0);
         xt = zt.get(1, 0);

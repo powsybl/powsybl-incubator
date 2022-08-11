@@ -6,6 +6,8 @@
  */
 package com.powsybl.incubator.simulator.shortcircuit;
 
+import com.powsybl.computation.ComputationManager;
+import com.powsybl.computation.local.LocalComputationManager;
 import com.powsybl.iidm.network.*;
 import com.powsybl.iidm.network.extensions.GeneratorShortCircuitAdder;
 import com.powsybl.incubator.simulator.util.ReferenceNetwork;
@@ -17,6 +19,7 @@ import com.powsybl.loadflow.LoadFlowResult;
 import com.powsybl.math.matrix.DenseMatrixFactory;
 import com.powsybl.math.matrix.MatrixFactory;
 import com.powsybl.openloadflow.OpenLoadFlowProvider;
+import com.powsybl.shortcircuit.*;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -122,6 +125,30 @@ public class ShortCircuitMonophasedTest {
         // test to check that non monophased faults does not have an impact on monophased results
         assertEquals(57.48674948061683, values.get("sc5"), 0.00001); // biphased not in ref doc
         assertEquals(25.21494837446988, values.get("sc6"), 0.00001); // biphased not in ref doc
+
+    }
+
+    @Test
+    void shortCircuitProviderIecTestNetworkMono() {
+
+        LoadFlowParameters loadFlowParameters = LoadFlowParameters.load();
+        loadFlowParameters.setTwtSplitShuntAdmittance(true);
+
+        Network network = ReferenceNetwork.createShortCircuitIec31testNetwork();
+
+        ShortCircuitAnalysisProvider provider = new OpenShortCircuitProvider(new DenseMatrixFactory());
+        ComputationManager cm = LocalComputationManager.getDefault();
+        ShortCircuitParameters scp = new ShortCircuitParameters();
+
+        List<Fault> faults = new ArrayList<>();
+        BusFault bf1 = new BusFault("F1", "B2", 0., 0., Fault.ConnectionType.SERIES, Fault.FaultType.SINGLE_PHASE);
+        faults.add(bf1);
+
+        ShortCircuitAnalysisResult scar = provider.run(network, faults, scp, cm, Collections.emptyList()).join();
+
+        List<FaultResult> frs = scar.getFaultResults();
+
+        assertEquals(14520.189287313931, frs.get(0).getCurrent().getDirectMagnitude(), 0.01);
 
     }
 

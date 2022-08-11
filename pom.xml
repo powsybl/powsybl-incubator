@@ -57,6 +57,7 @@
 
     <modules>
         <module>simulator</module>
+        <module>simulator/short-circuit-cgmes</module>
     </modules>
 
     <properties>

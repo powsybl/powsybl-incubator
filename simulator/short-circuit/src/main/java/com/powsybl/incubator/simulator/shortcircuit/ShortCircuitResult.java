@@ -334,6 +334,10 @@ public class ShortCircuitResult {
         return iFortescue.get(1, 0);
     }
 
+    public Map<LfBus, FeedersAtBusResult> getFeedersAtBusResultsDirect() {
+        return feedersAtBusResultsDirect;
+    }
+
     public Pair<Double, Double> getIcc() {
         // IccBase = sqrt(3) * Eth(pu) / Zth(pu) * SB(MVA) * 10e6 / (VB(kV) * 10e3)
         double magnitudeIccBase = Math.sqrt((getIdx() * getIdx() + getIdy() * getIdy()) * 3.) * 1000. * 100.  / lfBus.getNominalV();

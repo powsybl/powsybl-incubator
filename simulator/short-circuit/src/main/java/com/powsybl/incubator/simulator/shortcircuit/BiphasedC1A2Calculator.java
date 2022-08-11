@@ -138,7 +138,7 @@ public class BiphasedC1A2Calculator extends BiphasedCommonSupportShortCircuitCal
         DenseMatrix tmpi21 = a.times(zif21).toDense();
         DenseMatrix ti21 = minusId.times(tmpi21).toDense();
 
-        DenseMatrix zt = addMatrices22(zdf11, td12.toDense());
+        DenseMatrix zt = addMatrices22(zdf11, td12);
         zt = addMatrices22(zt, zdf22);
         zt = addMatrices22(zt, td21);
         zt = addMatrices22(zt, zof11);
@@ -154,7 +154,7 @@ public class BiphasedC1A2Calculator extends BiphasedCommonSupportShortCircuitCal
 
         DenseMatrix zf = getZ(rg, xg);
 
-        zt = addMatrices22(tmpzt.toDense(), zf.toDense());
+        zt = addMatrices22(tmpzt.toDense(), zf);
 
         rt = zt.get(0, 0);
         xt = zt.get(1, 0);

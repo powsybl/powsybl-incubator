@@ -204,6 +204,10 @@ public abstract class AbstractShortCircuitEngine {
         return new Pair<>(branchId, legNum);
     }
 
+    public Map<ShortCircuitFault, ShortCircuitResult> getResultsPerFault() {
+        return resultsPerFault;
+    }
+
     public abstract void run();
 
 }

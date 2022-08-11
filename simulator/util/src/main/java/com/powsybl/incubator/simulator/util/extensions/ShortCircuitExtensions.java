@@ -6,7 +6,6 @@
  */
 package com.powsybl.incubator.simulator.util.extensions;
 
-import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.*;
 import com.powsybl.iidm.network.extensions.GeneratorShortCircuit;
 import com.powsybl.incubator.simulator.util.extensions.iidm.*;
@@ -150,13 +149,16 @@ public final class ShortCircuitExtensions {
     private static void addGeneratorExtension(Network network, LfGenerator lfGenerator) {
         Generator generator = network.getGenerator(lfGenerator.getOriginalId());
 
+        double transX = DEFAULT_TRANS_XD;
+        double subtransX = DEFAULT_SUB_TRANS_XD;
+        double stepUpTfoX = DEFAULT_STEP_UP_XD;
+
         GeneratorShortCircuit extension = generator.getExtension(GeneratorShortCircuit.class);
-        if (extension == null) { // TODO: use a default value if extension is missing
-            throw new PowsyblException("Short circuit extension not found for generator '" + generator.getId() + "'");
+        if (extension != null) { // TODO: use a default value if extension is missing
+            transX = extension.getDirectTransX();
+            subtransX = extension.getDirectSubtransX();
+            stepUpTfoX = extension.getStepUpTransformerX();
         }
-        double transX = extension.getDirectTransX();
-        double subtransX = extension.getDirectSubtransX();
-        double stepUpTfoX = extension.getStepUpTransformerX();
 
         double transRd = DEFAULT_TRANS_RD;
         double subTransRd = DEFAULT_SUB_TRANS_RD;

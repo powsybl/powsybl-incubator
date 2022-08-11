@@ -8,6 +8,7 @@ package com.powsybl.incubator.simulator.util.extensions.iidm;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at gmail.com>
+ * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
 public final class ShortCircuitConstants {
 
@@ -23,4 +24,8 @@ public final class ShortCircuitConstants {
     public static final LegConnectionType DEFAULT_LEG1_CONNECTION_TYPE = LegConnectionType.DELTA; // TODO : check if default connection acceptable
     public static final LegConnectionType DEFAULT_LEG2_CONNECTION_TYPE = LegConnectionType.Y_GROUNDED; // TODO : check if default connection acceptable
     public static final LegConnectionType DEFAULT_LEG3_CONNECTION_TYPE = LegConnectionType.DELTA; // TODO : check if default connection acceptable
+
+    public static final double DEFAULT_TRANS_XD = 20.; //supposed in ohms // TODO : check most standard value
+    public static final double DEFAULT_SUB_TRANS_XD = 20.; //supposed in ohms // TODO : check most standard value
+    public static final double DEFAULT_STEP_UP_XD = 0.; //supposed in ohms // TODO : check most standard value
 }

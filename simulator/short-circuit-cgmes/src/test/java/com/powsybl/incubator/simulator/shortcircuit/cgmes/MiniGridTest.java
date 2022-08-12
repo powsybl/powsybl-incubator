@@ -34,14 +34,17 @@ public class MiniGridTest {
         Network network = Importers.loadNetwork(CgmesConformity1Catalog.miniBusBranch().dataSource(), parameters);
 
         Map<String, String> busNameToId = new HashMap<>();
-        busNameToId.put("Bus1", "adee76cd-b2b9-48ac-8fd4-0d205a435f59"); // TODO : check numbers
-        busNameToId.put("Bus2", "87c0d153-e308-4b2b-92a4-4fad53ab1ff9");
-        busNameToId.put("Bus5", "b3d3b4ad-02af-4490-8748-70f6c9a23734");
-        busNameToId.put("Bus4", "03163ede-7eec-457f-8641-365982227d7c");
-        busNameToId.put("Bus3", "c8726716-e182-4373-b83e-8f60070078cb");
-        busNameToId.put("Bus6", "37edd845-456f-4c3e-98d5-19af0c1cef1e");
-        busNameToId.put("Bus7", "764e0b8a-f2af-4092-b6aa-b4a19e55db98");
-        busNameToId.put("Bus8", "cd84fa40-ef63-422d-8ee0-d0a0f806719e");
+        busNameToId.put("Bus1", "adee76cd-b2b9-48ac-8fd4-0d205a435f59"); //OK
+        busNameToId.put("Bus9", "87c0d153-e308-4b2b-92a4-4fad53ab1ff9"); //OK
+        busNameToId.put("Bus2", "b3d3b4ad-02af-4490-8748-70f6c9a23734"); //OK
+        busNameToId.put("Bus8", "03163ede-7eec-457f-8641-365982227d7c"); //OK
+        busNameToId.put("Bus3", "c8726716-e182-4373-b83e-8f60070078cb"); //OK
+        busNameToId.put("Bus5", "37edd845-456f-4c3e-98d5-19af0c1cef1e"); //OK
+        busNameToId.put("Bus6", "764e0b8a-f2af-4092-b6aa-b4a19e55db98");
+        busNameToId.put("Bus7", "cd84fa40-ef63-422d-8ee0-d0a0f806719e");
+        busNameToId.put("Bus10", "c7eda3d2-e92d-4935-8166-5e045d3de045");
+        busNameToId.put("Bus11", "7f5515b2-ca6b-45af-93ee-f196686f0c66");
+        busNameToId.put("Bus4", "c0adab49-d445-4609-a1a3-ebe4ef297cc8");
 
         Map<String, String> genNameToId = new HashMap<>();
         genNameToId.put("Q1", "089c1945-4101-487f-a557-66c013b748f6");
@@ -68,7 +71,7 @@ public class MiniGridTest {
         // Attribute values for G1 et G2 taking into account that T1 and T2 are modeled separately
         double xG1 = 0.4116;
         double rG1 = 0.002;
-        double kG1 = 0.99597; // computed in IEC doc TODO : find a way to compute it from input date from extensions
+        double kG1 = 0.99597; // computed in IEC doc TODO : find a way to compute it from input data from extensions
 
         double coeffRoG1 = 1.; // TODO : set real value
         double coeffXoG1 = 1.; // TODO : set real value
@@ -243,22 +246,22 @@ public class MiniGridTest {
         t4.getLeg3().setX(xcT4k);
 
         List<ShortCircuitFault> faultList = new ArrayList<>();
-        ShortCircuitFault sc1 = new ShortCircuitFault(busNameToId.get("Bus3"), "sc1", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
+        ShortCircuitFault sc1 = new ShortCircuitFault(busNameToId.get("Bus1"), "sc1", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
         faultList.add(sc1);
-        /*ShortCircuitFault sc2 = new ShortCircuitFault("B2", "sc2", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
+        ShortCircuitFault sc2 = new ShortCircuitFault(busNameToId.get("Bus2"), "sc2", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
         faultList.add(sc2);
-        ShortCircuitFault sc3 = new ShortCircuitFault("B3", "sc3", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
+        ShortCircuitFault sc3 = new ShortCircuitFault(busNameToId.get("Bus3"), "sc3", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
         faultList.add(sc3);
-        ShortCircuitFault sc4 = new ShortCircuitFault("B4", "sc4", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
+        ShortCircuitFault sc4 = new ShortCircuitFault(busNameToId.get("Bus4"), "sc4", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
         faultList.add(sc4);
-        ShortCircuitFault sc5 = new ShortCircuitFault("B5", "sc5", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
+        ShortCircuitFault sc5 = new ShortCircuitFault(busNameToId.get("Bus5"), "sc5", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
         faultList.add(sc5);
-        ShortCircuitFault sc6 = new ShortCircuitFault("B6", "sc6", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
+        ShortCircuitFault sc6 = new ShortCircuitFault(busNameToId.get("Bus6"), "sc6", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
         faultList.add(sc6);
-        ShortCircuitFault sc7 = new ShortCircuitFault("B7", "sc7", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
+        ShortCircuitFault sc7 = new ShortCircuitFault(busNameToId.get("Bus7"), "sc7", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
         faultList.add(sc7);
-        ShortCircuitFault sc8 = new ShortCircuitFault("B8", "sc8", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
-        faultList.add(sc8);*/
+        ShortCircuitFault sc8 = new ShortCircuitFault(busNameToId.get("Bus8"), "sc8", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
+        faultList.add(sc8);
 
         ShortCircuitEngineParameters.PeriodType periodType = ShortCircuitEngineParameters.PeriodType.TRANSIENT;
         ShortCircuitNormIec shortCircuitNormIec = new ShortCircuitNormIec();
@@ -278,14 +281,14 @@ public class MiniGridTest {
         //NetworkXml.write(network, filePath);
 
         // I"k = 1/sqrt(3) * cmax * Un /(Zeq)
-        /*assertEquals(40.64478476116188, values.get(0), 0.001); // bus 1 : expected in doc = 40.6447 kA
-        assertEquals(31.783052222534174, values.get(1), 0.001); // bus 2 : expected in doc =  31.7831 kA*/
-        assertEquals(19.672955775750143, values.get(0), 0.001); // bus 3 : expected in doc =  19.673 kA
-        /*assertEquals(16.227655866910894, values.get(3), 0.001); // bus 4 : expected in doc =  16.2277 kA
-        assertEquals(33.18941481677016, values.get(0), 0.001); // bus 5 : expected in doc =  33.1894 kA
-        assertEquals(37.56287899040728, values.get(5), 0.001); // bus 6 : expected in doc =  37.5629 kA
-        assertEquals(25.589463480212533, values.get(6), 0.001); // bus 7 : expected in doc =  25.5895 kA
-        assertEquals(13.577771545200052, values.get(7), 0.001); // bus 8 : expected in doc =  13.5778 kA*/
+        assertEquals(40.64478476116188, values.get(0), 0.001); // bus 1 : expected in doc = 40.6447 kA
+        assertEquals(31.783052222534174, values.get(1), 0.01); // bus 2 : expected in doc =  31.7831 kA
+        assertEquals(19.672955775750143, values.get(2), 0.001); // bus 3 : expected in doc =  19.673 kA
+        assertEquals(16.227655866910894, values.get(3), 0.001); // bus 4 : expected in doc =  16.2277 kA
+        assertEquals(33.18941481677016, values.get(4), 0.01); // bus 5 : expected in doc =  33.1894 kA
+        assertEquals(37.56287899040728, values.get(5), 0.1); // bus 6 : expected in doc =  37.5629 kA
+        assertEquals(25.589463480212533, values.get(6), 0.1); // bus 7 : expected in doc =  25.5895 kA
+        assertEquals(13.577771545200052, values.get(7), 0.001); // bus 8 : expected in doc =  13.5778 kA
 
     }
 }

@@ -8,18 +8,18 @@ package com.powsybl.incubator.simulator.shortcircuit.cgmes;
 
 import com.google.auto.service.AutoService;
 import com.powsybl.cgmes.conversion.CgmesImportPostProcessor;
-import com.powsybl.iidm.network.Generator;
-import com.powsybl.iidm.network.Network;
+import com.powsybl.commons.PowsyblException;
+import com.powsybl.iidm.network.*;
 import com.powsybl.iidm.network.extensions.GeneratorShortCircuitAdder;
-//import com.powsybl.incubator.simulator.util.extensions.iidm.GeneratorShortCircuit2;
 import com.powsybl.incubator.simulator.util.extensions.iidm.GeneratorShortCircuitAdder2;
+import com.powsybl.incubator.simulator.util.extensions.iidm.LineShortCircuitAdder;
+import com.powsybl.incubator.simulator.util.extensions.iidm.ThreeWindingsTransformerShortCircuitAdder;
+import com.powsybl.incubator.simulator.util.extensions.iidm.TwoWindingsTransformerShortCircuitAdder;
 import com.powsybl.triplestore.api.PropertyBag;
 import com.powsybl.triplestore.api.QueryCatalog;
 import com.powsybl.triplestore.api.TripleStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static com.powsybl.incubator.simulator.util.extensions.iidm.ShortCircuitConstants.*;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at gmail.com>
@@ -38,7 +38,7 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
 
     private final QueryCatalog queryCatalog = new QueryCatalog("short-circuit.sparql");
 
-    public double epsilon = 0.000001;
+    public static final double EPSILON = 0.000001;
 
     private void processSynchronousMachines(Network network, TripleStore tripleStore) {
         for (PropertyBag propertyBag : tripleStore.query(queryCatalog.get("synchronousMachineShortCircuit"))) {
@@ -53,12 +53,15 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
             double ratedU = propertyBag.asDouble("ratedU");
 
             Generator generator = network.getGenerator(id);
+            if (generator == null) {
+                throw new PowsyblException("Generator '" + id + "' not found");
+            }
             double genRatedS = generator.getRatedS();
             if (genRatedS == 0) {
-                throw new IllegalArgumentException(" generator : " + generator.getId() + " has a rated S equal to zero");
+                throw new PowsyblException("Generator '" + generator.getId() + "' has a rated S equal to zero");
             }
             if (ratedU == 0) {
-                throw new IllegalArgumentException(" generator : " + generator.getId() + " has a rated U equal to zero");
+                throw new PowsyblException("Generator '" + generator.getId() + "' has a rated U equal to zero");
             }
 
             double zBase = ratedU * ratedU / genRatedS; // TODO : ratedU and not Unom !!!!! for S2 10.5 kV instead of 16 kV
@@ -71,14 +74,14 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
 
             double coeffRo = r0;
             double coeffR2 = r2;
-            if (Math.abs(r) > epsilon) {
+            if (Math.abs(r) > EPSILON) {
                 coeffRo = r0 / r;
                 coeffR2 = r2 / r;
             }
 
             double coeffXo = x0;
             double coeffX2 = x2;
-            if (Math.abs(subTransXdPu) > epsilon) {
+            if (Math.abs(subTransXdPu) > EPSILON) {
                 coeffXo = x0 / subTransXdPu;
                 coeffX2 = x2 / subTransXdPu;
             }
@@ -99,9 +102,68 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
         }
     }
 
+    private void processAcLineSegments(Network network, TripleStore tripleStore) {
+        for (PropertyBag propertyBag : tripleStore.query(queryCatalog.get("acLineSegmentShortCircuit"))) {
+            String id = propertyBag.getId("ID");
+            double r0 = propertyBag.asDouble("r0");
+            double x0 = propertyBag.asDouble("x0");
+            double g0ch = propertyBag.asDouble("g0ch");
+            double b0ch = propertyBag.asDouble("b0ch");
+            Line line = network.getLine(id);
+            if (line != null) {
+                // TODO
+                line.newExtension(LineShortCircuitAdder.class)
+                        // TODO
+//                        .withCoeffRo()
+//                        .withCoeffXo()
+                        .add();
+            } else {
+                DanglingLine danglingLine = network.getDanglingLine(id);
+                if (danglingLine != null) {
+                    // FIXME LineShortCircuitAdder should be compatible with dangling lines
+                    // TODO
+                } else {
+                    throw new PowsyblException("Line or dangling line not found: '" + id + "'");
+                }
+            }
+        }
+    }
+
+    private void processPowerTransformerEnds(Network network, TripleStore tripleStore) {
+        for (PropertyBag propertyBag : tripleStore.query(queryCatalog.get("powerTransformerEndShortCircuit"))) {
+            String id = propertyBag.getId("ID");
+            double r0 = propertyBag.asDouble("r0");
+            double x0 = propertyBag.asDouble("x0");
+            double g0 = propertyBag.asDouble("g0");
+            double b0 = propertyBag.asDouble("b0");
+            double rground = propertyBag.asDouble("rground");
+            double xground = propertyBag.asDouble("xground");
+            boolean grounded = propertyBag.asBoolean("grounded", false);
+            TwoWindingsTransformer t2wt = network.getTwoWindingsTransformer(id);
+            if (t2wt != null) {
+                // TODO
+                t2wt.newExtension(TwoWindingsTransformerShortCircuitAdder.class)
+                        // TODO
+                        .add();
+            } else {
+                ThreeWindingsTransformer t3wt = network.getThreeWindingsTransformer(id);
+                if (t3wt != null) {
+                    // TODO
+                    t3wt.newExtension(ThreeWindingsTransformerShortCircuitAdder.class)
+                            // TODO
+                            .add();
+                } else {
+                    throw new PowsyblException("2 or 3 windings transformer not found: '" + id + "'");
+                }
+            }
+        }
+    }
+
     @Override
     public void process(Network network, TripleStore tripleStore) {
         LOGGER.info("Loading CGMES short circuit data...");
         processSynchronousMachines(network, tripleStore);
+        processAcLineSegments(network, tripleStore);
+        processPowerTransformerEnds(network, tripleStore);
     }
 }

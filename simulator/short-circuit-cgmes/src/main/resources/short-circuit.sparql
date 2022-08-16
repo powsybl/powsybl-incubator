@@ -20,3 +20,33 @@ SELECT *
     OPTIONAL { ?ID cim:SynchronousMachine.shortCircuitRotorType ?shortCircuitRotorType }
     OPTIONAL { ?ID cim:RotatingMachine.ratedU ?ratedU }
 }
+
+# query: acLineSegmentShortCircuit
+SELECT *
+{
+    ?ID
+        a cim:ACLineSegment ;
+    OPTIONAL { ?ID cim:ACLineSegment.r0 ?r0 }
+    OPTIONAL { ?ID cim:ACLineSegment.x0 ?x0 }
+    OPTIONAL { ?ID cim:ACLineSegment.b0ch ?g0 }
+    OPTIONAL { ?ID cim:ACLineSegment.g0ch ?g0 }
+}
+
+
+# query: powerTransformerEndShortCircuit
+SELECT *
+{
+    ?ID
+        a cim:PowerTransformer ;
+    OPTIONAL { ?ID cim:Equipment.EquipmentContainer ?EquipmentContainer }
+    ?TransformerEnd
+        a cim:PowerTransformerEnd ;
+        cim:PowerTransformerEnd.PowerTransformer ?ID ;
+    OPTIONAL { ?TransformerEnd cim:PowerTransformerEnd.r0 ?r0 }
+    OPTIONAL { ?TransformerEnd cim:PowerTransformerEnd.x0 ?x0 }
+    OPTIONAL { ?TransformerEnd cim:PowerTransformerEnd.b0 ?g0 }
+    OPTIONAL { ?TransformerEnd cim:PowerTransformerEnd.g0 ?g0 }
+    OPTIONAL { ?TransformerEnd cim:TransformerEnd.rground ?rground }
+    OPTIONAL { ?TransformerEnd cim:TransformerEnd.xground ?xground }
+    OPTIONAL { ?TransformerEnd cim:TransformerEnd.grounded ?grounded }
+}

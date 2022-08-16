@@ -21,6 +21,14 @@ SELECT *
     OPTIONAL { ?ID cim:RotatingMachine.ratedU ?ratedU }
 }
 
+# query: asynchronousMachineShortCircuit
+SELECT *
+{
+    ?ID
+        a cim:AsynchronousMachine ;
+    OPTIONAL { ?ID cim:AsynchronousMachine.ratedMechanicalPower ?ratedMechanicalPower }
+}
+
 # query: acLineSegmentShortCircuit
 SELECT *
 {

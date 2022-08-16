@@ -102,6 +102,21 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
         }
     }
 
+    private void processAsynchronousMachines(Network network, TripleStore tripleStore) {
+        for (PropertyBag propertyBag : tripleStore.query(queryCatalog.get("asynchronousMachineShortCircuit"))) {
+            String id = propertyBag.getId("ID");
+            Load load = network.getLoad(id);
+            if (load == null) {
+                throw new PowsyblException("Load '" + id + "' not found");
+            }
+            // FIXME create a shortcircuit load extension ?
+            // TODO
+            // load.newExtension(LoadShortCircuitAdder.class)
+            //     ...
+            //     .add();
+        }
+    }
+
     private void processAcLineSegments(Network network, TripleStore tripleStore) {
         for (PropertyBag propertyBag : tripleStore.query(queryCatalog.get("acLineSegmentShortCircuit"))) {
             String id = propertyBag.getId("ID");
@@ -163,6 +178,7 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
     public void process(Network network, TripleStore tripleStore) {
         LOGGER.info("Loading CGMES short circuit data...");
         processSynchronousMachines(network, tripleStore);
+        processAsynchronousMachines(network, tripleStore);
         processAcLineSegments(network, tripleStore);
         processPowerTransformerEnds(network, tripleStore);
     }

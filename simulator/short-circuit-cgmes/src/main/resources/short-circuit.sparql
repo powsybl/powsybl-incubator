@@ -10,8 +10,13 @@ SELECT *
 {
     ?ID
         a cim:SynchronousMachine ;
+    OPTIONAL { ?ID cim:SynchronousMachine.satDirectSubtransX ?satDirectSubtransX }
+    OPTIONAL { ?ID cim:SynchronousMachine.satDirectTransX ?satDirectTransX }
     OPTIONAL { ?ID cim:SynchronousMachine.r0 ?r0 }
     OPTIONAL { ?ID cim:SynchronousMachine.r2 ?r2 }
     OPTIONAL { ?ID cim:SynchronousMachine.x0 ?x0 }
     OPTIONAL { ?ID cim:SynchronousMachine.x2 ?x2 }
+    OPTIONAL { ?ID cim:SynchronousMachine.r ?r }
+    OPTIONAL { ?ID cim:SynchronousMachine.shortCircuitRotorType ?shortCircuitRotorType }
+    OPTIONAL { ?ID cim:RotatingMachine.ratedU ?ratedU }
 }

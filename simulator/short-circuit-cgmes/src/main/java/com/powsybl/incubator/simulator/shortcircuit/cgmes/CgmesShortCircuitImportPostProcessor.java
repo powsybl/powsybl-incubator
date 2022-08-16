@@ -11,12 +11,15 @@ import com.powsybl.cgmes.conversion.CgmesImportPostProcessor;
 import com.powsybl.iidm.network.Generator;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.extensions.GeneratorShortCircuitAdder;
+//import com.powsybl.incubator.simulator.util.extensions.iidm.GeneratorShortCircuit2;
 import com.powsybl.incubator.simulator.util.extensions.iidm.GeneratorShortCircuitAdder2;
 import com.powsybl.triplestore.api.PropertyBag;
 import com.powsybl.triplestore.api.QueryCatalog;
 import com.powsybl.triplestore.api.TripleStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static com.powsybl.incubator.simulator.util.extensions.iidm.ShortCircuitConstants.*;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at gmail.com>
@@ -35,19 +38,63 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
 
     private final QueryCatalog queryCatalog = new QueryCatalog("short-circuit.sparql");
 
+    public double epsilon = 0.000001;
+
     private void processSynchronousMachines(Network network, TripleStore tripleStore) {
         for (PropertyBag propertyBag : tripleStore.query(queryCatalog.get("synchronousMachineShortCircuit"))) {
             String id = propertyBag.getId("ID");
             double r0 = propertyBag.asDouble("r0");
             double r2 = propertyBag.asDouble("r2");
-            double x0 = propertyBag.asDouble("r0");
-            double x2 = propertyBag.asDouble("r2");
+            double x0 = propertyBag.asDouble("x0");
+            double x2 = propertyBag.asDouble("x2");
+            double r = propertyBag.asDouble("r"); // given in ohms
+            double subTransXdPu = propertyBag.asDouble("satDirectSubtransX"); // value given in pu
+            double transXdPu = propertyBag.asDouble("satDirectTransX"); // value given in pu
+            double ratedU = propertyBag.asDouble("ratedU");
+
             Generator generator = network.getGenerator(id);
-            double directTransX = x2; // FIXME
+            double genRatedS = generator.getRatedS();
+            if (genRatedS == 0) {
+                throw new IllegalArgumentException(" generator : " + generator.getId() + " has a rated S equal to zero");
+            }
+            if (ratedU == 0) {
+                throw new IllegalArgumentException(" generator : " + generator.getId() + " has a rated U equal to zero");
+            }
+
+            double zBase = ratedU * ratedU / genRatedS; // TODO : ratedU and not Unom !!!!! for S2 10.5 kV instead of 16 kV
+            double subTransXd = subTransXdPu * zBase;
+            double transXd = transXdPu * zBase;
+/*
+            System.out.println(" ================>  GenId = " + id + " ro = " + r0 + " r2 = " + r2 +
+                    " xo = " + x0 + " x2 = " + x2 + " r = " + r + " subTransXd = " + subTransXdPu + " transXd = " + transXdPu
+                    + " Unom = " + ratedU + " Srated = " + genRatedS);*/
+
+            double coeffRo = r0;
+            double coeffR2 = r2;
+            if (Math.abs(r) > epsilon) {
+                coeffRo = r0 / r;
+                coeffR2 = r2 / r;
+            }
+
+            double coeffXo = x0;
+            double coeffX2 = x2;
+            if (Math.abs(subTransXdPu) > epsilon) {
+                coeffXo = x0 / subTransXdPu;
+                coeffX2 = x2 / subTransXdPu;
+            }
+
             generator.newExtension(GeneratorShortCircuitAdder.class)
-                    .withDirectTransX(x2)
+                    .withStepUpTransformerX(0.)
+                    .withDirectTransX(transXd)
+                    .withDirectSubtransX(subTransXd)
                     .add();
             generator.newExtension(GeneratorShortCircuitAdder2.class)
+                    .withSubTransRd(r)
+                    .withTransRd(r)
+                    .withCoeffRi(coeffR2)
+                    .withCoeffXi(coeffX2)
+                    .withCoeffRo(coeffRo)
+                    .withCoeffXo(coeffXo)
                     .add();
         }
     }

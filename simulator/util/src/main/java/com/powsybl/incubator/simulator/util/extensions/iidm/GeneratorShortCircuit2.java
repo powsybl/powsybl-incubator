@@ -16,24 +16,39 @@ public class GeneratorShortCircuit2 extends AbstractExtension<Generator> {
 
     public static final String NAME = "generatorShortCircuit2";
 
-    private final double transRd; // transient resistance
-    private final double subTransRd; // sub-transient resistance
+    public enum RotorType {
+        UNDEFINED,
+        TURBOSERIES_1;
+    }
+
+    private double transRd; // transient resistance // TODO : will be final when kG of the norm will be handled
+    private double subTransRd; // sub-transient resistance // TODO : will be final when kG of the norm will be handled
     private final boolean toGround;
     private final double coeffRo;
     private final double coeffXo;
+    private final double coeffRi;
+    private final double coeffXi;
+    private final double groundingR;
+    private final double groundingX;
+    private final RotorType rotorType;
 
     @Override
     public String getName() {
         return NAME;
     }
 
-    public GeneratorShortCircuit2(Generator generator, double transRd, double subTransRd, boolean toGround, double coeffRo, double coeffXo) {
+    public GeneratorShortCircuit2(Generator generator, double transRd, double subTransRd, boolean toGround, double coeffRo, double coeffXo, double coeffRi, double coeffXi, double groundingR, double groundingX, RotorType rotorType) {
         super(generator);
         this.transRd = transRd;
         this.subTransRd = subTransRd;
         this.toGround = toGround;
         this.coeffRo = coeffRo;
         this.coeffXo = coeffXo;
+        this.coeffRi = coeffRi;
+        this.coeffXi = coeffXi;
+        this.groundingR = groundingR;
+        this.groundingX = groundingX;
+        this.rotorType = rotorType;
     }
 
     public double getTransRd() {
@@ -54,5 +69,33 @@ public class GeneratorShortCircuit2 extends AbstractExtension<Generator> {
 
     public double getCoeffXo() {
         return coeffXo;
+    }
+
+    public double getGroundingR() {
+        return groundingR;
+    }
+
+    public double getGroundingX() {
+        return groundingX;
+    }
+
+    public double getCoeffRi() {
+        return coeffRi;
+    }
+
+    public double getCoeffXi() {
+        return coeffXi;
+    }
+
+    public RotorType getRotorType() {
+        return rotorType;
+    }
+
+    public void setSubTransRd(double subTransRd) {
+        this.subTransRd = subTransRd;
+    }
+
+    public void setTransRd(double transRd) {
+        this.transRd = transRd;
     }
 }

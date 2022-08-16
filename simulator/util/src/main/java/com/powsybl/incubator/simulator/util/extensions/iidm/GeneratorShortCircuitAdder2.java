@@ -21,6 +21,11 @@ public class GeneratorShortCircuitAdder2 extends AbstractExtensionAdder<Generato
     private boolean toGround = DEFAULT_TO_GROUND;
     private double coeffRo = DEFAULT_COEFF_RO;
     private double coeffXo = DEFAULT_COEFF_XO;
+    private double coeffRi = DEFAULT_COEFF_RI;
+    private double coeffXi = DEFAULT_COEFF_XI;
+    private double groundingR = DEFAULT_GROUNDING_R;
+    private double groundingX = DEFAULT_GROUNDING_X;
+    private GeneratorShortCircuit2.RotorType rotorType = GeneratorShortCircuit2.RotorType.UNDEFINED;
 
     public GeneratorShortCircuitAdder2(Generator generator) {
         super(generator);
@@ -33,7 +38,7 @@ public class GeneratorShortCircuitAdder2 extends AbstractExtensionAdder<Generato
 
     @Override
     protected GeneratorShortCircuit2 createExtension(Generator generator) {
-        return new GeneratorShortCircuit2(generator, transRd, subTransRd, toGround, coeffRo, coeffXo);
+        return new GeneratorShortCircuit2(generator, transRd, subTransRd, toGround, coeffRo, coeffXo, coeffRi, coeffXi, groundingR, groundingX, rotorType);
     }
 
     public GeneratorShortCircuitAdder2 withTransRd(double transRd) {
@@ -60,4 +65,30 @@ public class GeneratorShortCircuitAdder2 extends AbstractExtensionAdder<Generato
         this.coeffXo = coeffXo;
         return this;
     }
+
+    public GeneratorShortCircuitAdder2 withCoeffRi(double coeffRi) {
+        this.coeffRi = coeffRi;
+        return this;
+    }
+
+    public GeneratorShortCircuitAdder2 withCoeffXi(double coeffXi) {
+        this.coeffXi = coeffXi;
+        return this;
+    }
+
+    public GeneratorShortCircuitAdder2 withGroundingR(double groundingR) {
+        this.groundingR = groundingR;
+        return this;
+    }
+
+    public GeneratorShortCircuitAdder2 withGroundingX(double groundingX) {
+        this.groundingX = groundingX;
+        return this;
+    }
+
+    public GeneratorShortCircuitAdder2 withRotorType(GeneratorShortCircuit2.RotorType rotorType) {
+        this.rotorType = rotorType;
+        return this;
+    }
+
 }

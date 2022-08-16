@@ -7,10 +7,13 @@
 package com.powsybl.incubator.simulator.shortcircuit.cgmes;
 
 import com.powsybl.cgmes.conformity.CgmesConformity1Catalog;
+//import com.powsybl.cgmes.model.test.TestGridModelResources;
 import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.*;
+import com.powsybl.iidm.network.extensions.GeneratorShortCircuit;
 import com.powsybl.iidm.network.extensions.GeneratorShortCircuitAdder;
 import com.powsybl.incubator.simulator.shortcircuit.*;
+import com.powsybl.incubator.simulator.util.extensions.iidm.GeneratorShortCircuit2;
 import com.powsybl.incubator.simulator.util.extensions.iidm.GeneratorShortCircuitAdder2;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.math.matrix.DenseMatrixFactory;
@@ -19,6 +22,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
+import static com.powsybl.incubator.simulator.util.extensions.iidm.ShortCircuitConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -31,6 +35,7 @@ public class MiniGridTest {
     void bcTest() {
         Properties parameters = new Properties();
         parameters.setProperty("iidm.import.cgmes.post-processors", CgmesShortCircuitImportPostProcessor.NAME);
+        //TestGridModelResources testCgm = CgmesConformity1Catalog.miniBusBranch();
         Network network = Importers.loadNetwork(CgmesConformity1Catalog.miniBusBranch().dataSource(), parameters);
 
         Map<String, String> busNameToId = new HashMap<>();
@@ -68,41 +73,38 @@ public class MiniGridTest {
         t3wNameToId.put("T4", "411b5401-0a43-404a-acb4-05c3d7d0c95c");
         t3wNameToId.put("T3", "5d38b7ed-73fd-405a-9cdb-78425e003773");
 
+        // G1, G2, G3
         // Attribute values for G1 et G2 taking into account that T1 and T2 are modeled separately
-        double xG1 = 0.4116;
-        double rG1 = 0.002;
+        //double xG1 = 0.4116;
+        //double rG1 = 0.002;
+        //double xG2 = 0.1764;
+        //double rG2 = 0.005;
+        //double rG3 = 0.01779;
+        //double xG3 = 1.089623;
         double kG1 = 0.99597; // computed in IEC doc TODO : find a way to compute it from input data from extensions
-
-        double coeffRoG1 = 1.; // TODO : set real value
-        double coeffXoG1 = 1.; // TODO : set real value
-
-        double xG2 = 0.1764;
-        double rG2 = 0.005;
         double kG2 = 0.876832; // TODO : get exact value from extensions
+        double kG3 = 0.988320;
 
         Generator g1 = network.getGenerator(genNameToId.get("G1"));
-        g1.newExtension(GeneratorShortCircuitAdder.class)
-                .withDirectSubtransX(kG1 * xG1)
-                .withDirectTransX(kG1 * xG1)
-                .withStepUpTransformerX(0.) // transformer modelled explicitly
-                .add();
-        g1.newExtension(GeneratorShortCircuitAdder2.class)
-                .withTransRd(kG1 * rG1)
-                .withToGround(true) // TODO : check if relevant since grounding should be modeled through transformer that is modelled separately
-                .withCoeffRo(coeffRoG1)
-                .withCoeffXo(coeffXoG1)
-                .add();
-
+        adjustWithKg(g1, kG1);
         Generator g2 = network.getGenerator(genNameToId.get("G2"));
-        g2.newExtension(GeneratorShortCircuitAdder.class)
-                .withDirectSubtransX(kG2 * xG2) // transformer modelled explicitly
-                .withDirectTransX(kG2 * xG2)
-                .withStepUpTransformerX(0.)
-                .add();
-        g2.newExtension(GeneratorShortCircuitAdder2.class)
-                .withTransRd(kG2 * rG2)
-                .add();
+        adjustWithKg(g2, kG2);
+        Generator g3 = network.getGenerator(genNameToId.get("G3"));
+        adjustWithKg(g3, kG3);
 
+        // Q1
+        Generator q1 = network.getGenerator(genNameToId.get("Q1"));
+        /*extension = q1.getExtension(GeneratorShortCircuit.class);
+        double xQ1Cgmes = 0.;
+        double rQ1Cgmes = 0.;
+        if (extension != null) { // TODO: use a default value if extension is missing
+            xQ1Cgmes = extension.getDirectSubtransX();
+        }
+        extensions2 = q1.getExtension(GeneratorShortCircuit2.class);
+        if (extensions2 != null) {
+            rQ1Cgmes = extensions2.getSubTransRd();
+        }
+*/
         // In the CGMES import Q1 and Q2 feeders are modelled as generating units
         double xQ1 = 6.319335;
         double rQ1 = 0.631933;
@@ -110,15 +112,18 @@ public class MiniGridTest {
         double xQ2 = 4.344543;
         double rQ2 = 0.434454;
 
+        //System.out.println(" ==========>>> xQ1Cgmes = " + xQ1Cgmes + " xQ1 = " + xQ1 + " rQ1Cgmes = " + rQ1Cgmes + " rQ1 = " + rQ1);
+
         double coeffRoQ2 = 6.6; // TODO : set real value
         double coeffXoQ2 = 3.3; // TODO : set real value
-        Generator q1 = network.getGenerator(genNameToId.get("Q1"));
+
         q1.newExtension(GeneratorShortCircuitAdder.class)
                 .withDirectSubtransX(xQ1)
                 .withDirectTransX(xQ1)
                 .withStepUpTransformerX(0.) // transformer modelled explicitly
                 .add();
         q1.newExtension(GeneratorShortCircuitAdder2.class)
+                .withSubTransRd(rQ1)
                 .withTransRd(rQ1)
                 .withToGround(false) // TODO : check if relevant since grounding should be modeled through transformer that is modelled separately
                 .withCoeffRo(1.)
@@ -132,24 +137,11 @@ public class MiniGridTest {
                 .withStepUpTransformerX(0.) // transformer modelled explicitly
                 .add();
         q2.newExtension(GeneratorShortCircuitAdder2.class)
+                .withSubTransRd(rQ2)
                 .withTransRd(rQ2)
                 .withToGround(true) // TODO : check if relevant since grounding should be modeled through transformer that is modelled separately
                 .withCoeffRo(coeffRoQ2)
                 .withCoeffXo(coeffXoQ2)
-                .add();
-
-        // Generator G3
-        double rG3 = 0.01779;
-        double xG3 = 1.089623;
-        double kG3 = 0.988320;
-        Generator g3 = network.getGenerator(genNameToId.get("G3"));
-        g3.newExtension(GeneratorShortCircuitAdder.class)
-                .withDirectSubtransX(kG3 * xG3) // TODO : add table to store coeffs for homopolar values
-                .withDirectTransX(kG3 * xG3)
-                .withStepUpTransformerX(0.)
-                .add();
-        g3.newExtension(GeneratorShortCircuitAdder2.class)
-                .withTransRd(kG3 * rG3)
                 .add();
 
         // M1, M2a and M2b
@@ -263,7 +255,7 @@ public class MiniGridTest {
         ShortCircuitFault sc8 = new ShortCircuitFault(busNameToId.get("Bus8"), "sc8", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);
         faultList.add(sc8);
 
-        ShortCircuitEngineParameters.PeriodType periodType = ShortCircuitEngineParameters.PeriodType.TRANSIENT;
+        ShortCircuitEngineParameters.PeriodType periodType = ShortCircuitEngineParameters.PeriodType.SUB_TRANSIENT;
         ShortCircuitNormIec shortCircuitNormIec = new ShortCircuitNormIec();
         LoadFlowParameters loadFlowParameters = new LoadFlowParameters();
         loadFlowParameters.setTwtSplitShuntAdmittance(true);
@@ -291,4 +283,20 @@ public class MiniGridTest {
         assertEquals(13.577771545200052, values.get(7), 0.001); // bus 8 : expected in doc =  13.5778 kA
 
     }
+
+    public void adjustWithKg(Generator gen, double kg) {
+        // This is a temporary function to multiply with kg
+        // should disappear when the norm will be properly applied
+        GeneratorShortCircuit extension = gen.getExtension(GeneratorShortCircuit.class);
+        if (extension != null) {
+            extension.setDirectSubtransX(extension.getDirectSubtransX() * kg);
+            extension.setDirectTransX(extension.getDirectTransX() * kg);
+        }
+        GeneratorShortCircuit2 extensions2 = gen.getExtension(GeneratorShortCircuit2.class);
+        if (extensions2 != null) {
+            extensions2.setSubTransRd(extensions2.getSubTransRd() * kg);
+            extensions2.setTransRd(extensions2.getTransRd() * kg);
+        }
+    }
+
 }

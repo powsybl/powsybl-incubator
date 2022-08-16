@@ -6,8 +6,11 @@
  */
 package com.powsybl.incubator.simulator.shortcircuit;
 
+import com.powsybl.iidm.network.Generator;
 import com.powsybl.iidm.network.ThreeWindingsTransformer;
 import com.powsybl.iidm.network.TwoWindingsTransformer;
+import com.powsybl.iidm.network.extensions.GeneratorShortCircuit;
+import com.powsybl.incubator.simulator.util.extensions.iidm.GeneratorShortCircuit2;
 
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
@@ -87,5 +90,46 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
     @Override
     public String getNormType() {
         return "IEC";
+    }
+
+    @Override
+    public double getKg(Generator gen) {
+        double nominalU = gen.getTerminal().getVoltageLevel().getNominalV();
+        double ratedS = gen.getRatedS();
+        double cmax = getCmaxVoltageFactor(nominalU);
+
+        double cosPhi = 0.85; //default value
+        double ratedU = nominalU; // default value is nominal voltage
+        double subTransXd = 0.;
+        //double transXd = 0.;
+
+        GeneratorShortCircuit extension = gen.getExtension(GeneratorShortCircuit.class);
+        if (extension != null) {
+            subTransXd = extension.getDirectSubtransX();
+            //transXd = extension.getDirectTransX();
+        } else {
+            return 1.0;
+        }
+
+        GeneratorShortCircuit2 extensions2 = gen.getExtension(GeneratorShortCircuit2.class);
+        if (extensions2 != null) {
+            ratedU = extensions2.getRatedU();
+            cosPhi = extensions2.getCosPhi();
+        } else {
+            return 1.0;
+        }
+
+        double zBase = ratedU * ratedU / ratedS;
+        if (zBase == 0.) {
+            return 1.0;
+        }
+        double subTransXdpu = subTransXd / zBase;
+
+        /*System.out.println(" ==========>>>kG IEC : nominalU = " + nominalU + " ratedU = " + ratedU + " cmax = "
+                + cmax + " subTransXdpu = " + subTransXdpu + " cosPhi = " + cosPhi);*/
+
+        double kg = nominalU / ratedU * cmax / (1. + subTransXdpu * Math.sqrt(1. - cosPhi * cosPhi));
+
+        return kg;
     }
 }

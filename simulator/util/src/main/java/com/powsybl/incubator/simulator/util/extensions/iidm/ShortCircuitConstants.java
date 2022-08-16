@@ -24,6 +24,8 @@ public final class ShortCircuitConstants {
     public static final double DEFAULT_COEFF_XO = 1;
     public static final double DEFAULT_COEFF_RI = 1;
     public static final double DEFAULT_COEFF_XI = 1;
+    public static final double DEFAULT_COS_PHI = 0.85;
+    public static final double DEFAULT_RATED_U = 100.;
     public static final boolean DEFAULT_FREE_FLUXES = false;
     public static final LegConnectionType DEFAULT_LEG1_CONNECTION_TYPE = LegConnectionType.DELTA; // TODO : check if default connection acceptable
     public static final LegConnectionType DEFAULT_LEG2_CONNECTION_TYPE = LegConnectionType.Y_GROUNDED; // TODO : check if default connection acceptable

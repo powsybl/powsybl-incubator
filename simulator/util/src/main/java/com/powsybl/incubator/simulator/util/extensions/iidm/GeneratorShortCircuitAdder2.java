@@ -25,6 +25,8 @@ public class GeneratorShortCircuitAdder2 extends AbstractExtensionAdder<Generato
     private double coeffXi = DEFAULT_COEFF_XI;
     private double groundingR = DEFAULT_GROUNDING_R;
     private double groundingX = DEFAULT_GROUNDING_X;
+    private double cosPhi = DEFAULT_COS_PHI;
+    private double ratedU = DEFAULT_RATED_U;
     private GeneratorShortCircuit2.RotorType rotorType = GeneratorShortCircuit2.RotorType.UNDEFINED;
 
     public GeneratorShortCircuitAdder2(Generator generator) {
@@ -38,7 +40,7 @@ public class GeneratorShortCircuitAdder2 extends AbstractExtensionAdder<Generato
 
     @Override
     protected GeneratorShortCircuit2 createExtension(Generator generator) {
-        return new GeneratorShortCircuit2(generator, transRd, subTransRd, toGround, coeffRo, coeffXo, coeffRi, coeffXi, groundingR, groundingX, rotorType);
+        return new GeneratorShortCircuit2(generator, transRd, subTransRd, toGround, coeffRo, coeffXo, coeffRi, coeffXi, groundingR, groundingX, rotorType, ratedU, cosPhi);
     }
 
     public GeneratorShortCircuitAdder2 withTransRd(double transRd) {
@@ -88,6 +90,16 @@ public class GeneratorShortCircuitAdder2 extends AbstractExtensionAdder<Generato
 
     public GeneratorShortCircuitAdder2 withRotorType(GeneratorShortCircuit2.RotorType rotorType) {
         this.rotorType = rotorType;
+        return this;
+    }
+
+    public GeneratorShortCircuitAdder2 withCosPhi(double cosPhi) {
+        this.cosPhi = cosPhi;
+        return this;
+    }
+
+    public GeneratorShortCircuitAdder2 withRatedU(double ratedU) {
+        this.ratedU = ratedU;
         return this;
     }
 

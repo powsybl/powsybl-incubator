@@ -48,6 +48,7 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
             double subTransXdPu = propertyBag.asDouble("satDirectSubtransX"); // value given in pu
             double transXdPu = propertyBag.asDouble("satDirectTransX"); // value given in pu
             double ratedU = propertyBag.asDouble("ratedU");
+            double ratedPowerFactor = propertyBag.asDouble("ratedPowerFactor");
 
             Generator generator = network.getGenerator(id);
             if (generator == null) {
@@ -95,6 +96,8 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
                     .withCoeffXi(coeffX2)
                     .withCoeffRo(coeffRo)
                     .withCoeffXo(coeffXo)
+                    .withRatedU(ratedU)
+                    .withCosPhi(ratedPowerFactor)
                     .add();
         }
     }

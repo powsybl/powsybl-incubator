@@ -37,6 +37,7 @@ public class MiniGridTest {
         parameters.setProperty("iidm.import.cgmes.post-processors", CgmesShortCircuitImportPostProcessor.NAME);
         //TestGridModelResources testCgm = CgmesConformity1Catalog.miniBusBranch();
         Network network = Importers.loadNetwork(CgmesConformity1Catalog.miniBusBranch().dataSource(), parameters);
+        ShortCircuitNormIec shortCircuitNormIec = new ShortCircuitNormIec();
 
         Map<String, String> busNameToId = new HashMap<>();
         busNameToId.put("Bus1", "adee76cd-b2b9-48ac-8fd4-0d205a435f59"); //OK
@@ -81,16 +82,17 @@ public class MiniGridTest {
         //double rG2 = 0.005;
         //double rG3 = 0.01779;
         //double xG3 = 1.089623;
+        //double kG3 = 0.988320;
         double kG1 = 0.99597; // computed in IEC doc TODO : find a way to compute it from input data from extensions
         double kG2 = 0.876832; // TODO : get exact value from extensions
-        double kG3 = 0.988320;
 
         Generator g1 = network.getGenerator(genNameToId.get("G1"));
         adjustWithKg(g1, kG1);
         Generator g2 = network.getGenerator(genNameToId.get("G2"));
         adjustWithKg(g2, kG2);
         Generator g3 = network.getGenerator(genNameToId.get("G3"));
-        adjustWithKg(g3, kG3);
+        double kG3Iec = shortCircuitNormIec.getKg(g3);
+        adjustWithKg(g3, kG3Iec);
 
         // Q1
         Generator q1 = network.getGenerator(genNameToId.get("Q1"));
@@ -256,7 +258,6 @@ public class MiniGridTest {
         faultList.add(sc8);
 
         ShortCircuitEngineParameters.PeriodType periodType = ShortCircuitEngineParameters.PeriodType.SUB_TRANSIENT;
-        ShortCircuitNormIec shortCircuitNormIec = new ShortCircuitNormIec();
         LoadFlowParameters loadFlowParameters = new LoadFlowParameters();
         loadFlowParameters.setTwtSplitShuntAdmittance(true);
         MatrixFactory matrixFactory = new DenseMatrixFactory();

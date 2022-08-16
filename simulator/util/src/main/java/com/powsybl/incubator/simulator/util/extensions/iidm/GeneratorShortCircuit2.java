@@ -31,13 +31,15 @@ public class GeneratorShortCircuit2 extends AbstractExtension<Generator> {
     private final double groundingR;
     private final double groundingX;
     private final RotorType rotorType;
+    private final double ratedU;
+    private final double cosPhi;
 
     @Override
     public String getName() {
         return NAME;
     }
 
-    public GeneratorShortCircuit2(Generator generator, double transRd, double subTransRd, boolean toGround, double coeffRo, double coeffXo, double coeffRi, double coeffXi, double groundingR, double groundingX, RotorType rotorType) {
+    public GeneratorShortCircuit2(Generator generator, double transRd, double subTransRd, boolean toGround, double coeffRo, double coeffXo, double coeffRi, double coeffXi, double groundingR, double groundingX, RotorType rotorType, double ratedU, double cosPhi) {
         super(generator);
         this.transRd = transRd;
         this.subTransRd = subTransRd;
@@ -49,6 +51,8 @@ public class GeneratorShortCircuit2 extends AbstractExtension<Generator> {
         this.groundingR = groundingR;
         this.groundingX = groundingX;
         this.rotorType = rotorType;
+        this.ratedU = ratedU;
+        this.cosPhi = cosPhi;
     }
 
     public double getTransRd() {
@@ -89,6 +93,14 @@ public class GeneratorShortCircuit2 extends AbstractExtension<Generator> {
 
     public RotorType getRotorType() {
         return rotorType;
+    }
+
+    public double getCosPhi() {
+        return cosPhi;
+    }
+
+    public double getRatedU() {
+        return ratedU;
     }
 
     public void setSubTransRd(double subTransRd) {

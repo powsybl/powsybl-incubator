@@ -11,10 +11,7 @@ import com.powsybl.cgmes.conversion.CgmesImportPostProcessor;
 import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.*;
 import com.powsybl.iidm.network.extensions.GeneratorShortCircuitAdder;
-import com.powsybl.incubator.simulator.util.extensions.iidm.GeneratorShortCircuitAdder2;
-import com.powsybl.incubator.simulator.util.extensions.iidm.LineShortCircuitAdder;
-import com.powsybl.incubator.simulator.util.extensions.iidm.ThreeWindingsTransformerShortCircuitAdder;
-import com.powsybl.incubator.simulator.util.extensions.iidm.TwoWindingsTransformerShortCircuitAdder;
+import com.powsybl.incubator.simulator.util.extensions.iidm.*;
 import com.powsybl.triplestore.api.PropertyBag;
 import com.powsybl.triplestore.api.QueryCatalog;
 import com.powsybl.triplestore.api.TripleStore;
@@ -147,6 +144,7 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
     private void processPowerTransformerEnds(Network network, TripleStore tripleStore) {
         for (PropertyBag propertyBag : tripleStore.query(queryCatalog.get("powerTransformerEndShortCircuit"))) {
             String id = propertyBag.getId("ID");
+            int endNumber = propertyBag.asInt("endNumber");
             double r0 = propertyBag.asDouble("r0");
             double x0 = propertyBag.asDouble("x0");
             double g0 = propertyBag.asDouble("g0");
@@ -156,17 +154,25 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
             boolean grounded = propertyBag.asBoolean("grounded", false);
             TwoWindingsTransformer t2wt = network.getTwoWindingsTransformer(id);
             if (t2wt != null) {
+                TwoWindingsTransformerShortCircuit extension = t2wt.getExtension(TwoWindingsTransformerShortCircuit.class);
+                if (extension == null) {
+                    t2wt.newExtension(TwoWindingsTransformerShortCircuitAdder.class)
+                            // TODO
+                            .add();
+                    extension = t2wt.getExtension(TwoWindingsTransformerShortCircuit.class);
+                }
                 // TODO
-                t2wt.newExtension(TwoWindingsTransformerShortCircuitAdder.class)
-                        // TODO
-                        .add();
             } else {
                 ThreeWindingsTransformer t3wt = network.getThreeWindingsTransformer(id);
                 if (t3wt != null) {
+                    ThreeWindingsTransformerShortCircuit extension = t3wt.getExtension(ThreeWindingsTransformerShortCircuit.class);
+                    if (extension == null) {
+                        t3wt.newExtension(ThreeWindingsTransformerShortCircuitAdder.class)
+                                // TODO
+                                .add();
+                        extension = t3wt.getExtension(ThreeWindingsTransformerShortCircuit.class);
+                    }
                     // TODO
-                    t3wt.newExtension(ThreeWindingsTransformerShortCircuitAdder.class)
-                            // TODO
-                            .add();
                 } else {
                     throw new PowsyblException("2 or 3 windings transformer not found: '" + id + "'");
                 }

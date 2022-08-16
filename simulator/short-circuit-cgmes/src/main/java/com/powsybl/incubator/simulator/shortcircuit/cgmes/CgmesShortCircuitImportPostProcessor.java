@@ -111,7 +111,7 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
             }
             // FIXME create a shortcircuit load extension ?
             // TODO
-            // load.newExtension(LoadShortCircuitAdder.class)
+            // load.newExtension(AsynchronousGeneratorCircuitAdder.class)
             //     ...
             //     .add();
         }

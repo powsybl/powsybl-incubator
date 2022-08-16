@@ -36,8 +36,8 @@ SELECT *
         a cim:ACLineSegment ;
     OPTIONAL { ?ID cim:ACLineSegment.r0 ?r0 }
     OPTIONAL { ?ID cim:ACLineSegment.x0 ?x0 }
-    OPTIONAL { ?ID cim:ACLineSegment.b0ch ?g0 }
-    OPTIONAL { ?ID cim:ACLineSegment.g0ch ?g0 }
+    OPTIONAL { ?ID cim:ACLineSegment.b0ch ?b0ch }
+    OPTIONAL { ?ID cim:ACLineSegment.g0ch ?g0ch }
 }
 
 
@@ -52,7 +52,7 @@ SELECT *
         cim:PowerTransformerEnd.PowerTransformer ?ID ;
     OPTIONAL { ?TransformerEnd cim:PowerTransformerEnd.r0 ?r0 }
     OPTIONAL { ?TransformerEnd cim:PowerTransformerEnd.x0 ?x0 }
-    OPTIONAL { ?TransformerEnd cim:PowerTransformerEnd.b0 ?g0 }
+    OPTIONAL { ?TransformerEnd cim:PowerTransformerEnd.b0 ?b0 }
     OPTIONAL { ?TransformerEnd cim:PowerTransformerEnd.g0 ?g0 }
     OPTIONAL { ?TransformerEnd cim:TransformerEnd.rground ?rground }
     OPTIONAL { ?TransformerEnd cim:TransformerEnd.xground ?xground }

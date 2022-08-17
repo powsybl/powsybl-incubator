@@ -87,6 +87,53 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
         return 0.95 * cmax / (1 + 0.6 * xt3w * ratedSt3w / (ratedU0 * ratedU0));
     }
 
+    public double getKtT3Wij(ThreeWindingsTransformer t3w, int iNumLeg, int jNumLeg) {
+
+        ThreeWindingsTransformer.Leg it3wLeg;
+        if (iNumLeg == 1) {
+            it3wLeg = t3w.getLeg1();
+        } else if (iNumLeg == 2) {
+            it3wLeg = t3w.getLeg2();
+        } else if (iNumLeg == 3) {
+            it3wLeg = t3w.getLeg3();
+        } else {
+            throw new IllegalArgumentException("Three Winding Transformer " + t3w.getId() + " input leg must be 1, 2 or 3 but was : " + iNumLeg);
+        }
+
+        ThreeWindingsTransformer.Leg jt3wLeg;
+        if (jNumLeg == 1) {
+            jt3wLeg = t3w.getLeg1();
+        } else if (jNumLeg == 2) {
+            jt3wLeg = t3w.getLeg2();
+        } else if (jNumLeg == 3) {
+            jt3wLeg = t3w.getLeg3();
+        } else {
+            throw new IllegalArgumentException("Three Winding Transformer " + t3w.getId() + " input leg must be 1, 2 or 3 but was : " + iNumLeg);
+        }
+
+        double nominalV = Math.max(it3wLeg.getTerminal().getVoltageLevel().getNominalV(), jt3wLeg.getTerminal().getVoltageLevel().getNominalV());
+        double cmax = getCmaxVoltageFactor(nominalV);
+        double iratedSt3w = it3wLeg.getRatedS();
+        double jratedSt3w = jt3wLeg.getRatedS();
+        double ratedU0 = t3w.getRatedU0(); // we suppose that all impedances are based on an impedance base (Sb_leg, U0)
+
+        double iXt3w = it3wLeg.getX();
+        double jXt3w = jt3wLeg.getX();
+
+        // We use the following formula:
+        // Zab(pu) = Zab / Zbase = Zab * Sbase / Ubase²
+        // We suppose that :
+        // - Sbase = min(Sa, Sb)   ,
+        // - Ubase = U0 because all impedances are expressed in ohms at the U0 voltage level
+        // - Zab (ohms at U0) = Za (ohms at U0) + Zb (ohms at U0)
+        //
+        // Then Zab (pu) = (Za + Zb) * min(Sa,Sb) / U0²
+        double yBase = Math.min(iratedSt3w, jratedSt3w) / (ratedU0 * ratedU0);
+
+        return 0.95 * cmax / (1 + 0.6 * (iXt3w + jXt3w) * yBase);
+
+    }
+
     @Override
     public String getNormType() {
         return "IEC";

@@ -170,6 +170,15 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
             } else {
                 ThreeWindingsTransformer t3wt = network.getThreeWindingsTransformer(id);
                 if (t3wt != null) {
+                    if (endNumber == 1) {
+                        t3wt.getLeg1().setRatedS(ratedS);
+                    } else if (endNumber == 2) {
+                        t3wt.getLeg2().setRatedS(ratedS);
+                    } else if (endNumber == 3) {
+                        t3wt.getLeg3().setRatedS(ratedS);
+                    } else {
+                        throw new PowsyblException("incorrect end number for 3 windings transformer end '" + id + "'");
+                    }
                     ThreeWindingsTransformerShortCircuit extension = t3wt.getExtension(ThreeWindingsTransformerShortCircuit.class);
                     if (extension == null) {
                         t3wt.newExtension(ThreeWindingsTransformerShortCircuitAdder.class)

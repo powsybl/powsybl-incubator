@@ -82,6 +82,9 @@ public class MiniGridTest {
         //double xG3 = 1.089623;
         //double kG3 = 0.988320;
         //double kt56 = 0.974870;
+        //double ktab = 0.928072;
+        //double ktac = 0.985856;
+        //double ktbc = 1.002890;
 
         // G1, G2, G3
         // Attribute values for G1 et G2 taking into account that T1 and T2 are modeled separately
@@ -197,9 +200,9 @@ public class MiniGridTest {
         //T3 and T4
         ThreeWindingsTransformer t3 = network.getThreeWindingsTransformer(t3wNameToId.get("T3"));
         ThreeWindingsTransformer t4 = network.getThreeWindingsTransformer(t3wNameToId.get("T4"));
-        double ktab = 0.928072;
-        double ktac = 0.985856;
-        double ktbc = 1.002890;
+        double ktabIec = shortCircuitNormIec.getKtT3Wij(t3, 1, 2);
+        double ktacIec = shortCircuitNormIec.getKtT3Wij(t3, 1, 3);
+        double ktbcIec = shortCircuitNormIec.getKtT3Wij(t3, 2, 3);
 
         double raT3 = t3.getLeg1().getR();
         double xaT3 = t3.getLeg1().getX();
@@ -215,19 +218,19 @@ public class MiniGridTest {
         double rcT4 = t4.getLeg3().getR();
         double xcT4 = t4.getLeg3().getX();
 
-        double raT3k = 0.5 * (ktab * (raT3 + rbT3) + ktac * (raT3 + rcT3) - ktbc * (rbT3 + rcT3));
-        double xaT3k = 0.5 * (ktab * (xaT3 + xbT3) + ktac * (xaT3 + xcT3) - ktbc * (xbT3 + xcT3));
-        double rbT3k = 0.5 * (ktab * (raT3 + rbT3) - ktac * (raT3 + rcT3) + ktbc * (rbT3 + rcT3));
-        double xbT3k = 0.5 * (ktab * (xaT3 + xbT3) - ktac * (xaT3 + xcT3) + ktbc * (xbT3 + xcT3));
-        double rcT3k = 0.5 * (-ktab * (raT3 + rbT3) + ktac * (raT3 + rcT3) + ktbc * (rbT3 + rcT3));
-        double xcT3k = 0.5 * (-ktab * (xaT3 + xbT3) + ktac * (xaT3 + xcT3) + ktbc * (xbT3 + xcT3));
+        double raT3k = 0.5 * (ktabIec * (raT3 + rbT3) + ktacIec * (raT3 + rcT3) - ktbcIec * (rbT3 + rcT3));
+        double xaT3k = 0.5 * (ktabIec * (xaT3 + xbT3) + ktacIec * (xaT3 + xcT3) - ktbcIec * (xbT3 + xcT3));
+        double rbT3k = 0.5 * (ktabIec * (raT3 + rbT3) - ktacIec * (raT3 + rcT3) + ktbcIec * (rbT3 + rcT3));
+        double xbT3k = 0.5 * (ktabIec * (xaT3 + xbT3) - ktacIec * (xaT3 + xcT3) + ktbcIec * (xbT3 + xcT3));
+        double rcT3k = 0.5 * (-ktabIec * (raT3 + rbT3) + ktacIec * (raT3 + rcT3) + ktbcIec * (rbT3 + rcT3));
+        double xcT3k = 0.5 * (-ktabIec * (xaT3 + xbT3) + ktacIec * (xaT3 + xcT3) + ktbcIec * (xbT3 + xcT3));
 
-        double raT4k = 0.5 * (ktab * (raT4 + rbT4) + ktac * (raT4 + rcT4) - ktbc * (rbT4 + rcT4));
-        double xaT4k = 0.5 * (ktab * (xaT4 + xbT4) + ktac * (xaT4 + xcT4) - ktbc * (xbT4 + xcT4));
-        double rbT4k = 0.5 * (ktab * (raT4 + rbT4) - ktac * (raT4 + rcT4) + ktbc * (rbT4 + rcT4));
-        double xbT4k = 0.5 * (ktab * (xaT4 + xbT4) - ktac * (xaT4 + xcT4) + ktbc * (xbT4 + xcT4));
-        double rcT4k = 0.5 * (-ktab * (raT4 + rbT4) + ktac * (raT4 + rcT4) + ktbc * (rbT4 + rcT4));
-        double xcT4k = 0.5 * (-ktab * (xaT4 + xbT4) + ktac * (xaT4 + xcT4) + ktbc * (xbT4 + xcT4));
+        double raT4k = 0.5 * (ktabIec * (raT4 + rbT4) + ktacIec * (raT4 + rcT4) - ktbcIec * (rbT4 + rcT4));
+        double xaT4k = 0.5 * (ktabIec * (xaT4 + xbT4) + ktacIec * (xaT4 + xcT4) - ktbcIec * (xbT4 + xcT4));
+        double rbT4k = 0.5 * (ktabIec * (raT4 + rbT4) - ktacIec * (raT4 + rcT4) + ktbcIec * (rbT4 + rcT4));
+        double xbT4k = 0.5 * (ktabIec * (xaT4 + xbT4) - ktacIec * (xaT4 + xcT4) + ktbcIec * (xbT4 + xcT4));
+        double rcT4k = 0.5 * (-ktabIec * (raT4 + rbT4) + ktacIec * (raT4 + rcT4) + ktbcIec * (rbT4 + rcT4));
+        double xcT4k = 0.5 * (-ktabIec * (xaT4 + xbT4) + ktacIec * (xaT4 + xcT4) + ktbcIec * (xbT4 + xcT4));
 
         t3.getLeg1().setR(raT3k);
         t3.getLeg1().setX(xaT3k);

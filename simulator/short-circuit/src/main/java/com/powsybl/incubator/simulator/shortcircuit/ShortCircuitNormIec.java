@@ -62,7 +62,7 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
         double ratedU2 = t2w.getRatedU2(); //TODO : check that the assumption to use ratedU2 is always correct
         double xt2w = t2w.getX();
 
-        return 0.95 * cmax / (1 + 0.6 * xt2w * ratedSt2w / (ratedU2 * ratedU2));
+        return 0.95 * cmax / (1. + 0.6 * xt2w * ratedSt2w / (ratedU2 * ratedU2));
     }
 
     @Override

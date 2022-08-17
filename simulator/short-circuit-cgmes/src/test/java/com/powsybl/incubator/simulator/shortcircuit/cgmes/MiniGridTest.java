@@ -74,8 +74,6 @@ public class MiniGridTest {
         t3wNameToId.put("T4", "411b5401-0a43-404a-acb4-05c3d7d0c95c");
         t3wNameToId.put("T3", "5d38b7ed-73fd-405a-9cdb-78425e003773");
 
-        // G1, G2, G3
-        // Attribute values for G1 et G2 taking into account that T1 and T2 are modeled separately
         //double xG1 = 0.4116;
         //double rG1 = 0.002;
         //double xG2 = 0.1764;
@@ -83,6 +81,10 @@ public class MiniGridTest {
         //double rG3 = 0.01779;
         //double xG3 = 1.089623;
         //double kG3 = 0.988320;
+        //double kt56 = 0.974870;
+
+        // G1, G2, G3
+        // Attribute values for G1 et G2 taking into account that T1 and T2 are modeled separately
         double kG1 = 0.99597; // computed in IEC doc TODO : find a way to compute it from input data from extensions
         double kG2 = 0.876832; // TODO : get exact value from extensions
 
@@ -170,15 +172,17 @@ public class MiniGridTest {
         m2bLoad.setQ0(qM2ScLoad / 2.);
 
         //T5 and T6
-        double kt56 = 0.974870;
         TwoWindingsTransformer t5 = network.getTwoWindingsTransformer(t2wNameToId.get("T5"));
         TwoWindingsTransformer t6 = network.getTwoWindingsTransformer(t2wNameToId.get("T6"));
 
-        t5.setX(t5.getX() * kt56);
-        t6.setX(t6.getX() * kt56);
+        double kt5Iec = shortCircuitNormIec.getKtT2W(t5);
+        double kt6Iec = shortCircuitNormIec.getKtT2W(t6);
 
-        t5.setR(t5.getR() * kt56);
-        t6.setR(t6.getR() * kt56);
+        t5.setX(t5.getX() * kt5Iec);
+        t6.setX(t6.getX() * kt6Iec);
+
+        t5.setR(t5.getR() * kt5Iec);
+        t6.setR(t6.getR() * kt6Iec);
 
         // T1 and T2
         TwoWindingsTransformer t1 = network.getTwoWindingsTransformer(t2wNameToId.get("T1"));

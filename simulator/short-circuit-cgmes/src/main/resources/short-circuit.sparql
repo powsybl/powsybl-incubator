@@ -55,6 +55,7 @@ SELECT *
     OPTIONAL { ?TransformerEnd cim:PowerTransformerEnd.x0 ?x0 }
     OPTIONAL { ?TransformerEnd cim:PowerTransformerEnd.b0 ?b0 }
     OPTIONAL { ?TransformerEnd cim:PowerTransformerEnd.g0 ?g0 }
+    OPTIONAL { ?TransformerEnd cim:PowerTransformerEnd.ratedS ?ratedS }
     OPTIONAL { ?TransformerEnd cim:TransformerEnd.endNumber ?endNumber }
     OPTIONAL { ?TransformerEnd cim:TransformerEnd.rground ?rground }
     OPTIONAL { ?TransformerEnd cim:TransformerEnd.xground ?xground }

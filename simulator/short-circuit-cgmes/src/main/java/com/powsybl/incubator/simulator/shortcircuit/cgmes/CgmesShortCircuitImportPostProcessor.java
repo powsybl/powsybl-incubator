@@ -152,11 +152,13 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
             double x0 = propertyBag.asDouble("x0");
             double g0 = propertyBag.asDouble("g0");
             double b0 = propertyBag.asDouble("b0");
+            double ratedS = propertyBag.asDouble("ratedS");
             double rground = propertyBag.asDouble("rground");
             double xground = propertyBag.asDouble("xground");
             boolean grounded = propertyBag.asBoolean("grounded", false);
             TwoWindingsTransformer t2wt = network.getTwoWindingsTransformer(id);
             if (t2wt != null) {
+                t2wt.setRatedS(ratedS); // rated S not not filled in CGMES import example for transformers
                 TwoWindingsTransformerShortCircuit extension = t2wt.getExtension(TwoWindingsTransformerShortCircuit.class);
                 if (extension == null) {
                     t2wt.newExtension(TwoWindingsTransformerShortCircuitAdder.class)

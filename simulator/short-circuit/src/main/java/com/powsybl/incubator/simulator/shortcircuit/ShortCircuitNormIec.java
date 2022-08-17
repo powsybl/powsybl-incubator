@@ -11,11 +11,18 @@ import com.powsybl.iidm.network.ThreeWindingsTransformer;
 import com.powsybl.iidm.network.TwoWindingsTransformer;
 import com.powsybl.iidm.network.extensions.GeneratorShortCircuit;
 import com.powsybl.incubator.simulator.util.extensions.iidm.GeneratorShortCircuit2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
 public class ShortCircuitNormIec implements ShortCircuitNorm {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ShortCircuitNormIec.class);
 
     public static final double LOW_VOLTAGE_KV_THRESHOLD = 1.;
     public static final double MEDIUM_VOLTAGE_KV_THRESHOLD = 35.;
@@ -131,6 +138,76 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
         double yBase = Math.min(iratedSt3w, jratedSt3w) / (ratedU0 * ratedU0);
 
         return 0.95 * cmax / (1 + 0.6 * (iXt3w + jXt3w) * yBase);
+
+    }
+
+    public List<Double> getKtT3Wi(ThreeWindingsTransformer t3w) {
+
+        double ktabIec = getKtT3Wij(t3w, 1, 2);
+        double ktacIec = getKtT3Wij(t3w, 1, 3);
+        double ktbcIec = getKtT3Wij(t3w, 2, 3);
+
+        String t3WId = t3w.getId();
+
+        double ra = t3w.getLeg1().getR();
+        double xa = t3w.getLeg1().getX();
+        double rb = t3w.getLeg2().getR();
+        double xb = t3w.getLeg2().getX();
+        double rc = t3w.getLeg3().getR();
+        double xc = t3w.getLeg3().getX();
+
+        double raT3k = 0.5 * (ktabIec * (ra + rb) + ktacIec * (ra + rc) - ktbcIec * (rb + rc));
+        double xaT3k = 0.5 * (ktabIec * (xa + xb) + ktacIec * (xa + xc) - ktbcIec * (xb + xc));
+        double rbT3k = 0.5 * (ktabIec * (ra + rb) - ktacIec * (ra + rc) + ktbcIec * (rb + rc));
+        double xbT3k = 0.5 * (ktabIec * (xa + xb) - ktacIec * (xa + xc) + ktbcIec * (xb + xc));
+        double rcT3k = 0.5 * (-ktabIec * (ra + rb) + ktacIec * (ra + rc) + ktbcIec * (rb + rc));
+        double xcT3k = 0.5 * (-ktabIec * (xa + xb) + ktacIec * (xa + xc) + ktbcIec * (xb + xc));
+
+        double kTaX = getCheckedCoef(t3WId, xaT3k, xa);
+        double kTaR = getCheckedCoef(t3WId, raT3k, ra);
+
+        double kTbX = getCheckedCoef(t3WId, xbT3k, xb);
+        double kTbR = getCheckedCoef(t3WId, rbT3k, rb);
+
+        double kTcX = getCheckedCoef(t3WId, xcT3k, xc);
+        double kTcR = getCheckedCoef(t3WId, rcT3k, rc);
+
+        List<Double> result = new ArrayList<>();
+
+        result.add(kTaR);
+        result.add(kTaX);
+        result.add(kTbR);
+        result.add(kTbX);
+        result.add(kTcR);
+        result.add(kTcX);
+
+        return result;
+    }
+
+    public double getCheckedCoef(String id, double ztk, double zt) {
+
+        if (zt == 0.) {
+            if (ztk != 0.) {
+                LOGGER.warn("Transformer " + id +  " has r or x equal to zero and computed rk or xk is non null, short circuit calculation might be wrong");
+            }
+            return  1.;
+        } else {
+            return ztk / zt;
+        }
+
+    }
+
+    public void adjustWithKt3W(ThreeWindingsTransformer t3w, List<Double> result) {
+        ThreeWindingsTransformer.Leg leg1 = t3w.getLeg1();
+        ThreeWindingsTransformer.Leg leg2 = t3w.getLeg2();
+        ThreeWindingsTransformer.Leg leg3 = t3w.getLeg3();
+
+        leg1.setR(leg1.getR() * result.get(0));
+        leg1.setX(leg1.getX() * result.get(1));
+        leg2.setR(leg2.getR() * result.get(2));
+        leg2.setX(leg2.getX() * result.get(3));
+        leg3.setR(leg3.getR() * result.get(4));
+        leg3.setX(leg3.getX() * result.get(5));
 
     }
 

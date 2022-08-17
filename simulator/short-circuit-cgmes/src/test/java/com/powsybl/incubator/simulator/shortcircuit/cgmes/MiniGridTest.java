@@ -74,6 +74,7 @@ public class MiniGridTest {
         t3wNameToId.put("T4", "411b5401-0a43-404a-acb4-05c3d7d0c95c");
         t3wNameToId.put("T3", "5d38b7ed-73fd-405a-9cdb-78425e003773");
 
+        // TODO : use it for unit tests
         //double xG1 = 0.4116;
         //double rG1 = 0.002;
         //double xG2 = 0.1764;
@@ -200,51 +201,12 @@ public class MiniGridTest {
         //T3 and T4
         ThreeWindingsTransformer t3 = network.getThreeWindingsTransformer(t3wNameToId.get("T3"));
         ThreeWindingsTransformer t4 = network.getThreeWindingsTransformer(t3wNameToId.get("T4"));
-        double ktabIec = shortCircuitNormIec.getKtT3Wij(t3, 1, 2);
-        double ktacIec = shortCircuitNormIec.getKtT3Wij(t3, 1, 3);
-        double ktbcIec = shortCircuitNormIec.getKtT3Wij(t3, 2, 3);
 
-        double raT3 = t3.getLeg1().getR();
-        double xaT3 = t3.getLeg1().getX();
-        double rbT3 = t3.getLeg2().getR();
-        double xbT3 = t3.getLeg2().getX();
-        double rcT3 = t3.getLeg3().getR();
-        double xcT3 = t3.getLeg3().getX();
+        List<Double> resultT3 = shortCircuitNormIec.getKtT3Wi(t3); // table contains vector [ kTaR; kTaX; kTbR; kTbX; kTcR; kTcX ]
+        shortCircuitNormIec.adjustWithKt3W(t3, resultT3);
 
-        double raT4 = t4.getLeg1().getR();
-        double xaT4 = t4.getLeg1().getX();
-        double rbT4 = t4.getLeg2().getR();
-        double xbT4 = t4.getLeg2().getX();
-        double rcT4 = t4.getLeg3().getR();
-        double xcT4 = t4.getLeg3().getX();
-
-        double raT3k = 0.5 * (ktabIec * (raT3 + rbT3) + ktacIec * (raT3 + rcT3) - ktbcIec * (rbT3 + rcT3));
-        double xaT3k = 0.5 * (ktabIec * (xaT3 + xbT3) + ktacIec * (xaT3 + xcT3) - ktbcIec * (xbT3 + xcT3));
-        double rbT3k = 0.5 * (ktabIec * (raT3 + rbT3) - ktacIec * (raT3 + rcT3) + ktbcIec * (rbT3 + rcT3));
-        double xbT3k = 0.5 * (ktabIec * (xaT3 + xbT3) - ktacIec * (xaT3 + xcT3) + ktbcIec * (xbT3 + xcT3));
-        double rcT3k = 0.5 * (-ktabIec * (raT3 + rbT3) + ktacIec * (raT3 + rcT3) + ktbcIec * (rbT3 + rcT3));
-        double xcT3k = 0.5 * (-ktabIec * (xaT3 + xbT3) + ktacIec * (xaT3 + xcT3) + ktbcIec * (xbT3 + xcT3));
-
-        double raT4k = 0.5 * (ktabIec * (raT4 + rbT4) + ktacIec * (raT4 + rcT4) - ktbcIec * (rbT4 + rcT4));
-        double xaT4k = 0.5 * (ktabIec * (xaT4 + xbT4) + ktacIec * (xaT4 + xcT4) - ktbcIec * (xbT4 + xcT4));
-        double rbT4k = 0.5 * (ktabIec * (raT4 + rbT4) - ktacIec * (raT4 + rcT4) + ktbcIec * (rbT4 + rcT4));
-        double xbT4k = 0.5 * (ktabIec * (xaT4 + xbT4) - ktacIec * (xaT4 + xcT4) + ktbcIec * (xbT4 + xcT4));
-        double rcT4k = 0.5 * (-ktabIec * (raT4 + rbT4) + ktacIec * (raT4 + rcT4) + ktbcIec * (rbT4 + rcT4));
-        double xcT4k = 0.5 * (-ktabIec * (xaT4 + xbT4) + ktacIec * (xaT4 + xcT4) + ktbcIec * (xbT4 + xcT4));
-
-        t3.getLeg1().setR(raT3k);
-        t3.getLeg1().setX(xaT3k);
-        t3.getLeg2().setR(rbT3k);
-        t3.getLeg2().setX(xbT3k);
-        t3.getLeg3().setR(rcT3k);
-        t3.getLeg3().setX(xcT3k);
-
-        t4.getLeg1().setR(raT4k);
-        t4.getLeg1().setX(xaT4k);
-        t4.getLeg2().setR(rbT4k);
-        t4.getLeg2().setX(xbT4k);
-        t4.getLeg3().setR(rcT4k);
-        t4.getLeg3().setX(xcT4k);
+        List<Double> resultT4 = shortCircuitNormIec.getKtT3Wi(t4);
+        shortCircuitNormIec.adjustWithKt3W(t4, resultT4);
 
         List<ShortCircuitFault> faultList = new ArrayList<>();
         ShortCircuitFault sc1 = new ShortCircuitFault(busNameToId.get("Bus1"), "sc1", 0., 0., ShortCircuitFault.ShortCircuitType.TRIPHASED_GROUND);

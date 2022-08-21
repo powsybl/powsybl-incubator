@@ -37,6 +37,46 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
 
     public static final double EPSILON = 0.000001;
 
+    private void processExternalNetworkInjection(Network network, TripleStore tripleStore) {
+        for (PropertyBag propertyBag : tripleStore.query(queryCatalog.get("externalNetworkInjectionShortCircuit"))) {
+            String id = propertyBag.getId("ID");
+            double ikQmax = propertyBag.asDouble("maxInitialSymShCCurrent");
+            double maxR0ToX0Ratio = propertyBag.asDouble("maxR0ToX0Ratio");
+            double maxR1ToX1Ratio = propertyBag.asDouble("maxR1ToX1Ratio");
+            double maxZ0ToZ1Ratio = propertyBag.asDouble("maxZ0ToZ1Ratio");
+            double voltageFactor = propertyBag.asDouble("voltageFactor");
+
+            /*System.out.println(" ================>  ExternalNetworkInjectionId = " + id + " ikQmax = " + ikQmax
+                    + " maxR0ToX0Ratio = " + maxR0ToX0Ratio + " maxR1ToX1Ratio = " + maxR1ToX1Ratio + " maxZ0ToZ1Ratio = " + maxZ0ToZ1Ratio
+                    + " voltageFactor = " + voltageFactor);*/
+
+            Generator generator = network.getGenerator(id);
+            if (generator == null) {
+                throw new PowsyblException("Generator '" + id + "' not found");
+            }
+
+            generator.newExtension(GeneratorShortCircuitAdder.class)
+                    .withStepUpTransformerX(0.)
+                    .withDirectTransX(0.)
+                    .withDirectSubtransX(0.)
+                    .add();
+            generator.newExtension(GeneratorShortCircuitAdder2.class)
+                    .withSubTransRd(0.)
+                    .withTransRd(0.)
+                    .withCoeffRi(0.)
+                    .withCoeffXi(0.)
+                    .withCoeffRo(0.)
+                    .withCoeffXo(0.)
+                    .withRatedU(0.)
+                    .withCosPhi(0.)
+                    .withGeneratorType(GeneratorShortCircuit2.GeneratorType.FEEDER)
+                    .withMaxR1ToX1Ratio(maxR1ToX1Ratio) // extensions for feeder type
+                    .withCq(voltageFactor)
+                    .withIkQmax(ikQmax)
+                    .add();
+        }
+    }
+
     private void processSynchronousMachines(Network network, TripleStore tripleStore) {
         for (PropertyBag propertyBag : tripleStore.query(queryCatalog.get("synchronousMachineShortCircuit"))) {
             String id = propertyBag.getId("ID");
@@ -98,6 +138,7 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
                     .withCoeffXo(coeffXo)
                     .withRatedU(ratedU)
                     .withCosPhi(ratedPowerFactor)
+                    .withGeneratorType(GeneratorShortCircuit2.GeneratorType.ROTATING_MACHINE)
                     .add();
         }
     }
@@ -201,5 +242,6 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
         processAsynchronousMachines(network, tripleStore);
         processAcLineSegments(network, tripleStore);
         processPowerTransformerEnds(network, tripleStore);
+        processExternalNetworkInjection(network, tripleStore);
     }
 }

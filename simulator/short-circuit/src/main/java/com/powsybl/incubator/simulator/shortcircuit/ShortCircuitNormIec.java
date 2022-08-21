@@ -6,6 +6,7 @@
  */
 package com.powsybl.incubator.simulator.shortcircuit;
 
+import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.Generator;
 import com.powsybl.iidm.network.ThreeWindingsTransformer;
 import com.powsybl.iidm.network.TwoWindingsTransformer;
@@ -255,5 +256,36 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
         double kg = nominalU / ratedU * cmax / (1. + subTransXdpu * Math.sqrt(1. - cosPhi * cosPhi));
 
         return kg;
+    }
+
+    public void adjustGenValuesWithFeederInputs(Generator gen) {
+        GeneratorShortCircuit extension = gen.getExtension(GeneratorShortCircuit.class);
+        if (extension == null) {
+            throw new PowsyblException("Generator '" + gen.getId() + "' could not be adjusted with feeder values because of missing extension input data");
+        }
+        GeneratorShortCircuit2 extensions2 = gen.getExtension(GeneratorShortCircuit2.class);
+        if (extensions2 == null) {
+            throw new PowsyblException("Generator '" + gen.getId() + "' could not be adjusted with feeder values because of missing extension2 input data");
+        }
+
+        GeneratorShortCircuit2.GeneratorType genType = extensions2.getGeneratorType();
+        if (genType != GeneratorShortCircuit2.GeneratorType.FEEDER) {
+            throw new PowsyblException("Generator '" + gen.getId() + "' has wrong type to be adjusted");
+        }
+        double ikQmax = extensions2.getIkQmax();
+        double maxR1ToX1Ratio = extensions2.getMaxR1ToX1Ratio();
+        double cq = extensions2.getCq();
+
+        // Zq = cq * Unomq / (sqrt3 * Ikq)
+        // Zq = sqrt(r² + x²) which gives x = Zq / sqrt((R/X)² + 1)
+        double zq = cq * gen.getTerminal().getVoltageLevel().getNominalV() / (Math.sqrt(3) * ikQmax / 1000.); // ikQmax is changed from A to kA
+        double xq = zq / Math.sqrt(maxR1ToX1Ratio * maxR1ToX1Ratio + 1);
+        double rq = xq * maxR1ToX1Ratio;
+
+        extension.setDirectTransX(xq);
+        extension.setDirectSubtransX(xq);
+        extensions2.setTransRd(rq);
+        extensions2.setSubTransRd(rq);
+
     }
 }

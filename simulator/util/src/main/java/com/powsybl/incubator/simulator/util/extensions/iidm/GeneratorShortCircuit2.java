@@ -21,6 +21,12 @@ public class GeneratorShortCircuit2 extends AbstractExtension<Generator> {
         TURBOSERIES_1;
     }
 
+    public enum GeneratorType {
+        UNKNOWN,
+        ROTATING_MACHINE,
+        FEEDER;
+    }
+
     private double transRd; // transient resistance // TODO : will be final when kG of the norm will be handled
     private double subTransRd; // sub-transient resistance // TODO : will be final when kG of the norm will be handled
     private final boolean toGround;
@@ -33,13 +39,18 @@ public class GeneratorShortCircuit2 extends AbstractExtension<Generator> {
     private final RotorType rotorType;
     private final double ratedU;
     private final double cosPhi;
+    private final GeneratorType generatorType;
+    private final double cq;
+    private final double maxR1ToX1Ratio;
+    private final double ikQmax;
 
     @Override
     public String getName() {
         return NAME;
     }
 
-    public GeneratorShortCircuit2(Generator generator, double transRd, double subTransRd, boolean toGround, double coeffRo, double coeffXo, double coeffRi, double coeffXi, double groundingR, double groundingX, RotorType rotorType, double ratedU, double cosPhi) {
+    public GeneratorShortCircuit2(Generator generator, double transRd, double subTransRd, boolean toGround, double coeffRo, double coeffXo, double coeffRi, double coeffXi, double groundingR, double groundingX, RotorType rotorType, double ratedU, double cosPhi,
+                                  GeneratorType generatorType, double cq, double ikQmax, double maxR1ToX1Ratio) {
         super(generator);
         this.transRd = transRd;
         this.subTransRd = subTransRd;
@@ -53,6 +64,10 @@ public class GeneratorShortCircuit2 extends AbstractExtension<Generator> {
         this.rotorType = rotorType;
         this.ratedU = ratedU;
         this.cosPhi = cosPhi;
+        this.generatorType = generatorType;
+        this.cq = cq;
+        this.ikQmax = ikQmax;
+        this.maxR1ToX1Ratio = maxR1ToX1Ratio;
     }
 
     public double getTransRd() {
@@ -109,5 +124,21 @@ public class GeneratorShortCircuit2 extends AbstractExtension<Generator> {
 
     public void setTransRd(double transRd) {
         this.transRd = transRd;
+    }
+
+    public GeneratorType getGeneratorType() {
+        return generatorType;
+    }
+
+    public double getCq() {
+        return cq;
+    }
+
+    public double getIkQmax() {
+        return ikQmax;
+    }
+
+    public double getMaxR1ToX1Ratio() {
+        return maxR1ToX1Ratio;
     }
 }

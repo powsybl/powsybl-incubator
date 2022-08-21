@@ -22,6 +22,18 @@ SELECT *
     OPTIONAL { ?ID cim:RotatingMachine.ratedPowerFactor ?ratedPowerFactor }
 }
 
+# query: externalNetworkInjectionShortCircuit
+SELECT *
+{
+    ?ID
+        a cim:ExternalNetworkInjection ;
+    OPTIONAL { ?ID cim:ExternalNetworkInjection.maxInitialSymShCCurrent ?maxInitialSymShCCurrent }
+    OPTIONAL { ?ID cim:ExternalNetworkInjection.maxR0ToX0Ratio ?maxR0ToX0Ratio }
+    OPTIONAL { ?ID cim:ExternalNetworkInjection.maxR1ToX1Ratio ?maxR1ToX1Ratio }
+    OPTIONAL { ?ID cim:ExternalNetworkInjection.maxZ0ToZ1Ratio ?maxZ0ToZ1Ratio }
+    OPTIONAL { ?ID cim:ExternalNetworkInjection.voltageFactor ?voltageFactor }
+}
+
 # query: asynchronousMachineShortCircuit
 SELECT *
 {

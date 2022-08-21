@@ -11,10 +11,8 @@ import com.powsybl.cgmes.conformity.CgmesConformity1Catalog;
 import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.*;
 import com.powsybl.iidm.network.extensions.GeneratorShortCircuit;
-import com.powsybl.iidm.network.extensions.GeneratorShortCircuitAdder;
 import com.powsybl.incubator.simulator.shortcircuit.*;
 import com.powsybl.incubator.simulator.util.extensions.iidm.GeneratorShortCircuit2;
-import com.powsybl.incubator.simulator.util.extensions.iidm.GeneratorShortCircuitAdder2;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.math.matrix.DenseMatrixFactory;
 import com.powsybl.math.matrix.MatrixFactory;
@@ -22,7 +20,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
-import static com.powsybl.incubator.simulator.util.extensions.iidm.ShortCircuitConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -86,6 +83,12 @@ public class MiniGridTest {
         //double ktab = 0.928072;
         //double ktac = 0.985856;
         //double ktbc = 1.002890;
+        //double xQ1 = 6.319335;
+        //double rQ1 = 0.631933;
+        //double xQ2 = 4.344543;
+        //double rQ2 = 0.434454;
+        //double coeffRoQ2 = 6.6; // TODO : set real value
+        //double coeffXoQ2 = 3.3; // TODO : set real value
 
         // G1, G2, G3
         // Attribute values for G1 et G2 taking into account that T1 and T2 are modeled separately
@@ -100,57 +103,11 @@ public class MiniGridTest {
         double kG3Iec = shortCircuitNormIec.getKg(g3);
         adjustWithKg(g3, kG3Iec);
 
-        // Q1
+        // Q1, Q2
         Generator q1 = network.getGenerator(genNameToId.get("Q1"));
-        /*extension = q1.getExtension(GeneratorShortCircuit.class);
-        double xQ1Cgmes = 0.;
-        double rQ1Cgmes = 0.;
-        if (extension != null) { // TODO: use a default value if extension is missing
-            xQ1Cgmes = extension.getDirectSubtransX();
-        }
-        extensions2 = q1.getExtension(GeneratorShortCircuit2.class);
-        if (extensions2 != null) {
-            rQ1Cgmes = extensions2.getSubTransRd();
-        }
-*/
-        // In the CGMES import Q1 and Q2 feeders are modelled as generating units
-        double xQ1 = 6.319335;
-        double rQ1 = 0.631933;
-
-        double xQ2 = 4.344543;
-        double rQ2 = 0.434454;
-
-        //System.out.println(" ==========>>> xQ1Cgmes = " + xQ1Cgmes + " xQ1 = " + xQ1 + " rQ1Cgmes = " + rQ1Cgmes + " rQ1 = " + rQ1);
-
-        double coeffRoQ2 = 6.6; // TODO : set real value
-        double coeffXoQ2 = 3.3; // TODO : set real value
-
-        q1.newExtension(GeneratorShortCircuitAdder.class)
-                .withDirectSubtransX(xQ1)
-                .withDirectTransX(xQ1)
-                .withStepUpTransformerX(0.) // transformer modelled explicitly
-                .add();
-        q1.newExtension(GeneratorShortCircuitAdder2.class)
-                .withSubTransRd(rQ1)
-                .withTransRd(rQ1)
-                .withToGround(false) // TODO : check if relevant since grounding should be modeled through transformer that is modelled separately
-                .withCoeffRo(1.)
-                .withCoeffXo(1.)
-                .add();
-
         Generator q2 = network.getGenerator(genNameToId.get("Q2"));
-        q2.newExtension(GeneratorShortCircuitAdder.class)
-                .withDirectSubtransX(xQ2)
-                .withDirectTransX(xQ2)
-                .withStepUpTransformerX(0.) // transformer modelled explicitly
-                .add();
-        q2.newExtension(GeneratorShortCircuitAdder2.class)
-                .withSubTransRd(rQ2)
-                .withTransRd(rQ2)
-                .withToGround(true) // TODO : check if relevant since grounding should be modeled through transformer that is modelled separately
-                .withCoeffRo(coeffRoQ2)
-                .withCoeffXo(coeffXoQ2)
-                .add();
+        shortCircuitNormIec.adjustGenValuesWithFeederInputs(q1);
+        shortCircuitNormIec.adjustGenValuesWithFeederInputs(q2);
 
         // M1, M2a and M2b
         // FIXME : We have an issue : CGMES asynchronous machines are imported as loads in iidm.

@@ -146,10 +146,36 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
     private void processAsynchronousMachines(Network network, TripleStore tripleStore) {
         for (PropertyBag propertyBag : tripleStore.query(queryCatalog.get("asynchronousMachineShortCircuit"))) {
             String id = propertyBag.getId("ID");
+            double ratedMechanicalPower = propertyBag.asDouble("ratedMechanicalPower");
+            double ratedPowerFactor = propertyBag.asDouble("ratedPowerFactor");
+            double ratedS = propertyBag.asDouble("ratedS");
+            double ratedU = propertyBag.asDouble("ratedU");
+            double efficiency = propertyBag.asDouble("efficiency");
+            double iaIrRatio = propertyBag.asDouble("iaIrRatio");
+            double rxLockedRotorRatio = propertyBag.asDouble("rxLockedRotorRatio");
+            int polePairNumber = propertyBag.asInt("polePairNumber");
+
             Load load = network.getLoad(id);
             if (load == null) {
                 throw new PowsyblException("Load '" + id + "' not found");
             }
+
+            load.newExtension(LoadShortCircuitAdder.class)
+                    .withEfficiency(efficiency)
+                    .withIaIrRatio(iaIrRatio)
+                    .withPolePairNumber(polePairNumber)
+                    .withRatedMechanicalP(ratedMechanicalPower)
+                    .withRatedS(ratedS)
+                    .withRatedU(ratedU)
+                    .withRxLockedRotorRatio(rxLockedRotorRatio)
+                    .withRatedPowerFactor(ratedPowerFactor)
+                    .withLoadShortCircuitType(LoadShortCircuit.LoadShortCircuitType.ASYNCHRONOUS_MACHINE)
+                    .add();
+
+            /*System.out.println(" ================>  LoadId = " + id + " ratedMechanicalPower = " + ratedMechanicalPower + " ratedPowerFactor = " + ratedPowerFactor +
+                    " ratedS = " + ratedS + " efficiency = " + efficiency + " iaIrRatio = " + iaIrRatio + " rxLockedRotorRatio = " + rxLockedRotorRatio +
+                    " Unom = " + ratedU + " polePairNumber = " + polePairNumber);*/
+
             // FIXME create a shortcircuit load extension ?
             // TODO
             // load.newExtension(AsynchronousGeneratorCircuitAdder.class)

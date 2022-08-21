@@ -40,6 +40,13 @@ SELECT *
     ?ID
         a cim:AsynchronousMachine ;
     OPTIONAL { ?ID cim:AsynchronousMachine.ratedMechanicalPower ?ratedMechanicalPower }
+    OPTIONAL { ?ID cim:RotatingMachine.ratedPowerFactor ?ratedPowerFactor }
+    OPTIONAL { ?ID cim:RotatingMachine.ratedS ?ratedS }
+    OPTIONAL { ?ID cim:RotatingMachine.ratedU ?ratedU }
+    OPTIONAL { ?ID cim:AsynchronousMachine.efficiency ?efficiency }
+    OPTIONAL { ?ID cim:AsynchronousMachine.iaIrRatio ?iaIrRatio }
+    OPTIONAL { ?ID cim:AsynchronousMachine.polePairNumber ?polePairNumber }
+    OPTIONAL { ?ID cim:AsynchronousMachine.rxLockedRotorRatio ?rxLockedRotorRatio }
 }
 
 # query: acLineSegmentShortCircuit

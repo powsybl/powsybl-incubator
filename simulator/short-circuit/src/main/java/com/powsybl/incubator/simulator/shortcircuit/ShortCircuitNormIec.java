@@ -8,10 +8,12 @@ package com.powsybl.incubator.simulator.shortcircuit;
 
 import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.Generator;
+import com.powsybl.iidm.network.Load;
 import com.powsybl.iidm.network.ThreeWindingsTransformer;
 import com.powsybl.iidm.network.TwoWindingsTransformer;
 import com.powsybl.iidm.network.extensions.GeneratorShortCircuit;
 import com.powsybl.incubator.simulator.util.extensions.iidm.GeneratorShortCircuit2;
+import com.powsybl.incubator.simulator.util.extensions.iidm.LoadShortCircuit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -278,14 +280,51 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
 
         // Zq = cq * Unomq / (sqrt3 * Ikq)
         // Zq = sqrt(r² + x²) which gives x = Zq / sqrt((R/X)² + 1)
-        double zq = cq * gen.getTerminal().getVoltageLevel().getNominalV() / (Math.sqrt(3) * ikQmax / 1000.); // ikQmax is changed from A to kA
-        double xq = zq / Math.sqrt(maxR1ToX1Ratio * maxR1ToX1Ratio + 1);
+        double zq = cq * gen.getTerminal().getVoltageLevel().getNominalV() / (Math.sqrt(3.) * ikQmax / 1000.); // ikQmax is changed from A to kA
+        double xq = zq / Math.sqrt(maxR1ToX1Ratio * maxR1ToX1Ratio + 1.);
         double rq = xq * maxR1ToX1Ratio;
 
         extension.setDirectTransX(xq);
         extension.setDirectSubtransX(xq);
         extensions2.setTransRd(rq);
         extensions2.setSubTransRd(rq);
+    }
+
+    public void generateZofLoadfromAsynch(Load load) {
+        LoadShortCircuit extension = load.getExtension(LoadShortCircuit.class);
+        if (extension == null) {
+            throw new PowsyblException("Load '" + load.getId() + "' could generate Z for short circuit because of missing extension input data");
+        }
+
+        double ratedMechanicalPower = extension.getRatedMechanicalP();
+        double ratedPowerFactor = extension.getRatedPowerFactor(); // cosPhi
+        double ratedS = extension.getRatedS();
+        double ratedU = extension.getRatedU();
+        double efficiency = extension.getEfficiency() / 100.; // conversion from percentages
+        double iaIrRatio = extension.getIaIrRatio();
+        double rxLockedRotorRatio = extension.getRxLockedRotorRatio();
+        int polePairNumber = extension.getPolePairNumber();
+
+        // Zn = 1/(Ilr/Irm) * Urm / (sqrt3 * Irm) = 1/(Ilr/Irm) * Urm² / (Prm / (efficiency * cosPhi))
+        // Xn = Zn / sqrt(1+ (Rm/Xm)²)
+        double zn = 1. / iaIrRatio * ratedU * ratedU / (ratedMechanicalPower / (efficiency * ratedPowerFactor));
+        double xn = zn / Math.sqrt(rxLockedRotorRatio * rxLockedRotorRatio + 1.);
+        double rn = xn * rxLockedRotorRatio;
+
+        /*System.out.println(" ================>  LoadId = " + load.getId() + " zn = " + zn + " xn = " + xn + " rn = " + rn);*/
+
+        // zn is transformed into a load that will give the equivalent zn in the admittance matrix
+        //using formula P(MW) = Re(Z) * |V|² / |Z|² and Q(MVA) = Im(Z) * |V|² / |Z|²
+        // TODO: once load will not be aggregated in the lfNetwork,
+        //  the info regarding the load with Asynchronous machine info should remain carried as Zn to fill the admittance matrix
+        double uNom = load.getTerminal().getVoltageLevel().getNominalV();
+        double pEqScLoad = rn * uNom * uNom / (zn * zn);
+        double qEqScLoad = xn * uNom * uNom / (zn * zn);
+
+        /*System.out.println(" ================>  LoadId = " + load.getId() + " pEqScLoad = " + pEqScLoad + " qEqScLoad = " + qEqScLoad);*/
+
+        load.setQ0(qEqScLoad);
+        load.setP0(pEqScLoad);
 
     }
 }

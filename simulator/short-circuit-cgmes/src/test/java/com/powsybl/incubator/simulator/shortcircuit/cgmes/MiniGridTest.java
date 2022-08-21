@@ -89,6 +89,10 @@ public class MiniGridTest {
         //double rQ2 = 0.434454;
         //double coeffRoQ2 = 6.6; // TODO : set real value
         //double coeffXoQ2 = 3.3; // TODO : set real value
+        //double pM1ScLoad = 2.89929;
+        //double qM1ScLoad = 28.9929;
+        //double pM2ScLoad = 2.40235;
+        //double qM2ScLoad = 24.0235;
 
         // G1, G2, G3
         // Attribute values for G1 et G2 taking into account that T1 and T2 are modeled separately
@@ -116,21 +120,13 @@ public class MiniGridTest {
         // Impedance to be applied at M1 : Z_M1 = 0.341497 + j3.414968
         // Total Impedance to be applied at M2 : Z_M2 = 0.412137 + j4.121368
         //using formula P(MW) = Re(Z) * |V|² / |Z|² and Q(MVA) = Im(Z) * |V|² / |Z|²
-        double pM1ScLoad = 2.89929;
-        double qM1ScLoad = 28.9929;
 
-        double pM2ScLoad = 2.40235;
-        double qM2ScLoad = 24.0235;
         Load m1Load = network.getLoad(loadNameToId.get("M1orM3"));
         Load m2aLoad = network.getLoad(loadNameToId.get("M2a"));
         Load m2bLoad = network.getLoad(loadNameToId.get("M2b"));
-
-        m1Load.setP0(pM1ScLoad);
-        m1Load.setQ0(qM1ScLoad);
-        m2aLoad.setP0(pM2ScLoad / 2.);
-        m2aLoad.setQ0(qM2ScLoad / 2.);
-        m2bLoad.setP0(pM2ScLoad / 2.);
-        m2bLoad.setQ0(qM2ScLoad / 2.);
+        shortCircuitNormIec.generateZofLoadfromAsynch(m1Load);
+        shortCircuitNormIec.generateZofLoadfromAsynch(m2aLoad);
+        shortCircuitNormIec.generateZofLoadfromAsynch(m2bLoad);
 
         //T5 and T6
         TwoWindingsTransformer t5 = network.getTwoWindingsTransformer(t2wNameToId.get("T5"));

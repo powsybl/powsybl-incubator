@@ -70,7 +70,6 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
         double ratedU2 = t2w.getRatedU2(); //TODO : check that the assumption to use ratedU2 is always correct
         double xt2w = t2w.getX();
 
-        System.out.println(" ================>  TfoId = " + t2w.getId() + " xdpu = " + xt2w * ratedSt2w / (ratedU2 * ratedU2));
         return 0.95 * cmax / (1. + 0.6 * xt2w * ratedSt2w / (ratedU2 * ratedU2));
     }
 
@@ -236,11 +235,12 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
         return ks;
     }
 
-    public double getKsAggregatedTfoGen(Network network, TwoWindingsTransformer t2w) {
+    public Generator getAssociatedGenerator(Network network, TwoWindingsTransformer t2w) {
 
         TwoWindingsTransformerShortCircuit extension = t2w.getExtension(TwoWindingsTransformerShortCircuit.class);
-
+        Generator tfoGenerator = null;
         boolean isGen = false;
+
         if (extension != null) {
             isGen = extension.isPartOfGeneratingUnit();
         }
@@ -259,7 +259,6 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
             }
 
             Bus busTfo = terminal.getBusBreakerView().getBus(); // TODO : handle not only bus breaker view
-            Generator tfoGenerator = null;
             for (Generator generator : network.getGenerators()) {
                 Terminal termGen = generator.getTerminal();
                 Bus busGen = termGen.getBusBreakerView().getBus(); // TODO : handle not only bus breaker view
@@ -269,12 +268,8 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
                 }
             }
 
-            if (tfoGenerator != null) {
-                return getKs(t2w, tfoGenerator);
-            }
         }
-
-        return 1.;
+        return  tfoGenerator;
     }
 
     public double getCheckedCoef(String id, double ztk, double zt) {
@@ -342,9 +337,6 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
         }
         double subTransXdpu = subTransXd / zBase;
 
-        /*System.out.println(" ==========>>>kG IEC : nominalU = " + nominalU + " ratedU = " + ratedU + " cmax = "
-                + cmax + " subTransXdpu = " + subTransXdpu + " cosPhi = " + cosPhi);*/
-
         double kg = nominalU / ratedU * cmax / (1. + subTransXdpu * Math.sqrt(1. - cosPhi * cosPhi));
 
         return kg;
@@ -380,7 +372,7 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
         extensions2.setSubTransRd(rq);
     }
 
-    public void generateZofLoadfromAsynch(Load load) {
+    public void adjustLoadfromInfo(Load load) {
         LoadShortCircuit extension = load.getExtension(LoadShortCircuit.class);
         if (extension == null) {
             throw new PowsyblException("Load '" + load.getId() + "' could generate Z for short circuit because of missing extension input data");
@@ -401,20 +393,86 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
         double xn = zn / Math.sqrt(rxLockedRotorRatio * rxLockedRotorRatio + 1.);
         double rn = xn * rxLockedRotorRatio;
 
-        /*System.out.println(" ================>  LoadId = " + load.getId() + " zn = " + zn + " xn = " + xn + " rn = " + rn);*/
-
         // zn is transformed into a load that will give the equivalent zn in the admittance matrix
-        //using formula P(MW) = Re(Z) * |V|² / |Z|² and Q(MVA) = Im(Z) * |V|² / |Z|²
+        // using formula P(MW) = Re(Z) * |V|² / |Z|² and Q(MVA) = Im(Z) * |V|² / |Z|²
         // TODO: once load will not be aggregated in the lfNetwork,
         //  the info regarding the load with Asynchronous machine info should remain carried as Zn to fill the admittance matrix
         double uNom = load.getTerminal().getVoltageLevel().getNominalV();
         double pEqScLoad = rn * uNom * uNom / (zn * zn);
         double qEqScLoad = xn * uNom * uNom / (zn * zn);
 
-        /*System.out.println(" ================>  LoadId = " + load.getId() + " pEqScLoad = " + pEqScLoad + " qEqScLoad = " + qEqScLoad);*/
-
         load.setQ0(qEqScLoad);
         load.setP0(pEqScLoad);
+    }
 
+    public void applyNormToNetwork(Network network) {
+
+        // FIXME: the application of the norm modifies the iidm network characteristics. Extensions carried from iidm network to lfNetwork should help to avoid this.
+
+        // Work on two windings transformers
+        List<Generator> generatorsWithTfo = new ArrayList<>();
+        for (TwoWindingsTransformer t2w : network.getTwoWindingsTransformers()) {
+            Generator genTfo = getAssociatedGenerator(network, t2w);
+            if (genTfo != null) {
+                generatorsWithTfo.add(genTfo);
+                double ks = getKs(t2w, genTfo);
+                adjustWithKg(genTfo, ks);
+                t2w.setX(t2w.getX() * ks);
+                t2w.setR(t2w.getR() * ks);
+            } else {
+                double kt = getKtT2W(t2w);
+                t2w.setX(t2w.getX() * kt);
+                t2w.setR(t2w.getR() * kt);
+            }
+        }
+
+        // Work on generators
+        for (Generator gen : network.getGenerators()) {
+            if (generatorsWithTfo.contains(gen)) {
+                continue; //those generators have already been adjusted with the associated two windings transformer
+            }
+
+            GeneratorShortCircuit2 extensions2 = gen.getExtension(GeneratorShortCircuit2.class);
+            if (extensions2 != null) {
+                GeneratorShortCircuit2.GeneratorType genType = extensions2.getGeneratorType();
+                if (genType == GeneratorShortCircuit2.GeneratorType.FEEDER) {
+                    adjustGenValuesWithFeederInputs(gen);
+                } else {
+                    // this includes standard rotating machines
+                    double kg = getKg(gen);
+                    adjustWithKg(gen, kg);
+                }
+            }
+        }
+
+        // Work on loads
+        for (Load load : network.getLoads()) {
+            LoadShortCircuit extension = load.getExtension(LoadShortCircuit.class);
+            if (extension == null) {
+                continue; // we do not modify loads with no additional short circuit info
+            }
+            adjustLoadfromInfo(load);
+        }
+
+        // Work on three Windings transformers
+        for (ThreeWindingsTransformer t3w : network.getThreeWindingsTransformers()) {
+            List<Double> resultT3 = getKtT3Wi(t3w); // table contains vector [ kTaR; kTaX; kTbR; kTbX; kTcR; kTcX ]
+            adjustWithKt3W(t3w, resultT3);
+        }
+    }
+
+    public void adjustWithKg(Generator gen, double kg) {
+        // This is a temporary function to multiply with kg
+        // should disappear when the norm will be properly applied
+        GeneratorShortCircuit extension = gen.getExtension(GeneratorShortCircuit.class);
+        if (extension != null) {
+            extension.setDirectSubtransX(extension.getDirectSubtransX() * kg);
+            extension.setDirectTransX(extension.getDirectTransX() * kg);
+        }
+        GeneratorShortCircuit2 extensions2 = gen.getExtension(GeneratorShortCircuit2.class);
+        if (extensions2 != null) {
+            extensions2.setSubTransRd(extensions2.getSubTransRd() * kg);
+            extensions2.setTransRd(extensions2.getTransRd() * kg);
+        }
     }
 }

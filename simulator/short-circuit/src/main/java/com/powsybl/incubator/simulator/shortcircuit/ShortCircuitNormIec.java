@@ -207,9 +207,11 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
         }
 
         GeneratorShortCircuit2 extensions2 = gen.getExtension(GeneratorShortCircuit2.class);
+        double voltageRegulationRange = 0.;
         if (extensions2 != null) {
             ratedUgen = extensions2.getRatedU();
             cosPhiGen = extensions2.getCosPhi();
+            voltageRegulationRange = extensions2.getVoltageRegulationRange();
         }
 
         double yBaseGen = ratedSgen / (ratedUgen * ratedUgen);
@@ -224,7 +226,6 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
         RatioTapChanger ratioTapChanger = t2w.getRatioTapChanger();
 
         if (ratioTapChanger == null) {
-            double voltageRegulationRange = extensions2.getVoltageRegulationRange();
             ks = unq * ratedUlv / ratedUgen / ratedUthv / (1 + voltageRegulationRange / 100.) * cmax / (1. + subTransXdpu * Math.sqrt(1. - cosPhiGen * cosPhiGen));
 
         } else {

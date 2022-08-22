@@ -32,6 +32,7 @@ public class GeneratorShortCircuitAdder2 extends AbstractExtensionAdder<Generato
     private double cq = DEFAULT_CQ;
     private double ikQmax = DEFAULT_IKQ;
     private double maxR1ToX1Ratio = DEFAULT_R1_X1_RATIO;
+    private double voltageRegulationRange = 0.;
 
     public GeneratorShortCircuitAdder2(Generator generator) {
         super(generator);
@@ -44,7 +45,7 @@ public class GeneratorShortCircuitAdder2 extends AbstractExtensionAdder<Generato
 
     @Override
     protected GeneratorShortCircuit2 createExtension(Generator generator) {
-        return new GeneratorShortCircuit2(generator, transRd, subTransRd, toGround, coeffRo, coeffXo, coeffRi, coeffXi, groundingR, groundingX, rotorType, ratedU, cosPhi, generatorType, cq, ikQmax, maxR1ToX1Ratio);
+        return new GeneratorShortCircuit2(generator, transRd, subTransRd, toGround, coeffRo, coeffXo, coeffRi, coeffXi, groundingR, groundingX, rotorType, ratedU, cosPhi, generatorType, cq, ikQmax, maxR1ToX1Ratio, voltageRegulationRange);
     }
 
     public GeneratorShortCircuitAdder2 withTransRd(double transRd) {
@@ -124,6 +125,11 @@ public class GeneratorShortCircuitAdder2 extends AbstractExtensionAdder<Generato
 
     public GeneratorShortCircuitAdder2 withMaxR1ToX1Ratio(double maxR1ToX1Ratio) {
         this.maxR1ToX1Ratio = maxR1ToX1Ratio;
+        return this;
+    }
+
+    public GeneratorShortCircuitAdder2 withVoltageRegulationRange(double voltageRegulationRange) {
+        this.voltageRegulationRange = voltageRegulationRange;
         return this;
     }
 

@@ -18,6 +18,7 @@ import static com.powsybl.incubator.simulator.util.extensions.iidm.ShortCircuitC
  */
 public class TwoWindingsTransformerShortCircuitAdder extends AbstractExtensionAdder<TwoWindingsTransformer, TwoWindingsTransformerShortCircuit> {
 
+    private boolean isPartOfGeneratingUnit = false;
     private double coeffRo = DEFAULT_COEFF_RO;
     private double coeffXo = DEFAULT_COEFF_XO;
     private boolean freeFluxes = DEFAULT_FREE_FLUXES;
@@ -35,7 +36,12 @@ public class TwoWindingsTransformerShortCircuitAdder extends AbstractExtensionAd
 
     @Override
     protected TwoWindingsTransformerShortCircuit createExtension(TwoWindingsTransformer twt) {
-        return new TwoWindingsTransformerShortCircuit(twt, coeffRo, coeffXo, freeFluxes, leg1ConnectionType, leg2ConnectionType);
+        return new TwoWindingsTransformerShortCircuit(twt, isPartOfGeneratingUnit, coeffRo, coeffXo, freeFluxes, leg1ConnectionType, leg2ConnectionType);
+    }
+
+    public TwoWindingsTransformerShortCircuitAdder withIsPartOfGeneratingUnit(boolean isPartOfGeneratingUnit) {
+        this.isPartOfGeneratingUnit = isPartOfGeneratingUnit;
+        return this;
     }
 
     public TwoWindingsTransformerShortCircuitAdder withCoeffRo(double coeffRo) {

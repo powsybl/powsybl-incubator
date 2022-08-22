@@ -7,13 +7,11 @@
 package com.powsybl.incubator.simulator.shortcircuit;
 
 import com.powsybl.commons.PowsyblException;
-import com.powsybl.iidm.network.Generator;
-import com.powsybl.iidm.network.Load;
-import com.powsybl.iidm.network.ThreeWindingsTransformer;
-import com.powsybl.iidm.network.TwoWindingsTransformer;
+import com.powsybl.iidm.network.*;
 import com.powsybl.iidm.network.extensions.GeneratorShortCircuit;
 import com.powsybl.incubator.simulator.util.extensions.iidm.GeneratorShortCircuit2;
 import com.powsybl.incubator.simulator.util.extensions.iidm.LoadShortCircuit;
+import com.powsybl.incubator.simulator.util.extensions.iidm.TwoWindingsTransformerShortCircuit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,6 +70,7 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
         double ratedU2 = t2w.getRatedU2(); //TODO : check that the assumption to use ratedU2 is always correct
         double xt2w = t2w.getX();
 
+        System.out.println(" ================>  TfoId = " + t2w.getId() + " xdpu = " + xt2w * ratedSt2w / (ratedU2 * ratedU2));
         return 0.95 * cmax / (1. + 0.6 * xt2w * ratedSt2w / (ratedU2 * ratedU2));
     }
 
@@ -185,6 +184,97 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
         result.add(kTcX);
 
         return result;
+    }
+
+    public double getKs(TwoWindingsTransformer t2w, Generator gen) {
+
+        double unq = Math.max(t2w.getTerminal1().getVoltageLevel().getNominalV(), t2w.getTerminal2().getVoltageLevel().getNominalV());
+        double ratedU1 = t2w.getRatedU1();
+        double ratedU2 = t2w.getRatedU2();
+        double ratedUthv = Math.max(ratedU1, ratedU2);
+        double ratedUlv = Math.min(ratedU1, ratedU2);
+
+        double ratedSgen = gen.getRatedS();
+        double ratedUgen = gen.getTerminal().getVoltageLevel().getNominalV(); // default value
+        double cosPhiGen = 0.85;
+
+        double cmax = getCmaxVoltageFactor(unq);
+
+        double subTransXd = 0.;
+        GeneratorShortCircuit extension = gen.getExtension(GeneratorShortCircuit.class);
+        if (extension != null) {
+            subTransXd = extension.getDirectSubtransX();
+            //transXd = extension.getDirectTransX();
+        }
+
+        GeneratorShortCircuit2 extensions2 = gen.getExtension(GeneratorShortCircuit2.class);
+        if (extensions2 != null) {
+            ratedUgen = extensions2.getRatedU();
+            cosPhiGen = extensions2.getCosPhi();
+        }
+
+        double yBaseGen = ratedSgen / (ratedUgen * ratedUgen);
+
+        double subTransXdpu = subTransXd * yBaseGen;
+
+        double ratedSt2w = t2w.getRatedS();
+        double yBaseTfo = ratedSt2w / (ratedU2 * ratedU2);
+        double xt2wpu = t2w.getX() * yBaseTfo;
+
+        double ks = 1.0;
+        RatioTapChanger ratioTapChanger = t2w.getRatioTapChanger();
+
+        if (ratioTapChanger == null) {
+            double voltageRegulationRange = extensions2.getVoltageRegulationRange();
+            ks = unq * ratedUlv / ratedUgen / ratedUthv / (1 + voltageRegulationRange / 100.) * cmax / (1. + subTransXdpu * Math.sqrt(1. - cosPhiGen * cosPhiGen));
+
+        } else {
+            ks = Math.pow(unq * ratedUlv / ratedUgen / ratedUthv, 2.) * cmax / (1. + Math.abs(subTransXdpu - xt2wpu) * Math.sqrt(1. - cosPhiGen * cosPhiGen));
+
+        }
+
+        return ks;
+    }
+
+    public double getKsAggregatedTfoGen(Network network, TwoWindingsTransformer t2w) {
+
+        TwoWindingsTransformerShortCircuit extension = t2w.getExtension(TwoWindingsTransformerShortCircuit.class);
+
+        boolean isGen = false;
+        if (extension != null) {
+            isGen = extension.isPartOfGeneratingUnit();
+        }
+
+        if (isGen) {
+            // search for the associated generating unit
+            double ur1 = t2w.getRatedU1();
+            double ur2 = t2w.getRatedU2();
+            // we suppose that the generating unit must be connected to the lowest rated voltage terminal
+            Terminal terminal;
+            if (ur1 < ur2) {
+                terminal = t2w.getTerminal1();
+            } else {
+                terminal = t2w.getTerminal2();
+                // TODO : handle case where ur1 = ur2
+            }
+
+            Bus busTfo = terminal.getBusBreakerView().getBus(); // TODO : handle not only bus breaker view
+            Generator tfoGenerator = null;
+            for (Generator generator : network.getGenerators()) {
+                Terminal termGen = generator.getTerminal();
+                Bus busGen = termGen.getBusBreakerView().getBus(); // TODO : handle not only bus breaker view
+                if (busGen == busTfo) {
+                    tfoGenerator = generator;
+                    break;
+                }
+            }
+
+            if (tfoGenerator != null) {
+                return getKs(t2w, tfoGenerator);
+            }
+        }
+
+        return 1.;
     }
 
     public double getCheckedCoef(String id, double ztk, double zt) {

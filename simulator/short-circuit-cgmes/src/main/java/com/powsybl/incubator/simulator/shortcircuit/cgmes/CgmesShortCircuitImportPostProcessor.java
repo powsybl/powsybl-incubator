@@ -89,6 +89,7 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
             double transXdPu = propertyBag.asDouble("satDirectTransX"); // value given in pu
             double ratedU = propertyBag.asDouble("ratedU");
             double ratedPowerFactor = propertyBag.asDouble("ratedPowerFactor");
+            double voltageRegulationRange = propertyBag.asDouble("voltageRegulationRange", 0.);
 
             Generator generator = network.getGenerator(id);
             if (generator == null) {
@@ -105,10 +106,6 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
             double zBase = ratedU * ratedU / genRatedS; // TODO : ratedU and not Unom !!!!! for S2 10.5 kV instead of 16 kV
             double subTransXd = subTransXdPu * zBase;
             double transXd = transXdPu * zBase;
-/*
-            System.out.println(" ================>  GenId = " + id + " ro = " + r0 + " r2 = " + r2 +
-                    " xo = " + x0 + " x2 = " + x2 + " r = " + r + " subTransXd = " + subTransXdPu + " transXd = " + transXdPu
-                    + " Unom = " + ratedU + " Srated = " + genRatedS);*/
 
             double coeffRo = r0;
             double coeffR2 = r2;
@@ -139,6 +136,7 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
                     .withRatedU(ratedU)
                     .withCosPhi(ratedPowerFactor)
                     .withGeneratorType(GeneratorShortCircuit2.GeneratorType.ROTATING_MACHINE)
+                    .withVoltageRegulationRange(voltageRegulationRange)
                     .add();
         }
     }
@@ -211,6 +209,25 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
         }
     }
 
+    private void processPowerTransformers(Network network, TripleStore tripleStore) {
+        for (PropertyBag propertyBag : tripleStore.query(queryCatalog.get("powerTransformerShortCircuit"))) {
+            String id = propertyBag.getId("ID");
+            boolean isPartOfGeneratingUnit = propertyBag.asBoolean("isPartOfGeneratorUnit", false);
+
+            TwoWindingsTransformer t2wt = network.getTwoWindingsTransformer(id);
+            if (t2wt != null) {
+                TwoWindingsTransformerShortCircuit extension = t2wt.getExtension(TwoWindingsTransformerShortCircuit.class);
+                if (extension == null) {
+                    t2wt.newExtension(TwoWindingsTransformerShortCircuitAdder.class)
+                            .withIsPartOfGeneratingUnit(isPartOfGeneratingUnit)
+                            .add();
+                } else {
+                    extension.setPartOfGeneratingUnit(isPartOfGeneratingUnit);
+                }
+            }
+        }
+    }
+
     private void processPowerTransformerEnds(Network network, TripleStore tripleStore) {
         for (PropertyBag propertyBag : tripleStore.query(queryCatalog.get("powerTransformerEndShortCircuit"))) {
             String id = propertyBag.getId("ID");
@@ -223,16 +240,16 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
             double rground = propertyBag.asDouble("rground");
             double xground = propertyBag.asDouble("xground");
             boolean grounded = propertyBag.asBoolean("grounded", false);
+
             TwoWindingsTransformer t2wt = network.getTwoWindingsTransformer(id);
             if (t2wt != null) {
                 t2wt.setRatedS(ratedS); // rated S not not filled in CGMES import example for transformers
                 TwoWindingsTransformerShortCircuit extension = t2wt.getExtension(TwoWindingsTransformerShortCircuit.class);
-                if (extension == null) {
+                /*if (extension == null) {
                     t2wt.newExtension(TwoWindingsTransformerShortCircuitAdder.class)
-                            // TODO
                             .add();
-                    extension = t2wt.getExtension(TwoWindingsTransformerShortCircuit.class);
-                }
+                    //extension = t2wt.getExtension(TwoWindingsTransformerShortCircuit.class);
+                }*/
                 // TODO
             } else {
                 ThreeWindingsTransformer t3wt = network.getThreeWindingsTransformer(id);
@@ -267,6 +284,7 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
         processSynchronousMachines(network, tripleStore);
         processAsynchronousMachines(network, tripleStore);
         processAcLineSegments(network, tripleStore);
+        processPowerTransformers(network, tripleStore);
         processPowerTransformerEnds(network, tripleStore);
         processExternalNetworkInjection(network, tripleStore);
     }

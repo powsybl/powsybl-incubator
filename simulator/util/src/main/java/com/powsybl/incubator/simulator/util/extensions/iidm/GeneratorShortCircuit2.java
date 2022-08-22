@@ -43,6 +43,7 @@ public class GeneratorShortCircuit2 extends AbstractExtension<Generator> {
     private final double cq;
     private final double maxR1ToX1Ratio;
     private final double ikQmax;
+    private final double voltageRegulationRange;
 
     @Override
     public String getName() {
@@ -50,7 +51,7 @@ public class GeneratorShortCircuit2 extends AbstractExtension<Generator> {
     }
 
     public GeneratorShortCircuit2(Generator generator, double transRd, double subTransRd, boolean toGround, double coeffRo, double coeffXo, double coeffRi, double coeffXi, double groundingR, double groundingX, RotorType rotorType, double ratedU, double cosPhi,
-                                  GeneratorType generatorType, double cq, double ikQmax, double maxR1ToX1Ratio) {
+                                  GeneratorType generatorType, double cq, double ikQmax, double maxR1ToX1Ratio, double voltageRegulationRange) {
         super(generator);
         this.transRd = transRd;
         this.subTransRd = subTransRd;
@@ -68,6 +69,7 @@ public class GeneratorShortCircuit2 extends AbstractExtension<Generator> {
         this.cq = cq;
         this.ikQmax = ikQmax;
         this.maxR1ToX1Ratio = maxR1ToX1Ratio;
+        this.voltageRegulationRange = voltageRegulationRange;
     }
 
     public double getTransRd() {
@@ -140,5 +142,9 @@ public class GeneratorShortCircuit2 extends AbstractExtension<Generator> {
 
     public double getMaxR1ToX1Ratio() {
         return maxR1ToX1Ratio;
+    }
+
+    public double getVoltageRegulationRange() {
+        return voltageRegulationRange;
     }
 }

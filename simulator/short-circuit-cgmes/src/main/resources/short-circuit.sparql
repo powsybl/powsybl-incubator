@@ -18,6 +18,7 @@ SELECT *
     OPTIONAL { ?ID cim:SynchronousMachine.x2 ?x2 }
     OPTIONAL { ?ID cim:SynchronousMachine.r ?r }
     OPTIONAL { ?ID cim:SynchronousMachine.shortCircuitRotorType ?shortCircuitRotorType }
+    OPTIONAL { ?ID cim:SynchronousMachine.voltageRegulationRange ?voltageRegulationRange }
     OPTIONAL { ?ID cim:RotatingMachine.ratedU ?ratedU }
     OPTIONAL { ?ID cim:RotatingMachine.ratedPowerFactor ?ratedPowerFactor }
 }
@@ -60,6 +61,13 @@ SELECT *
     OPTIONAL { ?ID cim:ACLineSegment.g0ch ?g0ch }
 }
 
+# query: powerTransformerShortCircuit
+SELECT *
+{
+    ?ID
+        a cim:PowerTransformer ;
+    OPTIONAL { ?ID cim:PowerTransformer.isPartOfGeneratorUnit ?isPartOfGeneratorUnit }
+}
 
 # query: powerTransformerEndShortCircuit
 SELECT *

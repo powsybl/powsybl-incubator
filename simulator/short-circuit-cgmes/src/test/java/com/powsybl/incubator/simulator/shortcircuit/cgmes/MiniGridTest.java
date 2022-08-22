@@ -93,16 +93,31 @@ public class MiniGridTest {
         //double qM1ScLoad = 28.9929;
         //double pM2ScLoad = 2.40235;
         //double qM2ScLoad = 24.0235;
+        //double kG1 = 0.99597;
+        //double kG2 = 0.876832;
 
-        // G1, G2, G3
+        // G1, G2
         // Attribute values for G1 et G2 taking into account that T1 and T2 are modeled separately
-        double kG1 = 0.99597; // computed in IEC doc TODO : find a way to compute it from input data from extensions
-        double kG2 = 0.876832; // TODO : get exact value from extensions
-
         Generator g1 = network.getGenerator(genNameToId.get("G1"));
-        adjustWithKg(g1, kG1);
         Generator g2 = network.getGenerator(genNameToId.get("G2"));
+
+        // T1 and T2
+        TwoWindingsTransformer t1 = network.getTwoWindingsTransformer(t2wNameToId.get("T1"));
+        TwoWindingsTransformer t2 = network.getTwoWindingsTransformer(t2wNameToId.get("T2"));
+
+        double kG1 = shortCircuitNormIec.getKsAggregatedTfoGen(network, t1); // from t1 we get G1 values to get KS
+        double kG2 = shortCircuitNormIec.getKsAggregatedTfoGen(network, t2);
+
+        adjustWithKg(g1, kG1);
         adjustWithKg(g2, kG2);
+
+        t1.setX(t1.getX() * kG1);
+        t2.setX(t2.getX() * kG2);
+
+        t1.setR(t1.getR() * kG1);
+        t2.setR(t2.getR() * kG2);
+
+        // G3
         Generator g3 = network.getGenerator(genNameToId.get("G3"));
         double kG3Iec = shortCircuitNormIec.getKg(g3);
         adjustWithKg(g3, kG3Iec);
@@ -140,16 +155,6 @@ public class MiniGridTest {
 
         t5.setR(t5.getR() * kt5Iec);
         t6.setR(t6.getR() * kt6Iec);
-
-        // T1 and T2
-        TwoWindingsTransformer t1 = network.getTwoWindingsTransformer(t2wNameToId.get("T1"));
-        TwoWindingsTransformer t2 = network.getTwoWindingsTransformer(t2wNameToId.get("T2"));
-
-        t1.setX(t1.getX() * kG1);
-        t2.setX(t2.getX() * kG2);
-
-        t1.setR(t1.getR() * kG1);
-        t2.setR(t2.getR() * kG2);
 
         //T3 and T4
         ThreeWindingsTransformer t3 = network.getThreeWindingsTransformer(t3wNameToId.get("T3"));
@@ -196,14 +201,14 @@ public class MiniGridTest {
         //NetworkXml.write(network, filePath);
 
         // I"k = 1/sqrt(3) * cmax * Un /(Zeq)
-        assertEquals(40.64478476116188, values.get(0), 0.001); // bus 1 : expected in doc = 40.6447 kA
-        assertEquals(31.783052222534174, values.get(1), 0.01); // bus 2 : expected in doc =  31.7831 kA
-        assertEquals(19.672955775750143, values.get(2), 0.001); // bus 3 : expected in doc =  19.673 kA
-        assertEquals(16.227655866910894, values.get(3), 0.001); // bus 4 : expected in doc =  16.2277 kA
-        assertEquals(33.18941481677016, values.get(4), 0.01); // bus 5 : expected in doc =  33.1894 kA
-        assertEquals(37.56287899040728, values.get(5), 0.1); // bus 6 : expected in doc =  37.5629 kA
-        assertEquals(25.589463480212533, values.get(6), 0.1); // bus 7 : expected in doc =  25.5895 kA
-        assertEquals(13.577771545200052, values.get(7), 0.001); // bus 8 : expected in doc =  13.5778 kA
+        assertEquals(40.64478476116188, values.get(0), 0.001); // bus 1 : expected in IEC doc = 40.6447 kA and in CGMES doc = 40.6375 kA
+        assertEquals(31.783052222534174, values.get(1), 0.01); // bus 2 : expected in doc =  31.7831 kA  and in CGMES doc = 31.6939 kA
+        assertEquals(19.672955775750143, values.get(2), 0.001); // bus 3 : expected in doc =  19.673 kA and in CGMES doc = 19.5243 kA
+        assertEquals(16.227655866910894, values.get(3), 0.001); // bus 4 : expected in doc =  16.2277 kA and in CGMES doc = 16.1686 kA
+        assertEquals(33.18941481677016, values.get(4), 0.01); // bus 5 : expected in doc =  33.1894 kA and in CGMES doc = 33.0764 kA
+        assertEquals(37.56287899040728, values.get(5), 0.1); // bus 6 : expected in doc =  37.5629 kA and in CGMES doc = 37.5547 kA
+        assertEquals(25.589463480212533, values.get(6), 0.1); // bus 7 : expected in doc =  25.5895 kA and in CGMES doc = 25.5862 kA
+        assertEquals(13.577771545200052, values.get(7), 0.001); // bus 8 : expected in doc =  13.5778 kA and in CGMES doc = 13.632 kA
 
     }
 

@@ -23,15 +23,17 @@ public class TwoWindingsTransformerShortCircuit extends AbstractExtension<TwoWin
     private final boolean freeFluxes; // free fluxes mean that magnetizing impedance Zm is infinite, by default, fluxes are forced and Zm exists
     private final LegConnectionType leg1ConnectionType;
     private final LegConnectionType leg2ConnectionType;
+    private boolean isPartOfGeneratingUnit;
 
     @Override
     public String getName() {
         return NAME;
     }
 
-    public TwoWindingsTransformerShortCircuit(TwoWindingsTransformer twt, double coeffRo, double coeffXo, boolean freeFluxes,
+    public TwoWindingsTransformerShortCircuit(TwoWindingsTransformer twt, boolean isPartOfGeneratingUnit, double coeffRo, double coeffXo, boolean freeFluxes,
                                               LegConnectionType leg1ConnectionType, LegConnectionType leg2ConnectionType) {
         super(twt);
+        this.isPartOfGeneratingUnit = isPartOfGeneratingUnit;
         this.coeffRo = coeffRo;
         this.coeffXo = coeffXo;
         this.freeFluxes = freeFluxes;
@@ -57,5 +59,13 @@ public class TwoWindingsTransformerShortCircuit extends AbstractExtension<TwoWin
 
     public LegConnectionType getLeg2ConnectionType() {
         return leg2ConnectionType;
+    }
+
+    public void setPartOfGeneratingUnit(boolean partOfGeneratingUnit) {
+        isPartOfGeneratingUnit = partOfGeneratingUnit;
+    }
+
+    public boolean isPartOfGeneratingUnit() {
+        return isPartOfGeneratingUnit;
     }
 }

@@ -1,0 +1,11 @@
+data;
+
+param: VARIANTS_BUSES: bus_substations bus_cc bus_v bus_theta bus_p bus_q bus_fault bus_curative bus_id := include ampl_network_buses.txt;
+
+param: VARIANTS_GENS: gen_bus gen_conbus gen_substation gen_minp gen_maxp gen_minqmaxp gen_minq0 gen_minqminp gen_maxqmaxp gen_maxq0 gen_maxqminp gen_vregul  gen_targetv gen_targetp gen_targetq gen_fault gen_curative gen_id gen_desc gen_p gen_q := include ampl_network_generators.txt;
+
+param: VARIANTS_BRANCHES: br_bus1 br_bus2 br_3wtnum br_sub1 br_sub2 br_r br_x br_g1 br_g2 br_b1 br_b2 br_cstr br_ratiotc br_phasetc br_p1 br_p2 br_q1 br_q2 br_patl1 br_patl2 br_merged br_fault br_curative br_id br_desc := include ampl_network_branches.txt;
+
+param: VARIANTS_SS: ss_unused1 ss_unused2 ss_nomv ss_minv ss_maxv ss_fault ss_curative ss_country ss_id ss_desc := include ampl_network_substations.txt;
+
+param: VARIANTS_LOADS: ld_bus ld_ss ld_p0 ld_q0 ld_fault ld_curative ld_id ld_desc ld_p ld_q := include ampl_network_loads.txt;

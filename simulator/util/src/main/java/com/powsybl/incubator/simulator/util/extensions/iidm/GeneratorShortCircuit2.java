@@ -29,9 +29,9 @@ public class GeneratorShortCircuit2 extends AbstractExtension<Generator> {
 
     private double transRd; // transient resistance // TODO : will be final when kG of the norm will be handled
     private double subTransRd; // sub-transient resistance // TODO : will be final when kG of the norm will be handled
-    private final boolean toGround;
-    private final double coeffRo;
-    private final double coeffXo;
+    private boolean toGround;
+    private double coeffRo;
+    private double coeffXo;
     private final double coeffRi;
     private final double coeffXi;
     private final double groundingR;
@@ -146,5 +146,17 @@ public class GeneratorShortCircuit2 extends AbstractExtension<Generator> {
 
     public double getVoltageRegulationRange() {
         return voltageRegulationRange;
+    }
+
+    public void setCoeffRo(double coeffRo) {
+        this.coeffRo = coeffRo;
+    }
+
+    public void setCoeffXo(double coeffXo) {
+        this.coeffXo = coeffXo;
+    }
+
+    public void setToGround(boolean toGround) {
+        this.toGround = toGround;
     }
 }

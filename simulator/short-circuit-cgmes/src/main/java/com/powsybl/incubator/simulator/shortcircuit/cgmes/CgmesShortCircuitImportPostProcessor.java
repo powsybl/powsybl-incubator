@@ -103,7 +103,7 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
                 throw new PowsyblException("Generator '" + generator.getId() + "' has a rated U equal to zero");
             }
 
-            double zBase = ratedU * ratedU / genRatedS; // TODO : ratedU and not Unom !!!!! for S2 10.5 kV instead of 16 kV
+            double zBase = ratedU * ratedU / genRatedS;
             double subTransXd = subTransXdPu * zBase;
             double transXd = transXdPu * zBase;
 

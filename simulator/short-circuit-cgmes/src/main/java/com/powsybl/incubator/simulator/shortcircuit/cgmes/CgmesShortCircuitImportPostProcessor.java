@@ -90,6 +90,7 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
             double ratedU = propertyBag.asDouble("ratedU");
             double ratedPowerFactor = propertyBag.asDouble("ratedPowerFactor");
             double voltageRegulationRange = propertyBag.asDouble("voltageRegulationRange", 0.);
+            boolean earthing = propertyBag.asBoolean("earthing", false);
 
             Generator generator = network.getGenerator(id);
             if (generator == null) {
@@ -137,6 +138,9 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
                     .withCosPhi(ratedPowerFactor)
                     .withGeneratorType(GeneratorShortCircuit2.GeneratorType.ROTATING_MACHINE)
                     .withVoltageRegulationRange(voltageRegulationRange)
+                    .withToGround(earthing)
+                    .withGroundingR(0.)  // TODO : check if info available
+                    .withCoeffXo(0.)
                     .add();
         }
     }

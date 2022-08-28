@@ -163,10 +163,6 @@ public class MiniGridTest {
         lineNameToId.put("L3a", "35df6abe-3087-4c27-a90a-12b5065333f3");
         lineNameToId.put("L3b", "05597934-b248-491e-803a-68ce6290f502");
 
-        double xG1 = 26.336676;
-        double rG1 = 0.498795;
-        double coeffRoG1 = 0.439059 / rG1; // grounded = true
-
         double rhoB2 = 1. / (120. * 120.);
         double rT3a = 0.045714 * rhoB2;
         double xT3a = 8.0969989 * rhoB2;
@@ -180,16 +176,6 @@ public class MiniGridTest {
 
         double coeffF2Ro = 6.6;
         double coeffF2Xo = 3.3;
-
-        //G1 homopolar data
-        Generator g1 = network.getGenerator(genNameToId.get("G1"));
-        GeneratorShortCircuit2 g1Extensions2 = g1.getExtension(GeneratorShortCircuit2.class);
-
-        double coeffXoG1 = 1.0;
-
-        g1Extensions2.setCoeffRo(coeffRoG1);
-        g1Extensions2.setCoeffXo(coeffXoG1); // TODO : check the influence of separated T1
-        g1Extensions2.setToGround(false);
 
         Generator q2 = network.getGenerator(genNameToId.get("Q2"));
         GeneratorShortCircuit2 q2Extensions2 = q2.getExtension(GeneratorShortCircuit2.class);

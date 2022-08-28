@@ -19,6 +19,7 @@ SELECT *
     OPTIONAL { ?ID cim:SynchronousMachine.r ?r }
     OPTIONAL { ?ID cim:SynchronousMachine.shortCircuitRotorType ?shortCircuitRotorType }
     OPTIONAL { ?ID cim:SynchronousMachine.voltageRegulationRange ?voltageRegulationRange }
+    OPTIONAL { ?ID cim:SynchronousMachine.earthing ?earthing }
     OPTIONAL { ?ID cim:RotatingMachine.ratedU ?ratedU }
     OPTIONAL { ?ID cim:RotatingMachine.ratedPowerFactor ?ratedPowerFactor }
 }

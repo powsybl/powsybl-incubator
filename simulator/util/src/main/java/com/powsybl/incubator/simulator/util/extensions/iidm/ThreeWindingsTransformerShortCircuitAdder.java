@@ -30,6 +30,12 @@ public class ThreeWindingsTransformerShortCircuitAdder extends AbstractExtension
     private LegConnectionType leg1ConnectionType = DEFAULT_LEG1_CONNECTION_TYPE;
     private LegConnectionType leg2ConnectionType = DEFAULT_LEG2_CONNECTION_TYPE;
     private LegConnectionType leg3ConnectionType = DEFAULT_LEG3_CONNECTION_TYPE;
+    private double leg1Ro = DEFAULT_COEFF_RO;
+    private double leg2Ro = DEFAULT_COEFF_RO;
+    private double leg3Ro = DEFAULT_COEFF_RO;
+    private double leg1Xo = DEFAULT_COEFF_XO;
+    private double leg2Xo = DEFAULT_COEFF_XO;
+    private double leg3Xo = DEFAULT_COEFF_XO;
 
     public ThreeWindingsTransformerShortCircuitAdder(ThreeWindingsTransformer twt) {
         super(twt);
@@ -46,7 +52,8 @@ public class ThreeWindingsTransformerShortCircuitAdder extends AbstractExtension
                 leg1CoeffRo, leg2CoeffRo, leg3CoeffRo,
                 leg1CoeffXo, leg2CoeffXo, leg3CoeffXo,
                 leg1FreeFluxes, leg2FreeFluxes, leg3FreeFluxes,
-                leg1ConnectionType, leg2ConnectionType, leg3ConnectionType);
+                leg1ConnectionType, leg2ConnectionType, leg3ConnectionType,
+                leg1Ro, leg2Ro, leg3Ro, leg1Xo, leg2Xo, leg3Xo);
     }
 
     public ThreeWindingsTransformerShortCircuitAdder withLeg1CoeffRo(double leg1CoeffRo) {
@@ -108,4 +115,35 @@ public class ThreeWindingsTransformerShortCircuitAdder extends AbstractExtension
         this.leg3ConnectionType = Objects.requireNonNull(leg3ConnectionType);
         return this;
     }
+
+    public ThreeWindingsTransformerShortCircuitAdder withLeg1Ro(double leg1Ro) {
+        this.leg1Ro = leg1Ro;
+        return this;
+    }
+
+    public ThreeWindingsTransformerShortCircuitAdder withLeg2Ro(double leg2Ro) {
+        this.leg2Ro = leg2Ro;
+        return this;
+    }
+
+    public ThreeWindingsTransformerShortCircuitAdder withLeg3Ro(double leg3Ro) {
+        this.leg3Ro = leg3Ro;
+        return this;
+    }
+
+    public ThreeWindingsTransformerShortCircuitAdder withLeg1Xo(double leg1Xo) {
+        this.leg1Xo = leg1Xo;
+        return this;
+    }
+
+    public ThreeWindingsTransformerShortCircuitAdder withLeg2Xo(double leg2Xo) {
+        this.leg2Xo = leg2Xo;
+        return this;
+    }
+
+    public ThreeWindingsTransformerShortCircuitAdder withLeg3Xo(double leg3Xo) {
+        this.leg3Xo = leg3Xo;
+        return this;
+    }
+
 }

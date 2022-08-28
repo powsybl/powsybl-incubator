@@ -9,9 +9,7 @@ package com.powsybl.incubator.simulator.shortcircuit;
 import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.*;
 import com.powsybl.iidm.network.extensions.GeneratorShortCircuit;
-import com.powsybl.incubator.simulator.util.extensions.iidm.GeneratorShortCircuit2;
-import com.powsybl.incubator.simulator.util.extensions.iidm.LoadShortCircuit;
-import com.powsybl.incubator.simulator.util.extensions.iidm.TwoWindingsTransformerShortCircuit;
+import com.powsybl.incubator.simulator.util.extensions.iidm.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -182,6 +180,50 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
         result.add(kTcR);
         result.add(kTcX);
 
+        // dealing homopolar part
+        ThreeWindingsTransformerShortCircuit extension = t3w.getExtension(ThreeWindingsTransformerShortCircuit.class);
+        if (extension != null) {
+            double ra0 = extension.getLeg1Ro();
+            double xa0 = extension.getLeg1Xo();
+            double rb0 = extension.getLeg2Ro();
+            double xb0 = extension.getLeg2Xo();
+            double rc0 = extension.getLeg3Ro();
+            double xc0 = extension.getLeg3Xo();
+
+            double ra0T3k = 0.5 * (ktabIec * (ra0 + rb0) + ktacIec * (ra0 + rc0) - ktbcIec * (rb0 + rc0));
+            double xa0T3k = 0.5 * (ktabIec * (xa0 + xb0) + ktacIec * (xa0 + xc0) - ktbcIec * (xb0 + xc0));
+            double rb0T3k = 0.5 * (ktabIec * (ra0 + rb0) - ktacIec * (ra0 + rc0) + ktbcIec * (rb0 + rc0));
+            double xb0T3k = 0.5 * (ktabIec * (xa0 + xb0) - ktacIec * (xa0 + xc0) + ktbcIec * (xb0 + xc0));
+            double rc0T3k = 0.5 * (-ktabIec * (ra0 + rb0) + ktacIec * (ra0 + rc0) + ktbcIec * (rb0 + rc0));
+            double xc0T3k = 0.5 * (-ktabIec * (xa0 + xb0) + ktacIec * (xa0 + xc0) + ktbcIec * (xb0 + xc0));
+
+            double coefaX0 = getCheckedCoef(t3WId, xa0T3k, xaT3k);
+            double coefaR0 = getCheckedCoef(t3WId, ra0T3k, raT3k);
+
+            double coefbX0 = getCheckedCoef(t3WId, xb0T3k, xbT3k);
+            double coefbR0 = getCheckedCoef(t3WId, rb0T3k, rbT3k);
+
+            double coefbX0bis = xb0T3k / xbT3k;
+
+            double coefcX0 = getCheckedCoef(t3WId, xc0T3k, xcT3k);
+            double coefcR0 = getCheckedCoef(t3WId, rc0T3k, rcT3k);
+
+            result.add(coefaR0);
+            result.add(coefaX0);
+            result.add(coefbR0);
+            result.add(coefbX0);
+            result.add(coefcR0);
+            result.add(coefcX0);
+
+        } else {
+            result.add(0.);
+            result.add(0.);
+            result.add(0.);
+            result.add(0.);
+            result.add(0.);
+            result.add(0.);
+        }
+
         return result;
     }
 
@@ -297,6 +339,17 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
         leg2.setX(leg2.getX() * result.get(3));
         leg3.setR(leg3.getR() * result.get(4));
         leg3.setX(leg3.getX() * result.get(5));
+
+        ThreeWindingsTransformerShortCircuit extension = t3w.getExtension(ThreeWindingsTransformerShortCircuit.class);
+        if (extension != null) {
+            // these values already contain the Kt coeff
+            extension.setLeg1CoeffRo(result.get(6));
+            extension.setLeg1CoeffXo(result.get(7));
+            extension.setLeg2CoeffRo(result.get(8));
+            extension.setLeg2CoeffXo(result.get(9));
+            extension.setLeg3CoeffRo(result.get(10));
+            extension.setLeg3CoeffXo(result.get(11));
+        }
 
     }
 

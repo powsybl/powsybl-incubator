@@ -278,23 +278,31 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
             } else {
                 ThreeWindingsTransformer t3wt = network.getThreeWindingsTransformer(id);
                 if (t3wt != null) {
-                    if (endNumber == 1) {
-                        t3wt.getLeg1().setRatedS(ratedS);
-                    } else if (endNumber == 2) {
-                        t3wt.getLeg2().setRatedS(ratedS);
-                    } else if (endNumber == 3) {
-                        t3wt.getLeg3().setRatedS(ratedS);
-                    } else {
-                        throw new PowsyblException("incorrect end number for 3 windings transformer end '" + id + "'");
-                    }
                     ThreeWindingsTransformerShortCircuit extension = t3wt.getExtension(ThreeWindingsTransformerShortCircuit.class);
                     if (extension == null) {
                         t3wt.newExtension(ThreeWindingsTransformerShortCircuitAdder.class)
-                                // TODO
                                 .add();
                         extension = t3wt.getExtension(ThreeWindingsTransformerShortCircuit.class);
                     }
-                    // TODO
+
+                    double ratedU02 = t3wt.getRatedU0() * t3wt.getRatedU0();
+
+                    if (endNumber == 1) {
+                        t3wt.getLeg1().setRatedS(ratedS);
+                        extension.setLeg1Ro(r0 * ratedU02 / t3wt.getLeg1().getRatedU() / t3wt.getLeg1().getRatedU());
+                        extension.setLeg1Xo(x0 * ratedU02 / t3wt.getLeg1().getRatedU() / t3wt.getLeg1().getRatedU());
+                    } else if (endNumber == 2) {
+                        t3wt.getLeg2().setRatedS(ratedS);
+                        extension.setLeg2Ro(r0 * ratedU02 / t3wt.getLeg2().getRatedU() / t3wt.getLeg2().getRatedU());
+                        extension.setLeg2Xo(x0 * ratedU02 / t3wt.getLeg2().getRatedU() / t3wt.getLeg2().getRatedU());
+                    } else if (endNumber == 3) {
+                        t3wt.getLeg3().setRatedS(ratedS);
+                        extension.setLeg3Ro(r0 * ratedU02 / t3wt.getLeg3().getRatedU() / t3wt.getLeg3().getRatedU());
+                        extension.setLeg3Xo(x0 * ratedU02 / t3wt.getLeg3().getRatedU() / t3wt.getLeg3().getRatedU());
+                    } else {
+                        throw new PowsyblException("incorrect end number for 3 windings transformer end '" + id + "'");
+                    }
+
                 } else {
                     throw new PowsyblException("2 or 3 windings transformer not found: '" + id + "'");
                 }

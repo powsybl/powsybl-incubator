@@ -167,38 +167,6 @@ public class MiniGridTest {
         double rG1 = 0.498795;
         double coeffRoG1 = 0.439059 / rG1; // grounded = true
 
-        //double coeffXoG1 = 13.340874 / xG1;
-
-        double xL1 = 7.8;
-        double rL1 = 2.4;
-        double coeffRoL1 = 6.4 / rL1;
-        double coeffXoL1 = 25.2 / xL1;
-
-        double xL2 = 3.9;
-        double rL2 = 1.2;
-        double coeffRoL2 = 3.2 / rL2;
-        double coeffXoL2 = 12.6 / xL2;
-
-        double xL3 = 0.975; // TODO : check if this 2 times or only once
-        double rL3 = 0.3;
-        double coeffRoL3 = 1.3 / rL3;
-        double coeffXoL3 = 4.65 / xL3;
-
-        double xL4 = 3.88;
-        double rL4 = 0.96;
-        double coeffRoL4 = 2.2 / rL4;
-        double coeffXoL4 = 11. / xL4;
-
-        double xL5 = 5.79;
-        double rL5 = 1.8;
-        double coeffRoL5 = 3.3 / rL5;
-        double coeffXoL5 = 16.5 / xL5;
-
-        double xL6 = 0.086;
-        double rL6 = 0.082;
-        double coeffRoL6 = 1.0; // not used
-        double coeffXoL6 = 1.0; // not used
-
         double rhoB2 = 1. / (120. * 120.);
         double rT3a = 0.045714 * rhoB2;
         double xT3a = 8.0969989 * rhoB2;
@@ -229,15 +197,6 @@ public class MiniGridTest {
         q2Extensions2.setCoeffRo(coeffF2Ro);
         q2Extensions2.setCoeffXo(coeffF2Xo);
         q2Extensions2.setToGround(true);
-
-        // Lines
-        Line l1 = network.getLine(lineNameToId.get("L1"));
-        Line l2 = network.getLine(lineNameToId.get("L2"));
-        Line l3a = network.getLine(lineNameToId.get("L3a"));
-        Line l3b = network.getLine(lineNameToId.get("L3b"));
-        Line l4 = network.getLine(lineNameToId.get("L4"));
-        Line l5 = network.getLine(lineNameToId.get("L5"));
-        Line l6 = network.getLine(lineNameToId.get("L6"));
 
         // Tfo 3w
         ThreeWindingsTransformer twt3 = network.getThreeWindingsTransformer(t3wNameToId.get("T3"));
@@ -286,7 +245,7 @@ public class MiniGridTest {
         double uRatedlv = 21.;
         double coefT1 = (13.340874 + xo1ground) / t1.getX() * uRatedlv * uRatedlv / uRatedhv / uRatedhv;
         double coefRoT1 = 0.439059 / t1.getR() * uRatedlv * uRatedlv / uRatedhv / uRatedhv;
-        System.out.println(" T1 : xT1 = " + t1.getX() + " rT1 = " + t1.getR() + " coef = " + coefT1 + " Urated1 = " + t1.getRatedU1() + " Urated2 = " + t1.getRatedU2() + "coefXoT1 = " + coefT1);
+        System.out.println(" T1 : xT1 = " + t1.getX() + " rT1 = " + t1.getR() + " coef = " + coefT1 + " Urated1 = " + t1.getRatedU1() + " Urated2 = " + t1.getRatedU2() + " coefXoT1 = " + coefT1);
 
         t1.newExtension(TwoWindingsTransformerShortCircuitAdder.class)
                 .withLeg1ConnectionType(LegConnectionType.Y_GROUNDED)
@@ -300,35 +259,6 @@ public class MiniGridTest {
                 .withLeg2ConnectionType(LegConnectionType.DELTA)
                 .withCoeffXo(1.0)
                 .withCoeffRo(1.0)
-                .add();
-
-        l1.newExtension(LineShortCircuitAdder.class)
-                .withCoeffRo(coeffRoL1)
-                .withCoeffXo(coeffXoL1)
-                .add();
-        l2.newExtension(LineShortCircuitAdder.class)
-                .withCoeffRo(coeffRoL2)
-                .withCoeffXo(coeffXoL2)
-                .add();
-        l3a.newExtension(LineShortCircuitAdder.class)
-                .withCoeffRo(coeffRoL3)
-                .withCoeffXo(coeffXoL3)
-                .add();
-        l3b.newExtension(LineShortCircuitAdder.class)
-                .withCoeffRo(coeffRoL3)
-                .withCoeffXo(coeffXoL3)
-                .add();
-        l4.newExtension(LineShortCircuitAdder.class)
-                .withCoeffRo(coeffRoL4)
-                .withCoeffXo(coeffXoL4)
-                .add();
-        l5.newExtension(LineShortCircuitAdder.class)
-                .withCoeffRo(coeffRoL5)
-                .withCoeffXo(coeffXoL5)
-                .add();
-        l6.newExtension(LineShortCircuitAdder.class)
-                .withCoeffRo(coeffRoL6)
-                .withCoeffXo(coeffXoL6)
                 .add();
 
         List<ShortCircuitFault> faultList = new ArrayList<>();

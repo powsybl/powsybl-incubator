@@ -191,11 +191,19 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
             double b0ch = propertyBag.asDouble("b0ch");
             Line line = network.getLine(id);
             if (line != null) {
-                // TODO
+                double x = line.getX();
+                double r = line.getR();
+                double coeffRo = 1.;
+                double coeffXo = 1.;
+                if (x != 0.) {
+                    coeffXo = x0 / x;
+                }
+                if (r != 0.) {
+                    coeffRo = r0 / r;
+                }
                 line.newExtension(LineShortCircuitAdder.class)
-                        // TODO
-//                        .withCoeffRo()
-//                        .withCoeffXo()
+                        .withCoeffRo(coeffRo)
+                        .withCoeffXo(coeffXo)
                         .add();
             } else {
                 DanglingLine danglingLine = network.getDanglingLine(id);

@@ -88,4 +88,5 @@ SELECT *
     OPTIONAL { ?TransformerEnd cim:TransformerEnd.rground ?rground }
     OPTIONAL { ?TransformerEnd cim:TransformerEnd.xground ?xground }
     OPTIONAL { ?TransformerEnd cim:TransformerEnd.grounded ?grounded }
+    OPTIONAL { ?TransformerEnd cim:PowerTransformerEnd.connectionKind ?connectionKind }
 }

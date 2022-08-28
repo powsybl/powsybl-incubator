@@ -21,8 +21,8 @@ public class TwoWindingsTransformerShortCircuit extends AbstractExtension<TwoWin
     private final double coeffRo; // Ro = Rd * CoeffRo
     private double coeffXo;
     private final boolean freeFluxes; // free fluxes mean that magnetizing impedance Zm is infinite, by default, fluxes are forced and Zm exists
-    private final LegConnectionType leg1ConnectionType;
-    private final LegConnectionType leg2ConnectionType;
+    private LegConnectionType leg1ConnectionType;
+    private LegConnectionType leg2ConnectionType;
     private boolean isPartOfGeneratingUnit;
 
     @Override
@@ -71,5 +71,13 @@ public class TwoWindingsTransformerShortCircuit extends AbstractExtension<TwoWin
 
     public void setCoeffXo(double coeffXo) {
         this.coeffXo = coeffXo;
+    }
+
+    public void setLeg2ConnectionType(LegConnectionType leg2ConnectionType) {
+        this.leg2ConnectionType = leg2ConnectionType;
+    }
+
+    public void setLeg1ConnectionType(LegConnectionType leg1ConnectionType) {
+        this.leg1ConnectionType = leg1ConnectionType;
     }
 }

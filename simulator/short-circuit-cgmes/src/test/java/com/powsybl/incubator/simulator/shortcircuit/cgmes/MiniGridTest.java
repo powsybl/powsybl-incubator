@@ -174,16 +174,6 @@ public class MiniGridTest {
         double coeffRoT4 = 0.107281 / (rT3b + rT3c) * rhoB2;
         double coeffXoT4 = 18.195035 / (xT3b + xT3c) * rhoB2;
 
-        double coeffF2Ro = 6.6;
-        double coeffF2Xo = 3.3;
-
-        Generator q2 = network.getGenerator(genNameToId.get("Q2"));
-        GeneratorShortCircuit2 q2Extensions2 = q2.getExtension(GeneratorShortCircuit2.class);
-
-        q2Extensions2.setCoeffRo(coeffF2Ro);
-        q2Extensions2.setCoeffXo(coeffF2Xo);
-        q2Extensions2.setToGround(true);
-
         // Tfo 3w
         ThreeWindingsTransformer twt3 = network.getThreeWindingsTransformer(t3wNameToId.get("T3"));
         ThreeWindingsTransformer twt4 = network.getThreeWindingsTransformer(t3wNameToId.get("T4"));

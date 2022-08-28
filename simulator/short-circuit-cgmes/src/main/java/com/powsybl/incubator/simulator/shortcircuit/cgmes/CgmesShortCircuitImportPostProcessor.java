@@ -41,9 +41,9 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
         for (PropertyBag propertyBag : tripleStore.query(queryCatalog.get("externalNetworkInjectionShortCircuit"))) {
             String id = propertyBag.getId("ID");
             double ikQmax = propertyBag.asDouble("maxInitialSymShCCurrent");
-            double maxR0ToX0Ratio = propertyBag.asDouble("maxR0ToX0Ratio");
-            double maxR1ToX1Ratio = propertyBag.asDouble("maxR1ToX1Ratio");
-            double maxZ0ToZ1Ratio = propertyBag.asDouble("maxZ0ToZ1Ratio");
+            double roOverXo = propertyBag.asDouble("maxR0ToX0Ratio");
+            double rOverX = propertyBag.asDouble("maxR1ToX1Ratio");
+            double zoOverZ = propertyBag.asDouble("maxZ0ToZ1Ratio");
             double voltageFactor = propertyBag.asDouble("voltageFactor");
 
             /*System.out.println(" ================>  ExternalNetworkInjectionId = " + id + " ikQmax = " + ikQmax
@@ -53,6 +53,17 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
             Generator generator = network.getGenerator(id);
             if (generator == null) {
                 throw new PowsyblException("Generator '" + id + "' not found");
+            }
+
+            double xoOverX = zoOverZ * Math.sqrt((rOverX * rOverX + 1.) / (roOverXo * roOverXo + 1.));
+            double roOverR = 0.;
+            if (Math.abs(rOverX) > EPSILON) {
+                roOverR = roOverXo * xoOverX / rOverX;
+            }
+
+            boolean grounded = false;
+            if (Math.abs(xoOverX) > EPSILON || Math.abs(roOverR) > EPSILON) {
+                grounded = true;
             }
 
             generator.newExtension(GeneratorShortCircuitAdder.class)
@@ -65,12 +76,13 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
                     .withTransRd(0.)
                     .withCoeffRi(0.)
                     .withCoeffXi(0.)
-                    .withCoeffRo(0.)
-                    .withCoeffXo(0.)
+                    .withCoeffRo(roOverR)
+                    .withCoeffXo(xoOverX)
+                    .withToGround(grounded)
                     .withRatedU(0.)
                     .withCosPhi(0.)
                     .withGeneratorType(GeneratorShortCircuit2.GeneratorType.FEEDER)
-                    .withMaxR1ToX1Ratio(maxR1ToX1Ratio) // extensions for feeder type
+                    .withMaxR1ToX1Ratio(rOverX) // extensions for feeder type
                     .withCq(voltageFactor)
                     .withIkQmax(ikQmax)
                     .add();

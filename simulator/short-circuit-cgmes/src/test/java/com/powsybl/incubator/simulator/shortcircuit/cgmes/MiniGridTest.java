@@ -132,37 +132,6 @@ public class MiniGridTest {
 
         shortCircuitNormIec.applyNormToNetwork(network); // this modifies the characteristics of some iidm equipments
 
-        Map<String, String> genNameToId = new HashMap<>();
-        genNameToId.put("Q1", "089c1945-4101-487f-a557-66c013b748f6");
-        genNameToId.put("Q2", "3de9e1ad-4562-44df-b268-70ed0517e9e7");
-        genNameToId.put("G2", "2970a2b7-b840-4e9c-b405-0cb854cd2318");
-        genNameToId.put("G1", "ca67be42-750e-4ebf-bfaa-24d446e59a22");
-        genNameToId.put("G3", "392ea173-4f8e-48fa-b2a3-5c3721e93196");
-
-        Map<String, String> loadNameToId = new HashMap<>();
-        loadNameToId.put("M1orM3", "062ece1f-ade5-4d20-9c3a-fd8f12d12ec1");
-        loadNameToId.put("M2a", "ba62884d-8800-41a8-9c26-698297d7ebaa");
-        loadNameToId.put("M2b", "f184d87b-5565-45ee-89b4-29e8a42d3ad1");
-
-        Map<String, String> t2wNameToId = new HashMap<>();
-        t2wNameToId.put("T2", "f1e72854-ec35-46e9-b614-27db354e8dbb");
-        t2wNameToId.put("T1", "813365c3-5be7-4ef0-a0a7-abd1ae6dc174");
-        t2wNameToId.put("T5", "ceb5d06a-a7ff-4102-a620-7f3ea5fb4a51");
-        t2wNameToId.put("T6", "6c89588b-3df5-4120-88e5-26164afb43e9");
-
-        Map<String, String> t3wNameToId = new HashMap<>();
-        t3wNameToId.put("T4", "411b5401-0a43-404a-acb4-05c3d7d0c95c");
-        t3wNameToId.put("T3", "5d38b7ed-73fd-405a-9cdb-78425e003773");
-
-        Map<String, String> lineNameToId = new HashMap<>();
-        lineNameToId.put("L5", "1e7f52a9-21d0-4ebe-9a8a-b29281d5bfc9");
-        lineNameToId.put("L6", "56757c2b-550e-4843-886a-ed193f6eb21e");
-        lineNameToId.put("L4", "e95a6228-ceac-4f0a-8b52-d35367b364dc");
-        lineNameToId.put("L1", "d5d1cc4a-6297-4386-b6ce-16dc26f15feb");
-        lineNameToId.put("L2", "efdd7f46-67e6-46e3-9dcd-a3b6f8c613a4");
-        lineNameToId.put("L3a", "35df6abe-3087-4c27-a90a-12b5065333f3");
-        lineNameToId.put("L3b", "05597934-b248-491e-803a-68ce6290f502");
-
         // FIXME : check if there is a mistake in the CGMES input data example:
         //  for T4, by definition :
         //  ro_mvk = Kt_bc * (ro_b + ro_c)
@@ -172,23 +141,6 @@ public class MiniGridTest {
         //  for Ro_T / R_T = 1.0 , does it mean that r_b =? ro_b and r_c =? ro_c, maybe not...
         //  keeping the values provided in input, short circuit at bus2 varies from 15.9722 kA ( = the reference) to 15.981 kA
         //  if we want to keep the reference result, we need to modify the ration of ro_b/r_b and ro_c/r_c equal to : double coeffRoT4 = 0.107281 / (rT4b + rT4c) 120. /120. ;
-
-        // tfo 2w
-        TwoWindingsTransformer t1 = network.getTwoWindingsTransformer(t2wNameToId.get("T1"));
-
-        double xo1ground = 66.;
-        double uRatedhv = 115.;
-        double uRatedlv = 21.;
-        double coefT1 = (13.340874 + xo1ground) / t1.getX() * uRatedlv * uRatedlv / uRatedhv / uRatedhv;
-        double coefRoT1 = 0.439059 / t1.getR() * uRatedlv * uRatedlv / uRatedhv / uRatedhv;
-        System.out.println(" T1 : xT1 = " + t1.getX() + " rT1 = " + t1.getR() + " coef = " + coefT1 + " Urated1 = " + t1.getRatedU1() + " Urated2 = " + t1.getRatedU2() + " coefXoT1 = " + coefT1);
-
-        t1.newExtension(TwoWindingsTransformerShortCircuitAdder.class)
-                .withLeg1ConnectionType(LegConnectionType.Y_GROUNDED)
-                .withLeg2ConnectionType(LegConnectionType.DELTA)
-                .withCoeffXo(coefT1)
-                .withCoeffRo(coefRoT1)
-                .add();
 
         List<ShortCircuitFault> faultList = new ArrayList<>();
         ShortCircuitFault sc1 = new ShortCircuitFault(busNameToId.get("Bus2"), "sc1", 0., 0., ShortCircuitFault.ShortCircuitType.MONOPHASED);

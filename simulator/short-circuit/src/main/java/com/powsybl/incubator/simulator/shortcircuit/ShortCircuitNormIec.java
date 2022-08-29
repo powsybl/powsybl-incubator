@@ -478,6 +478,22 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
                 t2w.setX(t2w.getX() * kt);
                 t2w.setR(t2w.getR() * kt);
             }
+            // handling grounding in addition to X and R but without Kt or Ks
+            TwoWindingsTransformerShortCircuit extension = t2w.getExtension(TwoWindingsTransformerShortCircuit.class);
+            if (extension != null) { // grounding only exist if extension exists
+                double x = t2w.getX();
+                double r = t2w.getR();
+                double ro = extension.getCoeffRo() * r;
+                double xo = extension.getCoeffXo() * x;
+                double roTotal = ro + extension.getR1Ground() + extension.getR2Ground(); // if not grounded R1 and R2 to ground must be 0.
+                double xoTotal = xo + extension.getX1Ground() + extension.getX2Ground(); // TODO : try to implement grounding independently from the norm
+                if (Math.abs(r) > 0.00001) {
+                    extension.setCoeffRo(roTotal / r);
+                }
+                if (Math.abs(x) > 0.00001) {
+                    extension.setCoeffXo(xoTotal / x);
+                }
+            }
         }
 
         // Work on generators

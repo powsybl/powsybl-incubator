@@ -24,8 +24,6 @@ public class TwoWindingsTransformerShortCircuitAdder extends AbstractExtensionAd
     private boolean freeFluxes = DEFAULT_FREE_FLUXES;
     private LegConnectionType leg1ConnectionType = DEFAULT_LEG1_CONNECTION_TYPE;
     private LegConnectionType leg2ConnectionType = DEFAULT_LEG2_CONNECTION_TYPE;
-    private double ro = 0.;
-    private double xo = 0.;
     private double r1Ground = 0.;
     private double x1Ground = 0.;
     private double r2Ground = 0.;
@@ -42,7 +40,7 @@ public class TwoWindingsTransformerShortCircuitAdder extends AbstractExtensionAd
 
     @Override
     protected TwoWindingsTransformerShortCircuit createExtension(TwoWindingsTransformer twt) {
-        return new TwoWindingsTransformerShortCircuit(twt, isPartOfGeneratingUnit, coeffRo, coeffXo, freeFluxes, leg1ConnectionType, leg2ConnectionType, ro, xo, r1Ground, x1Ground, r2Ground, x2Ground);
+        return new TwoWindingsTransformerShortCircuit(twt, isPartOfGeneratingUnit, coeffRo, coeffXo, freeFluxes, leg1ConnectionType, leg2ConnectionType, r1Ground, x1Ground, r2Ground, x2Ground);
     }
 
     public TwoWindingsTransformerShortCircuitAdder withIsPartOfGeneratingUnit(boolean isPartOfGeneratingUnit) {

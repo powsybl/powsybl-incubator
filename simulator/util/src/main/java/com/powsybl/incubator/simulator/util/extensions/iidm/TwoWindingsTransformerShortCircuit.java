@@ -37,7 +37,7 @@ public class TwoWindingsTransformerShortCircuit extends AbstractExtension<TwoWin
     }
 
     public TwoWindingsTransformerShortCircuit(TwoWindingsTransformer twt, boolean isPartOfGeneratingUnit, double coeffRo, double coeffXo, boolean freeFluxes,
-                                              LegConnectionType leg1ConnectionType, LegConnectionType leg2ConnectionType,  double ro, double xo, double r1Ground, double x1Ground, double r2Ground, double x2Ground) {
+                                              LegConnectionType leg1ConnectionType, LegConnectionType leg2ConnectionType, double r1Ground, double x1Ground, double r2Ground, double x2Ground) {
         super(twt);
         this.isPartOfGeneratingUnit = isPartOfGeneratingUnit;
         this.coeffRo = coeffRo;
@@ -45,8 +45,6 @@ public class TwoWindingsTransformerShortCircuit extends AbstractExtension<TwoWin
         this.freeFluxes = freeFluxes;
         this.leg1ConnectionType = Objects.requireNonNull(leg1ConnectionType);
         this.leg2ConnectionType = Objects.requireNonNull(leg2ConnectionType);
-        this.ro = ro;
-        this.xo = xo;
         this.r1Ground = r1Ground;
         this.x1Ground = x1Ground;
         this.r2Ground = r2Ground;
@@ -91,22 +89,6 @@ public class TwoWindingsTransformerShortCircuit extends AbstractExtension<TwoWin
 
     public void setLeg1ConnectionType(LegConnectionType leg1ConnectionType) {
         this.leg1ConnectionType = leg1ConnectionType;
-    }
-
-    public double getRo() {
-        return ro;
-    }
-
-    public double getXo() {
-        return xo;
-    }
-
-    public void setRo(double ro) {
-        this.ro = ro;
-    }
-
-    public void setXo(double xo) {
-        this.xo = xo;
     }
 
     public void setCoeffRo(double coeffRo) {

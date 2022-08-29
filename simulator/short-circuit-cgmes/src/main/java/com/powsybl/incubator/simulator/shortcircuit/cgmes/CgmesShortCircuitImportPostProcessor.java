@@ -15,8 +15,12 @@ import com.powsybl.incubator.simulator.util.extensions.iidm.*;
 import com.powsybl.triplestore.api.PropertyBag;
 import com.powsybl.triplestore.api.QueryCatalog;
 import com.powsybl.triplestore.api.TripleStore;
+import org.apache.commons.math3.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at gmail.com>
@@ -233,7 +237,7 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
         }
     }
 
-    private void processPowerTransformers(Network network, TripleStore tripleStore) {
+    private void processPowerTransformers(Network network, TripleStore tripleStore, Map<TwoWindingsTransformerShortCircuit, Pair<Double, Double>> tmpExtensionToRoXo) {
         for (PropertyBag propertyBag : tripleStore.query(queryCatalog.get("powerTransformerShortCircuit"))) {
             String id = propertyBag.getId("ID");
             boolean isPartOfGeneratingUnit = propertyBag.asBoolean("isPartOfGeneratorUnit", false);
@@ -247,8 +251,9 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
                             .add();
                 } else {
                     extension.setPartOfGeneratingUnit(isPartOfGeneratingUnit);
-                    double ro = extension.getRo();
-                    double xo = extension.getXo();
+                    Pair<Double, Double> roxo = tmpExtensionToRoXo.get(extension);
+                    double ro = roxo.getFirst();
+                    double xo = roxo.getSecond();
                     double coeffRo = 1.;
                     double coeffXo = 1.;
                     if (Math.abs(t2wt.getR()) > EPSILON) {
@@ -264,7 +269,7 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
         }
     }
 
-    private void processPowerTransformerEnds(Network network, TripleStore tripleStore) {
+    private void processPowerTransformerEnds(Network network, TripleStore tripleStore, Map<TwoWindingsTransformerShortCircuit, Pair<Double, Double>> tmpExtensionToRoXo) {
         for (PropertyBag propertyBag : tripleStore.query(queryCatalog.get("powerTransformerEndShortCircuit"))) {
             String id = propertyBag.getId("ID");
             int endNumber = propertyBag.asInt("endNumber");
@@ -303,26 +308,37 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
                             .add();
                     extension = t2wt.getExtension(TwoWindingsTransformerShortCircuit.class);
                 }
+
+                // use of a local variable to get the sum of ro and xo from both ends to get the coefs afterwards
+                double tmpR0 = 0.;
+                double tmpX0 = 0.;
+                if (tmpExtensionToRoXo.containsKey(extension)) {
+                    Pair<Double, Double> tmpRoXo = tmpExtensionToRoXo.get(extension);
+                    tmpR0 = tmpRoXo.getFirst();
+                    tmpX0 = tmpRoXo.getSecond();
+                }
+
                 if (endNumber == 1) {
                     double rho2 = t2wt.getRatedU2() * t2wt.getRatedU2() / t2wt.getRatedU1() / t2wt.getRatedU1();
                     double roRatedU2 = r0 * rho2;
                     double xoRatedU2 = x0 * rho2;
-                    extension.setRo(extension.getRo() + roRatedU2); // we add Zo1 on the side 2
-                    extension.setXo(extension.getXo() + xoRatedU2); // coeffs will be updated in processPowerTransformers()
+
+                    // update of the sum zo = zo1 + zo2
+                    tmpR0 = tmpR0 + roRatedU2;
+                    tmpX0 = tmpX0 + xoRatedU2;
+
                     extension.setLeg1ConnectionType(legConnectionType);
 
                     if (grounded) {
                         extension.setR1Ground(3. * rground * rho2); //ZoT_ground = 3 * Zo_Ground , we put in input the rated value at side 2 ready to be added to R and X of transformer
                         extension.setX1Ground(3. * xground * rho2);
                     }
-                    System.out.println(" T2W : ID = " + id + " end = " + endNumber + " ro = " + roRatedU2 + "  xo = " + xoRatedU2 + " roInit = " + extension.getRo() + " xoInit = " + extension.getXo());
 
                 } else if (endNumber == 2) {
 
-                    extension.setRo(extension.getRo() + r0); // we add Zo2 on the side 2
-                    extension.setXo(extension.getXo() + x0); // coeffs will be updated in processPowerTransformers()
-
-                    System.out.println(" T2W : ID = " + id + " end = " + endNumber + " ro = " + r0 + "  xo = " + x0 + " roInit = " + extension.getRo() + " xoInit = " + extension.getXo());
+                    // update of the sum zo = zo1 + zo2
+                    tmpR0 = tmpR0 + r0;
+                    tmpX0 = tmpX0 + x0;
 
                     extension.setLeg2ConnectionType(legConnectionType);
 
@@ -334,6 +350,11 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
                 } else {
                     throw new PowsyblException("incorrect end number for 2 windings transformer end '" + id + "'");
                 }
+
+                // update of the local variable for the sum zo = zo1 + zo2
+                Pair<Double, Double> newPair = new Pair<>(tmpR0, tmpX0);
+                tmpExtensionToRoXo.put(extension, newPair);
+
             } else {
                 ThreeWindingsTransformer t3wt = network.getThreeWindingsTransformer(id);
                 if (t3wt != null) {
@@ -378,8 +399,9 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
         processSynchronousMachines(network, tripleStore);
         processAsynchronousMachines(network, tripleStore);
         processAcLineSegments(network, tripleStore);
-        processPowerTransformerEnds(network, tripleStore);
-        processPowerTransformers(network, tripleStore);
+        Map<TwoWindingsTransformerShortCircuit, Pair<Double, Double>> tmpExtensionToRoXo = new HashMap<>();
+        processPowerTransformerEnds(network, tripleStore, tmpExtensionToRoXo);
+        processPowerTransformers(network, tripleStore, tmpExtensionToRoXo);
         processExternalNetworkInjection(network, tripleStore);
     }
 }

@@ -71,28 +71,6 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
         return 0.95 * cmax / (1. + 0.6 * xt2w * ratedSt2w / (ratedU2 * ratedU2));
     }
 
-    @Override
-    public double getKtT3W(ThreeWindingsTransformer t3w, int numLeg) {
-
-        ThreeWindingsTransformer.Leg t3wLeg;
-        if (numLeg == 1) {
-            t3wLeg = t3w.getLeg1();
-        } else if (numLeg == 2) {
-            t3wLeg = t3w.getLeg2();
-        } else if (numLeg == 3) {
-            t3wLeg = t3w.getLeg3();
-        } else {
-            throw new IllegalArgumentException("Three Winding Transformer " + t3w.getId() + " input leg must be 1, 2 or 3 but was : " + numLeg);
-        }
-
-        double cmax = getCmaxVoltageFactor(t3wLeg.getTerminal().getVoltageLevel().getNominalV());
-        double ratedSt3w = t3wLeg.getRatedS();
-        double ratedU0 = t3w.getRatedU0(); // we suppose that all impedances are based on an impedance base (Sb_leg, U0)
-        double xt3w = t3wLeg.getX();
-
-        return 0.95 * cmax / (1 + 0.6 * xt3w * ratedSt3w / (ratedU0 * ratedU0));
-    }
-
     public double getKtT3Wij(ThreeWindingsTransformer t3w, int iNumLeg, int jNumLeg) {
 
         ThreeWindingsTransformer.Leg it3wLeg;
@@ -203,8 +181,6 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
             double coefbX0 = getCheckedCoef(t3WId, xb0T3k, xbT3k);
             double coefbR0 = getCheckedCoef(t3WId, rb0T3k, rbT3k);
 
-            double coefbX0bis = xb0T3k / xbT3k;
-
             double coefcX0 = getCheckedCoef(t3WId, xc0T3k, xcT3k);
             double coefcR0 = getCheckedCoef(t3WId, rc0T3k, rcT3k);
 
@@ -225,6 +201,31 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
         }
 
         return result;
+    }
+
+    public void adjustWithKt3W(ThreeWindingsTransformer t3w, List<Double> result) {
+        ThreeWindingsTransformer.Leg leg1 = t3w.getLeg1();
+        ThreeWindingsTransformer.Leg leg2 = t3w.getLeg2();
+        ThreeWindingsTransformer.Leg leg3 = t3w.getLeg3();
+
+        leg1.setR(leg1.getR() * result.get(0));
+        leg1.setX(leg1.getX() * result.get(1));
+        leg2.setR(leg2.getR() * result.get(2));
+        leg2.setX(leg2.getX() * result.get(3));
+        leg3.setR(leg3.getR() * result.get(4));
+        leg3.setX(leg3.getX() * result.get(5));
+
+        ThreeWindingsTransformerShortCircuit extension = t3w.getExtension(ThreeWindingsTransformerShortCircuit.class);
+        if (extension != null) {
+            // these values already contain the Kt coeff
+            extension.setLeg1CoeffRo(result.get(6));
+            extension.setLeg1CoeffXo(result.get(7));
+            extension.setLeg2CoeffRo(result.get(8));
+            extension.setLeg2CoeffXo(result.get(9));
+            extension.setLeg3CoeffRo(result.get(10));
+            extension.setLeg3CoeffXo(result.get(11));
+        }
+
     }
 
     public double getKs(TwoWindingsTransformer t2w, Generator gen) {
@@ -324,31 +325,6 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
             return  1.;
         } else {
             return ztk / zt;
-        }
-
-    }
-
-    public void adjustWithKt3W(ThreeWindingsTransformer t3w, List<Double> result) {
-        ThreeWindingsTransformer.Leg leg1 = t3w.getLeg1();
-        ThreeWindingsTransformer.Leg leg2 = t3w.getLeg2();
-        ThreeWindingsTransformer.Leg leg3 = t3w.getLeg3();
-
-        leg1.setR(leg1.getR() * result.get(0));
-        leg1.setX(leg1.getX() * result.get(1));
-        leg2.setR(leg2.getR() * result.get(2));
-        leg2.setX(leg2.getX() * result.get(3));
-        leg3.setR(leg3.getR() * result.get(4));
-        leg3.setX(leg3.getX() * result.get(5));
-
-        ThreeWindingsTransformerShortCircuit extension = t3w.getExtension(ThreeWindingsTransformerShortCircuit.class);
-        if (extension != null) {
-            // these values already contain the Kt coeff
-            extension.setLeg1CoeffRo(result.get(6));
-            extension.setLeg1CoeffXo(result.get(7));
-            extension.setLeg2CoeffRo(result.get(8));
-            extension.setLeg2CoeffXo(result.get(9));
-            extension.setLeg3CoeffRo(result.get(10));
-            extension.setLeg3CoeffXo(result.get(11));
         }
 
     }
@@ -459,6 +435,21 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
         load.setP0(pEqScLoad);
     }
 
+    public void adjustWithKg(Generator gen, double kg) {
+        // This is a temporary function to multiply with kg
+        // should disappear when the norm will be properly applied
+        GeneratorShortCircuit extension = gen.getExtension(GeneratorShortCircuit.class);
+        if (extension != null) {
+            extension.setDirectSubtransX(extension.getDirectSubtransX() * kg);
+            extension.setDirectTransX(extension.getDirectTransX() * kg);
+        }
+        GeneratorShortCircuit2 extensions2 = gen.getExtension(GeneratorShortCircuit2.class);
+        if (extensions2 != null) {
+            extensions2.setSubTransRd(extensions2.getSubTransRd() * kg);
+            extensions2.setTransRd(extensions2.getTransRd() * kg);
+        }
+    }
+
     public void applyNormToNetwork(Network network) {
 
         // FIXME: the application of the norm modifies the iidm network characteristics. Extensions carried from iidm network to lfNetwork should help to avoid this.
@@ -467,32 +458,22 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
         List<Generator> generatorsWithTfo = new ArrayList<>();
         for (TwoWindingsTransformer t2w : network.getTwoWindingsTransformers()) {
             Generator genTfo = getAssociatedGenerator(network, t2w);
+            TwoWindingsTransformerShortCircuit extension = t2w.getExtension(TwoWindingsTransformerShortCircuit.class);
+            double kNorm;
             if (genTfo != null) {
                 generatorsWithTfo.add(genTfo);
-                double ks = getKs(t2w, genTfo);
-                adjustWithKg(genTfo, ks);
-                t2w.setX(t2w.getX() * ks);
-                t2w.setR(t2w.getR() * ks);
+                kNorm = getKs(t2w, genTfo);
+                adjustWithKg(genTfo, kNorm);
             } else {
-                double kt = getKtT2W(t2w);
-                t2w.setX(t2w.getX() * kt);
-                t2w.setR(t2w.getR() * kt);
+                kNorm = getKtT2W(t2w);
             }
-            // handling grounding in addition to X and R but without Kt or Ks
-            TwoWindingsTransformerShortCircuit extension = t2w.getExtension(TwoWindingsTransformerShortCircuit.class);
+
             if (extension != null) { // grounding only exist if extension exists
-                double x = t2w.getX();
-                double r = t2w.getR();
-                double ro = extension.getCoeffRo() * r;
-                double xo = extension.getCoeffXo() * x;
-                double roTotal = ro + extension.getR1Ground() + extension.getR2Ground(); // if not grounded R1 and R2 to ground must be 0.
-                double xoTotal = xo + extension.getX1Ground() + extension.getX2Ground(); // TODO : try to implement grounding independently from the norm
-                if (Math.abs(r) > 0.00001) {
-                    extension.setCoeffRo(roTotal / r);
-                }
-                if (Math.abs(x) > 0.00001) {
-                    extension.setCoeffXo(xoTotal / x);
-                }
+                extension.setkNorm(kNorm);
+            } else {
+                t2w.newExtension(TwoWindingsTransformerShortCircuitAdder.class)
+                        .withKnorm(kNorm)
+                        .add();
             }
         }
 
@@ -531,18 +512,4 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
         }
     }
 
-    public void adjustWithKg(Generator gen, double kg) {
-        // This is a temporary function to multiply with kg
-        // should disappear when the norm will be properly applied
-        GeneratorShortCircuit extension = gen.getExtension(GeneratorShortCircuit.class);
-        if (extension != null) {
-            extension.setDirectSubtransX(extension.getDirectSubtransX() * kg);
-            extension.setDirectTransX(extension.getDirectTransX() * kg);
-        }
-        GeneratorShortCircuit2 extensions2 = gen.getExtension(GeneratorShortCircuit2.class);
-        if (extensions2 != null) {
-            extensions2.setSubTransRd(extensions2.getSubTransRd() * kg);
-            extensions2.setTransRd(extensions2.getTransRd() * kg);
-        }
-    }
 }

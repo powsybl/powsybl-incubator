@@ -6,6 +6,8 @@
  */
 package com.powsybl.incubator.simulator.util;
 
+import com.powsybl.incubator.simulator.util.extensions.ScTransfo2W;
+import com.powsybl.incubator.simulator.util.extensions.ShortCircuitExtensions;
 import com.powsybl.openloadflow.equations.AbstractNamedEquationTerm;
 import com.powsybl.openloadflow.equations.Variable;
 import com.powsybl.openloadflow.equations.VariableSet;
@@ -79,19 +81,31 @@ public abstract class AbstractAdmittanceEquationTerm extends AbstractNamedEquati
         if (piModel.getZ() == 0) {
             throw new IllegalArgumentException("Branch '" + branch.getId() + "' has Z equal to zero");
         }
-        zInvSquare = 1 / (piModel.getZ() * piModel.getZ());
-        r = piModel.getR();
-        x = piModel.getX();
+
+        double kT = 1.;
+        if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_2) {
+            // branch is a 2 windings transformer
+            ScTransfo2W scTransfo = (ScTransfo2W) branch.getProperty(ShortCircuitExtensions.PROPERTY_SHORT_CIRCUIT);
+            if (scTransfo != null) {
+                kT = scTransfo.getkT();
+            }
+        }
+
+        double zk = piModel.getZ() * kT;
+
+        zInvSquare = 1 / (zk * zk);
+        r = piModel.getR() * kT;
+        x = piModel.getX() * kT;
         double alpha = piModel.getA1();
         cosA = Math.cos(Math.toRadians(alpha));
         sinA = Math.sin(Math.toRadians(alpha));
         cos2A = Math.cos(Math.toRadians(2 * alpha));
         sin2A = Math.sin(Math.toRadians(2 * alpha));
 
-        gPi1 = piModel.getG1();
-        bPi1 = piModel.getB1();
-        gPi2 = piModel.getG2();
-        bPi2 = piModel.getB2();
+        gPi1 = piModel.getG1() / kT;
+        bPi1 = piModel.getB1() / kT;
+        gPi2 = piModel.getG2() / kT;
+        bPi2 = piModel.getB2() / kT;
     }
 
     @Override

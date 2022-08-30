@@ -138,12 +138,17 @@ public class HomopolarModel {
             // branch is a 2 windings transformer and homopolar data available
             ScTransfo2W scTransfo = (ScTransfo2W) branch.getProperty(ShortCircuitExtensions.PROPERTY_SHORT_CIRCUIT);
             if (scTransfo != null) {
-                double rCoeff = scTransfo.getCoeffRo();
-                double xCoeff = scTransfo.getCoeffXo();
-                homopolarExtension.ro = r * rCoeff;
-                homopolarExtension.xo = x * xCoeff;
-                homopolarExtension.gom = gPi1 / rCoeff; //TODO : adapt
-                homopolarExtension.bom = bPi1 / xCoeff;  //TODO : adapt
+                double roCoeff = scTransfo.getCoeffRo();
+                double xoCoeff = scTransfo.getCoeffXo();
+
+                double kT = scTransfo.getkT();
+                double rok = r * roCoeff * kT;
+                double xok = x * xoCoeff * kT;
+
+                homopolarExtension.ro = rok + scTransfo.getR1Ground() + scTransfo.getR2Ground(); // we assume by construction that if side is not grounded then rGround = 0
+                homopolarExtension.xo = xok + scTransfo.getX1Ground() + scTransfo.getX2Ground();
+                homopolarExtension.gom = gPi1 / roCoeff / kT; //TODO : adapt
+                homopolarExtension.bom = bPi1 / xoCoeff / kT;  //TODO : adapt
 
                 homopolarExtension.leg1ConnectionType = scTransfo.getLeg1ConnectionType();
                 homopolarExtension.leg2ConnectionType = scTransfo.getLeg2ConnectionType();

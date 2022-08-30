@@ -20,8 +20,7 @@ public class TwoWindingsTransformerShortCircuit extends AbstractExtension<TwoWin
 
     private double coeffRo; // Ro = Rd * CoeffRo
     private double coeffXo;
-    private double ro; // used to build the coeffs
-    private double xo;
+    private double kNorm; // coef used by the chosen norm to modify R, X, Ro and Xo
     private final boolean freeFluxes; // free fluxes mean that magnetizing impedance Zm is infinite, by default, fluxes are forced and Zm exists
     private LegConnectionType leg1ConnectionType;
     private LegConnectionType leg2ConnectionType;
@@ -36,12 +35,13 @@ public class TwoWindingsTransformerShortCircuit extends AbstractExtension<TwoWin
         return NAME;
     }
 
-    public TwoWindingsTransformerShortCircuit(TwoWindingsTransformer twt, boolean isPartOfGeneratingUnit, double coeffRo, double coeffXo, boolean freeFluxes,
+    public TwoWindingsTransformerShortCircuit(TwoWindingsTransformer twt, boolean isPartOfGeneratingUnit, double coeffRo, double coeffXo, double kNorm, boolean freeFluxes,
                                               LegConnectionType leg1ConnectionType, LegConnectionType leg2ConnectionType, double r1Ground, double x1Ground, double r2Ground, double x2Ground) {
         super(twt);
         this.isPartOfGeneratingUnit = isPartOfGeneratingUnit;
         this.coeffRo = coeffRo;
         this.coeffXo = coeffXo;
+        this.kNorm = kNorm;
         this.freeFluxes = freeFluxes;
         this.leg1ConnectionType = Objects.requireNonNull(leg1ConnectionType);
         this.leg2ConnectionType = Objects.requireNonNull(leg2ConnectionType);
@@ -125,5 +125,13 @@ public class TwoWindingsTransformerShortCircuit extends AbstractExtension<TwoWin
 
     public void setX2Ground(double x2Ground) {
         this.x2Ground = x2Ground;
+    }
+
+    public double getkNorm() {
+        return kNorm;
+    }
+
+    public void setkNorm(double kNorm) {
+        this.kNorm = kNorm;
     }
 }

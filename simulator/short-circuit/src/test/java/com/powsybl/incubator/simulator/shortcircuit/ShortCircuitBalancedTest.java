@@ -323,15 +323,6 @@ public class ShortCircuitBalancedTest {
         //assertEquals(4039.8610235151364, values.get(8), 0.1); // T3 U0 node : for check only
         //assertEquals(4039.8610235151364, values.get(8), 0.1); // T4 U0 node : for check only
 
-        ThreeWindingsTransformer t3w = network.getThreeWindingsTransformer("T3");
-        double kt3w1 = shortCircuitNormIec.getKtT3W(t3w, 1);
-        double kt3w2 = shortCircuitNormIec.getKtT3W(t3w, 2);
-        double kt3w3 = shortCircuitNormIec.getKtT3W(t3w, 3);
-
-        assertEquals(1.0108949367061448, kt3w1, 0.0000001);
-        assertEquals(1.0453443625666385, kt3w2, 0.0000001);
-        assertEquals(0.9635331330826161, kt3w3, 0.0000001);
-
         TwoWindingsTransformer t2w = network.getTwoWindingsTransformer("T5");
         double kt2w = shortCircuitNormIec.getKtT2W(t2w);
 
@@ -340,14 +331,6 @@ public class ShortCircuitBalancedTest {
         assertEquals(1., shortCircuitNormIec.getCminVoltageFactor(30.), 0.000001);
 
         ShortCircuitNormNone shortCircuitNormNone = new ShortCircuitNormNone();
-
-        kt3w1 = shortCircuitNormNone.getKtT3W(t3w, 1);
-        kt3w2 = shortCircuitNormNone.getKtT3W(t3w, 2);
-        kt3w3 = shortCircuitNormNone.getKtT3W(t3w, 3);
-
-        assertEquals(1.0, kt3w1, 0.0000001);
-        assertEquals(1.0, kt3w2, 0.0000001);
-        assertEquals(1.0, kt3w3, 0.0000001);
 
         kt2w = shortCircuitNormNone.getKtT2W(t2w);
 

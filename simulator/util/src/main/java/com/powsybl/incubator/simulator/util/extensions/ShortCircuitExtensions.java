@@ -27,6 +27,8 @@ public final class ShortCircuitExtensions {
     public static final String PROPERTY_SHORT_CIRCUIT = "ShortCircuit";
     public static final String PROPERTY_HOMOPOLAR_MODEL = "HomopolarModel";
 
+    private static final double SB = 100.;
+
     private ShortCircuitExtensions() {
     }
 
@@ -134,6 +136,11 @@ public final class ShortCircuitExtensions {
         boolean freeFluxes = DEFAULT_FREE_FLUXES;
         LegConnectionType leg1ConnectionType = DEFAULT_LEG1_CONNECTION_TYPE;
         LegConnectionType leg2ConnectionType = DEFAULT_LEG2_CONNECTION_TYPE;
+        double kT = DEFAULT_COEFF_K;
+        double r1Ground = 0.;
+        double x1Ground = 0.;
+        double r2Ground = 0.;
+        double x2Ground = 0.;
         var extensions = twt.getExtension(TwoWindingsTransformerShortCircuit.class);
         if (extensions != null) {
             coeffRo = extensions.getCoeffRo();
@@ -141,9 +148,19 @@ public final class ShortCircuitExtensions {
             freeFluxes = extensions.isFreeFluxes();
             leg1ConnectionType = extensions.getLeg1ConnectionType();
             leg2ConnectionType = extensions.getLeg2ConnectionType();
+            kT = extensions.getkNorm();
+
+            // per unitizing of grounding Z for LfNetwork
+            double u2Nom = twt.getTerminal2().getVoltageLevel().getNominalV();
+            double zBase = u2Nom * u2Nom / SB;
+
+            r1Ground = extensions.getR1Ground() / zBase;
+            x1Ground = extensions.getX1Ground() / zBase;
+            r2Ground = extensions.getR2Ground() / zBase;
+            x2Ground = extensions.getX2Ground() / zBase;
         }
 
-        lfBranch.setProperty(PROPERTY_SHORT_CIRCUIT, new ScTransfo2W(leg1ConnectionType, leg2ConnectionType, coeffRo, coeffXo, freeFluxes));
+        lfBranch.setProperty(PROPERTY_SHORT_CIRCUIT, new ScTransfo2W(leg1ConnectionType, leg2ConnectionType, coeffRo, coeffXo, freeFluxes, kT, r1Ground, x1Ground, r2Ground, x2Ground));
     }
 
     private static void addGeneratorExtension(Network network, LfGenerator lfGenerator) {

@@ -10,7 +10,6 @@ import com.powsybl.cgmes.conformity.CgmesConformity1Catalog;
 import com.powsybl.iidm.import_.Importers;
 import com.powsybl.iidm.network.*;
 import com.powsybl.incubator.simulator.shortcircuit.*;
-import com.powsybl.incubator.simulator.util.extensions.iidm.*;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.math.matrix.DenseMatrixFactory;
 import com.powsybl.math.matrix.MatrixFactory;

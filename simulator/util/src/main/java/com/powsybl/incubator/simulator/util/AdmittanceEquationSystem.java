@@ -69,9 +69,9 @@ public final class AdmittanceEquationSystem {
     }
 
     public enum AdmittancePeriodType {
-        ADM_SUB_TRANSIENT, // all external nodal injections that does not come from branches are considered as current injectors (including shunts elements)
-        ADM_TRANSIENT, // all external  nodal injections that does not come from branches are considered as current injectors (but not shunt elements)
-        ADM_STEADY_STATE, // all external  nodal injections are transformed into passive shunt elements included in the Y matrix (then [Ie] should be [0])
+        ADM_SUB_TRANSIENT,
+        ADM_TRANSIENT,
+        ADM_STEADY_STATE,
     }
 
     private static void createBranches(LfNetwork network, VariableSet<VariableType> variableSet, EquationSystem<VariableType, EquationType> equationSystem, AdmittanceType admittanceType) {

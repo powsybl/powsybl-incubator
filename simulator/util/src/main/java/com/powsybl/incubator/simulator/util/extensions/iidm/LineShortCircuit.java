@@ -16,8 +16,8 @@ public class LineShortCircuit extends AbstractExtension<Line> {
 
     public static final String NAME = "lineShortCircuit";
 
-    private final double coeffRo; // Ro = Rd * CoeffRo
-    private final double coeffXo;
+    private double coeffRo; // Ro = Rd * CoeffRo
+    private double coeffXo;
 
     @Override
     public String getName() {
@@ -36,5 +36,13 @@ public class LineShortCircuit extends AbstractExtension<Line> {
 
     public double getCoeffXo() {
         return coeffXo;
+    }
+
+    public void setCoeffRo(double coeffRo) {
+        this.coeffRo = coeffRo;
+    }
+
+    public void setCoeffXo(double coeffXo) {
+        this.coeffXo = coeffXo;
     }
 }

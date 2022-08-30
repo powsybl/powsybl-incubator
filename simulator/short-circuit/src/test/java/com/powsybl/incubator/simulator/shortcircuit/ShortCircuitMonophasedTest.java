@@ -148,7 +148,7 @@ public class ShortCircuitMonophasedTest {
 
         List<FaultResult> frs = scar.getFaultResults();
 
-        assertEquals(14520.189287313931, frs.get(0).getCurrent().getDirectMagnitude(), 0.01);
+        assertEquals(14682.211812226922, frs.get(0).getCurrent().getDirectMagnitude(), 0.01);
 
     }
 

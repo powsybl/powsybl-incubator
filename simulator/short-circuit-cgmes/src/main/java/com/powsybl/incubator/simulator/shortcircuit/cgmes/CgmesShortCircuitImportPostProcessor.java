@@ -24,6 +24,7 @@ import java.util.Map;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at gmail.com>
+ * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
 @AutoService(CgmesImportPostProcessor.class)
 public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProcessor {

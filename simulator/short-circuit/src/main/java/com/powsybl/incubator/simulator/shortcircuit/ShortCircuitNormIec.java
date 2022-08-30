@@ -435,18 +435,14 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
         load.setP0(pEqScLoad);
     }
 
-    public void adjustWithKg(Generator gen, double kg) {
-        // This is a temporary function to multiply with kg
-        // should disappear when the norm will be properly applied
-        GeneratorShortCircuit extension = gen.getExtension(GeneratorShortCircuit.class);
-        if (extension != null) {
-            extension.setDirectSubtransX(extension.getDirectSubtransX() * kg);
-            extension.setDirectTransX(extension.getDirectTransX() * kg);
-        }
-        GeneratorShortCircuit2 extensions2 = gen.getExtension(GeneratorShortCircuit2.class);
-        if (extensions2 != null) {
-            extensions2.setSubTransRd(extensions2.getSubTransRd() * kg);
-            extensions2.setTransRd(extensions2.getTransRd() * kg);
+    public void setGenKg(Generator gen, double kg) {
+        GeneratorShortCircuit2 extension2Gen = gen.getExtension(GeneratorShortCircuit2.class);
+        if (extension2Gen != null) {
+            extension2Gen.setkG(kg);
+        } else {
+            gen.newExtension(GeneratorShortCircuitAdder2.class)
+                    .withKg(kg)
+                    .add();
         }
     }
 
@@ -463,7 +459,7 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
             if (genTfo != null) {
                 generatorsWithTfo.add(genTfo);
                 kNorm = getKs(t2w, genTfo);
-                adjustWithKg(genTfo, kNorm);
+                setGenKg(genTfo, kNorm);
             } else {
                 kNorm = getKtT2W(t2w);
             }
@@ -491,7 +487,7 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
                 } else {
                     // this includes standard rotating machines
                     double kg = getKg(gen);
-                    adjustWithKg(gen, kg);
+                    setGenKg(gen, kg);
                 }
             }
         }

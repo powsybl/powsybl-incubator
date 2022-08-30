@@ -182,6 +182,7 @@ public final class ShortCircuitExtensions {
         boolean toGround = DEFAULT_TO_GROUND;
         double coeffRo = DEFAULT_COEFF_RO;
         double coeffXo = DEFAULT_COEFF_XO;
+        double kG = 1.0;
         GeneratorShortCircuit2 extensions2 = generator.getExtension(GeneratorShortCircuit2.class);
         if (extensions2 != null) {
             transRd = extensions2.getTransRd();
@@ -189,6 +190,7 @@ public final class ShortCircuitExtensions {
             toGround = extensions2.isToGround();
             coeffRo = extensions2.getCoeffRo();
             coeffXo = extensions2.getCoeffXo();
+            kG = extensions2.getkG();
         }
 
         lfGenerator.setProperty(PROPERTY_SHORT_CIRCUIT, new ScGenerator(transX,
@@ -202,6 +204,6 @@ public final class ShortCircuitExtensions {
                                                                         0.,
                                                                         0.,
                                                                         coeffRo,
-                                                                        coeffXo)); // TODO: set the right type when info available
+                                                                        coeffXo, kG)); // TODO: set the right type when info available
     }
 }

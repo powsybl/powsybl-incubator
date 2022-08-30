@@ -18,25 +18,37 @@ public class TwoWindingsTransformerShortCircuit extends AbstractExtension<TwoWin
 
     public static final String NAME = "twoWindingsTransformerShortCircuit";
 
-    private final double coeffRo; // Ro = Rd * CoeffRo
-    private final double coeffXo;
+    private double coeffRo; // Ro = Rd * CoeffRo
+    private double coeffXo;
+    private double ro; // used to build the coeffs
+    private double xo;
     private final boolean freeFluxes; // free fluxes mean that magnetizing impedance Zm is infinite, by default, fluxes are forced and Zm exists
-    private final LegConnectionType leg1ConnectionType;
-    private final LegConnectionType leg2ConnectionType;
+    private LegConnectionType leg1ConnectionType;
+    private LegConnectionType leg2ConnectionType;
+    private boolean isPartOfGeneratingUnit;
+    private double r1Ground;
+    private double x1Ground;
+    private double r2Ground;
+    private double x2Ground;
 
     @Override
     public String getName() {
         return NAME;
     }
 
-    public TwoWindingsTransformerShortCircuit(TwoWindingsTransformer twt, double coeffRo, double coeffXo, boolean freeFluxes,
-                                              LegConnectionType leg1ConnectionType, LegConnectionType leg2ConnectionType) {
+    public TwoWindingsTransformerShortCircuit(TwoWindingsTransformer twt, boolean isPartOfGeneratingUnit, double coeffRo, double coeffXo, boolean freeFluxes,
+                                              LegConnectionType leg1ConnectionType, LegConnectionType leg2ConnectionType, double r1Ground, double x1Ground, double r2Ground, double x2Ground) {
         super(twt);
+        this.isPartOfGeneratingUnit = isPartOfGeneratingUnit;
         this.coeffRo = coeffRo;
         this.coeffXo = coeffXo;
         this.freeFluxes = freeFluxes;
         this.leg1ConnectionType = Objects.requireNonNull(leg1ConnectionType);
         this.leg2ConnectionType = Objects.requireNonNull(leg2ConnectionType);
+        this.r1Ground = r1Ground;
+        this.x1Ground = x1Ground;
+        this.r2Ground = r2Ground;
+        this.x2Ground = x2Ground;
     }
 
     public double getCoeffRo() {
@@ -57,5 +69,61 @@ public class TwoWindingsTransformerShortCircuit extends AbstractExtension<TwoWin
 
     public LegConnectionType getLeg2ConnectionType() {
         return leg2ConnectionType;
+    }
+
+    public void setPartOfGeneratingUnit(boolean partOfGeneratingUnit) {
+        isPartOfGeneratingUnit = partOfGeneratingUnit;
+    }
+
+    public boolean isPartOfGeneratingUnit() {
+        return isPartOfGeneratingUnit;
+    }
+
+    public void setCoeffXo(double coeffXo) {
+        this.coeffXo = coeffXo;
+    }
+
+    public void setLeg2ConnectionType(LegConnectionType leg2ConnectionType) {
+        this.leg2ConnectionType = leg2ConnectionType;
+    }
+
+    public void setLeg1ConnectionType(LegConnectionType leg1ConnectionType) {
+        this.leg1ConnectionType = leg1ConnectionType;
+    }
+
+    public void setCoeffRo(double coeffRo) {
+        this.coeffRo = coeffRo;
+    }
+
+    public double getR1Ground() {
+        return r1Ground;
+    }
+
+    public double getR2Ground() {
+        return r2Ground;
+    }
+
+    public double getX1Ground() {
+        return x1Ground;
+    }
+
+    public double getX2Ground() {
+        return x2Ground;
+    }
+
+    public void setR1Ground(double r1Ground) {
+        this.r1Ground = r1Ground;
+    }
+
+    public void setR2Ground(double r2Ground) {
+        this.r2Ground = r2Ground;
+    }
+
+    public void setX1Ground(double x1Ground) {
+        this.x1Ground = x1Ground;
+    }
+
+    public void setX2Ground(double x2Ground) {
+        this.x2Ground = x2Ground;
     }
 }

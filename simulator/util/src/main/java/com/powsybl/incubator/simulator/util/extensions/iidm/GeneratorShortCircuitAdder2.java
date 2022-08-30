@@ -21,6 +21,18 @@ public class GeneratorShortCircuitAdder2 extends AbstractExtensionAdder<Generato
     private boolean toGround = DEFAULT_TO_GROUND;
     private double coeffRo = DEFAULT_COEFF_RO;
     private double coeffXo = DEFAULT_COEFF_XO;
+    private double coeffRi = DEFAULT_COEFF_RI;
+    private double coeffXi = DEFAULT_COEFF_XI;
+    private double groundingR = DEFAULT_GROUNDING_R;
+    private double groundingX = DEFAULT_GROUNDING_X;
+    private double cosPhi = DEFAULT_COS_PHI;
+    private double ratedU = DEFAULT_RATED_U;
+    private GeneratorShortCircuit2.RotorType rotorType = GeneratorShortCircuit2.RotorType.UNDEFINED;
+    private GeneratorShortCircuit2.GeneratorType generatorType = DEFAULT_GENERATOR_TYPE;
+    private double cq = DEFAULT_CQ;
+    private double ikQmax = DEFAULT_IKQ;
+    private double maxR1ToX1Ratio = DEFAULT_R1_X1_RATIO;
+    private double voltageRegulationRange = 0.;
 
     public GeneratorShortCircuitAdder2(Generator generator) {
         super(generator);
@@ -33,7 +45,7 @@ public class GeneratorShortCircuitAdder2 extends AbstractExtensionAdder<Generato
 
     @Override
     protected GeneratorShortCircuit2 createExtension(Generator generator) {
-        return new GeneratorShortCircuit2(generator, transRd, subTransRd, toGround, coeffRo, coeffXo);
+        return new GeneratorShortCircuit2(generator, transRd, subTransRd, toGround, coeffRo, coeffXo, coeffRi, coeffXi, groundingR, groundingX, rotorType, ratedU, cosPhi, generatorType, cq, ikQmax, maxR1ToX1Ratio, voltageRegulationRange);
     }
 
     public GeneratorShortCircuitAdder2 withTransRd(double transRd) {
@@ -60,4 +72,65 @@ public class GeneratorShortCircuitAdder2 extends AbstractExtensionAdder<Generato
         this.coeffXo = coeffXo;
         return this;
     }
+
+    public GeneratorShortCircuitAdder2 withCoeffRi(double coeffRi) {
+        this.coeffRi = coeffRi;
+        return this;
+    }
+
+    public GeneratorShortCircuitAdder2 withCoeffXi(double coeffXi) {
+        this.coeffXi = coeffXi;
+        return this;
+    }
+
+    public GeneratorShortCircuitAdder2 withGroundingR(double groundingR) {
+        this.groundingR = groundingR;
+        return this;
+    }
+
+    public GeneratorShortCircuitAdder2 withGroundingX(double groundingX) {
+        this.groundingX = groundingX;
+        return this;
+    }
+
+    public GeneratorShortCircuitAdder2 withRotorType(GeneratorShortCircuit2.RotorType rotorType) {
+        this.rotorType = rotorType;
+        return this;
+    }
+
+    public GeneratorShortCircuitAdder2 withCosPhi(double cosPhi) {
+        this.cosPhi = cosPhi;
+        return this;
+    }
+
+    public GeneratorShortCircuitAdder2 withRatedU(double ratedU) {
+        this.ratedU = ratedU;
+        return this;
+    }
+
+    public GeneratorShortCircuitAdder2 withGeneratorType(GeneratorShortCircuit2.GeneratorType generatorType) {
+        this.generatorType = generatorType;
+        return this;
+    }
+
+    public GeneratorShortCircuitAdder2 withIkQmax(double ikQ) {
+        this.ikQmax = ikQ;
+        return this;
+    }
+
+    public GeneratorShortCircuitAdder2 withCq(double cq) {
+        this.cq = cq;
+        return this;
+    }
+
+    public GeneratorShortCircuitAdder2 withMaxR1ToX1Ratio(double maxR1ToX1Ratio) {
+        this.maxR1ToX1Ratio = maxR1ToX1Ratio;
+        return this;
+    }
+
+    public GeneratorShortCircuitAdder2 withVoltageRegulationRange(double voltageRegulationRange) {
+        this.voltageRegulationRange = voltageRegulationRange;
+        return this;
+    }
+
 }

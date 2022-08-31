@@ -95,6 +95,12 @@ public final class ShortCircuitExtensions {
         double kT2X = DEFAULT_COEFF_K;
         double kT3R = DEFAULT_COEFF_K;
         double kT3X = DEFAULT_COEFF_K;
+        double kT1R0 = DEFAULT_COEFF_K;
+        double kT1X0 = DEFAULT_COEFF_K;
+        double kT2R0 = DEFAULT_COEFF_K;
+        double kT2X0 = DEFAULT_COEFF_K;
+        double kT3R0 = DEFAULT_COEFF_K;
+        double kT3X0 = DEFAULT_COEFF_K;
 
         var extensions = twt.getExtension(ThreeWindingsTransformerShortCircuit.class);
         if (extensions != null) {
@@ -116,11 +122,17 @@ public final class ShortCircuitExtensions {
             kT2X = extensions.getKt2X();
             kT3R = extensions.getKt3R();
             kT3X = extensions.getKt3X();
+            kT1R0 = extensions.getKt1Ro();
+            kT1X0 = extensions.getKt1Xo();
+            kT2R0 = extensions.getKt2Ro();
+            kT2X0 = extensions.getKt2Xo();
+            kT3R0 = extensions.getKt3Ro();
+            kT3X0 = extensions.getKt3Xo();
         }
 
-        ScTransfo3W.Leg leg1 = new ScTransfo3W.Leg(leg1ConnectionType, leg1CoeffRo, leg1CoeffXo, kT1R, kT1X, leg1FreeFluxes); // TODO : check if default connection acceptable
-        ScTransfo3W.Leg leg2 = new ScTransfo3W.Leg(leg2ConnectionType, leg2CoeffRo, leg2CoeffXo, kT2R, kT2X, leg2FreeFluxes); // TODO : check if default connection acceptable
-        ScTransfo3W.Leg leg3 = new ScTransfo3W.Leg(leg3ConnectionType, leg3CoeffRo, leg3CoeffXo, kT3R, kT3X, leg3FreeFluxes); // TODO : check if default connection acceptable
+        ScTransfo3W.Leg leg1 = new ScTransfo3W.Leg(leg1ConnectionType, leg1CoeffRo, leg1CoeffXo, kT1R, kT1X, kT1R0, kT1X0, leg1FreeFluxes); // TODO : check if default connection acceptable
+        ScTransfo3W.Leg leg2 = new ScTransfo3W.Leg(leg2ConnectionType, leg2CoeffRo, leg2CoeffXo, kT2R, kT2X, kT2R0, kT2X0, leg2FreeFluxes); // TODO : check if default connection acceptable
+        ScTransfo3W.Leg leg3 = new ScTransfo3W.Leg(leg3ConnectionType, leg3CoeffRo, leg3CoeffXo, kT3R, kT3X, kT3R0, kT3X0, leg3FreeFluxes); // TODO : check if default connection acceptable
 
         lfBranch.setProperty(PROPERTY_SHORT_CIRCUIT, new ScTransfo3W(leg1, leg2, leg3));
     }

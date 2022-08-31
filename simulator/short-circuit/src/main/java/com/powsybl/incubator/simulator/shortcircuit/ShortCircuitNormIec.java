@@ -163,7 +163,7 @@ public class ShortCircuitNormIec extends ShortCircuitNormNone {
         extension.setKt3X(kTcX);
 
         // dealing homopolar part
-        double ra0 = extension.getLeg1Ro();
+        double ra0 = extension.getLeg1Ro(); // TODO : remove attributes to avoid ambiguity with coefRo and coefXo
         double xa0 = extension.getLeg1Xo();
         double rb0 = extension.getLeg2Ro();
         double xb0 = extension.getLeg2Xo();
@@ -177,14 +177,27 @@ public class ShortCircuitNormIec extends ShortCircuitNormNone {
         double rc0T3k = 0.5 * (-ktabIec * (ra0 + rb0) + ktacIec * (ra0 + rc0) + ktbcIec * (rb0 + rc0));
         double xc0T3k = 0.5 * (-ktabIec * (xa0 + xb0) + ktacIec * (xa0 + xc0) + ktbcIec * (xb0 + xc0));
 
-        double coefaX0 = getCheckedCoef(t3WId, xa0T3k, xa);
-        double coefaR0 = getCheckedCoef(t3WId, ra0T3k, ra);
+        double coefaX0 = getCheckedCoef(t3WId, xa0, xa);
+        double coefaR0 = getCheckedCoef(t3WId, ra0, ra);
+        double coefbX0 = getCheckedCoef(t3WId, xb0, xb);
+        double coefbR0 = getCheckedCoef(t3WId, rb0, rb);
+        double coefcX0 = getCheckedCoef(t3WId, xc0, xc);
+        double coefcR0 = getCheckedCoef(t3WId, rc0, rc);
 
-        double coefbX0 = getCheckedCoef(t3WId, xb0T3k, xb);
-        double coefbR0 = getCheckedCoef(t3WId, rb0T3k, rb);
+        //
+        double kTaR0 = getCheckedCoef(t3WId, ra0T3k, ra0);
+        double kTaX0 = getCheckedCoef(t3WId, xa0T3k, xa0);
+        double kTbR0 = getCheckedCoef(t3WId, rb0T3k, rb0);
+        double kTbX0 = getCheckedCoef(t3WId, xb0T3k, xb0);
+        double kTcR0 = getCheckedCoef(t3WId, rc0T3k, rc0);
+        double kTcX0 = getCheckedCoef(t3WId, xc0T3k, xc0);
 
-        double coefcX0 = getCheckedCoef(t3WId, xc0T3k, xc);
-        double coefcR0 = getCheckedCoef(t3WId, rc0T3k, rc);
+        extension.setKt1Xo(kTaX0);
+        extension.setKt1Ro(kTaR0);
+        extension.setKt2Xo(kTbX0);
+        extension.setKt2Ro(kTbR0);
+        extension.setKt3Xo(kTcX0);
+        extension.setKt3Ro(kTcR0);
 
         extension.setLeg1CoeffRo(coefaR0);
         extension.setLeg1CoeffXo(coefaX0);
@@ -192,6 +205,7 @@ public class ShortCircuitNormIec extends ShortCircuitNormNone {
         extension.setLeg2CoeffXo(coefbX0);
         extension.setLeg3CoeffRo(coefcR0);
         extension.setLeg3CoeffXo(coefcX0);
+
     }
 
     public double getKs(TwoWindingsTransformer t2w, Generator gen) {

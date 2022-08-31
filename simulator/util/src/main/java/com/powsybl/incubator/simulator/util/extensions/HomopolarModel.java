@@ -161,27 +161,35 @@ public class HomopolarModel {
             if (scTransfo != null) {
                 double rCoeff;
                 double xCoeff;
+                double kTro;
+                double kTxo;
                 if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_1) {
                     rCoeff = scTransfo.getLeg1().getCoeffRo();
                     xCoeff = scTransfo.getLeg1().getCoeffXo();
+                    kTro = scTransfo.getLeg1().getkTro();
+                    kTxo = scTransfo.getLeg1().getkTxo();
                     homopolarExtension.leg1ConnectionType = scTransfo.getLeg1().getLegConnectionType();
                     homopolarExtension.freeFluxes = scTransfo.getLeg1().isFreeFluxes();
                 } else if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_2) {
                     rCoeff = scTransfo.getLeg2().getCoeffRo();
                     xCoeff = scTransfo.getLeg2().getCoeffXo();
+                    kTro = scTransfo.getLeg2().getkTro();
+                    kTxo = scTransfo.getLeg2().getkTxo();
                     homopolarExtension.leg1ConnectionType = scTransfo.getLeg2().getLegConnectionType();
                     homopolarExtension.freeFluxes = scTransfo.getLeg2().isFreeFluxes();
                 } else if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_3) {
                     rCoeff = scTransfo.getLeg3().getCoeffRo();
                     xCoeff = scTransfo.getLeg3().getCoeffXo();
+                    kTro = scTransfo.getLeg3().getkTro();
+                    kTxo = scTransfo.getLeg3().getkTxo();
                     homopolarExtension.leg1ConnectionType = scTransfo.getLeg3().getLegConnectionType();
                     homopolarExtension.freeFluxes = scTransfo.getLeg3().isFreeFluxes();
                 } else {
                     throw new IllegalArgumentException("Branch " + branch.getId() + " has unknown 3-winding leg number");
                 }
 
-                homopolarExtension.ro = r * rCoeff;
-                homopolarExtension.xo = x * xCoeff;
+                homopolarExtension.ro = r * rCoeff * kTro;
+                homopolarExtension.xo = x * xCoeff * kTxo;
                 homopolarExtension.gom = gPi1 / rCoeff; //TODO : adapt
                 homopolarExtension.bom = bPi1 / xCoeff;  //TODO : adapt
             }

@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
-public class ShortCircuitNormIec implements ShortCircuitNorm {
+public class ShortCircuitNormIec extends ShortCircuitNormNone {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ShortCircuitNormIec.class);
 
@@ -118,7 +118,7 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
 
     }
 
-    public List<Double> getKtT3Wi(ThreeWindingsTransformer t3w) {
+    public void setKtT3Wi(ThreeWindingsTransformer t3w) {
 
         double ktabIec = getKtT3Wij(t3w, 1, 2);
         double ktacIec = getKtT3Wij(t3w, 1, 3);
@@ -149,83 +149,49 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
         double kTcX = getCheckedCoef(t3WId, xcT3k, xc);
         double kTcR = getCheckedCoef(t3WId, rcT3k, rc);
 
-        List<Double> result = new ArrayList<>();
-
-        result.add(kTaR);
-        result.add(kTaX);
-        result.add(kTbR);
-        result.add(kTbX);
-        result.add(kTcR);
-        result.add(kTcX);
+        ThreeWindingsTransformerShortCircuit extension = t3w.getExtension(ThreeWindingsTransformerShortCircuit.class);
+        if (extension == null) {
+            t3w.newExtension(ThreeWindingsTransformerShortCircuitAdder.class)
+                    .add();
+            extension = t3w.getExtension(ThreeWindingsTransformerShortCircuit.class);
+        }
+        extension.setKt1R(kTaR);
+        extension.setKt1X(kTaX);
+        extension.setKt2R(kTbR);
+        extension.setKt2X(kTbX);
+        extension.setKt3R(kTcR);
+        extension.setKt3X(kTcX);
 
         // dealing homopolar part
-        ThreeWindingsTransformerShortCircuit extension = t3w.getExtension(ThreeWindingsTransformerShortCircuit.class);
-        if (extension != null) {
-            double ra0 = extension.getLeg1Ro();
-            double xa0 = extension.getLeg1Xo();
-            double rb0 = extension.getLeg2Ro();
-            double xb0 = extension.getLeg2Xo();
-            double rc0 = extension.getLeg3Ro();
-            double xc0 = extension.getLeg3Xo();
+        double ra0 = extension.getLeg1Ro();
+        double xa0 = extension.getLeg1Xo();
+        double rb0 = extension.getLeg2Ro();
+        double xb0 = extension.getLeg2Xo();
+        double rc0 = extension.getLeg3Ro();
+        double xc0 = extension.getLeg3Xo();
 
-            double ra0T3k = 0.5 * (ktabIec * (ra0 + rb0) + ktacIec * (ra0 + rc0) - ktbcIec * (rb0 + rc0));
-            double xa0T3k = 0.5 * (ktabIec * (xa0 + xb0) + ktacIec * (xa0 + xc0) - ktbcIec * (xb0 + xc0));
-            double rb0T3k = 0.5 * (ktabIec * (ra0 + rb0) - ktacIec * (ra0 + rc0) + ktbcIec * (rb0 + rc0));
-            double xb0T3k = 0.5 * (ktabIec * (xa0 + xb0) - ktacIec * (xa0 + xc0) + ktbcIec * (xb0 + xc0));
-            double rc0T3k = 0.5 * (-ktabIec * (ra0 + rb0) + ktacIec * (ra0 + rc0) + ktbcIec * (rb0 + rc0));
-            double xc0T3k = 0.5 * (-ktabIec * (xa0 + xb0) + ktacIec * (xa0 + xc0) + ktbcIec * (xb0 + xc0));
+        double ra0T3k = 0.5 * (ktabIec * (ra0 + rb0) + ktacIec * (ra0 + rc0) - ktbcIec * (rb0 + rc0));
+        double xa0T3k = 0.5 * (ktabIec * (xa0 + xb0) + ktacIec * (xa0 + xc0) - ktbcIec * (xb0 + xc0));
+        double rb0T3k = 0.5 * (ktabIec * (ra0 + rb0) - ktacIec * (ra0 + rc0) + ktbcIec * (rb0 + rc0));
+        double xb0T3k = 0.5 * (ktabIec * (xa0 + xb0) - ktacIec * (xa0 + xc0) + ktbcIec * (xb0 + xc0));
+        double rc0T3k = 0.5 * (-ktabIec * (ra0 + rb0) + ktacIec * (ra0 + rc0) + ktbcIec * (rb0 + rc0));
+        double xc0T3k = 0.5 * (-ktabIec * (xa0 + xb0) + ktacIec * (xa0 + xc0) + ktbcIec * (xb0 + xc0));
 
-            double coefaX0 = getCheckedCoef(t3WId, xa0T3k, xaT3k);
-            double coefaR0 = getCheckedCoef(t3WId, ra0T3k, raT3k);
+        double coefaX0 = getCheckedCoef(t3WId, xa0T3k, xa);
+        double coefaR0 = getCheckedCoef(t3WId, ra0T3k, ra);
 
-            double coefbX0 = getCheckedCoef(t3WId, xb0T3k, xbT3k);
-            double coefbR0 = getCheckedCoef(t3WId, rb0T3k, rbT3k);
+        double coefbX0 = getCheckedCoef(t3WId, xb0T3k, xb);
+        double coefbR0 = getCheckedCoef(t3WId, rb0T3k, rb);
 
-            double coefcX0 = getCheckedCoef(t3WId, xc0T3k, xcT3k);
-            double coefcR0 = getCheckedCoef(t3WId, rc0T3k, rcT3k);
+        double coefcX0 = getCheckedCoef(t3WId, xc0T3k, xc);
+        double coefcR0 = getCheckedCoef(t3WId, rc0T3k, rc);
 
-            result.add(coefaR0);
-            result.add(coefaX0);
-            result.add(coefbR0);
-            result.add(coefbX0);
-            result.add(coefcR0);
-            result.add(coefcX0);
-
-        } else {
-            result.add(0.);
-            result.add(0.);
-            result.add(0.);
-            result.add(0.);
-            result.add(0.);
-            result.add(0.);
-        }
-
-        return result;
-    }
-
-    public void adjustWithKt3W(ThreeWindingsTransformer t3w, List<Double> result) {
-        ThreeWindingsTransformer.Leg leg1 = t3w.getLeg1();
-        ThreeWindingsTransformer.Leg leg2 = t3w.getLeg2();
-        ThreeWindingsTransformer.Leg leg3 = t3w.getLeg3();
-
-        leg1.setR(leg1.getR() * result.get(0));
-        leg1.setX(leg1.getX() * result.get(1));
-        leg2.setR(leg2.getR() * result.get(2));
-        leg2.setX(leg2.getX() * result.get(3));
-        leg3.setR(leg3.getR() * result.get(4));
-        leg3.setX(leg3.getX() * result.get(5));
-
-        ThreeWindingsTransformerShortCircuit extension = t3w.getExtension(ThreeWindingsTransformerShortCircuit.class);
-        if (extension != null) {
-            // these values already contain the Kt coeff
-            extension.setLeg1CoeffRo(result.get(6));
-            extension.setLeg1CoeffXo(result.get(7));
-            extension.setLeg2CoeffRo(result.get(8));
-            extension.setLeg2CoeffXo(result.get(9));
-            extension.setLeg3CoeffRo(result.get(10));
-            extension.setLeg3CoeffXo(result.get(11));
-        }
-
+        extension.setLeg1CoeffRo(coefaR0);
+        extension.setLeg1CoeffXo(coefaX0);
+        extension.setLeg2CoeffRo(coefbR0);
+        extension.setLeg2CoeffXo(coefbX0);
+        extension.setLeg3CoeffRo(coefcR0);
+        extension.setLeg3CoeffXo(coefcX0);
     }
 
     public double getKs(TwoWindingsTransformer t2w, Generator gen) {
@@ -446,6 +412,7 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
         }
     }
 
+    @Override
     public void applyNormToNetwork(Network network) {
 
         // FIXME: the application of the norm modifies the iidm network characteristics. Extensions carried from iidm network to lfNetwork should help to avoid this.
@@ -503,8 +470,7 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
 
         // Work on three Windings transformers
         for (ThreeWindingsTransformer t3w : network.getThreeWindingsTransformers()) {
-            List<Double> resultT3 = getKtT3Wi(t3w); // table contains vector [ kTaR; kTaX; kTbR; kTbX; kTcR; kTcX ]
-            adjustWithKt3W(t3w, resultT3);
+            setKtT3Wi(t3w); // adjust coeffs to respect IEC norm
         }
     }
 

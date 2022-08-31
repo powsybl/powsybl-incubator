@@ -36,6 +36,18 @@ public class ThreeWindingsTransformerShortCircuitAdder extends AbstractExtension
     private double leg1Xo = DEFAULT_COEFF_XO;
     private double leg2Xo = DEFAULT_COEFF_XO;
     private double leg3Xo = DEFAULT_COEFF_XO;
+    private double kt1R = DEFAULT_COEFF_K;
+    private double kt1X = DEFAULT_COEFF_K;
+    private double kt2R = DEFAULT_COEFF_K;
+    private double kt2X = DEFAULT_COEFF_K;
+    private double kt3R = DEFAULT_COEFF_K;
+    private double kt3X = DEFAULT_COEFF_K;
+    private double kt1Ro = DEFAULT_COEFF_K;
+    private double kt1Xo = DEFAULT_COEFF_K;
+    private double kt2Ro = DEFAULT_COEFF_K;
+    private double kt2Xo = DEFAULT_COEFF_K;
+    private double kt3Ro = DEFAULT_COEFF_K;
+    private double kt3Xo = DEFAULT_COEFF_K;
 
     public ThreeWindingsTransformerShortCircuitAdder(ThreeWindingsTransformer twt) {
         super(twt);
@@ -53,7 +65,9 @@ public class ThreeWindingsTransformerShortCircuitAdder extends AbstractExtension
                 leg1CoeffXo, leg2CoeffXo, leg3CoeffXo,
                 leg1FreeFluxes, leg2FreeFluxes, leg3FreeFluxes,
                 leg1ConnectionType, leg2ConnectionType, leg3ConnectionType,
-                leg1Ro, leg2Ro, leg3Ro, leg1Xo, leg2Xo, leg3Xo);
+                leg1Ro, leg2Ro, leg3Ro, leg1Xo, leg2Xo, leg3Xo,
+                kt1R, kt1X, kt2R, kt2X, kt3R, kt3X,
+                kt1Ro, kt1Xo, kt2Ro, kt2Xo, kt3Ro, kt3Xo);
     }
 
     public ThreeWindingsTransformerShortCircuitAdder withLeg1CoeffRo(double leg1CoeffRo) {

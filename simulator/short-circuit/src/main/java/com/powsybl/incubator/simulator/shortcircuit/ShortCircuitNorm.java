@@ -7,6 +7,7 @@
 package com.powsybl.incubator.simulator.shortcircuit;
 
 import com.powsybl.iidm.network.Generator;
+import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.TwoWindingsTransformer;
 
 /**
@@ -23,4 +24,6 @@ public interface ShortCircuitNorm {
     double getKg(Generator gen);
 
     String getNormType();
+
+    public void applyNormToNetwork(Network network);
 }

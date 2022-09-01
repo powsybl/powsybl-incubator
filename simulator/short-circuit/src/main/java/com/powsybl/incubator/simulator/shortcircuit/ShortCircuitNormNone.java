@@ -169,8 +169,6 @@ public class ShortCircuitNormNone implements ShortCircuitNorm {
     @Override
     public void applyNormToNetwork(Network network) {
 
-        // FIXME: the application of the norm modifies the iidm network characteristics. Extensions carried from iidm network to lfNetwork should help to avoid this.
-
         applyNormToT2W(network); // the application of the norm to t2w includes generators with t2w associated to them
         applyNormToGenerators(network);
         applyNormToLoads(network);

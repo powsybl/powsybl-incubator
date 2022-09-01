@@ -10,8 +10,6 @@ import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.*;
 import com.powsybl.iidm.network.extensions.GeneratorShortCircuit;
 import com.powsybl.incubator.simulator.util.extensions.iidm.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,8 +18,6 @@ import java.util.List;
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
 public class ShortCircuitNormIec extends ShortCircuitNormNone {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ShortCircuitNormIec.class);
 
     public static final double LOW_VOLTAGE_KV_THRESHOLD = 1.;
     public static final double MEDIUM_VOLTAGE_KV_THRESHOLD = 35.;
@@ -34,6 +30,8 @@ public class ShortCircuitNormIec extends ShortCircuitNormNone {
     public static final double LOW_VOLTAGE_CMIN = 0.95;
     public static final double MEDIUM_VOLTAGE_CMIN = 1.0;
     public static final double HIGH_VOLTAGE_MAX_CMIN = 1.0;
+
+    List<Generator> generatorsWithTfo;
 
     @Override
     public double getCmaxVoltageFactor(double nominalVoltage) {
@@ -118,6 +116,7 @@ public class ShortCircuitNormIec extends ShortCircuitNormNone {
 
     }
 
+    @Override
     public void setKtT3Wi(ThreeWindingsTransformer t3w) {
 
         double ktabIec = getKtT3Wij(t3w, 1, 2);
@@ -296,19 +295,6 @@ public class ShortCircuitNormIec extends ShortCircuitNormNone {
         return  tfoGenerator;
     }
 
-    public double getCheckedCoef(String id, double ztk, double zt) {
-
-        if (zt == 0.) {
-            if (ztk != 0.) {
-                LOGGER.warn("Transformer " + id +  " has r or x equal to zero and computed rk or xk is non null, short circuit calculation might be wrong");
-            }
-            return  1.;
-        } else {
-            return ztk / zt;
-        }
-
-    }
-
     @Override
     public String getNormType() {
         return "IEC";
@@ -352,36 +338,7 @@ public class ShortCircuitNormIec extends ShortCircuitNormNone {
         return kg;
     }
 
-    public void adjustGenValuesWithFeederInputs(Generator gen) {
-        GeneratorShortCircuit extension = gen.getExtension(GeneratorShortCircuit.class);
-        if (extension == null) {
-            throw new PowsyblException("Generator '" + gen.getId() + "' could not be adjusted with feeder values because of missing extension input data");
-        }
-        GeneratorShortCircuit2 extensions2 = gen.getExtension(GeneratorShortCircuit2.class);
-        if (extensions2 == null) {
-            throw new PowsyblException("Generator '" + gen.getId() + "' could not be adjusted with feeder values because of missing extension2 input data");
-        }
-
-        GeneratorShortCircuit2.GeneratorType genType = extensions2.getGeneratorType();
-        if (genType != GeneratorShortCircuit2.GeneratorType.FEEDER) {
-            throw new PowsyblException("Generator '" + gen.getId() + "' has wrong type to be adjusted");
-        }
-        double ikQmax = extensions2.getIkQmax();
-        double maxR1ToX1Ratio = extensions2.getMaxR1ToX1Ratio();
-        double cq = extensions2.getCq();
-
-        // Zq = cq * Unomq / (sqrt3 * Ikq)
-        // Zq = sqrt(r² + x²) which gives x = Zq / sqrt((R/X)² + 1)
-        double zq = cq * gen.getTerminal().getVoltageLevel().getNominalV() / (Math.sqrt(3.) * ikQmax / 1000.); // ikQmax is changed from A to kA
-        double xq = zq / Math.sqrt(maxR1ToX1Ratio * maxR1ToX1Ratio + 1.);
-        double rq = xq * maxR1ToX1Ratio;
-
-        extension.setDirectTransX(xq);
-        extension.setDirectSubtransX(xq);
-        extensions2.setTransRd(rq);
-        extensions2.setSubTransRd(rq);
-    }
-
+    @Override
     public void adjustLoadfromInfo(Load load) {
         LoadShortCircuit extension = load.getExtension(LoadShortCircuit.class);
         if (extension == null) {
@@ -415,24 +372,10 @@ public class ShortCircuitNormIec extends ShortCircuitNormNone {
         load.setP0(pEqScLoad);
     }
 
-    public void setGenKg(Generator gen, double kg) {
-        GeneratorShortCircuit2 extension2Gen = gen.getExtension(GeneratorShortCircuit2.class);
-        if (extension2Gen != null) {
-            extension2Gen.setkG(kg);
-        } else {
-            gen.newExtension(GeneratorShortCircuitAdder2.class)
-                    .withKg(kg)
-                    .add();
-        }
-    }
-
     @Override
-    public void applyNormToNetwork(Network network) {
-
-        // FIXME: the application of the norm modifies the iidm network characteristics. Extensions carried from iidm network to lfNetwork should help to avoid this.
-
+    public void applyNormToT2W(Network network) {
         // Work on two windings transformers
-        List<Generator> generatorsWithTfo = new ArrayList<>();
+        generatorsWithTfo = new ArrayList<>();
         for (TwoWindingsTransformer t2w : network.getTwoWindingsTransformers()) {
             Generator genTfo = getAssociatedGenerator(network, t2w);
             TwoWindingsTransformerShortCircuit extension = t2w.getExtension(TwoWindingsTransformerShortCircuit.class);
@@ -453,7 +396,10 @@ public class ShortCircuitNormIec extends ShortCircuitNormNone {
                         .add();
             }
         }
+    }
 
+    @Override
+    public void applyNormToGenerators(Network network) {
         // Work on generators
         for (Generator gen : network.getGenerators()) {
             if (generatorsWithTfo.contains(gen)) {
@@ -471,20 +417,6 @@ public class ShortCircuitNormIec extends ShortCircuitNormNone {
                     setGenKg(gen, kg);
                 }
             }
-        }
-
-        // Work on loads
-        for (Load load : network.getLoads()) {
-            LoadShortCircuit extension = load.getExtension(LoadShortCircuit.class);
-            if (extension == null) {
-                continue; // we do not modify loads with no additional short circuit info
-            }
-            adjustLoadfromInfo(load);
-        }
-
-        // Work on three Windings transformers
-        for (ThreeWindingsTransformer t3w : network.getThreeWindingsTransformers()) {
-            setKtT3Wi(t3w); // adjust coeffs to respect IEC norm
         }
     }
 

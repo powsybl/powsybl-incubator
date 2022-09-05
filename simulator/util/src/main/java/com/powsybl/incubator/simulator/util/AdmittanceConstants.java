@@ -17,6 +17,6 @@ public final class AdmittanceConstants {
     public static final double COEF_XO_XD = 0.33; // xd/xo = 1/3 and xmo/x"d = 1/3
 
     public static final double INFINITE_IMPEDANCE_ADMITTANCE_VALUE = 0.00000001;
-    // This value represents the case where have a hompoloar transformer conecting two different connex areas through an infinite impedance.
+    // This value represents the case where have a hompoloar transformer connecting two different connex areas through an infinite impedance.
     // This may create a singular matrix. As a consequence we replace the zero admittance value by a very small one.
 }

@@ -154,20 +154,20 @@ public class ShortCircuitNormIec extends ShortCircuitNormNone {
                     .add();
             extension = t3w.getExtension(ThreeWindingsTransformerShortCircuit.class);
         }
-        extension.setKt1R(kTaR);
-        extension.setKt1X(kTaX);
-        extension.setKt2R(kTbR);
-        extension.setKt2X(kTbX);
-        extension.setKt3R(kTcR);
-        extension.setKt3X(kTcX);
+        extension.getLeg1().setKtR(kTaR);
+        extension.getLeg1().setKtX(kTaX);
+        extension.getLeg2().setKtR(kTbR);
+        extension.getLeg2().setKtX(kTbX);
+        extension.getLeg3().setKtR(kTcR);
+        extension.getLeg3().setKtX(kTcX);
 
         // dealing homopolar part
-        double ra0 = extension.getLeg1Ro(); // TODO : remove attributes to avoid ambiguity with coefRo and coefXo
-        double xa0 = extension.getLeg1Xo();
-        double rb0 = extension.getLeg2Ro();
-        double xb0 = extension.getLeg2Xo();
-        double rc0 = extension.getLeg3Ro();
-        double xc0 = extension.getLeg3Xo();
+        double ra0 = extension.getLeg1().getLegRo(); // TODO : remove attributes to avoid ambiguity with coefRo and coefXo
+        double xa0 = extension.getLeg1().getLegXo();
+        double rb0 = extension.getLeg2().getLegRo();
+        double xb0 = extension.getLeg2().getLegXo();
+        double rc0 = extension.getLeg3().getLegRo();
+        double xc0 = extension.getLeg3().getLegXo();
 
         double ra0T3k = 0.5 * (ktabIec * (ra0 + rb0) + ktacIec * (ra0 + rc0) - ktbcIec * (rb0 + rc0));
         double xa0T3k = 0.5 * (ktabIec * (xa0 + xb0) + ktacIec * (xa0 + xc0) - ktbcIec * (xb0 + xc0));
@@ -191,19 +191,19 @@ public class ShortCircuitNormIec extends ShortCircuitNormNone {
         double kTcR0 = getCheckedCoef(t3WId, rc0T3k, rc0);
         double kTcX0 = getCheckedCoef(t3WId, xc0T3k, xc0);
 
-        extension.setKt1Xo(kTaX0);
-        extension.setKt1Ro(kTaR0);
-        extension.setKt2Xo(kTbX0);
-        extension.setKt2Ro(kTbR0);
-        extension.setKt3Xo(kTcX0);
-        extension.setKt3Ro(kTcR0);
+        extension.getLeg1().setKtXo(kTaX0);
+        extension.getLeg1().setKtRo(kTaR0);
+        extension.getLeg2().setKtXo(kTbX0);
+        extension.getLeg2().setKtRo(kTbR0);
+        extension.getLeg3().setKtXo(kTcX0);
+        extension.getLeg3().setKtRo(kTcR0);
 
-        extension.setLeg1CoeffRo(coefaR0);
-        extension.setLeg1CoeffXo(coefaX0);
-        extension.setLeg2CoeffRo(coefbR0);
-        extension.setLeg2CoeffXo(coefbX0);
-        extension.setLeg3CoeffRo(coefcR0);
-        extension.setLeg3CoeffXo(coefcX0);
+        extension.getLeg1().setLegCoeffRo(coefaR0);
+        extension.getLeg1().setLegCoeffXo(coefaX0);
+        extension.getLeg2().setLegCoeffRo(coefbR0);
+        extension.getLeg2().setLegCoeffXo(coefbX0);
+        extension.getLeg3().setLegCoeffRo(coefcR0);
+        extension.getLeg3().setLegCoeffXo(coefcX0);
 
     }
 

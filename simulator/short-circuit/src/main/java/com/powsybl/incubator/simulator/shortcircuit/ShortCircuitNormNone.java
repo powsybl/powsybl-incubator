@@ -65,19 +65,19 @@ public class ShortCircuitNormNone implements ShortCircuitNorm {
                     .add();
             extension = t3w.getExtension(ThreeWindingsTransformerShortCircuit.class);
         }
-        extension.setKt1R(1.);
-        extension.setKt1X(1.);
-        extension.setKt2R(1.);
-        extension.setKt2X(1.);
-        extension.setKt3R(1.);
-        extension.setKt3X(1.);
+        extension.getLeg1().setKtR(1.);
+        extension.getLeg1().setKtX(1.);
+        extension.getLeg2().setKtR(1.);
+        extension.getLeg2().setKtX(1.);
+        extension.getLeg3().setKtR(1.);
+        extension.getLeg3().setKtX(1.);
 
-        extension.setKt1Xo(1.);
-        extension.setKt1Ro(1.);
-        extension.setKt2Xo(1.);
-        extension.setKt2Ro(1.);
-        extension.setKt3Xo(1.);
-        extension.setKt3Ro(1.);
+        extension.getLeg1().setKtRo(1.);
+        extension.getLeg1().setKtXo(1.);
+        extension.getLeg2().setKtRo(1.);
+        extension.getLeg2().setKtXo(1.);
+        extension.getLeg3().setKtRo(1.);
+        extension.getLeg3().setKtXo(1.);
 
     }
 

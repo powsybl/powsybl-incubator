@@ -31,6 +31,8 @@ public class ShortCircuitNormIec extends ShortCircuitNormNone {
     public static final double MEDIUM_VOLTAGE_CMIN = 1.0;
     public static final double HIGH_VOLTAGE_MAX_CMIN = 1.0;
 
+    public static final double EPSILON = 0.000001;
+
     List<Generator> generatorsWithTfo;
 
     @Override
@@ -162,12 +164,30 @@ public class ShortCircuitNormIec extends ShortCircuitNormNone {
         extension.getLeg3().setKtX(kTcX);
 
         // dealing homopolar part
-        double ra0 = extension.getLeg1().getLegRo(); // TODO : remove attributes to avoid ambiguity with coefRo and coefXo
-        double xa0 = extension.getLeg1().getLegXo();
-        double rb0 = extension.getLeg2().getLegRo();
-        double xb0 = extension.getLeg2().getLegXo();
-        double rc0 = extension.getLeg3().getLegRo();
-        double xc0 = extension.getLeg3().getLegXo();
+        double ra0 = extension.getLeg1().getLegCoeffRo();
+        if (Math.abs(ra) > EPSILON) {
+            ra0 = extension.getLeg1().getLegCoeffRo() * ra;
+        }
+        double xa0 = extension.getLeg1().getLegCoeffXo();
+        if (Math.abs(xa) > EPSILON) {
+            xa0 = extension.getLeg1().getLegCoeffXo() * xa;
+        }
+        double rb0 = extension.getLeg2().getLegCoeffRo();
+        if (Math.abs(rb) > EPSILON) {
+            rb0 = extension.getLeg2().getLegCoeffRo() * rb;
+        }
+        double xb0 = extension.getLeg2().getLegCoeffXo();
+        if (Math.abs(xb) > EPSILON) {
+            xb0 = extension.getLeg2().getLegCoeffXo() * xb;
+        }
+        double rc0 = extension.getLeg3().getLegCoeffRo();
+        if (Math.abs(rc) > EPSILON) {
+            rc0 = extension.getLeg3().getLegCoeffRo() * rc;
+        }
+        double xc0 = extension.getLeg3().getLegCoeffXo();
+        if (Math.abs(xc) > EPSILON) {
+            xc0 = extension.getLeg3().getLegCoeffXo() * xc;
+        }
 
         double ra0T3k = 0.5 * (ktabIec * (ra0 + rb0) + ktacIec * (ra0 + rc0) - ktbcIec * (rb0 + rc0));
         double xa0T3k = 0.5 * (ktabIec * (xa0 + xb0) + ktacIec * (xa0 + xc0) - ktbcIec * (xb0 + xc0));

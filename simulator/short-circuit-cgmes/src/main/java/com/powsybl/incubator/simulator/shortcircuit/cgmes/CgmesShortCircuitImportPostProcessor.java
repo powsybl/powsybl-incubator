@@ -370,18 +370,15 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
 
                     if (endNumber == 1) {
                         t3wt.getLeg1().setRatedS(ratedS);
-                        extension.getLeg1().setLegRo(r0 * ratedU02 / t3wt.getLeg1().getRatedU() / t3wt.getLeg1().getRatedU());
-                        extension.getLeg1().setLegXo(x0 * ratedU02 / t3wt.getLeg1().getRatedU() / t3wt.getLeg1().getRatedU());
+                        setLegRoXoCoefs(t3wt.getLeg1(), extension.getLeg1(), r0, x0, ratedU02);
                         extension.getLeg1().setLegConnectionType(legConnectionType);
                     } else if (endNumber == 2) {
                         t3wt.getLeg2().setRatedS(ratedS);
-                        extension.getLeg2().setLegRo(r0 * ratedU02 / t3wt.getLeg2().getRatedU() / t3wt.getLeg2().getRatedU());
-                        extension.getLeg2().setLegXo(x0 * ratedU02 / t3wt.getLeg2().getRatedU() / t3wt.getLeg2().getRatedU());
+                        setLegRoXoCoefs(t3wt.getLeg2(), extension.getLeg2(), r0, x0, ratedU02);
                         extension.getLeg2().setLegConnectionType(legConnectionType);
                     } else if (endNumber == 3) {
                         t3wt.getLeg3().setRatedS(ratedS);
-                        extension.getLeg3().setLegRo(r0 * ratedU02 / t3wt.getLeg3().getRatedU() / t3wt.getLeg3().getRatedU());
-                        extension.getLeg3().setLegXo(x0 * ratedU02 / t3wt.getLeg3().getRatedU() / t3wt.getLeg3().getRatedU());
+                        setLegRoXoCoefs(t3wt.getLeg3(), extension.getLeg3(), r0, x0, ratedU02);
                         extension.getLeg3().setLegConnectionType(legConnectionType);
                     } else {
                         throw new PowsyblException("incorrect end number for 3 windings transformer end '" + id + "'");
@@ -391,6 +388,22 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
                     throw new PowsyblException("2 or 3 windings transformer not found: '" + id + "'");
                 }
             }
+        }
+    }
+
+    public void setLegRoXoCoefs(ThreeWindingsTransformer.Leg leg, ThreeWindingsTransformerShortCircuit.T3wLeg extLeg, double r0, double x0, double ratedU02) {
+
+        double ratedRo = r0 * ratedU02 / leg.getRatedU() / leg.getRatedU();
+        double ratedXo = x0 * ratedU02 / leg.getRatedU() / leg.getRatedU();
+        double r = leg.getR();
+        double x = leg.getX();
+        extLeg.setLegCoeffRo(ratedRo); // if R = 0 coeff carries Ro and not Ro / R
+        if (Math.abs(r) > EPSILON) {
+            extLeg.setLegCoeffRo(ratedRo / r);
+        }
+        extLeg.setLegCoeffXo(ratedXo); // if X = 0 coeff carries Xo and not X0 / X
+        if (Math.abs(x) > EPSILON) {
+            extLeg.setLegCoeffXo(ratedXo / x);
         }
     }
 

@@ -123,8 +123,8 @@ public final class ShortCircuitExtensions {
             kT3R = extensions.getLeg3().getKtR();
             kT3X = extensions.getLeg3().getKtX();
             kT1R0 = extensions.getLeg1().getKtRo();
-            kT1X0 = extensions.getLeg1().getLegXo();
-            kT2R0 = extensions.getLeg2().getLegRo();
+            kT1X0 = extensions.getLeg1().getKtXo();
+            kT2R0 = extensions.getLeg2().getKtRo();
             kT2X0 = extensions.getLeg2().getKtXo();
             kT3R0 = extensions.getLeg3().getKtRo();
             kT3X0 = extensions.getLeg3().getKtXo();

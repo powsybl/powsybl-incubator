@@ -216,10 +216,10 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
                 double r = line.getR();
                 double coeffRo = 1.;
                 double coeffXo = 1.;
-                if (x != 0.) {
+                if (Math.abs(x) > EPSILON) {
                     coeffXo = x0 / x;
                 }
-                if (r != 0.) {
+                if (Math.abs(r) > EPSILON) {
                     coeffRo = r0 / r;
                 }
                 line.newExtension(LineShortCircuitAdder.class)

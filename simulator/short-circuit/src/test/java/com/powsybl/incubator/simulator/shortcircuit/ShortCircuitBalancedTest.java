@@ -11,6 +11,7 @@ import com.powsybl.computation.local.LocalComputationManager;
 import com.powsybl.iidm.network.*;
 import com.powsybl.iidm.network.extensions.GeneratorShortCircuitAdder;
 import com.powsybl.incubator.simulator.util.ReferenceNetwork;
+import com.powsybl.incubator.simulator.util.extensions.iidm.ThreeWindingsTransformerShortCircuit;
 import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
@@ -323,6 +324,7 @@ public class ShortCircuitBalancedTest {
         //assertEquals(4039.8610235151364, values.get(8), 0.1); // T3 U0 node : for check only
         //assertEquals(4039.8610235151364, values.get(8), 0.1); // T4 U0 node : for check only
 
+        // Test on the IEC norm
         TwoWindingsTransformer t2w = network.getTwoWindingsTransformer("T5");
         double kt2w = shortCircuitNormIec.getKtT2W(t2w);
 
@@ -337,6 +339,31 @@ public class ShortCircuitBalancedTest {
         assertEquals(1.0, kt2w, 0.0000001);
         assertEquals("NONE", shortCircuitNormNone.getNormType());
         assertEquals(1., shortCircuitNormNone.getCminVoltageFactor(30.), 0.000001);
+
+        ThreeWindingsTransformer t3w = network.getThreeWindingsTransformer("T3");
+        double kt3w = shortCircuitNormIec.getKtT3Wij(t3w, 1, 2);
+        assertEquals(1.011217185074488, kt3w, 0.000001);
+        kt3w = shortCircuitNormIec.getKtT3Wij(t3w, 1, 3);
+        assertEquals(0.9344644092032702, kt3w, 0.000001);
+        kt3w = shortCircuitNormIec.getKtT3Wij(t3w, 2, 3);
+        assertEquals(0.9638258888806438, kt3w, 0.000001);
+        kt3w = shortCircuitNormIec.getKtT3Wij(t3w, 3, 1);
+        assertEquals(0.9344644092032702, kt3w, 0.000001);
+
+        shortCircuitNormIec.setKtT3Wi(t3w);
+
+        ThreeWindingsTransformerShortCircuit extension = t3w.getExtension(ThreeWindingsTransformerShortCircuit.class);
+        double kTaR = extension.getLeg1().getKtR();
+        double kTbX = extension.getLeg2().getKtX();
+        assertEquals(0.86939867723079, kTaR, 0.000001);
+        assertEquals(-6.710685661589687, kTbX, 0.000001);
+
+        double coefcX0 = extension.getLeg3().getLegCoeffXo();
+        assertEquals(1.0, coefcX0, 0.000001);
+
+        Generator g1 = network.getGenerator("G1");
+        double kg = shortCircuitNormIec.getKg(g1);
+        assertEquals(1.0015680959819921, kg, 0.000001);
 
     }
 

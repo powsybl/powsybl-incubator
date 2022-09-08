@@ -324,6 +324,9 @@ public class ShortCircuitNormIec extends ShortCircuitNormNone {
     public double getKg(Generator gen) {
         double nominalU = gen.getTerminal().getVoltageLevel().getNominalV();
         double ratedS = gen.getRatedS();
+        if (Math.abs(ratedS) < EPSILON) {
+            ratedS = 100.;
+        }
         double cmax = getCmaxVoltageFactor(nominalU);
 
         double cosPhi = 0.85; //default value
@@ -353,6 +356,7 @@ public class ShortCircuitNormIec extends ShortCircuitNormNone {
         }
         double subTransXdpu = subTransXd / zBase;
 
+        System.out.println(" ================> nominalU = " + nominalU + " ratedU = " + nominalU + " cmax = " + cmax + " subTransXdpu = " + subTransXdpu + " cosPhi = " + cosPhi + " subTransXd = " + subTransXd + " zBase = " + zBase + " ratedS = " + ratedS);
         double kg = nominalU / ratedU * cmax / (1. + subTransXdpu * Math.sqrt(1. - cosPhi * cosPhi));
 
         return kg;

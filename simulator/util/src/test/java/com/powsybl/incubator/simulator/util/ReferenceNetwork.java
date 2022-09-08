@@ -964,6 +964,7 @@ public final class ReferenceNetwork {
                 .setTargetQ(0.)
                 .setTargetV(vHv)
                 .setVoltageRegulatorOn(false)
+                .setRatedS(150.)
                 .add();
 
         g1.newExtension(GeneratorShortCircuitAdder.class)

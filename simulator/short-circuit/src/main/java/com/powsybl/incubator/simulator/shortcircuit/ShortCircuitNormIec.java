@@ -356,7 +356,6 @@ public class ShortCircuitNormIec extends ShortCircuitNormNone {
         }
         double subTransXdpu = subTransXd / zBase;
 
-        System.out.println(" ================> nominalU = " + nominalU + " ratedU = " + nominalU + " cmax = " + cmax + " subTransXdpu = " + subTransXdpu + " cosPhi = " + cosPhi + " subTransXd = " + subTransXd + " zBase = " + zBase + " ratedS = " + ratedS);
         double kg = nominalU / ratedU * cmax / (1. + subTransXdpu * Math.sqrt(1. - cosPhi * cosPhi));
 
         return kg;

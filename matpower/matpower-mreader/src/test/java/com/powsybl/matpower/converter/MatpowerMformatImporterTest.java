@@ -17,6 +17,7 @@ import com.powsybl.matpower.model.io.MReader;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Test;
+import org.junit.Ignore;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,6 +32,7 @@ import java.util.Objects;
 /**
  * @author Christian Biasuzzi <christian.biasuzzi@techrain.eu>
  */
+@Ignore
 public class MatpowerMformatImporterTest extends AbstractConverterTest {
 
     private static final LocalDate DEFAULTDATEFORTESTS = LocalDate.of(2020, Month.JANUARY, 1);

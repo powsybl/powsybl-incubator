@@ -159,6 +159,8 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
                     ImpedanceLinearResolution.ImpedanceLinearResolutionResult.ImpedanceLinearResolutionResultBiphased biphasedHomopolarResult;
                     for (ImpedanceLinearResolution.ImpedanceLinearResolutionResult.ImpedanceLinearResolutionResultBiphased biphasedDirectResult : directResult.getBiphasedResultsAtBus()) {
                         biphasedHomopolarResult = homopolarResult.getBiphasedResultsAtBus().get(numBiphasedResult);
+                        numBiphasedResult++;
+
                         LfBus lfBus2 = biphasedDirectResult.getBus2();
                         if (lfBus2.getId().equals(scf.getLfBus2Info())) {
 

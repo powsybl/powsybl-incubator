@@ -82,22 +82,24 @@ public class ShortCircuitNormNone implements ShortCircuitNorm {
     }
 
     public void adjustLoadfromInfo(Load load) {
+        // TODO : must be modified once load will be disaggregated
 
     }
 
     public void adjustGenValuesWithFeederInputs(Generator gen) {
         GeneratorShortCircuit extension = gen.getExtension(GeneratorShortCircuit.class);
+        String generatorId = "Generator '" + gen.getId();
         if (extension == null) {
-            throw new PowsyblException("Generator '" + gen.getId() + "' could not be adjusted with feeder values because of missing extension input data");
+            throw new PowsyblException(generatorId + "' could not be adjusted with feeder values because of missing extension input data");
         }
         GeneratorShortCircuit2 extensions2 = gen.getExtension(GeneratorShortCircuit2.class);
         if (extensions2 == null) {
-            throw new PowsyblException("Generator '" + gen.getId() + "' could not be adjusted with feeder values because of missing extension2 input data");
+            throw new PowsyblException(generatorId + "' could not be adjusted with feeder values because of missing extension2 input data");
         }
 
         GeneratorShortCircuit2.GeneratorType genType = extensions2.getGeneratorType();
         if (genType != GeneratorShortCircuit2.GeneratorType.FEEDER) {
-            throw new PowsyblException("Generator '" + gen.getId() + "' has wrong type to be adjusted");
+            throw new PowsyblException(generatorId + "' has wrong type to be adjusted");
         }
         double ikQmax = extensions2.getIkQmax();
         double maxR1ToX1Ratio = extensions2.getMaxR1ToX1Ratio();
@@ -179,7 +181,7 @@ public class ShortCircuitNormNone implements ShortCircuitNorm {
 
         if (zt == 0.) {
             if (ztk != 0.) {
-                LOGGER.warn("Transformer " + id +  " has r or x equal to zero and computed rk or xk is non null, short circuit calculation might be wrong");
+                LOGGER.warn("Transformer {} has r or x equal to zero and computed rk or xk is non null, short circuit calculation might be wrong", id);
             }
             return  1.;
         } else {

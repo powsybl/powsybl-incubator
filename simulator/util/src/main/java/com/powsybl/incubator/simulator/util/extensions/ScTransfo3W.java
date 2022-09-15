@@ -33,9 +33,9 @@ public class ScTransfo3W {
         private final double rGround = 0;
         private final double xGround = 0;
 
-        public Leg(LegConnectionType legConnectionType) {
+        /*public Leg(LegConnectionType legConnectionType) {
             this(legConnectionType, 0, 0, 1., 1., 1., 1., false);
-        }
+        }*/
 
         public Leg(LegConnectionType legConnectionType, double coeffRo, double coeffXo, double kTr, double kTx, double kTro, double kTxo, boolean freeFluxes) {
             this.legConnectionType = legConnectionType;

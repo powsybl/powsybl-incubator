@@ -222,7 +222,7 @@ public class HomopolarModel {
             xm = -bom / (bom * bom + gom * gom);
         }
 
-        // we suppose that zob = zoa = Zo / 2  : TODO : check this is an acceptable approximation
+        // we suppose that zob = zoa = Zo / 2  : this approximation could be questioned if necessary
         double roa = ro / 2.;
         double xoa = xo / 2.;
         double rob = ro / 2.;
@@ -243,7 +243,7 @@ public class HomopolarModel {
 
         } else if (leg1ConnectionType == LegConnectionType.Y_GROUNDED && leg2ConnectionType == LegConnectionType.Y) {
             // we suppose that Zoa = Zo given in input for the transformer
-            // we suppose that if Yom given in input is zero, then Zom = is zero : TODO : see if there is a more robust way to handle this
+            // we suppose that if Yom given in input is zero, then Zom = is zero : if we want to model an open circuit, then set free fluxes to true
 
             // we have yo11 = 1 / ( 3Zga(pu) + (Zoa(pu)+ Zom(pu))/(rho*e(jAlpha))² )
             // and yo12 = yo22 = yo21 = 0.
@@ -260,7 +260,7 @@ public class HomopolarModel {
             mo.set(3, 3, infiniteImpedanceAdmittance);
         } else if (leg1ConnectionType == LegConnectionType.Y && leg2ConnectionType == LegConnectionType.Y_GROUNDED) {
             // we suppose that zob = Zo given in input for the transformer
-            // we suppose that if Yom given in input is zero, then Zom = is zero : TODO : see if there is a more robust way to handle this
+            // we suppose that if Yom given in input is zero, then Zom = is zero : if we want to model an open circuit, then set free fluxes to true
 
             // we have yo22 = 1 / ( 3Zga(pu) + Zob(pu) + Zom(pu) )
             // and yo12 = yo11 = yo21 = 0.
@@ -277,7 +277,7 @@ public class HomopolarModel {
             mo.set(3, 3, go22);
         } else if (leg1ConnectionType == LegConnectionType.Y_GROUNDED && leg2ConnectionType == LegConnectionType.DELTA) {
 
-            // we suppose that if Yom given in input is zero, then Zom = is zero : TODO : see if there is a more robust way to handle this
+            // we suppose that if Yom given in input is zero, then Zom = is zero : if we want to model an open circuit, then set free fluxes to true
 
             // we have yo11 = 1 / ( 3Zga(pu) + (Zoa(pu) + 1 / (1/Zom + 1/Zob))/(rho*e(jAlpha))² )
             // and yo12 = yo22 = yo21 = 0.
@@ -368,7 +368,7 @@ public class HomopolarModel {
                 // Zd = Zom+Zob+3Zgb
                 // Ze = Zom/k
                 //
-                // we suppose that if Yom given in input is zero, then Zom = is zero : TODO : see if there is a more robust way to handle this
+                // we suppose that if Yom given in input is zero, then Zom = is zero : if we want to model an open circuit, then set free fluxes to true
 
                 double rc = 1 / (rho * rho) * (cos2A * (rm + roa) + sin2A * (xm + xoa)) + 3 * rga;
                 double xc = 1 / (rho * rho) * (cos2A * (xm + xoa) - sin2A * (rm + roa)) + 3 * xga;

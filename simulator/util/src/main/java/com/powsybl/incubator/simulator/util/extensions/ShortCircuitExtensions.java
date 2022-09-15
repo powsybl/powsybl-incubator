@@ -130,9 +130,9 @@ public final class ShortCircuitExtensions {
             kT3X0 = extensions.getLeg3().getKtXo();
         }
 
-        ScTransfo3W.Leg leg1 = new ScTransfo3W.Leg(leg1ConnectionType, leg1CoeffRo, leg1CoeffXo, kT1R, kT1X, kT1R0, kT1X0, leg1FreeFluxes); // TODO : check if default connection acceptable
-        ScTransfo3W.Leg leg2 = new ScTransfo3W.Leg(leg2ConnectionType, leg2CoeffRo, leg2CoeffXo, kT2R, kT2X, kT2R0, kT2X0, leg2FreeFluxes); // TODO : check if default connection acceptable
-        ScTransfo3W.Leg leg3 = new ScTransfo3W.Leg(leg3ConnectionType, leg3CoeffRo, leg3CoeffXo, kT3R, kT3X, kT3R0, kT3X0, leg3FreeFluxes); // TODO : check if default connection acceptable
+        ScTransfo3W.Leg leg1 = new ScTransfo3W.Leg(leg1ConnectionType, leg1CoeffRo, leg1CoeffXo, kT1R, kT1X, kT1R0, kT1X0, leg1FreeFluxes);
+        ScTransfo3W.Leg leg2 = new ScTransfo3W.Leg(leg2ConnectionType, leg2CoeffRo, leg2CoeffXo, kT2R, kT2X, kT2R0, kT2X0, leg2FreeFluxes);
+        ScTransfo3W.Leg leg3 = new ScTransfo3W.Leg(leg3ConnectionType, leg3CoeffRo, leg3CoeffXo, kT3R, kT3X, kT3R0, kT3X0, leg3FreeFluxes);
 
         lfBranch.setProperty(PROPERTY_SHORT_CIRCUIT, new ScTransfo3W(leg1, leg2, leg3));
     }
@@ -196,7 +196,7 @@ public final class ShortCircuitExtensions {
         double stepUpTfoX = DEFAULT_STEP_UP_XD;
 
         GeneratorShortCircuit extension = generator.getExtension(GeneratorShortCircuit.class);
-        if (extension != null) { // TODO: use a default value if extension is missing
+        if (extension != null) {
             transX = extension.getDirectTransX();
             subtransX = extension.getDirectSubtransX();
             stepUpTfoX = extension.getStepUpTransformerX();
@@ -229,6 +229,6 @@ public final class ShortCircuitExtensions {
                                                                         0.,
                                                                         0.,
                                                                         coeffRo,
-                                                                        coeffXo, kG)); // TODO: set the right type when info available
+                                                                        coeffXo, kG));
     }
 }

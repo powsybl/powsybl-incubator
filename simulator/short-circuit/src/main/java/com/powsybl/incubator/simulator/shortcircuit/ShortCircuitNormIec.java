@@ -368,32 +368,41 @@ public class ShortCircuitNormIec extends ShortCircuitNormNone {
             throw new PowsyblException("Load '" + load.getId() + "' could generate Z for short circuit because of missing extension input data");
         }
 
-        double ratedMechanicalPower = extension.getRatedMechanicalP();
-        double ratedPowerFactor = extension.getRatedPowerFactor(); // cosPhi
-        double ratedS = extension.getRatedS();
-        double ratedU = extension.getRatedU();
-        double efficiency = extension.getEfficiency() / 100.; // conversion from percentages
-        double iaIrRatio = extension.getIaIrRatio();
-        double rxLockedRotorRatio = extension.getRxLockedRotorRatio();
-        int polePairNumber = extension.getPolePairNumber();
+        if (extension.getLoadShortCircuitType() == LoadShortCircuit.LoadShortCircuitType.ASYNCHRONOUS_MACHINE) {
 
-        // Zn = 1/(Ilr/Irm) * Urm / (sqrt3 * Irm) = 1/(Ilr/Irm) * Urm² / (Prm / (efficiency * cosPhi))
-        // Xn = Zn / sqrt(1+ (Rm/Xm)²)
-        double zn = 1. / iaIrRatio * ratedU * ratedU / (ratedMechanicalPower / (efficiency * ratedPowerFactor));
-        double xn = zn / Math.sqrt(rxLockedRotorRatio * rxLockedRotorRatio + 1.);
-        double rn = xn * rxLockedRotorRatio;
+            if (extension.getAsynchronousMachineLoadData() == null) {
+                throw new PowsyblException("Load '" + load.getId() + "' is an asynchronous machine without associated data, therefore equivalent admittance could not be generated ");
+            }
 
-        // zn is transformed into a load that will give the equivalent zn in the admittance matrix
-        // using formula P(MW) = Re(Z) * |V|² / |Z|² and Q(MVA) = Im(Z) * |V|² / |Z|²
-        // TODO: once load at bus will not be aggregated in the lfNetwork,
-        //  the info regarding the load with Asynchronous machine info should remain carried as Zn to fill the admittance matrix
-        //  as consequence, the application of the norm will not modify the load flow input data, which is the case for now
-        double uNom = load.getTerminal().getVoltageLevel().getNominalV();
-        double pEqScLoad = rn * uNom * uNom / (zn * zn);
-        double qEqScLoad = xn * uNom * uNom / (zn * zn);
+            LoadShortCircuit.AsynchronousMachineLoadData asynchData = extension.getAsynchronousMachineLoadData();
+            double ratedMechanicalPower = asynchData.getRatedMechanicalP();
+            double ratedPowerFactor = asynchData.getRatedPowerFactor(); // cosPhi
+            double ratedS = asynchData.getRatedS();
+            double ratedU = asynchData.getRatedU();
+            double efficiency = asynchData.getEfficiency() / 100.; // conversion from percentages
+            double iaIrRatio = asynchData.getIaIrRatio();
+            double rxLockedRotorRatio = asynchData.getRxLockedRotorRatio();
+            int polePairNumber = asynchData.getPolePairNumber();
 
-        load.setQ0(qEqScLoad);
-        load.setP0(pEqScLoad);
+            // Zn = 1/(Ilr/Irm) * Urm / (sqrt3 * Irm) = 1/(Ilr/Irm) * Urm² / (Prm / (efficiency * cosPhi))
+            // Xn = Zn / sqrt(1+ (Rm/Xm)²)
+            double zn = 1. / iaIrRatio * ratedU * ratedU / (ratedMechanicalPower / (efficiency * ratedPowerFactor));
+            double xn = zn / Math.sqrt(rxLockedRotorRatio * rxLockedRotorRatio + 1.);
+            double rn = xn * rxLockedRotorRatio;
+
+            // zn is transformed into a load that will give the equivalent zn in the admittance matrix
+            // using formula P(MW) = Re(Z) * |V|² / |Z|² and Q(MVA) = Im(Z) * |V|² / |Z|²
+            // TODO: once load at bus will not be aggregated in the lfNetwork,
+            //  the info regarding the load with Asynchronous machine info should remain carried as Zn to fill the admittance matrix
+            //  as consequence, the application of the norm will not modify the load flow input data, which is the case for now
+            double uNom = load.getTerminal().getVoltageLevel().getNominalV();
+            double pEqScLoad = rn * uNom * uNom / (zn * zn);
+            double qEqScLoad = xn * uNom * uNom / (zn * zn);
+
+            load.setQ0(qEqScLoad);
+            load.setP0(pEqScLoad);
+        }
+
     }
 
     @Override

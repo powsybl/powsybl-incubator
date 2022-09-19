@@ -180,26 +180,11 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
             }
 
             load.newExtension(LoadShortCircuitAdder.class)
-                    .withEfficiency(efficiency)
-                    .withIaIrRatio(iaIrRatio)
-                    .withPolePairNumber(polePairNumber)
-                    .withRatedMechanicalP(ratedMechanicalPower)
-                    .withRatedS(ratedS)
-                    .withRatedU(ratedU)
-                    .withRxLockedRotorRatio(rxLockedRotorRatio)
-                    .withRatedPowerFactor(ratedPowerFactor)
-                    .withLoadShortCircuitType(LoadShortCircuit.LoadShortCircuitType.ASYNCHRONOUS_MACHINE)
                     .add();
 
-            /*System.out.println(" ================>  LoadId = " + id + " ratedMechanicalPower = " + ratedMechanicalPower + " ratedPowerFactor = " + ratedPowerFactor +
-                    " ratedS = " + ratedS + " efficiency = " + efficiency + " iaIrRatio = " + iaIrRatio + " rxLockedRotorRatio = " + rxLockedRotorRatio +
-                    " Unom = " + ratedU + " polePairNumber = " + polePairNumber);*/
+            LoadShortCircuit extensionLoad = load.getExtension(LoadShortCircuit.class);
+            extensionLoad.setAsynchronousMachineLoadData(ratedMechanicalPower, ratedPowerFactor, ratedS, ratedU, efficiency, iaIrRatio, polePairNumber, rxLockedRotorRatio);
 
-            // FIXME create a shortcircuit load extension ?
-            // TODO
-            // load.newExtension(AsynchronousGeneratorCircuitAdder.class)
-            //     ...
-            //     .add();
         }
     }
 

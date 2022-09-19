@@ -8,6 +8,7 @@ package com.powsybl.incubator.simulator.util;
 
 import com.powsybl.incubator.simulator.util.extensions.ShortCircuitExtensions;
 import com.powsybl.incubator.simulator.util.extensions.ScGenerator;
+import com.powsybl.incubator.simulator.util.extensions.iidm.ScLoad;
 import com.powsybl.openloadflow.ac.outerloop.AcLoadFlowContext;
 import com.powsybl.openloadflow.ac.outerloop.AcLoadFlowParameters;
 import com.powsybl.openloadflow.ac.outerloop.AcloadFlowEngine;
@@ -179,7 +180,7 @@ public final class AdmittanceEquationSystem {
             double vr = bus.getV() * Math.cos(bus.getAngle());
             double vi = bus.getV() * Math.sin(bus.getAngle());
             if (admittanceVoltageProfileType == AdmittanceVoltageProfileType.NOMINAL) {
-                vr = 1.0; //TODO: check if Vnom or Vnom/Vbase
+                vr = 1.0;
                 vi = 0.;
             }
             boolean isBusPv = bus.isVoltageControlled();
@@ -192,14 +193,17 @@ public final class AdmittanceEquationSystem {
                 if (!isShuntsIgnore) {
                     b = getBfromShunt(bus); // Handling shunts that physically exist
                 }
-                gLoadEq = bus.getLoadTargetP() / (vr * vr + vi * vi); // Handling transformation of bus loads into equivalent shunts
-                bLoadEq = -bus.getLoadTargetQ() / (vr * vr + vi * vi);
+
+                ScLoad scLoad = (ScLoad) bus.getProperty(ShortCircuitExtensions.PROPERTY_SHORT_CIRCUIT);
+                gLoadEq = scLoad.getGdEquivalent() / (vr * vr + vi * vi);
+                bLoadEq = scLoad.getBdEquivalent() / (vr * vr + vi * vi);
+
                 // Handling transformation of generators into equivalent shunts
                 // Warning !!! : evaluation of power injections mandatory
-                gGenEq = -(bus.getP().eval() + bus.getLoadTargetP()) / (vr * vr + vi * vi); // full nodal P injection without the load
+                gGenEq = -bus.getP().eval() / (vr * vr + vi * vi) - gLoadEq; // full nodal P injection without the load
 
                 if (isBusPv) {
-                    bGenEq = (bus.getQ().eval() + bus.getLoadTargetQ()) / (vr * vr + vi * vi); // full nodal Q injection without the load
+                    bGenEq = bus.getQ().eval() / (vr * vr + vi * vi) + bLoadEq; // full nodal Q injection without the load
                 } else {
                     bGenEq = bus.getGenerationTargetQ() / (vr * vr + vi * vi);
                 }
@@ -211,8 +215,10 @@ public final class AdmittanceEquationSystem {
                     // Handling shunts that physically exist
                     b = getBfromShunt(bus, feederList); // ! updates feederList
                 }
-                gLoadEq = bus.getLoadTargetP() / (vr * vr + vi * vi); // Handling transformation of bus loads into equivalent shunts
-                bLoadEq = -bus.getLoadTargetQ() / (vr * vr + vi * vi);
+
+                ScLoad scLoad = (ScLoad) bus.getProperty(ShortCircuitExtensions.PROPERTY_SHORT_CIRCUIT);
+                gLoadEq = scLoad.getGdEquivalent() / (vr * vr + vi * vi);
+                bLoadEq = scLoad.getBdEquivalent() / (vr * vr + vi * vi);
 
                 Feeder shuntFeeder = new Feeder(bLoadEq, gLoadEq, bus.getId(), Feeder.FeederType.LOAD);
                 feederList.add(shuntFeeder);

@@ -35,53 +35,7 @@ public class LoadShortCircuitAdder extends AbstractExtensionAdder<Load, LoadShor
 
     @Override
     protected LoadShortCircuit createExtension(Load load) {
-        return new LoadShortCircuit(load, ratedMechanicalP, ratedPowerFactor, ratedS, ratedU,
-        efficiency, iaIrRatio, polePairNumber, rxLockedRotorRatio, loadShortCircuitType);
-    }
-
-    public LoadShortCircuitAdder withRatedMechanicalP(double ratedMechanicalP) {
-        this.ratedMechanicalP = ratedMechanicalP;
-        return this;
-    }
-
-    public LoadShortCircuitAdder withRatedS(double ratedS) {
-        this.ratedS = ratedS;
-        return this;
-    }
-
-    public LoadShortCircuitAdder withRatedPowerFactor(double ratedPowerFactor) {
-        this.ratedPowerFactor = ratedPowerFactor;
-        return this;
-    }
-
-    public LoadShortCircuitAdder withRatedU(double ratedU) {
-        this.ratedU = ratedU;
-        return this;
-    }
-
-    public LoadShortCircuitAdder withEfficiency(double efficiency) {
-        this.efficiency = efficiency;
-        return this;
-    }
-
-    public LoadShortCircuitAdder withIaIrRatio(double iaIrRatio) {
-        this.iaIrRatio = iaIrRatio;
-        return this;
-    }
-
-    public LoadShortCircuitAdder withRxLockedRotorRatio(double rxLockedRotorRatio) {
-        this.rxLockedRotorRatio = rxLockedRotorRatio;
-        return this;
-    }
-
-    public LoadShortCircuitAdder withPolePairNumber(int polePairNumber) {
-        this.polePairNumber = polePairNumber;
-        return this;
-    }
-
-    public LoadShortCircuitAdder withLoadShortCircuitType(LoadShortCircuit.LoadShortCircuitType loadShortCircuitType) {
-        this.loadShortCircuitType = loadShortCircuitType;
-        return this;
+        return new LoadShortCircuit(load);
     }
 
 }

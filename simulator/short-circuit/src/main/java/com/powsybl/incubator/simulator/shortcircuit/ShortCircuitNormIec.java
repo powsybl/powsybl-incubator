@@ -390,17 +390,9 @@ public class ShortCircuitNormIec extends ShortCircuitNormNone {
             double xn = zn / Math.sqrt(rxLockedRotorRatio * rxLockedRotorRatio + 1.);
             double rn = xn * rxLockedRotorRatio;
 
-            // zn is transformed into a load that will give the equivalent zn in the admittance matrix
-            // using formula P(MW) = Re(Z) * |V|² / |Z|² and Q(MVA) = Im(Z) * |V|² / |Z|²
-            // TODO: once load at bus will not be aggregated in the lfNetwork,
-            //  the info regarding the load with Asynchronous machine info should remain carried as Zn to fill the admittance matrix
-            //  as consequence, the application of the norm will not modify the load flow input data, which is the case for now
-            double uNom = load.getTerminal().getVoltageLevel().getNominalV();
-            double pEqScLoad = rn * uNom * uNom / (zn * zn);
-            double qEqScLoad = xn * uNom * uNom / (zn * zn);
+            extension.setRdEquivalent(rn);
+            extension.setXdEquivalent(xn);
 
-            load.setQ0(qEqScLoad);
-            load.setP0(pEqScLoad);
         }
 
     }

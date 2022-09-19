@@ -81,23 +81,19 @@ public class LoadShortCircuit extends AbstractExtension<Load> {
 
     private double xdEquivalent; // equivalent direct admittance of the load used in the admittance matrix, computed based on characteristics of the load
     private double rdEquivalent; // equivalent direct resistance of the load used in the admittance matrix, computed based on characteristics of the load
-    private final LoadShortCircuitType loadShortCircuitType;
-    private final AsynchronousMachineLoadData asynchronousMachineLoadData;
+    private LoadShortCircuitType loadShortCircuitType;
+    private AsynchronousMachineLoadData asynchronousMachineLoadData;
 
     @Override
     public String getName() {
         return NAME;
     }
 
-    public LoadShortCircuit(Load load, double ratedMechanicalP, double ratedPowerFactor, double ratedS, double ratedU,
-                            double efficiency, double iaIrRatio, int polePairNumber, double rxLockedRotorRatio, LoadShortCircuitType loadShortCircuitType) {
+    public LoadShortCircuit(Load load) {
         super(load);
 
-        AsynchronousMachineLoadData asynchronousMachineLoadData = new AsynchronousMachineLoadData(ratedMechanicalP, ratedPowerFactor, ratedS, ratedU,
-                efficiency, iaIrRatio, polePairNumber, rxLockedRotorRatio);
-
-        this.asynchronousMachineLoadData = asynchronousMachineLoadData;
-        this.loadShortCircuitType = loadShortCircuitType;
+        this.asynchronousMachineLoadData = null;
+        this.loadShortCircuitType = LoadShortCircuitType.UNKNOWN;
     }
 
     public LoadShortCircuitType getLoadShortCircuitType() {
@@ -106,5 +102,32 @@ public class LoadShortCircuit extends AbstractExtension<Load> {
 
     public AsynchronousMachineLoadData getAsynchronousMachineLoadData() {
         return asynchronousMachineLoadData;
+    }
+
+    public double getRdEquivalent() {
+        return rdEquivalent;
+    }
+
+    public double getXdEquivalent() {
+        return xdEquivalent;
+    }
+
+    public void setRdEquivalent(double rdEquivalent) {
+        this.rdEquivalent = rdEquivalent;
+    }
+
+    public void setXdEquivalent(double xdEquivalent) {
+        this.xdEquivalent = xdEquivalent;
+    }
+
+    public void setAsynchronousMachineLoadData(double ratedMechanicalP, double ratedPowerFactor, double ratedS, double ratedU,
+                                               double efficiency, double iaIrRatio, int polePairNumber, double rxLockedRotorRatio) {
+        this.asynchronousMachineLoadData = new AsynchronousMachineLoadData(ratedMechanicalP, ratedPowerFactor, ratedS, ratedU,
+        efficiency, iaIrRatio, polePairNumber, rxLockedRotorRatio);
+        this.loadShortCircuitType = LoadShortCircuitType.ASYNCHRONOUS_MACHINE;
+    }
+
+    public void setLoadShortCircuitType(LoadShortCircuitType loadShortCircuitType) {
+        this.loadShortCircuitType = loadShortCircuitType;
     }
 }

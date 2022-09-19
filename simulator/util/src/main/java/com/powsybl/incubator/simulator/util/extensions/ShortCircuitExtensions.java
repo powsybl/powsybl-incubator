@@ -26,6 +26,8 @@ public final class ShortCircuitExtensions {
 
     private static final double SB = 100.;
 
+    private static final double EPSILON = 0.00000001;
+
     private ShortCircuitExtensions() {
     }
 
@@ -37,6 +39,7 @@ public final class ShortCircuitExtensions {
                 for (LfGenerator lfGenerator : lfBus.getGenerators()) {
                     addGeneratorExtension(network, lfGenerator);
                 }
+                addLoadExtension(network, lfBus);
             }
 
             for (LfBranch lfBranch : lfNetwork.getBranches()) {
@@ -228,4 +231,40 @@ public final class ShortCircuitExtensions {
                                                                         coeffRo,
                                                                         coeffXo, kG));
     }
+
+    private static void addLoadExtension(Network network, LfBus lfBus) {
+        double bLoads = 0.;
+        double gLoads = 0.;
+        for (String loadId : lfBus.getLoads().getOriginalIds()) {
+            Load load = network.getLoad(loadId);
+            double uNom = load.getTerminal().getVoltageLevel().getNominalV();
+            LoadShortCircuit extension = load.getExtension(LoadShortCircuit.class);
+            double xd = 0.;
+            double rd = 0.;
+            if (extension != null) {
+                xd = extension.getXdEquivalent();
+                rd = extension.getRdEquivalent();
+            } else {
+                // No info available in extension we use the default formula with P and Q
+                double p = load.getP0();
+                double q = load.getQ0();
+                double s2 = p * p + q * q;
+
+                if (s2 > EPSILON) {
+                    xd = q / s2 * uNom * uNom;
+                    rd = p / s2 * uNom * uNom;
+                }
+            }
+            if (Math.abs(rd) > EPSILON || Math.abs(xd) > EPSILON) {
+                double tmpG = (uNom * uNom / SB) * rd / (rd * rd + xd * xd);
+                double tmpB = -(uNom * uNom / SB) * xd / (rd * rd + xd * xd);
+                gLoads = gLoads + tmpG; // yLoads represents the equivalent admittance of the loads connected at bus at Vnom voltage
+                bLoads = bLoads + tmpB;
+            }
+
+        }
+
+        lfBus.setProperty(PROPERTY_SHORT_CIRCUIT, new ScLoad(gLoads, bLoads)); // for now load extension is attached to the bus
+    }
+
 }

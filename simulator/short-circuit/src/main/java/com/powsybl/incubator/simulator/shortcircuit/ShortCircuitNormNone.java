@@ -20,6 +20,8 @@ public class ShortCircuitNormNone implements ShortCircuitNorm {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ShortCircuitNormNone.class);
 
+    public static final double EPSILON = 0.000001;
+
     @Override
     public double getCmaxVoltageFactor(double nominalVoltage) {
         return 1.0;
@@ -84,6 +86,35 @@ public class ShortCircuitNormNone implements ShortCircuitNorm {
     public void adjustLoadfromInfo(Load load) {
         // TODO : must be modified once load will be disaggregated
 
+    }
+
+    public void computeLoadsZeq(Network network) {
+        // uses available info of each load to deduce the equivalent impedance to be used in the admittance matrix
+        for (Load load : network.getLoads()) {
+            double pLoad = load.getP0();
+            double qLoad = load.getQ0();
+            double uNom = load.getTerminal().getVoltageLevel().getNominalV();
+            double s2 = pLoad * pLoad + qLoad * qLoad;
+            // using formula P(MW) = Re(Z) * |V|² / |Z|² and Q(MVAR) = Im(Z) * |V|² / |Z|²  or  Z = |V|² / (P-jQ)
+            // We compute the equivalent impedance at Unom
+            double xd = 0.;
+            double rd = 0.;
+            if (s2 > EPSILON) {
+                xd = qLoad * uNom * uNom / s2;
+                rd = pLoad * uNom * uNom / s2;
+            }
+
+            LoadShortCircuit extension = load.getExtension(LoadShortCircuit.class);
+            if (extension == null) {
+                load.newExtension(LoadShortCircuitAdder.class)
+                        .add();
+                LoadShortCircuit extensionLoad = load.getExtension(LoadShortCircuit.class);
+                extensionLoad.setLoadShortCircuitType(LoadShortCircuit.LoadShortCircuitType.CONSTANT_LOAD);
+                extension = extensionLoad;
+            }
+            extension.setXdEquivalent(xd);
+            extension.setRdEquivalent(rd);
+        }
     }
 
     public void adjustGenValuesWithFeederInputs(Generator gen) {
@@ -152,6 +183,8 @@ public class ShortCircuitNormNone implements ShortCircuitNorm {
 
     public void applyNormToLoads(Network network) {
         // Work on loads
+        computeLoadsZeq(network);
+
         for (Load load : network.getLoads()) {
             LoadShortCircuit extension = load.getExtension(LoadShortCircuit.class);
             if (extension == null) {

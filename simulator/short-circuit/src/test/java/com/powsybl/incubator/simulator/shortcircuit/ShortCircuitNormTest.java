@@ -45,12 +45,6 @@ public class ShortCircuitNormTest {
         double kg = extensionGen.getkG();
         assertEquals(0.1950430724873738, kg, 0.000001);
 
-        Load load = network.getLoad("LOAD_FEEDER2");
-        double pLoad = load.getP0();
-        double qLoad = load.getQ0();
-        assertEquals(5.798585024533738, pLoad, 0.000001);
-        assertEquals(57.98585024533737, qLoad, 0.000001);
-
         extensionT2w.setPartOfGeneratingUnit(false);
         shortCircuitNormIec.applyNormToT2W(network);
         shortCircuitNormIec.applyNormToGenerators(network);
@@ -246,16 +240,10 @@ public class ShortCircuitNormTest {
                 .add();
 
         load.newExtension(LoadShortCircuitAdder.class)
-                .withEfficiency(97.5)
-                .withIaIrRatio(0.5)
-                .withPolePairNumber(1)
-                .withRatedMechanicalP(100.)
-                .withRatedS(5.828)
-                .withRatedU(220.)
-                .withRxLockedRotorRatio(0.1)
-                .withRatedPowerFactor(0.88)
-                .withLoadShortCircuitType(LoadShortCircuit.LoadShortCircuitType.ASYNCHRONOUS_MACHINE)
                 .add();
+
+        LoadShortCircuit extensionLoad = load.getExtension(LoadShortCircuit.class);
+        extensionLoad.setAsynchronousMachineLoadData(100., 0.88, 5.828, 220., 97.5, 0.5, 1, 0.1);
 
         Generator g1 = vl1.newGenerator()
                 .setId("G1")

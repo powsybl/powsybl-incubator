@@ -22,20 +22,30 @@ public class ScTransfo3W {
         private final double coeffRo; // only used for now for 3 windings transformers
         private final double coeffXo;
 
+        private final double kTr;
+        private final double kTx;
+
+        private final double kTro;
+        private final double kTxo;
+
         private final boolean freeFluxes; // only used for now for 3 windings transformers
 
         private final double rGround = 0;
         private final double xGround = 0;
 
-        public Leg(LegConnectionType legConnectionType) {
-            this(legConnectionType, 0, 0, false);
-        }
+        /*public Leg(LegConnectionType legConnectionType) {
+            this(legConnectionType, 0, 0, 1., 1., 1., 1., false);
+        }*/
 
-        public Leg(LegConnectionType legConnectionType, double coeffRo, double coeffXo, boolean freeFluxes) {
+        public Leg(LegConnectionType legConnectionType, double coeffRo, double coeffXo, double kTr, double kTx, double kTro, double kTxo, boolean freeFluxes) {
             this.legConnectionType = legConnectionType;
             this.coeffRo = coeffRo;
             this.coeffXo = coeffXo;
             this.freeFluxes = freeFluxes;
+            this.kTr = kTr;
+            this.kTx = kTx;
+            this.kTro = kTro;
+            this.kTxo = kTxo;
         }
 
         public LegConnectionType getLegConnectionType() {
@@ -65,27 +75,32 @@ public class ScTransfo3W {
         public double getxGround() {
             return xGround;
         }
+
+        public double getkTr() {
+            return kTr;
+        }
+
+        public double getkTx() {
+            return kTx;
+        }
+
+        public double getkTro() {
+            return kTro;
+        }
+
+        public double getkTxo() {
+            return kTxo;
+        }
     }
 
     private final Leg leg1;
     private final Leg leg2;
     private final Leg leg3;
 
-    private final double kT1; //correction factor of the Two Windings Transformer
-    private final double kT2;
-    private final double kT3;
-
     ScTransfo3W(Leg leg1, Leg leg2, Leg leg3) {
-        this(leg1, leg2, leg3, 1d, 1d, 1d);
-    }
-
-    ScTransfo3W(Leg leg1, Leg leg2, Leg leg3, double kT1, double kT2, double kT3) {
         this.leg1 = Objects.requireNonNull(leg1);
         this.leg2 = Objects.requireNonNull(leg2);
         this.leg3 = Objects.requireNonNull(leg3);
-        this.kT1 = kT1;
-        this.kT2 = kT2;
-        this.kT3 = kT3;
     }
 
     public Leg getLeg1() {
@@ -98,17 +113,5 @@ public class ScTransfo3W {
 
     public Leg getLeg3() {
         return leg3;
-    }
-
-    public double getkT1() {
-        return kT1;
-    }
-
-    public double getkT2() {
-        return kT2;
-    }
-
-    public double getkT3() {
-        return kT3;
     }
 }

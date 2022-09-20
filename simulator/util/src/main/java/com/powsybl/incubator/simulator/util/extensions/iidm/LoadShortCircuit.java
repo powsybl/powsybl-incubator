@@ -14,6 +14,63 @@ import com.powsybl.iidm.network.Load;
  */
 public class LoadShortCircuit extends AbstractExtension<Load> {
 
+    public static class AsynchronousMachineLoadData {
+
+        private final double ratedMechanicalP;
+        private final double ratedPowerFactor; // cosPhi
+        private final double ratedS;
+        private final double ratedU;
+        private final double efficiency;
+        private final double iaIrRatio;
+        private final int polePairNumber;
+        private final double rxLockedRotorRatio;
+
+        public AsynchronousMachineLoadData(double ratedMechanicalP, double ratedPowerFactor, double ratedS, double ratedU,
+                                           double efficiency, double iaIrRatio, int polePairNumber, double rxLockedRotorRatio) {
+            this.ratedMechanicalP = ratedMechanicalP;
+            this.ratedPowerFactor = ratedPowerFactor;
+            this.ratedS = ratedS;
+            this.ratedU = ratedU;
+            this.efficiency = efficiency;
+            this.iaIrRatio = iaIrRatio;
+            this.polePairNumber = polePairNumber;
+            this.rxLockedRotorRatio = rxLockedRotorRatio;
+        }
+
+        public double getEfficiency() {
+            return efficiency;
+        }
+
+        public double getRatedU() {
+            return ratedU;
+        }
+
+        public double getIaIrRatio() {
+            return iaIrRatio;
+        }
+
+        public double getRatedMechanicalP() {
+            return ratedMechanicalP;
+        }
+
+        public double getRatedPowerFactor() {
+            return ratedPowerFactor;
+        }
+
+        public double getRatedS() {
+            return ratedS;
+        }
+
+        public double getRxLockedRotorRatio() {
+            return rxLockedRotorRatio;
+        }
+
+        public int getPolePairNumber() {
+            return polePairNumber;
+        }
+
+    }
+
     public static final String NAME = "loadShortCircuit";
 
     public enum LoadShortCircuitType {
@@ -22,68 +79,47 @@ public class LoadShortCircuit extends AbstractExtension<Load> {
         ASYNCHRONOUS_MACHINE;
     }
 
-    private final double ratedMechanicalP;
-    private final double ratedPowerFactor; // cosPhi
-    private final double ratedS;
-    private final double ratedU;
-    private final double efficiency;
-    private final double iaIrRatio;
-    private final int polePairNumber;
-    private final double rxLockedRotorRatio;
-    private final LoadShortCircuitType loadShortCircuitType;
+    private double xdEquivalent; // equivalent direct admittance of the load used in the admittance matrix, computed based on characteristics of the load
+    private double rdEquivalent; // equivalent direct resistance of the load used in the admittance matrix, computed based on characteristics of the load
+    private LoadShortCircuitType loadShortCircuitType;
+    private AsynchronousMachineLoadData asynchronousMachineLoadData;
 
     @Override
     public String getName() {
         return NAME;
     }
 
-    public LoadShortCircuit(Load load, double ratedMechanicalP, double ratedPowerFactor, double ratedS, double ratedU,
-                            double efficiency, double iaIrRatio, int polePairNumber, double rxLockedRotorRatio, LoadShortCircuitType loadShortCircuitType) {
+    public LoadShortCircuit(Load load, LoadShortCircuitType loadShortCircuitType, AsynchronousMachineLoadData asynchronousMachineLoadData) {
         super(load);
-        this.ratedMechanicalP = ratedMechanicalP;
-        this.ratedPowerFactor = ratedPowerFactor;
-        this.ratedS = ratedS;
-        this.ratedU = ratedU;
-        this.efficiency = efficiency;
-        this.iaIrRatio = iaIrRatio;
-        this.polePairNumber = polePairNumber;
-        this.rxLockedRotorRatio = rxLockedRotorRatio;
         this.loadShortCircuitType = loadShortCircuitType;
-    }
-
-    public double getEfficiency() {
-        return efficiency;
-    }
-
-    public double getRatedU() {
-        return ratedU;
-    }
-
-    public double getIaIrRatio() {
-        return iaIrRatio;
+        this.asynchronousMachineLoadData = asynchronousMachineLoadData;
     }
 
     public LoadShortCircuitType getLoadShortCircuitType() {
         return loadShortCircuitType;
     }
 
-    public double getRatedMechanicalP() {
-        return ratedMechanicalP;
+    public AsynchronousMachineLoadData getAsynchronousMachineLoadData() {
+        return asynchronousMachineLoadData;
     }
 
-    public double getRatedPowerFactor() {
-        return ratedPowerFactor;
+    public double getRdEquivalent() {
+        return rdEquivalent;
     }
 
-    public double getRatedS() {
-        return ratedS;
+    public double getXdEquivalent() {
+        return xdEquivalent;
     }
 
-    public double getRxLockedRotorRatio() {
-        return rxLockedRotorRatio;
+    public void setRdEquivalent(double rdEquivalent) {
+        this.rdEquivalent = rdEquivalent;
     }
 
-    public int getPolePairNumber() {
-        return polePairNumber;
+    public void setXdEquivalent(double xdEquivalent) {
+        this.xdEquivalent = xdEquivalent;
+    }
+
+    public void setLoadShortCircuitType(LoadShortCircuitType loadShortCircuitType) {
+        this.loadShortCircuitType = loadShortCircuitType;
     }
 }

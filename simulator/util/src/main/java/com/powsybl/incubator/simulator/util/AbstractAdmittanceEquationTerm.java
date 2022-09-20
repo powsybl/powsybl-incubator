@@ -6,6 +6,9 @@
  */
 package com.powsybl.incubator.simulator.util;
 
+import com.powsybl.incubator.simulator.util.extensions.ScTransfo2W;
+import com.powsybl.incubator.simulator.util.extensions.ScTransfo3W;
+import com.powsybl.incubator.simulator.util.extensions.ShortCircuitExtensions;
 import com.powsybl.openloadflow.equations.AbstractNamedEquationTerm;
 import com.powsybl.openloadflow.equations.Variable;
 import com.powsybl.openloadflow.equations.VariableSet;
@@ -79,19 +82,54 @@ public abstract class AbstractAdmittanceEquationTerm extends AbstractNamedEquati
         if (piModel.getZ() == 0) {
             throw new IllegalArgumentException("Branch '" + branch.getId() + "' has Z equal to zero");
         }
-        zInvSquare = 1 / (piModel.getZ() * piModel.getZ());
-        r = piModel.getR();
-        x = piModel.getX();
+
+        double kTr = 1.;
+        double kTx = 1.;
+        if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_2) {
+            // branch is a 2 windings transformer
+            ScTransfo2W scTransfo = (ScTransfo2W) branch.getProperty(ShortCircuitExtensions.PROPERTY_SHORT_CIRCUIT);
+            if (scTransfo != null) {
+                kTx = scTransfo.getkT();
+                kTr = kTx;
+            }
+        } else if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_1
+                || branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_2
+                || branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_3) {
+            // branch is leg1 of a 3 windings transformer and homopolar data available
+            ScTransfo3W scTransfo = (ScTransfo3W) branch.getProperty(ShortCircuitExtensions.PROPERTY_SHORT_CIRCUIT);
+            if (scTransfo != null) {
+                if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_1) {
+                    kTr = scTransfo.getLeg1().getkTr();
+                    kTx = scTransfo.getLeg1().getkTx();
+                } else if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_2) {
+                    kTr = scTransfo.getLeg2().getkTr();
+                    kTx = scTransfo.getLeg2().getkTx();
+                } else if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_3) {
+                    kTr = scTransfo.getLeg3().getkTr();
+                    kTx = scTransfo.getLeg3().getkTx();
+                } else {
+                    throw new IllegalArgumentException("Branch " + branch.getId() + " has unknown 3-winding leg number");
+                }
+            }
+        }
+
+        r = piModel.getR() * kTr;
+        x = piModel.getX() * kTx;
+
+        double zk = Math.sqrt(r * r + x * x);
+
+        zInvSquare = 1 / (zk * zk);
+
         double alpha = piModel.getA1();
         cosA = Math.cos(Math.toRadians(alpha));
         sinA = Math.sin(Math.toRadians(alpha));
         cos2A = Math.cos(Math.toRadians(2 * alpha));
         sin2A = Math.sin(Math.toRadians(2 * alpha));
 
-        gPi1 = piModel.getG1();
-        bPi1 = piModel.getB1();
-        gPi2 = piModel.getG2();
-        bPi2 = piModel.getB2();
+        gPi1 = piModel.getG1() / kTr;
+        bPi1 = piModel.getB1() / kTx;
+        gPi2 = piModel.getG2() / kTr;
+        bPi2 = piModel.getB2() / kTx;
     }
 
     @Override

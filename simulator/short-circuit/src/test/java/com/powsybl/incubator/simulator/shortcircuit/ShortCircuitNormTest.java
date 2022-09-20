@@ -249,10 +249,9 @@ public class ShortCircuitNormTest {
                 .add();
 
         load.newExtension(LoadShortCircuitAdder.class)
+                .withLoadShortCircuitType(LoadShortCircuit.LoadShortCircuitType.ASYNCHRONOUS_MACHINE)
+                .withAsynchronousMachineLoadData(new LoadShortCircuit.AsynchronousMachineLoadData(100., 0.88, 5.828, 220., 97.5, 0.5, 1, 0.1))
                 .add();
-
-        LoadShortCircuit extensionLoad = load.getExtension(LoadShortCircuit.class);
-        extensionLoad.setAsynchronousMachineLoadData(100., 0.88, 5.828, 220., 97.5, 0.5, 1, 0.1);
 
         Generator g1 = vl1.newGenerator()
                 .setId("G1")

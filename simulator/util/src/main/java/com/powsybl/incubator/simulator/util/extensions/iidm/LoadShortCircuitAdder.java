@@ -9,20 +9,15 @@ package com.powsybl.incubator.simulator.util.extensions.iidm;
 import com.powsybl.commons.extensions.AbstractExtensionAdder;
 import com.powsybl.iidm.network.Load;
 
+import java.util.Objects;
+
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
 public class LoadShortCircuitAdder extends AbstractExtensionAdder<Load, LoadShortCircuit> {
 
-    private double ratedMechanicalP = 0.;
-    private double ratedPowerFactor = 0.;
-    private double ratedS = 0.;
-    private double ratedU = 0.;
-    private double efficiency = 0.;
-    private double iaIrRatio = 0.;
-    private int polePairNumber = 1;
-    private double rxLockedRotorRatio = 0.;
-    private LoadShortCircuit.LoadShortCircuitType loadShortCircuitType = LoadShortCircuit.LoadShortCircuitType.CONSTANT_LOAD;
+    private LoadShortCircuit.LoadShortCircuitType loadShortCircuitType = LoadShortCircuit.LoadShortCircuitType.UNKNOWN;
+    private LoadShortCircuit.AsynchronousMachineLoadData asynchronousMachineLoadData;
 
     public LoadShortCircuitAdder(Load load) {
         super(load);
@@ -33,9 +28,19 @@ public class LoadShortCircuitAdder extends AbstractExtensionAdder<Load, LoadShor
         return LoadShortCircuit.class;
     }
 
+    public LoadShortCircuitAdder withLoadShortCircuitType(LoadShortCircuit.LoadShortCircuitType loadShortCircuitType) {
+        this.loadShortCircuitType = Objects.requireNonNull(loadShortCircuitType);
+        return this;
+    }
+
+    public LoadShortCircuitAdder withAsynchronousMachineLoadData(LoadShortCircuit.AsynchronousMachineLoadData asynchronousMachineLoadData) {
+        this.asynchronousMachineLoadData = asynchronousMachineLoadData;
+        return this;
+    }
+
     @Override
     protected LoadShortCircuit createExtension(Load load) {
-        return new LoadShortCircuit(load);
+        return new LoadShortCircuit(load, loadShortCircuitType, asynchronousMachineLoadData);
     }
 
 }

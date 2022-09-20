@@ -14,7 +14,7 @@ import com.powsybl.iidm.network.Load;
  */
 public class LoadShortCircuit extends AbstractExtension<Load> {
 
-    public class AsynchronousMachineLoadData {
+    public static class AsynchronousMachineLoadData {
 
         private final double ratedMechanicalP;
         private final double ratedPowerFactor; // cosPhi
@@ -89,11 +89,10 @@ public class LoadShortCircuit extends AbstractExtension<Load> {
         return NAME;
     }
 
-    public LoadShortCircuit(Load load) {
+    public LoadShortCircuit(Load load, LoadShortCircuitType loadShortCircuitType, AsynchronousMachineLoadData asynchronousMachineLoadData) {
         super(load);
-
-        this.asynchronousMachineLoadData = null;
-        this.loadShortCircuitType = LoadShortCircuitType.UNKNOWN;
+        this.loadShortCircuitType = loadShortCircuitType;
+        this.asynchronousMachineLoadData = asynchronousMachineLoadData;
     }
 
     public LoadShortCircuitType getLoadShortCircuitType() {
@@ -118,13 +117,6 @@ public class LoadShortCircuit extends AbstractExtension<Load> {
 
     public void setXdEquivalent(double xdEquivalent) {
         this.xdEquivalent = xdEquivalent;
-    }
-
-    public void setAsynchronousMachineLoadData(double ratedMechanicalP, double ratedPowerFactor, double ratedS, double ratedU,
-                                               double efficiency, double iaIrRatio, int polePairNumber, double rxLockedRotorRatio) {
-        this.asynchronousMachineLoadData = new AsynchronousMachineLoadData(ratedMechanicalP, ratedPowerFactor, ratedS, ratedU,
-        efficiency, iaIrRatio, polePairNumber, rxLockedRotorRatio);
-        this.loadShortCircuitType = LoadShortCircuitType.ASYNCHRONOUS_MACHINE;
     }
 
     public void setLoadShortCircuitType(LoadShortCircuitType loadShortCircuitType) {

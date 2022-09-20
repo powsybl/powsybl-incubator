@@ -180,11 +180,9 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
             }
 
             load.newExtension(LoadShortCircuitAdder.class)
+                    .withLoadShortCircuitType(LoadShortCircuit.LoadShortCircuitType.ASYNCHRONOUS_MACHINE)
+                    .withAsynchronousMachineLoadData(new LoadShortCircuit.AsynchronousMachineLoadData(ratedMechanicalPower, ratedPowerFactor, ratedS, ratedU, efficiency, iaIrRatio, polePairNumber, rxLockedRotorRatio))
                     .add();
-
-            LoadShortCircuit extensionLoad = load.getExtension(LoadShortCircuit.class);
-            extensionLoad.setAsynchronousMachineLoadData(ratedMechanicalPower, ratedPowerFactor, ratedS, ratedU, efficiency, iaIrRatio, polePairNumber, rxLockedRotorRatio);
-
         }
     }
 

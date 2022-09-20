@@ -10,8 +10,6 @@ import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.*;
 import com.powsybl.iidm.network.extensions.GeneratorShortCircuit;
 import com.powsybl.incubator.simulator.util.extensions.iidm.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,9 +17,7 @@ import java.util.List;
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
-public class ShortCircuitNormIec implements ShortCircuitNorm {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ShortCircuitNormIec.class);
+public class ShortCircuitNormIec extends ShortCircuitNormNone {
 
     public static final double LOW_VOLTAGE_KV_THRESHOLD = 1.;
     public static final double MEDIUM_VOLTAGE_KV_THRESHOLD = 35.;
@@ -34,6 +30,10 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
     public static final double LOW_VOLTAGE_CMIN = 0.95;
     public static final double MEDIUM_VOLTAGE_CMIN = 1.0;
     public static final double HIGH_VOLTAGE_MAX_CMIN = 1.0;
+
+    public static final double EPSILON = 0.000001;
+
+    List<Generator> generatorsWithTfo;
 
     @Override
     public double getCmaxVoltageFactor(double nominalVoltage) {
@@ -69,28 +69,6 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
         double xt2w = t2w.getX();
 
         return 0.95 * cmax / (1. + 0.6 * xt2w * ratedSt2w / (ratedU2 * ratedU2));
-    }
-
-    @Override
-    public double getKtT3W(ThreeWindingsTransformer t3w, int numLeg) {
-
-        ThreeWindingsTransformer.Leg t3wLeg;
-        if (numLeg == 1) {
-            t3wLeg = t3w.getLeg1();
-        } else if (numLeg == 2) {
-            t3wLeg = t3w.getLeg2();
-        } else if (numLeg == 3) {
-            t3wLeg = t3w.getLeg3();
-        } else {
-            throw new IllegalArgumentException("Three Winding Transformer " + t3w.getId() + " input leg must be 1, 2 or 3 but was : " + numLeg);
-        }
-
-        double cmax = getCmaxVoltageFactor(t3wLeg.getTerminal().getVoltageLevel().getNominalV());
-        double ratedSt3w = t3wLeg.getRatedS();
-        double ratedU0 = t3w.getRatedU0(); // we suppose that all impedances are based on an impedance base (Sb_leg, U0)
-        double xt3w = t3wLeg.getX();
-
-        return 0.95 * cmax / (1 + 0.6 * xt3w * ratedSt3w / (ratedU0 * ratedU0));
     }
 
     public double getKtT3Wij(ThreeWindingsTransformer t3w, int iNumLeg, int jNumLeg) {
@@ -140,7 +118,8 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
 
     }
 
-    public List<Double> getKtT3Wi(ThreeWindingsTransformer t3w) {
+    @Override
+    public void setKtT3Wi(ThreeWindingsTransformer t3w) {
 
         double ktabIec = getKtT3Wij(t3w, 1, 2);
         double ktacIec = getKtT3Wij(t3w, 1, 3);
@@ -171,60 +150,81 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
         double kTcX = getCheckedCoef(t3WId, xcT3k, xc);
         double kTcR = getCheckedCoef(t3WId, rcT3k, rc);
 
-        List<Double> result = new ArrayList<>();
-
-        result.add(kTaR);
-        result.add(kTaX);
-        result.add(kTbR);
-        result.add(kTbX);
-        result.add(kTcR);
-        result.add(kTcX);
+        ThreeWindingsTransformerShortCircuit extension = t3w.getExtension(ThreeWindingsTransformerShortCircuit.class);
+        if (extension == null) {
+            t3w.newExtension(ThreeWindingsTransformerShortCircuitAdder.class)
+                    .add();
+            extension = t3w.getExtension(ThreeWindingsTransformerShortCircuit.class);
+        }
+        extension.getLeg1().setKtR(kTaR);
+        extension.getLeg1().setKtX(kTaX);
+        extension.getLeg2().setKtR(kTbR);
+        extension.getLeg2().setKtX(kTbX);
+        extension.getLeg3().setKtR(kTcR);
+        extension.getLeg3().setKtX(kTcX);
 
         // dealing homopolar part
-        ThreeWindingsTransformerShortCircuit extension = t3w.getExtension(ThreeWindingsTransformerShortCircuit.class);
-        if (extension != null) {
-            double ra0 = extension.getLeg1Ro();
-            double xa0 = extension.getLeg1Xo();
-            double rb0 = extension.getLeg2Ro();
-            double xb0 = extension.getLeg2Xo();
-            double rc0 = extension.getLeg3Ro();
-            double xc0 = extension.getLeg3Xo();
-
-            double ra0T3k = 0.5 * (ktabIec * (ra0 + rb0) + ktacIec * (ra0 + rc0) - ktbcIec * (rb0 + rc0));
-            double xa0T3k = 0.5 * (ktabIec * (xa0 + xb0) + ktacIec * (xa0 + xc0) - ktbcIec * (xb0 + xc0));
-            double rb0T3k = 0.5 * (ktabIec * (ra0 + rb0) - ktacIec * (ra0 + rc0) + ktbcIec * (rb0 + rc0));
-            double xb0T3k = 0.5 * (ktabIec * (xa0 + xb0) - ktacIec * (xa0 + xc0) + ktbcIec * (xb0 + xc0));
-            double rc0T3k = 0.5 * (-ktabIec * (ra0 + rb0) + ktacIec * (ra0 + rc0) + ktbcIec * (rb0 + rc0));
-            double xc0T3k = 0.5 * (-ktabIec * (xa0 + xb0) + ktacIec * (xa0 + xc0) + ktbcIec * (xb0 + xc0));
-
-            double coefaX0 = getCheckedCoef(t3WId, xa0T3k, xaT3k);
-            double coefaR0 = getCheckedCoef(t3WId, ra0T3k, raT3k);
-
-            double coefbX0 = getCheckedCoef(t3WId, xb0T3k, xbT3k);
-            double coefbR0 = getCheckedCoef(t3WId, rb0T3k, rbT3k);
-
-            double coefbX0bis = xb0T3k / xbT3k;
-
-            double coefcX0 = getCheckedCoef(t3WId, xc0T3k, xcT3k);
-            double coefcR0 = getCheckedCoef(t3WId, rc0T3k, rcT3k);
-
-            result.add(coefaR0);
-            result.add(coefaX0);
-            result.add(coefbR0);
-            result.add(coefbX0);
-            result.add(coefcR0);
-            result.add(coefcX0);
-
-        } else {
-            result.add(0.);
-            result.add(0.);
-            result.add(0.);
-            result.add(0.);
-            result.add(0.);
-            result.add(0.);
+        double ra0 = extension.getLeg1().getLegCoeffRo();
+        if (Math.abs(ra) > EPSILON) {
+            ra0 = extension.getLeg1().getLegCoeffRo() * ra;
+        }
+        double xa0 = extension.getLeg1().getLegCoeffXo();
+        if (Math.abs(xa) > EPSILON) {
+            xa0 = extension.getLeg1().getLegCoeffXo() * xa;
+        }
+        double rb0 = extension.getLeg2().getLegCoeffRo();
+        if (Math.abs(rb) > EPSILON) {
+            rb0 = extension.getLeg2().getLegCoeffRo() * rb;
+        }
+        double xb0 = extension.getLeg2().getLegCoeffXo();
+        if (Math.abs(xb) > EPSILON) {
+            xb0 = extension.getLeg2().getLegCoeffXo() * xb;
+        }
+        double rc0 = extension.getLeg3().getLegCoeffRo();
+        if (Math.abs(rc) > EPSILON) {
+            rc0 = extension.getLeg3().getLegCoeffRo() * rc;
+        }
+        double xc0 = extension.getLeg3().getLegCoeffXo();
+        if (Math.abs(xc) > EPSILON) {
+            xc0 = extension.getLeg3().getLegCoeffXo() * xc;
         }
 
-        return result;
+        double ra0T3k = 0.5 * (ktabIec * (ra0 + rb0) + ktacIec * (ra0 + rc0) - ktbcIec * (rb0 + rc0));
+        double xa0T3k = 0.5 * (ktabIec * (xa0 + xb0) + ktacIec * (xa0 + xc0) - ktbcIec * (xb0 + xc0));
+        double rb0T3k = 0.5 * (ktabIec * (ra0 + rb0) - ktacIec * (ra0 + rc0) + ktbcIec * (rb0 + rc0));
+        double xb0T3k = 0.5 * (ktabIec * (xa0 + xb0) - ktacIec * (xa0 + xc0) + ktbcIec * (xb0 + xc0));
+        double rc0T3k = 0.5 * (-ktabIec * (ra0 + rb0) + ktacIec * (ra0 + rc0) + ktbcIec * (rb0 + rc0));
+        double xc0T3k = 0.5 * (-ktabIec * (xa0 + xb0) + ktacIec * (xa0 + xc0) + ktbcIec * (xb0 + xc0));
+
+        double coefaX0 = getCheckedCoef(t3WId, xa0, xa);
+        double coefaR0 = getCheckedCoef(t3WId, ra0, ra);
+        double coefbX0 = getCheckedCoef(t3WId, xb0, xb);
+        double coefbR0 = getCheckedCoef(t3WId, rb0, rb);
+        double coefcX0 = getCheckedCoef(t3WId, xc0, xc);
+        double coefcR0 = getCheckedCoef(t3WId, rc0, rc);
+
+        //
+        double kTaR0 = getCheckedCoef(t3WId, ra0T3k, ra0);
+        double kTaX0 = getCheckedCoef(t3WId, xa0T3k, xa0);
+        double kTbR0 = getCheckedCoef(t3WId, rb0T3k, rb0);
+        double kTbX0 = getCheckedCoef(t3WId, xb0T3k, xb0);
+        double kTcR0 = getCheckedCoef(t3WId, rc0T3k, rc0);
+        double kTcX0 = getCheckedCoef(t3WId, xc0T3k, xc0);
+
+        extension.getLeg1().setKtXo(kTaX0);
+        extension.getLeg1().setKtRo(kTaR0);
+        extension.getLeg2().setKtXo(kTbX0);
+        extension.getLeg2().setKtRo(kTbR0);
+        extension.getLeg3().setKtXo(kTcX0);
+        extension.getLeg3().setKtRo(kTcR0);
+
+        extension.getLeg1().setLegCoeffRo(coefaR0);
+        extension.getLeg1().setLegCoeffXo(coefaX0);
+        extension.getLeg2().setLegCoeffRo(coefbR0);
+        extension.getLeg2().setLegCoeffXo(coefbX0);
+        extension.getLeg3().setLegCoeffRo(coefcR0);
+        extension.getLeg3().setLegCoeffXo(coefcX0);
+
     }
 
     public double getKs(TwoWindingsTransformer t2w, Generator gen) {
@@ -315,44 +315,6 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
         return  tfoGenerator;
     }
 
-    public double getCheckedCoef(String id, double ztk, double zt) {
-
-        if (zt == 0.) {
-            if (ztk != 0.) {
-                LOGGER.warn("Transformer " + id +  " has r or x equal to zero and computed rk or xk is non null, short circuit calculation might be wrong");
-            }
-            return  1.;
-        } else {
-            return ztk / zt;
-        }
-
-    }
-
-    public void adjustWithKt3W(ThreeWindingsTransformer t3w, List<Double> result) {
-        ThreeWindingsTransformer.Leg leg1 = t3w.getLeg1();
-        ThreeWindingsTransformer.Leg leg2 = t3w.getLeg2();
-        ThreeWindingsTransformer.Leg leg3 = t3w.getLeg3();
-
-        leg1.setR(leg1.getR() * result.get(0));
-        leg1.setX(leg1.getX() * result.get(1));
-        leg2.setR(leg2.getR() * result.get(2));
-        leg2.setX(leg2.getX() * result.get(3));
-        leg3.setR(leg3.getR() * result.get(4));
-        leg3.setX(leg3.getX() * result.get(5));
-
-        ThreeWindingsTransformerShortCircuit extension = t3w.getExtension(ThreeWindingsTransformerShortCircuit.class);
-        if (extension != null) {
-            // these values already contain the Kt coeff
-            extension.setLeg1CoeffRo(result.get(6));
-            extension.setLeg1CoeffXo(result.get(7));
-            extension.setLeg2CoeffRo(result.get(8));
-            extension.setLeg2CoeffXo(result.get(9));
-            extension.setLeg3CoeffRo(result.get(10));
-            extension.setLeg3CoeffXo(result.get(11));
-        }
-
-    }
-
     @Override
     public String getNormType() {
         return "IEC";
@@ -362,6 +324,9 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
     public double getKg(Generator gen) {
         double nominalU = gen.getTerminal().getVoltageLevel().getNominalV();
         double ratedS = gen.getRatedS();
+        if (Math.abs(ratedS) < EPSILON) {
+            ratedS = 100.;
+        }
         double cmax = getCmaxVoltageFactor(nominalU);
 
         double cosPhi = 0.85; //default value
@@ -396,106 +361,70 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
         return kg;
     }
 
-    public void adjustGenValuesWithFeederInputs(Generator gen) {
-        GeneratorShortCircuit extension = gen.getExtension(GeneratorShortCircuit.class);
-        if (extension == null) {
-            throw new PowsyblException("Generator '" + gen.getId() + "' could not be adjusted with feeder values because of missing extension input data");
-        }
-        GeneratorShortCircuit2 extensions2 = gen.getExtension(GeneratorShortCircuit2.class);
-        if (extensions2 == null) {
-            throw new PowsyblException("Generator '" + gen.getId() + "' could not be adjusted with feeder values because of missing extension2 input data");
-        }
-
-        GeneratorShortCircuit2.GeneratorType genType = extensions2.getGeneratorType();
-        if (genType != GeneratorShortCircuit2.GeneratorType.FEEDER) {
-            throw new PowsyblException("Generator '" + gen.getId() + "' has wrong type to be adjusted");
-        }
-        double ikQmax = extensions2.getIkQmax();
-        double maxR1ToX1Ratio = extensions2.getMaxR1ToX1Ratio();
-        double cq = extensions2.getCq();
-
-        // Zq = cq * Unomq / (sqrt3 * Ikq)
-        // Zq = sqrt(r² + x²) which gives x = Zq / sqrt((R/X)² + 1)
-        double zq = cq * gen.getTerminal().getVoltageLevel().getNominalV() / (Math.sqrt(3.) * ikQmax / 1000.); // ikQmax is changed from A to kA
-        double xq = zq / Math.sqrt(maxR1ToX1Ratio * maxR1ToX1Ratio + 1.);
-        double rq = xq * maxR1ToX1Ratio;
-
-        extension.setDirectTransX(xq);
-        extension.setDirectSubtransX(xq);
-        extensions2.setTransRd(rq);
-        extensions2.setSubTransRd(rq);
-    }
-
+    @Override
     public void adjustLoadfromInfo(Load load) {
         LoadShortCircuit extension = load.getExtension(LoadShortCircuit.class);
         if (extension == null) {
             throw new PowsyblException("Load '" + load.getId() + "' could generate Z for short circuit because of missing extension input data");
         }
 
-        double ratedMechanicalPower = extension.getRatedMechanicalP();
-        double ratedPowerFactor = extension.getRatedPowerFactor(); // cosPhi
-        double ratedS = extension.getRatedS();
-        double ratedU = extension.getRatedU();
-        double efficiency = extension.getEfficiency() / 100.; // conversion from percentages
-        double iaIrRatio = extension.getIaIrRatio();
-        double rxLockedRotorRatio = extension.getRxLockedRotorRatio();
-        int polePairNumber = extension.getPolePairNumber();
+        if (extension.getLoadShortCircuitType() == LoadShortCircuit.LoadShortCircuitType.ASYNCHRONOUS_MACHINE) {
 
-        // Zn = 1/(Ilr/Irm) * Urm / (sqrt3 * Irm) = 1/(Ilr/Irm) * Urm² / (Prm / (efficiency * cosPhi))
-        // Xn = Zn / sqrt(1+ (Rm/Xm)²)
-        double zn = 1. / iaIrRatio * ratedU * ratedU / (ratedMechanicalPower / (efficiency * ratedPowerFactor));
-        double xn = zn / Math.sqrt(rxLockedRotorRatio * rxLockedRotorRatio + 1.);
-        double rn = xn * rxLockedRotorRatio;
-
-        // zn is transformed into a load that will give the equivalent zn in the admittance matrix
-        // using formula P(MW) = Re(Z) * |V|² / |Z|² and Q(MVA) = Im(Z) * |V|² / |Z|²
-        // TODO: once load will not be aggregated in the lfNetwork,
-        //  the info regarding the load with Asynchronous machine info should remain carried as Zn to fill the admittance matrix
-        double uNom = load.getTerminal().getVoltageLevel().getNominalV();
-        double pEqScLoad = rn * uNom * uNom / (zn * zn);
-        double qEqScLoad = xn * uNom * uNom / (zn * zn);
-
-        load.setQ0(qEqScLoad);
-        load.setP0(pEqScLoad);
-    }
-
-    public void applyNormToNetwork(Network network) {
-
-        // FIXME: the application of the norm modifies the iidm network characteristics. Extensions carried from iidm network to lfNetwork should help to avoid this.
-
-        // Work on two windings transformers
-        List<Generator> generatorsWithTfo = new ArrayList<>();
-        for (TwoWindingsTransformer t2w : network.getTwoWindingsTransformers()) {
-            Generator genTfo = getAssociatedGenerator(network, t2w);
-            if (genTfo != null) {
-                generatorsWithTfo.add(genTfo);
-                double ks = getKs(t2w, genTfo);
-                adjustWithKg(genTfo, ks);
-                t2w.setX(t2w.getX() * ks);
-                t2w.setR(t2w.getR() * ks);
-            } else {
-                double kt = getKtT2W(t2w);
-                t2w.setX(t2w.getX() * kt);
-                t2w.setR(t2w.getR() * kt);
+            if (extension.getAsynchronousMachineLoadData() == null) {
+                throw new PowsyblException("Load '" + load.getId() + "' is an asynchronous machine without associated data, therefore equivalent admittance could not be generated ");
             }
-            // handling grounding in addition to X and R but without Kt or Ks
-            TwoWindingsTransformerShortCircuit extension = t2w.getExtension(TwoWindingsTransformerShortCircuit.class);
-            if (extension != null) { // grounding only exist if extension exists
-                double x = t2w.getX();
-                double r = t2w.getR();
-                double ro = extension.getCoeffRo() * r;
-                double xo = extension.getCoeffXo() * x;
-                double roTotal = ro + extension.getR1Ground() + extension.getR2Ground(); // if not grounded R1 and R2 to ground must be 0.
-                double xoTotal = xo + extension.getX1Ground() + extension.getX2Ground(); // TODO : try to implement grounding independently from the norm
-                if (Math.abs(r) > 0.00001) {
-                    extension.setCoeffRo(roTotal / r);
-                }
-                if (Math.abs(x) > 0.00001) {
-                    extension.setCoeffXo(xoTotal / x);
-                }
-            }
+
+            LoadShortCircuit.AsynchronousMachineLoadData asynchData = extension.getAsynchronousMachineLoadData();
+            double ratedMechanicalPower = asynchData.getRatedMechanicalP();
+            double ratedPowerFactor = asynchData.getRatedPowerFactor(); // cosPhi
+            double ratedS = asynchData.getRatedS();
+            double ratedU = asynchData.getRatedU();
+            double efficiency = asynchData.getEfficiency() / 100.; // conversion from percentages
+            double iaIrRatio = asynchData.getIaIrRatio();
+            double rxLockedRotorRatio = asynchData.getRxLockedRotorRatio();
+            int polePairNumber = asynchData.getPolePairNumber();
+
+            // Zn = 1/(Ilr/Irm) * Urm / (sqrt3 * Irm) = 1/(Ilr/Irm) * Urm² / (Prm / (efficiency * cosPhi))
+            // Xn = Zn / sqrt(1+ (Rm/Xm)²)
+            double zn = 1. / iaIrRatio * ratedU * ratedU / (ratedMechanicalPower / (efficiency * ratedPowerFactor));
+            double xn = zn / Math.sqrt(rxLockedRotorRatio * rxLockedRotorRatio + 1.);
+            double rn = xn * rxLockedRotorRatio;
+
+            extension.setRdEquivalent(rn);
+            extension.setXdEquivalent(xn);
+
         }
 
+    }
+
+    @Override
+    public void applyNormToT2W(Network network) {
+        // Work on two windings transformers
+        generatorsWithTfo = new ArrayList<>();
+        for (TwoWindingsTransformer t2w : network.getTwoWindingsTransformers()) {
+            Generator genTfo = getAssociatedGenerator(network, t2w);
+            TwoWindingsTransformerShortCircuit extension = t2w.getExtension(TwoWindingsTransformerShortCircuit.class);
+            double kNorm;
+            if (genTfo != null) {
+                generatorsWithTfo.add(genTfo);
+                kNorm = getKs(t2w, genTfo);
+                setGenKg(genTfo, kNorm);
+            } else {
+                kNorm = getKtT2W(t2w);
+            }
+
+            if (extension != null) { // grounding only exist if extension exists
+                extension.setkNorm(kNorm);
+            } else {
+                t2w.newExtension(TwoWindingsTransformerShortCircuitAdder.class)
+                        .withKnorm(kNorm)
+                        .add();
+            }
+        }
+    }
+
+    @Override
+    public void applyNormToGenerators(Network network) {
         // Work on generators
         for (Generator gen : network.getGenerators()) {
             if (generatorsWithTfo.contains(gen)) {
@@ -510,39 +439,10 @@ public class ShortCircuitNormIec implements ShortCircuitNorm {
                 } else {
                     // this includes standard rotating machines
                     double kg = getKg(gen);
-                    adjustWithKg(gen, kg);
+                    setGenKg(gen, kg);
                 }
             }
         }
-
-        // Work on loads
-        for (Load load : network.getLoads()) {
-            LoadShortCircuit extension = load.getExtension(LoadShortCircuit.class);
-            if (extension == null) {
-                continue; // we do not modify loads with no additional short circuit info
-            }
-            adjustLoadfromInfo(load);
-        }
-
-        // Work on three Windings transformers
-        for (ThreeWindingsTransformer t3w : network.getThreeWindingsTransformers()) {
-            List<Double> resultT3 = getKtT3Wi(t3w); // table contains vector [ kTaR; kTaX; kTbR; kTbX; kTcR; kTcX ]
-            adjustWithKt3W(t3w, resultT3);
-        }
     }
 
-    public void adjustWithKg(Generator gen, double kg) {
-        // This is a temporary function to multiply with kg
-        // should disappear when the norm will be properly applied
-        GeneratorShortCircuit extension = gen.getExtension(GeneratorShortCircuit.class);
-        if (extension != null) {
-            extension.setDirectSubtransX(extension.getDirectSubtransX() * kg);
-            extension.setDirectTransX(extension.getDirectTransX() * kg);
-        }
-        GeneratorShortCircuit2 extensions2 = gen.getExtension(GeneratorShortCircuit2.class);
-        if (extensions2 != null) {
-            extensions2.setSubTransRd(extensions2.getSubTransRd() * kg);
-            extensions2.setTransRd(extensions2.getTransRd() * kg);
-        }
-    }
 }

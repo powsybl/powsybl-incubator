@@ -136,10 +136,10 @@ public class MiniGridTest {
         //  ro_mvk = Kt_bc * (ro_b + ro_c)
         //  Ro_T / R_T = (ro_b + ro_c) / r_ab = 1.0
         //  then ro_mvk = Kt_bc * r_ab * Ro_T / R_T = 0.107281
-        //  the input values ro_b and ro_c does not give ro_mvk = 0.107281
+        //  the input values ro_b and ro_c do not give ro_mvk = 0.107281
         //  for Ro_T / R_T = 1.0 , does it mean that r_b =? ro_b and r_c =? ro_c, maybe not...
         //  keeping the values provided in input, short circuit at bus2 varies from 15.9722 kA ( = the reference) to 15.981 kA
-        //  if we want to keep the reference result, we need to modify the ration of ro_b/r_b and ro_c/r_c equal to : double coeffRoT4 = 0.107281 / (rT4b + rT4c) 120. /120. ;
+        //  if we want to keep the reference result, we need to modify the ratio of ro_b/r_b and ro_c/r_c equal to : double coeffRoT4 = 0.107281 / (rT4b + rT4c) 120. /120. ;
 
         List<ShortCircuitFault> faultList = new ArrayList<>();
         ShortCircuitFault sc1 = new ShortCircuitFault(busNameToId.get("Bus2"), "sc1", 0., 0., ShortCircuitFault.ShortCircuitType.MONOPHASED);

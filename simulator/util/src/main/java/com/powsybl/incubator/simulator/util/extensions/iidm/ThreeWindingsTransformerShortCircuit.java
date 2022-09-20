@@ -16,26 +16,95 @@ import java.util.Objects;
  */
 public class ThreeWindingsTransformerShortCircuit extends AbstractExtension<ThreeWindingsTransformer> {
 
+    public class T3wLeg {
+
+        private double legCoeffRo;
+        private double legCoeffXo;
+        private boolean legFreeFluxes;
+        private LegConnectionType legConnectionType;
+        private double ktR;
+        private double ktX;
+        private double ktRo;
+        private double ktXo;
+
+        public T3wLeg(double legCoeffRo, double legCoeffXo, boolean legFreeFluxes, LegConnectionType legConnectionType,
+                      double ktR, double ktX, double ktRo, double ktXo) {
+            this.legCoeffRo = legCoeffRo;
+            this.legCoeffXo = legCoeffXo;
+            this.legFreeFluxes = legFreeFluxes;
+            this.legConnectionType = Objects.requireNonNull(legConnectionType);
+            this.ktR = ktR;
+            this.ktX = ktX;
+            this.ktRo = ktRo;
+            this.ktXo = ktXo;
+        }
+
+        public LegConnectionType getLegConnectionType() {
+            return legConnectionType;
+        }
+
+        public double getKtR() {
+            return ktR;
+        }
+
+        public double getKtRo() {
+            return ktRo;
+        }
+
+        public double getKtX() {
+            return ktX;
+        }
+
+        public double getKtXo() {
+            return ktXo;
+        }
+
+        public boolean isLegFreeFluxes() {
+            return legFreeFluxes;
+        }
+
+        public double getLegCoeffRo() {
+            return legCoeffRo;
+        }
+
+        public double getLegCoeffXo() {
+            return legCoeffXo;
+        }
+
+        public void setKtR(double ktR) {
+            this.ktR = ktR;
+        }
+
+        public void setKtX(double ktX) {
+            this.ktX = ktX;
+        }
+
+        public void setKtRo(double ktRo) {
+            this.ktRo = ktRo;
+        }
+
+        public void setKtXo(double ktXo) {
+            this.ktXo = ktXo;
+        }
+
+        public void setLegCoeffRo(double legCoeffRo) {
+            this.legCoeffRo = legCoeffRo;
+        }
+
+        public void setLegCoeffXo(double legCoeffXo) {
+            this.legCoeffXo = legCoeffXo;
+        }
+
+        public void setLegConnectionType(LegConnectionType legConnectionType) {
+            this.legConnectionType = legConnectionType;
+        }
+    }
+
     public static final String NAME = "threeWindingsTransformerShortCircuit";
 
-    private double leg1CoeffRo;
-    private double leg2CoeffRo;
-    private double leg3CoeffRo;
-    private double leg1CoeffXo;
-    private double leg2CoeffXo;
-    private double leg3CoeffXo;
-    private double leg1Ro;
-    private double leg2Ro;
-    private double leg3Ro;
-    private double leg1Xo;
-    private double leg2Xo;
-    private double leg3Xo;
-    private boolean leg1FreeFluxes;
-    private boolean leg2FreeFluxes;
-    private boolean leg3FreeFluxes;
-    private LegConnectionType leg1ConnectionType;
-    private LegConnectionType leg2ConnectionType;
-    private LegConnectionType leg3ConnectionType;
+    private T3wLeg leg1;
+    private T3wLeg leg2;
+    private T3wLeg leg3;
 
     @Override
     public String getName() {
@@ -47,170 +116,29 @@ public class ThreeWindingsTransformerShortCircuit extends AbstractExtension<Thre
                                                 double leg1CoeffXo, double leg2CoeffXo, double leg3CoeffXo,
                                                 boolean leg1FreeFluxes, boolean leg2FreeFluxes, boolean leg3FreeFluxes,
                                                 LegConnectionType leg1ConnectionType, LegConnectionType leg2ConnectionType, LegConnectionType leg3ConnectionType,
-                                                double leg1Ro, double leg2Ro, double leg3Ro,
-                                                double leg1Xo, double leg2Xo, double leg3Xo) {
+                                                double kt1R, double kt1X, double kt2R, double kt2X, double kt3R, double kt3X,
+                                                double kt1Ro, double kt1Xo, double kt2Ro, double kt2Xo, double kt3Ro, double kt3Xo) {
         super(extendable);
-        this.leg1CoeffRo = leg1CoeffRo;
-        this.leg2CoeffRo = leg2CoeffRo;
-        this.leg3CoeffRo = leg3CoeffRo;
-        this.leg1CoeffXo = leg1CoeffXo;
-        this.leg2CoeffXo = leg2CoeffXo;
-        this.leg3CoeffXo = leg3CoeffXo;
-        this.leg1Ro = leg1Ro;
-        this.leg2Ro = leg2Ro;
-        this.leg3Ro = leg3Ro;
-        this.leg1Xo = leg1Xo;
-        this.leg2Xo = leg2Xo;
-        this.leg3Xo = leg3Xo;
-        this.leg1FreeFluxes = leg1FreeFluxes;
-        this.leg2FreeFluxes = leg2FreeFluxes;
-        this.leg3FreeFluxes = leg3FreeFluxes;
-        this.leg1ConnectionType = Objects.requireNonNull(leg1ConnectionType);
-        this.leg2ConnectionType = Objects.requireNonNull(leg2ConnectionType);
-        this.leg3ConnectionType = Objects.requireNonNull(leg3ConnectionType);
+
+        this.leg1 = new T3wLeg(leg1CoeffRo, leg1CoeffXo, leg1FreeFluxes, leg1ConnectionType,
+        kt1R, kt1X, kt1Ro, kt1Xo);
+        this.leg2 = new T3wLeg(leg2CoeffRo, leg2CoeffXo, leg2FreeFluxes, leg2ConnectionType,
+                kt2R, kt2X, kt2Ro, kt2Xo);
+        this.leg3 = new T3wLeg(leg3CoeffRo, leg3CoeffXo, leg3FreeFluxes, leg3ConnectionType,
+                kt3R, kt3X, kt3Ro, kt3Xo);
+
     }
 
-    public double getLeg1CoeffRo() {
-        return leg1CoeffRo;
+    public T3wLeg getLeg1() {
+        return leg1;
     }
 
-    public double getLeg2CoeffRo() {
-        return leg2CoeffRo;
+    public T3wLeg getLeg2() {
+        return leg2;
     }
 
-    public double getLeg3CoeffRo() {
-        return leg3CoeffRo;
+    public T3wLeg getLeg3() {
+        return leg3;
     }
 
-    public double getLeg1CoeffXo() {
-        return leg1CoeffXo;
-    }
-
-    public double getLeg2CoeffXo() {
-        return leg2CoeffXo;
-    }
-
-    public double getLeg3CoeffXo() {
-        return leg3CoeffXo;
-    }
-
-    public boolean isLeg1FreeFluxes() {
-        return leg1FreeFluxes;
-    }
-
-    public boolean isLeg2FreeFluxes() {
-        return leg2FreeFluxes;
-    }
-
-    public boolean isLeg3FreeFluxes() {
-        return leg3FreeFluxes;
-    }
-
-    public LegConnectionType getLeg1ConnectionType() {
-        return leg1ConnectionType;
-    }
-
-    public LegConnectionType getLeg2ConnectionType() {
-        return leg2ConnectionType;
-    }
-
-    public LegConnectionType getLeg3ConnectionType() {
-        return leg3ConnectionType;
-    }
-
-    public void setLeg1CoeffRo(double leg1CoeffRo) {
-        this.leg1CoeffRo = leg1CoeffRo;
-    }
-
-    public void setLeg1CoeffXo(double leg1CoeffXo) {
-        this.leg1CoeffXo = leg1CoeffXo;
-    }
-
-    public void setLeg2CoeffRo(double leg2CoeffRo) {
-        this.leg2CoeffRo = leg2CoeffRo;
-    }
-
-    public void setLeg2CoeffXo(double leg2CoeffXo) {
-        this.leg2CoeffXo = leg2CoeffXo;
-    }
-
-    public void setLeg3CoeffRo(double leg3CoeffRo) {
-        this.leg3CoeffRo = leg3CoeffRo;
-    }
-
-    public void setLeg3CoeffXo(double leg3CoeffXo) {
-        this.leg3CoeffXo = leg3CoeffXo;
-    }
-
-    public void setLeg1ConnectionType(LegConnectionType leg1ConnectionType) {
-        this.leg1ConnectionType = leg1ConnectionType;
-    }
-
-    public void setLeg2ConnectionType(LegConnectionType leg2ConnectionType) {
-        this.leg2ConnectionType = leg2ConnectionType;
-    }
-
-    public void setLeg3ConnectionType(LegConnectionType leg3ConnectionType) {
-        this.leg3ConnectionType = leg3ConnectionType;
-    }
-
-    public void setLeg1FreeFluxes(boolean leg1FreeFluxes) {
-        this.leg1FreeFluxes = leg1FreeFluxes;
-    }
-
-    public void setLeg2FreeFluxes(boolean leg2FreeFluxes) {
-        this.leg2FreeFluxes = leg2FreeFluxes;
-    }
-
-    public void setLeg3FreeFluxes(boolean leg3FreeFluxes) {
-        this.leg3FreeFluxes = leg3FreeFluxes;
-    }
-
-    public double getLeg1Ro() {
-        return leg1Ro;
-    }
-
-    public double getLeg1Xo() {
-        return leg1Xo;
-    }
-
-    public double getLeg2Ro() {
-        return leg2Ro;
-    }
-
-    public double getLeg2Xo() {
-        return leg2Xo;
-    }
-
-    public double getLeg3Ro() {
-        return leg3Ro;
-    }
-
-    public double getLeg3Xo() {
-        return leg3Xo;
-    }
-
-    public void setLeg1Ro(double leg1Ro) {
-        this.leg1Ro = leg1Ro;
-    }
-
-    public void setLeg1Xo(double leg1Xo) {
-        this.leg1Xo = leg1Xo;
-    }
-
-    public void setLeg2Ro(double leg2Ro) {
-        this.leg2Ro = leg2Ro;
-    }
-
-    public void setLeg2Xo(double leg2Xo) {
-        this.leg2Xo = leg2Xo;
-    }
-
-    public void setLeg3Ro(double leg3Ro) {
-        this.leg3Ro = leg3Ro;
-    }
-
-    public void setLeg3Xo(double leg3Xo) {
-        this.leg3Xo = leg3Xo;
-    }
 }

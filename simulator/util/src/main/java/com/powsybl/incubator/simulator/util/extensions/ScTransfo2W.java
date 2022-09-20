@@ -25,17 +25,27 @@ public class ScTransfo2W {
 
     private final double kT; //correction factor of the Two Windings Transformer
 
-    ScTransfo2W(LegConnectionType leg1ConnectionType, LegConnectionType leg2ConnectionType, double coeffRo, double coeffXo, boolean freeFluxes) {
-        this(leg1ConnectionType, leg2ConnectionType, coeffRo, coeffXo, freeFluxes, 1d);
-    }
+    private final double r1Ground;
+    private final double x1Ground;
+    private final double r2Ground;
+    private final double x2Ground;
 
-    ScTransfo2W(LegConnectionType leg1ConnectionType, LegConnectionType leg2ConnectionType, double coeffRo, double coeffXo, boolean freeFluxes, double kT) {
+    /*ScTransfo2W(LegConnectionType leg1ConnectionType, LegConnectionType leg2ConnectionType, double coeffRo, double coeffXo, boolean freeFluxes) {
+        this(leg1ConnectionType, leg2ConnectionType, coeffRo, coeffXo, freeFluxes, 1d, 0., 0., 0., 0.);
+    }*/
+
+    ScTransfo2W(LegConnectionType leg1ConnectionType, LegConnectionType leg2ConnectionType, double coeffRo, double coeffXo, boolean freeFluxes, double kT,
+                double r1Ground, double x1Ground, double r2Ground, double x2Ground) {
         this.leg1ConnectionType = Objects.requireNonNull(leg1ConnectionType);
         this.leg2ConnectionType = Objects.requireNonNull(leg2ConnectionType);
         this.coeffRo = coeffRo;
         this.coeffXo = coeffXo;
         this.freeFluxes = freeFluxes;
         this.kT = kT;
+        this.r1Ground = r1Ground;
+        this.r2Ground = r2Ground;
+        this.x1Ground = x1Ground;
+        this.x2Ground = x2Ground;
     }
 
     public LegConnectionType getLeg1ConnectionType() {
@@ -60,5 +70,21 @@ public class ScTransfo2W {
 
     public double getkT() {
         return kT;
+    }
+
+    public double getR1Ground() {
+        return r1Ground;
+    }
+
+    public double getX1Ground() {
+        return x1Ground;
+    }
+
+    public double getX2Ground() {
+        return x2Ground;
+    }
+
+    public double getR2Ground() {
+        return r2Ground;
     }
 }

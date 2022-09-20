@@ -138,12 +138,17 @@ public class HomopolarModel {
             // branch is a 2 windings transformer and homopolar data available
             ScTransfo2W scTransfo = (ScTransfo2W) branch.getProperty(ShortCircuitExtensions.PROPERTY_SHORT_CIRCUIT);
             if (scTransfo != null) {
-                double rCoeff = scTransfo.getCoeffRo();
-                double xCoeff = scTransfo.getCoeffXo();
-                homopolarExtension.ro = r * rCoeff;
-                homopolarExtension.xo = x * xCoeff;
-                homopolarExtension.gom = gPi1 / rCoeff; //TODO : adapt
-                homopolarExtension.bom = bPi1 / xCoeff;  //TODO : adapt
+                double roCoeff = scTransfo.getCoeffRo();
+                double xoCoeff = scTransfo.getCoeffXo();
+
+                double kT = scTransfo.getkT();
+                double rok = r * roCoeff * kT;
+                double xok = x * xoCoeff * kT;
+
+                homopolarExtension.ro = rok + scTransfo.getR1Ground() + scTransfo.getR2Ground(); // we assume by construction that if side is not grounded then rGround = 0
+                homopolarExtension.xo = xok + scTransfo.getX1Ground() + scTransfo.getX2Ground();
+                homopolarExtension.gom = gPi1 / roCoeff / kT; //TODO : adapt
+                homopolarExtension.bom = bPi1 / xoCoeff / kT;  //TODO : adapt
 
                 homopolarExtension.leg1ConnectionType = scTransfo.getLeg1ConnectionType();
                 homopolarExtension.leg2ConnectionType = scTransfo.getLeg2ConnectionType();
@@ -156,27 +161,35 @@ public class HomopolarModel {
             if (scTransfo != null) {
                 double rCoeff;
                 double xCoeff;
+                double kTro;
+                double kTxo;
                 if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_1) {
                     rCoeff = scTransfo.getLeg1().getCoeffRo();
                     xCoeff = scTransfo.getLeg1().getCoeffXo();
+                    kTro = scTransfo.getLeg1().getkTro();
+                    kTxo = scTransfo.getLeg1().getkTxo();
                     homopolarExtension.leg1ConnectionType = scTransfo.getLeg1().getLegConnectionType();
                     homopolarExtension.freeFluxes = scTransfo.getLeg1().isFreeFluxes();
                 } else if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_2) {
                     rCoeff = scTransfo.getLeg2().getCoeffRo();
                     xCoeff = scTransfo.getLeg2().getCoeffXo();
+                    kTro = scTransfo.getLeg2().getkTro();
+                    kTxo = scTransfo.getLeg2().getkTxo();
                     homopolarExtension.leg1ConnectionType = scTransfo.getLeg2().getLegConnectionType();
                     homopolarExtension.freeFluxes = scTransfo.getLeg2().isFreeFluxes();
                 } else if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_3) {
                     rCoeff = scTransfo.getLeg3().getCoeffRo();
                     xCoeff = scTransfo.getLeg3().getCoeffXo();
+                    kTro = scTransfo.getLeg3().getkTro();
+                    kTxo = scTransfo.getLeg3().getkTxo();
                     homopolarExtension.leg1ConnectionType = scTransfo.getLeg3().getLegConnectionType();
                     homopolarExtension.freeFluxes = scTransfo.getLeg3().isFreeFluxes();
                 } else {
                     throw new IllegalArgumentException("Branch " + branch.getId() + " has unknown 3-winding leg number");
                 }
 
-                homopolarExtension.ro = r * rCoeff;
-                homopolarExtension.xo = x * xCoeff;
+                homopolarExtension.ro = r * rCoeff * kTro;
+                homopolarExtension.xo = x * xCoeff * kTxo;
                 homopolarExtension.gom = gPi1 / rCoeff; //TODO : adapt
                 homopolarExtension.bom = bPi1 / xCoeff;  //TODO : adapt
             }
@@ -209,7 +222,7 @@ public class HomopolarModel {
             xm = -bom / (bom * bom + gom * gom);
         }
 
-        // we suppose that zob = zoa = Zo / 2  : TODO : check this is an acceptable approximation
+        // we suppose that zob = zoa = Zo / 2  : this approximation could be questioned if necessary
         double roa = ro / 2.;
         double xoa = xo / 2.;
         double rob = ro / 2.;
@@ -230,7 +243,7 @@ public class HomopolarModel {
 
         } else if (leg1ConnectionType == LegConnectionType.Y_GROUNDED && leg2ConnectionType == LegConnectionType.Y) {
             // we suppose that Zoa = Zo given in input for the transformer
-            // we suppose that if Yom given in input is zero, then Zom = is zero : TODO : see if there is a more robust way to handle this
+            // we suppose that if Yom given in input is zero, then Zom = is zero : if we want to model an open circuit, then set free fluxes to true
 
             // we have yo11 = 1 / ( 3Zga(pu) + (Zoa(pu)+ Zom(pu))/(rho*e(jAlpha))² )
             // and yo12 = yo22 = yo21 = 0.
@@ -247,7 +260,7 @@ public class HomopolarModel {
             mo.set(3, 3, infiniteImpedanceAdmittance);
         } else if (leg1ConnectionType == LegConnectionType.Y && leg2ConnectionType == LegConnectionType.Y_GROUNDED) {
             // we suppose that zob = Zo given in input for the transformer
-            // we suppose that if Yom given in input is zero, then Zom = is zero : TODO : see if there is a more robust way to handle this
+            // we suppose that if Yom given in input is zero, then Zom = is zero : if we want to model an open circuit, then set free fluxes to true
 
             // we have yo22 = 1 / ( 3Zga(pu) + Zob(pu) + Zom(pu) )
             // and yo12 = yo11 = yo21 = 0.
@@ -264,7 +277,7 @@ public class HomopolarModel {
             mo.set(3, 3, go22);
         } else if (leg1ConnectionType == LegConnectionType.Y_GROUNDED && leg2ConnectionType == LegConnectionType.DELTA) {
 
-            // we suppose that if Yom given in input is zero, then Zom = is zero : TODO : see if there is a more robust way to handle this
+            // we suppose that if Yom given in input is zero, then Zom = is zero : if we want to model an open circuit, then set free fluxes to true
 
             // we have yo11 = 1 / ( 3Zga(pu) + (Zoa(pu) + 1 / (1/Zom + 1/Zob))/(rho*e(jAlpha))² )
             // and yo12 = yo22 = yo21 = 0.
@@ -355,7 +368,7 @@ public class HomopolarModel {
                 // Zd = Zom+Zob+3Zgb
                 // Ze = Zom/k
                 //
-                // we suppose that if Yom given in input is zero, then Zom = is zero : TODO : see if there is a more robust way to handle this
+                // we suppose that if Yom given in input is zero, then Zom = is zero : if we want to model an open circuit, then set free fluxes to true
 
                 double rc = 1 / (rho * rho) * (cos2A * (rm + roa) + sin2A * (xm + xoa)) + 3 * rga;
                 double xc = 1 / (rho * rho) * (cos2A * (xm + xoa) - sin2A * (rm + roa)) + 3 * xga;

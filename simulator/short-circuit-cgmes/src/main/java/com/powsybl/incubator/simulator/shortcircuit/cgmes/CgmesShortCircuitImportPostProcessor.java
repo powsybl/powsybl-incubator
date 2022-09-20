@@ -180,26 +180,9 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
             }
 
             load.newExtension(LoadShortCircuitAdder.class)
-                    .withEfficiency(efficiency)
-                    .withIaIrRatio(iaIrRatio)
-                    .withPolePairNumber(polePairNumber)
-                    .withRatedMechanicalP(ratedMechanicalPower)
-                    .withRatedS(ratedS)
-                    .withRatedU(ratedU)
-                    .withRxLockedRotorRatio(rxLockedRotorRatio)
-                    .withRatedPowerFactor(ratedPowerFactor)
                     .withLoadShortCircuitType(LoadShortCircuit.LoadShortCircuitType.ASYNCHRONOUS_MACHINE)
+                    .withAsynchronousMachineLoadData(new LoadShortCircuit.AsynchronousMachineLoadData(ratedMechanicalPower, ratedPowerFactor, ratedS, ratedU, efficiency, iaIrRatio, polePairNumber, rxLockedRotorRatio))
                     .add();
-
-            /*System.out.println(" ================>  LoadId = " + id + " ratedMechanicalPower = " + ratedMechanicalPower + " ratedPowerFactor = " + ratedPowerFactor +
-                    " ratedS = " + ratedS + " efficiency = " + efficiency + " iaIrRatio = " + iaIrRatio + " rxLockedRotorRatio = " + rxLockedRotorRatio +
-                    " Unom = " + ratedU + " polePairNumber = " + polePairNumber);*/
-
-            // FIXME create a shortcircuit load extension ?
-            // TODO
-            // load.newExtension(AsynchronousGeneratorCircuitAdder.class)
-            //     ...
-            //     .add();
         }
     }
 
@@ -216,10 +199,10 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
                 double r = line.getR();
                 double coeffRo = 1.;
                 double coeffXo = 1.;
-                if (x != 0.) {
+                if (Math.abs(x) > EPSILON) {
                     coeffXo = x0 / x;
                 }
-                if (r != 0.) {
+                if (Math.abs(r) > EPSILON) {
                     coeffRo = r0 / r;
                 }
                 line.newExtension(LineShortCircuitAdder.class)
@@ -370,19 +353,16 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
 
                     if (endNumber == 1) {
                         t3wt.getLeg1().setRatedS(ratedS);
-                        extension.setLeg1Ro(r0 * ratedU02 / t3wt.getLeg1().getRatedU() / t3wt.getLeg1().getRatedU());
-                        extension.setLeg1Xo(x0 * ratedU02 / t3wt.getLeg1().getRatedU() / t3wt.getLeg1().getRatedU());
-                        extension.setLeg1ConnectionType(legConnectionType);
+                        setLegRoXoCoefs(t3wt.getLeg1(), extension.getLeg1(), r0, x0, ratedU02);
+                        extension.getLeg1().setLegConnectionType(legConnectionType);
                     } else if (endNumber == 2) {
                         t3wt.getLeg2().setRatedS(ratedS);
-                        extension.setLeg2Ro(r0 * ratedU02 / t3wt.getLeg2().getRatedU() / t3wt.getLeg2().getRatedU());
-                        extension.setLeg2Xo(x0 * ratedU02 / t3wt.getLeg2().getRatedU() / t3wt.getLeg2().getRatedU());
-                        extension.setLeg2ConnectionType(legConnectionType);
+                        setLegRoXoCoefs(t3wt.getLeg2(), extension.getLeg2(), r0, x0, ratedU02);
+                        extension.getLeg2().setLegConnectionType(legConnectionType);
                     } else if (endNumber == 3) {
                         t3wt.getLeg3().setRatedS(ratedS);
-                        extension.setLeg3Ro(r0 * ratedU02 / t3wt.getLeg3().getRatedU() / t3wt.getLeg3().getRatedU());
-                        extension.setLeg3Xo(x0 * ratedU02 / t3wt.getLeg3().getRatedU() / t3wt.getLeg3().getRatedU());
-                        extension.setLeg3ConnectionType(legConnectionType);
+                        setLegRoXoCoefs(t3wt.getLeg3(), extension.getLeg3(), r0, x0, ratedU02);
+                        extension.getLeg3().setLegConnectionType(legConnectionType);
                     } else {
                         throw new PowsyblException("incorrect end number for 3 windings transformer end '" + id + "'");
                     }
@@ -391,6 +371,22 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
                     throw new PowsyblException("2 or 3 windings transformer not found: '" + id + "'");
                 }
             }
+        }
+    }
+
+    public void setLegRoXoCoefs(ThreeWindingsTransformer.Leg leg, ThreeWindingsTransformerShortCircuit.T3wLeg extLeg, double r0, double x0, double ratedU02) {
+
+        double ratedRo = r0 * ratedU02 / leg.getRatedU() / leg.getRatedU();
+        double ratedXo = x0 * ratedU02 / leg.getRatedU() / leg.getRatedU();
+        double r = leg.getR();
+        double x = leg.getX();
+        extLeg.setLegCoeffRo(ratedRo); // if R = 0 coeff carries Ro and not Ro / R
+        if (Math.abs(r) > EPSILON) {
+            extLeg.setLegCoeffRo(ratedRo / r);
+        }
+        extLeg.setLegCoeffXo(ratedXo); // if X = 0 coeff carries Xo and not X0 / X
+        if (Math.abs(x) > EPSILON) {
+            extLeg.setLegCoeffXo(ratedXo / x);
         }
     }
 

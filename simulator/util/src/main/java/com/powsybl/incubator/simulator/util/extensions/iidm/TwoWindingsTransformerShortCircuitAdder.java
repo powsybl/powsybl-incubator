@@ -28,6 +28,7 @@ public class TwoWindingsTransformerShortCircuitAdder extends AbstractExtensionAd
     private double x1Ground = 0.;
     private double r2Ground = 0.;
     private double x2Ground = 0.;
+    private double kNorm = 1.;
 
     public TwoWindingsTransformerShortCircuitAdder(TwoWindingsTransformer twt) {
         super(twt);
@@ -40,7 +41,7 @@ public class TwoWindingsTransformerShortCircuitAdder extends AbstractExtensionAd
 
     @Override
     protected TwoWindingsTransformerShortCircuit createExtension(TwoWindingsTransformer twt) {
-        return new TwoWindingsTransformerShortCircuit(twt, isPartOfGeneratingUnit, coeffRo, coeffXo, freeFluxes, leg1ConnectionType, leg2ConnectionType, r1Ground, x1Ground, r2Ground, x2Ground);
+        return new TwoWindingsTransformerShortCircuit(twt, isPartOfGeneratingUnit, coeffRo, coeffXo, kNorm, freeFluxes, leg1ConnectionType, leg2ConnectionType, r1Ground, x1Ground, r2Ground, x2Ground);
     }
 
     public TwoWindingsTransformerShortCircuitAdder withIsPartOfGeneratingUnit(boolean isPartOfGeneratingUnit) {
@@ -55,6 +56,11 @@ public class TwoWindingsTransformerShortCircuitAdder extends AbstractExtensionAd
 
     public TwoWindingsTransformerShortCircuitAdder withCoeffXo(double coeffXo) {
         this.coeffXo = coeffXo;
+        return this;
+    }
+
+    public TwoWindingsTransformerShortCircuitAdder withKnorm(double kNorm) {
+        this.kNorm = kNorm;
         return this;
     }
 

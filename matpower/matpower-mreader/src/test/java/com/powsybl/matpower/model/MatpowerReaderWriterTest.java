@@ -14,6 +14,7 @@ import com.powsybl.matpower.model.io.MWriter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Ignore;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,6 +27,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @author Christian Biasuzzi <christian.biasuzzi@techrain.eu>
  */
+@Ignore
 public class MatpowerReaderWriterTest {
 
     private final ObjectMapper mapper = new ObjectMapper();

@@ -22,6 +22,7 @@ public final class ShortCircuitConstants {
     public static final double DEFAULT_GROUNDING_X = 0.;
     public static final double DEFAULT_COEFF_RO = 1;
     public static final double DEFAULT_COEFF_XO = 1;
+    public static final double DEFAULT_COEFF_K = 1;
     public static final double DEFAULT_COEFF_RI = 1;
     public static final double DEFAULT_COEFF_XI = 1;
     public static final double DEFAULT_COS_PHI = 0.85;

@@ -34,6 +34,7 @@ public class GeneratorShortCircuit2 extends AbstractExtension<Generator> {
     private double coeffXo;
     private final double coeffRi;
     private final double coeffXi;
+    private double kG; // coeff related to the application of a norm, possibly modifying x"d or x'd
     private final double groundingR;
     private final double groundingX;
     private final RotorType rotorType;
@@ -51,7 +52,7 @@ public class GeneratorShortCircuit2 extends AbstractExtension<Generator> {
     }
 
     public GeneratorShortCircuit2(Generator generator, double transRd, double subTransRd, boolean toGround, double coeffRo, double coeffXo, double coeffRi, double coeffXi, double groundingR, double groundingX, RotorType rotorType, double ratedU, double cosPhi,
-                                  GeneratorType generatorType, double cq, double ikQmax, double maxR1ToX1Ratio, double voltageRegulationRange) {
+                                  GeneratorType generatorType, double cq, double ikQmax, double maxR1ToX1Ratio, double voltageRegulationRange, double kG) {
         super(generator);
         this.transRd = transRd;
         this.subTransRd = subTransRd;
@@ -70,6 +71,7 @@ public class GeneratorShortCircuit2 extends AbstractExtension<Generator> {
         this.ikQmax = ikQmax;
         this.maxR1ToX1Ratio = maxR1ToX1Ratio;
         this.voltageRegulationRange = voltageRegulationRange;
+        this.kG = kG;
     }
 
     public double getTransRd() {
@@ -158,5 +160,13 @@ public class GeneratorShortCircuit2 extends AbstractExtension<Generator> {
 
     public void setToGround(boolean toGround) {
         this.toGround = toGround;
+    }
+
+    public double getkG() {
+        return kG;
+    }
+
+    public void setkG(double kG) {
+        this.kG = kG;
     }
 }

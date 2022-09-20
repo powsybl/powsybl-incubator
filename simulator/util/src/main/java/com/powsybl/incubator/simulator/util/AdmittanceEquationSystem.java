@@ -8,7 +8,7 @@ package com.powsybl.incubator.simulator.util;
 
 import com.powsybl.incubator.simulator.util.extensions.ShortCircuitExtensions;
 import com.powsybl.incubator.simulator.util.extensions.ScGenerator;
-import com.powsybl.incubator.simulator.util.extensions.iidm.ScLoad;
+import com.powsybl.incubator.simulator.util.extensions.ScLoad;
 import com.powsybl.openloadflow.ac.outerloop.AcLoadFlowContext;
 import com.powsybl.openloadflow.ac.outerloop.AcLoadFlowParameters;
 import com.powsybl.openloadflow.ac.outerloop.AcloadFlowEngine;

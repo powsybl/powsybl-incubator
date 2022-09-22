@@ -123,11 +123,12 @@ public final class AdmittanceEquationSystem {
         double tmpB = 0.;
         for (LfGenerator lfgen : bus.getGenerators()) { //compute R'd or R"d from generators at bus
             ScGenerator scGen = (ScGenerator) lfgen.getProperty(ShortCircuitExtensions.PROPERTY_SHORT_CIRCUIT);
-            double rd = (scGen.getTransRd() + scGen.getStepUpTfoR()) * scGen.getkG();
-            double xd = (scGen.getTransXd() + scGen.getStepUpTfoX()) * scGen.getkG();
+            double kG = (Double) lfgen.getProperty(ShortCircuitExtensions.PROPERTY_SHORT_CIRCUIT_NORM);
+            double rd = (scGen.getTransRd() + scGen.getStepUpTfoR()) * kG;
+            double xd = (scGen.getTransXd() + scGen.getStepUpTfoX()) * kG;
             if (admittancePeriodType == AdmittancePeriodType.ADM_SUB_TRANSIENT) {
-                xd = (scGen.getSubTransXd() + scGen.getStepUpTfoX()) * scGen.getkG();
-                rd = (scGen.getSubTransRd() + scGen.getStepUpTfoR()) * scGen.getkG();
+                xd = (scGen.getSubTransXd() + scGen.getStepUpTfoX()) * kG;
+                rd = (scGen.getSubTransRd() + scGen.getStepUpTfoR()) * kG;
             }
 
             double coeffR = 1.0; // coeff used to deduce Ro from Rd. It is equal to 1.0 if we are looking for direct values. If the machine is not grounded, homopolar values are zero, then we set coeffs to 0.

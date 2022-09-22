@@ -23,6 +23,7 @@ public final class ShortCircuitExtensions {
 
     public static final String PROPERTY_SHORT_CIRCUIT = "ShortCircuit";
     public static final String PROPERTY_HOMOPOLAR_MODEL = "HomopolarModel";
+    public static final String PROPERTY_SHORT_CIRCUIT_NORM = "ShortCircuitNorm";
 
     private static final double SB = 100.;
 
@@ -130,11 +131,16 @@ public final class ShortCircuitExtensions {
             kT3X0 = extensions.getLeg3().getKtXo();
         }
 
-        ScTransfo3W.Leg leg1 = new ScTransfo3W.Leg(leg1ConnectionType, leg1CoeffRo, leg1CoeffXo, kT1R, kT1X, kT1R0, kT1X0, leg1FreeFluxes);
-        ScTransfo3W.Leg leg2 = new ScTransfo3W.Leg(leg2ConnectionType, leg2CoeffRo, leg2CoeffXo, kT2R, kT2X, kT2R0, kT2X0, leg2FreeFluxes);
-        ScTransfo3W.Leg leg3 = new ScTransfo3W.Leg(leg3ConnectionType, leg3CoeffRo, leg3CoeffXo, kT3R, kT3X, kT3R0, kT3X0, leg3FreeFluxes);
+        ScTransfo3W.Leg leg1 = new ScTransfo3W.Leg(leg1ConnectionType, leg1CoeffRo, leg1CoeffXo, leg1FreeFluxes);
+        ScTransfo3W.Leg leg2 = new ScTransfo3W.Leg(leg2ConnectionType, leg2CoeffRo, leg2CoeffXo, leg2FreeFluxes);
+        ScTransfo3W.Leg leg3 = new ScTransfo3W.Leg(leg3ConnectionType, leg3CoeffRo, leg3CoeffXo, leg3FreeFluxes);
+
+        ScTransfo3wKt.Leg leg1kT = new ScTransfo3wKt.Leg(kT1R, kT1X, kT1R0, kT1X0);
+        ScTransfo3wKt.Leg leg2kT = new ScTransfo3wKt.Leg(kT2R, kT2X, kT2R0, kT2X0);
+        ScTransfo3wKt.Leg leg3kT = new ScTransfo3wKt.Leg(kT3R, kT3X, kT3R0, kT3X0);
 
         lfBranch.setProperty(PROPERTY_SHORT_CIRCUIT, new ScTransfo3W(leg1, leg2, leg3));
+        lfBranch.setProperty(PROPERTY_SHORT_CIRCUIT_NORM, new ScTransfo3wKt(leg1kT, leg2kT, leg3kT)); // set in a separate extension because is does not depend only on iidm in input but also on the type of norm
     }
 
     private static void addLineExtension(Network network, LfBranch lfBranch) {
@@ -185,7 +191,8 @@ public final class ShortCircuitExtensions {
             x2Ground = extensions.getX2Ground() / zBase;
         }
 
-        lfBranch.setProperty(PROPERTY_SHORT_CIRCUIT, new ScTransfo2W(leg1ConnectionType, leg2ConnectionType, coeffRo, coeffXo, freeFluxes, kT, r1Ground, x1Ground, r2Ground, x2Ground));
+        lfBranch.setProperty(PROPERTY_SHORT_CIRCUIT, new ScTransfo2W(leg1ConnectionType, leg2ConnectionType, coeffRo, coeffXo, freeFluxes, r1Ground, x1Ground, r2Ground, x2Ground));
+        lfBranch.setProperty(PROPERTY_SHORT_CIRCUIT_NORM, kT); // set in a separate extension because is does not depend only on iidm in input but also on the type of norm
     }
 
     private static void addGeneratorExtension(Network network, LfGenerator lfGenerator) {
@@ -229,7 +236,8 @@ public final class ShortCircuitExtensions {
                                                                         0.,
                                                                         0.,
                                                                         coeffRo,
-                                                                        coeffXo, kG));
+                                                                        coeffXo));
+        lfGenerator.setProperty(PROPERTY_SHORT_CIRCUIT_NORM, kG); // set in a separate extension because is does not depend only on iidm in input but also on the type of norm
     }
 
     private static void addLoadExtension(Network network, LfBus lfBus) {

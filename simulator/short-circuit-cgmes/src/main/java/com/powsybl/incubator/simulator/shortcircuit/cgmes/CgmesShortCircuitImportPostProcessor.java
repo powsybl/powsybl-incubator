@@ -71,14 +71,24 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
                 grounded = true;
             }
 
+            //double ikQmax = extensions2.getIkQmax();
+            //double maxR1ToX1Ratio = extensions2.getMaxR1ToX1Ratio();
+            //double cq = extensions2.getCq();
+
+            // Zq = cq * Unomq / (sqrt3 * Ikq)
+            // Zq = sqrt(r² + x²) which gives x = Zq / sqrt((R/X)² + 1)
+            double zq = voltageFactor * generator.getTerminal().getVoltageLevel().getNominalV() / (Math.sqrt(3.) * ikQmax / 1000.); // ikQmax is changed from A to kA
+            double xq = zq / Math.sqrt(rOverX * rOverX + 1.);
+            double rq = xq * rOverX;
+
             generator.newExtension(GeneratorShortCircuitAdder.class)
                     .withStepUpTransformerX(0.)
-                    .withDirectTransX(0.)
-                    .withDirectSubtransX(0.)
+                    .withDirectTransX(xq)
+                    .withDirectSubtransX(xq)
                     .add();
             generator.newExtension(GeneratorShortCircuitAdder2.class)
-                    .withSubTransRd(0.)
-                    .withTransRd(0.)
+                    .withSubTransRd(rq)
+                    .withTransRd(rq)
                     .withCoeffRi(0.)
                     .withCoeffXi(0.)
                     .withCoeffRo(roOverR)

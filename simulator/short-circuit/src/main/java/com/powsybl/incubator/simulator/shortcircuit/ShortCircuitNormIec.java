@@ -221,34 +221,12 @@ public class ShortCircuitNormIec extends ShortCircuitNormNone {
         double coefcX0 = getCheckedCoef(t3WId, xc0, xc);
         double coefcR0 = getCheckedCoef(t3WId, rc0, rc);
 
-        //
         double kTaR0 = getCheckedCoef(t3WId, ra0T3k, ra0);
         double kTaX0 = getCheckedCoef(t3WId, xa0T3k, xa0);
         double kTbR0 = getCheckedCoef(t3WId, rb0T3k, rb0);
         double kTbX0 = getCheckedCoef(t3WId, xb0T3k, xb0);
         double kTcR0 = getCheckedCoef(t3WId, rc0T3k, rc0);
         double kTcX0 = getCheckedCoef(t3WId, xc0T3k, xc0);
-
-        extension.getLeg1().setKtR(kTaR);
-        extension.getLeg1().setKtX(kTaX);
-        extension.getLeg2().setKtR(kTbR);
-        extension.getLeg2().setKtX(kTbX);
-        extension.getLeg3().setKtR(kTcR);
-        extension.getLeg3().setKtX(kTcX);
-
-        extension.getLeg1().setKtXo(kTaX0);
-        extension.getLeg1().setKtRo(kTaR0);
-        extension.getLeg2().setKtXo(kTbX0);
-        extension.getLeg2().setKtRo(kTbR0);
-        extension.getLeg3().setKtXo(kTcX0);
-        extension.getLeg3().setKtRo(kTcR0);
-
-        extension.getLeg1().setLegCoeffRo(coefaR0);
-        extension.getLeg1().setLegCoeffXo(coefaX0);
-        extension.getLeg2().setLegCoeffRo(coefbR0);
-        extension.getLeg2().setLegCoeffXo(coefbX0);
-        extension.getLeg3().setLegCoeffRo(coefcR0);
-        extension.getLeg3().setLegCoeffXo(coefcX0);
 
         return new T3wCoefs(kTaR, kTaX, kTbR, kTbX, kTcR, kTcX, kTaR0, kTaX0, kTbR0, kTbX0, kTcR0, kTcX0, coefaR0, coefaX0, coefbR0, coefbX0, coefcR0, coefcX0);
     }

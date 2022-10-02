@@ -34,8 +34,7 @@ public class ShortCircuitNormIec extends ShortCircuitNormNone {
 
     public static final double EPSILON = 0.000001;
 
-    //List<Generator> generatorsWithTfo; // TODO : to be removed once application of the norm does not modify the iidm Network
-    List<GeneratorWithTfo> generatorsWithTfo2;
+    List<GeneratorWithTfo> generatorsWithTfo;
 
     public class GeneratorWithTfo {
         public final double kNorm;
@@ -324,8 +323,7 @@ public class ShortCircuitNormIec extends ShortCircuitNormNone {
         return "IEC";
     }
 
-    @Override
-    public double getKg(Generator gen) {
+    public double getKgNoTfo(Generator gen) {
         double nominalU = gen.getTerminal().getVoltageLevel().getNominalV();
         double ratedS = gen.getRatedS();
         if (Math.abs(ratedS) < EPSILON) {
@@ -405,7 +403,7 @@ public class ShortCircuitNormIec extends ShortCircuitNormNone {
     }
 
     @Override
-    public void adjustLoadfromInfo(Load load) {
+    public Pair<Double, Double> getAdjustedLoadfromInfo(Load load, double defaultRd, double defaultXd) {
         LoadShortCircuit extension = load.getExtension(LoadShortCircuit.class);
         if (extension == null) {
             throw new PowsyblException("Load '" + load.getId() + "' could generate Z for short circuit because of missing extension input data");
@@ -415,8 +413,7 @@ public class ShortCircuitNormIec extends ShortCircuitNormNone {
         double rn = rdXd.getFirst();
         double xn = rdXd.getSecond();
 
-        extension.setRdEquivalent(rn);
-        extension.setXdEquivalent(xn);
+        return new Pair<>(rn, xn);
 
     }
 
@@ -442,7 +439,7 @@ public class ShortCircuitNormIec extends ShortCircuitNormNone {
     public double getNormalizedKT(TwoWindingsTransformer t2w) {
         double kt = getKtT2W(t2w);
 
-        for (GeneratorWithTfo genWithTfo : generatorsWithTfo2) {
+        for (GeneratorWithTfo genWithTfo : generatorsWithTfo) {
             if (genWithTfo.getT2w() == t2w) {
                 kt = genWithTfo.getkNorm();
                 break;
@@ -455,8 +452,8 @@ public class ShortCircuitNormIec extends ShortCircuitNormNone {
     public void applyNormToGenerators(Network network) {
         // Work on generators
         for (Generator gen : network.getGenerators()) {
-            double kg2 = getNormalizedKg(gen);
-            setGenKg(gen, kg2);
+            double kg2 = getKg(gen);
+            setKg(gen, kg2);
 
         }
 
@@ -465,7 +462,7 @@ public class ShortCircuitNormIec extends ShortCircuitNormNone {
     public void buildGeneratorsWithTfoList(Network network) {
 
         // build the info that are common to a generator and a transformer
-        generatorsWithTfo2 = new ArrayList<>();
+        generatorsWithTfo = new ArrayList<>();
         for (TwoWindingsTransformer t2w : network.getTwoWindingsTransformers()) {
             Generator genTfo = getAssociatedGenerator(network, t2w);
             double kNorm;
@@ -473,12 +470,13 @@ public class ShortCircuitNormIec extends ShortCircuitNormNone {
 
                 kNorm = getKs(t2w, genTfo);
                 GeneratorWithTfo genWithTfo = new GeneratorWithTfo(genTfo, t2w, kNorm);
-                generatorsWithTfo2.add(genWithTfo);
+                generatorsWithTfo.add(genWithTfo);
             }
         }
     }
 
-    public double getNormalizedKg(Generator gen) {
+    @Override
+    public double getKg(Generator gen) {
         double kg = 1.;
 
         // Check if not feeder
@@ -492,14 +490,16 @@ public class ShortCircuitNormIec extends ShortCircuitNormNone {
         }
 
         if (!isFeeder) {
-            kg = getKg(gen);
+            kg = getKgNoTfo(gen);
         }
 
         // overload of kg if associated with a 2 windings transformer
-        for (GeneratorWithTfo genWithTfo : generatorsWithTfo2) {
-            if (genWithTfo.getGen() == gen) {
-                kg = genWithTfo.getkNorm();
-                break;
+        if (generatorsWithTfo != null) {
+            for (GeneratorWithTfo genWithTfo : generatorsWithTfo) {
+                if (genWithTfo.getGen() == gen) {
+                    kg = genWithTfo.getkNorm();
+                    break;
+                }
             }
         }
 

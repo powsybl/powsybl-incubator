@@ -16,23 +16,28 @@ import com.powsybl.iidm.network.TwoWindingsTransformer;
  */
 public interface ShortCircuitNorm {
 
+    String getNormType();
+
+    Network getNetwork();
+
     double getCmaxVoltageFactor(double nominalVoltage);
 
     double getCminVoltageFactor(double nominalVoltage);
 
-    double getKtT2W(TwoWindingsTransformer t2w);
-
+    // Generators normalizers
     double getKg(Generator gen);
 
-    String getNormType();
+    void setKg(Generator gen, double kg); // For now, this modifies the iidm extensions of the generators
 
-    void setKtT3Wi(ThreeWindingsTransformer t3w);
+    // Two Windings Transformers normalizers
+    double getKtT2W(TwoWindingsTransformer t2w);
 
-    void setGenKg(Generator gen, double kg);
+    // Three Windings Transformers normalizers
+    T3wCoefs getKtT3Wi(ThreeWindingsTransformer t3w);
+
+    void setKtT3Wi(ThreeWindingsTransformer t3w); // For now, this modifies the iidm extensions of the 3 w transformers
 
     void applyNormToNetwork(Network network);
-
-    Network getNetwork();
 
     public class T3wCoefs {
         public final double ktr1;

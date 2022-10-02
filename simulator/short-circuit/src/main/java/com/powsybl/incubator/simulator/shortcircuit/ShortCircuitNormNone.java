@@ -54,7 +54,7 @@ public class ShortCircuitNormNone implements ShortCircuitNorm {
     }
 
     @Override
-    public void setGenKg(Generator gen, double kg) {
+    public void setKg(Generator gen, double kg) {
         GeneratorShortCircuit2 extension2Gen = gen.getExtension(GeneratorShortCircuit2.class);
         if (extension2Gen != null) {
             extension2Gen.setkG(kg);
@@ -100,34 +100,14 @@ public class ShortCircuitNormNone implements ShortCircuitNorm {
 
     }
 
+    @Override
     public T3wCoefs getKtT3Wi(ThreeWindingsTransformer t3w) {
         return new T3wCoefs(1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1.);
     }
 
-    public void adjustLoadfromInfo(Load load) {
-        // TODO : must be modified once load will be disaggregated
+    public Pair<Double, Double>  getAdjustedLoadfromInfo(Load load, double defaultRd, double defaultXd) {
 
-    }
-
-    public void computeLoadsZeq(Network network) {
-        // uses available info of each load to deduce the equivalent impedance to be used in the admittance matrix
-        for (Load load : network.getLoads()) {
-
-            Pair<Double, Double> rdXd = getZeqLoad(load);
-            double rd = rdXd.getFirst();
-            double xd = rdXd.getSecond();
-
-            LoadShortCircuit extension = load.getExtension(LoadShortCircuit.class);
-            if (extension == null) {
-                load.newExtension(LoadShortCircuitAdder.class)
-                        .add();
-                LoadShortCircuit extensionLoad = load.getExtension(LoadShortCircuit.class);
-                extensionLoad.setLoadShortCircuitType(LoadShortCircuit.LoadShortCircuitType.CONSTANT_LOAD);
-                extension = extensionLoad;
-            }
-            extension.setXdEquivalent(xd);
-            extension.setRdEquivalent(rd);
-        }
+        return new Pair<>(defaultRd, defaultXd);
     }
 
     public Pair<Double, Double> getZeqLoad(Load load) {
@@ -174,7 +154,7 @@ public class ShortCircuitNormNone implements ShortCircuitNorm {
                 } else {
                     // this includes standard rotating machines
                     double kg = getKg(gen);
-                    setGenKg(gen, kg);
+                    setKg(gen, kg);
                 }
             }
         }
@@ -182,21 +162,34 @@ public class ShortCircuitNormNone implements ShortCircuitNorm {
 
     public void applyNormToLoads(Network network) {
         // Work on loads
-        computeLoadsZeq(network);
-
         for (Load load : network.getLoads()) {
+
+            Pair<Double, Double> rdXd = getZeqLoad(load);
+            double rd = rdXd.getFirst();
+            double xd = rdXd.getSecond();
+
             LoadShortCircuit extension = load.getExtension(LoadShortCircuit.class);
             if (extension == null) {
-                continue; // we do not modify loads with no additional short circuit info
+                load.newExtension(LoadShortCircuitAdder.class)
+                        .add();
+                LoadShortCircuit extensionLoad = load.getExtension(LoadShortCircuit.class);
+                extensionLoad.setLoadShortCircuitType(LoadShortCircuit.LoadShortCircuitType.CONSTANT_LOAD);
+                extension = extensionLoad;
             }
-            adjustLoadfromInfo(load);
+
+            getAdjustedLoadfromInfo(load, rd, xd);
+
+            extension.setXdEquivalent(xd);
+            extension.setRdEquivalent(rd);
+
         }
+
     }
 
     public void applyNormToT3w(Network network) {
         // Work on three Windings transformers
         for (ThreeWindingsTransformer t3w : network.getThreeWindingsTransformers()) {
-            setKtT3Wi(t3w); // adjust coeffs to respect IEC norm
+            setKtT3Wi(t3w); // adjust coeffs to respect norm
         }
     }
 

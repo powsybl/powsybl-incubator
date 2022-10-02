@@ -159,7 +159,7 @@ public class ShortCircuitNormTest {
                 .setRatedS(150.)
                 .add();
 
-        shortCircuitNormIec.setGenKg(g1bis, 12.);
+        shortCircuitNormIec.setKg(g1bis, 12.);
         extensionGen = g1bis.getExtension(GeneratorShortCircuit2.class);
         kg = extensionGen.getkG();
         assertEquals(12., kg, 0.000001);

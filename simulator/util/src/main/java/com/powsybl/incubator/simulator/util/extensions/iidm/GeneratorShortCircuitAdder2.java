@@ -46,7 +46,7 @@ public class GeneratorShortCircuitAdder2 extends AbstractExtensionAdder<Generato
 
     @Override
     protected GeneratorShortCircuit2 createExtension(Generator generator) {
-        return new GeneratorShortCircuit2(generator, transRd, subTransRd, toGround, coeffRo, coeffXo, coeffRi, coeffXi, groundingR, groundingX, rotorType, ratedU, cosPhi, generatorType, cq, ikQmax, maxR1ToX1Ratio, voltageRegulationRange, kG);
+        return new GeneratorShortCircuit2(generator, transRd, subTransRd, toGround, coeffRo, coeffXo, coeffRi, coeffXi, groundingR, groundingX, rotorType, ratedU, cosPhi, generatorType, cq, ikQmax, maxR1ToX1Ratio, voltageRegulationRange);
     }
 
     public GeneratorShortCircuitAdder2 withTransRd(double transRd) {
@@ -131,11 +131,6 @@ public class GeneratorShortCircuitAdder2 extends AbstractExtensionAdder<Generato
 
     public GeneratorShortCircuitAdder2 withVoltageRegulationRange(double voltageRegulationRange) {
         this.voltageRegulationRange = voltageRegulationRange;
-        return this;
-    }
-
-    public GeneratorShortCircuitAdder2 withKg(double kG) {
-        this.kG = kG;
         return this;
     }
 

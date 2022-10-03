@@ -6,13 +6,17 @@
  */
 package com.powsybl.incubator.simulator.util.extensions.iidm;
 
+import com.powsybl.commons.PowsyblException;
 import com.powsybl.commons.extensions.AbstractExtension;
 import com.powsybl.iidm.network.Load;
+import org.apache.commons.math3.util.Pair;
 
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
 public class LoadShortCircuit extends AbstractExtension<Load> {
+
+    public static final double EPSILON = 0.000001;
 
     public static class AsynchronousMachineLoadData {
 
@@ -79,8 +83,6 @@ public class LoadShortCircuit extends AbstractExtension<Load> {
         ASYNCHRONOUS_MACHINE;
     }
 
-    private double xdEquivalent; // equivalent direct admittance of the load used in the admittance matrix, computed based on characteristics of the load
-    private double rdEquivalent; // equivalent direct resistance of the load used in the admittance matrix, computed based on characteristics of the load
     private LoadShortCircuitType loadShortCircuitType;
     private AsynchronousMachineLoadData asynchronousMachineLoadData;
 
@@ -95,31 +97,48 @@ public class LoadShortCircuit extends AbstractExtension<Load> {
         this.asynchronousMachineLoadData = asynchronousMachineLoadData;
     }
 
-    public LoadShortCircuitType getLoadShortCircuitType() {
-        return loadShortCircuitType;
-    }
+    public Pair<Double, Double> getZeqLoad(Load load) {
 
-    public AsynchronousMachineLoadData getAsynchronousMachineLoadData() {
-        return asynchronousMachineLoadData;
-    }
+        double xn = 0.;
+        double rn = 0.;
 
-    public double getRdEquivalent() {
-        return rdEquivalent;
-    }
+        // Default case
+        double pLoad = load.getP0();
+        double qLoad = load.getQ0();
+        double uNom = load.getTerminal().getVoltageLevel().getNominalV();
+        double s2 = pLoad * pLoad + qLoad * qLoad;
+        // using formula P(MW) = Re(Z) * |V|² / |Z|² and Q(MVAR) = Im(Z) * |V|² / |Z|²  or  Z = |V|² / (P-jQ)
+        // We compute the equivalent impedance at Unom
 
-    public double getXdEquivalent() {
-        return xdEquivalent;
-    }
+        if (s2 > EPSILON) {
+            xn = qLoad * uNom * uNom / s2;
+            rn = pLoad * uNom * uNom / s2;
+        }
 
-    public void setRdEquivalent(double rdEquivalent) {
-        this.rdEquivalent = rdEquivalent;
-    }
+        // Case where the load is an asynchronous machine defined by the extension attributes
+        if (loadShortCircuitType == LoadShortCircuit.LoadShortCircuitType.ASYNCHRONOUS_MACHINE) {
 
-    public void setXdEquivalent(double xdEquivalent) {
-        this.xdEquivalent = xdEquivalent;
-    }
+            if (asynchronousMachineLoadData == null) {
+                throw new PowsyblException("Load '" + load.getId() + "' is an asynchronous machine without associated data, therefore equivalent admittance could not be generated ");
+            }
 
-    public void setLoadShortCircuitType(LoadShortCircuitType loadShortCircuitType) {
-        this.loadShortCircuitType = loadShortCircuitType;
+            double ratedMechanicalPower = asynchronousMachineLoadData.getRatedMechanicalP();
+            double ratedPowerFactor = asynchronousMachineLoadData.getRatedPowerFactor(); // cosPhi
+            double ratedS = asynchronousMachineLoadData.getRatedS();
+            double ratedU = asynchronousMachineLoadData.getRatedU();
+            double efficiency = asynchronousMachineLoadData.getEfficiency() / 100.; // conversion from percentages
+            double iaIrRatio = asynchronousMachineLoadData.getIaIrRatio();
+            double rxLockedRotorRatio = asynchronousMachineLoadData.getRxLockedRotorRatio();
+            int polePairNumber = asynchronousMachineLoadData.getPolePairNumber();
+
+            // Zn = 1/(Ilr/Irm) * Urm / (sqrt3 * Irm) = 1/(Ilr/Irm) * Urm² / (Prm / (efficiency * cosPhi))
+            // Xn = Zn / sqrt(1+ (Rm/Xm)²)
+            double zn = 1. / iaIrRatio * ratedU * ratedU / (ratedMechanicalPower / (efficiency * ratedPowerFactor));
+            xn = zn / Math.sqrt(rxLockedRotorRatio * rxLockedRotorRatio + 1.);
+            rn = xn * rxLockedRotorRatio;
+
+        }
+
+        return new Pair<>(rn, xn);
     }
 }

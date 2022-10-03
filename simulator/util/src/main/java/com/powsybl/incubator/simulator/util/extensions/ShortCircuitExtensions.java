@@ -10,6 +10,7 @@ import com.powsybl.iidm.network.*;
 import com.powsybl.iidm.network.extensions.GeneratorShortCircuit;
 import com.powsybl.incubator.simulator.util.extensions.iidm.*;
 import com.powsybl.openloadflow.network.*;
+import org.apache.commons.math3.util.Pair;
 
 import java.util.List;
 import java.util.Objects;
@@ -111,24 +112,38 @@ public final class ShortCircuitExtensions {
             leg1CoeffXo = extensions.getLeg1().getLegCoeffXo();
             leg2CoeffXo = extensions.getLeg2().getLegCoeffXo();
             leg3CoeffXo = extensions.getLeg3().getLegCoeffXo();
+
             leg1FreeFluxes = extensions.getLeg1().isLegFreeFluxes();
             leg2FreeFluxes = extensions.getLeg2().isLegFreeFluxes();
             leg3FreeFluxes = extensions.getLeg3().isLegFreeFluxes();
             leg1ConnectionType = extensions.getLeg1().getLegConnectionType();
             leg2ConnectionType = extensions.getLeg2().getLegConnectionType();
             leg3ConnectionType = extensions.getLeg3().getLegConnectionType();
-            kT1R = extensions.getLeg1().getKtR();
-            kT1X = extensions.getLeg1().getKtX();
-            kT2R = extensions.getLeg2().getKtR();
-            kT2X = extensions.getLeg2().getKtX();
-            kT3R = extensions.getLeg3().getKtR();
-            kT3X = extensions.getLeg3().getKtX();
-            kT1R0 = extensions.getLeg1().getKtRo();
-            kT1X0 = extensions.getLeg1().getKtXo();
-            kT2R0 = extensions.getLeg2().getKtRo();
-            kT2X0 = extensions.getLeg2().getKtXo();
-            kT3R0 = extensions.getLeg3().getKtRo();
-            kT3X0 = extensions.getLeg3().getKtXo();
+        }
+
+        var extensionNorm = twt.getExtension(ThreeWindingsTransformerNorm.class);
+        if (extensionNorm != null) {
+            if (extensionNorm.isOverloadHomopolarCoefs()) {
+                leg1CoeffRo = extensionNorm.getLeg1().getLegCoeffRoOverload();
+                leg2CoeffRo = extensionNorm.getLeg2().getLegCoeffRoOverload();
+                leg3CoeffRo = extensionNorm.getLeg3().getLegCoeffRoOverload();
+                leg1CoeffXo = extensionNorm.getLeg1().getLegCoeffXoOverload();
+                leg2CoeffXo = extensionNorm.getLeg2().getLegCoeffXoOverload();
+                leg3CoeffXo = extensionNorm.getLeg3().getLegCoeffXoOverload();
+            }
+
+            kT1R = extensionNorm.getLeg1().getKtR();
+            kT1X = extensionNorm.getLeg1().getKtX();
+            kT2R = extensionNorm.getLeg2().getKtR();
+            kT2X = extensionNorm.getLeg2().getKtX();
+            kT3R = extensionNorm.getLeg3().getKtR();
+            kT3X = extensionNorm.getLeg3().getKtX();
+            kT1R0 = extensionNorm.getLeg1().getKtRo();
+            kT1X0 = extensionNorm.getLeg1().getKtXo();
+            kT2R0 = extensionNorm.getLeg2().getKtRo();
+            kT2X0 = extensionNorm.getLeg2().getKtXo();
+            kT3R0 = extensionNorm.getLeg3().getKtRo();
+            kT3X0 = extensionNorm.getLeg3().getKtXo();
         }
 
         ScTransfo3W.Leg leg1 = new ScTransfo3W.Leg(leg1ConnectionType, leg1CoeffRo, leg1CoeffXo, leg1FreeFluxes);
@@ -179,7 +194,6 @@ public final class ShortCircuitExtensions {
             freeFluxes = extensions.isFreeFluxes();
             leg1ConnectionType = extensions.getLeg1ConnectionType();
             leg2ConnectionType = extensions.getLeg2ConnectionType();
-            kT = extensions.getkNorm();
 
             // per unitizing of grounding Z for LfNetwork
             double u2Nom = twt.getTerminal2().getVoltageLevel().getNominalV();
@@ -189,6 +203,11 @@ public final class ShortCircuitExtensions {
             x1Ground = extensions.getX1Ground() / zBase;
             r2Ground = extensions.getR2Ground() / zBase;
             x2Ground = extensions.getX2Ground() / zBase;
+        }
+
+        var extensionNorm = twt.getExtension(TwoWindingsTransformerNorm.class);
+        if (extensionNorm != null) {
+            kT = extensionNorm.getkNorm();
         }
 
         lfBranch.setProperty(PROPERTY_SHORT_CIRCUIT, new ScTransfo2W(leg1ConnectionType, leg2ConnectionType, coeffRo, coeffXo, freeFluxes, r1Ground, x1Ground, r2Ground, x2Ground));
@@ -222,7 +241,11 @@ public final class ShortCircuitExtensions {
             toGround = extensions2.isToGround();
             coeffRo = extensions2.getCoeffRo();
             coeffXo = extensions2.getCoeffXo();
-            kG = extensions2.getkG();
+        }
+
+        GeneratorNorm extensionGenNorm = generator.getExtension(GeneratorNorm.class);
+        if (extensionGenNorm != null) {
+            kG = extensionGenNorm.getkG();
         }
 
         lfGenerator.setProperty(PROPERTY_SHORT_CIRCUIT, new ScGenerator(transX,
@@ -250,8 +273,9 @@ public final class ShortCircuitExtensions {
             double xd = 0.;
             double rd = 0.;
             if (extension != null) {
-                xd = extension.getXdEquivalent();
-                rd = extension.getRdEquivalent();
+                Pair<Double, Double> rnxn = extension.getZeqLoad(load);
+                rd = rnxn.getFirst();
+                xd = rnxn.getSecond();
             } else {
                 // No info available in extension we use the default formula with P and Q
                 double p = load.getP0();

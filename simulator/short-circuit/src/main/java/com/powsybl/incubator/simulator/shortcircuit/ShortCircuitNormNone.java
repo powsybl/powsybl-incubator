@@ -7,6 +7,7 @@
 package com.powsybl.incubator.simulator.shortcircuit;
 
 import com.powsybl.iidm.network.*;
+import com.powsybl.incubator.simulator.util.extensions.*;
 import com.powsybl.incubator.simulator.util.extensions.iidm.*;
 import org.apache.commons.math3.util.Pair;
 import org.slf4j.Logger;
@@ -55,47 +56,51 @@ public class ShortCircuitNormNone implements ShortCircuitNorm {
 
     @Override
     public void setKg(Generator gen, double kg) {
-        GeneratorShortCircuit2 extension2Gen = gen.getExtension(GeneratorShortCircuit2.class);
-        if (extension2Gen != null) {
-            extension2Gen.setkG(kg);
+
+        GeneratorNorm extensionGenNorm = gen.getExtension(GeneratorNorm.class);
+        if (extensionGenNorm != null) {
+            extensionGenNorm.setkG(kg);
         } else {
-            gen.newExtension(GeneratorShortCircuitAdder2.class)
+            gen.newExtension(GeneratorNormAdder.class)
                     .withKg(kg)
                     .add();
         }
+
     }
 
     @Override
     public void setKtT3Wi(ThreeWindingsTransformer t3w) {
-        ThreeWindingsTransformerShortCircuit extension = t3w.getExtension(ThreeWindingsTransformerShortCircuit.class);
-        if (extension == null) {
-            t3w.newExtension(ThreeWindingsTransformerShortCircuitAdder.class)
+        T3wCoefs t3wCoefs = getKtT3Wi(t3w);
+
+        ThreeWindingsTransformerNorm extensionNorm = t3w.getExtension(ThreeWindingsTransformerNorm.class);
+        if (extensionNorm == null) {
+            t3w.newExtension(ThreeWindingsTransformerNormAdder.class)
                     .add();
-            extension = t3w.getExtension(ThreeWindingsTransformerShortCircuit.class);
+            extensionNorm = t3w.getExtension(ThreeWindingsTransformerNorm.class);
         }
 
-        T3wCoefs t3wCoefs = getKtT3Wi(t3w);
-        extension.getLeg1().setKtR(t3wCoefs.ktr1);
-        extension.getLeg1().setKtX(t3wCoefs.ktx1);
-        extension.getLeg2().setKtR(t3wCoefs.ktr2);
-        extension.getLeg2().setKtX(t3wCoefs.ktx2);
-        extension.getLeg3().setKtR(t3wCoefs.ktr3);
-        extension.getLeg3().setKtX(t3wCoefs.ktx3);
+        extensionNorm.getLeg1().setKtR(t3wCoefs.ktr1);
+        extensionNorm.getLeg1().setKtX(t3wCoefs.ktx1);
+        extensionNorm.getLeg2().setKtR(t3wCoefs.ktr2);
+        extensionNorm.getLeg2().setKtX(t3wCoefs.ktx2);
+        extensionNorm.getLeg3().setKtR(t3wCoefs.ktr3);
+        extensionNorm.getLeg3().setKtX(t3wCoefs.ktx3);
 
-        extension.getLeg1().setKtRo(t3wCoefs.ktro1);
-        extension.getLeg1().setKtXo(t3wCoefs.ktxo1);
-        extension.getLeg2().setKtRo(t3wCoefs.ktro2);
-        extension.getLeg2().setKtXo(t3wCoefs.ktxo2);
-        extension.getLeg3().setKtRo(t3wCoefs.ktro3);
-        extension.getLeg3().setKtXo(t3wCoefs.ktxo3);
+        extensionNorm.getLeg1().setKtRo(t3wCoefs.ktro1);
+        extensionNorm.getLeg1().setKtXo(t3wCoefs.ktxo1);
+        extensionNorm.getLeg2().setKtRo(t3wCoefs.ktro2);
+        extensionNorm.getLeg2().setKtXo(t3wCoefs.ktxo2);
+        extensionNorm.getLeg3().setKtRo(t3wCoefs.ktro3);
+        extensionNorm.getLeg3().setKtXo(t3wCoefs.ktxo3);
 
         if (t3wCoefs.updateCoefo) {
-            extension.getLeg1().setLegCoeffRo(t3wCoefs.coefro1);
-            extension.getLeg1().setLegCoeffXo(t3wCoefs.coefxo1);
-            extension.getLeg2().setLegCoeffRo(t3wCoefs.coefro2);
-            extension.getLeg2().setLegCoeffXo(t3wCoefs.coefxo2);
-            extension.getLeg3().setLegCoeffRo(t3wCoefs.coefro3);
-            extension.getLeg3().setLegCoeffXo(t3wCoefs.coefxo3);
+            extensionNorm.setOverloadHomopolarCoefs(true);
+            extensionNorm.getLeg1().setLegCoeffRoOverload(t3wCoefs.coefro1);
+            extensionNorm.getLeg1().setLegCoeffXoOverload(t3wCoefs.coefxo1);
+            extensionNorm.getLeg2().setLegCoeffRoOverload(t3wCoefs.coefro2);
+            extensionNorm.getLeg2().setLegCoeffXoOverload(t3wCoefs.coefxo2);
+            extensionNorm.getLeg3().setLegCoeffRoOverload(t3wCoefs.coefro3);
+            extensionNorm.getLeg3().setLegCoeffXoOverload(t3wCoefs.coefxo3);
         }
 
     }
@@ -110,32 +115,16 @@ public class ShortCircuitNormNone implements ShortCircuitNorm {
         return new Pair<>(defaultRd, defaultXd);
     }
 
-    public Pair<Double, Double> getZeqLoad(Load load) {
-        double pLoad = load.getP0();
-        double qLoad = load.getQ0();
-        double uNom = load.getTerminal().getVoltageLevel().getNominalV();
-        double s2 = pLoad * pLoad + qLoad * qLoad;
-        // using formula P(MW) = Re(Z) * |V|² / |Z|² and Q(MVAR) = Im(Z) * |V|² / |Z|²  or  Z = |V|² / (P-jQ)
-        // We compute the equivalent impedance at Unom
-        double xd = 0.;
-        double rd = 0.;
-        if (s2 > EPSILON) {
-            xd = qLoad * uNom * uNom / s2;
-            rd = pLoad * uNom * uNom / s2;
-        }
-
-        return new Pair<>(rd, xd);
-    }
-
     public void applyNormToT2W(Network network) {
         // Work on two windings transformers
         for (TwoWindingsTransformer t2w : network.getTwoWindingsTransformers()) {
-            TwoWindingsTransformerShortCircuit extension = t2w.getExtension(TwoWindingsTransformerShortCircuit.class);
             double kNorm = getKtT2W(t2w);
-            if (extension != null) { // grounding only exist if extension exists
-                extension.setkNorm(kNorm);
+
+            TwoWindingsTransformerNorm extensionNorm = t2w.getExtension(TwoWindingsTransformerNorm.class);
+            if (extensionNorm != null) {
+                extensionNorm.setkNorm(kNorm);
             } else {
-                t2w.newExtension(TwoWindingsTransformerShortCircuitAdder.class)
+                t2w.newExtension(TwoWindingsTransformerNormAdder.class)
                         .withKnorm(kNorm)
                         .add();
             }
@@ -160,32 +149,6 @@ public class ShortCircuitNormNone implements ShortCircuitNorm {
         }
     }
 
-    public void applyNormToLoads(Network network) {
-        // Work on loads
-        for (Load load : network.getLoads()) {
-
-            Pair<Double, Double> rdXd = getZeqLoad(load);
-            double rd = rdXd.getFirst();
-            double xd = rdXd.getSecond();
-
-            LoadShortCircuit extension = load.getExtension(LoadShortCircuit.class);
-            if (extension == null) {
-                load.newExtension(LoadShortCircuitAdder.class)
-                        .add();
-                LoadShortCircuit extensionLoad = load.getExtension(LoadShortCircuit.class);
-                extensionLoad.setLoadShortCircuitType(LoadShortCircuit.LoadShortCircuitType.CONSTANT_LOAD);
-                extension = extensionLoad;
-            }
-
-            getAdjustedLoadfromInfo(load, rd, xd);
-
-            extension.setXdEquivalent(xd);
-            extension.setRdEquivalent(rd);
-
-        }
-
-    }
-
     public void applyNormToT3w(Network network) {
         // Work on three Windings transformers
         for (ThreeWindingsTransformer t3w : network.getThreeWindingsTransformers()) {
@@ -199,7 +162,6 @@ public class ShortCircuitNormNone implements ShortCircuitNorm {
         this.network = network;
         applyNormToT2W(network); // the application of the norm to t2w includes generators with t2w associated to them
         applyNormToGenerators(network);
-        applyNormToLoads(network);
         applyNormToT3w(network);
     }
 

@@ -11,6 +11,7 @@ import com.powsybl.computation.local.LocalComputationManager;
 import com.powsybl.iidm.network.*;
 import com.powsybl.iidm.network.extensions.GeneratorShortCircuitAdder;
 import com.powsybl.incubator.simulator.util.ReferenceNetwork;
+import com.powsybl.incubator.simulator.util.extensions.ThreeWindingsTransformerNorm;
 import com.powsybl.incubator.simulator.util.extensions.iidm.ThreeWindingsTransformerShortCircuit;
 import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
@@ -353,13 +354,14 @@ public class ShortCircuitBalancedTest {
         shortCircuitNormIec.setKtT3Wi(t3w);
 
         ThreeWindingsTransformerShortCircuit extension = t3w.getExtension(ThreeWindingsTransformerShortCircuit.class);
-        double kTaR = extension.getLeg1().getKtR();
-        double kTbX = extension.getLeg2().getKtX();
-        assertEquals(0.86939867723079, kTaR, 0.000001);
-        assertEquals(-6.710685661589687, kTbX, 0.000001);
-
         double coefcX0 = extension.getLeg3().getLegCoeffXo();
         assertEquals(1.0, coefcX0, 0.000001);
+
+        ThreeWindingsTransformerNorm extensionNorm = t3w.getExtension(ThreeWindingsTransformerNorm.class);
+        double kTaR = extensionNorm.getLeg1().getKtR();
+        double kTbX = extensionNorm.getLeg2().getKtX();
+        assertEquals(0.86939867723079, kTaR, 0.000001);
+        assertEquals(-6.710685661589687, kTbX, 0.000001);
 
         Generator g1 = network.getGenerator("G1");
         double kg = shortCircuitNormIec.getKg(g1);

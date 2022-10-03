@@ -9,8 +9,9 @@ package com.powsybl.incubator.simulator.shortcircuit;
 import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.*;
 import com.powsybl.iidm.network.extensions.GeneratorShortCircuit;
+import com.powsybl.incubator.simulator.util.extensions.TwoWindingsTransformerNorm;
+import com.powsybl.incubator.simulator.util.extensions.TwoWindingsTransformerNormAdder;
 import com.powsybl.incubator.simulator.util.extensions.iidm.*;
-import org.apache.commons.math3.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -364,75 +365,23 @@ public class ShortCircuitNormIec extends ShortCircuitNormNone {
     }
 
     @Override
-    public Pair<Double, Double> getZeqLoad(Load load) {
-
-        Pair<Double, Double> rdXd = super.getZeqLoad(load);
-
-        double rn = rdXd.getFirst();
-        double xn = rdXd.getSecond();
-
-        LoadShortCircuit extension = load.getExtension(LoadShortCircuit.class);
-        if (extension != null) {
-            if (extension.getLoadShortCircuitType() == LoadShortCircuit.LoadShortCircuitType.ASYNCHRONOUS_MACHINE) {
-
-                if (extension.getAsynchronousMachineLoadData() == null) {
-                    throw new PowsyblException("Load '" + load.getId() + "' is an asynchronous machine without associated data, therefore equivalent admittance could not be generated ");
-                }
-
-                LoadShortCircuit.AsynchronousMachineLoadData asynchData = extension.getAsynchronousMachineLoadData();
-                double ratedMechanicalPower = asynchData.getRatedMechanicalP();
-                double ratedPowerFactor = asynchData.getRatedPowerFactor(); // cosPhi
-                double ratedS = asynchData.getRatedS();
-                double ratedU = asynchData.getRatedU();
-                double efficiency = asynchData.getEfficiency() / 100.; // conversion from percentages
-                double iaIrRatio = asynchData.getIaIrRatio();
-                double rxLockedRotorRatio = asynchData.getRxLockedRotorRatio();
-                int polePairNumber = asynchData.getPolePairNumber();
-
-                // Zn = 1/(Ilr/Irm) * Urm / (sqrt3 * Irm) = 1/(Ilr/Irm) * Urm² / (Prm / (efficiency * cosPhi))
-                // Xn = Zn / sqrt(1+ (Rm/Xm)²)
-                double zn = 1. / iaIrRatio * ratedU * ratedU / (ratedMechanicalPower / (efficiency * ratedPowerFactor));
-                xn = zn / Math.sqrt(rxLockedRotorRatio * rxLockedRotorRatio + 1.);
-                rn = xn * rxLockedRotorRatio;
-
-            }
-        }
-
-        return new Pair<>(rn, xn);
-
-    }
-
-    @Override
-    public Pair<Double, Double> getAdjustedLoadfromInfo(Load load, double defaultRd, double defaultXd) {
-        LoadShortCircuit extension = load.getExtension(LoadShortCircuit.class);
-        if (extension == null) {
-            throw new PowsyblException("Load '" + load.getId() + "' could generate Z for short circuit because of missing extension input data");
-        }
-
-        Pair<Double, Double> rdXd = getZeqLoad(load);
-        double rn = rdXd.getFirst();
-        double xn = rdXd.getSecond();
-
-        return new Pair<>(rn, xn);
-
-    }
-
-    @Override
     public void applyNormToT2W(Network network) {
         // Work on two windings transformers
         buildGeneratorsWithTfoList(network);
 
         for (TwoWindingsTransformer t2w : network.getTwoWindingsTransformers()) {
-            TwoWindingsTransformerShortCircuit extension = t2w.getExtension(TwoWindingsTransformerShortCircuit.class);
+
             double kNorm = getNormalizedKT(t2w);
 
-            if (extension != null) {
-                extension.setkNorm(kNorm);
+            TwoWindingsTransformerNorm extensionNorm = t2w.getExtension(TwoWindingsTransformerNorm.class);
+            if (extensionNorm != null) {
+                extensionNorm.setkNorm(kNorm);
             } else {
-                t2w.newExtension(TwoWindingsTransformerShortCircuitAdder.class)
+                t2w.newExtension(TwoWindingsTransformerNormAdder.class)
                         .withKnorm(kNorm)
                         .add();
             }
+
         }
     }
 

@@ -9,6 +9,9 @@ package com.powsybl.incubator.simulator.shortcircuit;
 import com.powsybl.iidm.network.*;
 import com.powsybl.iidm.network.extensions.GeneratorShortCircuit;
 import com.powsybl.iidm.network.extensions.GeneratorShortCircuitAdder;
+import com.powsybl.incubator.simulator.util.extensions.GeneratorNorm;
+import com.powsybl.incubator.simulator.util.extensions.ThreeWindingsTransformerNorm;
+import com.powsybl.incubator.simulator.util.extensions.TwoWindingsTransformerNorm;
 import com.powsybl.incubator.simulator.util.extensions.iidm.*;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.math.matrix.DenseMatrixFactory;
@@ -47,22 +50,23 @@ public class ShortCircuitNormTest {
 
         shortCircuitNormIec.applyNormToNetwork(network);
         TwoWindingsTransformerShortCircuit extensionT2w = t2w.getExtension(TwoWindingsTransformerShortCircuit.class);
-        double knormT2w = extensionT2w.getkNorm();
+        TwoWindingsTransformerNorm extensionT2wNorm = t2w.getExtension(TwoWindingsTransformerNorm.class);
+        double knormT2w = extensionT2wNorm.getkNorm();
         assertEquals(0.1950430724873738, knormT2w, 0.000001);
 
-        GeneratorShortCircuit2 extensionGen = g1.getExtension(GeneratorShortCircuit2.class);
-        double kg = extensionGen.getkG();
+        GeneratorNorm extensionGenNorm = g1.getExtension(GeneratorNorm.class);
+        double kg = extensionGenNorm.getkG();
         assertEquals(0.1950430724873738, kg, 0.000001);
 
         extensionT2w.setPartOfGeneratingUnit(false);
         shortCircuitNormIec.applyNormToT2W(network);
         shortCircuitNormIec.applyNormToGenerators(network);
-        kg = extensionGen.getkG();
+        kg = extensionGenNorm.getkG();
         assertEquals(0.1899770186565329, kg, 0.000001);
 
         ShortCircuitNormNone shortCircuitNormNone = new ShortCircuitNormNone();
         shortCircuitNormNone.applyNormToNetwork(network);
-        kg = extensionGen.getkG();
+        kg = extensionGenNorm.getkG();
         assertEquals(1.0, kg, 0.000001);
 
         knormT2w = extensionT2w.getkNorm();
@@ -141,9 +145,9 @@ public class ShortCircuitNormTest {
                 .add();
 
         shortCircuitNormNone.applyNormToNetwork(network);
-        ThreeWindingsTransformerShortCircuit extensionT3w = t3.getExtension(ThreeWindingsTransformerShortCircuit.class);
-        double ktRa = extensionT3w.getLeg1().getKtR();
-        double ktXoc = extensionT3w.getLeg3().getKtXo();
+        ThreeWindingsTransformerNorm extensionT3wNorm = t3.getExtension(ThreeWindingsTransformerNorm.class);
+        double ktRa = extensionT3wNorm.getLeg1().getKtR();
+        double ktXoc = extensionT3wNorm.getLeg3().getKtXo();
         assertEquals(1., ktRa, 0.000001);
         assertEquals(1., ktXoc, 0.000001);
 
@@ -160,8 +164,8 @@ public class ShortCircuitNormTest {
                 .add();
 
         shortCircuitNormIec.setKg(g1bis, 12.);
-        extensionGen = g1bis.getExtension(GeneratorShortCircuit2.class);
-        kg = extensionGen.getkG();
+        extensionGenNorm = g1bis.getExtension(GeneratorNorm.class);
+        kg = extensionGenNorm.getkG();
         assertEquals(12., kg, 0.000001);
 
         var t12bis = network.getSubstation("S1").newTwoWindingsTransformer()
@@ -183,8 +187,8 @@ public class ShortCircuitNormTest {
                 .add();
 
         shortCircuitNormNone.applyNormToT2W(network);
-        extensionT2w = t12bis.getExtension(TwoWindingsTransformerShortCircuit.class);
-        knormT2w = extensionT2w.getkNorm();
+        extensionT2wNorm = t12bis.getExtension(TwoWindingsTransformerNorm.class);
+        knormT2w = extensionT2wNorm.getkNorm();
         assertEquals(1.0, knormT2w, 0.000001);
 
     }

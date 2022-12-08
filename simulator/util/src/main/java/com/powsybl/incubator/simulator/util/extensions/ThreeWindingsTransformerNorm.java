@@ -1,9 +1,9 @@
 package com.powsybl.incubator.simulator.util.extensions;
 
-import com.powsybl.commons.extensions.AbstractExtension;
-import com.powsybl.iidm.network.ThreeWindingsTransformer;
+import static com.powsybl.incubator.simulator.util.extensions.iidm.ShortCircuitConstants.*;
+import static com.powsybl.incubator.simulator.util.extensions.iidm.ShortCircuitConstants.DEFAULT_COEFF_K;
 
-public class ThreeWindingsTransformerNorm extends AbstractExtension<ThreeWindingsTransformer> {
+public class ThreeWindingsTransformerNorm {
 
     public class T3wLeg {
 
@@ -81,17 +81,10 @@ public class ThreeWindingsTransformerNorm extends AbstractExtension<ThreeWinding
     private ThreeWindingsTransformerNorm.T3wLeg leg3;
     private boolean isOverloadHomopolarCoefs;
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
-
-    public ThreeWindingsTransformerNorm(ThreeWindingsTransformer extendable,
-                                        double leg1CoeffRo, double leg2CoeffRo, double leg3CoeffRo,
+    public ThreeWindingsTransformerNorm(double leg1CoeffRo, double leg2CoeffRo, double leg3CoeffRo,
                                         double leg1CoeffXo, double leg2CoeffXo, double leg3CoeffXo,
                                         double kt1R, double kt1X, double kt2R, double kt2X, double kt3R, double kt3X,
                                         double kt1Ro, double kt1Xo, double kt2Ro, double kt2Xo, double kt3Ro, double kt3Xo, boolean isOverloadHomopolarCoefs) {
-        super(extendable);
 
         this.leg1 = new ThreeWindingsTransformerNorm.T3wLeg(leg1CoeffRo, leg1CoeffXo,
                 kt1R, kt1X, kt1Ro, kt1Xo);
@@ -101,6 +94,13 @@ public class ThreeWindingsTransformerNorm extends AbstractExtension<ThreeWinding
                 kt3R, kt3X, kt3Ro, kt3Xo);
         this.isOverloadHomopolarCoefs = isOverloadHomopolarCoefs;
 
+    }
+
+    public ThreeWindingsTransformerNorm() {
+        this(DEFAULT_COEFF_RO, DEFAULT_COEFF_RO, DEFAULT_COEFF_RO,
+                DEFAULT_COEFF_XO, DEFAULT_COEFF_XO, DEFAULT_COEFF_XO,
+                DEFAULT_COEFF_K, DEFAULT_COEFF_K, DEFAULT_COEFF_K, DEFAULT_COEFF_K, DEFAULT_COEFF_K, DEFAULT_COEFF_K,
+                DEFAULT_COEFF_K, DEFAULT_COEFF_K, DEFAULT_COEFF_K, DEFAULT_COEFF_K, DEFAULT_COEFF_K, DEFAULT_COEFF_K, false);
     }
 
     public ThreeWindingsTransformerNorm.T3wLeg getLeg1() {

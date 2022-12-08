@@ -34,12 +34,16 @@ public final class ShortCircuitExtensions {
     }
 
     public static void add(Network network, List<LfNetwork> lfNetworks) {
+        add(network, lfNetworks, new ShortCircuitNormExtensions());
+    }
+
+    public static void add(Network network, List<LfNetwork> lfNetworks, ShortCircuitNormExtensions shortCircuitNormExtensions) {
         Objects.requireNonNull(network);
         Objects.requireNonNull(lfNetworks);
         for (LfNetwork lfNetwork : lfNetworks) {
             for (LfBus lfBus : lfNetwork.getBuses()) {
                 for (LfGenerator lfGenerator : lfBus.getGenerators()) {
-                    addGeneratorExtension(network, lfGenerator);
+                    addGeneratorExtension(network, lfGenerator, shortCircuitNormExtensions);
                 }
                 addLoadExtension(network, lfBus);
             }
@@ -51,13 +55,13 @@ public final class ShortCircuitExtensions {
                         break;
 
                     case TRANSFO_2:
-                        addTransfo2Extension(network, lfBranch);
+                        addTransfo2Extension(network, lfBranch, shortCircuitNormExtensions);
                         break;
 
                     case TRANSFO_3_LEG_1:
                     case TRANSFO_3_LEG_2:
                     case TRANSFO_3_LEG_3:
-                        addTransfo3Extension(network, lfBranch);
+                        addTransfo3Extension(network, lfBranch, shortCircuitNormExtensions);
                         break;
 
                     case DANGLING_LINE:
@@ -75,7 +79,7 @@ public final class ShortCircuitExtensions {
         }
     }
 
-    private static void addTransfo3Extension(Network network, LfBranch lfBranch) {
+    private static void addTransfo3Extension(Network network, LfBranch lfBranch, ShortCircuitNormExtensions shortCircuitNormExtensions) {
         String t3wId = lfBranch.getOriginalIds().get(0);
         ThreeWindingsTransformer twt = network.getThreeWindingsTransformer(t3wId);
 
@@ -121,29 +125,29 @@ public final class ShortCircuitExtensions {
             leg3ConnectionType = extensions.getLeg3().getLegConnectionType();
         }
 
-        var extensionNorm = twt.getExtension(ThreeWindingsTransformerNorm.class);
-        if (extensionNorm != null) {
-            if (extensionNorm.isOverloadHomopolarCoefs()) {
-                leg1CoeffRo = extensionNorm.getLeg1().getLegCoeffRoOverload();
-                leg2CoeffRo = extensionNorm.getLeg2().getLegCoeffRoOverload();
-                leg3CoeffRo = extensionNorm.getLeg3().getLegCoeffRoOverload();
-                leg1CoeffXo = extensionNorm.getLeg1().getLegCoeffXoOverload();
-                leg2CoeffXo = extensionNorm.getLeg2().getLegCoeffXoOverload();
-                leg3CoeffXo = extensionNorm.getLeg3().getLegCoeffXoOverload();
+        ThreeWindingsTransformerNorm t3wExtensionNorm = shortCircuitNormExtensions.getNormExtension(twt);
+        if (t3wExtensionNorm != null) {
+            if (t3wExtensionNorm.isOverloadHomopolarCoefs()) {
+                leg1CoeffRo = t3wExtensionNorm.getLeg1().getLegCoeffRoOverload();
+                leg2CoeffRo = t3wExtensionNorm.getLeg2().getLegCoeffRoOverload();
+                leg3CoeffRo = t3wExtensionNorm.getLeg3().getLegCoeffRoOverload();
+                leg1CoeffXo = t3wExtensionNorm.getLeg1().getLegCoeffXoOverload();
+                leg2CoeffXo = t3wExtensionNorm.getLeg2().getLegCoeffXoOverload();
+                leg3CoeffXo = t3wExtensionNorm.getLeg3().getLegCoeffXoOverload();
             }
 
-            kT1R = extensionNorm.getLeg1().getKtR();
-            kT1X = extensionNorm.getLeg1().getKtX();
-            kT2R = extensionNorm.getLeg2().getKtR();
-            kT2X = extensionNorm.getLeg2().getKtX();
-            kT3R = extensionNorm.getLeg3().getKtR();
-            kT3X = extensionNorm.getLeg3().getKtX();
-            kT1R0 = extensionNorm.getLeg1().getKtRo();
-            kT1X0 = extensionNorm.getLeg1().getKtXo();
-            kT2R0 = extensionNorm.getLeg2().getKtRo();
-            kT2X0 = extensionNorm.getLeg2().getKtXo();
-            kT3R0 = extensionNorm.getLeg3().getKtRo();
-            kT3X0 = extensionNorm.getLeg3().getKtXo();
+            kT1R = t3wExtensionNorm.getLeg1().getKtR();
+            kT1X = t3wExtensionNorm.getLeg1().getKtX();
+            kT2R = t3wExtensionNorm.getLeg2().getKtR();
+            kT2X = t3wExtensionNorm.getLeg2().getKtX();
+            kT3R = t3wExtensionNorm.getLeg3().getKtR();
+            kT3X = t3wExtensionNorm.getLeg3().getKtX();
+            kT1R0 = t3wExtensionNorm.getLeg1().getKtRo();
+            kT1X0 = t3wExtensionNorm.getLeg1().getKtXo();
+            kT2R0 = t3wExtensionNorm.getLeg2().getKtRo();
+            kT2X0 = t3wExtensionNorm.getLeg2().getKtXo();
+            kT3R0 = t3wExtensionNorm.getLeg3().getKtRo();
+            kT3X0 = t3wExtensionNorm.getLeg3().getKtXo();
         }
 
         ScTransfo3W.Leg leg1 = new ScTransfo3W.Leg(leg1ConnectionType, leg1CoeffRo, leg1CoeffXo, leg1FreeFluxes);
@@ -173,7 +177,7 @@ public final class ShortCircuitExtensions {
         lfBranch.setProperty(PROPERTY_SHORT_CIRCUIT, new ScLine(coeffRo, coeffXo));
     }
 
-    private static void addTransfo2Extension(Network network, LfBranch lfBranch) {
+    private static void addTransfo2Extension(Network network, LfBranch lfBranch, ShortCircuitNormExtensions shortCircuitNormExtensions) {
         String t2wId = lfBranch.getOriginalIds().get(0);
         TwoWindingsTransformer twt = network.getTwoWindingsTransformer(t2wId);
 
@@ -205,16 +209,16 @@ public final class ShortCircuitExtensions {
             x2Ground = extensions.getX2Ground() / zBase;
         }
 
-        var extensionNorm = twt.getExtension(TwoWindingsTransformerNorm.class);
-        if (extensionNorm != null) {
-            kT = extensionNorm.getkNorm();
+        TwoWindingsTransformerNorm t2wNormExtension = shortCircuitNormExtensions.getNormExtension(twt);
+        if (t2wNormExtension != null) {
+            kT = t2wNormExtension.getkNorm();
         }
 
         lfBranch.setProperty(PROPERTY_SHORT_CIRCUIT, new ScTransfo2W(leg1ConnectionType, leg2ConnectionType, coeffRo, coeffXo, freeFluxes, r1Ground, x1Ground, r2Ground, x2Ground));
         lfBranch.setProperty(PROPERTY_SHORT_CIRCUIT_NORM, kT); // set in a separate extension because is does not depend only on iidm in input but also on the type of norm
     }
 
-    private static void addGeneratorExtension(Network network, LfGenerator lfGenerator) {
+    private static void addGeneratorExtension(Network network, LfGenerator lfGenerator, ShortCircuitNormExtensions shortCircuitNormExtensions) {
         Generator generator = network.getGenerator(lfGenerator.getOriginalId());
 
         double transX = DEFAULT_TRANS_XD;
@@ -243,7 +247,7 @@ public final class ShortCircuitExtensions {
             coeffXo = extensions2.getCoeffXo();
         }
 
-        GeneratorNorm extensionGenNorm = generator.getExtension(GeneratorNorm.class);
+        GeneratorNorm extensionGenNorm = shortCircuitNormExtensions.getNormExtension(generator);
         if (extensionGenNorm != null) {
             kG = extensionGenNorm.getkG();
         }

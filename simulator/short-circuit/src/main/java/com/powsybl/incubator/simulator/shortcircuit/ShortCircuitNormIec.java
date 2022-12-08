@@ -10,7 +10,6 @@ import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.*;
 import com.powsybl.iidm.network.extensions.GeneratorShortCircuit;
 import com.powsybl.incubator.simulator.util.extensions.TwoWindingsTransformerNorm;
-import com.powsybl.incubator.simulator.util.extensions.TwoWindingsTransformerNormAdder;
 import com.powsybl.incubator.simulator.util.extensions.iidm.*;
 
 import java.util.ArrayList;
@@ -373,15 +372,13 @@ public class ShortCircuitNormIec extends ShortCircuitNormNone {
 
             double kNorm = getNormalizedKT(t2w);
 
-            TwoWindingsTransformerNorm extensionNorm = t2w.getExtension(TwoWindingsTransformerNorm.class);
-            if (extensionNorm != null) {
-                extensionNorm.setkNorm(kNorm);
+            TwoWindingsTransformerNorm t2wNormExtension = getNormExtensions().getNormExtension(t2w);
+            if (t2wNormExtension != null) {
+                t2wNormExtension.setkNorm(kNorm);
             } else {
-                t2w.newExtension(TwoWindingsTransformerNormAdder.class)
-                        .withKnorm(kNorm)
-                        .add();
+                t2wNormExtension = new TwoWindingsTransformerNorm(kNorm);
+                getNormExtensions().setNormExtension(t2w, t2wNormExtension);
             }
-
         }
     }
 

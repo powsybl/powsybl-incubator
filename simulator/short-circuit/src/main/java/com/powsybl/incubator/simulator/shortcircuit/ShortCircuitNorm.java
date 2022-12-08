@@ -10,6 +10,7 @@ import com.powsybl.iidm.network.Generator;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.ThreeWindingsTransformer;
 import com.powsybl.iidm.network.TwoWindingsTransformer;
+import com.powsybl.incubator.simulator.util.extensions.ShortCircuitNormExtensions;
 
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
@@ -19,6 +20,8 @@ public interface ShortCircuitNorm {
     String getNormType();
 
     Network getNetwork();
+
+    ShortCircuitNormExtensions getNormExtensions();
 
     double getCmaxVoltageFactor(double nominalVoltage);
 
@@ -39,7 +42,7 @@ public interface ShortCircuitNorm {
 
     void applyNormToNetwork(Network network);
 
-    public class T3wCoefs {
+    class T3wCoefs {
         public final double ktr1;
         public final double ktx1;
         public final double ktr2;

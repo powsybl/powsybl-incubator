@@ -24,6 +24,17 @@ public class ShortCircuitNormNone implements ShortCircuitNorm {
 
     public Network network;
 
+    private ShortCircuitNormExtensions normExtensions;
+
+    public ShortCircuitNormNone() {
+        this.normExtensions = new ShortCircuitNormExtensions();
+    }
+
+    @Override
+    public ShortCircuitNormExtensions getNormExtensions() {
+        return normExtensions;
+    }
+
     @Override
     public Network getNetwork() {
         return network;
@@ -57,13 +68,12 @@ public class ShortCircuitNormNone implements ShortCircuitNorm {
     @Override
     public void setKg(Generator gen, double kg) {
 
-        GeneratorNorm extensionGenNorm = gen.getExtension(GeneratorNorm.class);
-        if (extensionGenNorm != null) {
-            extensionGenNorm.setkG(kg);
+        GeneratorNorm genNormExtension = normExtensions.getNormExtension(gen);
+        if (genNormExtension != null) {
+            genNormExtension.setkG(kg);
         } else {
-            gen.newExtension(GeneratorNormAdder.class)
-                    .withKg(kg)
-                    .add();
+            genNormExtension = new GeneratorNorm(kg);
+            normExtensions.setNormExtension(gen, genNormExtension);
         }
 
     }
@@ -72,36 +82,35 @@ public class ShortCircuitNormNone implements ShortCircuitNorm {
     public void setKtT3Wi(ThreeWindingsTransformer t3w) {
         T3wCoefs t3wCoefs = getKtT3Wi(t3w);
 
-        ThreeWindingsTransformerNorm extensionNorm = t3w.getExtension(ThreeWindingsTransformerNorm.class);
-        if (extensionNorm == null) {
-            t3w.newExtension(ThreeWindingsTransformerNormAdder.class)
-                    .add();
-            extensionNorm = t3w.getExtension(ThreeWindingsTransformerNorm.class);
+        ThreeWindingsTransformerNorm t3wExtensionNorm = normExtensions.getNormExtension(t3w);
+        if (t3wExtensionNorm == null) {
+            t3wExtensionNorm = new ThreeWindingsTransformerNorm();
         }
 
-        extensionNorm.getLeg1().setKtR(t3wCoefs.ktr1);
-        extensionNorm.getLeg1().setKtX(t3wCoefs.ktx1);
-        extensionNorm.getLeg2().setKtR(t3wCoefs.ktr2);
-        extensionNorm.getLeg2().setKtX(t3wCoefs.ktx2);
-        extensionNorm.getLeg3().setKtR(t3wCoefs.ktr3);
-        extensionNorm.getLeg3().setKtX(t3wCoefs.ktx3);
+        t3wExtensionNorm.getLeg1().setKtR(t3wCoefs.ktr1);
+        t3wExtensionNorm.getLeg1().setKtX(t3wCoefs.ktx1);
+        t3wExtensionNorm.getLeg2().setKtR(t3wCoefs.ktr2);
+        t3wExtensionNorm.getLeg2().setKtX(t3wCoefs.ktx2);
+        t3wExtensionNorm.getLeg3().setKtR(t3wCoefs.ktr3);
+        t3wExtensionNorm.getLeg3().setKtX(t3wCoefs.ktx3);
 
-        extensionNorm.getLeg1().setKtRo(t3wCoefs.ktro1);
-        extensionNorm.getLeg1().setKtXo(t3wCoefs.ktxo1);
-        extensionNorm.getLeg2().setKtRo(t3wCoefs.ktro2);
-        extensionNorm.getLeg2().setKtXo(t3wCoefs.ktxo2);
-        extensionNorm.getLeg3().setKtRo(t3wCoefs.ktro3);
-        extensionNorm.getLeg3().setKtXo(t3wCoefs.ktxo3);
+        t3wExtensionNorm.getLeg1().setKtRo(t3wCoefs.ktro1);
+        t3wExtensionNorm.getLeg1().setKtXo(t3wCoefs.ktxo1);
+        t3wExtensionNorm.getLeg2().setKtRo(t3wCoefs.ktro2);
+        t3wExtensionNorm.getLeg2().setKtXo(t3wCoefs.ktxo2);
+        t3wExtensionNorm.getLeg3().setKtRo(t3wCoefs.ktro3);
+        t3wExtensionNorm.getLeg3().setKtXo(t3wCoefs.ktxo3);
 
         if (t3wCoefs.updateCoefo) {
-            extensionNorm.setOverloadHomopolarCoefs(true);
-            extensionNorm.getLeg1().setLegCoeffRoOverload(t3wCoefs.coefro1);
-            extensionNorm.getLeg1().setLegCoeffXoOverload(t3wCoefs.coefxo1);
-            extensionNorm.getLeg2().setLegCoeffRoOverload(t3wCoefs.coefro2);
-            extensionNorm.getLeg2().setLegCoeffXoOverload(t3wCoefs.coefxo2);
-            extensionNorm.getLeg3().setLegCoeffRoOverload(t3wCoefs.coefro3);
-            extensionNorm.getLeg3().setLegCoeffXoOverload(t3wCoefs.coefxo3);
+            t3wExtensionNorm.setOverloadHomopolarCoefs(true);
+            t3wExtensionNorm.getLeg1().setLegCoeffRoOverload(t3wCoefs.coefro1);
+            t3wExtensionNorm.getLeg1().setLegCoeffXoOverload(t3wCoefs.coefxo1);
+            t3wExtensionNorm.getLeg2().setLegCoeffRoOverload(t3wCoefs.coefro2);
+            t3wExtensionNorm.getLeg2().setLegCoeffXoOverload(t3wCoefs.coefxo2);
+            t3wExtensionNorm.getLeg3().setLegCoeffRoOverload(t3wCoefs.coefro3);
+            t3wExtensionNorm.getLeg3().setLegCoeffXoOverload(t3wCoefs.coefxo3);
         }
+        normExtensions.setNormExtension(t3w, t3wExtensionNorm);
 
     }
 
@@ -120,13 +129,12 @@ public class ShortCircuitNormNone implements ShortCircuitNorm {
         for (TwoWindingsTransformer t2w : network.getTwoWindingsTransformers()) {
             double kNorm = getKtT2W(t2w);
 
-            TwoWindingsTransformerNorm extensionNorm = t2w.getExtension(TwoWindingsTransformerNorm.class);
-            if (extensionNorm != null) {
-                extensionNorm.setkNorm(kNorm);
+            TwoWindingsTransformerNorm t2wNormExtension = normExtensions.getNormExtension(t2w);
+            if (t2wNormExtension != null) {
+                t2wNormExtension.setkNorm(kNorm);
             } else {
-                t2w.newExtension(TwoWindingsTransformerNormAdder.class)
-                        .withKnorm(kNorm)
-                        .add();
+                t2wNormExtension = new TwoWindingsTransformerNorm(kNorm);
+                normExtensions.setNormExtension(t2w, t2wNormExtension);
             }
         }
     }
@@ -160,6 +168,7 @@ public class ShortCircuitNormNone implements ShortCircuitNorm {
     public void applyNormToNetwork(Network network) {
 
         this.network = network;
+        this.normExtensions = new ShortCircuitNormExtensions();
         applyNormToT2W(network); // the application of the norm to t2w includes generators with t2w associated to them
         applyNormToGenerators(network);
         applyNormToT3w(network);

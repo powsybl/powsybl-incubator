@@ -1,22 +1,13 @@
 package com.powsybl.incubator.simulator.util.extensions;
 
-import com.powsybl.commons.extensions.AbstractExtension;
-import com.powsybl.iidm.network.Generator;
-
-public class GeneratorNorm extends AbstractExtension<Generator>  {
+public class GeneratorNorm  {
 
     public static final String NAME = "generatorNorm";
 
     private double kG; // coeff related to the application of a norm, possibly modifying x"d or x'd
 
-    public GeneratorNorm(Generator generator, double kG) {
-        super(generator);
+    public GeneratorNorm(double kG) {
         this.kG = kG;
-    }
-
-    @Override
-    public String getName() {
-        return NAME;
     }
 
     public double getkG() {

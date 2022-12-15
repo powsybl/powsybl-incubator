@@ -29,6 +29,8 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 
+import static com.powsybl.commons.ComparisonUtils.compareTxt;
+
 /**
  * @author Christian Biasuzzi <christian.biasuzzi@techrain.eu>
  */

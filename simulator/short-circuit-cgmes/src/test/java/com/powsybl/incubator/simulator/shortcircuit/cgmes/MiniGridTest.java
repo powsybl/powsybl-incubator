@@ -7,8 +7,7 @@
 package com.powsybl.incubator.simulator.shortcircuit.cgmes;
 
 import com.powsybl.cgmes.conformity.CgmesConformity1Catalog;
-import com.powsybl.iidm.import_.Importers;
-import com.powsybl.iidm.network.*;
+import com.powsybl.iidm.network.Network;
 import com.powsybl.incubator.simulator.shortcircuit.*;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.math.matrix.DenseMatrixFactory;
@@ -24,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at gmail.com>
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
-public class MiniGridTest {
+class MiniGridTest {
 
     private Map<String, String> busNameToId;
 
@@ -49,7 +48,7 @@ public class MiniGridTest {
         Properties parameters = new Properties();
         parameters.setProperty("iidm.import.cgmes.post-processors", CgmesShortCircuitImportPostProcessor.NAME);
         //TestGridModelResources testCgm = CgmesConformity1Catalog.miniBusBranch();
-        Network network = Importers.loadNetwork(CgmesConformity1Catalog.miniBusBranch().dataSource(), parameters);
+        Network network = Network.read(CgmesConformity1Catalog.miniBusBranch().dataSource(), parameters);
         ShortCircuitNormIec shortCircuitNormIec = new ShortCircuitNormIec();
 
         shortCircuitNormIec.applyNormToNetwork(network); // this modifies the characteristics of some iidm equipments
@@ -126,7 +125,7 @@ public class MiniGridTest {
         Properties parameters = new Properties();
         parameters.setProperty("iidm.import.cgmes.post-processors", CgmesShortCircuitImportPostProcessor.NAME);
         //TestGridModelResources testCgm = CgmesConformity1Catalog.miniBusBranch();
-        Network network = Importers.loadNetwork(CgmesConformity1Catalog.miniBusBranch().dataSource(), parameters);
+        Network network = Network.read(CgmesConformity1Catalog.miniBusBranch().dataSource(), parameters);
         ShortCircuitNormIec shortCircuitNormIec = new ShortCircuitNormIec();
 
         shortCircuitNormIec.applyNormToNetwork(network); // this modifies the characteristics of some iidm equipments

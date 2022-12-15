@@ -23,8 +23,6 @@ public class ScTransfo2W {
 
     private final boolean freeFluxes;
 
-    private final double kT; //correction factor of the Two Windings Transformer
-
     private final double r1Ground;
     private final double x1Ground;
     private final double r2Ground;
@@ -34,14 +32,13 @@ public class ScTransfo2W {
         this(leg1ConnectionType, leg2ConnectionType, coeffRo, coeffXo, freeFluxes, 1d, 0., 0., 0., 0.);
     }*/
 
-    ScTransfo2W(LegConnectionType leg1ConnectionType, LegConnectionType leg2ConnectionType, double coeffRo, double coeffXo, boolean freeFluxes, double kT,
+    ScTransfo2W(LegConnectionType leg1ConnectionType, LegConnectionType leg2ConnectionType, double coeffRo, double coeffXo, boolean freeFluxes,
                 double r1Ground, double x1Ground, double r2Ground, double x2Ground) {
         this.leg1ConnectionType = Objects.requireNonNull(leg1ConnectionType);
         this.leg2ConnectionType = Objects.requireNonNull(leg2ConnectionType);
         this.coeffRo = coeffRo;
         this.coeffXo = coeffXo;
         this.freeFluxes = freeFluxes;
-        this.kT = kT;
         this.r1Ground = r1Ground;
         this.r2Ground = r2Ground;
         this.x1Ground = x1Ground;
@@ -66,10 +63,6 @@ public class ScTransfo2W {
 
     public boolean isFreeFluxes() {
         return freeFluxes;
-    }
-
-    public double getkT() {
-        return kT;
     }
 
     public double getR1Ground() {

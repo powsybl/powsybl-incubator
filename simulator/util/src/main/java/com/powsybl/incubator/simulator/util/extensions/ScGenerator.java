@@ -34,12 +34,10 @@ public class ScGenerator {
     private final double coeffRo; // coeff used to get Ro from Rd
     private final double coeffXo; // coeff used to get Xo from Xd
 
-    private final double kG;
-
     private final MachineType machineType;
 
     public ScGenerator(double transXd, double stepUpTfoX, MachineType machineType, double transRd, double stepUpTfoR, double subTransRd, double subTransXd,
-                       boolean grounded, double groundR, double groundX, double coeffRo, double coeffXo, double kG) {
+                       boolean grounded, double groundR, double groundX, double coeffRo, double coeffXo) {
         this.transXd = transXd;
         this.stepUpTfoX = stepUpTfoX;
         this.machineType = machineType;
@@ -52,7 +50,6 @@ public class ScGenerator {
         this.groundX = groundX;
         this.coeffRo = coeffRo;
         this.coeffXo = coeffXo;
-        this.kG = kG;
     }
 
     public double getTransXd() {
@@ -99,7 +96,4 @@ public class ScGenerator {
         return  coeffXo;
     }
 
-    public double getkG() {
-        return kG;
-    }
 }

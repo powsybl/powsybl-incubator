@@ -124,32 +124,28 @@ public final class AdmittanceEquationSystem {
         for (LfGenerator lfgen : bus.getGenerators()) { //compute R'd or R"d from generators at bus
             ScGenerator scGen = (ScGenerator) lfgen.getProperty(ShortCircuitExtensions.PROPERTY_SHORT_CIRCUIT);
             double kG = (Double) lfgen.getProperty(ShortCircuitExtensions.PROPERTY_SHORT_CIRCUIT_NORM);
-            double rd = (scGen.getTransRd() + scGen.getStepUpTfoR()) * kG;
-            double xd = (scGen.getTransXd() + scGen.getStepUpTfoX()) * kG;
+            double r = (scGen.getTransRd() + scGen.getStepUpTfoR()) * kG;
+            double x = (scGen.getTransXd() + scGen.getStepUpTfoX()) * kG;
             if (admittancePeriodType == AdmittancePeriodType.ADM_SUB_TRANSIENT) {
-                xd = (scGen.getSubTransXd() + scGen.getStepUpTfoX()) * kG;
-                rd = (scGen.getSubTransRd() + scGen.getStepUpTfoR()) * kG;
+                x = (scGen.getSubTransXd() + scGen.getStepUpTfoX()) * kG;
+                r = (scGen.getSubTransRd() + scGen.getStepUpTfoR()) * kG;
             }
 
-            double coeffR = 1.0; // coeff used to deduce Ro from Rd. It is equal to 1.0 if we are looking for direct values. If the machine is not grounded, homopolar values are zero, then we set coeffs to 0.
-            double coeffX = 1.0;
             if (admittanceType == AdmittanceType.ADM_THEVENIN_HOMOPOLAR) {
-                coeffR = 0.;
-                coeffX = 0.;
+                // For now, xo and ro are fixed independently of x'd and x"d:
+                // further improvement might be needed if xo and ro are different for transient and subTransient short circuit analysis
+                r = 0.;
+                x = 0.;
                 if (scGen.isGrounded()) {
-                    coeffR = scGen.getCoeffRo();
-                    coeffX = scGen.getCoeffXo();
+                    r = scGen.getRo();
+                    x = scGen.getXo();
                 }
             }
 
             double epsilon = 0.0000001;
-
-            rd = rd * coeffR;
-            xd = xd * coeffX;
-
-            if (Math.abs(rd) > epsilon || Math.abs(xd) > epsilon) {
-                double gGen = (vnomVl * vnomVl / SB) * rd / (rd * rd + xd * xd);
-                double bGen = -(vnomVl * vnomVl / SB) * xd / (rd * rd + xd * xd);
+            if (Math.abs(r) > epsilon || Math.abs(x) > epsilon) {
+                double gGen = (vnomVl * vnomVl / SB) * r / (r * r + x * x);
+                double bGen = -(vnomVl * vnomVl / SB) * x / (r * r + x * x);
                 tmpG = tmpG + gGen;
                 tmpB = tmpB + bGen; // TODO: check: for now X'd = 0 not allowed
                 Feeder shuntFeeder = new Feeder(bGen, gGen, lfgen.getId(), Feeder.FeederType.GENERATOR);

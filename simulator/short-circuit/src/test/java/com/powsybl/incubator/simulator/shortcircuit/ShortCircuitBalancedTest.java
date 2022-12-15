@@ -354,7 +354,7 @@ public class ShortCircuitBalancedTest {
         shortCircuitNormIec.setKtT3Wi(t3w);
 
         ThreeWindingsTransformerShortCircuit extension = t3w.getExtension(ThreeWindingsTransformerShortCircuit.class);
-        double coefcX0 = extension.getLeg3().getLegCoeffXo();
+        double coefcX0 = extension.getLeg3().getLegXo() / t3w.getLeg3().getX();
         assertEquals(1.0, coefcX0, 0.000001);
 
         ThreeWindingsTransformerNorm t3wNormExtension = shortCircuitNormIec.getNormExtensions().getNormExtension(t3w);

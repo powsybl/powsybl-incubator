@@ -21,10 +21,9 @@ import com.powsybl.openloadflow.OpenLoadFlowProvider;
 import com.powsybl.openloadflow.network.LfBus;
 import com.powsybl.security.LimitViolation;
 import com.powsybl.shortcircuit.*;
-import com.powsybl.shortcircuit.interceptors.ShortCircuitAnalysisInterceptor;
+import org.apache.commons.math3.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.commons.math3.util.Pair;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -38,8 +37,6 @@ public class OpenShortCircuitProvider implements ShortCircuitAnalysisProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OpenShortCircuitProvider.class);
 
-    private final List<ShortCircuitAnalysisInterceptor> interceptors = new ArrayList<>();
-
     private final MatrixFactory matrixFactory;
 
     public OpenShortCircuitProvider() {
@@ -48,16 +45,6 @@ public class OpenShortCircuitProvider implements ShortCircuitAnalysisProvider {
 
     public OpenShortCircuitProvider(MatrixFactory matrixFactory) {
         this.matrixFactory = Objects.requireNonNull(matrixFactory);
-    }
-
-    @Override
-    public void addInterceptor(ShortCircuitAnalysisInterceptor interceptor) {
-        interceptors.add(interceptor);
-    }
-
-    @Override
-    public boolean removeInterceptor(ShortCircuitAnalysisInterceptor interceptor) {
-        return interceptors.remove(interceptor);
     }
 
     @Override

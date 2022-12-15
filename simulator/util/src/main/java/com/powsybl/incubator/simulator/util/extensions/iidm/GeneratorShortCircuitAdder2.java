@@ -19,10 +19,10 @@ public class GeneratorShortCircuitAdder2 extends AbstractExtensionAdder<Generato
     private double transRd = DEFAULT_TRANS_RD;
     private double subTransRd = DEFAULT_SUB_TRANS_RD;
     private boolean toGround = DEFAULT_TO_GROUND;
-    private double coeffRo = DEFAULT_COEFF_RO;
-    private double coeffXo = DEFAULT_COEFF_XO;
-    private double coeffRi = DEFAULT_COEFF_RI;
-    private double coeffXi = DEFAULT_COEFF_XI;
+    private double ro = 0.;
+    private double xo = 0.;
+    private double ri = 0.;
+    private double xi = 0.;
     private double groundingR = DEFAULT_GROUNDING_R;
     private double groundingX = DEFAULT_GROUNDING_X;
     private double cosPhi = DEFAULT_COS_PHI;
@@ -46,7 +46,7 @@ public class GeneratorShortCircuitAdder2 extends AbstractExtensionAdder<Generato
 
     @Override
     protected GeneratorShortCircuit2 createExtension(Generator generator) {
-        return new GeneratorShortCircuit2(generator, transRd, subTransRd, toGround, coeffRo, coeffXo, coeffRi, coeffXi, groundingR, groundingX, rotorType, ratedU, cosPhi, generatorType, cq, ikQmax, maxR1ToX1Ratio, voltageRegulationRange);
+        return new GeneratorShortCircuit2(generator, transRd, subTransRd, toGround, ro, xo, ri, xi, groundingR, groundingX, rotorType, ratedU, cosPhi, generatorType, cq, ikQmax, maxR1ToX1Ratio, voltageRegulationRange);
     }
 
     public GeneratorShortCircuitAdder2 withTransRd(double transRd) {
@@ -64,23 +64,23 @@ public class GeneratorShortCircuitAdder2 extends AbstractExtensionAdder<Generato
         return this;
     }
 
-    public GeneratorShortCircuitAdder2 withCoeffRo(double coeffRo) {
-        this.coeffRo = coeffRo;
+    public GeneratorShortCircuitAdder2 withRo(double ro) {
+        this.ro = ro;
         return this;
     }
 
-    public GeneratorShortCircuitAdder2 withCoeffXo(double coeffXo) {
-        this.coeffXo = coeffXo;
+    public GeneratorShortCircuitAdder2 withXo(double xo) {
+        this.xo = xo;
         return this;
     }
 
-    public GeneratorShortCircuitAdder2 withCoeffRi(double coeffRi) {
-        this.coeffRi = coeffRi;
+    public GeneratorShortCircuitAdder2 withRi(double ri) {
+        this.ri = ri;
         return this;
     }
 
-    public GeneratorShortCircuitAdder2 withCoeffXi(double coeffXi) {
-        this.coeffXi = coeffXi;
+    public GeneratorShortCircuitAdder2 withXi(double xi) {
+        this.xi = xi;
         return this;
     }
 

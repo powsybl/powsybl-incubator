@@ -11,19 +11,19 @@ package com.powsybl.incubator.simulator.util.extensions;
  */
 public class ScLine {
 
-    private final double coeffXo; // Xo = Xd * coeffXo : value of the homopolar admittance (in ohms) expressed at the leg2 side
-    private final double coeffRo; // Ro = Rd * coeffRo : value of the homopolar resistance (in ohms) expressed at the leg2 side
+    private final double xo; // Xo : value of the homopolar admittance (in pu, same base as X) expressed at the leg2 side
+    private final double ro; // Ro : value of the homopolar resistance (in pu, same base as R) expressed at the leg2 side
 
-    ScLine(double coeffRo, double coeffXo) {
-        this.coeffRo = coeffRo;
-        this.coeffXo = coeffXo;
+    ScLine(double ro, double xo) {
+        this.ro = ro;
+        this.xo = xo;
     }
 
-    public double getCoeffRo() {
-        return coeffRo;
+    public double getRo() {
+        return ro;
     }
 
-    public double getCoeffXo() {
-        return coeffXo;
+    public double getXo() {
+        return xo;
     }
 }

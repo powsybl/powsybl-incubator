@@ -35,7 +35,7 @@ public final class ReferenceNetwork {
         double bus1Vnom = 115.;
         //
         // Utility at bus 1: Sutility=1500 MVA, X/R = 15, Xpu = Sbase/Sutility which gives Zpu = 0.0007+j0.01
-        // Z=VnomBus1²/Sbase * Zpu = 0.617167 + j8.81667 ohms which gives yeq= 0.007901-j0.112868 and then Peq = 104.488 MW and Qeq = 1492.69 MVAR
+        // Z=VnomBus1Â²/Sbase * Zpu = 0.617167 + j8.81667 ohms which gives yeq= 0.007901-j0.112868 and then Peq = 104.488 MW and Qeq = 1492.69 MVAR
         double xdUtility = 0.01 * bus1Vnom * bus1Vnom / sbase; //8.81667;
         double rdUtility = 0.0007 * bus1Vnom * bus1Vnom / sbase; //0.617167;
         //
@@ -478,7 +478,7 @@ public final class ReferenceNetwork {
 
         // we model the feeder through a load: TODO : check if relevant for all IEC examples
         double pEquivalentFeeder = 31.286;  //Impedance to be applied at feeder : Zfeeder = 0.126115 +j1.26353 ohms
-        double qEquivalentFeeder = 313.451; //using formula P(MW) = Re(Z) * |V|² / |Z|² and Q(MVA) = Im(Z) * |V|² / |Z|²
+        double qEquivalentFeeder = 313.451; //using formula P(MW) = Re(Z) * |V|Â² / |Z|Â² and Q(MVA) = Im(Z) * |V|Â² / |Z|Â²
 
         Substation substation123 = network.newSubstation()
                 .setId("S123")
@@ -675,31 +675,31 @@ public final class ReferenceNetwork {
         //additional data
 
         l1.newExtension(LineShortCircuitAdder.class)
-                .withCoeffRo(coeffRoL1)
-                .withCoeffXo(coeffXoL1)
+                .withRo(coeffRoL1 * rL1)
+                .withXo(coeffXoL1 * xL1)
                 .add();
         l2.newExtension(LineShortCircuitAdder.class)
-                .withCoeffRo(coeffRoL2)
-                .withCoeffXo(coeffXoL2)
+                .withRo(coeffRoL2 * rL2)
+                .withXo(coeffXoL2 * xL2)
                 .add();
         l3.newExtension(LineShortCircuitAdder.class)
-                .withCoeffRo(coeffRoL3)
-                .withCoeffXo(coeffXoL3)
+                .withRo(coeffRoL3 * rL3)
+                .withXo(coeffXoL3 * xL3)
                 .add();
         l4.newExtension(LineShortCircuitAdder.class)
-                .withCoeffRo(coeffRoL4)
-                .withCoeffXo(coeffXoL4)
+                .withRo(coeffRoL4 * rL4)
+                .withXo(coeffXoL4 * xL4)
                 .add();
 
         t1.newExtension(TwoWindingsTransformerShortCircuitAdder.class)
-                .withCoeffRo(coeffRoT1)
-                .withCoeffXo(coeffXoT1)
+                .withRo(coeffRoT1 * rT1)
+                .withXo(coeffXoT1 * xT1)
                 .withLeg1ConnectionType(LegConnectionType.DELTA)
                 .withLeg2ConnectionType(LegConnectionType.Y_GROUNDED)
                 .add();
         t2.newExtension(TwoWindingsTransformerShortCircuitAdder.class)
-                .withCoeffRo(coeffRoT2)
-                .withCoeffXo(coeffXoT2)
+                .withRo(coeffRoT2 * rT2)
+                .withXo(coeffXoT2 * xT2)
                 .withLeg1ConnectionType(LegConnectionType.DELTA)
                 .withLeg2ConnectionType(LegConnectionType.Y_GROUNDED)
                 .add();
@@ -764,7 +764,7 @@ public final class ReferenceNetwork {
         double coeffRoL6 = 1.0; // not used
         double coeffXoL6 = 1.0; // not used
 
-        double rho52 = 115 * 115 / (10.5 * 10.5); // Unlike presented in the doc, rT5 and xT5 are expressed on the HV side, we need to divide by rho5²
+        double rho52 = 115 * 115 / (10.5 * 10.5); // Unlike presented in the doc, rT5 and xT5 are expressed on the HV side, we need to divide by rho5Â²
         double rT5 = 2.046454 / rho52;
         double xT5 = 49.072241 / rho52;
 
@@ -913,7 +913,7 @@ public final class ReferenceNetwork {
         // Feeders :
         // Same as previous IEC example : we model the feeder through a load: TODO : check if relevant for all IEC examples
         double pEquivalentFeeder1 = 2262.42;  //Impedance to be applied at feeder : Zfeeder = 0.631933 +j6.319335 ohms
-        double qEquivalentFeeder1 = 22624.3; //using formula P(MW) = Re(Z) * |V|² / |Z|² and Q(MVA) = Im(Z) * |V|² / |Z|²
+        double qEquivalentFeeder1 = 22624.3; //using formula P(MW) = Re(Z) * |V|Â² / |Z|Â² and Q(MVA) = Im(Z) * |V|Â² / |Z|Â²
 
         double pEquivalentFeeder2 = 275.753;
         double qEquivalentFeeder2 = 2757.53;
@@ -1245,8 +1245,8 @@ public final class ReferenceNetwork {
         g1.newExtension(GeneratorShortCircuitAdder2.class)
                 .withTransRd(rG1)
                 .withToGround(true)
-                .withCoeffRo(coeffRoG1)
-                .withCoeffXo(coeffXoG1)
+                .withXo(xG1 * coeffXoG1)
+                .withRo(rG1 * coeffRoG1)
                 .add();
         g2.newExtension(GeneratorShortCircuitAdder2.class)
                 .withTransRd(rG2)
@@ -1263,8 +1263,8 @@ public final class ReferenceNetwork {
         q2.newExtension(GeneratorShortCircuitAdder2.class)
                 .withTransRd(rFeeder2)
                 .withToGround(true)
-                .withCoeffRo(coeffF2Ro)
-                .withCoeffXo(coeffF2Xo)
+                .withRo(rFeeder2 * coeffF2Ro)
+                .withXo(xFeeder2 * coeffF2Xo)
                 .add();
 
         // transformers :
@@ -1272,54 +1272,66 @@ public final class ReferenceNetwork {
                 .withLeg1ConnectionType(LegConnectionType.Y_GROUNDED)
                 .withLeg2ConnectionType(LegConnectionType.Y)
                 .withLeg3ConnectionType(LegConnectionType.DELTA)
+                .withLeg1Ro(twt3.getLeg1().getR())
+                .withLeg1Xo(twt3.getLeg1().getX())
+                .withLeg2Ro(twt3.getLeg2().getR())
+                .withLeg2Xo(twt3.getLeg2().getX())
+                .withLeg3Ro(twt3.getLeg3().getR())
+                .withLeg3Xo(twt3.getLeg3().getX())
                 .add();
 
         twt4.newExtension(ThreeWindingsTransformerShortCircuitAdder.class)
                 .withLeg1FreeFluxes(true)
                 .withLeg1ConnectionType(LegConnectionType.Y)
+                .withLeg1Ro(twt4.getLeg1().getR())
+                .withLeg1Xo(twt4.getLeg1().getX())
                 .withLeg2FreeFluxes(true)
-                .withLeg2CoeffRo(coeffRoT4)
-                .withLeg2CoeffXo(coeffXoT4)
+                .withLeg2Ro(twt4.getLeg2().getR() * coeffRoT4)
+                .withLeg2Xo(twt4.getLeg2().getX() * coeffXoT4)
                 .withLeg2ConnectionType(LegConnectionType.Y_GROUNDED)
                 .withLeg3FreeFluxes(true)
-                .withLeg3CoeffRo(coeffRoT4)
-                .withLeg3CoeffXo(coeffXoT4)
+                .withLeg3Ro(twt4.getLeg3().getR() * coeffRoT4)
+                .withLeg3Xo(twt4.getLeg3().getX() * coeffXoT4)
                 .withLeg3ConnectionType(LegConnectionType.DELTA)
                 .add();
 
         t5.newExtension(TwoWindingsTransformerShortCircuitAdder.class)
+                .withXo(xT5)
+                .withRo(rT5)
                 .withLeg1ConnectionType(LegConnectionType.Y)
                 .withLeg2ConnectionType(LegConnectionType.Y)
                 .add();
         t6.newExtension(TwoWindingsTransformerShortCircuitAdder.class)
+                .withXo(xT6)
+                .withRo(rT6)
                 .withLeg1ConnectionType(LegConnectionType.Y)
                 .withLeg2ConnectionType(LegConnectionType.Y_GROUNDED)
                 .add();
 
         // Lines :
         l1.newExtension(LineShortCircuitAdder.class)
-                .withCoeffRo(coeffRoL1)
-                .withCoeffXo(coeffXoL1)
+                .withRo(coeffRoL1 * rL1)
+                .withXo(coeffXoL1 * xL1)
                 .add();
         l2.newExtension(LineShortCircuitAdder.class)
-                .withCoeffRo(coeffRoL2)
-                .withCoeffXo(coeffXoL2)
+                .withRo(coeffRoL2 * rL2)
+                .withXo(coeffXoL2 * xL2)
                 .add();
         l3.newExtension(LineShortCircuitAdder.class)
-                .withCoeffRo(coeffRoL3)
-                .withCoeffXo(coeffXoL3)
+                .withRo(coeffRoL3 * rL3)
+                .withXo(coeffXoL3 * xL3)
                 .add();
         l4.newExtension(LineShortCircuitAdder.class)
-                .withCoeffRo(coeffRoL4)
-                .withCoeffXo(coeffXoL4)
+                .withRo(coeffRoL4 * rL4)
+                .withXo(coeffXoL4 * xL4)
                 .add();
         l5.newExtension(LineShortCircuitAdder.class)
-                .withCoeffRo(coeffRoL5)
-                .withCoeffXo(coeffXoL5)
+                .withRo(coeffRoL5 * rL5)
+                .withXo(coeffXoL5 * xL5)
                 .add();
         l6.newExtension(LineShortCircuitAdder.class)
-                .withCoeffRo(coeffRoL6)
-                .withCoeffXo(coeffXoL6)
+                .withRo(coeffRoL6 * rL6)
+                .withXo(coeffXoL6 * xL6)
                 .add();
 
         return network;

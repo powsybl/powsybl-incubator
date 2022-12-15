@@ -30,10 +30,10 @@ public class GeneratorShortCircuit2 extends AbstractExtension<Generator> {
     private double transRd; // transient resistance // TODO : will be final when kG of the norm will be handled
     private double subTransRd; // sub-transient resistance // TODO : will be final when kG of the norm will be handled
     private boolean toGround;
-    private double coeffRo;
-    private double coeffXo;
-    private final double coeffRi;
-    private final double coeffXi;
+    private final double ro;
+    private final double xo;
+    private final double ri;
+    private final double xi;
     private final double groundingR;
     private final double groundingX;
     private final RotorType rotorType;
@@ -50,16 +50,16 @@ public class GeneratorShortCircuit2 extends AbstractExtension<Generator> {
         return NAME;
     }
 
-    public GeneratorShortCircuit2(Generator generator, double transRd, double subTransRd, boolean toGround, double coeffRo, double coeffXo, double coeffRi, double coeffXi, double groundingR, double groundingX, RotorType rotorType, double ratedU, double cosPhi,
+    public GeneratorShortCircuit2(Generator generator, double transRd, double subTransRd, boolean toGround, double ro, double xo, double ri, double xi, double groundingR, double groundingX, RotorType rotorType, double ratedU, double cosPhi,
                                   GeneratorType generatorType, double cq, double ikQmax, double maxR1ToX1Ratio, double voltageRegulationRange) {
         super(generator);
         this.transRd = transRd;
         this.subTransRd = subTransRd;
         this.toGround = toGround;
-        this.coeffRo = coeffRo;
-        this.coeffXo = coeffXo;
-        this.coeffRi = coeffRi;
-        this.coeffXi = coeffXi;
+        this.ro = ro;
+        this.xo = xo;
+        this.ri = ri;
+        this.xi = xi;
         this.groundingR = groundingR;
         this.groundingX = groundingX;
         this.rotorType = rotorType;
@@ -84,14 +84,6 @@ public class GeneratorShortCircuit2 extends AbstractExtension<Generator> {
         return toGround;
     }
 
-    public double getCoeffRo() {
-        return coeffRo;
-    }
-
-    public double getCoeffXo() {
-        return coeffXo;
-    }
-
     public double getGroundingR() {
         return groundingR;
     }
@@ -100,12 +92,20 @@ public class GeneratorShortCircuit2 extends AbstractExtension<Generator> {
         return groundingX;
     }
 
-    public double getCoeffRi() {
-        return coeffRi;
+    public double getRo() {
+        return ro;
     }
 
-    public double getCoeffXi() {
-        return coeffXi;
+    public double getXo() {
+        return xo;
+    }
+
+    public double getRi() {
+        return ri;
+    }
+
+    public double getXi() {
+        return xi;
     }
 
     public RotorType getRotorType() {
@@ -146,14 +146,6 @@ public class GeneratorShortCircuit2 extends AbstractExtension<Generator> {
 
     public double getVoltageRegulationRange() {
         return voltageRegulationRange;
-    }
-
-    public void setCoeffRo(double coeffRo) {
-        this.coeffRo = coeffRo;
-    }
-
-    public void setCoeffXo(double coeffXo) {
-        this.coeffXo = coeffXo;
     }
 
     public void setToGround(boolean toGround) {

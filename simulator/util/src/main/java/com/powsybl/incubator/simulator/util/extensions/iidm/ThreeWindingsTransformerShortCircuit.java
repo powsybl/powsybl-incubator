@@ -13,19 +13,20 @@ import java.util.Objects;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at gmail.com>
+ * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
 public class ThreeWindingsTransformerShortCircuit extends AbstractExtension<ThreeWindingsTransformer> {
 
     public class T3wLeg {
 
-        private double legCoeffRo;
-        private double legCoeffXo;
+        private double legRo;
+        private double legXo;
         private boolean legFreeFluxes;
         private LegConnectionType legConnectionType;
 
-        public T3wLeg(double legCoeffRo, double legCoeffXo, boolean legFreeFluxes, LegConnectionType legConnectionType) {
-            this.legCoeffRo = legCoeffRo;
-            this.legCoeffXo = legCoeffXo;
+        public T3wLeg(double ro, double xo, boolean legFreeFluxes, LegConnectionType legConnectionType) {
+            this.legRo = ro;
+            this.legXo = xo;
             this.legFreeFluxes = legFreeFluxes;
             this.legConnectionType = Objects.requireNonNull(legConnectionType);
         }
@@ -38,20 +39,20 @@ public class ThreeWindingsTransformerShortCircuit extends AbstractExtension<Thre
             return legFreeFluxes;
         }
 
-        public double getLegCoeffRo() {
-            return legCoeffRo;
+        public double getLegRo() {
+            return legRo;
         }
 
-        public double getLegCoeffXo() {
-            return legCoeffXo;
+        public double getLegXo() {
+            return legXo;
         }
 
-        public void setLegCoeffRo(double legCoeffRo) {
-            this.legCoeffRo = legCoeffRo;
+        public void setLegRo(double legRo) {
+            this.legRo = legRo;
         }
 
-        public void setLegCoeffXo(double legCoeffXo) {
-            this.legCoeffXo = legCoeffXo;
+        public void setLegXo(double legXo) {
+            this.legXo = legXo;
         }
 
         public void setLegConnectionType(LegConnectionType legConnectionType) {
@@ -71,15 +72,15 @@ public class ThreeWindingsTransformerShortCircuit extends AbstractExtension<Thre
     }
 
     public ThreeWindingsTransformerShortCircuit(ThreeWindingsTransformer extendable,
-                                                double leg1CoeffRo, double leg2CoeffRo, double leg3CoeffRo,
-                                                double leg1CoeffXo, double leg2CoeffXo, double leg3CoeffXo,
+                                                double leg1Ro, double leg2Ro, double leg3Ro,
+                                                double leg1Xo, double leg2Xo, double leg3Xo,
                                                 boolean leg1FreeFluxes, boolean leg2FreeFluxes, boolean leg3FreeFluxes,
                                                 LegConnectionType leg1ConnectionType, LegConnectionType leg2ConnectionType, LegConnectionType leg3ConnectionType) {
         super(extendable);
 
-        this.leg1 = new T3wLeg(leg1CoeffRo, leg1CoeffXo, leg1FreeFluxes, leg1ConnectionType);
-        this.leg2 = new T3wLeg(leg2CoeffRo, leg2CoeffXo, leg2FreeFluxes, leg2ConnectionType);
-        this.leg3 = new T3wLeg(leg3CoeffRo, leg3CoeffXo, leg3FreeFluxes, leg3ConnectionType);
+        this.leg1 = new T3wLeg(leg1Ro, leg1Xo, leg1FreeFluxes, leg1ConnectionType);
+        this.leg2 = new T3wLeg(leg2Ro, leg2Xo, leg2FreeFluxes, leg2ConnectionType);
+        this.leg3 = new T3wLeg(leg3Ro, leg3Xo, leg3FreeFluxes, leg3ConnectionType);
 
     }
 

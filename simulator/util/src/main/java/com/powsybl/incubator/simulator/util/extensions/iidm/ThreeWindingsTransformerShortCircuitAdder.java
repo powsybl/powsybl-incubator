@@ -18,12 +18,12 @@ import static com.powsybl.incubator.simulator.util.extensions.iidm.ShortCircuitC
  */
 public class ThreeWindingsTransformerShortCircuitAdder extends AbstractExtensionAdder<ThreeWindingsTransformer, ThreeWindingsTransformerShortCircuit> {
 
-    private double leg1CoeffRo = DEFAULT_COEFF_RO;
-    private double leg2CoeffRo = DEFAULT_COEFF_RO;
-    private double leg3CoeffRo = DEFAULT_COEFF_RO;
-    private double leg1CoeffXo = DEFAULT_COEFF_XO;
-    private double leg2CoeffXo = DEFAULT_COEFF_XO;
-    private double leg3CoeffXo = DEFAULT_COEFF_XO;
+    private double leg1Ro = 0;
+    private double leg2Ro = 0;
+    private double leg3Ro = 0;
+    private double leg1Xo = 0;
+    private double leg2Xo = 0;
+    private double leg3Xo = 0;
     private boolean leg1FreeFluxes = DEFAULT_FREE_FLUXES;
     private boolean leg2FreeFluxes = DEFAULT_FREE_FLUXES;
     private boolean leg3FreeFluxes = DEFAULT_FREE_FLUXES;
@@ -43,39 +43,39 @@ public class ThreeWindingsTransformerShortCircuitAdder extends AbstractExtension
     @Override
     protected ThreeWindingsTransformerShortCircuit createExtension(ThreeWindingsTransformer twt) {
         return new ThreeWindingsTransformerShortCircuit(twt,
-                leg1CoeffRo, leg2CoeffRo, leg3CoeffRo,
-                leg1CoeffXo, leg2CoeffXo, leg3CoeffXo,
+                leg1Ro, leg2Ro, leg3Ro,
+                leg1Xo, leg2Xo, leg3Xo,
                 leg1FreeFluxes, leg2FreeFluxes, leg3FreeFluxes,
                 leg1ConnectionType, leg2ConnectionType, leg3ConnectionType);
     }
 
-    public ThreeWindingsTransformerShortCircuitAdder withLeg1CoeffRo(double leg1CoeffRo) {
-        this.leg1CoeffRo = leg1CoeffRo;
+    public ThreeWindingsTransformerShortCircuitAdder withLeg1Ro(double leg1Ro) {
+        this.leg1Ro = leg1Ro;
         return this;
     }
 
-    public ThreeWindingsTransformerShortCircuitAdder withLeg2CoeffRo(double leg2CoeffRo) {
-        this.leg2CoeffRo = leg2CoeffRo;
+    public ThreeWindingsTransformerShortCircuitAdder withLeg2Ro(double leg2Ro) {
+        this.leg2Ro = leg2Ro;
         return this;
     }
 
-    public ThreeWindingsTransformerShortCircuitAdder withLeg3CoeffRo(double leg3CoeffRo) {
-        this.leg3CoeffRo = leg3CoeffRo;
+    public ThreeWindingsTransformerShortCircuitAdder withLeg3Ro(double leg3Ro) {
+        this.leg3Ro = leg3Ro;
         return this;
     }
 
-    public ThreeWindingsTransformerShortCircuitAdder withLeg1CoeffXo(double leg1CoeffXo) {
-        this.leg1CoeffXo = leg1CoeffXo;
+    public ThreeWindingsTransformerShortCircuitAdder withLeg1Xo(double leg1Xo) {
+        this.leg1Xo = leg1Xo;
         return this;
     }
 
-    public ThreeWindingsTransformerShortCircuitAdder withLeg2CoeffXo(double leg2CoeffXo) {
-        this.leg2CoeffXo = leg2CoeffXo;
+    public ThreeWindingsTransformerShortCircuitAdder withLeg2Xo(double leg2Xo) {
+        this.leg2Xo = leg2Xo;
         return this;
     }
 
-    public ThreeWindingsTransformerShortCircuitAdder withLeg3CoeffXo(double leg3CoeffXo) {
-        this.leg3CoeffXo = leg3CoeffXo;
+    public ThreeWindingsTransformerShortCircuitAdder withLeg3Xo(double leg3Xo) {
+        this.leg3Xo = leg3Xo;
         return this;
     }
 

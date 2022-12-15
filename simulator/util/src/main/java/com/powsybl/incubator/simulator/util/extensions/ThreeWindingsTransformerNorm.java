@@ -1,11 +1,20 @@
+/**
+ * Copyright (c) 2022, Jean-Baptiste Heyberger & Geoffroy Jamgotchian
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 package com.powsybl.incubator.simulator.util.extensions;
 
 import static com.powsybl.incubator.simulator.util.extensions.iidm.ShortCircuitConstants.*;
 import static com.powsybl.incubator.simulator.util.extensions.iidm.ShortCircuitConstants.DEFAULT_COEFF_K;
 
+/**
+ * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
+ */
 public class ThreeWindingsTransformerNorm {
 
-    public class T3wLeg {
+    public static class T3wLeg {
 
         private double legCoeffRoOverload;
         private double legCoeffXoOverload;
@@ -76,10 +85,10 @@ public class ThreeWindingsTransformerNorm {
 
     public static final String NAME = "threeWindingsTransformerNorm";
 
-    private ThreeWindingsTransformerNorm.T3wLeg leg1;
-    private ThreeWindingsTransformerNorm.T3wLeg leg2;
-    private ThreeWindingsTransformerNorm.T3wLeg leg3;
-    private boolean isOverloadHomopolarCoefs;
+    private final ThreeWindingsTransformerNorm.T3wLeg leg1;
+    private final ThreeWindingsTransformerNorm.T3wLeg leg2;
+    private final ThreeWindingsTransformerNorm.T3wLeg leg3;
+    private boolean overloadHomopolarCoefs;
 
     public ThreeWindingsTransformerNorm(double leg1CoeffRo, double leg2CoeffRo, double leg3CoeffRo,
                                         double leg1CoeffXo, double leg2CoeffXo, double leg3CoeffXo,
@@ -92,8 +101,7 @@ public class ThreeWindingsTransformerNorm {
                 kt2R, kt2X, kt2Ro, kt2Xo);
         this.leg3 = new ThreeWindingsTransformerNorm.T3wLeg(leg3CoeffRo, leg3CoeffXo,
                 kt3R, kt3X, kt3Ro, kt3Xo);
-        this.isOverloadHomopolarCoefs = isOverloadHomopolarCoefs;
-
+        this.overloadHomopolarCoefs = isOverloadHomopolarCoefs;
     }
 
     public ThreeWindingsTransformerNorm() {
@@ -116,10 +124,10 @@ public class ThreeWindingsTransformerNorm {
     }
 
     public boolean isOverloadHomopolarCoefs() {
-        return isOverloadHomopolarCoefs;
+        return overloadHomopolarCoefs;
     }
 
     public void setOverloadHomopolarCoefs(boolean overloadHomopolarCoefs) {
-        isOverloadHomopolarCoefs = overloadHomopolarCoefs;
+        this.overloadHomopolarCoefs = overloadHomopolarCoefs;
     }
 }

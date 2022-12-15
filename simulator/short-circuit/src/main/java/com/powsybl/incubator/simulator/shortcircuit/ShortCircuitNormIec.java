@@ -36,7 +36,7 @@ public class ShortCircuitNormIec extends ShortCircuitNormNone {
 
     List<GeneratorWithTfo> generatorsWithTfo;
 
-    public class GeneratorWithTfo {
+    public static class GeneratorWithTfo {
         public final double kNorm;
         public final Generator gen;
         public final TwoWindingsTransformer t2w;

@@ -83,8 +83,8 @@ public class LoadShortCircuit extends AbstractExtension<Load> {
         ASYNCHRONOUS_MACHINE;
     }
 
-    private LoadShortCircuitType loadShortCircuitType;
-    private AsynchronousMachineLoadData asynchronousMachineLoadData;
+    private final LoadShortCircuitType loadShortCircuitType;
+    private final AsynchronousMachineLoadData asynchronousMachineLoadData;
 
     @Override
     public String getName() {
@@ -97,12 +97,13 @@ public class LoadShortCircuit extends AbstractExtension<Load> {
         this.asynchronousMachineLoadData = asynchronousMachineLoadData;
     }
 
-    public Pair<Double, Double> getZeqLoad(Load load) {
+    public Pair<Double, Double> getZeqLoad() {
 
         double xn = 0.;
         double rn = 0.;
 
         // Default case
+        var load = getExtendable();
         double pLoad = load.getP0();
         double qLoad = load.getQ0();
         double uNom = load.getTerminal().getVoltageLevel().getNominalV();

@@ -36,11 +36,6 @@ public class ShortCircuitNormNone implements ShortCircuitNorm {
     }
 
     @Override
-    public Network getNetwork() {
-        return network;
-    }
-
-    @Override
     public double getCmaxVoltageFactor(double nominalVoltage) {
         return 1.0;
     }

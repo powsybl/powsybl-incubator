@@ -19,8 +19,6 @@ public interface ShortCircuitNorm {
 
     String getNormType();
 
-    Network getNetwork();
-
     ShortCircuitNormExtensions getNormExtensions();
 
     double getCmaxVoltageFactor(double nominalVoltage);

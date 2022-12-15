@@ -277,7 +277,7 @@ public final class ShortCircuitExtensions {
             double xd = 0.;
             double rd = 0.;
             if (extension != null) {
-                Pair<Double, Double> rnxn = extension.getZeqLoad(load);
+                Pair<Double, Double> rnxn = extension.getZeqLoad();
                 rd = rnxn.getFirst();
                 xd = rnxn.getSecond();
             } else {

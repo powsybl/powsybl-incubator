@@ -8,7 +8,7 @@ package com.powsybl.incubator.simulator.util;
 
 import com.powsybl.incubator.simulator.util.extensions.ScTransfo3wKt;
 import com.powsybl.incubator.simulator.util.extensions.ShortCircuitExtensions;
-import com.powsybl.openloadflow.equations.AbstractNamedEquationTerm;
+import com.powsybl.openloadflow.equations.AbstractBranchEquationTerm;
 import com.powsybl.openloadflow.equations.Variable;
 import com.powsybl.openloadflow.equations.VariableSet;
 import com.powsybl.openloadflow.network.ElementType;
@@ -22,9 +22,7 @@ import java.util.Objects;
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
-public abstract class AbstractAdmittanceEquationTerm extends AbstractNamedEquationTerm<VariableType, EquationType> implements LinearEquationTerm {
-
-    private final LfBranch branch;
+public abstract class AbstractAdmittanceEquationTerm extends AbstractBranchEquationTerm<VariableType, EquationType> implements LinearEquationTerm {
 
     protected final Variable<VariableType> v1rVar;
 
@@ -61,7 +59,7 @@ public abstract class AbstractAdmittanceEquationTerm extends AbstractNamedEquati
     protected double bPi2;
 
     protected AbstractAdmittanceEquationTerm(LfBranch branch, LfBus bus1, LfBus bus2, VariableSet<VariableType> variableSet) {
-        this.branch = Objects.requireNonNull(branch);
+        super(branch);
         Objects.requireNonNull(bus1);
         Objects.requireNonNull(bus2);
         Objects.requireNonNull(variableSet);

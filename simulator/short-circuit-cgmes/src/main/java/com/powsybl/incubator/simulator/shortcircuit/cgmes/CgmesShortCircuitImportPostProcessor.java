@@ -76,7 +76,7 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
             //double cq = extensions2.getCq();
 
             // Zq = cq * Unomq / (sqrt3 * Ikq)
-            // Zq = sqrt(r² + x²) which gives x = Zq / sqrt((R/X)² + 1)
+            // Zq = sqrt(rÂ² + xÂ²) which gives x = Zq / sqrt((R/X)Â² + 1)
             double zq = voltageFactor * generator.getTerminal().getVoltageLevel().getNominalV() / (Math.sqrt(3.) * ikQmax / 1000.); // ikQmax is changed from A to kA
             double xq = zq / Math.sqrt(rOverX * rOverX + 1.);
             double rq = xq * rOverX;
@@ -89,10 +89,10 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
             generator.newExtension(GeneratorShortCircuitAdder2.class)
                     .withSubTransRd(rq)
                     .withTransRd(rq)
-                    .withCoeffRi(0.)
-                    .withCoeffXi(0.)
-                    .withCoeffRo(roOverR)
-                    .withCoeffXo(xoOverX)
+                    .withRo(roOverR * rq)
+                    .withXo(xoOverX * xq)
+                    .withRi(0.)
+                    .withXi(0.)
                     .withToGround(grounded)
                     .withRatedU(0.)
                     .withCosPhi(0.)
@@ -135,20 +135,6 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
             double subTransXd = subTransXdPu * zBase;
             double transXd = transXdPu * zBase;
 
-            double coeffRo = r0;
-            double coeffR2 = r2;
-            if (Math.abs(r) > EPSILON) {
-                coeffRo = r0 / r;
-                coeffR2 = r2 / r;
-            }
-
-            double coeffXo = x0;
-            double coeffX2 = x2;
-            if (Math.abs(subTransXdPu) > EPSILON) {
-                coeffXo = x0 / subTransXdPu;
-                coeffX2 = x2 / subTransXdPu;
-            }
-
             generator.newExtension(GeneratorShortCircuitAdder.class)
                     .withStepUpTransformerX(0.)
                     .withDirectTransX(transXd)
@@ -157,17 +143,16 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
             generator.newExtension(GeneratorShortCircuitAdder2.class)
                     .withSubTransRd(r)
                     .withTransRd(r)
-                    .withCoeffRi(coeffR2)
-                    .withCoeffXi(coeffX2)
-                    .withCoeffRo(coeffRo)
-                    .withCoeffXo(coeffXo)
+                    .withRo(r0)
+                    .withXo(x0)
+                    .withRi(0.)
+                    .withXi(0.)
                     .withRatedU(ratedU)
                     .withCosPhi(ratedPowerFactor)
                     .withGeneratorType(GeneratorShortCircuit2.GeneratorType.ROTATING_MACHINE)
                     .withVoltageRegulationRange(voltageRegulationRange)
                     .withToGround(earthing)
                     .withGroundingR(0.)  // TODO : check if info available
-                    .withCoeffXo(0.)
                     .add();
         }
     }
@@ -205,19 +190,9 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
             double b0ch = propertyBag.asDouble("b0ch");
             Line line = network.getLine(id);
             if (line != null) {
-                double x = line.getX();
-                double r = line.getR();
-                double coeffRo = 1.;
-                double coeffXo = 1.;
-                if (Math.abs(x) > EPSILON) {
-                    coeffXo = x0 / x;
-                }
-                if (Math.abs(r) > EPSILON) {
-                    coeffRo = r0 / r;
-                }
                 line.newExtension(LineShortCircuitAdder.class)
-                        .withCoeffRo(coeffRo)
-                        .withCoeffXo(coeffXo)
+                        .withRo(r0)
+                        .withXo(x0)
                         .add();
             } else {
                 DanglingLine danglingLine = network.getDanglingLine(id);
@@ -242,22 +217,17 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
                 if (extension == null) {
                     t2wt.newExtension(TwoWindingsTransformerShortCircuitAdder.class)
                             .withIsPartOfGeneratingUnit(isPartOfGeneratingUnit)
+                            .withRo(t2wt.getR())
+                            .withXo(t2wt.getX())
                             .add();
                 } else {
                     extension.setPartOfGeneratingUnit(isPartOfGeneratingUnit);
                     Pair<Double, Double> roxo = tmpExtensionToRoXo.get(extension);
                     double ro = roxo.getFirst();
                     double xo = roxo.getSecond();
-                    double coeffRo = 1.;
-                    double coeffXo = 1.;
-                    if (Math.abs(t2wt.getR()) > EPSILON) {
-                        coeffRo = ro / t2wt.getR();
-                    }
-                    if (Math.abs(t2wt.getX()) > EPSILON) {
-                        coeffXo = xo / t2wt.getX();
-                    }
-                    extension.setCoeffRo(coeffRo);
-                    extension.setCoeffXo(coeffXo);
+                    extension.setRo(ro);
+                    extension.setXo(xo);
+
                 }
             }
         }

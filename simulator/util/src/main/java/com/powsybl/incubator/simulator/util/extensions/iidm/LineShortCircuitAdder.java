@@ -16,8 +16,8 @@ import static com.powsybl.incubator.simulator.util.extensions.iidm.ShortCircuitC
  */
 public class LineShortCircuitAdder extends AbstractExtensionAdder<Line, LineShortCircuit> {
 
-    private double coeffRo = DEFAULT_COEFF_RO;
-    private double coeffXo = DEFAULT_COEFF_XO;
+    private double ro = 0.;
+    private double xo = 0.;
 
     public LineShortCircuitAdder(Line line) {
         super(line);
@@ -30,16 +30,16 @@ public class LineShortCircuitAdder extends AbstractExtensionAdder<Line, LineShor
 
     @Override
     protected LineShortCircuit createExtension(Line line) {
-        return new LineShortCircuit(line, coeffRo, coeffXo);
+        return new LineShortCircuit(line, ro, xo);
     }
 
-    public LineShortCircuitAdder withCoeffRo(double coeffRo) {
-        this.coeffRo = coeffRo;
+    public LineShortCircuitAdder withRo(double ro) {
+        this.ro = ro;
         return this;
     }
 
-    public LineShortCircuitAdder withCoeffXo(double coeffXo) {
-        this.coeffXo = coeffXo;
+    public LineShortCircuitAdder withXo(double xo) {
+        this.xo = xo;
         return this;
     }
 }

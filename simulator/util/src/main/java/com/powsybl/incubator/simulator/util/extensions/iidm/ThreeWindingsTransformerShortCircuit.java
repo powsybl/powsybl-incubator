@@ -13,6 +13,7 @@ import java.util.Objects;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at gmail.com>
+ * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
 public class ThreeWindingsTransformerShortCircuit extends AbstractExtension<ThreeWindingsTransformer> {
 

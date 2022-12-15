@@ -15,12 +15,15 @@ import static com.powsybl.incubator.simulator.util.extensions.iidm.ShortCircuitC
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at gmail.com>
+ * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
 public class TwoWindingsTransformerShortCircuitAdder extends AbstractExtensionAdder<TwoWindingsTransformer, TwoWindingsTransformerShortCircuit> {
 
     private boolean isPartOfGeneratingUnit = false;
     private double coeffRo = DEFAULT_COEFF_RO;
     private double coeffXo = DEFAULT_COEFF_XO;
+    private double ro = 0.;
+    private double xo = 0.;
     private boolean freeFluxes = DEFAULT_FREE_FLUXES;
     private LegConnectionType leg1ConnectionType = DEFAULT_LEG1_CONNECTION_TYPE;
     private LegConnectionType leg2ConnectionType = DEFAULT_LEG2_CONNECTION_TYPE;
@@ -41,7 +44,7 @@ public class TwoWindingsTransformerShortCircuitAdder extends AbstractExtensionAd
 
     @Override
     protected TwoWindingsTransformerShortCircuit createExtension(TwoWindingsTransformer twt) {
-        return new TwoWindingsTransformerShortCircuit(twt, isPartOfGeneratingUnit, coeffRo, coeffXo, kNorm, freeFluxes, leg1ConnectionType, leg2ConnectionType, r1Ground, x1Ground, r2Ground, x2Ground);
+        return new TwoWindingsTransformerShortCircuit(twt, isPartOfGeneratingUnit, ro, xo, kNorm, freeFluxes, leg1ConnectionType, leg2ConnectionType, r1Ground, x1Ground, r2Ground, x2Ground);
     }
 
     public TwoWindingsTransformerShortCircuitAdder withIsPartOfGeneratingUnit(boolean isPartOfGeneratingUnit) {
@@ -56,6 +59,16 @@ public class TwoWindingsTransformerShortCircuitAdder extends AbstractExtensionAd
 
     public TwoWindingsTransformerShortCircuitAdder withCoeffXo(double coeffXo) {
         this.coeffXo = coeffXo;
+        return this;
+    }
+
+    public TwoWindingsTransformerShortCircuitAdder withRo(double ro) {
+        this.ro = ro;
+        return this;
+    }
+
+    public TwoWindingsTransformerShortCircuitAdder withXo(double xo) {
+        this.xo = xo;
         return this;
     }
 

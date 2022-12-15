@@ -275,7 +275,7 @@ public class ReductionEngine {
 
     public ReductionEngine(Network network, ReductionParameters parameters) {
         this.network = Objects.requireNonNull(network);
-        this.lfNetworks = LfNetwork.load(network, new LfNetworkLoaderImpl(), new LfNetworkParameters(new FirstSlackBusSelector()));
+        this.lfNetworks = LfNetwork.load(network, new LfNetworkLoaderImpl(), new LfNetworkParameters());
         this.parameters = Objects.requireNonNull(parameters);
         extBusses = new HashSet<>();
         borderBusses = new HashSet<>();

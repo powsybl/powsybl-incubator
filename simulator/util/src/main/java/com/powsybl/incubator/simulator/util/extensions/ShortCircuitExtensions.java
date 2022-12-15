@@ -166,23 +166,31 @@ public final class ShortCircuitExtensions {
         String lineId = lfBranch.getOriginalIds().get(0);
         Line line = network.getLine(lineId);
 
-        double coeffRo = DEFAULT_COEFF_RO;
-        double coeffXo = DEFAULT_COEFF_XO;
+        double vNom2 = line.getTerminal2().getVoltageLevel().getNominalV();
+        double zBase = vNom2 * vNom2 / SB;
+        double ro = line.getR() / zBase;
+        double xo = line.getX() / zBase;
         LineShortCircuit extensions = line.getExtension(LineShortCircuit.class);
         if (extensions != null) {
-            coeffRo = extensions.getCoeffRo();
-            coeffXo = extensions.getCoeffXo();
+            ro = extensions.getRo() / zBase;
+            xo = extensions.getXo() / zBase;
         }
 
-        lfBranch.setProperty(PROPERTY_SHORT_CIRCUIT, new ScLine(coeffRo, coeffXo));
+        lfBranch.setProperty(PROPERTY_SHORT_CIRCUIT, new ScLine(ro, xo));
     }
 
     private static void addTransfo2Extension(Network network, LfBranch lfBranch, ShortCircuitNormExtensions shortCircuitNormExtensions) {
         String t2wId = lfBranch.getOriginalIds().get(0);
         TwoWindingsTransformer twt = network.getTwoWindingsTransformer(t2wId);
 
+        // per unitizing of grounding Z for LfNetwork
+        double u2Nom = twt.getTerminal2().getVoltageLevel().getNominalV();
+        double zBase = u2Nom * u2Nom / SB;
+
         double coeffRo = DEFAULT_COEFF_RO;
         double coeffXo = DEFAULT_COEFF_XO;
+        double ro = DEFAULT_COEFF_RO * lfBranch.getPiModel().getR();
+        double xo = DEFAULT_COEFF_XO * lfBranch.getPiModel().getX();
         boolean freeFluxes = DEFAULT_FREE_FLUXES;
         LegConnectionType leg1ConnectionType = DEFAULT_LEG1_CONNECTION_TYPE;
         LegConnectionType leg2ConnectionType = DEFAULT_LEG2_CONNECTION_TYPE;
@@ -193,15 +201,11 @@ public final class ShortCircuitExtensions {
         double x2Ground = 0.;
         var extensions = twt.getExtension(TwoWindingsTransformerShortCircuit.class);
         if (extensions != null) {
-            coeffRo = extensions.getCoeffRo();
-            coeffXo = extensions.getCoeffXo();
+            ro = extensions.getRo() / zBase;
+            xo = extensions.getXo() / zBase;
             freeFluxes = extensions.isFreeFluxes();
             leg1ConnectionType = extensions.getLeg1ConnectionType();
             leg2ConnectionType = extensions.getLeg2ConnectionType();
-
-            // per unitizing of grounding Z for LfNetwork
-            double u2Nom = twt.getTerminal2().getVoltageLevel().getNominalV();
-            double zBase = u2Nom * u2Nom / SB;
 
             r1Ground = extensions.getR1Ground() / zBase;
             x1Ground = extensions.getX1Ground() / zBase;
@@ -214,7 +218,7 @@ public final class ShortCircuitExtensions {
             kT = t2wNormExtension.getkNorm();
         }
 
-        lfBranch.setProperty(PROPERTY_SHORT_CIRCUIT, new ScTransfo2W(leg1ConnectionType, leg2ConnectionType, coeffRo, coeffXo, freeFluxes, r1Ground, x1Ground, r2Ground, x2Ground));
+        lfBranch.setProperty(PROPERTY_SHORT_CIRCUIT, new ScTransfo2W(leg1ConnectionType, leg2ConnectionType, ro, xo, freeFluxes, r1Ground, x1Ground, r2Ground, x2Ground));
         lfBranch.setProperty(PROPERTY_SHORT_CIRCUIT_NORM, kT); // set in a separate extension because is does not depend only on iidm in input but also on the type of norm
     }
 
@@ -235,16 +239,17 @@ public final class ShortCircuitExtensions {
         double transRd = DEFAULT_TRANS_RD;
         double subTransRd = DEFAULT_SUB_TRANS_RD;
         boolean toGround = DEFAULT_TO_GROUND;
-        double coeffRo = DEFAULT_COEFF_RO;
-        double coeffXo = DEFAULT_COEFF_XO;
+        double ro = subTransRd;
+        double xo = subtransX;
         double kG = 1.0;
+
         GeneratorShortCircuit2 extensions2 = generator.getExtension(GeneratorShortCircuit2.class);
         if (extensions2 != null) {
             transRd = extensions2.getTransRd();
             subTransRd = extensions2.getSubTransRd();
             toGround = extensions2.isToGround();
-            coeffRo = extensions2.getCoeffRo();
-            coeffXo = extensions2.getCoeffXo();
+            ro = extensions2.getRo();
+            xo = extensions2.getXo();
         }
 
         GeneratorNorm extensionGenNorm = shortCircuitNormExtensions.getNormExtension(generator);
@@ -253,24 +258,24 @@ public final class ShortCircuitExtensions {
         }
 
         lfGenerator.setProperty(PROPERTY_SHORT_CIRCUIT, new ScGenerator(transX,
-                                                                        stepUpTfoX,
-                                                                        ScGenerator.MachineType.SYNCHRONOUS_GEN,
-                                                                        transRd,
-                                                                        0.,
-                                                                        subTransRd,
-                                                                        subtransX,
-                                                                        toGround,
-                                                                        0.,
-                                                                        0.,
-                                                                        coeffRo,
-                                                                        coeffXo));
+                stepUpTfoX,
+                ScGenerator.MachineType.SYNCHRONOUS_GEN,
+                transRd,
+                0.,
+                subTransRd,
+                subtransX,
+                toGround,
+                0.,
+                0.,
+                ro,
+                xo));
         lfGenerator.setProperty(PROPERTY_SHORT_CIRCUIT_NORM, kG); // set in a separate extension because is does not depend only on iidm in input but also on the type of norm
     }
 
     private static void addLoadExtension(Network network, LfBus lfBus) {
         double bLoads = 0.;
         double gLoads = 0.;
-        for (String loadId : lfBus.getLoads().getOriginalIds()) {
+        for (String loadId : lfBus.getAggregatedLoads().getOriginalIds()) {
             Load load = network.getLoad(loadId);
             double uNom = load.getTerminal().getVoltageLevel().getNominalV();
             LoadShortCircuit extension = load.getExtension(LoadShortCircuit.class);

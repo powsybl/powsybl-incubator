@@ -87,10 +87,6 @@ public class ShortCircuitNormTest {
         g1.newExtension(GeneratorShortCircuitAdder2.class)
                 .withSubTransRd(0.)
                 .withTransRd(0.)
-                .withCoeffRi(0.)
-                .withCoeffXi(0.)
-                .withCoeffRo(roOverR)
-                .withCoeffXo(xoOverX)
                 .withToGround(true)
                 .withRatedU(0.)
                 .withCosPhi(0.)
@@ -279,8 +275,6 @@ public class ShortCircuitNormTest {
         g1.newExtension(GeneratorShortCircuitAdder2.class)
                 .withTransRd(0.1)
                 .withToGround(true)
-                .withCoeffRo(3.)
-                .withCoeffXo(3.)
                 .add();
 
         var t12 = substation1.newTwoWindingsTransformer()

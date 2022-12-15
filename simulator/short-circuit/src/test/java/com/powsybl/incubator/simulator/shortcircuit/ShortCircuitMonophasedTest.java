@@ -148,7 +148,7 @@ public class ShortCircuitMonophasedTest {
 
         List<FaultResult> frs = scar.getFaultResults();
 
-        assertEquals(14682.211812226922, frs.get(0).getCurrent().getDirectMagnitude(), 0.01);
+        assertEquals(14548.104511643787, frs.get(0).getCurrent().getDirectMagnitude(), 0.01);
 
     }
 
@@ -160,6 +160,7 @@ public class ShortCircuitMonophasedTest {
 
         network.getGenerator("GB").newExtension(GeneratorShortCircuitAdder2.class)
                 .withToGround(true)
+                .withXo(130) // initialized with subtransXd by default
                 .add();
 
         List<ShortCircuitFault> faultList = new ArrayList<>();
@@ -335,10 +336,10 @@ public class ShortCircuitMonophasedTest {
                 .add();
 
         babp.newExtension(LineShortCircuitAdder.class)
-                .withCoeffXo(coeffXo1)
+                .withXo(coeffXo1 * xd1)
                 .add();
         bpbb.newExtension(LineShortCircuitAdder.class)
-                .withCoeffXo(coeffXo2)
+                .withXo(coeffXo2 * xd2)
                 .add();
 
         return network;

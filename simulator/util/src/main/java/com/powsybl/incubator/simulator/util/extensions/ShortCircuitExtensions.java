@@ -270,7 +270,7 @@ public final class ShortCircuitExtensions {
     private static void addLoadExtension(Network network, LfBus lfBus) {
         double bLoads = 0.;
         double gLoads = 0.;
-        for (String loadId : lfBus.getLoads().getOriginalIds()) {
+        for (String loadId : lfBus.getAggregatedLoads().getOriginalIds()) {
             Load load = network.getLoad(loadId);
             double uNom = load.getTerminal().getVoltageLevel().getNominalV();
             LoadShortCircuit extension = load.getExtension(LoadShortCircuit.class);

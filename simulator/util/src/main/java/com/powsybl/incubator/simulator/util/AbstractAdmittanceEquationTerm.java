@@ -6,10 +6,9 @@
  */
 package com.powsybl.incubator.simulator.util;
 
-import com.powsybl.incubator.simulator.util.extensions.ScTransfo2W;
-import com.powsybl.incubator.simulator.util.extensions.ScTransfo3W;
+import com.powsybl.incubator.simulator.util.extensions.ScTransfo3wKt;
 import com.powsybl.incubator.simulator.util.extensions.ShortCircuitExtensions;
-import com.powsybl.openloadflow.equations.AbstractNamedEquationTerm;
+import com.powsybl.openloadflow.equations.AbstractBranchEquationTerm;
 import com.powsybl.openloadflow.equations.Variable;
 import com.powsybl.openloadflow.equations.VariableSet;
 import com.powsybl.openloadflow.network.ElementType;
@@ -23,9 +22,7 @@ import java.util.Objects;
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
-public abstract class AbstractAdmittanceEquationTerm extends AbstractNamedEquationTerm<VariableType, EquationType> implements LinearEquationTerm {
-
-    private final LfBranch branch;
+public abstract class AbstractAdmittanceEquationTerm extends AbstractBranchEquationTerm<VariableType, EquationType> implements LinearEquationTerm {
 
     protected final Variable<VariableType> v1rVar;
 
@@ -62,7 +59,7 @@ public abstract class AbstractAdmittanceEquationTerm extends AbstractNamedEquati
     protected double bPi2;
 
     protected AbstractAdmittanceEquationTerm(LfBranch branch, LfBus bus1, LfBus bus2, VariableSet<VariableType> variableSet) {
-        this.branch = Objects.requireNonNull(branch);
+        super(branch);
         Objects.requireNonNull(bus1);
         Objects.requireNonNull(bus2);
         Objects.requireNonNull(variableSet);
@@ -87,26 +84,25 @@ public abstract class AbstractAdmittanceEquationTerm extends AbstractNamedEquati
         double kTx = 1.;
         if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_2) {
             // branch is a 2 windings transformer
-            ScTransfo2W scTransfo = (ScTransfo2W) branch.getProperty(ShortCircuitExtensions.PROPERTY_SHORT_CIRCUIT);
-            if (scTransfo != null) {
-                kTx = scTransfo.getkT();
+            if (branch.getProperty(ShortCircuitExtensions.PROPERTY_SHORT_CIRCUIT_NORM) != null) {
+                kTx = (Double) branch.getProperty(ShortCircuitExtensions.PROPERTY_SHORT_CIRCUIT_NORM);
                 kTr = kTx;
             }
         } else if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_1
                 || branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_2
                 || branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_3) {
             // branch is leg1 of a 3 windings transformer and homopolar data available
-            ScTransfo3W scTransfo = (ScTransfo3W) branch.getProperty(ShortCircuitExtensions.PROPERTY_SHORT_CIRCUIT);
-            if (scTransfo != null) {
+            ScTransfo3wKt scTransfoKt = (ScTransfo3wKt) branch.getProperty(ShortCircuitExtensions.PROPERTY_SHORT_CIRCUIT_NORM);
+            if (scTransfoKt != null) {
                 if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_1) {
-                    kTr = scTransfo.getLeg1().getkTr();
-                    kTx = scTransfo.getLeg1().getkTx();
+                    kTr = scTransfoKt.getLeg1().getkTr();
+                    kTx = scTransfoKt.getLeg1().getkTx();
                 } else if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_2) {
-                    kTr = scTransfo.getLeg2().getkTr();
-                    kTx = scTransfo.getLeg2().getkTx();
+                    kTr = scTransfoKt.getLeg2().getkTr();
+                    kTx = scTransfoKt.getLeg2().getkTx();
                 } else if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_3) {
-                    kTr = scTransfo.getLeg3().getkTr();
-                    kTx = scTransfo.getLeg3().getkTx();
+                    kTr = scTransfoKt.getLeg3().getkTr();
+                    kTx = scTransfoKt.getLeg3().getkTx();
                 } else {
                     throw new IllegalArgumentException("Branch " + branch.getId() + " has unknown 3-winding leg number");
                 }

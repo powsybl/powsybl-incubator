@@ -22,12 +22,6 @@ public class ScTransfo3W {
         private final double coeffRo; // only used for now for 3 windings transformers
         private final double coeffXo;
 
-        private final double kTr;
-        private final double kTx;
-
-        private final double kTro;
-        private final double kTxo;
-
         private final boolean freeFluxes; // only used for now for 3 windings transformers
 
         private final double rGround = 0;
@@ -37,15 +31,11 @@ public class ScTransfo3W {
             this(legConnectionType, 0, 0, 1., 1., 1., 1., false);
         }*/
 
-        public Leg(LegConnectionType legConnectionType, double coeffRo, double coeffXo, double kTr, double kTx, double kTro, double kTxo, boolean freeFluxes) {
+        public Leg(LegConnectionType legConnectionType, double coeffRo, double coeffXo, boolean freeFluxes) {
             this.legConnectionType = legConnectionType;
             this.coeffRo = coeffRo;
             this.coeffXo = coeffXo;
             this.freeFluxes = freeFluxes;
-            this.kTr = kTr;
-            this.kTx = kTx;
-            this.kTro = kTro;
-            this.kTxo = kTxo;
         }
 
         public LegConnectionType getLegConnectionType() {
@@ -76,21 +66,6 @@ public class ScTransfo3W {
             return xGround;
         }
 
-        public double getkTr() {
-            return kTr;
-        }
-
-        public double getkTx() {
-            return kTx;
-        }
-
-        public double getkTro() {
-            return kTro;
-        }
-
-        public double getkTxo() {
-            return kTxo;
-        }
     }
 
     private final Leg leg1;

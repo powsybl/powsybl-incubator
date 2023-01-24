@@ -58,6 +58,7 @@
     <modules>
         <module>matpower/matpower-mreader</module>
         <module>simulator</module>
+        <module>reactive-opf</module>
     </modules>
 
     <properties>

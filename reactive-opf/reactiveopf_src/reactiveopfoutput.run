@@ -114,6 +114,8 @@ printf "%s %s\n","dcopf_status",dcopf_status > (fileOut);
 
 printf "\n" > (fileOut);
 printf "%s %i\n","last_solve_result_num",solve_result_num > (fileOut);
+printf "%s %i\n","nb_iter_last",nb_iter_last > (fileOut);
+printf "%s %i\n","nb_iter_total",nb_iter_total > (fileOut);
 printf "%s %f\n","_ampl_elapsed_time",_ampl_elapsed_time > (fileOut);
 printf "%s %f\n","_total_solve_time",_total_solve_time > (fileOut);
 

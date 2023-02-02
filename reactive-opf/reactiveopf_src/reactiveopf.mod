@@ -129,6 +129,11 @@ check {(t,g,n) in UNIT}: unit_Pmax[t,g,n] >= unit_Pmin[t,g,n];
 #check {(t,g,n) in UNIT}: unit_Qp[t,g,n] >= unit_qp[t,g,n];
 #check {(t,g,n) in UNIT}: unit_QP[t,g,n] >= unit_qP[t,g,n] ;
 
+# Global inital losses_ratio: value of (P-C-H)/(C+H) in data files
+# Value is 0 if no losses
+# Value 0.02 means % of losses 
+param global_initial_losses_ratio default 0.02; # Typical value value for transmission
+
 
 
 ###############################################################################
@@ -337,7 +342,6 @@ param branch_curative     {BRANCH};
 param branch_id           {BRANCH} symbolic;
 param branch_name         {BRANCH} symbolic;
 
-set BRANCHT{t in TIME} := setof{(t,qq,m,n) in BRANCH}(qq,m,n);
 
 # Consistency checks
 check {(t,qq,m,n) in BRANCH}: t in TIME;
@@ -381,7 +385,7 @@ param vscconv_fault       {VSCCONV};
 param vscconv_curative    {VSCCONV};
 param vscconv_id          {VSCCONV} symbolic;
 param vscconv_description {VSCCONV} symbolic;
-param vscconv_P0          {VSCCONV}; # P0 >= 0 means active power going from AC grid to DC line
+param vscconv_P0          {VSCCONV}; # P0 >= 0 means active power going from AC grid to DC line (homogeneous to a load)
 param vscconv_Q0          {VSCCONV};
 
 # Consistency checks
@@ -485,20 +489,20 @@ set BUS2:= setof {(1,n) in BUS:
 set BRANCH2:= setof {(1,qq,m,n) in BRANCH: m in BUS2 and n in BUS2} (qq,m,n);
 
 set BUSCC dimen 1 default {};
-set BRANCHCC:= setof {(1,qq,m,n) in BRANCH: m in BUSCC and n in BUSCC} (qq,m,n);
+set BRANCHCC:= {(qq,m,n) in BRANCH2: m in BUSCC and n in BUSCC};
 set LOADCC  := setof {(1,c,n)    in LOAD  : n in BUSCC               } (c,n);
 set UNITCC  := setof {(1,g,n)    in UNIT  : n in BUSCC               } (g,n);
 
 # Busses with valid voltage value
-set BUSVV    := setof {n in BUSCC : bus_V0[1,n] >= epsilon_min_voltage} n; 
+set BUSVV := {n in BUSCC : bus_V0[1,n] >= epsilon_min_voltage}; 
 
 # Warning: units with zero target are considered as out of order
 # Units up and generating:
-set UNITON := setof {(g,n) in UNITCC : abs(unit_Pc[1,g,n]) >= Pnull}(g,n);
+set UNITON := {(g,n) in UNITCC : abs(unit_Pc[1,g,n]) >= Pnull};
 
 # Branches with zero or near zero impedances
 # Notice: module of Z is equal to square root of (R^2+X^2)
-set BRANCHZNULL := setof {(qq,m,n) in BRANCHCC: branch_R[1,qq,m,n]^2+branch_X[1,qq,m,n]^2 <= Znull^2} (qq,m,n);
+set BRANCHZNULL := {(qq,m,n) in BRANCHCC: branch_R[1,qq,m,n]^2+branch_X[1,qq,m,n]^2 <= Znull^2};
 
 # Reactive
 set SHUNTCC := {(1,s,n) in SHUNT: n in BUSCC or shunt_possiblebus[1,s,n] in BUSCC}; # We want to be able to reconnect shunts
@@ -565,7 +569,7 @@ set LCCCONVON := setof{(t,l,n) in LCCCONV:
 param branch_X_mod{(qq,m,n) in BRANCHCC} :=
   if (qq,m,n) in BRANCHZNULL then Znull
   else branch_X[1,qq,m,n];
-
+check {(qq,m,n) in BRANCHCC}: abs(branch_X_mod[qq,m,n]) > 0; 
 
 
 ###############################################################################
@@ -663,15 +667,14 @@ set PROBLEM_ACOPF default { };
 # Variables and contraints for connexity computation
 #
 ###############################################################################
-# Even if set BUS2 isonly with busses in connex component (CC) nuber '0', for a OPF we
-# have to do connexity computation using only AC branches, ie in only 1 synchronous area.
-# Indeed, HVDC branches may connect 2 synchronous area; one might consider in that case that de grid is connex
-# In our case we have to consider only the buses which are connected to reference bus with AC branches
-var teta_ccomputation{n in BUS2} >=0, <=1;
+# Even if set BUS2 is only with busses in connex component (CC) number '0', for an OPF we
+# have to do connexity computation using only AC branches, ie in only one single synchronous area.
+# Indeed, HVDC branches may connect 2 synchronous areas; one might consider in that case that de grid is connex
+# In our case we have to consider only buses which are connected to reference bus with AC branches
+var teta_ccomputation{BUS2} >=0, <=1;
 subject to ctr_null_phase_bus_cccomputation{PROBLEM_CCOMP}: teta_ccomputation[null_phase_bus] = 0;
 subject to ctr_flow_cccomputation{PROBLEM_CCOMP, (qq,m,n) in BRANCH2}: teta_ccomputation[m]-teta_ccomputation[n]=0;
-var nb_of_bus_out_mainCC = sum{n in BUS2} teta_ccomputation[n];
-maximize cccomputation_objective: nb_of_bus_out_mainCC;
+maximize cccomputation_objective: sum{n in BUS2} teta_ccomputation[n];
 # All busses AC-connected to null_phase_bus will have '0' as optimal value, other will have '1'
 
 
@@ -681,36 +684,36 @@ maximize cccomputation_objective: nb_of_bus_out_mainCC;
 # Variables and contraints for DCOPF
 #
 ###############################################################################
-# Why doing a DCPF before ACOPF?
+# Why doing a DCOPF before ACOPF?
 # 1/ if DCOPF fails, how to hope that ACOPF is feasible? -> DCOPF may be seen as an unformal consistency check on data
 # 2/ phases computed in DCOPF will be used as initial point for ACOPF
-# Part of variables and constraintes defined for DCOPF will be used also for ACOPF
+# Some of the variables and constraints defined for DCOPF will be used also for ACOPF
 
 # Phase of voltage
-param teta_min default -2;
-param teta_max default  2;
+param teta_min default -10; # roughly 3*pi
+param teta_max default  10; # roughly 3*pi
 var teta_dc{n in BUSCC} <= teta_max, >= teta_min;
 subject to ctr_null_phase_bus_dc{PROBLEM_DCOPF}: teta_dc[null_phase_bus] = 0;
 
 # Variable flow is the flow from bus 1 to bus 2
-var activeflow{(qq,m,n) in BRANCHCC};
+var activeflow{BRANCHCC};
 subject to ctr_activeflow{PROBLEM_DCOPF, (qq,m,n) in BRANCHCC}:
-  activeflow[qq,m,n] = base100MVA * (teta_dc[m]-teta_dc[n]) * branch_X_mod[qq,m,n] / (branch_X_mod[qq,m,n]**2+branch_R[1,qq,m,n]**2);
+  activeflow[qq,m,n] = base100MVA * (teta_dc[m]-teta_dc[n]) / branch_X_mod[qq,m,n];#* branch_X_mod[qq,m,n] / (branch_X_mod[qq,m,n]**2+branch_R[1,qq,m,n]**2);
 
 # Generation for DCOPF
 var P_dcopf{(g,n) in UNITON}; # >= unit_Pmin[1,g,n], <= unit_Pmax[1,g,n];
 
 # Slack variable for each bus
 # >=0 if too much generation in bus, <=0 if missing generation
-var balance_pos{n in BUSCC} >= 0;
-var balance_neg{n in BUSCC} >= 0;
+var balance_pos{BUSCC} >= 0;
+var balance_neg{BUSCC} >= 0;
 
 # Balance at each bus
 subject to ctr_balance{PROBLEM_DCOPF, n in BUSCC}:
-  + sum{(g,n) in UNITON} P_dcopf[g,n]
-  - sum{(c,n) in LOADCC} load_PFix[1,c,n]
-  - sum{(qq,n,m) in BRANCHCC} activeflow[qq,n,m] # active power flow outgoing on branch qq at bus n
-  + sum{(qq,m,n) in BRANCHCC} activeflow[qq,m,n] # active power flow entering in bus n on branch qq
+  - sum{(g,n) in UNITON} P_dcopf[g,n]
+  + sum{(c,n) in LOADCC} load_PFix[1,c,n]
+  + sum{(qq,n,m) in BRANCHCC} activeflow[qq,n,m] # active power flow outgoing on branch qq at bus n
+  - sum{(qq,m,n) in BRANCHCC} activeflow[qq,m,n] # active power flow entering in bus n on branch qq
   + sum{(vscconv,n) in VSCCONVON} vscconv_P0[1,vscconv,n]
   + sum{(l,n) in LCCCONVON} lccconv_P0[1,l,n]
   =
@@ -724,8 +727,8 @@ param penalty_gen     := 1;
 param penalty_balance := 1000;
 
 minimize problem_dcopf_objective:
-    penalty_gen     * sum{(g,n) in UNITON} ((P_dcopf[g,n]-unit_Pc[1,g,n])/max(abs(unit_Pmin[1,g,n]),abs(unit_Pmax[1,g,n])))**2 
-  + penalty_balance  * sum{n in BUSCC} ( balance_pos[n] + balance_neg[n] )
+    penalty_gen     * sum{(g,n) in UNITON} ((P_dcopf[g,n]-unit_Pc[1,g,n])/max(0.01*abs(unit_Pc[1,g,n]),1))**2 
+  + penalty_balance * sum{n in BUSCC} ( balance_pos[n] + balance_neg[n] )
   ;
 
 
@@ -744,12 +747,12 @@ minimize problem_dcopf_objective:
 
 # Complex voltage = V*exp(i*teta). (with i**2=-1)
 # Phase of voltage
-var teta{n in BUSCC} <= teta_max, >= teta_min;
+var teta{BUSCC} <= teta_max, >= teta_min;
 subject to ctr_null_phase_bus{PROBLEM_ACOPF}: teta[null_phase_bus] = 0;
 var V{n in BUSCC} 
-  >= voltage_lower_bound[1,bus_substation[1,n]], 
-  <= voltage_upper_bound[1,bus_substation[1,n]];
-
+  <= 2-epsilon_min_voltage, >= voltage_lower_bound[1,bus_substation[1,n]];
+# >= epsilon_min_voltage, <= voltage_upper_bound[1,bus_substation[1,n]];
+# >= voltage_lower_bound[1,bus_substation[1,n]], <= voltage_upper_bound[1,bus_substation[1,n]];
 
 #
 # Generation
@@ -777,7 +780,6 @@ var P{(g,n) in UNITON}
 #
 # todo: add trapeze of hexagone constraints for reactive power
 var Q{(g,n) in UNITON} <= corrected_unit_Qmax[g,n], >= corrected_unit_Qmin[g,n];
-
 
 
 #
@@ -855,14 +857,15 @@ subject to ctr_balance_P{PROBLEM_ACOPF,k in BUSCC}:
 
 # Reactive balance slack variables only if there is a load or a shunt connected
 # If there is a unit, or SVC, or VSC, they already have reactive power generation, so no need to add slack variables
-set BUSCC_SLACK := setof {n in BUSCC: 
+set BUSCC_SLACK :=  {n in BUSCC: 
   (card({(c,n) in LOADCC})>0 or card({(t,s,n) in SHUNT})>0)
-  and card{(t,g,n) in UNIT}==0
+  and card{(g,n) in UNITON: (g,n) not in UNIT_FIXQ}==0
   and card{(svc,n) in SVCON}==0
   and card{(vscconv,n) in VSCCONVON}==0
-  } n;
+  } ;
 var slack1_balance_Q{BUSCC_SLACK} >=0, <= 500; # 500 Mvar is already HUGE
 var slack2_balance_Q{BUSCC_SLACK} >=0, <= 500;
+#subject to ctr_compl_slack_Q{PROBLEM_ACOPF,k in BUSCC_SLACK}: slack1_balance_Q[k] >= 0 complements slack2_balance_Q[k] >= 0;
 
 subject to ctr_balance_Q{PROBLEM_ACOPF,k in BUSCC}: 
   # flows
@@ -893,20 +896,23 @@ subject to ctr_balance_Q{PROBLEM_ACOPF,k in BUSCC}:
 #
 # Objective function and penalties
 #
-param penalite_invest_rea_pos := 100;
-param penalite_invest_rea_neg := 100;
+param penalite_invest_rea_pos := 10;
+param penalite_invest_rea_neg := 10;
 
 minimize problem_acopf_objective:
   sum{n in BUSCC_SLACK} (
       penalite_invest_rea_pos * slack1_balance_Q[n]
     + penalite_invest_rea_neg * slack2_balance_Q[n]
     )
+  +(sum{n in BUSCC_SLACK} slack1_balance_Q[n] * slack2_balance_Q[n] ) * (penalite_invest_rea_pos+penalite_invest_rea_neg)
   # todo revenir a une variation homogene de la prod
   # L'idee serait de demarrer avec des prods proportionnelle (utiliser alpha), mais si on n'y arrive 
   # pas alors on minimise l'ecart quadratique ou la somme
   #+ alpha
-  #+ sum{(g,n) in UNITON} ( (P[g,n]-unit_Pc[1,g,n])/max(1,abs(unit_Pc[1,g,n])) )**2 
-  + sum{(g,n) in UNITON} P[g,n]
+  + sum{(g,n) in UNITON} ( (P[g,n]-unit_Pc[1,g,n])/max(1,abs(unit_Pc[1,g,n])) )**2 
+  #+ sum{(g,n) in UNITON} P[g,n]
+  #+ sum{(qq,m,n) in BRANCHCC}(teta[m]-teta[n]-teta_dc[m]+teta_dc[n])**2
+  + sum{n in BUSCC} (V[n]-0.5*(voltage_lower_bound[1,bus_substation[1,n]]+voltage_upper_bound[1,bus_substation[1,n]]))**2
   ;
 
 

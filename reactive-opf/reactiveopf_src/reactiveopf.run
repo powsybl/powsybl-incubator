@@ -81,6 +81,7 @@
 # VSC converter stations
 ###############################################################################
 # Active power P is used as a fixed load
+# Voltage and reactve power are variables
 # No additional parameter file needed
 
 
@@ -88,7 +89,7 @@
 ###############################################################################
 # LCC converter stations
 ###############################################################################
-# Active power P and reactive power Q are used as a fixed load
+# Active power P and reactive power Q are used as a fixed values
 # No additional parameter file needed
 
 
@@ -293,6 +294,9 @@ param errorMessage symbolic default "empty error message";
 param messageInfo symbolic default "empty information message";
 set messagesInfo default {};
 
+# Number of iterations for AC OPF
+param nb_iter_last  integer default 0;
+param nb_iter_total integer default 0;
 
 # Additional dummy parameters, used for local computation
 # Remenber you cannot declare new variable in loop or "if"
@@ -300,6 +304,7 @@ param temp1;
 param temp2;
 param temp3;
 param tempo;
+param tempstr symbolic default "empty string";
 
 
 
@@ -357,8 +362,11 @@ let PROBLEM_CCOMP := {1};
 let PROBLEM_DCOPF := { };
 let PROBLEM_ACOPF := { };
 option presolve 0;
-let {n in BUS2} teta_ccomputation[n] := 0.1;
+let tempstr := ctime();
+printf "# CCcomp solve: start (%s)\n\n",tempstr;
+#
 solve cccomputation_objective;
+#
 if solve_result_num > 103 or card({n in BUS2: teta_ccomputation[n].val > 0.01 and teta_ccomputation[n].val < 0.99})>0 
 then {
   # First return codes of knitro :
@@ -368,22 +376,23 @@ then {
   let final_status := "NOK";
   include reactiveopfexit.run;
 }
+printf "# CCcomp solve: end   (%s -> %s)\n\n",tempstr,ctime();
+option presolve 10;
 
 #
-# Definition of BUSCCX below was the purpose of this opitmization
+# Definition of BUSCC below was the purpose of this optimization
 #
-let BUSCC := setof{n in BUS2: teta_ccomputation[n].val <= 0.01}n;
+let BUSCC := {n in BUS2: teta_ccomputation[n].val <= 0.01};
 
 printf "\n*** Connexity computation\n";
-for{n in BUS2: teta_ccomputation[n] >= 0.5}
+for{n in BUS2 diff BUSCC}
   printf "Bus %Q in substation %Q (Vnomi=%.2fkV, country=%Q) is out of main AC CC\n",
     bus_id[1,n], substation_id[1,bus_substation[1,n]],
     substation_Vnomi[1,bus_substation[1,n]], substation_country[1,bus_substation[1,n]];
 printf "Nb of busses in AC+DC CC: %i\n",card(BUS2); 
 printf "Nb of busses in CC %Q: %i\n",bus_id[1,null_phase_bus],card(BUSCC);
-printf "Nb of busses in other CCs: %Q\n",nb_of_bus_out_mainCC;
+printf "Nb of busses in other CCs: %Q\n",card(BUS2)-card(BUSCC);
 
-option presolve 10;
 printf "\n";
 
 
@@ -394,7 +403,7 @@ printf "\n";
 display
 maximal_voltage_upper_bound, minimal_voltage_lower_bound,
 card(SUBSTATIONS),card(BUS),card(BUS2),card(BUSCC),card(BUS2 diff BUSCC),card(BUSVV),card(BUSCC_SLACK),card(BUSCC diff BUSCC_SLACK),
-card(BRANCH),card(BRANCHCC),card(BRANCHCC diff BRANCHZNULL),card(BRANCHZNULL),
+card(BRANCH),card(BRANCHCC),card(BRANCHZNULL),card(BRANCHCC diff BRANCHZNULL),
 card(UNIT),card(UNITCC),card(UNITON),card(UNITON diff UNIT_FIXQ),card(UNIT_FIXQ),
 card(LOAD),card(LOADCC),
 card(SHUNTCC),card(SHUNT_FIX),card(SHUNT_VAR),
@@ -407,10 +416,11 @@ card(LCCCONV),card(LCCCONVON)
 let temp1 := sum{(c,n) in LOADCC} load_PFix[1,c,n];
 let temp2 := sum{(g,n) in UNITON} unit_Pc[1,g,n];
 let temp3 :=  (sum{(vscconv,n) in VSCCONVON} vscconv_P0[1,vscconv,n])+(sum{(l,k) in LCCCONVON} lccconv_P0[1,l,k]);
+let global_initial_losses_ratio := (temp2-temp1-temp3)/(temp1+temp3);
 
 printf "HVDC injections (homogeneous to loads):\n";
 for {(v,n) in VSCCONVON} 
-  printf "VSC converter %Q in %Q: P0=%.1fMW is fixed Q is variable\n",
+  printf "VSC converter %Q in %Q: P0=%.1fMW is fixed, Q is variable\n",
   vscconv_id[1,v,n],substation_id[1,bus_substation[1,n]],vscconv_P0[1,v,n];
 for {(l,n) in LCCCONVON}
   printf "LCC converter %Q in %Q: P0=%.1fMW is fixed, Q0=%.1fMvar is fixed\n",
@@ -418,7 +428,7 @@ for {(l,n) in LCCCONVON}
 printf "Sum of HVDC conv.  H: %.0f MW\n", temp3;
 printf "Sum of loads       C: %.0f MW\n", temp1;
 printf "Sum of generations P: %.0f MW\n", temp2;
-printf "Balance    (P-C-H)/C: %.2f %%\n\n", (temp2-temp1-temp3)/temp1*100;
+printf "Balance    (P-C-H)/C: %.2f %%    (global_initial_losses_ratio=%f)\n\n", (temp2-temp1-temp3)/temp1*100,global_initial_losses_ratio;
 
 # Branches with low current limits (but keep in mind they are not used; this is just for information)
 let temp1 := min{(qq,m,n) in BRANCHCC} Fmax[qq,m,n];
@@ -570,15 +580,12 @@ let PROBLEM_CCOMP := { };
 let PROBLEM_DCOPF := {1};
 let PROBLEM_ACOPF := { };
 
-# Bounds for phases
-let teta_max := 10; # roughly 3*pi
-let teta_min := -10; # roughly 3*pi
 
 printf "\n######################################################################\n";
-printf "# DCopf solve: start (%s)\n\n",ctime();
-option knitro_options "maxit=300";
+let tempstr := ctime();
+printf "# DCopf solve: start (%s)\n\n",tempstr;
 solve problem_dcopf_objective;
-printf "\n# DCopf solve: end   (%s)\n",ctime();
+printf "\n# DCopf solve: end   (%s -> %s)\n",tempstr,ctime();
 printf "######################################################################\n\n";
 
 
@@ -639,28 +646,35 @@ for {(qq,m,n) in BRANCHCC : abs(activeflow[qq,m,n]) >= temp1*0.99} printf "Maxim
 let temp2 := max{(g,n) in UNITON} abs(P_dcopf[g,n]-unit_Pc[1,g,n]);
 printf "Maximum deviation between generation and target: %.2f MW\n",temp2;
 if temp2 >= 10 then
-for {(g,n) in UNITON : abs(P_dcopf[g,n]-unit_Pc[1,g,n]) >= temp2*0.99} 
+for {(g,n) in UNITON : abs(P_dcopf[g,n]-unit_Pc[1,g,n]) >= temp2*0.99}
   printf "Generating unit %Q : Pc=%.2fMW P=%.2fMW (Pmin=%.2fMW Pmax=%.2fMW)\n",
     unit_id[1,g,n],unit_Pc[1,g,n],P_dcopf[g,n],unit_Pmin[1,g,n],unit_Pmax[1,g,n];
 
 # Balance check
 let temp1 := sum{(c,n) in LOADCC} load_PFix[1,c,n];
 let temp2 := sum{(g,n) in UNITON} P_dcopf[g,n];
+let temp3 :=  (sum{(vscconv,n) in VSCCONVON} vscconv_P0[1,vscconv,n])+(sum{(l,k) in LCCCONVON} lccconv_P0[1,l,k]);
+printf "Sum of HVDC conv.  H: %.0f MW\n", temp3;
 printf "Sum of loads       C: %.0f MW\n", temp1;
 printf "Sum of generations P: %.0f MW\n", temp2;
-printf "Balance      (P-C)/C: %.2f %%\n\n", (temp2-temp1)/temp1*100;
+printf "Balance    (P-C-H)/C: %.2f %%\n\n", (temp2-temp1-temp3)/temp1*100;
 
-# Analysis of phases coputed by DC OPF
-let teta_max := max({n in BUSCC} teta_dc[n].val) + 1; # radians
-let teta_min := min({n in BUSCC} teta_dc[n].val) - 1; # radians
+# Analysis of phases computed by DC OPF
+let teta_max := max({n in BUSCC} teta_dc[n].val) + 3; # radians
+let teta_min := min({n in BUSCC} teta_dc[n].val) - 3; # radians
 display teta_max,teta_min,max({n in BUSCC} teta_dc[n]),min({n in BUSCC} teta_dc[n]),
   max({(qq,m,n) in BRANCHCC} (teta_dc[m]-teta_dc[n])),min({(qq,m,n) in BRANCHCC} (teta_dc[m]-teta_dc[n]));
+
 let temp1 := max({(qq,m,n) in BRANCHCC} (teta_dc[m]-teta_dc[n]));
-for {(qq,m,n) in BRANCHCC: teta_dc[m]-teta_dc[n] > temp1*0.99}
-  printf "Branch %Q R=%Q X=%Q F=%Q\n", branch_id[1,qq,m,n],branch_R[1,qq,m,n],branch_X[1,qq,m,n],activeflow[qq,m,n];
-let temp1 := min({(qq,m,n) in BRANCHCC} (teta_dc[m]-teta_dc[n]));
-for {(qq,m,n) in BRANCHCC: teta_dc[m]-teta_dc[n] < temp1*0.99}
-  printf "Branch %Q R=%Q X=%Q F=%Q\n", branch_id[1,qq,m,n],branch_R[1,qq,m,n],branch_X[1,qq,m,n],activeflow[qq,m,n];
+let temp2 := min({(qq,m,n) in BRANCHCC} (teta_dc[m]-teta_dc[n]));
+
+printf"Branches with large Delta Teta:\n";
+for {(qq,m,n) in BRANCHCC: (teta_dc[m]-teta_dc[n])>temp1*0.99 or (teta_dc[m]-teta_dc[n])<temp2*0.99}
+  printf "%Q R=%.4f X=%.4f delta=%.2f teta_m=%.2f teta_n=%.2f F=%.2f\n",
+  branch_id[1,qq,m,n],branch_R[1,qq,m,n],branch_X[1,qq,m,n],teta_dc[m]-teta_dc[n],teta_dc[m],teta_dc[n],
+  activeflow[qq,m,n];
+
+
 
 # Next optimization problems will use other "teta" variables. These ones were only for DCOPF
 fix{n in BUSCC} teta_dc[n];
@@ -675,6 +689,7 @@ fix{n in BUSCC} teta_dc[n];
 let PROBLEM_CCOMP := { };
 let PROBLEM_DCOPF := { };
 let PROBLEM_ACOPF := {1};
+
 
 #
 # Initial values
@@ -696,86 +711,49 @@ let {(shunt,n) in SHUNT_VAR} shunt_var[shunt,n] := min{(1,shunt,k) in SHUNT} shu
 let {(svc,n) in SVCON} svc_qvar[svc,n] := 0.1;
 let {(v,n) in VSCCONVON} vscconv_qvar[v,n] := if abs(vscconv_targetQ[1,v,n]) < PQmax then vscconv_targetQ[1,v,n] else 0;
 
+
 #
-# Scaling
+# Solve
 #
-let {n in BUSCC} V[n].xscalefactor := max(V[n].ub2-V[n].lb2,0.1);
-let {n in BUSCC} teta[n].xscalefactor := teta_max - teta_min;
-let {n in BUSCC_SLACK} slack1_balance_Q[n].xscalefactor := slack1_balance_Q[n].ub2-slack1_balance_Q[n].lb2;
-let {n in BUSCC_SLACK} slack2_balance_Q[n].xscalefactor := slack2_balance_Q[n].ub2-slack2_balance_Q[n].lb2;
-let {(g,n) in UNITON} P[g,n].xscalefactor := max(1,abs(P[g,n].ub2-P[g,n].lb2));
-let {(g,n) in UNITON} Q[g,n].xscalefactor := max(1,abs(Q[g,n].ub2-Q[g,n].lb2));
-let {(shunt,n) in SHUNT_VAR} shunt_var[shunt,n].xscalefactor := shunt_var[shunt,n].ub2 - shunt_var[shunt,n].lb2;
-let {(svc,n) in SVCON} svc_qvar[svc,n].xscalefactor := svc_qvar[svc,n].ub2-svc_qvar[svc,n].lb2;
-let {(v,n) in VSCCONVON} vscconv_qvar[v,n].xscalefactor := vscconv_qvar[v,n].ub2 - vscconv_qvar[v,n].lb2;
-
-let {PROBLEM_ACOPF,n in BUSCC} ctr_balance_P[1,n].cscalefactor := 1/max(1.0,sum{(c,n) in LOADCC} abs(load_PFix[1,c,n]));
-let {PROBLEM_ACOPF,n in BUSCC} ctr_balance_Q[1,n].cscalefactor := 1/max(1.0,sum{(c,n) in LOADCC} abs(load_QFix[1,c,n]));
-
-
-
 printf "\n######################################################################\n";
 printf "# ACopf solve: start (%s)\n\n",ctime();
+let tempstr := ctime();
 
-option knitro_options "maxit=50 presolve=0 bar_directinterval=10 maxcgit=100 bar_initpt=2 honorbnds=0 scale=2 opttol=1 opttolabs=1e-1 feastol=1 feastolabs=1e-3 debug=0 algorithm=1";  
 solve problem_acopf_objective;
 
-display teta_max,teta_min,max({n in BUSCC} teta[n]),min({n in BUSCC} teta[n]),
-  max({(qq,m,n) in BRANCHCC} (teta[m]-teta[n])),min({(qq,m,n) in BRANCHCC} (teta[m]-teta[n]));
+let nb_iter_last := problem_acopf_objective.numiters;
+let nb_iter_total := nb_iter_total + nb_iter_last; 
 
-if solve_result_num > 103 then {
-  option knitro_options "maxit=100 presolve=0 bar_directinterval=10 maxcgit=100 bar_initpt=2 honorbnds=0 scale=2 opttol=1 opttolabs=1e-1 feastol=1 feastolabs=1e-3 debug=0 algorithm=1";
-  if max({n in BUSCC} teta[n]) >= teta_max -0.1 or min({n in BUSCC} teta[n]) <= teta_min +0.1
-    or max({(qq,m,n) in BRANCHCC} (teta[m]-teta[n])) > 1 or min({(qq,m,n) in BRANCHCC} (teta[m]-teta[n])) < -1
-  then let {n in BUSCC} teta[n] := teta_dc[n];
+param solve_result_num_limit := 200;
+
+if solve_result_num > solve_result_num_limit then 
+for {n in BUS2}
+{
   solve problem_acopf_objective;
-  display teta_max,teta_min,max({n in BUSCC} teta[n]),min({n in BUSCC} teta[n]),
-    max({(qq,m,n) in BRANCHCC} (teta[m]-teta[n])),min({(qq,m,n) in BRANCHCC} (teta[m]-teta[n]));
+  let nb_iter_last := problem_acopf_objective.numiters;
+  let nb_iter_total := nb_iter_total + nb_iter_last; 
+  if solve_result_num <= solve_result_num_limit then break; 
 }
 
-if solve_result_num > 103 then {
-  option knitro_options "maxit=150 presolve=0 bar_directinterval=10 maxcgit=100 bar_initpt=2 honorbnds=0 scale=2 opttol=1 opttolabs=1e-1 feastol=1 feastolabs=1e-3 debug=0 algorithm=1";
-  if max({n in BUSCC} teta[n]) >= teta_max -0.1 or min({n in BUSCC} teta[n]) <= teta_min +0.1
-    or max({(qq,m,n) in BRANCHCC} (teta[m]-teta[n])) > 1 or min({(qq,m,n) in BRANCHCC} (teta[m]-teta[n])) < -1
-  then let {n in BUSCC} teta[n] := teta_dc[n];
-  solve problem_acopf_objective;
-  display teta_max,teta_min,max({n in BUSCC} teta[n]),min({n in BUSCC} teta[n]),
-    max({(qq,m,n) in BRANCHCC} (teta[m]-teta[n])),min({(qq,m,n) in BRANCHCC} (teta[m]-teta[n]));
-}
 
-if solve_result_num > 103 then {
-  option knitro_options "maxit=300 presolve=0 bar_directinterval=10 maxcgit=100 bar_initpt=2 honorbnds=0 scale=2 opttol=1 opttolabs=1e-1 feastol=1 feastolabs=1e-3 debug=0 algorithm=1";
-  if max({n in BUSCC} teta[n]) >= teta_max -0.1 or min({n in BUSCC} teta[n]) <= teta_min +0.1
-    or max({(qq,m,n) in BRANCHCC} (teta[m]-teta[n])) > 1 or min({(qq,m,n) in BRANCHCC} (teta[m]-teta[n])) < -1
-  then let {n in BUSCC} teta[n] := teta_dc[n];
-  solve problem_acopf_objective;
-  display teta_max,teta_min,max({n in BUSCC} teta[n]),min({n in BUSCC} teta[n]),
-    max({(qq,m,n) in BRANCHCC} (teta[m]-teta[n])),min({(qq,m,n) in BRANCHCC} (teta[m]-teta[n]));
-}
+#
+# Analysis of solve_result_num
+#
 
-if solve_result_num > 103 then {
-  option knitro_options "maxit=400 presolve=0 bar_directinterval=10 maxcgit=100 bar_initpt=2 honorbnds=0 scale=2 opttol=1 opttolabs=1e-1 feastol=1 feastolabs=1e-3 debug=0 algorithm=1";
-  if max({n in BUSCC} teta[n]) >= teta_max -0.1 or min({n in BUSCC} teta[n]) <= teta_min +0.1
-    or max({(qq,m,n) in BRANCHCC} (teta[m]-teta[n])) > 1 or min({(qq,m,n) in BRANCHCC} (teta[m]-teta[n])) < -1
-  then let {n in BUSCC} teta[n] := teta_dc[n];
-  solve problem_acopf_objective;
-  display teta_max,teta_min,max({n in BUSCC} teta[n]),min({n in BUSCC} teta[n]),
-    max({(qq,m,n) in BRANCHCC} (teta[m]-teta[n])),min({(qq,m,n) in BRANCHCC} (teta[m]-teta[n]));
-}
-
-if solve_result_num > 103 then {
-  option knitro_options "maxit=500 presolve=0 bar_directinterval=10 maxcgit=100 bar_initpt=2 honorbnds=0 scale=2 opttol=1 opttolabs=1e-1 feastol=1 feastolabs=1e-3 debug=0 algorithm=1";
-  if max({n in BUSCC} teta[n]) >= teta_max -0.1 or min({n in BUSCC} teta[n]) <= teta_min +0.1
-    or max({(qq,m,n) in BRANCHCC} (teta[m]-teta[n])) > 1 or min({(qq,m,n) in BRANCHCC} (teta[m]-teta[n])) < -1
-  then let {n in BUSCC} teta[n] := teta_dc[n];
-  solve problem_acopf_objective;
-  display teta_max,teta_min,max({n in BUSCC} teta[n]),min({n in BUSCC} teta[n]),
-    max({(qq,m,n) in BRANCHCC} (teta[m]-teta[n])),min({(qq,m,n) in BRANCHCC} (teta[m]-teta[n]));
-}
-
+# <= 103 : feasible
+# 200 convergence to unfeasible
+# > 200 : failure
+#
 param output_results binary default 0;
-
-if solve_result_num > 103
+if solve_result_num == 200 
+then {
+  let output_results := 0;
+  let messageInfo := "Optimization was ***not*** successfull - Convergence to an infeasible solution";
+  printf "%s\n", messageInfo;
+  let messagesInfo := messagesInfo union {messageInfo};
+  let final_status := "NOK";
+}
+else if solve_result_num > 103
 then {
   let output_results := 0;
   let messageInfo := "Optimization was ***not*** successfull - no solution found";
@@ -788,27 +766,70 @@ else {
   let final_status := "OK";
 }
 
-printf "\n# ACopf solve: end   (%s)\n",ctime();
+printf "\n# ACopf solve: end   (%s -> %s)\n",tempstr,ctime();
 printf "######################################################################\n\n";
 
 
+#
+# Displays aftoer solving
+#
+
 display
+  nb_iter_last,nb_iter_total,
+  max({(qq,m,n) in BRANCHCC} branch_R[1,qq,m,n]),max({(qq,m,n) in BRANCHCC} branch_X[1,qq,m,n]),
   teta_max, max({n in BUSCC} teta[n]), max({n in BUSCC} teta_dc[n]),
   teta_min, min({n in BUSCC} teta[n]), min({n in BUSCC} teta_dc[n]),
   max({(qq,m,n) in BRANCHCC} (teta[m]-teta[n])), max({(qq,m,n) in BRANCHCC} (teta_dc[m]-teta_dc[n])),
-  min({(qq,m,n) in BRANCHCC} (teta[m]-teta[n])), min({(qq,m,n) in BRANCHCC} (teta_dc[m]-teta_dc[n]));
+  min({(qq,m,n) in BRANCHCC} (teta[m]-teta[n])), min({(qq,m,n) in BRANCHCC} (teta_dc[m]-teta_dc[n])),
+  min({n in BUSCC}V[n]),max({n in BUSCC}V[n])
+  ;
+
+let temp1 := max({(qq,m,n) in BRANCHCC} (teta[m]-teta[n]));
+let temp2 := min({(qq,m,n) in BRANCHCC} (teta[m]-teta[n]));
+
+for {(qq,m,n) in BRANCHCC: (teta[m]-teta[n])>temp1*0.99 or (teta[m]-teta[n])<temp2*0.99} {
+  printf "%Q R=%.3f X=%.3f delta=%.2f Vm=%.3f %.2f Vn=%.3f %.2f ",
+  branch_id[1,qq,m,n],branch_R[1,qq,m,n],branch_X[1,qq,m,n],teta[m]-teta[n],V[m],teta[m],V[n],teta[n];
+  if m in BUSCC_SLACK then printf "sQm %.2f %.2f ",
+    max(slack1_balance_Q[m]-slack2_balance_Q[m],0),max(slack2_balance_Q[m]-slack1_balance_Q[m],0);
+  if n in BUSCC_SLACK then printf "sQn %.2f %.2f ",
+    max(slack1_balance_Q[n]-slack2_balance_Q[n],0),max(slack2_balance_Q[n]-slack1_balance_Q[n],0);
+  printf "P1=%.1f Q1=%.1f ",base100MVA*V[m]*Red_Tran_Act_Dir[qq,m,n],base100MVA*V[m]*Red_Tran_Rea_Dir[qq,m,n];
+  printf "P2=%.1f Q2=%.1f ",base100MVA*V[m]*Red_Tran_Act_Inv[qq,m,n],base100MVA*V[m]*Red_Tran_Rea_Inv[qq,m,n];
+  printf"\n";
+  }
 
 # Ouput reactive slack values and voltages
 if (sum{n in BUSCC_SLACK} slack1_balance_Q[n])+(sum{n in BUSCC_SLACK} slack2_balance_Q[n]) > Pnull
 then {
-  display sum{n in BUSCC_SLACK} slack1_balance_Q[n],sum{n in BUSCC_SLACK} slack2_balance_Q[n],
-          max{n in BUSCC_SLACK} slack1_balance_Q[n],max{n in BUSCC_SLACK} slack2_balance_Q[n];
+  display
+    sum{n in BUSCC_SLACK} max(slack1_balance_Q[n]-slack2_balance_Q[n],0),
+    sum{n in BUSCC_SLACK} max(slack2_balance_Q[n]-slack1_balance_Q[n],0),
+    max{n in BUSCC_SLACK} max(slack1_balance_Q[n]-slack2_balance_Q[n],0),
+    max{n in BUSCC_SLACK} max(slack2_balance_Q[n]-slack1_balance_Q[n],0),
+    card({n in BUSCC_SLACK: abs(slack2_balance_Q[n]-slack1_balance_Q[n])>Pnull});
   if output_results > 0 then
     for {n in BUSCC_SLACK: slack1_balance_Q[n]+slack2_balance_Q[n] > Pnull}
       printf "Bus %Q in substation %Q has non zero reactive slacks %.1f %.1f, Vmin=%.2f Vopt=%.2f Vmax=%.2f \n",
         bus_id[1,n],substation_id[1,bus_substation[1,n]],slack1_balance_Q[n],slack2_balance_Q[n],
         voltage_lower_bound[1,bus_substation[1,n]],V[n],voltage_upper_bound[1,bus_substation[1,n]];
 }
+
+# Write voltage information in debug file
+printf "#bus_id;V;Vlb;Vub;Vmin_mod;Vmax_mod;Vmin_OK;Vmax_OK;Vmin_ori;Vmax_ori;sQ1;sQ2;\n" > debug_bus.csv;
+for {n in BUSCC} printf "%Q;%.4f;%.4f;%.4f;%.4f;%.4f;%s;%s;%.4f;%.4f;%.2f;%.2f;\n",
+  bus_id[1,n],
+  V[n],V[n].lb,V[n].ub,
+  voltage_lower_bound[1,bus_substation[1,n]],
+  voltage_upper_bound[1,bus_substation[1,n]],
+  if V[n]<voltage_lower_bound[1,bus_substation[1,n]] then "NOK" else "OK",
+  if V[n]>voltage_upper_bound[1,bus_substation[1,n]] then "NOK" else "OK",
+  substation_Vmin[1,bus_substation[1,n]],substation_Vmax[1,bus_substation[1,n]],
+  if n in BUSCC_SLACK then max(slack1_balance_Q[n]-slack2_balance_Q[n],0) else -1,
+  if n in BUSCC_SLACK then max(slack2_balance_Q[n]-slack1_balance_Q[n],0) else -1
+  > debug_bus.csv;
+  ;
+close debug_bus.csv;
 
 
 

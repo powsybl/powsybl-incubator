@@ -9,7 +9,7 @@
 
 ###############################################################################
 # Reactive OPF
-# Author :  Jean Maeght 2022
+# Author :  Jean Maeght 2022 2023
 ###############################################################################
 
 
@@ -59,12 +59,14 @@ check maximal_voltage_upper_bound > minimal_voltage_lower_bound;
 # Voltage bounds that will really been used
 # Negative value for substation_Vmin or substation_Vmac means that the value is undefined
 # In that case, minimal_voltage_lower_bound or maximal_voltage_upper_bound is used instead
-param voltage_lower_bound{(t,s) in SUBSTATIONS} := max(minimal_voltage_lower_bound,substation_Vmin[t,s]);
+param voltage_lower_bound{(t,s) in SUBSTATIONS} := 
+  max(minimal_voltage_lower_bound,substation_Vmin[t,s]);
 param voltage_upper_bound{(t,s) in SUBSTATIONS} :=
   if substation_Vmax[t,s] <= voltage_lower_bound[t,s]
   then maximal_voltage_upper_bound
   else min(maximal_voltage_upper_bound,substation_Vmax[t,s]);
 check {(t,s) in SUBSTATIONS}: voltage_lower_bound[t,s] < voltage_upper_bound[t,s];
+
 
 
 ###############################################################################
@@ -88,6 +90,7 @@ check{(t,n) in BUS}: n >= -1;
 check{(t,n) in BUS}: (t,bus_substation[t,n]) in SUBSTATIONS;
 
 param null_phase_bus;
+
 
 
 ###############################################################################
@@ -252,6 +255,7 @@ check {(t,b,n) in BATTERY: (t,n) in BUS} : battery_substation[t,b,n] == bus_subs
 check {(t,b,n) in BATTERY} : battery_Pmin[t,b,n] <= battery_Pmax[t,b,n] ;
 
 
+
 ###############################################################################
 # Tables of taps
 ###############################################################################
@@ -291,6 +295,9 @@ param regl_id       {REGL} symbolic;
 # Consistency checks
 check {(t,r) in REGL}: regl_table[t,r] in TAPTABLES;
 check {(t,r) in REGL}: (t,regl_table[t,r], regl_tap0[t,r]) in TAPS;
+
+param regl_ratio_min{(t,r) in REGL} := min{(t,regl_table[t,r],tap) in TAPS} tap_ratio[t,regl_table[t,r],tap];
+param regl_ratio_max{(t,r) in REGL} := max{(t,regl_table[t,r],tap) in TAPS} tap_ratio[t,regl_table[t,r],tap];
 
 
 
@@ -750,7 +757,10 @@ minimize problem_dcopf_objective:
 var teta{BUSCC} <= teta_max, >= teta_min;
 subject to ctr_null_phase_bus{PROBLEM_ACOPF}: teta[null_phase_bus] = 0;
 var V{n in BUSCC} 
-  <= 2-epsilon_min_voltage, >= voltage_lower_bound[1,bus_substation[1,n]];
+  <= 2-epsilon_min_voltage, 
+  >= 
+#  if substation_Vnomi[1,bus_substation[1,n]] < 25 then epsilon_min_voltage else
+  voltage_lower_bound[1,bus_substation[1,n]];
 # >= epsilon_min_voltage, <= voltage_upper_bound[1,bus_substation[1,n]];
 # >= voltage_lower_bound[1,bus_substation[1,n]], <= voltage_upper_bound[1,bus_substation[1,n]];
 

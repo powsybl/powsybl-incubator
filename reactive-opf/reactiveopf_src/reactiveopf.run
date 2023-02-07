@@ -9,7 +9,7 @@
 
 ###############################################################################
 # Reactive OPF
-# Author :  Jean Maeght 2022
+# Author :  Jean Maeght 2022 2023
 ###############################################################################
 
 
@@ -436,7 +436,7 @@ for {(qq,m,n) in BRANCHCC : Fmax[qq,m,n] <= temp1 * 1.5}
   printf "Branch %Q Fmax=%.2fMW is small ; Vnom1=%ikV Vnom2=%ikV patl1=%iA patl2=%iA (Fmax not used, this is just for information)\n",
     branch_id[1,qq,m,n],Fmax[qq,m,n],substation_Vnomi[1,bus_substation[1,m]],substation_Vnomi[1,bus_substation[1,n]],branch_patl1[1,qq,m,n],branch_patl1[1,qq,m,n];
 
-# abnormally low nominal voltages
+# Abnormally low nominal voltages
 for {(t,n) in BUS: substation_Vnomi[1,bus_substation[1,n]] < epsilon_nominal_voltage}
   printf "Warning: bus %Q in substation %Q has nominal voltage %.2fkV < %QkV -> bus is ignored\n",
   bus_id[1,n], substation_id[1,bus_substation[1,n]], substation_Vnomi[1,bus_substation[1,n]], epsilon_nominal_voltage;
@@ -452,6 +452,55 @@ printf "If voltage lower bounds are missing or too small, they are set to %.3fpu
 printf "If voltage upper bounds are missing or too high,  they are set to %.3fpu\n",maximal_voltage_upper_bound;
 printf "Maximal diameter of voltage interval: %.3f\n",max({(t,s) in SUBSTATIONS}(voltage_upper_bound[t,s] - voltage_lower_bound[t,s]));
 printf "Minimal diameter of voltage interval: %.3f\n",min({(t,s) in SUBSTATIONS}(voltage_upper_bound[t,s] - voltage_lower_bound[t,s]));
+
+#
+# Consistency of transformers ratios
+#
+let temp1 := min{(t,r) in REGL} regl_ratio_min[1,r];
+let temp2 := max{(t,r) in REGL} regl_ratio_max[1,r];
+printf "Minimal transformer ratio : %.3f\n",temp1;
+printf "Maximal transformer ratio : %.3f\n",temp2;
+for {(qq,m,n) in BRANCHCC_REGL: regl_ratio_min[1,branch_ptrRegl[1,qq,m,n]] <= temp1 * 1.01
+  or regl_ratio_max[1,branch_ptrRegl[1,qq,m,n]] >= temp2 * 0.99 }
+{
+  printf "Transformer %Q ratio_min=%.3f ratio_max=%.3f\n",
+  branch_id[1,qq,m,n],
+  regl_ratio_min[1,branch_ptrRegl[1,qq,m,n]],
+  regl_ratio_max[1,branch_ptrRegl[1,qq,m,n]]
+}
+# Looking for unconsistencies
+let tempo := 0; # If non zero, major inconsistency detected
+for {(qq,m,n) in BRANCHCC_REGL} {
+  let temp1 := regl_ratio_min[1,branch_ptrRegl[1,qq,m,n]];
+  let temp2 := regl_ratio_max[1,branch_ptrRegl[1,qq,m,n]];
+  if voltage_lower_bound[1,bus_substation[1,m]]*temp1 > voltage_upper_bound[1,bus_substation[1,n]]
+  then {
+    let tempo := 1;
+    let messageInfo := sprintf (
+    "ERROR INFEASIBLE transformer %Q ratio_min=%.3f ratio_max=%.3f : Vmin1=%.3f * ratio_min > Vmax2=%.3f",
+    branch_id[1,qq,m,n],temp1,temp2,
+    voltage_lower_bound[1,bus_substation[1,m]],
+    voltage_upper_bound[1,bus_substation[1,n]]);
+    printf "%s\n",messageInfo;
+    let messagesInfo := messagesInfo union {messageInfo};  
+  }
+  if voltage_upper_bound[1,bus_substation[1,m]]*temp2 < voltage_lower_bound[1,bus_substation[1,n]]
+  then {
+    let tempo := 1;
+    let messageInfo := sprintf (
+    "ERROR INFEASIBLE transformer %Q ratio_min=%.3f ratio_max=%.3f : Vmax1=%.3f * ratio_max < Vmin2=%.3f",
+    branch_id[1,qq,m,n],temp1,temp2,
+    voltage_upper_bound[1,bus_substation[1,m]],
+    voltage_lower_bound[1,bus_substation[1,n]]);
+    printf "%s\n",messageInfo;
+    let messagesInfo := messagesInfo union {messageInfo};  
+  }  
+}
+if tempo > 0.5 then {
+  let errorMessage := "ERROR INFEASIBLE some voltages bounds and not feasible with transformers ratios";
+  let final_status := "NOK";
+  include reactiveopfexit.run;
+}
 
 
 
@@ -695,6 +744,7 @@ let PROBLEM_ACOPF := {1};
 # Initial values
 #
 
+
 # DC values used as initialization for phases
 let {n in BUSCC} teta[n] := teta_dc[n];
 
@@ -718,6 +768,8 @@ let {(v,n) in VSCCONVON} vscconv_qvar[v,n] := if abs(vscconv_targetQ[1,v,n]) < P
 printf "\n######################################################################\n";
 printf "# ACopf solve: start (%s)\n\n",ctime();
 let tempstr := ctime();
+
+option knitro_options "opttol=1 opttolabs=1e-1 feastol=1 feastolabs=1e-3 maxit=500";
 
 solve problem_acopf_objective;
 
@@ -816,9 +868,9 @@ then {
 }
 
 # Write voltage information in debug file
-printf "#bus_id;V;Vlb;Vub;Vmin_mod;Vmax_mod;Vmin_OK;Vmax_OK;Vmin_ori;Vmax_ori;sQ1;sQ2;\n" > debug_bus.csv;
-for {n in BUSCC} printf "%Q;%.4f;%.4f;%.4f;%.4f;%.4f;%s;%s;%.4f;%.4f;%.2f;%.2f;\n",
-  bus_id[1,n],
+printf "#bus_id;Vnom;V;Vlb;Vub;Vmin_mod;Vmax_mod;Vmin_OK;Vmax_OK;Vmin_ori;Vmax_ori;sQ1;sQ2;\n" > debug_bus.csv;
+for {n in BUSCC} printf "%Q;%i;%.4f;%.4f;%.4f;%.4f;%.4f;%s;%s;%.4f;%.4f;%.2f;%.2f;\n",
+  bus_id[1,n],substation_Vnomi[1,bus_substation[1,n]],
   V[n],V[n].lb,V[n].ub,
   voltage_lower_bound[1,bus_substation[1,n]],
   voltage_upper_bound[1,bus_substation[1,n]],

@@ -9,7 +9,7 @@
 
 ###############################################################################
 # Reactive OPF
-# Author :  Jean Maeght 2022
+# Author :  Jean Maeght 2022 2023
 ###############################################################################
 
 # Exit procedure
@@ -21,6 +21,14 @@ if length(errorMessage) > 0 then {
   printf "%s\n",errorMessage;
 }
 printf "%s %Q\n","ctime_start",ctime_start > (fileOut);
+
+if card(messagesInfo) > 0 then {
+  let temp1:=1;
+  for { message in messagesInfo } {
+    printf "messageInfo%i %Q\n",temp1,message > (fileOut);
+    let temp1:=temp1+1;
+  }
+}
 
 
 printf   "\n*** End of file reactiveopfexit.run : %s\n",ctime();

@@ -9,7 +9,7 @@
 
 ###############################################################################
 # Reactive OPF
-# Author :  Jean Maeght 2022
+# Author :  Jean Maeght 2022 2023
 ###############################################################################
 
 
@@ -22,14 +22,18 @@
 if final_status == "OK" then {
 
   let fileOut := "reactiveopf_results_shunts.csv";
-  printf "#variant;num;bus;b(pu);Q(Mvar);id;\n" > (fileOut);
+  printf "#variant;num;bus;b(pu);Q(Mvar);section;\n" > (fileOut);
   # Shunts which were already connected, with variable value
-  printf{(s,n) in SHUNT_VAR: (1,s,n) in SHUNT} "%i;%i;%i;%.3f;%.3f;%Q;\n",
-    1,s,n,shunt_var[s,n],base100MVA * shunt_var[s,n] * V[n]^2,shunt_id[1,s,n] 
+  printf{(s,n) in SHUNT_VAR: (1,s,n) in SHUNT} "%i;%i;%i;%.3f;%.3f;%i;\n",
+    1,s,n,
+    shunt_var[s,n],
+    base100MVA * shunt_var[s,n] * V[n]^2,
+    shunt_sections_count[1,s,n] 
     > (fileOut);
   # Shunts which were not connected, and which have been reconnected by reactiveopf, with variable value
-  printf {(s,n) in SHUNT_VAR: (1,s,-1) in SHUNT} "%i;%i;%i;%.3f;%.3f;%Q;\n",
-    1,s,n,shunt_var[s,n],base100MVA * shunt_var[s,n] * V[n]^2,shunt_id[1,s,-1] 
+  printf {(s,n) in SHUNT_VAR: (1,s,-1) in SHUNT} "%i;%i;%i;%.3f;%.3f;%i;\n",
+    1,s,n,shunt_var[s,n],base100MVA * shunt_var[s,n] * V[n]^2,
+    shunt_sections_count[1,s,-1] 
     > (fileOut);
   close (fileOut);
 
@@ -45,9 +49,12 @@ if final_status == "OK" then {
 if final_status == "OK" then {
 
 let fileOut := "reactiveopf_results_static_var_compensators.csv";
-printf "#variant;num;bus;V(pu);b(pu);Q(Mvar);id;\n" > (fileOut);
-printf{(s,n) in SVCON} "%i;%i;%i;%.3f;%.3f;%.3f;%Q;\n",
-  1,s,n,V[n],svc_qvar[s,n],base100MVA * svc_qvar[s,n] * V[n]^2,svc_id[1,s,n]
+printf "#variant;num;bus;vRegul;V(pu);Q(Mvar);\n" > (fileOut);
+printf{(s,n) in SVCON} "%i;%i;%i;%Q;%.3f;%.3f;\n",
+  1,s,n,
+  svc_vregul[1,s,n],
+  V[n],
+  base100MVA * svc_qvar[s,n] * V[n]^2
   > (fileOut);
 close (fileOut);
 
@@ -63,11 +70,15 @@ close (fileOut);
 if final_status == "OK" then {
 
 let fileOut := "reactiveopf_results_generators.csv";
-printf "#variant;num;bus;V(pu);P(MW);Q(Mvar);id;\n" > (fileOut);
-printf{(g,n) in UNITON} "%i;%i;%i;%.3f;%.3f;%.3f;%Q;\n",
-  1,g,n,V[n],P[g,n],
+printf "#variant;num;bus;vRegul;V(pu);targetP(MW);targetQ(Mvar);P(MW);Q(MW);\n" > (fileOut);
+printf{(g,n) in UNITON} "%i;%i;%i;%Q;%.3f;%.3f;%.3f;%.3f;%.3f;\n",
+  1,g,n,
+  unit_vregul[1,g,n],
+  V[n],
+  unit_Pc[1,g,n],
   if (g,n) in UNIT_FIXQ then unit_Qc[1,g,n] else Q[g,n],
-  unit_id[1,g,n]
+  P[g,n],
+  Q[g,n]
   > (fileOut);
 close (fileOut);
 
@@ -83,9 +94,14 @@ close (fileOut);
 if final_status == "OK" then {
 
 let fileOut := "reactiveopf_results_vsc_converter_station.csv";
-printf "#variant;num;bus;V(pu);P(MW);Q(Mvar);id;\n" > (fileOut);
-printf{(v,n) in VSCCONVON} "%i;%i;%i;%.3f;%.3f;%.3f;%Q;\n",
-  1,v,n,V[n],vscconv_P0[1,v,n],vscconv_qvar[v,n],vscconv_id[1,v,n]
+printf "#variant;num;bus;vRegul;targetV(pu);targetQ(Mvar);P(MW);Q(Mvar);\n" > (fileOut);
+printf{(v,n) in VSCCONVON} "%i;%i;%i;%Q;%.3f;%.3f;%.3f;%.3f;\n",
+  1,v,n,
+  vscconv_vregul[1,v,n],
+  V[n],
+  vscconv_qvar[v,n],
+  vscconv_P0[1,v,n],
+  vscconv_qvar[v,n]
   > (fileOut);
 close (fileOut);
 

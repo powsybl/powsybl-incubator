@@ -36,7 +36,7 @@ public final class ShortCircuitConstants {
     public static final double DEFAULT_SUB_TRANS_XD = 20.; //supposed in ohms // TODO : check most standard value
     public static final double DEFAULT_STEP_UP_XD = 0.; //supposed in ohms // TODO : check most standard value
 
-    public static final GeneratorShortCircuit2.GeneratorType DEFAULT_GENERATOR_TYPE = GeneratorShortCircuit2.GeneratorType.ROTATING_MACHINE;
+    public static final GeneratorFortescue.GeneratorType DEFAULT_GENERATOR_FORTESCUE_TYPE = GeneratorFortescue.GeneratorType.ROTATING_MACHINE;
     public static final double DEFAULT_CQ = 1.1;
     public static final double DEFAULT_R1_X1_RATIO = 1.;
     public static final double DEFAULT_IKQ = 10;

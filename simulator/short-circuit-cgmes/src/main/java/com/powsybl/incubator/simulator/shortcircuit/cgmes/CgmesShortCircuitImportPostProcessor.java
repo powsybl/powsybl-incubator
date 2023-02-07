@@ -89,17 +89,20 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
             generator.newExtension(GeneratorShortCircuitAdder2.class)
                     .withSubTransRd(rq)
                     .withTransRd(rq)
+                    .withRatedU(0.)
+                    .withCosPhi(0.)
+                    .withMaxR1ToX1Ratio(rOverX) // extensions for feeder type
+                    .withCq(voltageFactor)
+                    .withIkQmax(ikQmax)
+                    .add();
+
+            generator.newExtension(GeneratorFortescueAdder.class)
                     .withRo(roOverR * rq)
                     .withXo(xoOverX * xq)
                     .withRi(0.)
                     .withXi(0.)
                     .withToGround(grounded)
-                    .withRatedU(0.)
-                    .withCosPhi(0.)
-                    .withGeneratorType(GeneratorShortCircuit2.GeneratorType.FEEDER)
-                    .withMaxR1ToX1Ratio(rOverX) // extensions for feeder type
-                    .withCq(voltageFactor)
-                    .withIkQmax(ikQmax)
+                    .withGeneratorType(GeneratorFortescue.GeneratorType.FEEDER)
                     .add();
         }
     }
@@ -143,14 +146,17 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
             generator.newExtension(GeneratorShortCircuitAdder2.class)
                     .withSubTransRd(r)
                     .withTransRd(r)
+                    .withRatedU(ratedU)
+                    .withCosPhi(ratedPowerFactor)
+                    .withVoltageRegulationRange(voltageRegulationRange)
+                    .add();
+
+            generator.newExtension(GeneratorFortescueAdder.class)
                     .withRo(r0)
                     .withXo(x0)
                     .withRi(0.)
                     .withXi(0.)
-                    .withRatedU(ratedU)
-                    .withCosPhi(ratedPowerFactor)
-                    .withGeneratorType(GeneratorShortCircuit2.GeneratorType.ROTATING_MACHINE)
-                    .withVoltageRegulationRange(voltageRegulationRange)
+                    .withGeneratorType(GeneratorFortescue.GeneratorType.ROTATING_MACHINE)
                     .withToGround(earthing)
                     .withGroundingR(0.)  // TODO : check if info available
                     .add();

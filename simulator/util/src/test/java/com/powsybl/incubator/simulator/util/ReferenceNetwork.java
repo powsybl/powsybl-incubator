@@ -8,11 +8,7 @@ package com.powsybl.incubator.simulator.util;
 
 import com.powsybl.iidm.network.*;
 import com.powsybl.iidm.network.extensions.GeneratorShortCircuitAdder;
-import com.powsybl.incubator.simulator.util.extensions.iidm.LegConnectionType;
-import com.powsybl.incubator.simulator.util.extensions.iidm.GeneratorShortCircuitAdder2;
-import com.powsybl.incubator.simulator.util.extensions.iidm.LineShortCircuitAdder;
-import com.powsybl.incubator.simulator.util.extensions.iidm.ThreeWindingsTransformerShortCircuitAdder;
-import com.powsybl.incubator.simulator.util.extensions.iidm.TwoWindingsTransformerShortCircuitAdder;
+import com.powsybl.incubator.simulator.util.extensions.iidm.*;
 import org.joda.time.DateTime;
 
 /**
@@ -1244,9 +1240,6 @@ public final class ReferenceNetwork {
         // Machines :
         g1.newExtension(GeneratorShortCircuitAdder2.class)
                 .withTransRd(rG1)
-                .withToGround(true)
-                .withXo(xG1 * coeffXoG1)
-                .withRo(rG1 * coeffRoG1)
                 .add();
         g2.newExtension(GeneratorShortCircuitAdder2.class)
                 .withTransRd(rG2)
@@ -1262,6 +1255,14 @@ public final class ReferenceNetwork {
                 .add();
         q2.newExtension(GeneratorShortCircuitAdder2.class)
                 .withTransRd(rFeeder2)
+                .add();
+
+        g1.newExtension(GeneratorFortescueAdder.class)
+                .withToGround(true)
+                .withXo(xG1 * coeffXoG1)
+                .withRo(rG1 * coeffRoG1)
+                .add();
+        q2.newExtension(GeneratorFortescueAdder.class)
                 .withToGround(true)
                 .withRo(rFeeder2 * coeffF2Ro)
                 .withXo(xFeeder2 * coeffF2Xo)

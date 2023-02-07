@@ -252,9 +252,13 @@ public final class ShortCircuitExtensions {
         if (extensions2 != null) {
             transRd = extensions2.getTransRd();
             subTransRd = extensions2.getSubTransRd();
-            toGround = extensions2.isToGround();
-            ro = extensions2.getRo();
-            xo = extensions2.getXo();
+        }
+
+        GeneratorFortescue extensionFortescue = generator.getExtension(GeneratorFortescue.class);
+        if (extensionFortescue != null) {
+            toGround = extensionFortescue.isToGround();
+            ro = extensionFortescue.getRo();
+            xo = extensionFortescue.getXo();
         }
 
         GeneratorNorm extensionGenNorm = shortCircuitNormExtensions.getNormExtension(generator);

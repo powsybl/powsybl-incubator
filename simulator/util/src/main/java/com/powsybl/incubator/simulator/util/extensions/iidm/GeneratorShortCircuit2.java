@@ -29,17 +29,9 @@ public class GeneratorShortCircuit2 extends AbstractExtension<Generator> {
 
     private double transRd; // transient resistance // TODO : will be final when kG of the norm will be handled
     private double subTransRd; // sub-transient resistance // TODO : will be final when kG of the norm will be handled
-    private boolean toGround;
-    private final double ro;
-    private final double xo;
-    private final double ri;
-    private final double xi;
-    private final double groundingR;
-    private final double groundingX;
     private final RotorType rotorType;
     private final double ratedU;
     private final double cosPhi;
-    private final GeneratorType generatorType;
     private final double cq;
     private final double maxR1ToX1Ratio;
     private final double ikQmax;
@@ -50,22 +42,14 @@ public class GeneratorShortCircuit2 extends AbstractExtension<Generator> {
         return NAME;
     }
 
-    public GeneratorShortCircuit2(Generator generator, double transRd, double subTransRd, boolean toGround, double ro, double xo, double ri, double xi, double groundingR, double groundingX, RotorType rotorType, double ratedU, double cosPhi,
-                                  GeneratorType generatorType, double cq, double ikQmax, double maxR1ToX1Ratio, double voltageRegulationRange) {
+    public GeneratorShortCircuit2(Generator generator, double transRd, double subTransRd, RotorType rotorType, double ratedU, double cosPhi,
+                                  double cq, double ikQmax, double maxR1ToX1Ratio, double voltageRegulationRange) {
         super(generator);
         this.transRd = transRd;
         this.subTransRd = subTransRd;
-        this.toGround = toGround;
-        this.ro = ro;
-        this.xo = xo;
-        this.ri = ri;
-        this.xi = xi;
-        this.groundingR = groundingR;
-        this.groundingX = groundingX;
         this.rotorType = rotorType;
         this.ratedU = ratedU;
         this.cosPhi = cosPhi;
-        this.generatorType = generatorType;
         this.cq = cq;
         this.ikQmax = ikQmax;
         this.maxR1ToX1Ratio = maxR1ToX1Ratio;
@@ -78,34 +62,6 @@ public class GeneratorShortCircuit2 extends AbstractExtension<Generator> {
 
     public double getSubTransRd() {
         return subTransRd;
-    }
-
-    public boolean isToGround() {
-        return toGround;
-    }
-
-    public double getGroundingR() {
-        return groundingR;
-    }
-
-    public double getGroundingX() {
-        return groundingX;
-    }
-
-    public double getRo() {
-        return ro;
-    }
-
-    public double getXo() {
-        return xo;
-    }
-
-    public double getRi() {
-        return ri;
-    }
-
-    public double getXi() {
-        return xi;
     }
 
     public RotorType getRotorType() {
@@ -128,10 +84,6 @@ public class GeneratorShortCircuit2 extends AbstractExtension<Generator> {
         this.transRd = transRd;
     }
 
-    public GeneratorType getGeneratorType() {
-        return generatorType;
-    }
-
     public double getCq() {
         return cq;
     }
@@ -146,10 +98,6 @@ public class GeneratorShortCircuit2 extends AbstractExtension<Generator> {
 
     public double getVoltageRegulationRange() {
         return voltageRegulationRange;
-    }
-
-    public void setToGround(boolean toGround) {
-        this.toGround = toGround;
     }
 
 }

@@ -11,7 +11,7 @@ import com.powsybl.computation.local.LocalComputationManager;
 import com.powsybl.iidm.network.*;
 import com.powsybl.iidm.network.extensions.GeneratorShortCircuitAdder;
 import com.powsybl.incubator.simulator.util.ReferenceNetwork;
-import com.powsybl.incubator.simulator.util.extensions.iidm.GeneratorShortCircuitAdder2;
+import com.powsybl.incubator.simulator.util.extensions.iidm.GeneratorFortescueAdder;
 import com.powsybl.incubator.simulator.util.extensions.iidm.LineShortCircuitAdder;
 import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
@@ -158,7 +158,7 @@ public class ShortCircuitMonophasedTest {
 
         LoadFlowResult resultntg = loadFlowRunner.run(network, parameters);
 
-        network.getGenerator("GB").newExtension(GeneratorShortCircuitAdder2.class)
+        network.getGenerator("GB").newExtension(GeneratorFortescueAdder.class)
                 .withToGround(true)
                 .withXo(130) // initialized with subtransXd by default
                 .add();

@@ -70,9 +70,6 @@ public class ShortCircuitNormTest {
         kg = extensionGenNorm.getkG();
         assertEquals(1.0, kg, 0.000001);
 
-        knormT2w = extensionT2w.getkNorm();
-        assertEquals(1.0, knormT2w, 0.000001);
-
         double roOverR = 0.15;
         double xoOverX = 3.;
         double rOverX = 0.1;
@@ -87,13 +84,16 @@ public class ShortCircuitNormTest {
         g1.newExtension(GeneratorShortCircuitAdder2.class)
                 .withSubTransRd(0.)
                 .withTransRd(0.)
-                .withToGround(true)
                 .withRatedU(0.)
                 .withCosPhi(0.)
-                .withGeneratorType(GeneratorShortCircuit2.GeneratorType.FEEDER)
                 .withMaxR1ToX1Ratio(rOverX) // extensions for feeder type
                 .withCq(voltageFactor)
                 .withIkQmax(ikQmax)
+                .add();
+
+        g1.newExtension(GeneratorFortescueAdder.class)
+                .withToGround(true)
+                .withGeneratorType(GeneratorFortescue.GeneratorType.FEEDER)
                 .add();
 
         shortCircuitNormNone.applyNormToNetwork(network);
@@ -274,6 +274,9 @@ public class ShortCircuitNormTest {
 
         g1.newExtension(GeneratorShortCircuitAdder2.class)
                 .withTransRd(0.1)
+                .add();
+
+        g1.newExtension(GeneratorFortescueAdder.class)
                 .withToGround(true)
                 .add();
 

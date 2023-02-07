@@ -35,13 +35,12 @@ public class TwoWindingsTransformerShortCircuit extends AbstractExtension<TwoWin
         return NAME;
     }
 
-    public TwoWindingsTransformerShortCircuit(TwoWindingsTransformer twt, boolean isPartOfGeneratingUnit, double ro, double xo, double kNorm, boolean freeFluxes,
+    public TwoWindingsTransformerShortCircuit(TwoWindingsTransformer twt, boolean isPartOfGeneratingUnit, double ro, double xo, boolean freeFluxes,
                                               LegConnectionType leg1ConnectionType, LegConnectionType leg2ConnectionType, double r1Ground, double x1Ground, double r2Ground, double x2Ground) {
         super(twt);
         this.isPartOfGeneratingUnit = isPartOfGeneratingUnit;
         this.ro = ro;
         this.xo = xo;
-        this.kNorm = kNorm;
         this.freeFluxes = freeFluxes;
         this.leg1ConnectionType = Objects.requireNonNull(leg1ConnectionType);
         this.leg2ConnectionType = Objects.requireNonNull(leg2ConnectionType);

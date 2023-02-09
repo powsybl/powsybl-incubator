@@ -12,7 +12,7 @@ import com.powsybl.iidm.network.Line;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at gmail.com>
  */
-public class LineShortCircuit extends AbstractExtension<Line> {
+public class LineFortescue extends AbstractExtension<Line> {
 
     public static final String NAME = "lineShortCircuit";
 
@@ -24,7 +24,7 @@ public class LineShortCircuit extends AbstractExtension<Line> {
         return NAME;
     }
 
-    public LineShortCircuit(Line line, double ro, double xo) {
+    public LineFortescue(Line line, double ro, double xo) {
         super(line);
         this.ro = ro;
         this.xo = xo;

@@ -9,36 +9,34 @@ package com.powsybl.incubator.simulator.util.extensions.iidm;
 import com.powsybl.commons.extensions.AbstractExtensionAdder;
 import com.powsybl.iidm.network.Line;
 
-import static com.powsybl.incubator.simulator.util.extensions.iidm.ShortCircuitConstants.*;
-
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at gmail.com>
  */
-public class LineShortCircuitAdder extends AbstractExtensionAdder<Line, LineShortCircuit> {
+public class LineFortescueAdder extends AbstractExtensionAdder<Line, LineFortescue> {
 
     private double ro = 0.;
     private double xo = 0.;
 
-    public LineShortCircuitAdder(Line line) {
+    public LineFortescueAdder(Line line) {
         super(line);
     }
 
     @Override
-    public Class<? super LineShortCircuit> getExtensionClass() {
-        return LineShortCircuit.class;
+    public Class<? super LineFortescue> getExtensionClass() {
+        return LineFortescue.class;
     }
 
     @Override
-    protected LineShortCircuit createExtension(Line line) {
-        return new LineShortCircuit(line, ro, xo);
+    protected LineFortescue createExtension(Line line) {
+        return new LineFortescue(line, ro, xo);
     }
 
-    public LineShortCircuitAdder withRo(double ro) {
+    public LineFortescueAdder withRo(double ro) {
         this.ro = ro;
         return this;
     }
 
-    public LineShortCircuitAdder withXo(double xo) {
+    public LineFortescueAdder withXo(double xo) {
         this.xo = xo;
         return this;
     }

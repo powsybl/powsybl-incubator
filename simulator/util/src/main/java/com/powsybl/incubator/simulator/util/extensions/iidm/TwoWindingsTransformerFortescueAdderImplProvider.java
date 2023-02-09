@@ -8,14 +8,14 @@ package com.powsybl.incubator.simulator.util.extensions.iidm;
 
 import com.google.auto.service.AutoService;
 import com.powsybl.commons.extensions.ExtensionAdderProvider;
-import com.powsybl.iidm.network.ThreeWindingsTransformer;
+import com.powsybl.iidm.network.TwoWindingsTransformer;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at gmail.com>
  */
 @AutoService(ExtensionAdderProvider.class)
-public class ThreeWindingsTransformerShortCircuitAdderImplProvider
-        implements ExtensionAdderProvider<ThreeWindingsTransformer, ThreeWindingsTransformerShortCircuit, ThreeWindingsTransformerShortCircuitAdder> {
+public class TwoWindingsTransformerFortescueAdderImplProvider
+        implements ExtensionAdderProvider<TwoWindingsTransformer, TwoWindingsTransformerFortescue, TwoWindingsTransformerFortescueAdder> {
 
     @Override
     public String getImplementationName() {
@@ -24,16 +24,16 @@ public class ThreeWindingsTransformerShortCircuitAdderImplProvider
 
     @Override
     public String getExtensionName() {
-        return ThreeWindingsTransformerShortCircuit.NAME;
+        return TwoWindingsTransformerFortescue.NAME;
     }
 
     @Override
-    public Class<ThreeWindingsTransformerShortCircuitAdder> getAdderClass() {
-        return ThreeWindingsTransformerShortCircuitAdder.class;
+    public Class<TwoWindingsTransformerFortescueAdder> getAdderClass() {
+        return TwoWindingsTransformerFortescueAdder.class;
     }
 
     @Override
-    public ThreeWindingsTransformerShortCircuitAdder newAdder(ThreeWindingsTransformer twt) {
-        return new ThreeWindingsTransformerShortCircuitAdder(twt);
+    public TwoWindingsTransformerFortescueAdder newAdder(TwoWindingsTransformer twt) {
+        return new TwoWindingsTransformerFortescueAdder(twt);
     }
 }

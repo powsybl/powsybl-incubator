@@ -15,7 +15,7 @@ import java.util.Objects;
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at gmail.com>
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
-public class ThreeWindingsTransformerShortCircuit extends AbstractExtension<ThreeWindingsTransformer> {
+public class ThreeWindingsTransformerFortescue extends AbstractExtension<ThreeWindingsTransformer> {
 
     public class T3wLeg {
 
@@ -71,11 +71,11 @@ public class ThreeWindingsTransformerShortCircuit extends AbstractExtension<Thre
         return NAME;
     }
 
-    public ThreeWindingsTransformerShortCircuit(ThreeWindingsTransformer extendable,
-                                                double leg1Ro, double leg2Ro, double leg3Ro,
-                                                double leg1Xo, double leg2Xo, double leg3Xo,
-                                                boolean leg1FreeFluxes, boolean leg2FreeFluxes, boolean leg3FreeFluxes,
-                                                LegConnectionType leg1ConnectionType, LegConnectionType leg2ConnectionType, LegConnectionType leg3ConnectionType) {
+    public ThreeWindingsTransformerFortescue(ThreeWindingsTransformer extendable,
+                                             double leg1Ro, double leg2Ro, double leg3Ro,
+                                             double leg1Xo, double leg2Xo, double leg3Xo,
+                                             boolean leg1FreeFluxes, boolean leg2FreeFluxes, boolean leg3FreeFluxes,
+                                             LegConnectionType leg1ConnectionType, LegConnectionType leg2ConnectionType, LegConnectionType leg3ConnectionType) {
         super(extendable);
 
         this.leg1 = new T3wLeg(leg1Ro, leg1Xo, leg1FreeFluxes, leg1ConnectionType);

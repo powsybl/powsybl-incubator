@@ -175,7 +175,7 @@ public class ShortCircuitNormIec extends ShortCircuitNormNone {
         double kTcX = getCheckedCoef(t3WId, xcT3k, xc);
         double kTcR = getCheckedCoef(t3WId, rcT3k, rc);
 
-        ThreeWindingsTransformerShortCircuit extension = t3w.getExtension(ThreeWindingsTransformerShortCircuit.class);
+        ThreeWindingsTransformerFortescue extension = t3w.getExtension(ThreeWindingsTransformerFortescue.class);
         if (extension == null) {
             throw new PowsyblException(t3WId + "' could not be adjusted with feeder values because of missing extension input data");
         }
@@ -265,7 +265,7 @@ public class ShortCircuitNormIec extends ShortCircuitNormNone {
 
     public Generator getAssociatedGenerator(Network network, TwoWindingsTransformer t2w) {
 
-        TwoWindingsTransformerShortCircuit extension = t2w.getExtension(TwoWindingsTransformerShortCircuit.class);
+        TwoWindingsTransformerFortescue extension = t2w.getExtension(TwoWindingsTransformerFortescue.class);
         Generator tfoGenerator = null;
         boolean isGen = false;
 

@@ -12,7 +12,7 @@ import com.powsybl.iidm.network.*;
 import com.powsybl.iidm.network.extensions.GeneratorShortCircuitAdder;
 import com.powsybl.incubator.simulator.util.ReferenceNetwork;
 import com.powsybl.incubator.simulator.util.extensions.ThreeWindingsTransformerNorm;
-import com.powsybl.incubator.simulator.util.extensions.iidm.ThreeWindingsTransformerShortCircuit;
+import com.powsybl.incubator.simulator.util.extensions.iidm.ThreeWindingsTransformerFortescue;
 import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
@@ -353,7 +353,7 @@ public class ShortCircuitBalancedTest {
 
         shortCircuitNormIec.setKtT3Wi(t3w);
 
-        ThreeWindingsTransformerShortCircuit extension = t3w.getExtension(ThreeWindingsTransformerShortCircuit.class);
+        ThreeWindingsTransformerFortescue extension = t3w.getExtension(ThreeWindingsTransformerFortescue.class);
         double coefcX0 = extension.getLeg3().getLegXo() / t3w.getLeg3().getX();
         assertEquals(1.0, coefcX0, 0.000001);
 

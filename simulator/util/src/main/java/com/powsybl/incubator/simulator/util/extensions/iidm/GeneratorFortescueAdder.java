@@ -4,6 +4,7 @@ import com.powsybl.commons.extensions.AbstractExtensionAdder;
 import com.powsybl.iidm.network.Generator;
 
 import static com.powsybl.incubator.simulator.util.extensions.iidm.ShortCircuitConstants.*;
+import static com.powsybl.incubator.simulator.util.extensions.iidm.FortescueConstants.*;
 
 public class GeneratorFortescueAdder extends AbstractExtensionAdder<Generator, GeneratorFortescue> {
 

@@ -670,30 +670,30 @@ public final class ReferenceNetwork {
 
         //additional data
 
-        l1.newExtension(LineShortCircuitAdder.class)
+        l1.newExtension(LineFortescueAdder.class)
                 .withRo(coeffRoL1 * rL1)
                 .withXo(coeffXoL1 * xL1)
                 .add();
-        l2.newExtension(LineShortCircuitAdder.class)
+        l2.newExtension(LineFortescueAdder.class)
                 .withRo(coeffRoL2 * rL2)
                 .withXo(coeffXoL2 * xL2)
                 .add();
-        l3.newExtension(LineShortCircuitAdder.class)
+        l3.newExtension(LineFortescueAdder.class)
                 .withRo(coeffRoL3 * rL3)
                 .withXo(coeffXoL3 * xL3)
                 .add();
-        l4.newExtension(LineShortCircuitAdder.class)
+        l4.newExtension(LineFortescueAdder.class)
                 .withRo(coeffRoL4 * rL4)
                 .withXo(coeffXoL4 * xL4)
                 .add();
 
-        t1.newExtension(TwoWindingsTransformerShortCircuitAdder.class)
+        t1.newExtension(TwoWindingsTransformerFortescueAdder.class)
                 .withRo(coeffRoT1 * rT1)
                 .withXo(coeffXoT1 * xT1)
                 .withLeg1ConnectionType(LegConnectionType.DELTA)
                 .withLeg2ConnectionType(LegConnectionType.Y_GROUNDED)
                 .add();
-        t2.newExtension(TwoWindingsTransformerShortCircuitAdder.class)
+        t2.newExtension(TwoWindingsTransformerFortescueAdder.class)
                 .withRo(coeffRoT2 * rT2)
                 .withXo(coeffXoT2 * xT2)
                 .withLeg1ConnectionType(LegConnectionType.DELTA)
@@ -1269,7 +1269,7 @@ public final class ReferenceNetwork {
                 .add();
 
         // transformers :
-        twt3.newExtension(ThreeWindingsTransformerShortCircuitAdder.class)
+        twt3.newExtension(ThreeWindingsTransformerFortescueAdder.class)
                 .withLeg1ConnectionType(LegConnectionType.Y_GROUNDED)
                 .withLeg2ConnectionType(LegConnectionType.Y)
                 .withLeg3ConnectionType(LegConnectionType.DELTA)
@@ -1281,7 +1281,7 @@ public final class ReferenceNetwork {
                 .withLeg3Xo(twt3.getLeg3().getX())
                 .add();
 
-        twt4.newExtension(ThreeWindingsTransformerShortCircuitAdder.class)
+        twt4.newExtension(ThreeWindingsTransformerFortescueAdder.class)
                 .withLeg1FreeFluxes(true)
                 .withLeg1ConnectionType(LegConnectionType.Y)
                 .withLeg1Ro(twt4.getLeg1().getR())
@@ -1296,13 +1296,13 @@ public final class ReferenceNetwork {
                 .withLeg3ConnectionType(LegConnectionType.DELTA)
                 .add();
 
-        t5.newExtension(TwoWindingsTransformerShortCircuitAdder.class)
+        t5.newExtension(TwoWindingsTransformerFortescueAdder.class)
                 .withXo(xT5)
                 .withRo(rT5)
                 .withLeg1ConnectionType(LegConnectionType.Y)
                 .withLeg2ConnectionType(LegConnectionType.Y)
                 .add();
-        t6.newExtension(TwoWindingsTransformerShortCircuitAdder.class)
+        t6.newExtension(TwoWindingsTransformerFortescueAdder.class)
                 .withXo(xT6)
                 .withRo(rT6)
                 .withLeg1ConnectionType(LegConnectionType.Y)
@@ -1310,27 +1310,27 @@ public final class ReferenceNetwork {
                 .add();
 
         // Lines :
-        l1.newExtension(LineShortCircuitAdder.class)
+        l1.newExtension(LineFortescueAdder.class)
                 .withRo(coeffRoL1 * rL1)
                 .withXo(coeffXoL1 * xL1)
                 .add();
-        l2.newExtension(LineShortCircuitAdder.class)
+        l2.newExtension(LineFortescueAdder.class)
                 .withRo(coeffRoL2 * rL2)
                 .withXo(coeffXoL2 * xL2)
                 .add();
-        l3.newExtension(LineShortCircuitAdder.class)
+        l3.newExtension(LineFortescueAdder.class)
                 .withRo(coeffRoL3 * rL3)
                 .withXo(coeffXoL3 * xL3)
                 .add();
-        l4.newExtension(LineShortCircuitAdder.class)
+        l4.newExtension(LineFortescueAdder.class)
                 .withRo(coeffRoL4 * rL4)
                 .withXo(coeffXoL4 * xL4)
                 .add();
-        l5.newExtension(LineShortCircuitAdder.class)
+        l5.newExtension(LineFortescueAdder.class)
                 .withRo(coeffRoL5 * rL5)
                 .withXo(coeffXoL5 * xL5)
                 .add();
-        l6.newExtension(LineShortCircuitAdder.class)
+        l6.newExtension(LineFortescueAdder.class)
                 .withRo(coeffRoL6 * rL6)
                 .withXo(coeffXoL6 * xL6)
                 .add();

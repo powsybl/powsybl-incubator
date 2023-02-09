@@ -11,13 +11,13 @@ import com.powsybl.iidm.network.TwoWindingsTransformer;
 
 import java.util.Objects;
 
-import static com.powsybl.incubator.simulator.util.extensions.iidm.ShortCircuitConstants.*;
+import static com.powsybl.incubator.simulator.util.extensions.iidm.FortescueConstants.*;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at gmail.com>
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
-public class TwoWindingsTransformerShortCircuitAdder extends AbstractExtensionAdder<TwoWindingsTransformer, TwoWindingsTransformerShortCircuit> {
+public class TwoWindingsTransformerFortescueAdder extends AbstractExtensionAdder<TwoWindingsTransformer, TwoWindingsTransformerFortescue> {
 
     private boolean isPartOfGeneratingUnit = false;
     private double coeffRo = DEFAULT_COEFF_RO;
@@ -32,56 +32,56 @@ public class TwoWindingsTransformerShortCircuitAdder extends AbstractExtensionAd
     private double r2Ground = 0.;
     private double x2Ground = 0.;
 
-    public TwoWindingsTransformerShortCircuitAdder(TwoWindingsTransformer twt) {
+    public TwoWindingsTransformerFortescueAdder(TwoWindingsTransformer twt) {
         super(twt);
     }
 
     @Override
-    public Class<? super TwoWindingsTransformerShortCircuit> getExtensionClass() {
-        return TwoWindingsTransformerShortCircuit.class;
+    public Class<? super TwoWindingsTransformerFortescue> getExtensionClass() {
+        return TwoWindingsTransformerFortescue.class;
     }
 
     @Override
-    protected TwoWindingsTransformerShortCircuit createExtension(TwoWindingsTransformer twt) {
-        return new TwoWindingsTransformerShortCircuit(twt, isPartOfGeneratingUnit, ro, xo, freeFluxes, leg1ConnectionType, leg2ConnectionType, r1Ground, x1Ground, r2Ground, x2Ground);
+    protected TwoWindingsTransformerFortescue createExtension(TwoWindingsTransformer twt) {
+        return new TwoWindingsTransformerFortescue(twt, isPartOfGeneratingUnit, ro, xo, freeFluxes, leg1ConnectionType, leg2ConnectionType, r1Ground, x1Ground, r2Ground, x2Ground);
     }
 
-    public TwoWindingsTransformerShortCircuitAdder withIsPartOfGeneratingUnit(boolean isPartOfGeneratingUnit) {
+    public TwoWindingsTransformerFortescueAdder withIsPartOfGeneratingUnit(boolean isPartOfGeneratingUnit) {
         this.isPartOfGeneratingUnit = isPartOfGeneratingUnit;
         return this;
     }
 
-    public TwoWindingsTransformerShortCircuitAdder withCoeffRo(double coeffRo) {
+    public TwoWindingsTransformerFortescueAdder withCoeffRo(double coeffRo) {
         this.coeffRo = coeffRo;
         return this;
     }
 
-    public TwoWindingsTransformerShortCircuitAdder withCoeffXo(double coeffXo) {
+    public TwoWindingsTransformerFortescueAdder withCoeffXo(double coeffXo) {
         this.coeffXo = coeffXo;
         return this;
     }
 
-    public TwoWindingsTransformerShortCircuitAdder withRo(double ro) {
+    public TwoWindingsTransformerFortescueAdder withRo(double ro) {
         this.ro = ro;
         return this;
     }
 
-    public TwoWindingsTransformerShortCircuitAdder withXo(double xo) {
+    public TwoWindingsTransformerFortescueAdder withXo(double xo) {
         this.xo = xo;
         return this;
     }
 
-    public TwoWindingsTransformerShortCircuitAdder withFreeFluxes(boolean freeFluxes) {
+    public TwoWindingsTransformerFortescueAdder withFreeFluxes(boolean freeFluxes) {
         this.freeFluxes = freeFluxes;
         return this;
     }
 
-    public TwoWindingsTransformerShortCircuitAdder withLeg1ConnectionType(LegConnectionType leg1ConnectionType) {
+    public TwoWindingsTransformerFortescueAdder withLeg1ConnectionType(LegConnectionType leg1ConnectionType) {
         this.leg1ConnectionType = Objects.requireNonNull(leg1ConnectionType);
         return this;
     }
 
-    public TwoWindingsTransformerShortCircuitAdder withLeg2ConnectionType(LegConnectionType leg2ConnectionType) {
+    public TwoWindingsTransformerFortescueAdder withLeg2ConnectionType(LegConnectionType leg2ConnectionType) {
         this.leg2ConnectionType = Objects.requireNonNull(leg2ConnectionType);
         return this;
     }

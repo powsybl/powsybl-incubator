@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static com.powsybl.incubator.simulator.util.extensions.iidm.ShortCircuitConstants.*;
+import static com.powsybl.incubator.simulator.util.extensions.iidm.FortescueConstants.*;
 
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
@@ -108,7 +109,7 @@ public final class ShortCircuitExtensions {
         double kT3R0 = DEFAULT_COEFF_K;
         double kT3X0 = DEFAULT_COEFF_K;
 
-        var extensions = twt.getExtension(ThreeWindingsTransformerShortCircuit.class);
+        var extensions = twt.getExtension(ThreeWindingsTransformerFortescue.class);
         if (extensions != null) {
 
             leg1Ro = extensions.getLeg1().getLegRo();
@@ -175,7 +176,7 @@ public final class ShortCircuitExtensions {
         double zBase = vNom2 * vNom2 / SB;
         double ro = line.getR() / zBase;
         double xo = line.getX() / zBase;
-        LineShortCircuit extensions = line.getExtension(LineShortCircuit.class);
+        LineFortescue extensions = line.getExtension(LineFortescue.class);
         if (extensions != null) {
             ro = extensions.getRo() / zBase;
             xo = extensions.getXo() / zBase;
@@ -204,7 +205,7 @@ public final class ShortCircuitExtensions {
         double x1Ground = 0.;
         double r2Ground = 0.;
         double x2Ground = 0.;
-        var extensions = twt.getExtension(TwoWindingsTransformerShortCircuit.class);
+        var extensions = twt.getExtension(TwoWindingsTransformerFortescue.class);
         if (extensions != null) {
             ro = extensions.getRo() / zBase;
             xo = extensions.getXo() / zBase;

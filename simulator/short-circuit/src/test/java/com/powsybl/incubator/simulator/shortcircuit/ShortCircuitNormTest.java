@@ -49,7 +49,7 @@ public class ShortCircuitNormTest {
         assertEquals(0.1950430724873738, ks, 0.000001);
 
         shortCircuitNormIec.applyNormToNetwork(network);
-        TwoWindingsTransformerShortCircuit extensionT2w = t2w.getExtension(TwoWindingsTransformerShortCircuit.class);
+        TwoWindingsTransformerFortescue extensionT2w = t2w.getExtension(TwoWindingsTransformerFortescue.class);
         TwoWindingsTransformerNorm extensionT2wNorm = shortCircuitNormIec.getNormExtensions().getNormExtension(t2w);
         double knormT2w = extensionT2wNorm.getkNorm();
         assertEquals(0.1950430724873738, knormT2w, 0.000001);
@@ -297,7 +297,7 @@ public class ShortCircuitNormTest {
                 .setB(0.0D)
                 .setRatedS(31.5)
                 .add();
-        t12.newExtension(TwoWindingsTransformerShortCircuitAdder.class)
+        t12.newExtension(TwoWindingsTransformerFortescueAdder.class)
                 .withLeg1ConnectionType(LegConnectionType.Y)
                 .withLeg2ConnectionType(LegConnectionType.Y)
                 .withIsPartOfGeneratingUnit(true)

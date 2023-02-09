@@ -12,7 +12,7 @@ import com.powsybl.iidm.network.*;
 import com.powsybl.iidm.network.extensions.GeneratorShortCircuitAdder;
 import com.powsybl.incubator.simulator.util.ReferenceNetwork;
 import com.powsybl.incubator.simulator.util.extensions.iidm.GeneratorFortescueAdder;
-import com.powsybl.incubator.simulator.util.extensions.iidm.LineShortCircuitAdder;
+import com.powsybl.incubator.simulator.util.extensions.iidm.LineFortescueAdder;
 import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
@@ -335,10 +335,10 @@ public class ShortCircuitMonophasedTest {
                 .setB2(0.0)
                 .add();
 
-        babp.newExtension(LineShortCircuitAdder.class)
+        babp.newExtension(LineFortescueAdder.class)
                 .withXo(coeffXo1 * xd1)
                 .add();
-        bpbb.newExtension(LineShortCircuitAdder.class)
+        bpbb.newExtension(LineFortescueAdder.class)
                 .withXo(coeffXo2 * xd2)
                 .add();
 

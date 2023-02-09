@@ -196,7 +196,7 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
             double b0ch = propertyBag.asDouble("b0ch");
             Line line = network.getLine(id);
             if (line != null) {
-                line.newExtension(LineShortCircuitAdder.class)
+                line.newExtension(LineFortescueAdder.class)
                         .withRo(r0)
                         .withXo(x0)
                         .add();
@@ -212,16 +212,16 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
         }
     }
 
-    private void processPowerTransformers(Network network, TripleStore tripleStore, Map<TwoWindingsTransformerShortCircuit, Pair<Double, Double>> tmpExtensionToRoXo) {
+    private void processPowerTransformers(Network network, TripleStore tripleStore, Map<TwoWindingsTransformerFortescue, Pair<Double, Double>> tmpExtensionToRoXo) {
         for (PropertyBag propertyBag : tripleStore.query(queryCatalog.get("powerTransformerShortCircuit"))) {
             String id = propertyBag.getId("ID");
             boolean isPartOfGeneratingUnit = propertyBag.asBoolean("isPartOfGeneratorUnit", false);
 
             TwoWindingsTransformer t2wt = network.getTwoWindingsTransformer(id);
             if (t2wt != null) {
-                TwoWindingsTransformerShortCircuit extension = t2wt.getExtension(TwoWindingsTransformerShortCircuit.class);
+                TwoWindingsTransformerFortescue extension = t2wt.getExtension(TwoWindingsTransformerFortescue.class);
                 if (extension == null) {
-                    t2wt.newExtension(TwoWindingsTransformerShortCircuitAdder.class)
+                    t2wt.newExtension(TwoWindingsTransformerFortescueAdder.class)
                             .withIsPartOfGeneratingUnit(isPartOfGeneratingUnit)
                             .withRo(t2wt.getR())
                             .withXo(t2wt.getX())
@@ -239,7 +239,7 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
         }
     }
 
-    private void processPowerTransformerEnds(Network network, TripleStore tripleStore, Map<TwoWindingsTransformerShortCircuit, Pair<Double, Double>> tmpExtensionToRoXo) {
+    private void processPowerTransformerEnds(Network network, TripleStore tripleStore, Map<TwoWindingsTransformerFortescue, Pair<Double, Double>> tmpExtensionToRoXo) {
         for (PropertyBag propertyBag : tripleStore.query(queryCatalog.get("powerTransformerEndShortCircuit"))) {
             String id = propertyBag.getId("ID");
             int endNumber = propertyBag.asInt("endNumber");
@@ -272,11 +272,11 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
             TwoWindingsTransformer t2wt = network.getTwoWindingsTransformer(id);
             if (t2wt != null) {
                 t2wt.setRatedS(ratedS); // rated S not not filled in CGMES import example for transformers
-                TwoWindingsTransformerShortCircuit extension = t2wt.getExtension(TwoWindingsTransformerShortCircuit.class);
+                TwoWindingsTransformerFortescue extension = t2wt.getExtension(TwoWindingsTransformerFortescue.class);
                 if (extension == null) {
-                    t2wt.newExtension(TwoWindingsTransformerShortCircuitAdder.class)
+                    t2wt.newExtension(TwoWindingsTransformerFortescueAdder.class)
                             .add();
-                    extension = t2wt.getExtension(TwoWindingsTransformerShortCircuit.class);
+                    extension = t2wt.getExtension(TwoWindingsTransformerFortescue.class);
                 }
 
                 // use of a local variable to get the sum of ro and xo from both ends to get the coefs afterwards
@@ -328,11 +328,11 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
             } else {
                 ThreeWindingsTransformer t3wt = network.getThreeWindingsTransformer(id);
                 if (t3wt != null) {
-                    ThreeWindingsTransformerShortCircuit extension = t3wt.getExtension(ThreeWindingsTransformerShortCircuit.class);
+                    ThreeWindingsTransformerFortescue extension = t3wt.getExtension(ThreeWindingsTransformerFortescue.class);
                     if (extension == null) {
-                        t3wt.newExtension(ThreeWindingsTransformerShortCircuitAdder.class)
+                        t3wt.newExtension(ThreeWindingsTransformerFortescueAdder.class)
                                 .add();
-                        extension = t3wt.getExtension(ThreeWindingsTransformerShortCircuit.class);
+                        extension = t3wt.getExtension(ThreeWindingsTransformerFortescue.class);
                     }
 
                     double ratedU02 = t3wt.getRatedU0() * t3wt.getRatedU0();
@@ -360,7 +360,7 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
         }
     }
 
-    public void setLegRoXoCoefs(ThreeWindingsTransformer.Leg leg, ThreeWindingsTransformerShortCircuit.T3wLeg extLeg, double r0, double x0, double ratedU02) {
+    public void setLegRoXoCoefs(ThreeWindingsTransformer.Leg leg, ThreeWindingsTransformerFortescue.T3wLeg extLeg, double r0, double x0, double ratedU02) {
 
         double ratedRo = r0 * ratedU02 / leg.getRatedU() / leg.getRatedU();
         double ratedXo = x0 * ratedU02 / leg.getRatedU() / leg.getRatedU();
@@ -374,7 +374,7 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
         processSynchronousMachines(network, tripleStore);
         processAsynchronousMachines(network, tripleStore);
         processAcLineSegments(network, tripleStore);
-        Map<TwoWindingsTransformerShortCircuit, Pair<Double, Double>> tmpExtensionToRoXo = new HashMap<>();
+        Map<TwoWindingsTransformerFortescue, Pair<Double, Double>> tmpExtensionToRoXo = new HashMap<>();
         processPowerTransformerEnds(network, tripleStore, tmpExtensionToRoXo);
         processPowerTransformers(network, tripleStore, tmpExtensionToRoXo);
         processExternalNetworkInjection(network, tripleStore);

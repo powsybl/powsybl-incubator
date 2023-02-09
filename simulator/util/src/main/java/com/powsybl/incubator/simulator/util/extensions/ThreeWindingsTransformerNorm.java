@@ -6,7 +6,7 @@
  */
 package com.powsybl.incubator.simulator.util.extensions;
 
-import static com.powsybl.incubator.simulator.util.extensions.iidm.ShortCircuitConstants.*;
+import static com.powsybl.incubator.simulator.util.extensions.iidm.FortescueConstants.*;
 import static com.powsybl.incubator.simulator.util.extensions.iidm.ShortCircuitConstants.DEFAULT_COEFF_K;
 
 /**

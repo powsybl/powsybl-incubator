@@ -17,6 +17,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.powsybl.ampl.converter.AbstractNetworkApplierFactory;
+import com.powsybl.ampl.converter.AmplSubset;
+import com.powsybl.commons.util.StringToIntMapper;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.powsybl.ampl.converter.NetworkApplier;
@@ -35,7 +38,7 @@ public enum AmplModel implements IAmplModel {
      */
     REACTIVE_OPF("reactiveopf_results", "reactiveopf_src",
             Arrays.asList("reactiveopf.run", "reactiveopfoutput.run", "reactiveopfexit.run"),
-            Arrays.asList("reactiveopf.mod", "reactiveopf.dat"), new ReactiveOpfNetworkApplier());
+            Arrays.asList("reactiveopf.mod", "reactiveopf.dat"));
 
     private static final String NETWORK_DATA_PREFIX = "ampl";
     /**
@@ -44,7 +47,6 @@ public enum AmplModel implements IAmplModel {
     private List<Pair<String, String>> modelNameAndPath;
     private List<String> runFiles;
     private String outputFilePrefix;
-    private NetworkApplier applier;
 
     /**
      * Create a ampl Model to be executed
@@ -59,24 +61,18 @@ public enum AmplModel implements IAmplModel {
      *                         files)
      */
     private AmplModel(String outputFilePrefix, String resourcesFolder, List<String> runFiles,
-            List<String> resourcesFiles, NetworkApplier applier) {
+                      List<String> resourcesFiles) {
         this.runFiles = runFiles;
         this.outputFilePrefix = outputFilePrefix;
-        this.applier = applier;
         List<String> modelFiles = new LinkedList<>();
         modelFiles.addAll(resourcesFiles);
         modelFiles.addAll(runFiles);
-        this.modelNameAndPath = modelFiles.stream().map(file -> Pair.of(file, resourcesFolder + "/" + file))
-                .collect(Collectors.toCollection(LinkedList::new));
-    }
-
-    private AmplModel(String outputFilePrefix, String resourcesFolder, List<String> runFiles,
-            List<String> resourcesFiles) {
-        this(outputFilePrefix, resourcesFolder, runFiles, resourcesFiles, NetworkApplier.getDefaultApplier());
+        this.modelNameAndPath = modelFiles.stream().map(file -> Pair.of(file, resourcesFolder + "/" + file)).collect(
+                Collectors.toCollection(LinkedList::new));
     }
 
     /**
-     * @return each pair contains the name and the InputStream of the file
+     * @return each pair contains the name, and the InputStream of the file
      */
     public List<Pair<String, InputStream>> getModelAsStream() {
         return modelNameAndPath.stream()
@@ -101,8 +97,13 @@ public enum AmplModel implements IAmplModel {
     }
 
     @Override
-    public NetworkApplier getNetworkApplier() {
-        return this.applier;
+    public AbstractNetworkApplierFactory getNetworkApplierFactory() {
+        return new AbstractNetworkApplierFactory() {
+            @Override
+            public NetworkApplier of(StringToIntMapper<AmplSubset> mapper) {
+                return new ReactiveOpfNetworkApplier(mapper);
+            }
+        };
     }
 
     @Override

@@ -6,10 +6,16 @@
  */
 package com.powsybl.opf;
 
-import com.powsybl.ampl.converter.NetworkApplier;
-import com.powsybl.iidm.network.Generator;
+import com.powsybl.ampl.converter.AmplSubset;
+import com.powsybl.ampl.converter.DefaultNetworkApplier;
+import com.powsybl.commons.util.StringToIntMapper;
+import com.powsybl.iidm.network.*;
 
-public class ReactiveOpfNetworkApplier implements NetworkApplier {
+public class ReactiveOpfNetworkApplier extends DefaultNetworkApplier {
+
+    public ReactiveOpfNetworkApplier(StringToIntMapper<AmplSubset> networkMapper) {
+        super(networkMapper);
+    }
 
     @Override
     public void applyGenerators(Generator g, int busNum, boolean vregul, double targetV, double targetP, double targetQ,

@@ -18,10 +18,18 @@ public class ReactiveOpfNetworkApplier extends DefaultNetworkApplier {
     }
 
     @Override
-    public void applyGenerators(Generator g, int busNum, boolean vregul, double targetV, double targetP, double targetQ,
-            double p, double q) {
-        double vb = g.getTerminal().getVoltageLevel().getNominalV();
-        g.setTargetV(targetV * vb);
+    public void applyShunt(ShuntCompensator sc, int busNum, double q, double b, int sections) {
+        int nbSection = 0;
+        while (nbSection <= sc.getMaximumSectionCount() && sc.getB(nbSection) < b) {
+            ++nbSection;
+        }
+        if (nbSection == sc.getMaximumSectionCount()) {
+            sc.setSectionCount(sc.getMaximumSectionCount());
+        } else if (Math.abs(sc.getB(nbSection) - b) < Math.abs(sc.getB(nbSection - 1) - b)) {
+            sc.setSectionCount(nbSection);
+        } else {
+            sc.setSectionCount(nbSection - 1);
+        }
     }
 
 }

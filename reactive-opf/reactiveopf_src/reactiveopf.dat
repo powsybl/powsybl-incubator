@@ -79,3 +79,8 @@ param: PARAM_SHUNT: param_shunt_id := include param_shunts.txt;
 # param_generators_reactive.txt
 #"variant" "num" "bus" "id"
 param: PARAM_UNIT_FIXQ: param_unit_fixq_id := include param_generators_reactive.txt;
+
+# param_transformers.txt
+#"variant" "num" "bus1" "bus2" "id"
+param: PARAM_TRANSFORMERS_RATIO_VARIABLE: param_transformers_ratio_variable_id := include param_transformers.txt;
+

@@ -474,12 +474,25 @@ check {(t,s,n) in PARAM_SHUNT inter SHUNT}: shunt_id[t,s,n] == param_shunt_id[t,
 # Controls for reactive power of generating units
 ###############################################################################
 # param_generators_reactive.txt
-# All units are considered with varaible Q, within bounds.
+# All units are considered with variable Q, within bounds.
 # Only units listed in this file will be considered with fixed reactive power value
 #"variant" "num" "bus" "id"
 set PARAM_UNIT_FIXQ  dimen 3 default {}; # [timestep, num, bus]
 param param_unit_fixq_id{PARAM_UNIT_FIXQ} symbolic;
 check {(t,g,n) in PARAM_UNIT_FIXQ inter UNIT}: unit_id[t,g,n] == param_unit_fixq_id[t,g,n];
+
+
+
+###############################################################################
+# Controls for transformers
+###############################################################################
+# param_transformers.txt
+# All transformers are considered with fixed ratio
+# Only transformers listed in this file will be considered with variable ratio value
+#"variant" "num" "bus" "id"
+set PARAM_TRANSFORMERS_RATIO_VARIABLE  dimen 4 default {}; # [timestep, num, bus1, bus2]
+param param_transformers_ratio_variable_id{PARAM_TRANSFORMERS_RATIO_VARIABLE} symbolic;
+check {(t,qq,m,n) in PARAM_TRANSFORMERS_RATIO_VARIABLE inter BRANCH}: branch_id[t,qq,m,n] == param_transformers_ratio_variable_id[t,qq,m,n];
 
 
 
@@ -757,9 +770,11 @@ minimize problem_dcopf_objective:
 var teta{BUSCC} <= teta_max, >= teta_min;
 subject to ctr_null_phase_bus{PROBLEM_ACOPF}: teta[null_phase_bus] = 0;
 var V{n in BUSCC} 
-  <= 2-epsilon_min_voltage, 
+  <= 
+  if substation_Vnomi[1,bus_substation[1,n]] > ignore_voltage_bounds then voltage_upper_bound[1,bus_substation[1,n]] else
+  2-epsilon_min_voltage,
   >= 
-#  if substation_Vnomi[1,bus_substation[1,n]] < 25 then epsilon_min_voltage else
+  if substation_Vnomi[1,bus_substation[1,n]] <= ignore_voltage_bounds then epsilon_min_voltage else
   voltage_lower_bound[1,bus_substation[1,n]];
 # >= epsilon_min_voltage, <= voltage_upper_bound[1,bus_substation[1,n]];
 # >= voltage_lower_bound[1,bus_substation[1,n]], <= voltage_upper_bound[1,bus_substation[1,n]];
@@ -868,10 +883,13 @@ subject to ctr_balance_P{PROBLEM_ACOPF,k in BUSCC}:
 # Reactive balance slack variables only if there is a load or a shunt connected
 # If there is a unit, or SVC, or VSC, they already have reactive power generation, so no need to add slack variables
 set BUSCC_SLACK :=  {n in BUSCC: 
-  (card({(c,n) in LOADCC})>0 or card({(t,s,n) in SHUNT})>0)
-  and card{(g,n) in UNITON: (g,n) not in UNIT_FIXQ}==0
+  (
+  #(card({(c,n) in LOADCC})>0 or card({(t,s,n) in SHUNT})>0) and
+  card{(g,n) in UNITON: (g,n) not in UNIT_FIXQ}==0
   and card{(svc,n) in SVCON}==0
   and card{(vscconv,n) in VSCCONVON}==0
+  )
+  #or (card(setof{(qq,m,n) in BRANCHCC}m)+card(setof{(qq,n,m) in BRANCHCC}m))==1 # Bus connected with only one other bus
   } ;
 var slack1_balance_Q{BUSCC_SLACK} >=0, <= 500; # 500 Mvar is already HUGE
 var slack2_balance_Q{BUSCC_SLACK} >=0, <= 500;

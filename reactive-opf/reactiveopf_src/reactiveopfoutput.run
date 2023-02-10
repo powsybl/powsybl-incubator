@@ -93,7 +93,7 @@ close (fileOut);
 ###############################################################################
 if final_status == "OK" then {
 
-let fileOut := "reactiveopf_results_vsc_converter_station.csv";
+let fileOut := "reactiveopf_results_vsc_converter_stations.csv";
 printf "#variant;num;bus;vRegul;targetV(pu);targetQ(Mvar);P(MW);Q(Mvar);\n" > (fileOut);
 printf{(v,n) in VSCCONVON} "%i;%i;%i;%Q;%.3f;%.3f;%.3f;%.3f;\n",
   1,v,n,
@@ -102,6 +102,31 @@ printf{(v,n) in VSCCONVON} "%i;%i;%i;%Q;%.3f;%.3f;%.3f;%.3f;\n",
   vscconv_qvar[v,n],
   vscconv_P0[1,v,n],
   vscconv_qvar[v,n]
+  > (fileOut);
+close (fileOut);
+
+}
+
+
+
+###############################################################################
+#
+# Writing results for reactive slacks
+#
+###############################################################################
+if final_status == "OK" 
+and card({n in BUSCC_SLACK: slack1_balance_Q[n]>Pnull or slack2_balance_Q[n]>Pnull}) > 0
+then {
+
+let fileOut := "reactiveopf_results_reactive_slacks.csv";
+printf "#variant;bus;slack_condensator(Mvar);slack_self(Mvar);id;substation;\n" > (fileOut);
+printf{n in BUSCC_SLACK: slack1_balance_Q[n]>Pnull or slack2_balance_Q[n]>Pnull}
+  "%i;%i;%.2f;%.2f;%Q;%Q;\n",
+  1,n,
+  if slack1_balance_Q[n]>Pnull then slack1_balance_Q[n] else 0, 
+  if slack2_balance_Q[n]>Pnull then slack2_balance_Q[n] else 0,
+  bus_id[1,n],
+  substation_id[1,bus_substation[1,n]]
   > (fileOut);
 close (fileOut);
 
@@ -134,6 +159,7 @@ printf "%s %i\n","nb_iter_last",nb_iter_last > (fileOut);
 printf "%s %i\n","nb_iter_total",nb_iter_total > (fileOut);
 printf "%s %f\n","_ampl_elapsed_time",_ampl_elapsed_time > (fileOut);
 printf "%s %f\n","_total_solve_time",_total_solve_time > (fileOut);
+printf "%s %i\n","total_time",_total_solve_time+_ampl_elapsed_time > (fileOut);
 
 printf "\n" > (fileOut);
 printf "%s %s\n","operatingSystem",operatingSystem > (fileOut);
@@ -145,6 +171,21 @@ if length($SHELL) > 0 then {
   printf "%s %Q\n","SHELL",$SHELL > (fileOut); # Linux
   printf "%s %Q\n","HOSTNAME",$HOSTNAME > (fileOut);
 }
+printf "%s %Q\n","_cd",_cd > (fileOut);
+
+printf "\n" > (fileOut);
+printf "%s %f\n","Pnull",Pnull > (fileOut);
+printf "%s %f\n","Znull",Znull > (fileOut);
+printf "%s %f\n","epsilon_nominal_voltage",epsilon_nominal_voltage > (fileOut);
+printf "%s %f\n","epsilon_min_voltage",epsilon_min_voltage > (fileOut);
+printf "%s %f\n","ignore_voltage_bounds",ignore_voltage_bounds > (fileOut);
+printf "%s %f\n","PQmax",PQmax > (fileOut);
+printf "%s %f\n","defaultPmax",defaultPmax > (fileOut);
+printf "%s %f\n","defaultPmin",defaultPmin > (fileOut);
+printf "%s %f\n","defaultQmaxPmaxRatio",defaultQmaxPmaxRatio > (fileOut);
+printf "%s %f\n","defaultQmin",defaultQmin > (fileOut);
+printf "%s %f\n","defaultQmax",defaultQmax > (fileOut);
+printf "%s %f\n","minimalQPrange",minimalQPrange > (fileOut);
 
 printf "\n" > (fileOut);
 printf "%s %i\n","nb_substations",card(SUBSTATIONS) > (fileOut);
@@ -178,8 +219,6 @@ printf "%s %i\n","nb_vsc_converter_up_and_running",card(VSCCONVON) > (fileOut);
 printf "%s %i\n","nb_lcc_converter_in_data_file",card(LCCCONV) > (fileOut);
 printf "%s %i\n","nb_lcc_converter_up_and_running",card(LCCCONVON) > (fileOut);
 
-
-
 printf "\n" > (fileOut);
 printf "max_teta_dc %.2f\n",max({n in BUSCC} teta_dc[n]) > (fileOut);
 printf "max_teta_ac %.2f\n",max({n in BUSCC} teta[n]) > (fileOut);
@@ -192,9 +231,12 @@ printf "max_delta_teta_ac %2f\n",max({(qq,m,n) in BRANCHCC} (teta[m]-teta[n])) >
 printf "min_delta_teta_dc %2f\n",min({(qq,m,n) in BRANCHCC} (teta_dc[m]-teta_dc[n])) > (fileOut);
 printf "min_delta_teta_ac %2f\n",min({(qq,m,n) in BRANCHCC} (teta[m]-teta[n])) > (fileOut);
 
-
-
-
+printf "\n" > (fileOut);
+printf "%s %i\n","nb_reactive_slacks",card({n in BUSCC_SLACK: slack1_balance_Q[n]>Pnull or slack2_balance_Q[n]>Pnull}) > (fileOut);
+printf "%s %i\n","nb_slacks_condensator",card({n in BUSCC_SLACK: slack1_balance_Q[n]>Pnull}) > (fileOut);
+printf "%s %.1f\n","sum_slacks_condensator",sum{n in BUSCC_SLACK} slack1_balance_Q[n] > (fileOut);
+printf "%s %i\n","nb_slacks_self",card({n in BUSCC_SLACK: slack2_balance_Q[n]>Pnull}) > (fileOut);
+printf "%s %.1f\n","sum_slacks_self",sum{n in BUSCC_SLACK} slack2_balance_Q[n] > (fileOut);
 
 # All messages added in messages container
 if card(messagesInfo) > 0 then {

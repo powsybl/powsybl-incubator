@@ -94,15 +94,26 @@
 
 
 
+###############################################################################
+# Controls for ratios of transformers
+###############################################################################
+#
+# Default behavior is: no ratio of transformer are variable
+# If file param_transformers.txt is non empty, then all transformers listed in
+# this file have a variable value.
+# *** Format of param_transformers.txt: 5 columns # timestep num bus1 bus2 id
+#
 # todo
-# Controle pour minimiser la prod ou bien viser une cible
+# Controle pour les transfos : dire lesquels sont variables
+# Sinon aucun n'est variable
+
+
+# todo
+# Controle pour minimiser la prod ou bien viser un plan de tension cible
 # La cible est la valeur v(pu) dans _buses. 
 # Si aucune valeur v(pu) dans _buses (pour aucun bus), on vise le milieu pout tous les bus
 # Controles pour indiquer pour quels postes on vise la cible, sinon on vise pour tous ceux qui ont une cible
 
-# todo
-# Controle pour les transfos : dire lesquels sont variables
-# Sinon aucun n'est variable
 
 
 
@@ -154,12 +165,14 @@ if operatingSystem == "linux" then {
   shell "if [ ! -f param_algo.txt ];                then touch param_algo.txt ;fi";
   shell "if [ ! -f param_shunts.txt ];              then touch param_shunts.txt ;fi";
   shell "if [ ! -f param_generators_reactive.txt ]; then touch param_generators_reactive.txt ;fi";
+  shell "if [ ! -f param_transformers.txt ];        then touch param_transformers.txt ;fi";
   shell "chmod a+rX . * 2>/dev/null";
 }
 if operatingSystem == "windows" then {
   shell "if not exist param_algo.txt                echo #empty > param_algo.txt";
   shell "if not exist param_shunts.txt              echo #empty > param_shunts.txt";
   shell "if not exist param_generators_reactive.txt echo #empty > param_generators_reactive.txt";
+  shell "if not exist param_transformers.txt        echo #empty > param_transformers.txt";
 }
 # If operating system is not linux nor windows, then these optional files are 
 # not optional anymore: you need to provide at least empty files
@@ -208,6 +221,7 @@ printf "Parameter: threshold to detect zero impedance branch Znull:=%Q pu\n",Znu
 check Znull > 0 and Znull < 0.1;
 
 # Minimum consistency value for minimum voltage in kV
+# All busses with nominal voltage lower than epsilon_nominal_voltage will be ignored
 # This value has to be >0
 param epsilon_nominal_voltage default 1.0;
 if "epsilon_nominal_voltage" in PARAM_ALGO_KEYS then let epsilon_nominal_voltage := num(PARAM_ALGO_VALUES["epsilon_nominal_voltage"]);
@@ -220,6 +234,15 @@ param epsilon_min_voltage default 0.5;
 if "epsilon_min_voltage" in PARAM_ALGO_KEYS then let epsilon_min_voltage := num(PARAM_ALGO_VALUES["epsilon_min_voltage"]);
 printf "Parameter: for consistency checks of voltage bounds eps<=Vmin<Vmax<=2-eps, epsilon_min_voltage:= %Q pu\n",epsilon_min_voltage; 
 check epsilon_min_voltage > 0 and epsilon_min_voltage < 1;
+
+# Ignore voltage bounds for buses with nominal voltage lower than this parameter
+# For all busses with nominal voltage lower than ignore_voltage_bounds, voltage bonds will be ignored
+# and replaced by [epsilon_min_voltage ; 2 - epsilon_min_voltage]
+param ignore_voltage_bounds default 0;
+if "ignore_voltage_bounds" in PARAM_ALGO_KEYS then let ignore_voltage_bounds := num(PARAM_ALGO_VALUES["ignore_voltage_bounds"]);
+if ignore_voltage_bounds >= epsilon_nominal_voltage
+then printf "Parameter: for all busses with nominal voltage <= ignore_voltage_bounds=%.1f, voltage bounds are ignored and replaced by [%.3f;%.3f]\n",ignore_voltage_bounds,epsilon_min_voltage,2-epsilon_min_voltage;
+check ignore_voltage_bounds >= 0;
 
 # Consistency maximal value for P and Q
 # Any Pmax Pmin Qmax Qmin of generating unit with abolute value larger than PQmax is discarded
@@ -473,23 +496,69 @@ let tempo := 0; # If non zero, major inconsistency detected
 for {(qq,m,n) in BRANCHCC_REGL} {
   let temp1 := regl_ratio_min[1,branch_ptrRegl[1,qq,m,n]];
   let temp2 := regl_ratio_max[1,branch_ptrRegl[1,qq,m,n]];
-  if voltage_lower_bound[1,bus_substation[1,m]]*temp1 > voltage_upper_bound[1,bus_substation[1,n]]
+  if voltage_lower_bound[1,bus_substation[1,m]]*temp1*branch_cstratio[1,qq,m,n] > voltage_upper_bound[1,bus_substation[1,n]]
   then {
-    let tempo := 1;
+    if substation_Vnomi[1,bus_substation[1,m]] > ignore_voltage_bounds 
+      and substation_Vnomi[1,bus_substation[1,n]] > ignore_voltage_bounds
+      then let tempo := 1;
     let messageInfo := sprintf (
-    "ERROR INFEASIBLE transformer %Q ratio_min=%.3f ratio_max=%.3f : Vmin1=%.3f * ratio_min > Vmax2=%.3f",
-    branch_id[1,qq,m,n],temp1,temp2,
+    "ERROR INFEASIBLE transformer %Q %Q(%ikV)->%Q(%ikV) cstratio=%.3f ratio_min=%.3f ratio_max=%.3f : Vmin1=%.3f * ratio_min > Vmax2=%.3f",
+    branch_id[1,qq,m,n],
+    substation_id[1,bus_substation[1,m]],substation_Vnomi[1,bus_substation[1,m]],
+    substation_id[1,bus_substation[1,n]],substation_Vnomi[1,bus_substation[1,n]],
+    branch_cstratio[1,qq,m,n],temp1,temp2,
     voltage_lower_bound[1,bus_substation[1,m]],
     voltage_upper_bound[1,bus_substation[1,n]]);
     printf "%s\n",messageInfo;
     let messagesInfo := messagesInfo union {messageInfo};  
   }
-  if voltage_upper_bound[1,bus_substation[1,m]]*temp2 < voltage_lower_bound[1,bus_substation[1,n]]
+  if voltage_upper_bound[1,bus_substation[1,m]]*temp2*branch_cstratio[1,qq,m,n] < voltage_lower_bound[1,bus_substation[1,n]]
   then {
-    let tempo := 1;
+    if substation_Vnomi[1,bus_substation[1,m]] > ignore_voltage_bounds 
+      and substation_Vnomi[1,bus_substation[1,n]] > ignore_voltage_bounds
+      then let tempo := 1;
     let messageInfo := sprintf (
-    "ERROR INFEASIBLE transformer %Q ratio_min=%.3f ratio_max=%.3f : Vmax1=%.3f * ratio_max < Vmin2=%.3f",
-    branch_id[1,qq,m,n],temp1,temp2,
+    "ERROR INFEASIBLE transformer %Q %Q(%ikV)->%Q(%ikV) cstratio=%.3f ratio_min=%.3f ratio_max=%.3f : Vmax1=%.3f * ratio_max < Vmin2=%.3f",
+    branch_id[1,qq,m,n],
+    substation_id[1,bus_substation[1,m]],substation_Vnomi[1,bus_substation[1,m]],
+    substation_id[1,bus_substation[1,n]],substation_Vnomi[1,bus_substation[1,n]],
+    branch_cstratio[1,qq,m,n],temp1,temp2,
+    voltage_upper_bound[1,bus_substation[1,m]],
+    voltage_lower_bound[1,bus_substation[1,n]]);
+    printf "%s\n",messageInfo;
+    let messagesInfo := messagesInfo union {messageInfo};  
+  }  
+}
+# Consistency for transformers with fixed ratio
+for {(qq,m,n) in BRANCHCC_REGL: (1,qq,m,n) not in PARAM_TRANSFORMERS_RATIO_VARIABLE} {
+  let temp1 := tap_ratio[1,regl_table[1,branch_ptrRegl[1,qq,m,n]],regl_tap0[1,branch_ptrRegl[1,qq,m,n]]];
+  if voltage_lower_bound[1,bus_substation[1,m]]*temp1*branch_cstratio[1,qq,m,n] > voltage_upper_bound[1,bus_substation[1,n]]
+  then {
+    if substation_Vnomi[1,bus_substation[1,m]] > ignore_voltage_bounds 
+      and substation_Vnomi[1,bus_substation[1,n]] > ignore_voltage_bounds
+      then let tempo := 1;
+    let messageInfo := sprintf (
+    "ERROR INFEASIBLE transformer %Q %Q(%ikV)->%Q(%ikV) cstratio=%.3f fixed_ratio=%.3f : Vmin1=%.3f * ratio > Vmax2=%.3f",
+    branch_id[1,qq,m,n],
+    substation_id[1,bus_substation[1,m]],substation_Vnomi[1,bus_substation[1,m]],
+    substation_id[1,bus_substation[1,n]],substation_Vnomi[1,bus_substation[1,n]],
+    branch_cstratio[1,qq,m,n],temp1,
+    voltage_lower_bound[1,bus_substation[1,m]],
+    voltage_upper_bound[1,bus_substation[1,n]]);
+    printf "%s\n",messageInfo;
+    let messagesInfo := messagesInfo union {messageInfo};  
+  }
+  if voltage_upper_bound[1,bus_substation[1,m]]*temp1*branch_cstratio[1,qq,m,n] < voltage_lower_bound[1,bus_substation[1,n]]
+  then {
+    if substation_Vnomi[1,bus_substation[1,m]] > ignore_voltage_bounds 
+      and substation_Vnomi[1,bus_substation[1,n]] > ignore_voltage_bounds
+      then let tempo := 1;
+    let messageInfo := sprintf (
+    "ERROR INFEASIBLE transformer %Q %Q(%ikV)->%Q(%ikV) cstratio=%.3f fixed_ratio=%.3f : Vmax1=%.3f * ratio < Vmin2=%.3f",
+    branch_id[1,qq,m,n],
+    substation_id[1,bus_substation[1,m]],substation_Vnomi[1,bus_substation[1,m]],
+    substation_id[1,bus_substation[1,n]],substation_Vnomi[1,bus_substation[1,n]],
+    branch_cstratio[1,qq,m,n],temp1,
     voltage_upper_bound[1,bus_substation[1,m]],
     voltage_lower_bound[1,bus_substation[1,n]]);
     printf "%s\n",messageInfo;
@@ -753,8 +822,8 @@ let {n in BUSVV}            V[n] := bus_V0[1,n];
 let {n in BUSCC diff BUSVV} V[n] := voltage_lower_bound[1,bus_substation[1,n]]
   + 0.8 *(voltage_upper_bound[1,bus_substation[1,n]] - voltage_lower_bound[1,bus_substation[1,n]]);
 
-let {n in BUSCC_SLACK} slack1_balance_Q[n] := 1.1;
-let {n in BUSCC_SLACK} slack2_balance_Q[n] := 1;
+let {n in BUSCC_SLACK} slack1_balance_Q[n] := 0;
+let {n in BUSCC_SLACK} slack2_balance_Q[n] := 0;
 let {(g,n) in UNITON} P[g,n] := max(P_dcopf[g,n],unit_Pc[1,g,n]);
 let {(g,n) in UNITON} Q[g,n] := 0.5*(corrected_unit_Qmax[g,n] + corrected_unit_Qmin[g,n]);
 let {(shunt,n) in SHUNT_VAR} shunt_var[shunt,n] := min{(1,shunt,k) in SHUNT} shunt_valnom[1,shunt,k];
@@ -855,15 +924,16 @@ for {(qq,m,n) in BRANCHCC: (teta[m]-teta[n])>temp1*0.99 or (teta[m]-teta[n])<tem
 if (sum{n in BUSCC_SLACK} slack1_balance_Q[n])+(sum{n in BUSCC_SLACK} slack2_balance_Q[n]) > Pnull
 then {
   display
-    sum{n in BUSCC_SLACK} max(slack1_balance_Q[n]-slack2_balance_Q[n],0),
-    sum{n in BUSCC_SLACK} max(slack2_balance_Q[n]-slack1_balance_Q[n],0),
-    max{n in BUSCC_SLACK} max(slack1_balance_Q[n]-slack2_balance_Q[n],0),
-    max{n in BUSCC_SLACK} max(slack2_balance_Q[n]-slack1_balance_Q[n],0),
-    card({n in BUSCC_SLACK: abs(slack2_balance_Q[n]-slack1_balance_Q[n])>Pnull});
+    sum{n in BUSCC_SLACK} slack1_balance_Q[n],
+    sum{n in BUSCC_SLACK} slack2_balance_Q[n],
+    max{n in BUSCC_SLACK} slack1_balance_Q[n],
+    max{n in BUSCC_SLACK} slack2_balance_Q[n],
+    card({n in BUSCC_SLACK: slack2_balance_Q[n]+slack1_balance_Q[n]>Pnull});
   if output_results > 0 then
     for {n in BUSCC_SLACK: slack1_balance_Q[n]+slack2_balance_Q[n] > Pnull}
-      printf "Bus %Q in substation %Q has non zero reactive slacks %.1f %.1f, Vmin=%.2f Vopt=%.2f Vmax=%.2f \n",
-        bus_id[1,n],substation_id[1,bus_substation[1,n]],slack1_balance_Q[n],slack2_balance_Q[n],
+      printf "Bus %Q in substation %Q (%ikV) has non zero reactive slacks %.1f %.1f, Vmin=%.2f Vopt=%.2f Vmax=%.2f \n",
+        bus_id[1,n],substation_id[1,bus_substation[1,n]],substation_Vnomi[1,bus_substation[1,n]],
+        slack1_balance_Q[n],slack2_balance_Q[n],
         voltage_lower_bound[1,bus_substation[1,n]],V[n],voltage_upper_bound[1,bus_substation[1,n]];
 }
 

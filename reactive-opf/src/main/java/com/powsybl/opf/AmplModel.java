@@ -13,17 +13,15 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.powsybl.ampl.converter.AbstractNetworkApplierFactory;
-import com.powsybl.ampl.converter.AmplSubset;
+import com.powsybl.ampl.converter.*;
 import com.powsybl.commons.util.StringToIntMapper;
 import org.apache.commons.lang3.tuple.Pair;
 
-import com.powsybl.ampl.converter.NetworkApplier;
-import com.powsybl.ampl.converter.OutputFileFormat;
 import com.powsybl.ampl.executor.IAmplModel;
 
 import static com.powsybl.ampl.converter.AmplConstants.DEFAULT_VARIANT_INDEX;
@@ -60,8 +58,7 @@ public enum AmplModel implements IAmplModel {
      * @param resourcesFiles   All others files needed by the model (.dat and .mod
      *                         files)
      */
-    private AmplModel(String outputFilePrefix, String resourcesFolder, List<String> runFiles,
-                      List<String> resourcesFiles) {
+    AmplModel(String outputFilePrefix, String resourcesFolder, List<String> runFiles, List<String> resourcesFiles) {
         this.runFiles = runFiles;
         this.outputFilePrefix = outputFilePrefix;
         List<String> modelFiles = new LinkedList<>();
@@ -114,6 +111,12 @@ public enum AmplModel implements IAmplModel {
     @Override
     public String getNetworkDataPrefix() {
         return NETWORK_DATA_PREFIX;
+    }
+
+    @Override
+    public Collection<AmplReadableElement> getAmplReadableElement() {
+        return Arrays.asList(AmplReadableElement.SHUNT, AmplReadableElement.GENERATOR,
+                AmplReadableElement.VSC_CONVERTER_STATION, AmplReadableElement.STATIC_VAR_COMPENSATOR);
     }
 
     @Override

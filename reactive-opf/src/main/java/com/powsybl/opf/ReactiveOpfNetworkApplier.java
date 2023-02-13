@@ -19,16 +19,27 @@ public class ReactiveOpfNetworkApplier extends DefaultNetworkApplier {
 
     @Override
     public void applyShunt(ShuntCompensator sc, int busNum, double q, double b, int sections) {
+        sc.setSectionCount(findShuntNbSection(sc, b));
+    }
+
+    /**
+     * The b value is continuous, however in IIDM format it's not.
+     * We search the number of section to put in the shunt to have the closest b value.
+     */
+    private int findShuntNbSection(ShuntCompensator sc, double b) {
         int nbSection = 0;
+        if (b <= 0) {
+            return 0;
+        }
         while (nbSection <= sc.getMaximumSectionCount() && sc.getB(nbSection) < b) {
             ++nbSection;
         }
         if (nbSection == sc.getMaximumSectionCount()) {
-            sc.setSectionCount(sc.getMaximumSectionCount());
+            return sc.getMaximumSectionCount();
         } else if (Math.abs(sc.getB(nbSection) - b) < Math.abs(sc.getB(nbSection - 1) - b)) {
-            sc.setSectionCount(nbSection);
+            return nbSection;
         } else {
-            sc.setSectionCount(nbSection - 1);
+            return nbSection - 1;
         }
     }
 

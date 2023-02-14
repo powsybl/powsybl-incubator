@@ -6,23 +6,16 @@
  */
 package com.powsybl.opf;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.powsybl.ampl.converter.*;
+import com.powsybl.ampl.executor.IAmplModel;
 import com.powsybl.commons.util.StringToIntMapper;
 import org.apache.commons.lang3.tuple.Pair;
 
-import com.powsybl.ampl.executor.IAmplModel;
+import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.powsybl.ampl.converter.AmplConstants.DEFAULT_VARIANT_INDEX;
 
@@ -34,7 +27,7 @@ public enum AmplModel implements IAmplModel {
     /**
      * a reactive opf to set target tension of the generators
      */
-    REACTIVE_OPF("reactiveopf_results", "reactiveopf_src",
+    REACTIVE_OPF("reactiveopf_results", "openreac",
             Arrays.asList("reactiveopf.run", "reactiveopfoutput.run", "reactiveopfexit.run"),
             Arrays.asList("reactiveopf.mod", "reactiveopf.dat"));
 
@@ -74,12 +67,15 @@ public enum AmplModel implements IAmplModel {
     public List<Pair<String, InputStream>> getModelAsStream() {
         return modelNameAndPath.stream()
                 .map(nameAndPath -> {
-                    try {
-                        return Pair.of(nameAndPath.getLeft(),
-                                Files.newInputStream(Paths.get("reactive-opf/" + nameAndPath.getRight())));
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+                    InputStream resourceAsStream = this.getClass()
+                                                       .getClassLoader()
+                                                       .getResourceAsStream(nameAndPath.getRight());
+                    if (resourceAsStream == null) {
+                        throw new MissingResourceException(
+                                "Missing OpenReac ampl files : " + nameAndPath.getLeft() + " at " + nameAndPath.getRight(),
+                                this.getClass().getName(), nameAndPath.getLeft());
                     }
+                    return Pair.of(nameAndPath.getLeft(), resourceAsStream);
                 })
                 .collect(Collectors.toCollection(LinkedList::new));
     }

@@ -23,8 +23,6 @@ public final class Main {
         String variantId = network.getVariantManager().getWorkingVariantId();
         AmplModel reactiveOpf = AmplModel.REACTIVE_OPF;
         ComputationManager manager = LocalComputationManager.getDefault();
-        network.getGeneratorStream().forEach(gen -> System.out.println(gen.getNameOrId() + " : " + gen.getTargetV()));
-        AmplModelRunner.run(network, variantId, reactiveOpf, manager);
-        network.getGeneratorStream().forEach(gen -> System.out.println(gen.getNameOrId() + " : " + gen.getTargetV()));
+        AmplModelRunner.run(network, variantId, reactiveOpf, manager, new OpenReacParameters());
     }
 }

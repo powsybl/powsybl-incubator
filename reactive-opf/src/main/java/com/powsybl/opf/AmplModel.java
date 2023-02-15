@@ -9,6 +9,7 @@ package com.powsybl.opf;
 import com.powsybl.ampl.converter.*;
 import com.powsybl.ampl.executor.IAmplModel;
 import com.powsybl.commons.util.StringToIntMapper;
+import com.powsybl.iidm.network.Network;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.InputStream;
@@ -93,8 +94,8 @@ public enum AmplModel implements IAmplModel {
     public AbstractNetworkApplierFactory getNetworkApplierFactory() {
         return new AbstractNetworkApplierFactory() {
             @Override
-            public NetworkApplier of(StringToIntMapper<AmplSubset> mapper) {
-                return new ReactiveOpfNetworkApplier(mapper);
+            public NetworkApplier of(StringToIntMapper<AmplSubset> mapper, Network network) {
+                return new ReactiveOpfNetworkApplier(mapper, network);
             }
         };
     }
@@ -112,7 +113,8 @@ public enum AmplModel implements IAmplModel {
     @Override
     public Collection<AmplReadableElement> getAmplReadableElement() {
         return Arrays.asList(AmplReadableElement.SHUNT, AmplReadableElement.GENERATOR,
-                AmplReadableElement.VSC_CONVERTER_STATION, AmplReadableElement.STATIC_VAR_COMPENSATOR);
+                AmplReadableElement.VSC_CONVERTER_STATION, AmplReadableElement.STATIC_VAR_COMPENSATOR,
+                AmplReadableElement.REACTIVE_SLACK);
     }
 
     @Override

@@ -13,8 +13,8 @@ import com.powsybl.iidm.network.*;
 
 public class ReactiveOpfNetworkApplier extends DefaultNetworkApplier {
 
-    public ReactiveOpfNetworkApplier(StringToIntMapper<AmplSubset> networkMapper) {
-        super(networkMapper);
+    public ReactiveOpfNetworkApplier(StringToIntMapper<AmplSubset> networkMapper, Network network) {
+        super(networkMapper, network);
     }
 
     @Override

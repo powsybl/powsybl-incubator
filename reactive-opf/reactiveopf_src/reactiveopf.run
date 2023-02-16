@@ -48,7 +48,7 @@
 # Set of shunts which can be modified and/or connected is defined in param_shunts.txt
 # Among this variable shunts, if a shunt is not connected (bus==-1) but bus_possible is 
 # well defined, then this shunt may be used by opf
-# *** Format of param_shunt: 4 columns # timestep num bus id
+# *** Format of param_shunt: 4 columns #variant num bus id
 #
 
 
@@ -63,8 +63,9 @@
 # this file have a constant value for reactive power, equal to unit_Qc.
 # This value unit_Qc is used even if out of bounds Qmin Qmax of this unit
 # If unit_Qc is not consistent (larger than PQmax), then reactive power will be a variable
-# *** Format of param_generators_reactive: 4 columns # timestep num bus id
-# (Another way to fix reactive values is also posible: set minimum and maximum reactive power bounds to equal value)
+# *** Format of param_generators_reactive: 4 columns # variant num bus id
+# (Another way to fix reactive values is also posible: set minimum and 
+# maximum reactive power bounds to equal value)
 #
 
 
@@ -101,7 +102,7 @@
 # Default behavior is: no ratio of transformer are variable
 # If file param_transformers.txt is non empty, then all transformers listed in
 # this file have a variable value.
-# *** Format of param_transformers.txt: 5 columns # timestep num bus1 bus2 id
+# *** Format of param_transformers.txt: 5 columns # variant num bus1 bus2 id
 #
 # todo
 # Controle pour les transfos : dire lesquels sont variables
@@ -110,7 +111,7 @@
 
 # todo
 # Controle pour minimiser la prod ou bien viser un plan de tension cible
-# La cible est la valeur v(pu) dans _buses. 
+# La cible est la valeur v(pu) dans _buses.
 # Si aucune valeur v(pu) dans _buses (pour aucun bus), on vise le milieu pout tous les bus
 # Controles pour indiquer pour quels postes on vise la cible, sinon on vise pour tous ceux qui ont une cible
 
@@ -473,6 +474,10 @@ for {(t,s) in SUBSTATIONS: substation_Vmax[t,s] > 0 and substation_Vmax[t,s] >= 
   printf "Substations %Q with highest voltage upper bound Vnom=%ikV Vmax=%.3fpu\n",substation_id[t,s],substation_Vnomi[t,s],substation_Vmax[t,s];
 printf "If voltage lower bounds are missing or too small, they are set to %.3fpu\n",minimal_voltage_lower_bound;
 printf "If voltage upper bounds are missing or too high,  they are set to %.3fpu\n",maximal_voltage_upper_bound;
+let temp1 := card({n in BUSCC: substation_Vnomi[1,bus_substation[1,n]] <= ignore_voltage_bounds});
+if temp1 > 0 then
+printf "Voltage bounds for substations with nominal voltage <= %ikV are set to [%.3fpu;%.3fpu] (%i busses)\n",
+  ignore_voltage_bounds,minimal_voltage_lower_bound,maximal_voltage_upper_bound,temp1;
 printf "Maximal diameter of voltage interval: %.3f\n",max({(t,s) in SUBSTATIONS}(voltage_upper_bound[t,s] - voltage_lower_bound[t,s]));
 printf "Minimal diameter of voltage interval: %.3f\n",min({(t,s) in SUBSTATIONS}(voltage_upper_bound[t,s] - voltage_lower_bound[t,s]));
 
@@ -483,6 +488,19 @@ let temp1 := min{(t,r) in REGL} regl_ratio_min[1,r];
 let temp2 := max{(t,r) in REGL} regl_ratio_max[1,r];
 printf "Minimal transformer ratio : %.3f\n",temp1;
 printf "Maximal transformer ratio : %.3f\n",temp2;
+for {(qq,m,n) in BRANCHCC_REGL: (1,qq,m,n) in PARAM_TRANSFORMERS_RATIO_VARIABLE
+  and not regl_ratio_min[1,branch_ptrRegl[1,qq,m,n]] < regl_ratio_max[1,branch_ptrRegl[1,qq,m,n]]}
+{
+  let messageInfo := sprintf (
+    "Transformer %Q %Q(%ikV)->%Q(%ikV) cstratio=%.3f ratio_min=%.3f ratio_max=%.3f should have variable ratio but min and max are equal",
+    branch_id[1,qq,m,n],
+    substation_id[1,bus_substation[1,m]],substation_Vnomi[1,bus_substation[1,m]],
+    substation_id[1,bus_substation[1,n]],substation_Vnomi[1,bus_substation[1,n]],
+    branch_cstratio[1,qq,m,n],
+    regl_ratio_min[1,branch_ptrRegl[1,qq,m,n]],regl_ratio_max[1,branch_ptrRegl[1,qq,m,n]]);
+  printf "%s\n",messageInfo;
+  let messagesInfo := messagesInfo union {messageInfo};  
+}
 for {(qq,m,n) in BRANCHCC_REGL: regl_ratio_min[1,branch_ptrRegl[1,qq,m,n]] <= temp1 * 1.01
   or regl_ratio_max[1,branch_ptrRegl[1,qq,m,n]] >= temp2 * 0.99 }
 {
@@ -530,7 +548,7 @@ for {(qq,m,n) in BRANCHCC_REGL} {
   }  
 }
 # Consistency for transformers with fixed ratio
-for {(qq,m,n) in BRANCHCC_REGL: (1,qq,m,n) not in PARAM_TRANSFORMERS_RATIO_VARIABLE} {
+for {(qq,m,n) in BRANCHCC_REGL_FIX} {
   let temp1 := tap_ratio[1,regl_table[1,branch_ptrRegl[1,qq,m,n]],regl_tap0[1,branch_ptrRegl[1,qq,m,n]]];
   if voltage_lower_bound[1,bus_substation[1,m]]*temp1*branch_cstratio[1,qq,m,n] > voltage_upper_bound[1,bus_substation[1,n]]
   then {
@@ -829,7 +847,7 @@ let {(g,n) in UNITON} Q[g,n] := 0.5*(corrected_unit_Qmax[g,n] + corrected_unit_Q
 let {(shunt,n) in SHUNT_VAR} shunt_var[shunt,n] := min{(1,shunt,k) in SHUNT} shunt_valnom[1,shunt,k];
 let {(svc,n) in SVCON} svc_qvar[svc,n] := 0.1;
 let {(v,n) in VSCCONVON} vscconv_qvar[v,n] := if abs(vscconv_targetQ[1,v,n]) < PQmax then vscconv_targetQ[1,v,n] else 0;
-
+let {(qq,m,n) in BRANCHCC_REGL_VAR} branch_Ror_var[qq,m,n] := branch_Ror[qq,m,n];
 
 #
 # Solve

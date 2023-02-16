@@ -18,7 +18,10 @@
 # Substations
 ###############################################################################
 #ampl_network_substations.txt
-# [timestep, substation] 
+# [variant, substation]
+# The 1st column "variant" may also be used to define time step, in case this
+# PowSyBl format is used for multi-timestep OPF. This is why the letter for
+# the variant is mostly 't' and not 'v' (in power system, v is for voltage).
 set SUBSTATIONS dimen 2; #See this in error message? Use "ampl reactiveopf.run" instead of .mod 
 param substation_horizon     {SUBSTATIONS} symbolic;
 param substation_fodist      {SUBSTATIONS};
@@ -73,7 +76,7 @@ check {(t,s) in SUBSTATIONS}: voltage_lower_bound[t,s] < voltage_upper_bound[t,s
 # Buses
 ###############################################################################
 # ampl_network_buses.txt
-set BUS dimen 2 ; # [timestep, bus]
+set BUS dimen 2 ; # [variant, bus]
 param bus_substation{BUS} integer;
 param bus_CC        {BUS} integer; # num of connex component. Computation only in CC number 0 (=main connex component)
 param bus_V0        {BUS};
@@ -98,7 +101,7 @@ param null_phase_bus;
 ###############################################################################
 # ampl_network_generators.txt
 
-set UNIT dimen 3; # [timestep, unit, bus]
+set UNIT dimen 3; # [variant, unit, bus]
 param unit_potentialbus{UNIT} integer;
 param unit_substation  {UNIT} integer;
 param unit_Pmin    {UNIT};
@@ -144,7 +147,7 @@ param global_initial_losses_ratio default 0.02; # Typical value value for transm
 ###############################################################################
 # ampl_network_loads.txt
 
-set LOAD dimen 3; # [timestep, load, bus]
+set LOAD dimen 3; # [variant, load, bus]
 param load_substation{LOAD} integer;
 param load_PFix      {LOAD};
 param load_QFix      {LOAD};
@@ -167,7 +170,7 @@ check {(t,c,n) in LOAD}: (t,load_substation[t,c,n]) in SUBSTATIONS;
 ###############################################################################
 # ampl_network_shunts.txt
 
-set SHUNT dimen 3; # [timestep, shunt, bus]
+set SHUNT dimen 3; # [variant, shunt, bus]
 param shunt_possiblebus   {SHUNT} integer;
 param shunt_substation    {SHUNT} integer;
 param shunt_valmin        {SHUNT}; # Susceptance B in p.u.: compute B*100*V^2 to get MVAr
@@ -203,7 +206,7 @@ check {(t,s,n) in SHUNT : shunt_valmax[1,s,n] >=  Pnull / base100MVA}: shunt_val
 ###############################################################################
 # ampl_network_static_var_compensators.txt
 
-set SVC dimen 3; # [timestep, svc, bus]
+set SVC dimen 3; # [variant, svc, bus]
 param svc_possiblebus {SVC} integer;
 param svc_substation  {SVC} integer;
 param svc_bmin        {SVC}; # Susceptance B in p.u.: compute B*100*V^2 to get MVAr
@@ -228,7 +231,7 @@ check {(t,svc,n) in SVC}: (t,svc_substation[t,svc,n]) in SUBSTATIONS;
 # Batteries
 ###############################################################################
 # ampl_network_batteries.txt
-set BATTERY dimen 3; # [timestep, battery, bus]
+set BATTERY dimen 3; # [variant, battery, bus]
 param battery_possiblebus{BATTERY} integer;
 param battery_substation {BATTERY} integer;
 param battery_p0      {BATTERY}; # current P of the battery, P0 <= 0 if batterie is charging
@@ -262,7 +265,7 @@ check {(t,b,n) in BATTERY} : battery_Pmin[t,b,n] <= battery_Pmax[t,b,n] ;
 # ampl_network_tct.txt
 # Data in these tables are used for both ratio tap changers and phase taps changers
 
-set TAPS dimen 3;  # [timestep, num, tap]
+set TAPS dimen 3;  # [variant, num, tap]
 param tap_ratio    {TAPS};
 param tap_x        {TAPS};
 param tap_angle    {TAPS};
@@ -283,7 +286,7 @@ check {(t,tab,tap) in TAPS}: tab > 0 && tap >= 0;
 # ampl_network_rtc.txt
 
 param regl_V_missing := -99999.0;
-set REGL dimen 2;  # [timestep, num]
+set REGL dimen 2;  # [variant, num]
 param regl_tap0     {REGL} integer;
 param regl_table    {REGL} integer;
 param regl_onLoad   {REGL} symbolic;
@@ -306,7 +309,7 @@ param regl_ratio_max{(t,r) in REGL} := max{(t,regl_table[t,r],tap) in TAPS} tap_
 ###############################################################################
 # ampl_network_ptc.txt
 
-set DEPH dimen 2; # [timestep, num]
+set DEPH dimen 2; # [variant, num]
 param deph_tap0     {DEPH} integer;
 param deph_table    {DEPH} integer;
 param deph_fault    {DEPH};
@@ -324,7 +327,7 @@ check {(t,d) in DEPH}: (t,deph_table[t,d], deph_tap0[t,d]) in TAPS;
 ###############################################################################
 # ampl_network_branches.txt
 
-set BRANCH dimen 4; # [timestep, branch, bus1, bus2]
+set BRANCH dimen 4; # [variant, branch, bus1, bus2]
 param branch_subor        {BRANCH} integer;
 param branch_subex        {BRANCH} integer;
 param branch_3wt          {BRANCH};
@@ -373,7 +376,7 @@ check {(t,qq,m,n) in BRANCH}: (t,branch_ptrDeph[t,qq,m,n]) in DEPH union {(1,-1)
 ###############################################################################
 # ampl_network_vsc_converter_stations.txt
 
-set VSCCONV dimen 3; # [timestep, num, bus]
+set VSCCONV dimen 3; # [variant, num, bus]
 param vscconv_possiblebus {VSCCONV} integer;
 param vscconv_substation  {VSCCONV} integer;
 param vscconv_Pmin        {VSCCONV};
@@ -411,7 +414,7 @@ check {(t,cs,n) in VSCCONV}: vscconv_qP[t,cs,n]   <= vscconv_QP[t,cs,n];
 # ampl_network_lcc_converter_stations.txt
 #"variant" "num" "bus" "con. bus" "substation" "lossFactor (%PDC)" "powerFactor" "fault" "curative" "id" "description" "P (MW)" "Q (MVar)"
 
-set LCCCONV dimen 3; # [timestep, num, bus]
+set LCCCONV dimen 3; # [variant, num, bus]
 param lccconv_possiblebus {LCCCONV} integer;
 param lccconv_substation  {LCCCONV} integer;
 param lccconv_loss_factor {LCCCONV};
@@ -430,7 +433,7 @@ param lccconv_Q0          {LCCCONV};
 ###############################################################################
 # ampl_network_hvdc.txt
 
-set HVDC dimen 2; # [timestep, num]
+set HVDC dimen 2; # [variant, num]
 param hvdc_type           {HVDC} integer; # 1->vscConverterStation, 2->lccConverterStation
 param hvdc_conv1          {HVDC} integer;
 param hvdc_conv2          {HVDC} integer;
@@ -464,7 +467,7 @@ check {(t,h) in HVDC}: hvdc_targetP[t,h] <= hvdc_Pmax[t,h];
 # param_shunts.txt
 # All shunts are considered fixed to their value in ampl_network_shunts.txt (set and parameters based on SHUNT above)
 # Only shunts listed here will be changed by this reactive opf
-set PARAM_SHUNT  dimen 3 default {}; # [timestep, shunt, bus]
+set PARAM_SHUNT  dimen 3 default {}; # [variant, shunt, bus]
 param param_shunt_id{PARAM_SHUNT} symbolic;
 check {(t,s,n) in PARAM_SHUNT inter SHUNT}: shunt_id[t,s,n] == param_shunt_id[t,s,n];
 
@@ -477,7 +480,7 @@ check {(t,s,n) in PARAM_SHUNT inter SHUNT}: shunt_id[t,s,n] == param_shunt_id[t,
 # All units are considered with variable Q, within bounds.
 # Only units listed in this file will be considered with fixed reactive power value
 #"variant" "num" "bus" "id"
-set PARAM_UNIT_FIXQ  dimen 3 default {}; # [timestep, num, bus]
+set PARAM_UNIT_FIXQ  dimen 3 default {}; # [variant, num, bus]
 param param_unit_fixq_id{PARAM_UNIT_FIXQ} symbolic;
 check {(t,g,n) in PARAM_UNIT_FIXQ inter UNIT}: unit_id[t,g,n] == param_unit_fixq_id[t,g,n];
 
@@ -490,7 +493,7 @@ check {(t,g,n) in PARAM_UNIT_FIXQ inter UNIT}: unit_id[t,g,n] == param_unit_fixq
 # All transformers are considered with fixed ratio
 # Only transformers listed in this file will be considered with variable ratio value
 #"variant" "num" "bus" "id"
-set PARAM_TRANSFORMERS_RATIO_VARIABLE  dimen 4 default {}; # [timestep, num, bus1, bus2]
+set PARAM_TRANSFORMERS_RATIO_VARIABLE  dimen 4 default {}; # [variant, num, bus1, bus2]
 param param_transformers_ratio_variable_id{PARAM_TRANSFORMERS_RATIO_VARIABLE} symbolic;
 check {(t,qq,m,n) in PARAM_TRANSFORMERS_RATIO_VARIABLE inter BRANCH}: branch_id[t,qq,m,n] == param_transformers_ratio_variable_id[t,qq,m,n];
 
@@ -557,6 +560,17 @@ set SVCON := {(svc,n) in SVCCC: svc_vregul[1,svc,n]=="true" and svc_bmin[1,svc,n
 #
 # If unit_Qc is not consistent, then reactive power will be a variable
 set UNIT_FIXQ := setof{(t,g,n) in PARAM_UNIT_FIXQ: (g,n) in UNITON and abs(unit_Qc[1,g,n])<PQmax } (g,n);
+
+#
+# Control parameters for ratios of transformers
+#
+set BRANCHCC_REGL_VAR := 
+  { (qq,m,n) in BRANCHCC_REGL: 
+    (1,qq,m,n) in PARAM_TRANSFORMERS_RATIO_VARIABLE
+    and regl_ratio_min[1,branch_ptrRegl[1,qq,m,n]] < regl_ratio_max[1,branch_ptrRegl[1,qq,m,n]]
+  };
+set BRANCHCC_REGL_FIX :=BRANCHCC_REGL diff BRANCHCC_REGL_VAR;
+
 
 #
 # VSC converter stations
@@ -662,9 +676,6 @@ param branch_dephex {(qq,m,n) in BRANCHCC} = 0; # In IIDM, everything is in bus1
 
 
 
-
-
-
 ###############################################################################
 #
 # List of all optimization problems which wil be solved successively
@@ -762,22 +773,23 @@ minimize problem_dcopf_objective:
 
 
 #
-# Modulus of voltage
+# Phase and modulus of voltage
 #
-
 # Complex voltage = V*exp(i*teta). (with i**2=-1)
+
 # Phase of voltage
 var teta{BUSCC} <= teta_max, >= teta_min;
 subject to ctr_null_phase_bus{PROBLEM_ACOPF}: teta[null_phase_bus] = 0;
+
+# Modulus of voltage
 var V{n in BUSCC} 
   <= 
-  if substation_Vnomi[1,bus_substation[1,n]] > ignore_voltage_bounds then voltage_upper_bound[1,bus_substation[1,n]] else
-  2-epsilon_min_voltage,
+  if substation_Vnomi[1,bus_substation[1,n]] <= ignore_voltage_bounds then 2-epsilon_min_voltage else
+  voltage_upper_bound[1,bus_substation[1,n]],
   >= 
   if substation_Vnomi[1,bus_substation[1,n]] <= ignore_voltage_bounds then epsilon_min_voltage else
   voltage_lower_bound[1,bus_substation[1,n]];
-# >= epsilon_min_voltage, <= voltage_upper_bound[1,bus_substation[1,n]];
-# >= voltage_lower_bound[1,bus_substation[1,n]], <= voltage_upper_bound[1,bus_substation[1,n]];
+
 
 #
 # Generation
@@ -831,28 +843,39 @@ var vscconv_qvar{(v,n) in VSCCONVON}
 
 
 #
+# Ratios of transformers
+#
+var branch_Ror_var{(qq,m,n) in BRANCHCC_REGL_VAR} 
+  >= regl_ratio_min[1,branch_ptrRegl[1,qq,m,n]],
+  <= regl_ratio_max[1,branch_ptrRegl[1,qq,m,n]];
+
+#
 # Flows
 #
 
-# todo : pouvoir modifier les ratios des transfos
-
 var Red_Tran_Act_Dir{(qq,m,n) in BRANCHCC } =
-    V[n] * branch_admi[qq,m,n] * branch_Ror[qq,m,n] * sin(teta[m]-teta[n]+branch_dephor[qq,m,n]-branch_angper[qq,m,n])
-  + V[m] * branch_Ror[qq,m,n]^2*(branch_admi[qq,m,n]*sin(branch_angper[qq,m,n])+branch_Gor[1,qq,m,n])
+    V[n] * branch_admi[qq,m,n] * sin(teta[m]-teta[n]+branch_dephor[qq,m,n]-branch_angper[qq,m,n])
+    * (if (qq,m,n) in BRANCHCC_REGL_VAR then branch_Ror_var[qq,m,n]*branch_cstratio[1,qq,m,n] else branch_Ror[qq,m,n]) 
+  + V[m] * (branch_admi[qq,m,n]*sin(branch_angper[qq,m,n])+branch_Gor[1,qq,m,n])
+    * (if (qq,m,n) in BRANCHCC_REGL_VAR then branch_Ror_var[qq,m,n]*branch_cstratio[1,qq,m,n] else branch_Ror[qq,m,n])**2
   ;
 
 var Red_Tran_Rea_Dir{(qq,m,n) in BRANCHCC } = 
-  - V[n] * branch_admi[qq,m,n]  * branch_Ror[qq,m,n] * cos(teta[m]-teta[n]+branch_dephor[qq,m,n]-branch_angper[qq,m,n])
-  + V[m] * branch_Ror[qq,m,n]^2 * (branch_admi[qq,m,n]*cos(branch_angper[qq,m,n])-branch_Bor[1,qq,m,n])
+  - V[n] * branch_admi[qq,m,n] * cos(teta[m]-teta[n]+branch_dephor[qq,m,n]-branch_angper[qq,m,n])
+    * (if (qq,m,n) in BRANCHCC_REGL_VAR then branch_Ror_var[qq,m,n]*branch_cstratio[1,qq,m,n] else branch_Ror[qq,m,n])
+  + V[m] * (branch_admi[qq,m,n]*cos(branch_angper[qq,m,n])-branch_Bor[1,qq,m,n])
+    * (if (qq,m,n) in BRANCHCC_REGL_VAR then branch_Ror_var[qq,m,n]*branch_cstratio[1,qq,m,n] else branch_Ror[qq,m,n])^2 
   ;
 
 var Red_Tran_Act_Inv{(qq,m,n) in BRANCHCC } = 
-   V[m] * branch_admi[qq,m,n] * branch_Ror[qq,m,n] * sin(teta[n]-teta[m]-branch_dephor[qq,m,n]-branch_angper[qq,m,n])
-  +V[n] * (branch_admi[qq,m,n]*sin(branch_angper[qq,m,n])+branch_Gex[1,qq,m,n])
+    V[m] * branch_admi[qq,m,n] * sin(teta[n]-teta[m]-branch_dephor[qq,m,n]-branch_angper[qq,m,n])
+    * (if (qq,m,n) in BRANCHCC_REGL_VAR then branch_Ror_var[qq,m,n]*branch_cstratio[1,qq,m,n] else branch_Ror[qq,m,n])
+  + V[n] * (branch_admi[qq,m,n]*sin(branch_angper[qq,m,n])+branch_Gex[1,qq,m,n])
   ;
 
 var Red_Tran_Rea_Inv{(qq,m,n) in BRANCHCC } =
-  - V[m] * branch_admi[qq,m,n] * branch_Ror[qq,m,n] * cos(teta[n]-teta[m]-branch_dephor[qq,m,n]-branch_angper[qq,m,n])
+  - V[m] * branch_admi[qq,m,n] * cos(teta[n]-teta[m]-branch_dephor[qq,m,n]-branch_angper[qq,m,n])
+    * (if (qq,m,n) in BRANCHCC_REGL_VAR then branch_Ror_var[qq,m,n]*branch_cstratio[1,qq,m,n] else branch_Ror[qq,m,n])
   + V[n] * (branch_admi[qq,m,n]*cos(branch_angper[qq,m,n])-branch_Bex[1,qq,m,n])
   ;
 
@@ -862,13 +885,13 @@ var Red_Tran_Rea_Inv{(qq,m,n) in BRANCHCC } =
 #
 
 subject to ctr_balance_P{PROBLEM_ACOPF,k in BUSCC}:
-  # flows
+  # Flows
     sum{(qq,k,n) in BRANCHCC} base100MVA * V[k] * Red_Tran_Act_Dir[qq,k,n]
   + sum{(qq,m,k) in BRANCHCC} base100MVA * V[k] * Red_Tran_Act_Inv[qq,m,k]
-  # generating units
+  # Generating units
   - sum{(g,k) in UNITON} P[g,k]
-  # loads
-  + sum{(c,k) in LOADCC} load_PFix[1,c,k]
+  # Loads
+  + sum{(c,k) in LOADCC} load_PFix[1,c,k]     # Fixed value
   # VSC converters
   + sum{(v,k) in VSCCONVON} vscconv_P0[1,v,k] # Fixed value
   # LCC converters
@@ -896,15 +919,15 @@ var slack2_balance_Q{BUSCC_SLACK} >=0, <= 500;
 #subject to ctr_compl_slack_Q{PROBLEM_ACOPF,k in BUSCC_SLACK}: slack1_balance_Q[k] >= 0 complements slack2_balance_Q[k] >= 0;
 
 subject to ctr_balance_Q{PROBLEM_ACOPF,k in BUSCC}: 
-  # flows
+  # Flows
     sum{(qq,k,n) in BRANCHCC} base100MVA * V[k] * Red_Tran_Rea_Dir[qq,k,n]
   + sum{(qq,m,k) in BRANCHCC} base100MVA * V[k] * Red_Tran_Rea_Inv[qq,m,k]
-  # generating units
-  - sum{(g,k) in UNITON diff UNIT_FIXQ } Q[g,k]
+  # Senerating units
+  - sum{(g,k) in UNITON: (g,k) not in UNIT_FIXQ } Q[g,k]
   - sum{(g,k) in UNIT_FIXQ} unit_Qc[1,g,k]
-  # load
+  # Soad
   + sum{(c,k) in LOADCC} load_QFix[1,c,k]
-  # shunts
+  # Shunts
   - sum{(shunt,k) in SHUNT_FIX} base100MVA * shunt_valnom[1,shunt,k] * V[k]^2
   - sum{(shunt,k) in SHUNT_VAR} base100MVA * shunt_var[shunt,k] * V[k]^2
   # SVC
@@ -913,10 +936,10 @@ subject to ctr_balance_Q{PROBLEM_ACOPF,k in BUSCC}:
   - sum{(v,k) in VSCCONVON} vscconv_qvar[v,k]
   # LCC converters
   + sum{(l,k) in LCCCONVON} lccconv_Q0[1,l,k] # Fixed value
-  # slack variables
+  # Slack variables
   + if k in BUSCC_SLACK then 
-  (- slack1_balance_Q[k]  # Homogeneous to a generation
-   + slack2_balance_Q[k]) # homogeneous to a load
+  (- slack1_balance_Q[k]  # Homogeneous to a generation of reactive power (condensator)
+   + slack2_balance_Q[k]) # homogeneous to a reactive load (self)
   = 0;
 
 
@@ -924,24 +947,36 @@ subject to ctr_balance_Q{PROBLEM_ACOPF,k in BUSCC}:
 #
 # Objective function and penalties
 #
-param penalite_invest_rea_pos := 10;
-param penalite_invest_rea_neg := 10;
+param penalty_invest_rea_pos := 10;
+param penalty_invest_rea_neg := 10;
+param penalty_units_reactive := 0.1;
+param penalty_transfo_ratio  := 0.1;
 
 minimize problem_acopf_objective:
   sum{n in BUSCC_SLACK} (
-      penalite_invest_rea_pos * slack1_balance_Q[n]
-    + penalite_invest_rea_neg * slack2_balance_Q[n]
+      penalty_invest_rea_pos * slack1_balance_Q[n]
+    + penalty_invest_rea_neg * slack2_balance_Q[n]
     )
-  +(sum{n in BUSCC_SLACK} slack1_balance_Q[n] * slack2_balance_Q[n] ) * (penalite_invest_rea_pos+penalite_invest_rea_neg)
+  
+  #+(sum{n in BUSCC_SLACK} slack1_balance_Q[n] * slack2_balance_Q[n] ) * (penalite_invest_rea_pos+penalite_invest_rea_neg)
+  
   # todo revenir a une variation homogene de la prod
   # L'idee serait de demarrer avec des prods proportionnelle (utiliser alpha), mais si on n'y arrive 
   # pas alors on minimise l'ecart quadratique ou la somme
   #+ alpha
   + sum{(g,n) in UNITON} ( (P[g,n]-unit_Pc[1,g,n])/max(1,abs(unit_Pc[1,g,n])) )**2 
   #+ sum{(g,n) in UNITON} P[g,n]
-  #+ sum{(qq,m,n) in BRANCHCC}(teta[m]-teta[n]-teta_dc[m]+teta_dc[n])**2
+  
+  # Voltage for busses
   + sum{n in BUSCC} (V[n]-0.5*(voltage_lower_bound[1,bus_substation[1,n]]+voltage_upper_bound[1,bus_substation[1,n]]))**2
+  
+  # Reactive power of units
+  + penalty_units_reactive * sum{(g,n) in UNITON} (Q[g,n]/max(1,abs(corrected_unit_Qmin[g,n]),abs(corrected_unit_Qmax[g,n])))**2
+  
+  # Ratio of transformers
+  + penalty_transfo_ratio * sum{(qq,m,n) in BRANCHCC_REGL_VAR} (branch_Ror[qq,m,n]-branch_Ror_var[qq,m,n])**2
   ;
+  #
 
 
 

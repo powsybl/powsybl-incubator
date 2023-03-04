@@ -80,7 +80,7 @@ public final class AdmittanceEquationSystem {
             LfBus bus1 = branch.getBus1();
             LfBus bus2 = branch.getBus2();
             PiModel piModel = branch.getPiModel();
-            if (FastMath.abs(piModel.getX()) < LfBranch.LOW_IMPEDANCE_THRESHOLD) {
+            if (FastMath.abs(piModel.getX()) < LfNetworkParameters.LOW_IMPEDANCE_THRESHOLD_DEFAULT_VALUE) {
                 if (bus1 != null && bus2 != null) {
                     LOGGER.warn("Warning: Branch = {} : Non impedant lines not supported in the current version of the reduction method",
                             branch.getId());

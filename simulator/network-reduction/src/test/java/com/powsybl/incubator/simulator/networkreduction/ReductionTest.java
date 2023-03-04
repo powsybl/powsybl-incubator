@@ -6,7 +6,6 @@
  */
 package com.powsybl.incubator.simulator.networkreduction;
 
-import com.powsybl.commons.reporter.Reporter;
 import com.powsybl.ieeecdf.converter.IeeeCdfNetworkFactory;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.incubator.simulator.util.*;
@@ -49,8 +48,7 @@ class ReductionTest {
     @BeforeEach
     void setUp() {
         loadFlowParameters = new LoadFlowParameters();
-        loadFlowParametersExt = OpenLoadFlowParameters.get(loadFlowParameters)
-                .setAddRatioToLinesWithDifferentNominalVoltageAtBothEnds(false);
+        loadFlowParametersExt = OpenLoadFlowParameters.get(loadFlowParameters);
         loadFlowParameters.addExtension(OpenLoadFlowParameters.class, loadFlowParametersExt);
 
         matrixFactory = new DenseMatrixFactory();
@@ -74,7 +72,7 @@ class ReductionTest {
         LfNetwork lfNetwork = re.getLfNetworks().get(0);
 
         OpenLoadFlowParameters loadflowParametersExt = OpenLoadFlowParameters.get(loadFlowParameters);
-        AcLoadFlowParameters acLoadFlowParameters = OpenLoadFlowParameters.createAcParameters(network, loadFlowParameters, loadflowParametersExt, matrixFactory, new EvenShiloachGraphDecrementalConnectivityFactory<>(), Reporter.NO_OP);
+        AcLoadFlowParameters acLoadFlowParameters = OpenLoadFlowParameters.createAcParameters(network, loadFlowParameters, loadflowParametersExt, matrixFactory, new EvenShiloachGraphDecrementalConnectivityFactory<>());
         AdmittanceEquationSystem.AdmittanceVoltageProfileType admittanceVoltageProfileType = AdmittanceEquationSystem.AdmittanceVoltageProfileType.CALCULATED;
         //AdditionalDataInfo additionalDataInfo = new AdditionalDataInfo();
         AdmittanceEquationSystem.AdmittancePeriodType admittancePeriodType = AdmittanceEquationSystem.AdmittancePeriodType.ADM_TRANSIENT;
@@ -115,7 +113,7 @@ class ReductionTest {
         LfNetwork lfNetwork = re.getLfNetworks().get(0);
 
         OpenLoadFlowParameters loadflowParametersExt = OpenLoadFlowParameters.get(loadFlowParameters);
-        AcLoadFlowParameters acLoadFlowParameters = OpenLoadFlowParameters.createAcParameters(network, loadFlowParameters, loadflowParametersExt, matrixFactory, new EvenShiloachGraphDecrementalConnectivityFactory<>(), Reporter.NO_OP);
+        AcLoadFlowParameters acLoadFlowParameters = OpenLoadFlowParameters.createAcParameters(network, loadFlowParameters, loadflowParametersExt, matrixFactory, new EvenShiloachGraphDecrementalConnectivityFactory<>());
         AdmittanceEquationSystem.AdmittanceVoltageProfileType admittanceVoltageProfileType = AdmittanceEquationSystem.AdmittanceVoltageProfileType.CALCULATED;
         AdmittanceEquationSystem.AdmittancePeriodType admittancePeriodType = AdmittanceEquationSystem.AdmittancePeriodType.ADM_TRANSIENT;
         //AdditionalDataInfo additionalDataInfo = new AdditionalDataInfo();
@@ -136,10 +134,10 @@ class ReductionTest {
 
         double[] x = re.rowVectorToDouble(mI);
 
-        assertEquals(2.192, x[0], 0.001);
-        assertEquals(0.156, x[1], 0.001);
-        assertEquals(0.148, x[2], 0.001);
-        assertEquals(-0.309, x[3], 0.001);
+        assertEquals(2.197, x[0], 0.001);
+        assertEquals(0.125, x[1], 0.001);
+        assertEquals(0.143, x[2], 0.001);
+        assertEquals(-0.371, x[3], 0.001);
     }
 
     @Test
@@ -182,7 +180,7 @@ class ReductionTest {
         assertEquals(-1.328271953073, m.get(3, 3), 0.000001);*/
 
         ReductionEngine.ReductionHypotheses hypo =  re.getReductionHypo();
-        assertEquals(0.159817620898, hypo.eqLoads.get(0).pEq, 0.00001);
+        assertEquals(0.15858784798, hypo.eqLoads.get(0).pEq, 0.00001);
         /*assertEquals(0.062286236316, hypo.eqLoads.get(0).qEq, 0.00001);
         assertEquals(13.86653446365, hypo.eqShunts.get(0).gEq, 0.0001);
         assertEquals(1.305248440279, hypo.eqShunts.get(0).bEq, 0.0001);

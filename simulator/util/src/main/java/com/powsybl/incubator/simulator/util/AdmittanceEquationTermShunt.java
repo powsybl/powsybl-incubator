@@ -6,7 +6,7 @@
  */
 package com.powsybl.incubator.simulator.util;
 
-import com.powsybl.openloadflow.equations.AbstractBusEquationTerm;
+import com.powsybl.openloadflow.equations.AbstractElementEquationTerm;
 import com.powsybl.openloadflow.equations.Variable;
 import com.powsybl.openloadflow.equations.VariableSet;
 import com.powsybl.openloadflow.network.ElementType;
@@ -18,7 +18,7 @@ import java.util.Objects;
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
-public class AdmittanceEquationTermShunt extends AbstractBusEquationTerm<VariableType, EquationType> implements LinearEquationTerm {
+public class AdmittanceEquationTermShunt extends AbstractElementEquationTerm<LfBus, VariableType, EquationType> implements LinearEquationTerm {
 
     protected final Variable<VariableType> v1rVar;
 
@@ -58,7 +58,7 @@ public class AdmittanceEquationTermShunt extends AbstractBusEquationTerm<Variabl
 
     @Override
     public int getElementNum() {
-        return bus.getNum();
+        return element.getNum();
     }
 
     public List<Variable<VariableType>> getVariables() {

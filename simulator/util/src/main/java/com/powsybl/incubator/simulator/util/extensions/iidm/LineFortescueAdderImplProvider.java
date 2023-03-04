@@ -8,14 +8,14 @@ package com.powsybl.incubator.simulator.util.extensions.iidm;
 
 import com.google.auto.service.AutoService;
 import com.powsybl.commons.extensions.ExtensionAdderProvider;
-import com.powsybl.iidm.network.TwoWindingsTransformer;
+import com.powsybl.iidm.network.Line;
 
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at gmail.com>
  */
 @AutoService(ExtensionAdderProvider.class)
-public class TwoWindingsTransformerShortCircuitAdderImplProvider
-        implements ExtensionAdderProvider<TwoWindingsTransformer, TwoWindingsTransformerShortCircuit, TwoWindingsTransformerShortCircuitAdder> {
+public class LineFortescueAdderImplProvider
+        implements ExtensionAdderProvider<Line, LineFortescue, LineFortescueAdder> {
 
     @Override
     public String getImplementationName() {
@@ -24,16 +24,16 @@ public class TwoWindingsTransformerShortCircuitAdderImplProvider
 
     @Override
     public String getExtensionName() {
-        return TwoWindingsTransformerShortCircuit.NAME;
+        return LineFortescue.NAME;
     }
 
     @Override
-    public Class<TwoWindingsTransformerShortCircuitAdder> getAdderClass() {
-        return TwoWindingsTransformerShortCircuitAdder.class;
+    public Class<LineFortescueAdder> getAdderClass() {
+        return LineFortescueAdder.class;
     }
 
     @Override
-    public TwoWindingsTransformerShortCircuitAdder newAdder(TwoWindingsTransformer twt) {
-        return new TwoWindingsTransformerShortCircuitAdder(twt);
+    public LineFortescueAdder newAdder(Line line) {
+        return new LineFortescueAdder(line);
     }
 }

@@ -76,7 +76,7 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
             //double cq = extensions2.getCq();
 
             // Zq = cq * Unomq / (sqrt3 * Ikq)
-            // Zq = sqrt(r² + x²) which gives x = Zq / sqrt((R/X)² + 1)
+            // Zq = sqrt(rÂ² + xÂ²) which gives x = Zq / sqrt((R/X)Â² + 1)
             double zq = voltageFactor * generator.getTerminal().getVoltageLevel().getNominalV() / (Math.sqrt(3.) * ikQmax / 1000.); // ikQmax is changed from A to kA
             double xq = zq / Math.sqrt(rOverX * rOverX + 1.);
             double rq = xq * rOverX;
@@ -89,17 +89,20 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
             generator.newExtension(GeneratorShortCircuitAdder2.class)
                     .withSubTransRd(rq)
                     .withTransRd(rq)
-                    .withCoeffRi(0.)
-                    .withCoeffXi(0.)
-                    .withCoeffRo(roOverR)
-                    .withCoeffXo(xoOverX)
-                    .withToGround(grounded)
                     .withRatedU(0.)
                     .withCosPhi(0.)
-                    .withGeneratorType(GeneratorShortCircuit2.GeneratorType.FEEDER)
                     .withMaxR1ToX1Ratio(rOverX) // extensions for feeder type
                     .withCq(voltageFactor)
                     .withIkQmax(ikQmax)
+                    .add();
+
+            generator.newExtension(GeneratorFortescueAdder.class)
+                    .withRo(roOverR * rq)
+                    .withXo(xoOverX * xq)
+                    .withRi(0.)
+                    .withXi(0.)
+                    .withToGround(grounded)
+                    .withGeneratorType(GeneratorFortescue.GeneratorType.FEEDER)
                     .add();
         }
     }
@@ -135,20 +138,6 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
             double subTransXd = subTransXdPu * zBase;
             double transXd = transXdPu * zBase;
 
-            double coeffRo = r0;
-            double coeffR2 = r2;
-            if (Math.abs(r) > EPSILON) {
-                coeffRo = r0 / r;
-                coeffR2 = r2 / r;
-            }
-
-            double coeffXo = x0;
-            double coeffX2 = x2;
-            if (Math.abs(subTransXdPu) > EPSILON) {
-                coeffXo = x0 / subTransXdPu;
-                coeffX2 = x2 / subTransXdPu;
-            }
-
             generator.newExtension(GeneratorShortCircuitAdder.class)
                     .withStepUpTransformerX(0.)
                     .withDirectTransX(transXd)
@@ -157,17 +146,19 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
             generator.newExtension(GeneratorShortCircuitAdder2.class)
                     .withSubTransRd(r)
                     .withTransRd(r)
-                    .withCoeffRi(coeffR2)
-                    .withCoeffXi(coeffX2)
-                    .withCoeffRo(coeffRo)
-                    .withCoeffXo(coeffXo)
                     .withRatedU(ratedU)
                     .withCosPhi(ratedPowerFactor)
-                    .withGeneratorType(GeneratorShortCircuit2.GeneratorType.ROTATING_MACHINE)
                     .withVoltageRegulationRange(voltageRegulationRange)
+                    .add();
+
+            generator.newExtension(GeneratorFortescueAdder.class)
+                    .withRo(r0)
+                    .withXo(x0)
+                    .withRi(0.)
+                    .withXi(0.)
+                    .withGeneratorType(GeneratorFortescue.GeneratorType.ROTATING_MACHINE)
                     .withToGround(earthing)
                     .withGroundingR(0.)  // TODO : check if info available
-                    .withCoeffXo(0.)
                     .add();
         }
     }
@@ -205,19 +196,9 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
             double b0ch = propertyBag.asDouble("b0ch");
             Line line = network.getLine(id);
             if (line != null) {
-                double x = line.getX();
-                double r = line.getR();
-                double coeffRo = 1.;
-                double coeffXo = 1.;
-                if (Math.abs(x) > EPSILON) {
-                    coeffXo = x0 / x;
-                }
-                if (Math.abs(r) > EPSILON) {
-                    coeffRo = r0 / r;
-                }
-                line.newExtension(LineShortCircuitAdder.class)
-                        .withCoeffRo(coeffRo)
-                        .withCoeffXo(coeffXo)
+                line.newExtension(LineFortescueAdder.class)
+                        .withRo(r0)
+                        .withXo(x0)
                         .add();
             } else {
                 DanglingLine danglingLine = network.getDanglingLine(id);
@@ -231,39 +212,34 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
         }
     }
 
-    private void processPowerTransformers(Network network, TripleStore tripleStore, Map<TwoWindingsTransformerShortCircuit, Pair<Double, Double>> tmpExtensionToRoXo) {
+    private void processPowerTransformers(Network network, TripleStore tripleStore, Map<TwoWindingsTransformerFortescue, Pair<Double, Double>> tmpExtensionToRoXo) {
         for (PropertyBag propertyBag : tripleStore.query(queryCatalog.get("powerTransformerShortCircuit"))) {
             String id = propertyBag.getId("ID");
             boolean isPartOfGeneratingUnit = propertyBag.asBoolean("isPartOfGeneratorUnit", false);
 
             TwoWindingsTransformer t2wt = network.getTwoWindingsTransformer(id);
             if (t2wt != null) {
-                TwoWindingsTransformerShortCircuit extension = t2wt.getExtension(TwoWindingsTransformerShortCircuit.class);
+                TwoWindingsTransformerFortescue extension = t2wt.getExtension(TwoWindingsTransformerFortescue.class);
                 if (extension == null) {
-                    t2wt.newExtension(TwoWindingsTransformerShortCircuitAdder.class)
+                    t2wt.newExtension(TwoWindingsTransformerFortescueAdder.class)
                             .withIsPartOfGeneratingUnit(isPartOfGeneratingUnit)
+                            .withRo(t2wt.getR())
+                            .withXo(t2wt.getX())
                             .add();
                 } else {
                     extension.setPartOfGeneratingUnit(isPartOfGeneratingUnit);
                     Pair<Double, Double> roxo = tmpExtensionToRoXo.get(extension);
                     double ro = roxo.getFirst();
                     double xo = roxo.getSecond();
-                    double coeffRo = 1.;
-                    double coeffXo = 1.;
-                    if (Math.abs(t2wt.getR()) > EPSILON) {
-                        coeffRo = ro / t2wt.getR();
-                    }
-                    if (Math.abs(t2wt.getX()) > EPSILON) {
-                        coeffXo = xo / t2wt.getX();
-                    }
-                    extension.setCoeffRo(coeffRo);
-                    extension.setCoeffXo(coeffXo);
+                    extension.setRo(ro);
+                    extension.setXo(xo);
+
                 }
             }
         }
     }
 
-    private void processPowerTransformerEnds(Network network, TripleStore tripleStore, Map<TwoWindingsTransformerShortCircuit, Pair<Double, Double>> tmpExtensionToRoXo) {
+    private void processPowerTransformerEnds(Network network, TripleStore tripleStore, Map<TwoWindingsTransformerFortescue, Pair<Double, Double>> tmpExtensionToRoXo) {
         for (PropertyBag propertyBag : tripleStore.query(queryCatalog.get("powerTransformerEndShortCircuit"))) {
             String id = propertyBag.getId("ID");
             int endNumber = propertyBag.asInt("endNumber");
@@ -296,11 +272,11 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
             TwoWindingsTransformer t2wt = network.getTwoWindingsTransformer(id);
             if (t2wt != null) {
                 t2wt.setRatedS(ratedS); // rated S not not filled in CGMES import example for transformers
-                TwoWindingsTransformerShortCircuit extension = t2wt.getExtension(TwoWindingsTransformerShortCircuit.class);
+                TwoWindingsTransformerFortescue extension = t2wt.getExtension(TwoWindingsTransformerFortescue.class);
                 if (extension == null) {
-                    t2wt.newExtension(TwoWindingsTransformerShortCircuitAdder.class)
+                    t2wt.newExtension(TwoWindingsTransformerFortescueAdder.class)
                             .add();
-                    extension = t2wt.getExtension(TwoWindingsTransformerShortCircuit.class);
+                    extension = t2wt.getExtension(TwoWindingsTransformerFortescue.class);
                 }
 
                 // use of a local variable to get the sum of ro and xo from both ends to get the coefs afterwards
@@ -352,11 +328,11 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
             } else {
                 ThreeWindingsTransformer t3wt = network.getThreeWindingsTransformer(id);
                 if (t3wt != null) {
-                    ThreeWindingsTransformerShortCircuit extension = t3wt.getExtension(ThreeWindingsTransformerShortCircuit.class);
+                    ThreeWindingsTransformerFortescue extension = t3wt.getExtension(ThreeWindingsTransformerFortescue.class);
                     if (extension == null) {
-                        t3wt.newExtension(ThreeWindingsTransformerShortCircuitAdder.class)
+                        t3wt.newExtension(ThreeWindingsTransformerFortescueAdder.class)
                                 .add();
-                        extension = t3wt.getExtension(ThreeWindingsTransformerShortCircuit.class);
+                        extension = t3wt.getExtension(ThreeWindingsTransformerFortescue.class);
                     }
 
                     double ratedU02 = t3wt.getRatedU0() * t3wt.getRatedU0();
@@ -384,20 +360,12 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
         }
     }
 
-    public void setLegRoXoCoefs(ThreeWindingsTransformer.Leg leg, ThreeWindingsTransformerShortCircuit.T3wLeg extLeg, double r0, double x0, double ratedU02) {
+    public void setLegRoXoCoefs(ThreeWindingsTransformer.Leg leg, ThreeWindingsTransformerFortescue.T3wLeg extLeg, double r0, double x0, double ratedU02) {
 
         double ratedRo = r0 * ratedU02 / leg.getRatedU() / leg.getRatedU();
         double ratedXo = x0 * ratedU02 / leg.getRatedU() / leg.getRatedU();
-        double r = leg.getR();
-        double x = leg.getX();
-        extLeg.setLegCoeffRo(ratedRo); // if R = 0 coeff carries Ro and not Ro / R
-        if (Math.abs(r) > EPSILON) {
-            extLeg.setLegCoeffRo(ratedRo / r);
-        }
-        extLeg.setLegCoeffXo(ratedXo); // if X = 0 coeff carries Xo and not X0 / X
-        if (Math.abs(x) > EPSILON) {
-            extLeg.setLegCoeffXo(ratedXo / x);
-        }
+        extLeg.setLegRo(ratedRo);
+        extLeg.setLegXo(ratedXo);
     }
 
     @Override
@@ -406,7 +374,7 @@ public class CgmesShortCircuitImportPostProcessor implements CgmesImportPostProc
         processSynchronousMachines(network, tripleStore);
         processAsynchronousMachines(network, tripleStore);
         processAcLineSegments(network, tripleStore);
-        Map<TwoWindingsTransformerShortCircuit, Pair<Double, Double>> tmpExtensionToRoXo = new HashMap<>();
+        Map<TwoWindingsTransformerFortescue, Pair<Double, Double>> tmpExtensionToRoXo = new HashMap<>();
         processPowerTransformerEnds(network, tripleStore, tmpExtensionToRoXo);
         processPowerTransformers(network, tripleStore, tmpExtensionToRoXo);
         processExternalNetworkInjection(network, tripleStore);

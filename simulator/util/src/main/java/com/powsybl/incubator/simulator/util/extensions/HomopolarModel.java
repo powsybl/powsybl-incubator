@@ -127,31 +127,58 @@ public class HomopolarModel {
             // branch is a line and homopolar data available
             ScLine scLine = (ScLine) branch.getProperty(ShortCircuitExtensions.PROPERTY_SHORT_CIRCUIT);
             if (scLine != null) {
-                double rCoeff = scLine.getCoeffRo();
-                double xCoeff = scLine.getCoeffXo();
-                homopolarExtension.ro = r * rCoeff;
-                homopolarExtension.xo = x * xCoeff;
-                homopolarExtension.gom = gPi1 / rCoeff; //TODO : adapt
-                homopolarExtension.bom = bPi1 / xCoeff;  //TODO : adapt
+                double epsilon = 0.0000001;
+                double r0 = scLine.getRo();
+                double x0 = scLine.getXo();
+
+                // We propose to scale b and g accordingly with x / x0 and r / r0
+                // this assumption could be changed if not relevant
+                double gCoeff = 1.;
+                double bCoeff = 1.;
+                if (Math.abs(x0) > epsilon) {
+                    bCoeff = x / x0;
+                }
+                if (Math.abs(r0) > epsilon) {
+                    gCoeff = r / r0;
+                }
+
+                homopolarExtension.ro = r0;
+                homopolarExtension.xo = x0;
+                homopolarExtension.gom = gPi1 * gCoeff; // check if acceptable approach
+                homopolarExtension.bom = bPi1 * bCoeff;
             }
         } else if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_2) {
             // branch is a 2 windings transformer and homopolar data available
             ScTransfo2W scTransfo = (ScTransfo2W) branch.getProperty(ShortCircuitExtensions.PROPERTY_SHORT_CIRCUIT);
             if (scTransfo != null) {
-                double roCoeff = scTransfo.getCoeffRo();
-                double xoCoeff = scTransfo.getCoeffXo();
 
                 double kT = 1.0;
                 if (branch.getProperty(ShortCircuitExtensions.PROPERTY_SHORT_CIRCUIT_NORM) != null) {
                     kT = (Double) branch.getProperty(ShortCircuitExtensions.PROPERTY_SHORT_CIRCUIT_NORM);
                 }
-                double rok = r * roCoeff * kT;
-                double xok = x * xoCoeff * kT;
+
+                double ro = scTransfo.getRo();
+                double xo = scTransfo.getXo();
+
+                double rok = ro * kT;
+                double xok = xo * kT;
+
+                // We propose to scale b and g accordingly with x / x0 and r / r0
+                // this assumption could be changed if not relevant
+                double epsilon = 0.0000001;
+                double gCoeff = 1.;
+                double bCoeff = 1.;
+                if (Math.abs(xo) > epsilon) {
+                    bCoeff = x / xo;
+                }
+                if (Math.abs(ro) > epsilon) {
+                    gCoeff = r / ro;
+                }
 
                 homopolarExtension.ro = rok + scTransfo.getR1Ground() + scTransfo.getR2Ground(); // we assume by construction that if side is not grounded then rGround = 0
                 homopolarExtension.xo = xok + scTransfo.getX1Ground() + scTransfo.getX2Ground();
-                homopolarExtension.gom = gPi1 / roCoeff / kT; //TODO : adapt
-                homopolarExtension.bom = bPi1 / xoCoeff / kT;  //TODO : adapt
+                homopolarExtension.gom = gPi1 * gCoeff / kT; //TODO : adapt
+                homopolarExtension.bom = bPi1 * bCoeff / kT;  //TODO : adapt
 
                 homopolarExtension.leg1ConnectionType = scTransfo.getLeg1ConnectionType();
                 homopolarExtension.leg2ConnectionType = scTransfo.getLeg2ConnectionType();
@@ -163,27 +190,27 @@ public class HomopolarModel {
             ScTransfo3W scTransfo = (ScTransfo3W) branch.getProperty(ShortCircuitExtensions.PROPERTY_SHORT_CIRCUIT);
             ScTransfo3wKt scTransfoKt = (ScTransfo3wKt) branch.getProperty(ShortCircuitExtensions.PROPERTY_SHORT_CIRCUIT_NORM);
             if (scTransfoKt != null && scTransfo != null) {
-                double rCoeff;
-                double xCoeff;
+                double ro;
+                double xo;
                 double kTro;
                 double kTxo;
                 if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_1) {
-                    rCoeff = scTransfo.getLeg1().getCoeffRo();
-                    xCoeff = scTransfo.getLeg1().getCoeffXo();
+                    ro = scTransfo.getLeg1().getRo();
+                    xo = scTransfo.getLeg1().getXo();
                     kTro = scTransfoKt.getLeg1().getkTro();
                     kTxo = scTransfoKt.getLeg1().getkTxo();
                     homopolarExtension.leg1ConnectionType = scTransfo.getLeg1().getLegConnectionType();
                     homopolarExtension.freeFluxes = scTransfo.getLeg1().isFreeFluxes();
                 } else if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_2) {
-                    rCoeff = scTransfo.getLeg2().getCoeffRo();
-                    xCoeff = scTransfo.getLeg2().getCoeffXo();
+                    ro = scTransfo.getLeg2().getRo();
+                    xo = scTransfo.getLeg2().getXo();
                     kTro = scTransfoKt.getLeg2().getkTro();
                     kTxo = scTransfoKt.getLeg2().getkTxo();
                     homopolarExtension.leg1ConnectionType = scTransfo.getLeg2().getLegConnectionType();
                     homopolarExtension.freeFluxes = scTransfo.getLeg2().isFreeFluxes();
                 } else if (branch.getBranchType() == LfBranch.BranchType.TRANSFO_3_LEG_3) {
-                    rCoeff = scTransfo.getLeg3().getCoeffRo();
-                    xCoeff = scTransfo.getLeg3().getCoeffXo();
+                    ro = scTransfo.getLeg3().getRo();
+                    xo = scTransfo.getLeg3().getXo();
                     kTro = scTransfoKt.getLeg3().getkTro();
                     kTxo = scTransfoKt.getLeg3().getkTxo();
                     homopolarExtension.leg1ConnectionType = scTransfo.getLeg3().getLegConnectionType();
@@ -192,10 +219,22 @@ public class HomopolarModel {
                     throw new IllegalArgumentException("Branch " + branch.getId() + " has unknown 3-winding leg number");
                 }
 
-                homopolarExtension.ro = r * rCoeff * kTro;
-                homopolarExtension.xo = x * xCoeff * kTxo;
-                homopolarExtension.gom = gPi1 / rCoeff; //TODO : adapt
-                homopolarExtension.bom = bPi1 / xCoeff;  //TODO : adapt
+                // We propose to scale b and g accordingly with x / x0 and r / r0
+                // this assumption could be changed if not relevant
+                double epsilon = 0.0000001;
+                double gCoeff = 1.;
+                double bCoeff = 1.;
+                if (Math.abs(xo) > epsilon) {
+                    bCoeff = x / xo;
+                }
+                if (Math.abs(ro) > epsilon) {
+                    gCoeff = r / ro;
+                }
+
+                homopolarExtension.ro = ro * kTro;
+                homopolarExtension.xo = xo * kTxo;
+                homopolarExtension.gom = gPi1 * gCoeff; // adapt if needed
+                homopolarExtension.bom = bPi1 * bCoeff; // adapt if needed
             }
         } else {
             throw new IllegalArgumentException("Branch '" + branch.getId() + "' has a not yet supported type");
@@ -249,9 +288,9 @@ public class HomopolarModel {
             // we suppose that Zoa = Zo given in input for the transformer
             // we suppose that if Yom given in input is zero, then Zom = is zero : if we want to model an open circuit, then set free fluxes to true
 
-            // we have yo11 = 1 / ( 3Zga(pu) + (Zoa(pu)+ Zom(pu))/(rho*e(jAlpha))² )
+            // we have yo11 = 1 / ( 3Zga(pu) + (Zoa(pu)+ Zom(pu))/(rho*e(jAlpha))Â² )
             // and yo12 = yo22 = yo21 = 0.
-            // 3Zga(pu) + Zoa(pu)/(rho*e(jAlpha))² + Zom/(rho*e(jAlpha))² = 3*rg + 1/rho²*((roa+rom)cos2A-(xoa+xom)sin2A) + j(3*xg + 1/rho²*((xoa+xom)cos2A+(roa+rom)sin2A) )
+            // 3Zga(pu) + Zoa(pu)/(rho*e(jAlpha))Â² + Zom/(rho*e(jAlpha))Â² = 3*rg + 1/rhoÂ²*((roa+rom)cos2A-(xoa+xom)sin2A) + j(3*xg + 1/rhoÂ²*((xoa+xom)cos2A+(roa+rom)sin2A) )
             double req = 3 * rga + 1 / (rho * rho) * ((ro + rm) * cos2A - (xo + xm) * sin2A);
             double xeq = 3 * xga + 1 / (rho * rho) * ((xo + xm) * cos2A + (ro + rm) * sin2A);
             double bo11 = -xeq / (xeq * xeq + req * req);
@@ -283,10 +322,10 @@ public class HomopolarModel {
 
             // we suppose that if Yom given in input is zero, then Zom = is zero : if we want to model an open circuit, then set free fluxes to true
 
-            // we have yo11 = 1 / ( 3Zga(pu) + (Zoa(pu) + 1 / (1/Zom + 1/Zob))/(rho*e(jAlpha))² )
+            // we have yo11 = 1 / ( 3Zga(pu) + (Zoa(pu) + 1 / (1/Zom + 1/Zob))/(rho*e(jAlpha))Â² )
             // and yo12 = yo22 = yo21 = 0.
             // using Ztmp = Zoa(pu) + 1 / (Yom + 1/Zob)
-            // 3Zga(pu) + (Zoa(pu) + 1 / (Yom + 1/Zob))/(rho*e(jAlpha))² = 3*rg + 1/rho²*((rtmp)cos2A-(xtmp)sin2A) + j(3*xg + 1/rho²*((xtmp)cos2A+(rtmp)sin2A) )
+            // 3Zga(pu) + (Zoa(pu) + 1 / (Yom + 1/Zob))/(rho*e(jAlpha))Â² = 3*rg + 1/rhoÂ²*((rtmp)cos2A-(xtmp)sin2A) + j(3*xg + 1/rhoÂ²*((xtmp)cos2A+(rtmp)sin2A) )
             double bob = -xob / (rob * rob + xob * xob);
             double gob = rob / (rob * rob + xob * xob);
             double bombob = bom + bob;
@@ -299,7 +338,7 @@ public class HomopolarModel {
             double go11 = req / (xeq * xeq + req * req);
 
             if (freeFluxes) {
-                // we have Zm = infinity : yo11 = 1 / ( 3Zga(pu) + (Zoa(pu) + 1/Zob(pu))/(rho*e(jAlpha))² )
+                // we have Zm = infinity : yo11 = 1 / ( 3Zga(pu) + (Zoa(pu) + 1/Zob(pu))/(rho*e(jAlpha))Â² )
                 rtmp = roa + rob;
                 xtmp = xoa + xob;
                 req = 3 * rga + 1 / (rho * rho) * (rtmp * cos2A - xtmp * sin2A);
@@ -365,10 +404,10 @@ public class HomopolarModel {
                 //
                 // [Ia]                   1                             [ Zom+Zob+3Zgs    -Zom/k        ] [Va]
                 // [  ] = ------------------------------------------  * [                               ] [  ]
-                // [Ib]   (Zom/k²+3Zga+Zoa/k²)(Zom+Zob+3Zgb)-(Zom/k)²   [   -Zom/k   Zom/k²+3Zga+Zoa/k² ] [Vb]
+                // [Ib]   (Zom/kÂ²+3Zga+Zoa/kÂ²)(Zom+Zob+3Zgb)-(Zom/k)Â²   [   -Zom/k   Zom/kÂ²+3Zga+Zoa/kÂ² ] [Vb]
                 // [  ]                                                 [                               ] [  ]
                 //
-                // Zc = Zom/k²+3Zga+Zoa/k²
+                // Zc = Zom/kÂ²+3Zga+Zoa/kÂ²
                 // Zd = Zom+Zob+3Zgb
                 // Ze = Zom/k
                 //
@@ -384,10 +423,10 @@ public class HomopolarModel {
                 // this gives :
                 // [Ia]         1         [ Zd -Ze ] [Va]
                 // [  ] = ------------- * [        ] [  ]
-                // [Ib]   Zc * Zd - Ze²   [-Ze  Zc ] [Vb]
+                // [Ib]   Zc * Zd - ZeÂ²   [-Ze  Zc ] [Vb]
                 // [  ]                   [        ] [  ]
                 //
-                // We set Z2denom = Zc * Zd - Ze²
+                // We set Z2denom = Zc * Zd - ZeÂ²
                 double r2denom = rc * rd - xc * xd - re * re + xe * xe;
                 double x2demon = rc * xd + xc * rd - 2 * re * xe;
                 double g2demon = r2denom / (r2denom * r2denom + x2demon * x2demon);
@@ -406,10 +445,10 @@ public class HomopolarModel {
                 //
                 // [Ia]                   1               [    1    -1/k  ] [Va]
                 // [  ] = ---------------------------   * [               ] [  ]
-                // [Ib]   3Zga+Zoa/k²+Zob/k²+3Zgb/k²)     [   -1/k   1/k² ] [Vb]
+                // [Ib]   3Zga+Zoa/kÂ²+Zob/kÂ²+3Zgb/kÂ²)     [   -1/k   1/kÂ² ] [Vb]
                 // [  ]                                   [               ] [  ]
                 //
-                // Zc = 3Zga+Zoa/k²+Zob/k²+3Zgb/k²)
+                // Zc = 3Zga+Zoa/kÂ²+Zob/kÂ²+3Zgb/kÂ²)
                 // Zd = Zom+Zob+3Zgb
                 // Ze = Zom/k
 
@@ -422,10 +461,10 @@ public class HomopolarModel {
                 // this gives :
                 // [Ia]         1         [ 1   -1/k ] [Va]
                 // [  ] = ------------- * [          ] [  ]
-                // [Ib]         Zc        [-1/k  1/k²] [Vb]
+                // [Ib]         Zc        [-1/k  1/kÂ²] [Vb]
                 // [  ]                   [          ] [  ]
                 //
-                // We set Z2denom = Zc * Zd - Ze²
+                // We set Z2denom = Zc * Zd - ZeÂ²
                 double gcdemon = rc / (rc * rc + xc * xc);
                 double bcdemon = -xc  / (rc * rc + xc * xc);
 

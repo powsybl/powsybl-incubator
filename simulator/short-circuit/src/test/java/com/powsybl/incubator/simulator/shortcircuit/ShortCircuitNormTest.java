@@ -49,7 +49,7 @@ public class ShortCircuitNormTest {
         assertEquals(0.1950430724873738, ks, 0.000001);
 
         shortCircuitNormIec.applyNormToNetwork(network);
-        TwoWindingsTransformerShortCircuit extensionT2w = t2w.getExtension(TwoWindingsTransformerShortCircuit.class);
+        TwoWindingsTransformerFortescue extensionT2w = t2w.getExtension(TwoWindingsTransformerFortescue.class);
         TwoWindingsTransformerNorm extensionT2wNorm = shortCircuitNormIec.getNormExtensions().getNormExtension(t2w);
         double knormT2w = extensionT2wNorm.getkNorm();
         assertEquals(0.1950430724873738, knormT2w, 0.000001);
@@ -70,9 +70,6 @@ public class ShortCircuitNormTest {
         kg = extensionGenNorm.getkG();
         assertEquals(1.0, kg, 0.000001);
 
-        knormT2w = extensionT2w.getkNorm();
-        assertEquals(1.0, knormT2w, 0.000001);
-
         double roOverR = 0.15;
         double xoOverX = 3.;
         double rOverX = 0.1;
@@ -87,17 +84,16 @@ public class ShortCircuitNormTest {
         g1.newExtension(GeneratorShortCircuitAdder2.class)
                 .withSubTransRd(0.)
                 .withTransRd(0.)
-                .withCoeffRi(0.)
-                .withCoeffXi(0.)
-                .withCoeffRo(roOverR)
-                .withCoeffXo(xoOverX)
-                .withToGround(true)
                 .withRatedU(0.)
                 .withCosPhi(0.)
-                .withGeneratorType(GeneratorShortCircuit2.GeneratorType.FEEDER)
                 .withMaxR1ToX1Ratio(rOverX) // extensions for feeder type
                 .withCq(voltageFactor)
                 .withIkQmax(ikQmax)
+                .add();
+
+        g1.newExtension(GeneratorFortescueAdder.class)
+                .withToGround(true)
+                .withGeneratorType(GeneratorFortescue.GeneratorType.FEEDER)
                 .add();
 
         shortCircuitNormNone.applyNormToNetwork(network);
@@ -278,9 +274,10 @@ public class ShortCircuitNormTest {
 
         g1.newExtension(GeneratorShortCircuitAdder2.class)
                 .withTransRd(0.1)
+                .add();
+
+        g1.newExtension(GeneratorFortescueAdder.class)
                 .withToGround(true)
-                .withCoeffRo(3.)
-                .withCoeffXo(3.)
                 .add();
 
         var t12 = substation1.newTwoWindingsTransformer()
@@ -300,7 +297,7 @@ public class ShortCircuitNormTest {
                 .setB(0.0D)
                 .setRatedS(31.5)
                 .add();
-        t12.newExtension(TwoWindingsTransformerShortCircuitAdder.class)
+        t12.newExtension(TwoWindingsTransformerFortescueAdder.class)
                 .withLeg1ConnectionType(LegConnectionType.Y)
                 .withLeg2ConnectionType(LegConnectionType.Y)
                 .withIsPartOfGeneratingUnit(true)

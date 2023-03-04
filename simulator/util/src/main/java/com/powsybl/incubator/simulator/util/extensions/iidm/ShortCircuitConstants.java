@@ -17,26 +17,14 @@ public final class ShortCircuitConstants {
 
     public static final double DEFAULT_TRANS_RD = 0;
     public static final double DEFAULT_SUB_TRANS_RD = 0;
-    public static final boolean DEFAULT_TO_GROUND = false;
-    public static final double DEFAULT_GROUNDING_R = 0.;
-    public static final double DEFAULT_GROUNDING_X = 0.;
-    public static final double DEFAULT_COEFF_RO = 1;
-    public static final double DEFAULT_COEFF_XO = 1;
     public static final double DEFAULT_COEFF_K = 1;
-    public static final double DEFAULT_COEFF_RI = 1;
-    public static final double DEFAULT_COEFF_XI = 1;
     public static final double DEFAULT_COS_PHI = 0.85;
     public static final double DEFAULT_RATED_U = 100.;
-    public static final boolean DEFAULT_FREE_FLUXES = true;
-    public static final LegConnectionType DEFAULT_LEG1_CONNECTION_TYPE = LegConnectionType.DELTA; // TODO : check if default connection acceptable
-    public static final LegConnectionType DEFAULT_LEG2_CONNECTION_TYPE = LegConnectionType.Y_GROUNDED; // TODO : check if default connection acceptable
-    public static final LegConnectionType DEFAULT_LEG3_CONNECTION_TYPE = LegConnectionType.DELTA; // TODO : check if default connection acceptable
 
     public static final double DEFAULT_TRANS_XD = 20.; //supposed in ohms // TODO : check most standard value
     public static final double DEFAULT_SUB_TRANS_XD = 20.; //supposed in ohms // TODO : check most standard value
     public static final double DEFAULT_STEP_UP_XD = 0.; //supposed in ohms // TODO : check most standard value
 
-    public static final GeneratorShortCircuit2.GeneratorType DEFAULT_GENERATOR_TYPE = GeneratorShortCircuit2.GeneratorType.ROTATING_MACHINE;
     public static final double DEFAULT_CQ = 1.1;
     public static final double DEFAULT_R1_X1_RATIO = 1.;
     public static final double DEFAULT_IKQ = 10;

@@ -175,36 +175,18 @@ public class ShortCircuitNormIec extends ShortCircuitNormNone {
         double kTcX = getCheckedCoef(t3WId, xcT3k, xc);
         double kTcR = getCheckedCoef(t3WId, rcT3k, rc);
 
-        ThreeWindingsTransformerShortCircuit extension = t3w.getExtension(ThreeWindingsTransformerShortCircuit.class);
+        ThreeWindingsTransformerFortescue extension = t3w.getExtension(ThreeWindingsTransformerFortescue.class);
         if (extension == null) {
             throw new PowsyblException(t3WId + "' could not be adjusted with feeder values because of missing extension input data");
         }
 
         // dealing homopolar part
-        double ra0 = extension.getLeg1().getLegCoeffRo();
-        if (Math.abs(ra) > EPSILON) {
-            ra0 = extension.getLeg1().getLegCoeffRo() * ra;
-        }
-        double xa0 = extension.getLeg1().getLegCoeffXo();
-        if (Math.abs(xa) > EPSILON) {
-            xa0 = extension.getLeg1().getLegCoeffXo() * xa;
-        }
-        double rb0 = extension.getLeg2().getLegCoeffRo();
-        if (Math.abs(rb) > EPSILON) {
-            rb0 = extension.getLeg2().getLegCoeffRo() * rb;
-        }
-        double xb0 = extension.getLeg2().getLegCoeffXo();
-        if (Math.abs(xb) > EPSILON) {
-            xb0 = extension.getLeg2().getLegCoeffXo() * xb;
-        }
-        double rc0 = extension.getLeg3().getLegCoeffRo();
-        if (Math.abs(rc) > EPSILON) {
-            rc0 = extension.getLeg3().getLegCoeffRo() * rc;
-        }
-        double xc0 = extension.getLeg3().getLegCoeffXo();
-        if (Math.abs(xc) > EPSILON) {
-            xc0 = extension.getLeg3().getLegCoeffXo() * xc;
-        }
+        double ra0 = extension.getLeg1().getLegRo();
+        double xa0 = extension.getLeg1().getLegXo();
+        double rb0 = extension.getLeg2().getLegRo();
+        double xb0 = extension.getLeg2().getLegXo();
+        double rc0 = extension.getLeg3().getLegRo();
+        double xc0 = extension.getLeg3().getLegXo();
 
         double ra0T3k = 0.5 * (ktabIec * (ra0 + rb0) + ktacIec * (ra0 + rc0) - ktbcIec * (rb0 + rc0));
         double xa0T3k = 0.5 * (ktabIec * (xa0 + xb0) + ktacIec * (xa0 + xc0) - ktbcIec * (xb0 + xc0));
@@ -283,7 +265,7 @@ public class ShortCircuitNormIec extends ShortCircuitNormNone {
 
     public Generator getAssociatedGenerator(Network network, TwoWindingsTransformer t2w) {
 
-        TwoWindingsTransformerShortCircuit extension = t2w.getExtension(TwoWindingsTransformerShortCircuit.class);
+        TwoWindingsTransformerFortescue extension = t2w.getExtension(TwoWindingsTransformerFortescue.class);
         Generator tfoGenerator = null;
         boolean isGen = false;
 
@@ -427,10 +409,10 @@ public class ShortCircuitNormIec extends ShortCircuitNormNone {
 
         // Check if not feeder
         boolean isFeeder = false;
-        GeneratorShortCircuit2 extensions2 = gen.getExtension(GeneratorShortCircuit2.class);
+        GeneratorFortescue extensions2 = gen.getExtension(GeneratorFortescue.class);
         if (extensions2 != null) {
-            GeneratorShortCircuit2.GeneratorType genType = extensions2.getGeneratorType();
-            if (genType == GeneratorShortCircuit2.GeneratorType.FEEDER) {
+            GeneratorFortescue.GeneratorType genType = extensions2.getGeneratorType();
+            if (genType == GeneratorFortescue.GeneratorType.FEEDER) {
                 isFeeder = true;
             }
         }

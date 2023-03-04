@@ -11,8 +11,8 @@ import com.powsybl.computation.local.LocalComputationManager;
 import com.powsybl.iidm.network.*;
 import com.powsybl.iidm.network.extensions.GeneratorShortCircuitAdder;
 import com.powsybl.incubator.simulator.util.ReferenceNetwork;
-import com.powsybl.incubator.simulator.util.extensions.iidm.GeneratorShortCircuitAdder2;
-import com.powsybl.incubator.simulator.util.extensions.iidm.LineShortCircuitAdder;
+import com.powsybl.incubator.simulator.util.extensions.iidm.GeneratorFortescueAdder;
+import com.powsybl.incubator.simulator.util.extensions.iidm.LineFortescueAdder;
 import com.powsybl.loadflow.LoadFlow;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.loadflow.LoadFlowResult;
@@ -148,7 +148,7 @@ public class ShortCircuitMonophasedTest {
 
         List<FaultResult> frs = scar.getFaultResults();
 
-        assertEquals(14682.211812226922, frs.get(0).getCurrent().getDirectMagnitude(), 0.01);
+        assertEquals(14548.104511643787, frs.get(0).getCurrent().getDirectMagnitude(), 0.01);
 
     }
 
@@ -158,8 +158,9 @@ public class ShortCircuitMonophasedTest {
 
         LoadFlowResult resultntg = loadFlowRunner.run(network, parameters);
 
-        network.getGenerator("GB").newExtension(GeneratorShortCircuitAdder2.class)
+        network.getGenerator("GB").newExtension(GeneratorFortescueAdder.class)
                 .withToGround(true)
+                .withXo(130) // initialized with subtransXd by default
                 .add();
 
         List<ShortCircuitFault> faultList = new ArrayList<>();
@@ -334,11 +335,11 @@ public class ShortCircuitMonophasedTest {
                 .setB2(0.0)
                 .add();
 
-        babp.newExtension(LineShortCircuitAdder.class)
-                .withCoeffXo(coeffXo1)
+        babp.newExtension(LineFortescueAdder.class)
+                .withXo(coeffXo1 * xd1)
                 .add();
-        bpbb.newExtension(LineShortCircuitAdder.class)
-                .withCoeffXo(coeffXo2)
+        bpbb.newExtension(LineFortescueAdder.class)
+                .withXo(coeffXo2 * xd2)
                 .add();
 
         return network;

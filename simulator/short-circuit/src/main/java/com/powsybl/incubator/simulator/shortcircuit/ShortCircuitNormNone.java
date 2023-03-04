@@ -138,10 +138,10 @@ public class ShortCircuitNormNone implements ShortCircuitNorm {
         // Work on generators
         for (Generator gen : network.getGenerators()) {
 
-            GeneratorShortCircuit2 extensions2 = gen.getExtension(GeneratorShortCircuit2.class);
+            GeneratorFortescue extensions2 = gen.getExtension(GeneratorFortescue.class);
             if (extensions2 != null) {
-                GeneratorShortCircuit2.GeneratorType genType = extensions2.getGeneratorType();
-                if (genType == GeneratorShortCircuit2.GeneratorType.FEEDER) {
+                GeneratorFortescue.GeneratorType genType = extensions2.getGeneratorType();
+                if (genType == GeneratorFortescue.GeneratorType.FEEDER) {
                     //adjustGenValuesWithFeederInputs(gen);
                 } else {
                     // this includes standard rotating machines

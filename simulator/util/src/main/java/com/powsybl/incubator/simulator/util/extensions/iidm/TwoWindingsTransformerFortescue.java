@@ -14,13 +14,12 @@ import java.util.Objects;
 /**
  * @author Geoffroy Jamgotchian <geoffroy.jamgotchian at gmail.com>
  */
-public class TwoWindingsTransformerShortCircuit extends AbstractExtension<TwoWindingsTransformer> {
+public class TwoWindingsTransformerFortescue extends AbstractExtension<TwoWindingsTransformer> {
 
     public static final String NAME = "twoWindingsTransformerShortCircuit";
 
-    private double coeffRo; // Ro = Rd * CoeffRo
-    private double coeffXo;
-    private double kNorm; // coef used by the chosen norm to modify R, X, Ro and Xo
+    private double ro; // Ro = Rd * CoeffRo
+    private double xo;
     private final boolean freeFluxes; // free fluxes mean that magnetizing impedance Zm is infinite, by default, fluxes are forced and Zm exists
     private LegConnectionType leg1ConnectionType;
     private LegConnectionType leg2ConnectionType;
@@ -35,13 +34,12 @@ public class TwoWindingsTransformerShortCircuit extends AbstractExtension<TwoWin
         return NAME;
     }
 
-    public TwoWindingsTransformerShortCircuit(TwoWindingsTransformer twt, boolean isPartOfGeneratingUnit, double coeffRo, double coeffXo, double kNorm, boolean freeFluxes,
-                                              LegConnectionType leg1ConnectionType, LegConnectionType leg2ConnectionType, double r1Ground, double x1Ground, double r2Ground, double x2Ground) {
+    public TwoWindingsTransformerFortescue(TwoWindingsTransformer twt, boolean isPartOfGeneratingUnit, double ro, double xo, boolean freeFluxes,
+                                           LegConnectionType leg1ConnectionType, LegConnectionType leg2ConnectionType, double r1Ground, double x1Ground, double r2Ground, double x2Ground) {
         super(twt);
         this.isPartOfGeneratingUnit = isPartOfGeneratingUnit;
-        this.coeffRo = coeffRo;
-        this.coeffXo = coeffXo;
-        this.kNorm = kNorm;
+        this.ro = ro;
+        this.xo = xo;
         this.freeFluxes = freeFluxes;
         this.leg1ConnectionType = Objects.requireNonNull(leg1ConnectionType);
         this.leg2ConnectionType = Objects.requireNonNull(leg2ConnectionType);
@@ -51,12 +49,12 @@ public class TwoWindingsTransformerShortCircuit extends AbstractExtension<TwoWin
         this.x2Ground = x2Ground;
     }
 
-    public double getCoeffRo() {
-        return coeffRo;
+    public double getRo() {
+        return ro;
     }
 
-    public double getCoeffXo() {
-        return coeffXo;
+    public double getXo() {
+        return xo;
     }
 
     public boolean isFreeFluxes() {
@@ -79,8 +77,12 @@ public class TwoWindingsTransformerShortCircuit extends AbstractExtension<TwoWin
         return isPartOfGeneratingUnit;
     }
 
-    public void setCoeffXo(double coeffXo) {
-        this.coeffXo = coeffXo;
+    public void setXo(double xo) {
+        this.xo = xo;
+    }
+
+    public void setRo(double ro) {
+        this.ro = ro;
     }
 
     public void setLeg2ConnectionType(LegConnectionType leg2ConnectionType) {
@@ -89,10 +91,6 @@ public class TwoWindingsTransformerShortCircuit extends AbstractExtension<TwoWin
 
     public void setLeg1ConnectionType(LegConnectionType leg1ConnectionType) {
         this.leg1ConnectionType = leg1ConnectionType;
-    }
-
-    public void setCoeffRo(double coeffRo) {
-        this.coeffRo = coeffRo;
     }
 
     public double getR1Ground() {
@@ -127,11 +125,4 @@ public class TwoWindingsTransformerShortCircuit extends AbstractExtension<TwoWin
         this.x2Ground = x2Ground;
     }
 
-    public double getkNorm() {
-        return kNorm;
-    }
-
-    public void setkNorm(double kNorm) {
-        this.kNorm = kNorm;
-    }
 }

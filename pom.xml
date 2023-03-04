@@ -62,7 +62,7 @@
 
     <properties>
         <java.version>11</java.version>
-        <powsybl-dependencies.version>2022.0.0</powsybl-dependencies.version>
+        <powsybl-dependencies.version>2023.0.1</powsybl-dependencies.version>
     </properties>
 
     <dependencyManagement>

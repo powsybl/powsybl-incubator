@@ -6,17 +6,18 @@
  */
 package com.powsybl.incubator.simulator.networkreduction;
 
+import com.powsybl.iidm.network.Network;
 import com.powsybl.incubator.simulator.util.AdmittanceEquationSystem;
 import com.powsybl.incubator.simulator.util.AdmittanceMatrix;
 import com.powsybl.incubator.simulator.util.EquationType;
-import com.powsybl.commons.reporter.Reporter;
-import com.powsybl.iidm.network.Network;
 import com.powsybl.incubator.simulator.util.VariableType;
 import com.powsybl.math.matrix.DenseMatrix;
 import com.powsybl.math.matrix.Matrix;
 import com.powsybl.openloadflow.OpenLoadFlowParameters;
 import com.powsybl.openloadflow.ac.outerloop.AcLoadFlowParameters;
-import com.powsybl.openloadflow.equations.*;
+import com.powsybl.openloadflow.equations.EquationSystem;
+import com.powsybl.openloadflow.equations.Variable;
+import com.powsybl.openloadflow.equations.VariableSet;
 import com.powsybl.openloadflow.graph.EvenShiloachGraphDecrementalConnectivityFactory;
 import com.powsybl.openloadflow.network.*;
 import com.powsybl.openloadflow.network.impl.LfNetworkLoaderImpl;
@@ -303,7 +304,7 @@ public class ReductionEngine {
         }
 
         OpenLoadFlowParameters loadflowParametersExt = OpenLoadFlowParameters.get(parameters.getLoadFlowParameters());
-        AcLoadFlowParameters acLoadFlowParameters = OpenLoadFlowParameters.createAcParameters(network, parameters.getLoadFlowParameters(), loadflowParametersExt, parameters.getMatrixFactory(), new EvenShiloachGraphDecrementalConnectivityFactory<>(), Reporter.NO_OP);
+        AcLoadFlowParameters acLoadFlowParameters = OpenLoadFlowParameters.createAcParameters(network, parameters.getLoadFlowParameters(), loadflowParametersExt, parameters.getMatrixFactory(), new EvenShiloachGraphDecrementalConnectivityFactory<>());
 
         EquationSystem<VariableType, EquationType> equationSystem = AdmittanceEquationSystem.create(lfNetwork, new VariableSet<>(), admittanceType, admittanceVoltageProfileType, acLoadFlowParameters);
 

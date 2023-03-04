@@ -8,7 +8,7 @@ package com.powsybl.incubator.simulator.util;
 
 import com.powsybl.incubator.simulator.util.extensions.ScTransfo3wKt;
 import com.powsybl.incubator.simulator.util.extensions.ShortCircuitExtensions;
-import com.powsybl.openloadflow.equations.AbstractBranchEquationTerm;
+import com.powsybl.openloadflow.equations.AbstractElementEquationTerm;
 import com.powsybl.openloadflow.equations.Variable;
 import com.powsybl.openloadflow.equations.VariableSet;
 import com.powsybl.openloadflow.network.ElementType;
@@ -22,7 +22,7 @@ import java.util.Objects;
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
-public abstract class AbstractAdmittanceEquationTerm extends AbstractBranchEquationTerm<VariableType, EquationType> implements LinearEquationTerm {
+public abstract class AbstractAdmittanceEquationTerm extends AbstractElementEquationTerm<LfBranch, VariableType, EquationType> implements LinearEquationTerm {
 
     protected final Variable<VariableType> v1rVar;
 
@@ -140,7 +140,7 @@ public abstract class AbstractAdmittanceEquationTerm extends AbstractBranchEquat
 
     @Override
     public int getElementNum() {
-        return branch.getNum();
+        return element.getNum();
     }
 
     @Override

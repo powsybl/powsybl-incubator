@@ -130,7 +130,7 @@ public class OpenShortCircuitProvider implements ShortCircuitAnalysisProvider {
             List<LimitViolation> limitViolations = new ArrayList<>();
             FortescueValue current = new FortescueValue(iccMagnitude, iccAngle);
 
-            FaultResult fr = new FaultResult(fault, 0., feederResults, limitViolations, current);
+            FaultResult fr = new FaultResult(fault, 0., feederResults, limitViolations, current, FaultResult.Status.SUCCESS);
             faultResults.add(fr);
         }
     }
@@ -157,7 +157,7 @@ public class OpenShortCircuitProvider implements ShortCircuitAnalysisProvider {
             List<LimitViolation> limitViolations = new ArrayList<>();
             FortescueValue current = new FortescueValue(iccMagnitude, iccAngle);
 
-            FaultResult fr = new FaultResult(fault, pcc, feederResultsProvider, limitViolations, current);
+            FaultResult fr = new FaultResult(fault, pcc, feederResultsProvider, limitViolations, current, FaultResult.Status.SUCCESS);
             faultResults.add(fr);
         }
     }

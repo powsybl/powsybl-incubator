@@ -11,7 +11,10 @@ import com.powsybl.opf.parameters.OpenReacResults;
 import com.powsybl.opf.parameters.OpenReacStatus;
 import org.apache.commons.lang3.tuple.Pair;
 
-public class OpenReacRunner {
+public final class OpenReacRunner {
+
+    private OpenReacRunner() {
+    }
 
     public static OpenReacResults runOpenReac(Network network, String variant, OpenReacParameters parameters) {
         AmplModel reactiveOpf = AmplModel.REACTIVE_OPF;

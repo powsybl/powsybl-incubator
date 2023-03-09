@@ -1,12 +1,12 @@
 package com.powsybl.opf;
 
 import com.google.auto.service.AutoService;
-import com.powsybl.ampl.executor.AmplModelRunner;
 import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.Exporter;
 import com.powsybl.iidm.network.ImportConfig;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.tools.ConversionToolUtils;
+import com.powsybl.opf.parameters.OpenReacParameters;
 import com.powsybl.tools.Command;
 import com.powsybl.tools.Tool;
 import com.powsybl.tools.ToolRunningContext;
@@ -97,8 +97,8 @@ public class OpenReacTool implements Tool {
 
         // Running model
         context.getOutputStream().println("Running OpenReac on the network...");
-        AmplModelRunner.run(network, network.getVariantManager().getWorkingVariantId(), AmplModel.REACTIVE_OPF,
-                context.getLongTimeExecutionComputationManager());
+        OpenReacRunner.runOpenReac(network, network.getVariantManager().getWorkingVariantId(),
+                OpenReacParameters.load());
         context.getOutputStream().println("OpenReac optimisation done");
 
         // Exporting the modified network

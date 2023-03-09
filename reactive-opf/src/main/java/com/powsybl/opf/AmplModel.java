@@ -113,8 +113,7 @@ public enum AmplModel implements IAmplModel {
     @Override
     public Collection<AmplReadableElement> getAmplReadableElement() {
         return Arrays.asList(AmplReadableElement.SHUNT, AmplReadableElement.GENERATOR,
-                AmplReadableElement.VSC_CONVERTER_STATION, AmplReadableElement.STATIC_VAR_COMPENSATOR,
-                AmplReadableElement.REACTIVE_SLACK);
+                AmplReadableElement.VSC_CONVERTER_STATION, AmplReadableElement.STATIC_VAR_COMPENSATOR);
     }
 
     @Override

@@ -27,7 +27,7 @@ public final class Main {
         System.out.println(openReacResults.getStatus());
         for (ReactiveInvestmentOutput.ReactiveInvestment investment : openReacResults.getReactiveInvestments()) {
             System.out.println(
-                    "investment : " + investment.id + " " + investment.busId + " " + investment.substationId + " " + investment.slack);
+                    "investment : " + investment.busId + " " + investment.substationId + " " + investment.slack);
         }
     }
 

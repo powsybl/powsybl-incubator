@@ -46,13 +46,12 @@ public class ReactiveInvestmentOutput implements IAmplOutputFile {
                     "Error reading " + getFileName() + ", wrong number of columns. Expected: " + expectedCols + ", found:" + readCols);
         } else {
             for (String line : investmentsLines.subList(1, investmentsLines.size())) {
-                readLine(line.split(sep), amplMapper);
+                readLine(line.split(sep));
             }
         }
     }
 
-    private void readLine(String[] tokens, StringToIntMapper<AmplSubset> amplMapper) {
-        int busNum = Integer.parseInt(tokens[1]);
+    private void readLine(String[] tokens) {
         double slackCapacitor = CAPACITOR_FACTOR * readDouble(tokens[2]);
         double slackSelf = SELF_FACTOR * readDouble(tokens[3]);
         String id = readString(tokens[4]);
@@ -62,7 +61,7 @@ public class ReactiveInvestmentOutput implements IAmplOutputFile {
             throw new AmplException(
                     "Error reading reactive investments, can't be self and capacitor at the same time.");
         }
-        investments.add(new ReactiveInvestment(id, amplMapper.getId(AmplSubset.BUS, busNum), substationId, slack));
+        investments.add(new ReactiveInvestment(id, substationId, slack));
     }
 
     private double readDouble(String d) {
@@ -77,13 +76,11 @@ public class ReactiveInvestmentOutput implements IAmplOutputFile {
     }
 
     public static class ReactiveInvestment {
-        public final String id;
         public final String busId;
         public final String substationId;
         public final double slack;
 
-        public ReactiveInvestment(String id, String busId, String substationId, double slack) {
-            this.id = id;
+        public ReactiveInvestment(String busId, String substationId, double slack) {
             this.busId = busId;
             this.substationId = substationId;
             this.slack = slack;

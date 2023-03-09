@@ -6,23 +6,29 @@
  */
 package com.powsybl.opf;
 
-import java.util.Properties;
-
-import com.powsybl.ampl.executor.AmplModelRunner;
-import com.powsybl.computation.ComputationManager;
-import com.powsybl.computation.local.LocalComputationManager;
 import com.powsybl.iidm.network.Importers;
 import com.powsybl.iidm.network.Network;
+import com.powsybl.opf.parameters.OpenReacParameters;
+import com.powsybl.opf.parameters.OpenReacResults;
+import com.powsybl.opf.parameters.ReactiveInvestmentOutput;
+
+import java.util.Properties;
 
 public final class Main {
     private Main() {
     }
 
     public static void main(String[] args) throws Exception {
-        Network network = Importers.importData("XIIDM", "./", "ieee14", new Properties());
-        String variantId = network.getVariantManager().getWorkingVariantId();
-        AmplModel reactiveOpf = AmplModel.REACTIVE_OPF;
-        ComputationManager manager = LocalComputationManager.getDefault();
-        AmplModelRunner.run(network, variantId, reactiveOpf, manager, new OpenReacParameters());
+        //        Network network = Importers.importData("XIIDM", "./", "ieee14", new Properties());
+        Network network = Importers.importData("XIIDM", "./", "rte-iidm-borne-orig", new Properties());
+        OpenReacParameters parameters = new OpenReacParameters();
+        OpenReacResults openReacResults = OpenReacRunner.runOpenReac(network,
+                network.getVariantManager().getWorkingVariantId(), parameters);
+        System.out.println(openReacResults.getStatus());
+        for (ReactiveInvestmentOutput.ReactiveInvestment investment : openReacResults.getReactiveInvestments()) {
+            System.out.println(
+                    "investment : " + investment.id + " " + investment.busId + " " + investment.substationId + " " + investment.slack);
+        }
     }
+
 }

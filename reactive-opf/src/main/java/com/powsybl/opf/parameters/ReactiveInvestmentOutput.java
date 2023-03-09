@@ -1,8 +1,11 @@
-package com.powsybl.opf;
+package com.powsybl.opf.parameters;
 
 import com.powsybl.ampl.converter.AmplConstants;
+import com.powsybl.ampl.converter.AmplException;
+import com.powsybl.ampl.converter.AmplSubset;
 import com.powsybl.ampl.executor.IAmplOutputFile;
 import com.powsybl.commons.PowsyblException;
+import com.powsybl.commons.util.StringToIntMapper;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -12,7 +15,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class ReactiveInvestmentOutput implements IAmplOutputFile {
-
+    // TODO determine sign for self investments
+    private static final boolean IS_SELF_POSITIVE = true;
+    private static final int SELF_FACTOR = IS_SELF_POSITIVE ? 1 : -1;
+    private static final int CAPACITOR_FACTOR = !IS_SELF_POSITIVE ? 1 : -1;
     private final List<ReactiveInvestment> investments;
 
     public ReactiveInvestmentOutput() {
@@ -29,7 +35,7 @@ public class ReactiveInvestmentOutput implements IAmplOutputFile {
     }
 
     @Override
-    public void read(Path path) throws IOException {
+    public void read(Path path, StringToIntMapper<AmplSubset> amplMapper) throws IOException {
         List<String> investmentsLines = Files.readAllLines(path, StandardCharsets.UTF_8);
         String headers = investmentsLines.get(0);
         int expectedCols = 6;
@@ -40,38 +46,47 @@ public class ReactiveInvestmentOutput implements IAmplOutputFile {
                     "Error reading " + getFileName() + ", wrong number of columns. Expected: " + expectedCols + ", found:" + readCols);
         } else {
             for (String line : investmentsLines.subList(1, investmentsLines.size())) {
-                readLine(line.split(sep));
+                readLine(line.split(sep), amplMapper);
             }
         }
     }
 
-    private void readLine(String[] tokens) {
+    private void readLine(String[] tokens, StringToIntMapper<AmplSubset> amplMapper) {
         int busNum = Integer.parseInt(tokens[1]);
-        double slackCondensator = readDouble(tokens[2]);
-        double slackSelf = readDouble(tokens[3]);
-        String id = tokens[4];
-        String substationId = tokens[5];
-        investments.add(new ReactiveInvestment(id, busNum, substationId, slackCondensator, slackSelf));
+        double slackCapacitor = CAPACITOR_FACTOR * readDouble(tokens[2]);
+        double slackSelf = SELF_FACTOR * readDouble(tokens[3]);
+        String id = readString(tokens[4]);
+        String substationId = readString(tokens[5]);
+        double slack = slackCapacitor + slackSelf;
+        if (slack != slackCapacitor && slack != slackSelf) {
+            throw new AmplException(
+                    "Error reading reactive investments, can't be self and capacitor at the same time.");
+        }
+        investments.add(new ReactiveInvestment(id, amplMapper.getId(AmplSubset.BUS, busNum), substationId, slack));
     }
 
     private double readDouble(String d) {
         return Float.parseFloat(d) != AmplConstants.INVALID_FLOAT_VALUE ? Double.parseDouble(d) : Double.NaN;
     }
 
-    private static class ReactiveInvestment {
-        public final String id;
-        public final int busId;
-        public final String substationId;
-        public final double slackCondensator;
-        public final double slackSelf;
+    /**
+     * removes quotes on strings
+     */
+    private String readString(String str) {
+        return str.substring(1, str.length() - 1);
+    }
 
-        public ReactiveInvestment(String id, int busId, String substationId, double slackCondensator,
-                                  double slackSelf) {
+    public static class ReactiveInvestment {
+        public final String id;
+        public final String busId;
+        public final String substationId;
+        public final double slack;
+
+        public ReactiveInvestment(String id, String busId, String substationId, double slack) {
             this.id = id;
             this.busId = busId;
             this.substationId = substationId;
-            this.slackCondensator = slackCondensator;
-            this.slackSelf = slackSelf;
+            this.slack = slack;
         }
     }
 }

@@ -6,13 +6,17 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
 
+/**
+ * This class stores all inputs parameters specific to the OpenReac optimizer, and allow them to be loaded from yaml.
+ * <p>
+ * TODO read from yaml shunts, transfo, generators, specific voltages ?
+ */
 public class OpenReacParameters extends AbstractExtendable<OpenReacParameters> {
     private static final String MODULE_CONFIG_NAME = "open-reac";
 
-    //TODO read from yaml this key
     private static final String MODIFIABLE_SHUNT_LIST = "modifiable-shunt-list";
 
-    // VERSION 1.0 : VoltageNegativeDelta, VoltagePositiveDelta
+    // VERSION 1.0 : No reading from yaml but framework is here
     public static final String VERSION = "1.0";
 
     /**
@@ -35,6 +39,8 @@ public class OpenReacParameters extends AbstractExtendable<OpenReacParameters> {
      * List of network's shunts ID
      */
     private final List<String> modifiableShunts;
+    private final List<String> fixedGenerators;
+    private final List<ReactiveTransformerInput.AmplTransformerParameter> modifiableTransformers;
 
     public static OpenReacParameters load() {
         return load(PlatformConfig.defaultConfig());
@@ -53,6 +59,8 @@ public class OpenReacParameters extends AbstractExtendable<OpenReacParameters> {
 
     public OpenReacParameters() {
         this.modifiableShunts = new LinkedList<>();
+        this.fixedGenerators = new LinkedList<>();
+        this.modifiableTransformers = new LinkedList<>();
         this.specificVoltageDelta = new HashMap<>();
     }
 
@@ -61,16 +69,50 @@ public class OpenReacParameters extends AbstractExtendable<OpenReacParameters> {
         return this;
     }
 
-    public List<String> getModifiableShunts() {
-        return modifiableShunts;
-    }
-
+    /**
+     * Override voltage level bound in the network. This will modify the network when OpenReac is called.
+     *
+     * @param lowerVoltage factor to the nominal voltage of the voltage ID.
+     * @param upperVoltage factor to the nominal voltage of the voltage ID.
+     */
     public OpenReacParameters addSpecificVoltageDelta(String voltageLevelId, double lowerVoltage, double upperVoltage) {
         this.specificVoltageDelta.put(voltageLevelId, Pair.of(lowerVoltage, upperVoltage));
         return this;
     }
 
+    /**
+     * Fix the reactance of the given generators during the OpenReac solve.
+     * The reactance is constant to the reactance stored in the network.
+     */
+    public OpenReacParameters addFixedReactanceGenerators(String... generatorsIds) {
+        this.fixedGenerators.addAll(Arrays.asList(generatorsIds));
+        return this;
+    }
+
+    /**
+     * Tells OpenReac that it can modify the ratio of the given transformers.
+     *
+     * @param transformerParams information to identify the transformer.
+     */
+    public OpenReacParameters addVariableTransformator(
+            ReactiveTransformerInput.AmplTransformerParameter... transformerParams) {
+        this.modifiableTransformers.addAll(Arrays.asList(transformerParams));
+        return this;
+    }
+
+    public List<String> getModifiableShunts() {
+        return modifiableShunts;
+    }
+
     public Map<String, Pair<Double, Double>> getSpecificVoltageDelta() {
         return specificVoltageDelta;
+    }
+
+    public List<String> getFixedGenerators() {
+        return fixedGenerators;
+    }
+
+    public List<ReactiveTransformerInput.AmplTransformerParameter> getModifiableTransformers() {
+        return modifiableTransformers;
     }
 }

@@ -78,7 +78,7 @@ printf{(g,n) in UNITON} "%i;%i;%i;%Q;%.3f;%.3f;%.3f;%.3f;%.3f;\n",
   unit_Pc[1,g,n],
   if (g,n) in UNIT_FIXQ then unit_Qc[1,g,n] else Q[g,n],
   P[g,n],
-  Q[g,n]
+  if (g,n) in UNIT_FIXQ then unit_Qc[1,g,n] else Q[g,n]
   > (fileOut);
 close (fileOut);
 
@@ -108,6 +108,47 @@ close (fileOut);
 }
 
 
+
+###############################################################################
+#
+# Writing results for transformers
+#
+###############################################################################
+if final_status == "OK" then {
+
+let fileOut := "reactiveopf_results_rtc.csv";
+printf "#variant;num;tap;\n" > (fileOut);
+for{(qq,m,n) in BRANCHCC_REGL_VAR} {
+  let temp1 := 
+    min{(1,regl_table[1,branch_ptrRegl[1,qq,m,n]],tap) in TAPS}
+      abs(branch_Ror_var[qq,m,n]-tap_ratio[1,regl_table[1,branch_ptrRegl[1,qq,m,n]],tap]);
+  let temp2 :=
+    min{(1,regl_table[1,branch_ptrRegl[1,qq,m,n]],tap) in TAPS:
+      abs(branch_Ror_var[qq,m,n]-tap_ratio[1,regl_table[1,branch_ptrRegl[1,qq,m,n]],tap])<=1.00001*temp1}tap;
+  if 0 and card(BRANCHCC_REGL_VAR)<=10 then
+  printf "REGL=%Q ptrRegl=%i regl_table=%i Ror_var=%f min=%f tap=%i tap_ratio=%f err=%f\n",
+    branch_id[1,qq,m,n],branch_ptrRegl[1,qq,m,n],regl_table[1,branch_ptrRegl[1,qq,m,n]],
+    branch_Ror_var[qq,m,n],temp1,
+    temp2,
+    tap_ratio[1,regl_table[1,branch_ptrRegl[1,qq,m,n]],temp2],
+    abs(branch_Ror_var[qq,m,n]-tap_ratio[1,regl_table[1,branch_ptrRegl[1,qq,m,n]],temp2])
+    ;
+  printf "%i;%i;%i;\n",
+    1,qq,temp2
+    > (fileOut);
+}
+close (fileOut);
+
+}
+
+# Useful during tests to create list of transfos
+if 0 then
+printf {(qq,m,n) in BRANCHCC_REGL: 
+  substation_Vnomi[1,bus_substation[1,m]]>21 and substation_Vnomi[1,bus_substation[1,m]]<300 and
+  substation_Vnomi[1,bus_substation[1,n]]>21 and substation_Vnomi[1,bus_substation[1,n]]<300 and
+  (substation_Vnomi[1,bus_substation[1,m]]>120 or substation_Vnomi[1,bus_substation[1,n]]>120) and
+  (substation_Vnomi[1,bus_substation[1,m]]<120 or substation_Vnomi[1,bus_substation[1,n]]<120)
+} "1 %i %i %i %Q\n",qq,m,n,branch_id[1,qq,m,n] > param_transformers.txtt;
 
 ###############################################################################
 #
@@ -171,7 +212,7 @@ if length($SHELL) > 0 then {
   printf "%s %Q\n","SHELL",$SHELL > (fileOut); # Linux
   printf "%s %Q\n","HOSTNAME",$HOSTNAME > (fileOut);
 }
-printf "%s %Q\n","_cd",_cd > (fileOut);
+printf "%s %Q\n","directory",_cd > (fileOut);
 
 printf "\n" > (fileOut);
 printf "%s %f\n","Pnull",Pnull > (fileOut);
@@ -211,6 +252,8 @@ printf "%s %i\n","nb_shunt_in_data_file",card(SHUNT) > (fileOut);
 printf "%s %i\n","nb_shunt_connectable_or_in_AC_CC",card(SHUNTCC) > (fileOut);
 printf "%s %i\n","nb_shunt_with_fixed_value",card(SHUNT_FIX) > (fileOut);
 printf "%s %i\n","nb_shunt_with_variable_value",card(SHUNT_VAR) > (fileOut);
+printf "%s %i\n","nb_transformers_with_variable_ratio",card(BRANCHCC_REGL_VAR) > (fileOut);
+printf "%s %i\n","nb_transformers_with_fixed_ratio",card(BRANCHCC_REGL_FIX) > (fileOut);
 printf "%s %i\n","nb_svc_in_data_file",card(SVC) > (fileOut);
 printf "%s %i\n","nb_svc_in_AC_CC",card(SVCCC) > (fileOut);
 printf "%s %i\n","nb_svc_up_and_operating",card(SVCON) > (fileOut);

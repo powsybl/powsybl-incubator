@@ -1,4 +1,4 @@
-package com.powsybl.opf.parameters;
+package com.powsybl.opf.parameters.output;
 
 public enum OpenReacStatus {
     /**
@@ -8,6 +8,6 @@ public enum OpenReacStatus {
     /**
      * OpenReac run is not successful.
      */
-    NOT_OK;
+    NOT_OK
 
 }

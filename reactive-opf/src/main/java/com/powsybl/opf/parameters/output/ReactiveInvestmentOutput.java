@@ -1,4 +1,4 @@
-package com.powsybl.opf.parameters;
+package com.powsybl.opf.parameters.output;
 
 import com.powsybl.ampl.converter.AmplConstants;
 import com.powsybl.ampl.converter.AmplException;

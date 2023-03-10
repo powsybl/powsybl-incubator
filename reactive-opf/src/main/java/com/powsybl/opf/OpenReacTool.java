@@ -6,7 +6,7 @@ import com.powsybl.iidm.network.Exporter;
 import com.powsybl.iidm.network.ImportConfig;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.tools.ConversionToolUtils;
-import com.powsybl.opf.parameters.OpenReacParameters;
+import com.powsybl.opf.parameters.input.OpenReacParameters;
 import com.powsybl.tools.Command;
 import com.powsybl.tools.Tool;
 import com.powsybl.tools.ToolRunningContext;

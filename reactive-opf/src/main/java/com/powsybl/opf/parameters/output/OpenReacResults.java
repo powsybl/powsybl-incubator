@@ -1,6 +1,6 @@
-package com.powsybl.opf.parameters;
+package com.powsybl.opf.parameters.output;
 
-import com.powsybl.opf.parameters.ReactiveInvestmentOutput.ReactiveInvestment;
+import com.powsybl.opf.parameters.output.ReactiveInvestmentOutput.ReactiveInvestment;
 
 import java.util.List;
 

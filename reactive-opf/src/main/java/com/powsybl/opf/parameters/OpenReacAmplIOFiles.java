@@ -3,6 +3,12 @@ package com.powsybl.opf.parameters;
 import com.powsybl.ampl.executor.IAmplInputFile;
 import com.powsybl.ampl.executor.IAmplOutputFile;
 import com.powsybl.ampl.executor.IAmplParameters;
+import com.powsybl.opf.parameters.input.FixedReactanceGeneratorInput;
+import com.powsybl.opf.parameters.input.OpenReacParameters;
+import com.powsybl.opf.parameters.input.ReactiveTransformerInput;
+import com.powsybl.opf.parameters.input.VariableReactanceShuntsInput;
+import com.powsybl.opf.parameters.output.OpenReacResults;
+import com.powsybl.opf.parameters.output.ReactiveInvestmentOutput;
 
 import java.util.Collection;
 import java.util.List;

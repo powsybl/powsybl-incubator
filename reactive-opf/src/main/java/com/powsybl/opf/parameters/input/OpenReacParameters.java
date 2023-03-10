@@ -1,4 +1,4 @@
-package com.powsybl.opf.parameters;
+package com.powsybl.opf.parameters.input;
 
 import com.powsybl.commons.config.PlatformConfig;
 import com.powsybl.commons.extensions.AbstractExtendable;

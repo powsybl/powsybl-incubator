@@ -6,9 +6,9 @@ import com.powsybl.computation.ComputationManager;
 import com.powsybl.computation.local.LocalComputationManager;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.opf.parameters.OpenReacAmplIOFiles;
-import com.powsybl.opf.parameters.OpenReacParameters;
-import com.powsybl.opf.parameters.OpenReacResults;
-import com.powsybl.opf.parameters.OpenReacStatus;
+import com.powsybl.opf.parameters.input.OpenReacParameters;
+import com.powsybl.opf.parameters.output.OpenReacResults;
+import com.powsybl.opf.parameters.output.OpenReacStatus;
 import org.apache.commons.lang3.tuple.Pair;
 
 public final class OpenReacRunner {

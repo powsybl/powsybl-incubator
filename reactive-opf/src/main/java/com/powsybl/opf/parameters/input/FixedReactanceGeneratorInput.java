@@ -1,4 +1,4 @@
-package com.powsybl.opf.parameters;
+package com.powsybl.opf.parameters.input;
 
 import com.powsybl.ampl.converter.AmplSubset;
 

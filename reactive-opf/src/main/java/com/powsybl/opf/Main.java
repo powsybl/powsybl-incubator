@@ -8,9 +8,9 @@ package com.powsybl.opf;
 
 import com.powsybl.iidm.network.Importers;
 import com.powsybl.iidm.network.Network;
-import com.powsybl.opf.parameters.OpenReacParameters;
-import com.powsybl.opf.parameters.OpenReacResults;
-import com.powsybl.opf.parameters.ReactiveInvestmentOutput;
+import com.powsybl.opf.parameters.input.OpenReacParameters;
+import com.powsybl.opf.parameters.output.OpenReacResults;
+import com.powsybl.opf.parameters.output.ReactiveInvestmentOutput;
 
 import java.util.Properties;
 

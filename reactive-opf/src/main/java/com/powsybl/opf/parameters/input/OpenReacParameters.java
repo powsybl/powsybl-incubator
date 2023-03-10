@@ -40,7 +40,7 @@ public class OpenReacParameters extends AbstractExtendable<OpenReacParameters> {
      */
     private final List<String> modifiableShunts;
     private final List<String> fixedGenerators;
-    private final List<ReactiveTransformerInput.AmplTransformerParameter> modifiableTransformers;
+    private final List<String> modifiableTransformers;
 
     public static OpenReacParameters load() {
         return load(PlatformConfig.defaultConfig());
@@ -91,12 +91,9 @@ public class OpenReacParameters extends AbstractExtendable<OpenReacParameters> {
 
     /**
      * Tells OpenReac that it can modify the ratio of the given transformers.
-     *
-     * @param transformerParams information to identify the transformer.
      */
-    public OpenReacParameters addVariableTransformator(
-            ReactiveTransformerInput.AmplTransformerParameter... transformerParams) {
-        this.modifiableTransformers.addAll(Arrays.asList(transformerParams));
+    public OpenReacParameters addVariableTransformator(String... transformerIds) {
+        this.modifiableTransformers.addAll(Arrays.asList(transformerIds));
         return this;
     }
 
@@ -112,7 +109,7 @@ public class OpenReacParameters extends AbstractExtendable<OpenReacParameters> {
         return fixedGenerators;
     }
 
-    public List<ReactiveTransformerInput.AmplTransformerParameter> getModifiableTransformers() {
+    public List<String> getModifiableTransformers() {
         return modifiableTransformers;
     }
 }

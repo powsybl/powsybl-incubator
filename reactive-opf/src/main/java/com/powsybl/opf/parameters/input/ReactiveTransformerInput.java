@@ -14,24 +14,12 @@ import java.util.List;
  * timestep num bus id
  */
 public class ReactiveTransformerInput implements IAmplInputFile {
-    public static class AmplTransformerParameter {
-        public final String transformerId;
-        public final String busId1;
-        public final String busId2;
-
-        public AmplTransformerParameter(String transformerId, String busId1, String busId2) {
-            this.transformerId = transformerId;
-            this.busId1 = busId1;
-            this.busId2 = busId2;
-        }
-    }
-
     public static final String PARAM_TRANSFORMER_FILE_NAME = "param_generators_reactive.txt";
 
-    private final List<AmplTransformerParameter> variablesTransformers;
+    private final List<String> variablesTransformers;
     private final String networkVariant;
 
-    public ReactiveTransformerInput(List<AmplTransformerParameter> variablesTransformers, String networkVariant) {
+    public ReactiveTransformerInput(List<String> variablesTransformers, String networkVariant) {
         this.variablesTransformers = variablesTransformers;
         this.networkVariant = networkVariant;
     }
@@ -44,13 +32,10 @@ public class ReactiveTransformerInput implements IAmplInputFile {
     @Override
     public InputStream getParameterFileAsStream(StringToIntMapper<AmplSubset> stringToIntMapper) {
         StringBuilder dataBuilder = new StringBuilder();
-        dataBuilder.append("#NetworkId amplTransformerId amplBusId1 amplBusId2 powsyblTransformerId");
-        for (AmplTransformerParameter transformerParam : variablesTransformers) {
+        dataBuilder.append("#NetworkId amplId powsyblId");
+        for (String transformerId : variablesTransformers) {
             String[] tokens = {this.networkVariant, Integer.toString(
-                    stringToIntMapper.getInt(AmplSubset.THREE_WINDINGS_TRANSFO,
-                            transformerParam.transformerId)), Integer.toString(
-                    stringToIntMapper.getInt(AmplSubset.BUS, transformerParam.busId1)), Integer.toString(
-                    stringToIntMapper.getInt(AmplSubset.BUS, transformerParam.busId2)), transformerParam.transformerId};
+                    stringToIntMapper.getInt(AmplSubset.THREE_WINDINGS_TRANSFO, transformerId)), transformerId};
             dataBuilder.append(String.join(" ", tokens));
             dataBuilder.append("\n");
         }

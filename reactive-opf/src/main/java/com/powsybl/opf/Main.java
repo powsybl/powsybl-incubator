@@ -12,6 +12,7 @@ import com.powsybl.opf.parameters.input.OpenReacParameters;
 import com.powsybl.opf.parameters.output.OpenReacResults;
 import com.powsybl.opf.parameters.output.ReactiveInvestmentOutput;
 
+import java.util.Map;
 import java.util.Properties;
 
 public final class Main {
@@ -28,6 +29,10 @@ public final class Main {
         for (ReactiveInvestmentOutput.ReactiveInvestment investment : openReacResults.getReactiveInvestments()) {
             System.out.println(
                     "investment : " + investment.busId + " " + investment.substationId + " " + investment.slack);
+        }
+        for (Map.Entry<String, String> entry : openReacResults.getIndicators().entrySet()) {
+            System.out.println(entry.getKey() + ": " + entry.getValue());
+
         }
     }
 

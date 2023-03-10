@@ -23,7 +23,7 @@ public final class OpenReacRunner {
         preRunModifications(network, parameters);
         AmplResults run = AmplModelRunner.run(network, variant, reactiveOpf, manager, amplIoInterface);
         return new OpenReacResults(run.isSuccess() ? OpenReacStatus.OK : OpenReacStatus.NOT_OK,
-                amplIoInterface.getReactiveInvestments());
+                amplIoInterface.getReactiveInvestments(), amplIoInterface.getIndicators());
     }
 
     /**

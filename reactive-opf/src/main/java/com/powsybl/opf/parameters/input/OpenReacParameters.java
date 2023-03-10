@@ -41,6 +41,7 @@ public class OpenReacParameters extends AbstractExtendable<OpenReacParameters> {
     private final List<String> modifiableShunts;
     private final List<String> fixedGenerators;
     private final List<String> modifiableTransformers;
+    private final Map<AlgorithmInput.OpenReacAlgoParam, String> algoParamsMap;
 
     public static OpenReacParameters load() {
         return load(PlatformConfig.defaultConfig());
@@ -62,6 +63,7 @@ public class OpenReacParameters extends AbstractExtendable<OpenReacParameters> {
         this.fixedGenerators = new LinkedList<>();
         this.modifiableTransformers = new LinkedList<>();
         this.specificVoltageDelta = new HashMap<>();
+        this.algoParamsMap = new HashMap<>();
     }
 
     public OpenReacParameters addVariableReactanceShunts(String... shuntsIds) {
@@ -97,6 +99,11 @@ public class OpenReacParameters extends AbstractExtendable<OpenReacParameters> {
         return this;
     }
 
+    public OpenReacParameters addAlgorithmParam(AlgorithmInput.OpenReacAlgoParam param, String value) {
+        this.algoParamsMap.put(param, value);
+        return this;
+    }
+
     public List<String> getModifiableShunts() {
         return modifiableShunts;
     }
@@ -111,5 +118,9 @@ public class OpenReacParameters extends AbstractExtendable<OpenReacParameters> {
 
     public List<String> getModifiableTransformers() {
         return modifiableTransformers;
+    }
+
+    public Map<AlgorithmInput.OpenReacAlgoParam, String> getAlgorithmParams() {
+        return algoParamsMap;
     }
 }

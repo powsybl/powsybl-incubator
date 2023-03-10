@@ -3,10 +3,7 @@ package com.powsybl.opf.parameters;
 import com.powsybl.ampl.executor.IAmplInputFile;
 import com.powsybl.ampl.executor.IAmplOutputFile;
 import com.powsybl.ampl.executor.IAmplParameters;
-import com.powsybl.opf.parameters.input.FixedReactanceGeneratorInput;
-import com.powsybl.opf.parameters.input.OpenReacParameters;
-import com.powsybl.opf.parameters.input.ReactiveTransformerInput;
-import com.powsybl.opf.parameters.input.VariableReactanceShuntsInput;
+import com.powsybl.opf.parameters.input.*;
 import com.powsybl.opf.parameters.output.IndicatorOutput;
 import com.powsybl.opf.parameters.output.OpenReacResults;
 import com.powsybl.opf.parameters.output.ReactiveInvestmentOutput;
@@ -28,6 +25,7 @@ public class OpenReacAmplIOFiles implements IAmplParameters {
     private final FixedReactanceGeneratorInput fixedReactiveGeneratorInput;
     private final VariableReactanceShuntsInput variableReactanceShuntsInput;
     private final ReactiveTransformerInput reactiveTransformerInput;
+    private final AlgorithmInput algorithmParams;
     private final ReactiveInvestmentOutput reactiveInvestmentOutput;
     private final IndicatorOutput indicators;
 
@@ -38,6 +36,7 @@ public class OpenReacAmplIOFiles implements IAmplParameters {
                 networkVariant);
         this.reactiveTransformerInput = new ReactiveTransformerInput(params.getModifiableTransformers(),
                 networkVariant);
+        this.algorithmParams = new AlgorithmInput(params.getAlgorithmParams());
         this.reactiveInvestmentOutput = new ReactiveInvestmentOutput();
         this.indicators = new IndicatorOutput();
     }
@@ -52,7 +51,8 @@ public class OpenReacAmplIOFiles implements IAmplParameters {
 
     @Override
     public Collection<IAmplInputFile> getInputParameters() {
-        return List.of(fixedReactiveGeneratorInput, variableReactanceShuntsInput, reactiveTransformerInput);
+        return List.of(fixedReactiveGeneratorInput, variableReactanceShuntsInput, reactiveTransformerInput,
+                algorithmParams);
     }
 
     @Override

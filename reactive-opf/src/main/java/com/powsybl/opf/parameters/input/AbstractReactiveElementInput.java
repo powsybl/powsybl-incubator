@@ -1,5 +1,6 @@
 package com.powsybl.opf.parameters.input;
 
+import com.powsybl.ampl.converter.AmplConstants;
 import com.powsybl.ampl.converter.AmplSubset;
 import com.powsybl.ampl.executor.IAmplInputFile;
 import com.powsybl.commons.util.StringToIntMapper;
@@ -15,11 +16,14 @@ import java.util.List;
  */
 public abstract class AbstractReactiveElementInput implements IAmplInputFile {
     private final List<String> elementIds;
-    private final String networkVariant;
+    private static final String QUOTE = "'";
 
-    public AbstractReactiveElementInput(List<String> elementIds, String networkVariant) {
+    public String addQuotes(String str) {
+        return QUOTE + str + QUOTE;
+    }
+
+    public AbstractReactiveElementInput(List<String> elementIds) {
         this.elementIds = elementIds;
-        this.networkVariant = networkVariant;
     }
 
     @Override
@@ -27,8 +31,9 @@ public abstract class AbstractReactiveElementInput implements IAmplInputFile {
         StringBuilder dataBuilder = new StringBuilder();
         dataBuilder.append("#NetworkId amplId powsyblId\n");
         for (String elementID : elementIds) {
-            String[] tokens = {this.networkVariant, Integer.toString(
-                    stringToIntMapper.getInt(getElementAmplSubset(), elementID)), elementID};
+            int amplId = stringToIntMapper.getInt(getElementAmplSubset(), elementID);
+            String[] tokens = {Integer.toString(AmplConstants.DEFAULT_VARIANT_INDEX), Integer.toString(
+                    amplId), addQuotes(elementID)};
             dataBuilder.append(String.join(" ", tokens));
             dataBuilder.append("\n");
         }

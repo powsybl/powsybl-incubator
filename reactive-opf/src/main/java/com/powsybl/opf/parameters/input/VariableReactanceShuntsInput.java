@@ -11,8 +11,8 @@ import java.util.List;
 public class VariableReactanceShuntsInput extends AbstractReactiveElementInput {
     public static final String PARAM_SHUNT_FILE_NAME = "param_shunts.txt";
 
-    public VariableReactanceShuntsInput(List<String> elementIds, String networkVariant) {
-        super(elementIds, networkVariant);
+    public VariableReactanceShuntsInput(List<String> elementIds) {
+        super(elementIds);
     }
 
     @Override

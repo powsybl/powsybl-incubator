@@ -11,8 +11,8 @@ import java.util.List;
 public class FixedReactanceGeneratorInput extends AbstractReactiveElementInput {
     public static final String PARAM_GENERATOR_FILE_NAME = "param_generators_reactive.txt";
 
-    public FixedReactanceGeneratorInput(List<String> elementIds, String networkVariant) {
-        super(elementIds, networkVariant);
+    public FixedReactanceGeneratorInput(List<String> elementIds) {
+        super(elementIds);
     }
 
     @Override

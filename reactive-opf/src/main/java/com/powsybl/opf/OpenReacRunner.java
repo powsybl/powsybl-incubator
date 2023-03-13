@@ -19,7 +19,7 @@ public final class OpenReacRunner {
     public static OpenReacResults runOpenReac(Network network, String variant, OpenReacParameters parameters) {
         AmplModel reactiveOpf = AmplModel.REACTIVE_OPF;
         ComputationManager manager = LocalComputationManager.getDefault();
-        OpenReacAmplIOFiles amplIoInterface = new OpenReacAmplIOFiles(variant, parameters);
+        OpenReacAmplIOFiles amplIoInterface = new OpenReacAmplIOFiles(parameters);
         preRunModifications(network, parameters);
         AmplResults run = AmplModelRunner.run(network, variant, reactiveOpf, manager, amplIoInterface);
         return new OpenReacResults(run.isSuccess() ? OpenReacStatus.OK : OpenReacStatus.NOT_OK,

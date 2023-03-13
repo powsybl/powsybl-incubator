@@ -29,13 +29,10 @@ public class OpenReacAmplIOFiles implements IAmplParameters {
     private final ReactiveInvestmentOutput reactiveInvestmentOutput;
     private final IndicatorOutput indicators;
 
-    public OpenReacAmplIOFiles(String networkVariant, OpenReacParameters params) {
-        this.fixedReactiveGeneratorInput = new FixedReactanceGeneratorInput(params.getModifiableShunts(),
-                networkVariant);
-        this.variableReactanceShuntsInput = new VariableReactanceShuntsInput(params.getFixedGenerators(),
-                networkVariant);
-        this.reactiveTransformerInput = new ReactiveTransformerInput(params.getModifiableTransformers(),
-                networkVariant);
+    public OpenReacAmplIOFiles(OpenReacParameters params) {
+        this.fixedReactiveGeneratorInput = new FixedReactanceGeneratorInput(params.getFixedGenerators());
+        this.variableReactanceShuntsInput = new VariableReactanceShuntsInput(params.getModifiableShunts());
+        this.reactiveTransformerInput = new ReactiveTransformerInput(params.getModifiableTransformers());
         this.algorithmParams = new AlgorithmInput(params.getAlgorithmParams());
         this.reactiveInvestmentOutput = new ReactiveInvestmentOutput();
         this.indicators = new IndicatorOutput();

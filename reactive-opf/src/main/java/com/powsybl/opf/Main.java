@@ -20,11 +20,18 @@ public final class Main {
     }
 
     public static void main(String[] args) throws Exception {
-        //        Network network = Importers.importData("XIIDM", "./", "ieee14", new Properties());
-        Network network = Importers.importData("XIIDM", "./", "rte-iidm-borne-orig", new Properties());
+        Network network = Importers.importData("XIIDM", "./", "ieee14", new Properties());
+        // Setup parameters
         OpenReacParameters parameters = new OpenReacParameters();
+        // Not working for now because the AMPL .dat file is not up-to-date
+        //        parameters.addVariableTransformator("transformer_id");
+        //        parameters.addFixedReactanceGenerators("generator_id");
+        //        parameters.addVariableReactanceShunts("shunt_id");
+
         OpenReacResults openReacResults = OpenReacRunner.runOpenReac(network,
                 network.getVariantManager().getWorkingVariantId(), parameters);
+
+        // Exploiting OpenReac output
         System.out.println(openReacResults.getStatus());
         for (ReactiveInvestmentOutput.ReactiveInvestment investment : openReacResults.getReactiveInvestments()) {
             System.out.println(

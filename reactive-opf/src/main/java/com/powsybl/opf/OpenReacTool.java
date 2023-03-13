@@ -6,6 +6,7 @@ import com.powsybl.iidm.network.Exporter;
 import com.powsybl.iidm.network.ImportConfig;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.tools.ConversionToolUtils;
+import com.powsybl.opf.parameters.input.AlgorithmInput;
 import com.powsybl.opf.parameters.input.OpenReacParameters;
 import com.powsybl.tools.Command;
 import com.powsybl.tools.Tool;
@@ -14,6 +15,9 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
 
@@ -24,13 +28,17 @@ public class OpenReacTool implements Tool {
     private static final String CASE_FILE = "case-file";
     private static final String OUTPUT_CASE_FORMAT = "output-case-format";
     private static final String OUTPUT_CASE_FILE = "output-case-file";
+    private static final String SHUNTS_LIST = "tunable-reactance-shunts-list";
+    private static final String GENERATORS_LIST = "fixed-reactance-generators-list";
+    private static final String TRANSFORMER_LIST = "ratio-tunable-transformers-list";
+    private static final String OPEN_REAC_PARAMS = "open-reac-params";
 
     @Override
     public Command getCommand() {
         return new Command() {
             @Override
             public String getName() {
-                return "openreac";
+                return "open-reac";
             }
 
             @Override
@@ -70,6 +78,12 @@ public class OpenReacTool implements Tool {
                 options.addOption(createImportParameterOption());
                 options.addOption(createExportParametersFileOption());
                 options.addOption(createExportParameterOption());
+                options.addOption(Option.builder()
+                                        .longOpt(OPEN_REAC_PARAMS)
+                                        .desc("the OpenReac configuation file")
+                                        .hasArg()
+                                        .argName("OPEN_REAC_PARAM_FILE")
+                                        .build());
                 return options;
             }
 
@@ -85,27 +99,84 @@ public class OpenReacTool implements Tool {
         // getting parameters
         Path inputCaseFile = context.getFileSystem().getPath(commandLine.getOptionValue(CASE_FILE));
         Path outputCaseFile = context.getFileSystem().getPath(commandLine.getOptionValue(OUTPUT_CASE_FILE));
-        Properties inputParams = readProperties(commandLine, ConversionToolUtils.OptionType.IMPORT, context);
 
-        // loading network
+        context.getOutputStream().println("Parsing properties...");
+        Properties inputParams = readProperties(commandLine, ConversionToolUtils.OptionType.IMPORT, context);
+        OpenReacParameters openReacParameters = createOpenReacParameters(commandLine, context);
+
         context.getOutputStream().println("Loading network '" + inputCaseFile + "'...");
+        Network network = loadingNetwork(context, inputCaseFile, inputParams);
+
+        itoolsOpenReac(context, network, openReacParameters);
+
+        context.getOutputStream().println("Exporting network '" + outputCaseFile + "' with the results...");
+        exportNetwork(commandLine, context, outputCaseFile, network);
+        context.getOutputStream().println("OpenReac ran successfully.");
+    }
+
+    private OpenReacParameters createOpenReacParameters(CommandLine line,
+                                                        ToolRunningContext context) throws IOException {
+
+        Properties inputParams = new Properties();
+        String filename = line.getOptionValue(OPEN_REAC_PARAMS, null);
+        if (filename != null) {
+            try (InputStream inputStream = Files.newInputStream(context.getFileSystem().getPath(filename))) {
+                if (filename.endsWith(".xml")) {
+                    inputParams.loadFromXML(inputStream);
+                } else {
+                    inputParams.load(inputStream);
+                }
+            }
+        }
+
+        OpenReacParameters openReacParameters = new OpenReacParameters();
+        String inputFileListSeparator = ";";
+        String[] shuntsList = inputParams.getProperty(SHUNTS_LIST, "").split(inputFileListSeparator);
+        openReacParameters.addVariableReactanceShunts(shuntsList);
+        String[] generatorsList = inputParams.getProperty(SHUNTS_LIST, "").split(inputFileListSeparator);
+        openReacParameters.addFixedReactanceGenerators(generatorsList);
+        String[] transformerList = inputParams.getProperty(SHUNTS_LIST, "").split(inputFileListSeparator);
+        openReacParameters.addVariableTransformator(transformerList);
+
+        for (String key : inputParams.stringPropertyNames()) {
+            if (!key.equals(SHUNTS_LIST) && !key.equals(GENERATORS_LIST) && !key.equals(TRANSFORMER_LIST)) {
+                AlgorithmInput.OpenReacAlgoParam algoParam = null;
+                switch (key) {
+                    case "foo":
+                        algoParam = AlgorithmInput.OpenReacAlgoParam.TEST_PARAM;
+                        break;
+                    default:
+                        context.getOutputStream()
+                               .println(
+                                       "Algorithm parameter " + key + " does not match any OpenReacParameter. Skipping...");
+                        continue;
+                }
+                openReacParameters.addAlgorithmParam(algoParam, inputParams.getProperty(key));
+            }
+        }
+        return openReacParameters;
+    }
+
+    private static void itoolsOpenReac(ToolRunningContext context, Network network,
+                                       OpenReacParameters openReacParameters) {
+        context.getOutputStream().println("Running OpenReac on the network...");
+        OpenReacRunner.runOpenReac(network, network.getVariantManager().getWorkingVariantId(), openReacParameters);
+        context.getOutputStream().println("OpenReac optimisation done.");
+    }
+
+    private static void exportNetwork(CommandLine commandLine, ToolRunningContext context, Path outputCaseFile,
+                                      Network network) throws IOException {
+        String outputCaseFormat = commandLine.getOptionValue(OUTPUT_CASE_FORMAT);
+        Properties outputParams = readProperties(commandLine, OptionType.EXPORT, context);
+        network.write(outputCaseFormat, outputParams, outputCaseFile);
+    }
+
+    private static Network loadingNetwork(ToolRunningContext context, Path inputCaseFile, Properties inputParams) {
         Network network = Network.read(inputCaseFile, context.getShortTimeExecutionComputationManager(),
                 ImportConfig.load(), inputParams);
         if (network == null) {
-            throw new PowsyblException("Case '" + inputCaseFile + "' not found");
+            throw new PowsyblException("Case '" + inputCaseFile + "' not found.");
         }
-
-        // Running model
-        context.getOutputStream().println("Running OpenReac on the network...");
-        OpenReacRunner.runOpenReac(network, network.getVariantManager().getWorkingVariantId(),
-                OpenReacParameters.load());
-        context.getOutputStream().println("OpenReac optimisation done");
-
-        // Exporting the modified network
-        context.getOutputStream().println("Exporting network '" + outputCaseFile + "'with the results...");
-        String outputCaseFormat = commandLine.getOptionValue(OUTPUT_CASE_FORMAT);
-        Properties outputParams = readProperties(commandLine, ConversionToolUtils.OptionType.EXPORT, context);
-        network.write(outputCaseFormat, outputParams, outputCaseFile);
-        context.getOutputStream().println("Done");
+        return network;
     }
 }

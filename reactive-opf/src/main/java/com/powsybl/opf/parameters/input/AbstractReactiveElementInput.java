@@ -25,7 +25,7 @@ public abstract class AbstractReactiveElementInput implements IAmplInputFile {
     @Override
     public InputStream getParameterFileAsStream(StringToIntMapper<AmplSubset> stringToIntMapper) {
         StringBuilder dataBuilder = new StringBuilder();
-        dataBuilder.append("#NetworkId amplId powsyblId");
+        dataBuilder.append("#NetworkId amplId powsyblId\n");
         for (String elementID : elementIds) {
             String[] tokens = {this.networkVariant, Integer.toString(
                     stringToIntMapper.getInt(getElementAmplSubset(), elementID)), elementID};

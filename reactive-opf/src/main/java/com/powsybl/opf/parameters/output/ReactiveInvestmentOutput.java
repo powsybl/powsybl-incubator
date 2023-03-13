@@ -10,6 +10,7 @@ import com.powsybl.commons.util.StringToIntMapper;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
@@ -36,7 +37,13 @@ public class ReactiveInvestmentOutput implements IAmplOutputFile {
 
     @Override
     public void read(Path path, StringToIntMapper<AmplSubset> amplMapper) throws IOException {
-        List<String> investmentsLines = Files.readAllLines(path, StandardCharsets.UTF_8);
+        List<String> investmentsLines;
+        try {
+            investmentsLines = Files.readAllLines(path, StandardCharsets.UTF_8);
+        } catch (NoSuchFileException e) {
+            // FIXME investements file does not exist if there is none.
+            return;
+        }
         String headers = investmentsLines.get(0);
         int expectedCols = 6;
         String sep = ";";

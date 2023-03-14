@@ -1,8 +1,8 @@
 package com.powsybl.opf.parameters;
 
-import com.powsybl.ampl.executor.IAmplInputFile;
-import com.powsybl.ampl.executor.IAmplOutputFile;
-import com.powsybl.ampl.executor.IAmplParameters;
+import com.powsybl.ampl.executor.AmplInputFile;
+import com.powsybl.ampl.executor.AmplOutputFile;
+import com.powsybl.ampl.executor.AmplParameters;
 import com.powsybl.opf.parameters.input.*;
 import com.powsybl.opf.parameters.output.IndicatorOutput;
 import com.powsybl.opf.parameters.output.OpenReacResults;
@@ -17,14 +17,14 @@ import java.util.Map;
  * <p>
  * The user of OpenReac should not see this class directly. One should use {@link OpenReacParameters} for inputs
  * and {@link OpenReacResults} for outputs.
- * However, when adding new inputs (outputs) to OpenReac, one must add {@link IAmplOutputFile} (@link IAmplInputFile)
+ * However, when adding new inputs (outputs) to OpenReac, one must add {@link AmplOutputFile} (@link AmplInputFile)
  * here through {@link OpenReacAmplIOFiles#getInputParameters} ({@link OpenReacAmplIOFiles#getOutputParameters()})
  */
-public class OpenReacAmplIOFiles implements IAmplParameters {
+public class OpenReacAmplIOFiles implements AmplParameters {
 
     private final FixedReactanceGeneratorInput fixedReactiveGeneratorInput;
     private final VariableReactanceShuntsInput variableReactanceShuntsInput;
-    private final ReactiveTransformerInput reactiveTransformerInput;
+    private final VariableRatioInput variableRatioInput;
     private final AlgorithmInput algorithmParams;
     private final ReactiveInvestmentOutput reactiveInvestmentOutput;
     private final IndicatorOutput indicators;
@@ -32,7 +32,7 @@ public class OpenReacAmplIOFiles implements IAmplParameters {
     public OpenReacAmplIOFiles(OpenReacParameters params) {
         this.fixedReactiveGeneratorInput = new FixedReactanceGeneratorInput(params.getFixedGenerators());
         this.variableReactanceShuntsInput = new VariableReactanceShuntsInput(params.getModifiableShunts());
-        this.reactiveTransformerInput = new ReactiveTransformerInput(params.getModifiableTransformers());
+        this.variableRatioInput = new VariableRatioInput(params.getModifiableTransformers());
         this.algorithmParams = new AlgorithmInput(params.getAlgorithmParams());
         this.reactiveInvestmentOutput = new ReactiveInvestmentOutput();
         this.indicators = new IndicatorOutput();
@@ -47,13 +47,12 @@ public class OpenReacAmplIOFiles implements IAmplParameters {
     }
 
     @Override
-    public Collection<IAmplInputFile> getInputParameters() {
-        return List.of(fixedReactiveGeneratorInput, variableReactanceShuntsInput, reactiveTransformerInput,
-                algorithmParams);
+    public Collection<AmplInputFile> getInputParameters() {
+        return List.of(fixedReactiveGeneratorInput, variableReactanceShuntsInput, variableRatioInput, algorithmParams);
     }
 
     @Override
-    public Collection<IAmplOutputFile> getOutputParameters() {
+    public Collection<AmplOutputFile> getOutputParameters() {
         return List.of(reactiveInvestmentOutput, indicators);
     }
 

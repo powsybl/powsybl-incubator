@@ -2,7 +2,7 @@ package com.powsybl.opf.parameters.input;
 
 import com.powsybl.ampl.converter.AmplConstants;
 import com.powsybl.ampl.converter.AmplSubset;
-import com.powsybl.ampl.executor.IAmplInputFile;
+import com.powsybl.ampl.executor.AmplInputFile;
 import com.powsybl.commons.util.StringToIntMapper;
 
 import java.io.ByteArrayInputStream;
@@ -14,7 +14,7 @@ import java.util.List;
  * List of shunts that can be modified by OpenReac
  * timestep num bus id
  */
-public class ReactiveTransformerInput implements IAmplInputFile {
+public class VariableRatioInput implements AmplInputFile {
     public static final String PARAM_TRANSFORMER_FILE_NAME = "param_transformers.txt";
 
     private final List<String> variablesTransformers;
@@ -24,7 +24,7 @@ public class ReactiveTransformerInput implements IAmplInputFile {
         return QUOTE + str + QUOTE;
     }
 
-    public ReactiveTransformerInput(List<String> variablesTransformers) {
+    public VariableRatioInput(List<String> variablesTransformers) {
         this.variablesTransformers = variablesTransformers;
     }
 
@@ -38,7 +38,7 @@ public class ReactiveTransformerInput implements IAmplInputFile {
         StringBuilder dataBuilder = new StringBuilder();
         dataBuilder.append("#NetworkId amplId powsyblId");
         for (String transformerId : variablesTransformers) {
-            int amplId = stringToIntMapper.getInt(AmplSubset.THREE_WINDINGS_TRANSFO, transformerId);
+            int amplId = stringToIntMapper.getInt(AmplSubset.RATIO_TAP_CHANGER, transformerId);
             String[] tokens = {Integer.toString(AmplConstants.DEFAULT_VARIANT_INDEX), Integer.toString(
                     amplId), addQuotes(transformerId)};
             dataBuilder.append(String.join(" ", tokens));

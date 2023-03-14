@@ -1,5 +1,6 @@
 package com.powsybl.opf;
 
+import com.powsybl.ampl.executor.AmplModel;
 import com.powsybl.ampl.executor.AmplModelRunner;
 import com.powsybl.ampl.executor.AmplResults;
 import com.powsybl.computation.ComputationManager;
@@ -17,7 +18,7 @@ public final class OpenReacRunner {
     }
 
     public static OpenReacResults runOpenReac(Network network, String variant, OpenReacParameters parameters) {
-        AmplModel reactiveOpf = AmplModel.REACTIVE_OPF;
+        AmplModel reactiveOpf = OpenReacModel.buildModel();
         ComputationManager manager = LocalComputationManager.getDefault();
         OpenReacAmplIOFiles amplIoInterface = new OpenReacAmplIOFiles(parameters);
         preRunModifications(network, parameters);

@@ -1,7 +1,7 @@
 package com.powsybl.opf.parameters.input;
 
 import com.powsybl.ampl.converter.AmplSubset;
-import com.powsybl.ampl.executor.IAmplInputFile;
+import com.powsybl.ampl.executor.AmplInputFile;
 import com.powsybl.commons.util.StringToIntMapper;
 
 import java.io.ByteArrayInputStream;
@@ -9,7 +9,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-public class AlgorithmInput implements IAmplInputFile {
+public class AlgorithmInput implements AmplInputFile {
     private static final String ALGORITHM_INPUT_FILE = "param_algo.txt";
 
     public enum OpenReacAlgoParam {

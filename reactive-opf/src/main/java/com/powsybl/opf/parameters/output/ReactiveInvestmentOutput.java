@@ -3,7 +3,7 @@ package com.powsybl.opf.parameters.output;
 import com.powsybl.ampl.converter.AmplConstants;
 import com.powsybl.ampl.converter.AmplException;
 import com.powsybl.ampl.converter.AmplSubset;
-import com.powsybl.ampl.executor.IAmplOutputFile;
+import com.powsybl.ampl.executor.AmplOutputFile;
 import com.powsybl.commons.PowsyblException;
 import com.powsybl.commons.util.StringToIntMapper;
 
@@ -15,7 +15,7 @@ import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ReactiveInvestmentOutput implements IAmplOutputFile {
+public class ReactiveInvestmentOutput implements AmplOutputFile {
     // TODO determine sign for self investments
     private static final boolean IS_SELF_POSITIVE = true;
     private static final int SELF_FACTOR = IS_SELF_POSITIVE ? 1 : -1;

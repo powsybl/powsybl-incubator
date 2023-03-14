@@ -7,14 +7,14 @@
 package com.powsybl.opf;
 
 import com.powsybl.ampl.converter.AmplSubset;
-import com.powsybl.ampl.converter.DefaultNetworkApplier;
+import com.powsybl.ampl.converter.DefaultAmplNetworkUpdater;
 import com.powsybl.commons.util.StringToIntMapper;
 import com.powsybl.iidm.network.*;
 
-public class ReactiveOpfNetworkApplier extends DefaultNetworkApplier {
+public class ReactiveOpfNetworkApplier extends DefaultAmplNetworkUpdater {
 
-    public ReactiveOpfNetworkApplier(StringToIntMapper<AmplSubset> networkMapper, Network network) {
-        super(networkMapper, network);
+    public ReactiveOpfNetworkApplier(StringToIntMapper<AmplSubset> networkMapper) {
+        super(networkMapper);
     }
 
     @Override

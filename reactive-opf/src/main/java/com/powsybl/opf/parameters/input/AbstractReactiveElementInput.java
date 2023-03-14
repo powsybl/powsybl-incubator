@@ -2,7 +2,7 @@ package com.powsybl.opf.parameters.input;
 
 import com.powsybl.ampl.converter.AmplConstants;
 import com.powsybl.ampl.converter.AmplSubset;
-import com.powsybl.ampl.executor.IAmplInputFile;
+import com.powsybl.ampl.executor.AmplInputFile;
 import com.powsybl.commons.util.StringToIntMapper;
 
 import java.io.ByteArrayInputStream;
@@ -14,7 +14,7 @@ import java.util.List;
  * List of shunts that can be modified by OpenReac
  * timestep num bus id
  */
-public abstract class AbstractReactiveElementInput implements IAmplInputFile {
+public abstract class AbstractReactiveElementInput implements AmplInputFile {
     private final List<String> elementIds;
     private static final String QUOTE = "'";
 

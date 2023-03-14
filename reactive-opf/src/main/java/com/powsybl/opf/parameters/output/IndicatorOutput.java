@@ -2,7 +2,7 @@ package com.powsybl.opf.parameters.output;
 
 import com.powsybl.ampl.converter.AmplException;
 import com.powsybl.ampl.converter.AmplSubset;
-import com.powsybl.ampl.executor.IAmplOutputFile;
+import com.powsybl.ampl.executor.AmplOutputFile;
 import com.powsybl.commons.util.StringToIntMapper;
 
 import java.io.IOException;
@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class IndicatorOutput implements IAmplOutputFile {
+public class IndicatorOutput implements AmplOutputFile {
     private static final String INDICATOR_FILE_NAME = "reactiveopf_results_indic.txt";
     private static final Pattern STRING_MAYBE_IN_QUOTES = Pattern.compile("([^']\\S*|'.+?')\\s*");
     private Map<String, String> indicatorMap;

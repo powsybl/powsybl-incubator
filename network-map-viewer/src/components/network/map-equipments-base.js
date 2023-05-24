@@ -6,7 +6,8 @@
  */
 
 import { equipments } from './network-equipments';
-import { EQUIPMENT_TYPES } from '../util/equipment-types';
+import { EQUIPMENT_TYPES } from '../utils/equipment-types';
+import { MAX_NUMBER_OF_IMPACTED_SUBSTATIONS } from './constants';
 
 const elementIdIndexer = (map, element) => {
     map.set(element.id, element);
@@ -21,6 +22,10 @@ export class MapEquipmentsBase {
     lines = [];
 
     linesById = new Map();
+
+    hvdcLines = [];
+
+    hvdcLinesById = new Map();
 
     voltageLevels = [];
 
@@ -94,7 +99,9 @@ export class MapEquipmentsBase {
             (eqpt) =>
                 !currentEquipments.some((otherEqpt) => otherEqpt.id === eqpt.id)
         );
-        if (eqptsToAdd.length === 0) return currentEquipments;
+        if (eqptsToAdd.length === 0) {
+            return currentEquipments;
+        }
         return [...currentEquipments, ...eqptsToAdd];
     }
 
@@ -156,6 +163,31 @@ export class MapEquipmentsBase {
         }
         this.lines = this.updateEquipments(this.lines, lines, equipments.lines);
         this.completeLinesInfos(fullReload ? [] : lines);
+    }
+
+    updateHvdcLines(hvdcLines, fullReload) {
+        if (fullReload) {
+            this.hvdcLines = [];
+        }
+        this.hvdcLines = this.updateEquipments(
+            this.hvdcLines,
+            hvdcLines,
+            equipments.hvdcLines
+        );
+        this.completeHvdcLinesInfos(fullReload ? [] : hvdcLines);
+    }
+
+    completeHvdcLinesInfos(equipementsToIndex) {
+        if (equipementsToIndex?.length > 0) {
+            equipementsToIndex.forEach((hvdcLine) => {
+                this.hvdcLinesById?.set(hvdcLine.id, hvdcLine);
+            });
+        } else {
+            this.hvdcLinesById = this.hvdcLines.reduce(
+                elementIdIndexer,
+                new Map()
+            );
+        }
     }
 
     removeBranchesOfVoltageLevel(branchesList, voltageLevelId) {
@@ -236,5 +268,13 @@ export class MapEquipmentsBase {
 
     getLine(id) {
         return this.linesById.get(id);
+    }
+
+    getHvdcLines() {
+        return this.hvdcLines;
+    }
+
+    getHvdcLine(id) {
+        return this.hvdcLinesById.get(id);
     }
 }

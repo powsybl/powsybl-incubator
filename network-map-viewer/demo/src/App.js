@@ -70,7 +70,9 @@ function App() {
         selectedRow: {
             background: '#545C5B',
         },
-        mapboxStyle: 'mapbox://styles/mapbox/dark-v9',
+        //TODO if we implement light/dark themes in this demo, we can use the following variant urls
+        //mapBaseUrl: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer',
+        mapBaseUrl: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer',
         aggrid: 'ag-theme-alpine-dark',
     });
 

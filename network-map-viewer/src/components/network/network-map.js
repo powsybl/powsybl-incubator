@@ -5,16 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
 import {
-    _MapContext as MapContext,
     NavigationControl,
-    StaticMap,
+    Map,
 } from 'react-map-gl';
+import maplibregl from 'maplibre-gl';
 import { FlyToInterpolator } from '@deck.gl/core';
 import DeckGL from '@deck.gl/react';
+import {DynamicMapService} from 'mapbox-gl-esri-sources'
 
 import { makeStyles, useTheme } from '@mui/styles';
 import { decomposeColor } from '@mui/material/styles';
@@ -31,6 +32,23 @@ import { Button } from '@mui/material';
 import { MapEquipmentsBase } from './map-equipments-base';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
 
+// TODO foudn by trial and error is there a better way to do this ?
+// we need the mapStyle prop for deckgl to control the map: https://github.com/visgl/deck.gl/commit/c4bfbe3ef216
+// TODO restore dark/light from theme
+const MAP_STYLE = {
+  "version": 8,
+  "name": "powsybl",
+  "metadata": {},
+  "sources": {
+    "powsybl": {
+      "type": "vector",
+    }
+  },
+  "layers": [],
+  "id": "powsybl",
+  "owner": "powsybl"
+};
+
 const useStyles = makeStyles((theme) => ({
     mapManualRefreshBackdrop: {
         width: '100%',
@@ -45,9 +63,6 @@ const useStyles = makeStyles((theme) => ({
         fontSize: 30,
     },
 }));
-
-const FALLBACK_MAPBOX_TOKEN =
-    'pk.eyJ1IjoiZ2VvZmphbWciLCJhIjoiY2pwbnRwcm8wMDYzMDQ4b2pieXd0bDMxNSJ9.Q4aL20nBo5CzGkrWtxroug';
 
 const SUBSTATION_LAYER_PREFIX = 'substationLayer';
 const LINE_LAYER_PREFIX = 'lineLayer';
@@ -109,8 +124,6 @@ const NetworkMap = (props) => {
     }, [props.mapEquipments?.hvdcLines, props.mapEquipments?.lines]);
 
     const classes = useStyles();
-
-    const mToken = (props.mapBoxToken == null) ? FALLBACK_MAPBOX_TOKEN : props.mapBoxToken;
 
     useEffect(() => {
         if (centerOnSubstation === null) {
@@ -430,6 +443,28 @@ const NetworkMap = (props) => {
         })
     );
 
+  const mapRef = useRef();
+
+  // TODO is there a more declarative approach?
+  const onMapLoad = useCallback(() => {
+    // Create the source
+    const map = mapRef.current.getMap();
+    // TODO using DynamicMapService which does requests like
+    // MapServer/export?bbox=1174072.7544603087,5635549.221409474,1213208.5129423179,5674684.9798914865&bboxSR=3857&imageSR=3857&format=png24&layers=false&transparent=true&size=256%2C256&f=image
+    // but our servers supports the following which should be better ? But the numbers generated are not correct, to investigate.
+    // MapServer/tile/4/828/707
+    new DynamicMapService('imagery-source', map, {
+        url: theme.mapBaseUrl
+    })
+
+    // And then add it as a layer to your map
+    map.addLayer({
+        id: 'imagery-layer',
+        type: 'raster',
+        source: 'imagery-source'
+    })
+  }, []);
+
     //DUE TO TRANSPILING JSX ERRORS, REPLACE JSX WITH JS CODE
     /*
     return (
@@ -500,7 +535,6 @@ const NetworkMap = (props) => {
                 controller: {
                     doubleClickZoom: false,
                 },
-                ContextProvider: MapContext.Provider,
                 getCursor: cursorHandler,
                 pickingRadius: 5,
             },
@@ -526,21 +560,25 @@ const NetworkMap = (props) => {
                     )
                 ),
             React.createElement(
-                StaticMap,
+                Map,
                 {
-                    mapStyle: theme.mapboxStyle,
-                    preventStyleDiffing: true,
-                    mapboxApiAccessToken: mToken,
+                  mapStyle: MAP_STYLE,
+                  ref: mapRef,
+                  mapLib: maplibregl,
+                  reuseMap: true,
+                  onLoad: onMapLoad,
+                  preventStyleDiffing: true,
                 },
                 renderTooltip()
             ),
-            React.createElement(NavigationControl, {
-                style: {
-                    right: 10,
-                    top: 10,
-                    zIndex: 1,
-                },
-            })
+            //TODO how to restore navigation controls that work with deckgl ?
+            //React.createElement(NavigationControl, {
+            //    style: {
+            //        right: 10,
+            //        top: 10,
+            //        zIndex: 1,
+            //    },
+            //})
         )
     );                 
 
@@ -570,8 +608,6 @@ NetworkMap.defaultProps = {
     reloadMapNeeded: true,
     currentNodeBuilt: false,
     useName: true,
-
-    mapBoxToken: null,
 
     onSubstationClick: (sId) => {},
     onSubstationClickChooseVoltageLevel: (idSubstation, x, y) => {},
@@ -612,7 +648,6 @@ NetworkMap.propTypes = {
     reloadMapNeeded: PropTypes.bool,
     currentNodeBuilt: PropTypes.bool,
     useName: PropTypes.bool,
-    mapBoxToken: PropTypes.string,
     onReloadMapClick: PropTypes.func,
 };
 

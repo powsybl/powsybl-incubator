@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {useCallback} from 'react';
+import React, {useEffect, useCallback} from 'react';
 import {NetworkMap, GeoData} from '@powsybl/network-map-viewer';
 import {
     createTheme,
@@ -113,6 +113,15 @@ function App() {
         );
     };
 
+    useEffect(() => {
+        const handleContextmenu = e => {
+            e.preventDefault()
+        }
+        document.addEventListener('contextmenu', handleContextmenu)
+        return function cleanup() {
+            document.removeEventListener('contextmenu', handleContextmenu)
+        }
+    }, [ ])
 
     return (
         <div className="App">

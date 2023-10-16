@@ -16,7 +16,6 @@ import {
 import { FlyToInterpolator } from '@deck.gl/core';
 import DeckGL from '@deck.gl/react';
 
-import { makeStyles, useTheme } from '@mui/styles';
 import { decomposeColor } from '@mui/material/styles';
 import LoaderWithOverlay from '../utils/loader-with-overlay';
 
@@ -27,11 +26,12 @@ import { getNominalVoltageColor } from '../../utils/colors';
 import { RunningStatus } from '../utils/running-status';
 import { FormattedMessage } from 'react-intl';
 import ReplayIcon from '@mui/icons-material/Replay';
-import { Button } from '@mui/material';
+import { Button, useTheme } from '@mui/material';
 import { MapEquipmentsBase } from './map-equipments-base';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
+import { Box } from '@mui/system';
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     mapManualRefreshBackdrop: {
         width: '100%',
         height: '100%',
@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
         zIndex: 99,
         fontSize: 30,
     },
-}));
+};
 
 const FALLBACK_MAPBOX_TOKEN =
     'pk.eyJ1IjoiZ2VvZmphbWciLCJhIjoiY2pwbnRwcm8wMDYzMDQ4b2pieXd0bDMxNSJ9.Q4aL20nBo5CzGkrWtxroug';
@@ -56,6 +56,7 @@ const LABEL_SIZE = 12;
 const NetworkMap = (props) => {
     const [labelsVisible, setLabelsVisible] = useState(false);
     const [showLineFlow, setShowLineFlow] = useState(true);
+    const [showTooltip, setShowTooltip] = useState(true);
     const [deck, setDeck] = useState(null);
     const [centered, setCentered] = useState({
         lastCenteredSubstation: null,
@@ -108,7 +109,7 @@ const NetworkMap = (props) => {
         ];
     }, [props.mapEquipments?.hvdcLines, props.mapEquipments?.lines]);
 
-    const classes = useStyles();
+    const divRef = useRef();
 
     const mToken = (props.mapBoxToken == null) ? FALLBACK_MAPBOX_TOKEN : props.mapBoxToken;
 
@@ -238,17 +239,49 @@ const NetworkMap = (props) => {
             ) {
                 setLabelsVisible(false);
             }
-
+            setShowTooltip(info.viewState.zoom >= props.tooltipZoomThreshold);
             setShowLineFlow(info.viewState.zoom >= props.arrowsZoomThreshold);
         }
     }
 
+    //DUE TO TRANSPILING JSX ERRORS, REPLACE JSX WITH JS CODE
+    /*
+    function renderTooltip_() {
+        return (
+            tooltip &&
+            tooltip.visible && (
+                <div
+                    ref={divRef}
+                    style={{
+                        position: 'absolute',
+                        color: theme.palette.text.primary,
+                        zIndex: 1,
+                        pointerEvents: 'none',
+                        left: tooltip.pointerX,
+                        top: tooltip.pointerY,
+                    }}
+                >
+                    <EquipmentPopover
+                        studyUuid={studyUuid}
+                        anchorEl={divRef.current}
+                        equipmentId={tooltip.equipmentId}
+                        equipmentType={EQUIPMENT_TYPES.LINE}
+                        loadFlowStatus={props.loadFlowStatus}
+                    />
+                </div>
+            )
+        );
+    } 
+    */
+
     function renderTooltip() {
         return (
             tooltip &&
+            tooltip.visible &&
             React.createElement(
               "div",
               {
+                ref: divRef,
                 style: {
                   position: "absolute",
                   color: theme.palette.text.primary,
@@ -258,7 +291,7 @@ const NetworkMap = (props) => {
                   top: tooltip.pointerY,
                 },
               },
-              tooltip.message
+              props.renderPopover(tooltip.equipmentId, divRef.current)
             )
           );
     }
@@ -386,7 +419,7 @@ const NetworkMap = (props) => {
                 showLineFlow: props.visible && showLineFlow,
                 lineFlowColorMode: props.lineFlowColorMode,
                 lineFlowAlertThreshold: props.lineFlowAlertThreshold,
-                loadFlowStatus: props.loadFlowStatus,
+                loadFlowStatus: props?.loadFlowStatus,
                 lineFullPath:
                     props.geoData.linePositionsById.size > 0 &&
                     props.lineFullPath,
@@ -398,10 +431,12 @@ const NetworkMap = (props) => {
                 onHover: ({ object, x, y }) => {
                     if (object) {
                         setCursorType('pointer');
+                        const lineObject = object?.line ?? object;
                         setTooltip({
-                            message: getNameOrId(object),
+                            equipmentId: lineObject?.id,
                             pointerX: x,
                             pointerY: y,
+                            visible: showTooltip,
                         });
                     } else {
                         setCursorType('grab');
@@ -454,8 +489,8 @@ const NetworkMap = (props) => {
                 {props.displayOverlayLoader && renderOverlay()}
                 {mapManualRefresh &&
                     reloadMapNeeded &&
-                    currentNodeBuilt && (
-                        <div className={classes.mapManualRefreshBackdrop}>
+                    isNodeBuilt(currentNode) && (
+                        <Box sx={styles.mapManualRefreshBackdrop}>
                             <Button
                                 onClick={props.onReloadMapClick}
                                 aria-label="reload"
@@ -465,16 +500,18 @@ const NetworkMap = (props) => {
                                 <ReplayIcon />
                                 <FormattedMessage id="ManuallyRefreshGeoData" />
                             </Button>
-                        </div>
+                        </Box>
                     )}
 
-                <StaticMap
-                    mapStyle={theme.mapboxStyle}
-                    preventStyleDiffing={true}
-                    mapboxApiAccessToken={MAPBOX_TOKEN}
-                >
-                    {renderTooltip()}
-                </StaticMap>
+                {mapBoxToken && (
+                    <StaticMap
+                        mapStyle={theme.mapboxStyle}
+                        preventStyleDiffing={true}
+                        mapboxApiAccessToken={mapBoxToken}
+                    >
+                        {showTooltip && renderTooltip()}
+                    </StaticMap>
+                )}
                 <NavigationControl style={{ right: 10, top: 10, zIndex: 1 }} />
             </DeckGL>
         </>
@@ -506,25 +543,25 @@ const NetworkMap = (props) => {
             },
             props.displayOverlayLoader && renderOverlay(),
             mapManualRefresh &&
-                reloadMapNeeded &&
-                currentNodeBuilt &&
+            reloadMapNeeded &&
+            currentNodeBuilt &&
+            React.createElement(
+                Box,
+                {
+                    sx: styles.mapManualRefreshBackdrop,
+                },
                 React.createElement(
-                    'div',
+                    Button,
                     {
-                        className: classes.mapManualRefreshBackdrop,
+                        onClick: props.onReloadMapClick,
+                        'aria-label': 'reload',
+                        color: 'inherit',
+                        size: 'large',
                     },
-                    React.createElement(
-                        Button,
-                        {
-                            onClick: props.onReloadMapClick,
-                            'aria-label': 'reload',
-                            color: 'inherit',
-                            size: 'large',
-                        },
-                        React.createElement(ReplayIcon, null),
-                        React.createElement(FormattedMessage, { id: "ManuallyRefreshGeoData"})
-                    )
-                ),
+                    React.createElement(ReplayIcon, null),
+                    React.createElement(FormattedMessage, { id: "ManuallyRefreshGeoData"})
+                )
+            ),
             React.createElement(
                 StaticMap,
                 {
@@ -532,7 +569,7 @@ const NetworkMap = (props) => {
                     preventStyleDiffing: true,
                     mapboxApiAccessToken: mToken,
                 },
-                renderTooltip()
+                showTooltip && renderTooltip()
             ),
             React.createElement(NavigationControl, {
                 style: {
@@ -542,8 +579,7 @@ const NetworkMap = (props) => {
                 },
             })
         )
-    );                 
-
+    );
 };
 
 NetworkMap.defaultProps = {
@@ -553,11 +589,13 @@ NetworkMap.defaultProps = {
     filteredNominalVoltages: null,
     labelsZoomThreshold: 9,
     arrowsZoomThreshold: 7,
+    tooltipZoomThreshold: 7,
     initialZoom: 5,
     initialPosition: [0, 0],
     lineFullPath: true,
     lineParallelPath: true,
     lineFlowMode: LineFlowMode.FEEDERS,
+    lineFlowHidden: true,
     lineFlowColorMode: LineFlowColorMode.NOMINAL_VOLTAGE,
     lineFlowAlertThreshold: 100,
     loadFlowStatus: RunningStatus.IDLE,
@@ -580,6 +618,9 @@ NetworkMap.defaultProps = {
     onLineMenuClick: (equipment, x, y) => {},
     onHvdcLineMenuClick: (equipment, x, y) => {},
     onReloadMapClick: () => {},
+    renderPopover: (eId, aEl) => {
+        return eId;
+    },
 };
 
 NetworkMap.propTypes = {
@@ -588,6 +629,7 @@ NetworkMap.propTypes = {
     filteredNominalVoltages: PropTypes.array,
     labelsZoomThreshold: PropTypes.number.isRequired,
     arrowsZoomThreshold: PropTypes.number.isRequired,
+    tooltipZoomThreshold: PropTypes.number.isRequired,
     initialZoom: PropTypes.number.isRequired,
     initialPosition: PropTypes.arrayOf(PropTypes.number).isRequired,
     onSubstationClick: PropTypes.func,
@@ -599,6 +641,7 @@ NetworkMap.propTypes = {
     lineFullPath: PropTypes.bool,
     lineParallelPath: PropTypes.bool,
     lineFlowMode: PropTypes.oneOf(Object.values(LineFlowMode)),
+    lineFlowHidden: PropTypes.bool,
     lineFlowColorMode: PropTypes.oneOf(Object.values(LineFlowColorMode)),
     lineFlowAlertThreshold: PropTypes.number.isRequired,
     loadFlowStatus: PropTypes.oneOf(Object.values(RunningStatus)),
@@ -614,6 +657,7 @@ NetworkMap.propTypes = {
     useName: PropTypes.bool,
     mapBoxToken: PropTypes.string,
     onReloadMapClick: PropTypes.func,
+    renderPopover: PropTypes.func,
 };
 
 export default React.memo(NetworkMap);

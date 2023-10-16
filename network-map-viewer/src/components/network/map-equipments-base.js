@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { equipments } from './network-equipments';
 import { EQUIPMENT_TYPES } from '../utils/equipment-types';
 import { MAX_NUMBER_OF_IMPACTED_SUBSTATIONS } from './constants';
 
@@ -52,7 +51,7 @@ export class MapEquipmentsBase {
     }
 
     completeSubstationsInfos(equipementsToIndex) {
-        const nominalVoltagesSet = new Set();
+        const nominalVoltagesSet = new Set(this.nominalVoltages);
         if (equipementsToIndex?.length === 0) {
             this.substationsById = new Map();
             this.voltageLevelsById = new Map();
@@ -161,7 +160,11 @@ export class MapEquipmentsBase {
         if (fullReload) {
             this.lines = [];
         }
-        this.lines = this.updateEquipments(this.lines, lines, equipments.lines);
+        this.lines = this.updateEquipments(
+            this.lines,
+            lines,
+            EQUIPMENT_TYPES.LINE
+        );
         this.completeLinesInfos(fullReload ? [] : lines);
     }
 
@@ -172,7 +175,7 @@ export class MapEquipmentsBase {
         this.hvdcLines = this.updateEquipments(
             this.hvdcLines,
             hvdcLines,
-            equipments.hvdcLines
+            EQUIPMENT_TYPES.HVDC_LINE
         );
         this.completeHvdcLinesInfos(fullReload ? [] : hvdcLines);
     }
@@ -205,11 +208,11 @@ export class MapEquipmentsBase {
 
     removeEquipment(equipmentType, equipmentId) {
         switch (equipmentType) {
-            case EQUIPMENT_TYPES.LINE.type:
+            case EQUIPMENT_TYPES.LINE:
                 this.lines = this.lines.filter((l) => l.id !== equipmentId);
                 this.linesById.delete(equipmentId);
                 break;
-            case EQUIPMENT_TYPES.VOLTAGE_LEVEL.type:
+            case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
                 const substationId =
                     this.voltageLevelsById.get(equipmentId).substationId;
                 let voltageLevelsOfSubstation =
@@ -224,17 +227,14 @@ export class MapEquipmentsBase {
                 //New reference on substations to trigger reload of NetworkExplorer and NetworkMap
                 this.substations = [...this.substations];
                 break;
-            case EQUIPMENT_TYPES.SUBSTATION.type:
+            case EQUIPMENT_TYPES.SUBSTATION:
                 this.substations = this.substations.filter(
                     (l) => l.id !== equipmentId
                 );
 
                 const substation = this.substationsById.get(equipmentId);
                 substation.voltageLevels.map((vl) =>
-                    this.removeEquipment(
-                        EQUIPMENT_TYPES.VOLTAGE_LEVEL.type,
-                        vl.id
-                    )
+                    this.removeEquipment(EQUIPMENT_TYPES.VOLTAGE_LEVEL, vl.id)
                 );
                 this.completeSubstationsInfos([substation]);
                 break;

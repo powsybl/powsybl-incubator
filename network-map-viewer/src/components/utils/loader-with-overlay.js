@@ -1,3 +1,4 @@
+//TBD
 /**
  * Copyright (c) 2022, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -7,26 +8,26 @@
 
 import React from 'react';
 import { CircularProgress } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
 import { FormattedMessage } from 'react-intl';
+import { Box } from '@mui/system';
 
-const useStyles = makeStyles((theme) => ({
-    overlay: {
-        top: 0,
-        bottom: 0,
-        left: 0,
-        right: 0,
-        textAlign: 'center',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'grey',
-        opacity: '0.8',
-        zIndex: 99,
-        fontSize: 15,
-    },
-}));
+const styles = {
+  overlay: {
+      top: 0,
+      bottom: 0,
+      left: 0,
+      right: 0,
+      textAlign: 'center',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: 'grey',
+      opacity: '0.8',
+      zIndex: 99,
+      fontSize: 15,
+  },
+};
 
 const LoaderWithOverlay = ({
     color,
@@ -34,12 +35,10 @@ const LoaderWithOverlay = ({
     loadingMessageText,
     isFixed,
 }) => {
-    const classes = useStyles();
-
     return React.createElement(
-      "div",
+      Box,
       {
-        className: classes.overlay,
+        sx: styles.overlay,
         style: {
           position: isFixed ? "fixed" : "absolute",
         },

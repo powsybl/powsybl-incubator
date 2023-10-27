@@ -26,7 +26,7 @@
   "peerDependencies": {
     "@mui/icons-material": "^5.5.1",
     "@mui/material": "^5.5.3",
-    "@mui/styles": "^5.5.3",
+    "@mui/system": "^5.5.3",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-intl": "^6.0.0"

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {useEffect, useCallback} from 'react';
+import React, {useEffect} from 'react';
 import {NetworkMap, GeoData} from '@powsybl/network-map-viewer';
 import {
     createTheme,
@@ -28,27 +28,6 @@ function App() {
     const ARROWS_ZOOM_THRESHOLD = 7;
     const centerOnSubstation = {to: 'SUB1'};
     const useName = true;
-
-    //called after a click (left mouse click) on a substation (represented as a stack of colored discs)
-    const chooseVoltageLevelForSubstation = useCallback(
-        (idSubstation, x, y) => {
-            console.log('# Choose Voltage Level for substation: ' + idSubstation);
-        },
-        []
-    );
-
-    //called after a click (left mouse click) on a VL
-    const openVoltageLevel = useCallback(
-        (vlId) => {
-            console.log('# OpenVoltageLevel: ' + vlId);
-        },
-        []
-    );
-
-    //called after a click (right mouse click) on a VL
-    const voltageLevelMenuClick = (equipment, x, y) => {
-        console.log("# VoltageLevel menu click: " + JSON.stringify(equipment));
-    };
 
     //called after a click (right mouse click) on an equipment (line or substation)
     function showEquipmentMenu(equipment, x, y, type) {
@@ -87,53 +66,53 @@ function App() {
         lmapdata
     );
 
-    const renderMap = () => {
-        return (
-            <NetworkMap
-                mapEquipments={mapEquipments}
-                geoData={geoData}
-                labelsZoomThreshold={LABELS_ZOOM_THRESHOLD}
-                arrowsZoomThreshold={ARROWS_ZOOM_THRESHOLD}
-                initialPosition={INITIAL_POSITION}
-                initialZoom={INITIAL_ZOOM}
-                centerOnSubstation={centerOnSubstation}
-                useName={useName}
-                onSubstationClick={openVoltageLevel}
-                onSubstationClickChooseVoltageLevel={
-                    chooseVoltageLevelForSubstation
-                }
-                onSubstationMenuClick={(equipment, x, y) =>
-                    showEquipmentMenu(equipment, x, y, 'substation')
-                }
-                onLineMenuClick={(equipment, x, y) =>
-                    showEquipmentMenu(equipment, x, y, 'line')
-                }
-                onVoltageLevelMenuClick={voltageLevelMenuClick}
-            />
-        );
-    };
-
     useEffect(() => {
         const handleContextmenu = e => {
             e.preventDefault()
         }
         document.addEventListener('contextmenu', handleContextmenu)
-        return function cleanup() {
-            document.removeEventListener('contextmenu', handleContextmenu)
-        }
+        return () => {
+            document.removeEventListener('contextmenu', handleContextmenu);
+        };
     }, [ ])
 
     return (
-        <div className="App">
-            <header className="App-header">
-            </header>
-            <StyledEngineProvider injectFirst>
-                <ThemeProvider theme={darkTheme}>
-                    {renderMap()}
-                </ThemeProvider>
-            </StyledEngineProvider>
-
-        </div>
+      <div className="App">
+        <header className="App-header"></header>
+        <StyledEngineProvider injectFirst>
+          <ThemeProvider theme={darkTheme}>
+            <NetworkMap
+              mapEquipments={mapEquipments}
+              geoData={geoData}
+              labelsZoomThreshold={LABELS_ZOOM_THRESHOLD}
+              arrowsZoomThreshold={ARROWS_ZOOM_THRESHOLD}
+              initialPosition={INITIAL_POSITION}
+              initialZoom={INITIAL_ZOOM}
+              centerOnSubstation={centerOnSubstation}
+              useName={useName}
+              onSubstationClick={(vlId) => {
+                console.log('# OpenVoltageLevel: ' + vlId);
+              }}
+              onSubstationClickChooseVoltageLevel={(idSubstation, x, y) =>
+                console.log(
+                  '# Choose Voltage Level for substation: ' + idSubstation
+                )
+              }
+              onSubstationMenuClick={(equipment, x, y) =>
+                showEquipmentMenu(equipment, x, y, 'substation')
+              }
+              onLineMenuClick={(equipment, x, y) =>
+                showEquipmentMenu(equipment, x, y, 'line')
+              }
+              onVoltageLevelMenuClick={(equipment, x, y) => {
+                console.log(
+                  '# VoltageLevel menu click: ' + JSON.stringify(equipment)
+                );
+              }}
+            />
+          </ThemeProvider>
+        </StyledEngineProvider>
+      </div>
     );
 }
 

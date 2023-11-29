@@ -21,9 +21,5 @@ export const useNameOrId = (useName) => {
         [useName]
     );
 
-    const getUseNameParameterKey = useCallback(() => {
-        return useName ? 'name' : 'id';
-    }, [useName]);
-
-    return { getNameOrId, getUseNameParameterKey };
+    return { getNameOrId };
 };

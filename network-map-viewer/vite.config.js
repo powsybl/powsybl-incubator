@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-
-const path = require('path');
+import { resolve } from 'path'
 
 export default defineConfig({
   plugins: [react()],
@@ -19,13 +18,12 @@ export default defineConfig({
   },
   build: {
     lib: {
-      entry: path.resolve(__dirname, 'src/index.js'),
+      entry: resolve(__dirname, 'src/index.js'),
       name: 'NetworkMapViewer',
-      formats: ['umd'],
       fileName: 'network-map-viewer',
     },
     rollupOptions: {
-      external: ['react', 'react-dom', 'react-intl', 'react/jsx-runtime', /^@mui\/.+$/],
+      external: ['react', 'react-dom', 'react-intl', 'react/jsx-runtime', '@emotion/react'],
     },
   },
 })

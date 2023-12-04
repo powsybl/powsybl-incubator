@@ -16,7 +16,7 @@ import {
 import { FlyToInterpolator } from '@deck.gl/core';
 import DeckGL from '@deck.gl/react';
 
-import { decomposeColor } from '@mui/material/styles';
+import { decomposeColor } from '@mui/system';
 import LoaderWithOverlay from '../utils/loader-with-overlay';
 
 import { GeoData } from './geo-data';

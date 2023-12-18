@@ -34,21 +34,14 @@ const LoaderWithOverlay = ({
     loadingMessageText,
     isFixed,
 }) => {
-    return React.createElement(
-      Box,
-      {
-        sx: styles.overlay,
-        style: {
-          position: isFixed ? "fixed" : "absolute",
-        },
-      },
-      React.createElement(CircularProgress, {
-        color: color,
-        size: loaderSize,
-      }),
-      React.createElement(FormattedMessage, {
-        id: loadingMessageText,
-      })
+    return (
+        <Box
+            sx={styles.overlay}
+            style={{ position: isFixed ? 'fixed' : 'absolute' }}
+        >
+            <CircularProgress color={color} size={loaderSize} />
+            <FormattedMessage id={loadingMessageText} />
+        </Box>
     );
 };
 

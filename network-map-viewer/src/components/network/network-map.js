@@ -16,7 +16,7 @@ import {
 import { FlyToInterpolator } from '@deck.gl/core';
 import DeckGL from '@deck.gl/react';
 
-import { decomposeColor } from '@mui/system';
+import { decomposeColor } from '@mui/material/styles';
 import LoaderWithOverlay from '../utils/loader-with-overlay';
 
 import { GeoData } from './geo-data';
@@ -244,7 +244,9 @@ const NetworkMap = (props) => {
         }
     }
 
-    function renderTooltip() {
+    //DUE TO TRANSPILING JSX ERRORS, REPLACE JSX WITH JS CODE
+    /*
+    function renderTooltip_() {
         return (
             tooltip &&
             tooltip.visible && (
@@ -259,10 +261,39 @@ const NetworkMap = (props) => {
                         top: tooltip.pointerY,
                     }}
                 >
-                    {props.renderPopover(tooltip.equipmentId, divRef.current)}
+                    <EquipmentPopover
+                        studyUuid={studyUuid}
+                        anchorEl={divRef.current}
+                        equipmentId={tooltip.equipmentId}
+                        equipmentType={EQUIPMENT_TYPES.LINE}
+                        loadFlowStatus={props.loadFlowStatus}
+                    />
                 </div>
             )
         );
+    } 
+    */
+
+    function renderTooltip() {
+        return (
+            tooltip &&
+            tooltip.visible &&
+            React.createElement(
+              "div",
+              {
+                ref: divRef,
+                style: {
+                  position: "absolute",
+                  color: theme.palette.text.primary,
+                  zIndex: 1,
+                  pointerEvents: "none",
+                  left: tooltip.pointerX,
+                  top: tooltip.pointerY,
+                },
+              },
+              props.renderPopover(tooltip.equipmentId, divRef.current)
+            )
+          );
     }
 
     function onClickHandler(info, event, network) {
@@ -426,14 +457,16 @@ const NetworkMap = (props) => {
     };
 
     const renderOverlay = () => (
-        <LoaderWithOverlay
-            color="inherit"
-            loaderSize={70}
-            isFixed={false}
-            loadingMessageText={'loadingGeoData'}
-        />
-    );    
+        React.createElement(LoaderWithOverlay, {
+            color: "inherit",
+            loaderSize: 70,
+            isFixed: false,
+            loadingMessageText: 'loadingGeoData'
+        })
+    );
 
+    //DUE TO TRANSPILING JSX ERRORS, REPLACE JSX WITH JS CODE
+    /*
     return (
         <>
             <DeckGL
@@ -456,7 +489,7 @@ const NetworkMap = (props) => {
                 {props.displayOverlayLoader && renderOverlay()}
                 {mapManualRefresh &&
                     reloadMapNeeded &&
-                    currentNodeBuilt && (
+                    isNodeBuilt(currentNode) && (
                         <Box sx={styles.mapManualRefreshBackdrop}>
                             <Button
                                 onClick={props.onReloadMapClick}
@@ -470,11 +503,11 @@ const NetworkMap = (props) => {
                         </Box>
                     )}
 
-                {mToken && (
+                {mapBoxToken && (
                     <StaticMap
                         mapStyle={theme.mapboxStyle}
                         preventStyleDiffing={true}
-                        mapboxApiAccessToken={mToken}
+                        mapboxApiAccessToken={mapBoxToken}
                     >
                         {showTooltip && renderTooltip()}
                     </StaticMap>
@@ -482,6 +515,70 @@ const NetworkMap = (props) => {
                 <NavigationControl style={{ right: 10, top: 10, zIndex: 1 }} />
             </DeckGL>
         </>
+    );
+    */
+    return React.createElement(
+        React.Fragment,
+        null,
+        React.createElement(
+            DeckGL,
+            {
+                onViewStateChange: onViewStateChange,
+                ref: (ref) => {
+                    // save a reference to the Deck instance to be able to center in onAfterRender
+                    setDeck(ref && ref.deck);
+                },
+                onClick: (info, event) => {
+                    onClickHandler(info, event, props.mapEquipments);
+                },
+                onAfterRender: onAfterRender,
+                layers: layers,
+                initialViewState: initialViewState,
+                controller: {
+                    doubleClickZoom: false,
+                },
+                ContextProvider: MapContext.Provider,
+                getCursor: cursorHandler,
+                pickingRadius: 5,
+            },
+            props.displayOverlayLoader && renderOverlay(),
+            mapManualRefresh &&
+            reloadMapNeeded &&
+            currentNodeBuilt &&
+            React.createElement(
+                Box,
+                {
+                    sx: styles.mapManualRefreshBackdrop,
+                },
+                React.createElement(
+                    Button,
+                    {
+                        onClick: props.onReloadMapClick,
+                        'aria-label': 'reload',
+                        color: 'inherit',
+                        size: 'large',
+                    },
+                    React.createElement(ReplayIcon, null),
+                    React.createElement(FormattedMessage, { id: "ManuallyRefreshGeoData"})
+                )
+            ),
+            React.createElement(
+                StaticMap,
+                {
+                    mapStyle: theme.mapboxStyle,
+                    preventStyleDiffing: true,
+                    mapboxApiAccessToken: mToken,
+                },
+                showTooltip && renderTooltip()
+            ),
+            React.createElement(NavigationControl, {
+                style: {
+                    right: 10,
+                    top: 10,
+                    zIndex: 1,
+                },
+            })
+        )
     );
 };
 

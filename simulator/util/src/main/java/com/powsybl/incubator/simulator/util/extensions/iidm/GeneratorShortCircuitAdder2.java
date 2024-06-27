@@ -25,7 +25,7 @@ public class GeneratorShortCircuitAdder2 extends AbstractExtensionAdder<Generato
     private double ikQmax = DEFAULT_IKQ;
     private double maxR1ToX1Ratio = DEFAULT_R1_X1_RATIO;
     private double voltageRegulationRange = 0.;
-    private  double kG = 1.;
+    private double kG = 1.;
 
     public GeneratorShortCircuitAdder2(Generator generator) {
         super(generator);

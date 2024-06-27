@@ -8,7 +8,6 @@ package com.powsybl.incubator.simulator.util;
 
 import com.powsybl.iidm.network.*;
 import com.powsybl.iidm.network.extensions.GeneratorShortCircuitAdder;
-import org.joda.time.DateTime;
 
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
@@ -20,7 +19,6 @@ public final class Networks {
 
     public static Network create4n() {
         Network network = Network.create("4n", "test");
-        network.setCaseDate(DateTime.parse("2018-03-05T13:30:30.486+01:00"));
         Substation substation1 = network.newSubstation()
                 .setId("S1")
                 .setCountry(Country.FR)
@@ -187,7 +185,6 @@ public final class Networks {
 
     public static Network create4nShunt() {
         Network network = Network.create("4n_shunt", "test");
-        network.setCaseDate(DateTime.parse("2018-03-05T13:30:30.486+01:00"));
         Substation substation1 = network.newSubstation()
                 .setId("S1")
                 .setCountry(Country.FR)
@@ -356,7 +353,6 @@ public final class Networks {
 
     public static Network create4nShuntEq() {
         Network network = Network.create("4n_Shunt_Eq", "test");
-        network.setCaseDate(DateTime.parse("2018-03-05T13:30:30.486+01:00"));
         Substation substation1 = network.newSubstation()
                 .setId("S1")
                 .setCountry(Country.FR)

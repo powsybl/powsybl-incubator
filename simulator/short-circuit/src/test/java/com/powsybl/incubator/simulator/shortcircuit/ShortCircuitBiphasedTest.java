@@ -48,7 +48,7 @@ class ShortCircuitBiphasedTest {
 
         Network network = ReferenceNetwork.createShortCircuitIec31();
 
-        MatrixFactory  matrixFactory = new DenseMatrixFactory();
+        MatrixFactory matrixFactory = new DenseMatrixFactory();
 
         List<ShortCircuitFault> faultList = new ArrayList<>();
         ShortCircuitFault sc1 = new ShortCircuitFault("B3", "sc1", 0., 0., ShortCircuitFault.ShortCircuitType.BIPHASED);

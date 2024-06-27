@@ -9,7 +9,6 @@ package com.powsybl.incubator.simulator.util;
 import com.powsybl.iidm.network.*;
 import com.powsybl.iidm.network.extensions.GeneratorShortCircuitAdder;
 import com.powsybl.incubator.simulator.util.extensions.iidm.*;
-import org.joda.time.DateTime;
 
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
@@ -21,7 +20,6 @@ public final class ReferenceNetwork {
 
     public static Network createShortCircuitReference() {
         Network network = Network.create("ShortCircuitReference", "reference");
-        network.setCaseDate(DateTime.parse("2018-03-05T13:30:30.486+01:00"));
 
         // This is an 8 bus grid used as a reference in many paper to get the equivalent Thevenin impedance for a balanced short circuit
         // Sbase = 15 MVA
@@ -433,7 +431,6 @@ public final class ReferenceNetwork {
 
     public static Network createShortCircuitIec31() {
         Network network = Network.create("ShortCircuit_IEC_3.1", "IEC_3.1");
-        network.setCaseDate(DateTime.parse("2018-03-05T13:30:30.486+01:00"));
 
         double bus1Vnom = 20.; // 20 kV
         double bus2Vnom = 0.4; // 400 V
@@ -705,7 +702,6 @@ public final class ReferenceNetwork {
 
     public static Network createShortCircuitIec31testNetwork() {
         Network network = Network.create("ShortCircuit_IEC_3.1", "IEC_3.1");
-        network.setCaseDate(DateTime.parse("2018-03-05T13:30:30.486+01:00"));
 
         double vEhv = 380.; // Vnom at bus 1 is 380 kV
         double vHv = 110.; // high voltage = 110 kV

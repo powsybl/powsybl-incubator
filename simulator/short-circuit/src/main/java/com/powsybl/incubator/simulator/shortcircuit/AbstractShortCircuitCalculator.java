@@ -115,7 +115,7 @@ public abstract class AbstractShortCircuitCalculator {
     }
 
     public static DenseMatrix getZ(double r, double x) {
-        DenseMatrix z =  new DenseMatrix(2, 2);
+        DenseMatrix z = new DenseMatrix(2, 2);
         z.add(0, 0, r);
         z.add(0, 1, -x);
         z.add(1, 0, x);

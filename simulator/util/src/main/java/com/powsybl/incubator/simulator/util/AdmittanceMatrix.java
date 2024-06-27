@@ -243,7 +243,7 @@ public class AdmittanceMatrix implements AutoCloseable {
                     break;
 
                 default:
-                    throw new IllegalStateException("Unknown variable type "  + v.getType());
+                    throw new IllegalStateException("Unknown variable type " + v.getType());
             }
         }
         return x;
@@ -303,7 +303,7 @@ public class AdmittanceMatrix implements AutoCloseable {
         return tmpV;
     }
 
-    public List<DenseMatrix> getDeltaVFortescue(List<DenseMatrix> busNum2Dv,  DenseMatrix md, DenseMatrix mo, DenseMatrix mi) {
+    public List<DenseMatrix> getDeltaVFortescue(List<DenseMatrix> busNum2Dv, DenseMatrix md, DenseMatrix mo, DenseMatrix mi) {
         for (Variable<VariableType> v : equationSystem.getIndex().getSortedVariablesToFind()) {
             int row = v.getRow();
             VariableType type = v.getType();

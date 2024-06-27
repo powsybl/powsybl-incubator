@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 package com.powsybl.matpower.model;
-
+/*
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.jimfs.Configuration;
 import com.google.common.jimfs.Jimfs;
@@ -23,10 +23,11 @@ import java.nio.file.Path;
 import java.util.Objects;
 
 import static org.junit.Assert.assertEquals;
-
+*/
 /**
  * @author Christian Biasuzzi <christian.biasuzzi@techrain.eu>
  */
+/*
 @Ignore
 public class MatpowerReaderWriterTest {
 
@@ -99,4 +100,4 @@ public class MatpowerReaderWriterTest {
     public void testMCase300() throws IOException {
         testMFile("case300.m");
     }
-}
+}*/

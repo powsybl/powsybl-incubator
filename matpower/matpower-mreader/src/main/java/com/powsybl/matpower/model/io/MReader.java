@@ -68,7 +68,7 @@ public final class MReader {
                 //skip comments and empty lines
             } else if (line.startsWith("mpc.version ")) {
                 processVersion(line, model);
-            }  else if (line.startsWith("mpc.baseMVA ")) {
+            } else if (line.startsWith("mpc.baseMVA ")) {
                 processBaseMva(line, model);
             } else if (line.startsWith("mpc.bus ")) {
                 section = MatpowerSection.BUS;
@@ -116,7 +116,7 @@ public final class MReader {
     }
 
     private static boolean canSkipLine(String line) {
-        return line.startsWith("%") || (line.trim().length() == 0);
+        return line.startsWith("%") || line.trim().length() == 0;
     }
 
     private static void processBaseMva(String line, MatpowerModel model) {

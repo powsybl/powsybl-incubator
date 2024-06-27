@@ -16,7 +16,6 @@ import com.powsybl.incubator.simulator.util.extensions.iidm.*;
 import com.powsybl.loadflow.LoadFlowParameters;
 import com.powsybl.math.matrix.DenseMatrixFactory;
 import com.powsybl.math.matrix.MatrixFactory;
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -66,7 +65,7 @@ public class ShortCircuitNormTest {
 
         ShortCircuitNormNone shortCircuitNormNone = new ShortCircuitNormNone();
         shortCircuitNormNone.applyNormToNetwork(network);
-        extensionGenNorm =  shortCircuitNormNone.getNormExtensions().getNormExtension(g1);
+        extensionGenNorm = shortCircuitNormNone.getNormExtensions().getNormExtension(g1);
         kg = extensionGenNorm.getkG();
         assertEquals(1.0, kg, 0.000001);
 
@@ -193,7 +192,6 @@ public class ShortCircuitNormTest {
     public static Network createNormNetwork() {
 
         Network network = Network.create("ShortCircuit_Norm", "IEC_Norm");
-        network.setCaseDate(DateTime.parse("2018-03-05T13:30:30.486+01:00"));
 
         double vLv = 20;
         double vMv = 100.;
@@ -303,7 +301,7 @@ public class ShortCircuitNormTest {
                 .withIsPartOfGeneratingUnit(true)
                 .add();
 
-        return  network;
+        return network;
     }
 
 }

@@ -117,8 +117,8 @@ public class HomopolarModel {
         var homopolarExtension = new HomopolarModel(branch);
 
         // default initialization if no homopolar values available
-        homopolarExtension.ro = r /  AdmittanceConstants.COEF_XO_XD;
-        homopolarExtension.xo = x /  AdmittanceConstants.COEF_XO_XD;
+        homopolarExtension.ro = r / AdmittanceConstants.COEF_XO_XD;
+        homopolarExtension.xo = x / AdmittanceConstants.COEF_XO_XD;
 
         homopolarExtension.gom = gPi1 * AdmittanceConstants.COEF_XO_XD; //TODO : adapt
         homopolarExtension.bom = bPi1 * AdmittanceConstants.COEF_XO_XD;  //TODO : adapt
@@ -272,12 +272,12 @@ public class HomopolarModel {
         double xob = xo / 2.;
 
         // we suppose that all impedance and admittance terms of the homopolar extension are per-unitized on Sbase = 100 MVA and Vnom = Vnom on B side
-        if ((leg1ConnectionType == LegConnectionType.Y && leg2ConnectionType == LegConnectionType.Y)
-                || (leg1ConnectionType == LegConnectionType.Y && leg2ConnectionType == LegConnectionType.DELTA)
-                || (leg1ConnectionType == LegConnectionType.DELTA && leg2ConnectionType == LegConnectionType.Y)
-                || (leg1ConnectionType == LegConnectionType.DELTA && leg2ConnectionType == LegConnectionType.DELTA)
-                || (leg1ConnectionType == LegConnectionType.Y_GROUNDED && leg2ConnectionType == LegConnectionType.Y && freeFluxes)
-                || (leg1ConnectionType == LegConnectionType.Y && leg2ConnectionType == LegConnectionType.Y_GROUNDED && freeFluxes)) {
+        if (leg1ConnectionType == LegConnectionType.Y && leg2ConnectionType == LegConnectionType.Y
+                || leg1ConnectionType == LegConnectionType.Y && leg2ConnectionType == LegConnectionType.DELTA
+                || leg1ConnectionType == LegConnectionType.DELTA && leg2ConnectionType == LegConnectionType.Y
+                || leg1ConnectionType == LegConnectionType.DELTA && leg2ConnectionType == LegConnectionType.DELTA
+                || leg1ConnectionType == LegConnectionType.Y_GROUNDED && leg2ConnectionType == LegConnectionType.Y && freeFluxes
+                || leg1ConnectionType == LegConnectionType.Y && leg2ConnectionType == LegConnectionType.Y_GROUNDED && freeFluxes) {
             // homopolar admittance matrix is zero-Matrix
             mo.set(0, 0, infiniteImpedanceAdmittance);
             mo.set(1, 1, infiniteImpedanceAdmittance);
@@ -308,8 +308,8 @@ public class HomopolarModel {
             // we have yo22 = 1 / ( 3Zga(pu) + Zob(pu) + Zom(pu) )
             // and yo12 = yo11 = yo21 = 0.
             // 3Zgb(pu) + Zob(pu) + Zom = 3*rg + rob + rom + j(3*xg + xob + xom )
-            double req = 3 * rgb +  ro + rm;
-            double xeq = 3 * xgb +  xo + xm;
+            double req = 3 * rgb + ro + rm;
+            double xeq = 3 * xgb + xo + xm;
             double bo22 = -xeq / (xeq * xeq + req * req);
             double go22 = req / (xeq * xeq + req * req);
             mo.set(0, 0, infiniteImpedanceAdmittance);
@@ -430,7 +430,7 @@ public class HomopolarModel {
                 double r2denom = rc * rd - xc * xd - re * re + xe * xe;
                 double x2demon = rc * xd + xc * rd - 2 * re * xe;
                 double g2demon = r2denom / (r2denom * r2denom + x2demon * x2demon);
-                double b2demon = -x2demon  / (r2denom * r2denom + x2demon * x2demon);
+                double b2demon = -x2demon / (r2denom * r2denom + x2demon * x2demon);
                 go11 = g2demon * rd - b2demon * xd;
                 bo11 = b2demon * rd + g2demon * xd;
                 go12 = -g2demon * re + b2demon * xe;
@@ -466,7 +466,7 @@ public class HomopolarModel {
                 //
                 // We set Z2denom = Zc * Zd - ZeÂ²
                 double gcdemon = rc / (rc * rc + xc * xc);
-                double bcdemon = -xc  / (rc * rc + xc * xc);
+                double bcdemon = -xc / (rc * rc + xc * xc);
 
                 go11 = gcdemon;
                 bo11 = bcdemon;

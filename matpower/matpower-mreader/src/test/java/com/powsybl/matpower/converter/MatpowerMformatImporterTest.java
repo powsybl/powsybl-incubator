@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 package com.powsybl.matpower.converter;
-
+/*
 import com.powsybl.commons.test.AbstractConverterTest;
 import com.powsybl.commons.datasource.FileDataSource;
 import com.powsybl.iidm.network.Network;
@@ -18,7 +18,9 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Test;
 import org.junit.Ignore;
+*/
 
+/*
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -30,10 +32,11 @@ import java.time.ZonedDateTime;
 import java.util.Objects;
 
 import static com.powsybl.commons.test.ComparisonUtils.compareTxt;
-
+*/
 /**
  * @author Christian Biasuzzi <christian.biasuzzi@techrain.eu>
  */
+/*
 @Ignore
 public class MatpowerMformatImporterTest extends AbstractConverterTest {
 
@@ -104,4 +107,4 @@ public class MatpowerMformatImporterTest extends AbstractConverterTest {
         testCaseBin("case300");
     }
 
-}
+}*/

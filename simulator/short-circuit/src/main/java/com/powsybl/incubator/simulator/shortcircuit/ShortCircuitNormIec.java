@@ -77,7 +77,7 @@ public class ShortCircuitNormIec extends ShortCircuitNormNone {
     public double getCminVoltageFactor(double nominalVoltage) {
         double cmin;
         if (nominalVoltage <= LOW_VOLTAGE_KV_THRESHOLD) {
-            cmin =  LOW_VOLTAGE_CMIN;
+            cmin = LOW_VOLTAGE_CMIN;
         } else if (nominalVoltage <= MEDIUM_VOLTAGE_KV_THRESHOLD) {
             cmin = MEDIUM_VOLTAGE_CMIN;
         } else {
@@ -297,7 +297,7 @@ public class ShortCircuitNormIec extends ShortCircuitNormNone {
             }
 
         }
-        return  tfoGenerator;
+        return tfoGenerator;
     }
 
     @Override

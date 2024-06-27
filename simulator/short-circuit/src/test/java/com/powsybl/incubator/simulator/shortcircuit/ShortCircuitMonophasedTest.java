@@ -20,7 +20,6 @@ import com.powsybl.math.matrix.DenseMatrixFactory;
 import com.powsybl.math.matrix.MatrixFactory;
 import com.powsybl.openloadflow.OpenLoadFlowProvider;
 import com.powsybl.shortcircuit.*;
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -54,7 +53,7 @@ public class ShortCircuitMonophasedTest {
 
         Network network = ReferenceNetwork.createShortCircuitIec31();
 
-        MatrixFactory  matrixFactory = new DenseMatrixFactory();
+        MatrixFactory matrixFactory = new DenseMatrixFactory();
 
         List<ShortCircuitFault> faultList = new ArrayList<>();
         ShortCircuitFault sc1 = new ShortCircuitFault("B3", "sc1", 0., 0., ShortCircuitFault.ShortCircuitType.MONOPHASED);
@@ -87,7 +86,7 @@ public class ShortCircuitMonophasedTest {
 
         Network network = ReferenceNetwork.createShortCircuitIec31testNetwork();
 
-        MatrixFactory  matrixFactory = new DenseMatrixFactory();
+        MatrixFactory matrixFactory = new DenseMatrixFactory();
 
         List<ShortCircuitFault> faultList = new ArrayList<>();
         ShortCircuitFault sc1 = new ShortCircuitFault("B2", "sc1", 0., 0., ShortCircuitFault.ShortCircuitType.MONOPHASED);
@@ -147,8 +146,9 @@ public class ShortCircuitMonophasedTest {
         ShortCircuitAnalysisResult scar = provider.run(network, faults, scp, cm, Collections.emptyList()).join();
 
         List<FaultResult> frs = scar.getFaultResults();
+        MagnitudeFaultResult magnitudeFaultResult = (MagnitudeFaultResult) frs.get(0);
 
-        assertEquals(14548.104511643787, frs.get(0).getCurrent().getDirectMagnitude(), 0.01);
+        assertEquals(14548.104511643787, magnitudeFaultResult.getCurrent(), 0.01);
 
     }
 
@@ -224,7 +224,6 @@ public class ShortCircuitMonophasedTest {
         double ubc = 410.;
 
         Network network = networkFactory.createNetwork("Giard exemple", "test");
-        network.setCaseDate(DateTime.parse("2018-03-05T13:30:30.486+01:00"));
         Substation substationA = network.newSubstation()
                 .setId("SA")
                 .setCountry(Country.FR)

@@ -95,7 +95,7 @@ public class ShortCircuitResult {
     private DenseMatrix vFortescue; //fortescue vector of voltages
 
     private boolean isVoltageProfileUpdated;
-    private List<DenseMatrix>  busNum2Dv;
+    private List<DenseMatrix> busNum2Dv;
 
     private FeedersAtNetwork eqSysFeedersDirect;
 
@@ -233,7 +233,7 @@ public class ShortCircuitResult {
                 eqSysFeedersDirect, eqSysFeedersHomopolar, norm);
 
         this.commonSupportResult = new CommonSupportResult(lfBus2, v2dxinit, v2dyinit,
-                i2dx, i2dy, i2ox, i2oy, i2ix,  i2iy,
+                i2dx, i2dy, i2ox, i2oy, i2ix, i2iy,
                 dv2dx, dv2dy, dv2ox, dv2oy, dv2ix, dv2iy);
 
     }
@@ -340,7 +340,7 @@ public class ShortCircuitResult {
 
     public Pair<Double, Double> getIcc() {
         // IccBase = sqrt(3) * Eth(pu) / Zth(pu) * SB(MVA) * 10e6 / (VB(kV) * 10e3)
-        double magnitudeIccBase = Math.sqrt((getIdx() * getIdx() + getIdy() * getIdy()) * 3.) * 1000. * 100.  / lfBus.getNominalV();
+        double magnitudeIccBase = Math.sqrt((getIdx() * getIdx() + getIdy() * getIdy()) * 3.) * 1000. * 100. / lfBus.getNominalV();
         double angleIcc = Math.atan2(getIdy(), getIdx());
 
         double magnitudeIcc = magnitudeIccBase;
@@ -376,7 +376,7 @@ public class ShortCircuitResult {
 
     public void createEmptyFortescueVoltageVector(int nbBusses) {
         List<DenseMatrix> busNum2Dv = new ArrayList<>();
-        for (int i = 0;  i < nbBusses; i++) {
+        for (int i = 0; i < nbBusses; i++) {
             DenseMatrix mdV = new DenseMatrix(6, 1);
             busNum2Dv.add(mdV);
         }

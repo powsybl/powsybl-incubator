@@ -11,10 +11,10 @@ import com.powsybl.math.matrix.DenseMatrix;
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
-public class BiphasedShortCircuitCalculator extends AbstractShortCircuitCalculator  {
+public class BiphasedShortCircuitCalculator extends AbstractShortCircuitCalculator {
 
     public BiphasedShortCircuitCalculator(double rdf, double xdf, double rof, double xof, double rg, double xg,
-                                            double initVx, double initVy) {
+                                          double initVx, double initVy) {
         super(rdf, xdf, rof, xof, rg, xg, initVx, initVy);
 
     }

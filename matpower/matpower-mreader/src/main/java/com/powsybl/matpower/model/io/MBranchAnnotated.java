@@ -141,16 +141,6 @@ public class MBranchAnnotated extends MBranch {
         super.setPhaseShiftAngle(phaseShiftAngle);
     }
 
-    @Parsed(index = 10)
-    public double getStatus() {
-        return super.getStatus();
-    }
-
-    @Parsed(index = 10, field = "status")
-    public void setStatus(double status) {
-        super.setStatus(status);
-    }
-
     @Parsed(index = 11)
     public double getAngMin() {
         return super.getAngMin();

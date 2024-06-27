@@ -146,7 +146,7 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
                         mIi = biphasedGrCalculator.getmIi();
                     }
 
-                    res =  buildUnbalancedResult(mId, mIo, mIi, rdf, xdf, rof, xof,
+                    res = buildUnbalancedResult(mId, mIo, mIi, rdf, xdf, rof, xof,
                             directResult, homopolarResult,
                             scf, lfBus1, v1dxInit, v1dyInit, lfNetwork);
 
@@ -217,7 +217,7 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
                             double v2dxInit = biphasedDirectResult.getV2x();
                             double v2dyInit = biphasedDirectResult.getV2y();
 
-                            res =  buildUnbalancedCommunSuppportResult(mId, mIo, mIi, mI2d, mI2o, mI2i, mdVd, mdVo, mdVi, rdf, xdf, rof, xof,
+                            res = buildUnbalancedCommunSuppportResult(mId, mIo, mIi, mI2d, mI2o, mI2i, mdVd, mdVo, mdVi, rdf, xdf, rof, xof,
                                     directResult, homopolarResult, scf,
                                     lfBus1, v1dxInit, v1dyInit, lfNetwork,
                                     lfBus2, v2dxInit, v2dyInit, biphasedDirectResult, biphasedHomopolarResult);
@@ -252,8 +252,8 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
         DenseMatrix minusVi = zdf.times(mIi).toDense();
 
         //record the results
-        FeedersAtNetwork equationSystemFeedersDirect =  directResult.getEqSysFeeders();
-        FeedersAtNetwork equationSystemFeedersHomopolar =  homopolarResult.getEqSysFeeders();
+        FeedersAtNetwork equationSystemFeedersDirect = directResult.getEqSysFeeders();
+        FeedersAtNetwork equationSystemFeedersHomopolar = homopolarResult.getEqSysFeeders();
 
         ShortCircuitResult res = new ShortCircuitResult(scf, lfBus1,
                 mId.get(0, 0), mId.get(1, 0),
@@ -327,8 +327,8 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
                                                                   ImpedanceLinearResolution.ImpedanceLinearResolutionResult.ImpedanceLinearResolutionResultBiphased biphasedHomopolarResult) {
 
         //record the results
-        FeedersAtNetwork equationSystemFeedersDirect =  directResult.getEqSysFeeders();
-        FeedersAtNetwork equationSystemFeedersHomopolar =  homopolarResult.getEqSysFeeders();
+        FeedersAtNetwork equationSystemFeedersDirect = directResult.getEqSysFeeders();
+        FeedersAtNetwork equationSystemFeedersHomopolar = homopolarResult.getEqSysFeeders();
 
         ShortCircuitResult res = new ShortCircuitResult(scf, lfBus1,
                 mId.toDense().get(0, 0), mId.toDense().get(1, 0),
@@ -410,7 +410,7 @@ public class ShortCircuitUnbalancedEngine extends AbstractShortCircuitEngine {
     }
 
     public static DenseMatrix getZ(double r, double x) {
-        DenseMatrix z =  new DenseMatrix(2, 2);
+        DenseMatrix z = new DenseMatrix(2, 2);
         z.add(0, 0, r);
         z.add(0, 1, -x);
         z.add(1, 0, x);

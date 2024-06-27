@@ -14,7 +14,7 @@ import com.powsybl.incubator.simulator.util.VariableType;
 import com.powsybl.math.matrix.DenseMatrix;
 import com.powsybl.math.matrix.Matrix;
 import com.powsybl.openloadflow.OpenLoadFlowParameters;
-import com.powsybl.openloadflow.ac.outerloop.AcLoadFlowParameters;
+import com.powsybl.openloadflow.ac.AcLoadFlowParameters;
 import com.powsybl.openloadflow.equations.EquationSystem;
 import com.powsybl.openloadflow.equations.Variable;
 import com.powsybl.openloadflow.equations.VariableSet;
@@ -68,7 +68,7 @@ public class ReductionEngine {
 
         private Map<Integer, Double> busNumToRealIeq;
 
-        private Map<Integer, Double>  busNumToImagIeq;
+        private Map<Integer, Double> busNumToImagIeq;
 
         private Map<Integer, Integer> yeqRowNumToBusNum; //gives the bus number from the row number of the Y submatrix in input
 
@@ -204,7 +204,7 @@ public class ReductionEngine {
 */
             YijBlock yb0 = null;
             for (YijBlock yb : yijBlocks) {
-                if ((yb.bus1 == i && yb.bus2 == j) || (yb.bus1 == j && yb.bus2 == i)) {
+                if (yb.bus1 == i && yb.bus2 == j || yb.bus1 == j && yb.bus2 == i) {
                     yb0 = yb;
                     break;
                 }

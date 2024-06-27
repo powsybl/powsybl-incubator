@@ -48,7 +48,7 @@ class ShotCircuitBiphasedCommonSupportTest {
 
         Network network = ReferenceNetwork.createShortCircuitIec31();
 
-        MatrixFactory  matrixFactory = new DenseMatrixFactory();
+        MatrixFactory matrixFactory = new DenseMatrixFactory();
 
         List<ShortCircuitFault> faultList = new ArrayList<>();
         ShortCircuitFault sc1 = new ShortCircuitFault("B2", "B3", "sc1", 0., 0., ShortCircuitFault.ShortCircuitType.BIPHASED_COMMON_SUPPORT, ShortCircuitFault.ShortCircuitBiphasedType.C1_A2);
@@ -78,7 +78,7 @@ class ShotCircuitBiphasedCommonSupportTest {
 
         Network network = ReferenceNetwork.createShortCircuitIec31();
 
-        MatrixFactory  matrixFactory = new DenseMatrixFactory();
+        MatrixFactory matrixFactory = new DenseMatrixFactory();
 
         List<ShortCircuitFault> faultList = new ArrayList<>();
         ShortCircuitFault sc1 = new ShortCircuitFault("B2", "B3", "sc1", 0., 0., ShortCircuitFault.ShortCircuitType.BIPHASED_COMMON_SUPPORT, ShortCircuitFault.ShortCircuitBiphasedType.C1_B2);

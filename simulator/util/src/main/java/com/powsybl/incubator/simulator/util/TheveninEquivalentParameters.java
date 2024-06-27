@@ -7,7 +7,7 @@
 package com.powsybl.incubator.simulator.util;
 
 import com.powsybl.math.matrix.MatrixFactory;
-import com.powsybl.openloadflow.ac.outerloop.AcLoadFlowParameters;
+import com.powsybl.openloadflow.ac.AcLoadFlowParameters;
 
 import java.util.List;
 import java.util.Objects;

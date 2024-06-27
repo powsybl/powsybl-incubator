@@ -22,7 +22,7 @@ import java.util.Objects;
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
-public  class ImpedanceLinearResolution {
+public class ImpedanceLinearResolution {
 
     // This class is used to resolve problems with a similar structure
     // [ Vof ] = -tM * inv(Yo) * M * [ Iof ]
@@ -176,7 +176,7 @@ public  class ImpedanceLinearResolution {
         }
 
         public double getRthz11() {
-            return  rEq11;
+            return rEq11;
         }
 
         public double getEthr() {
@@ -192,7 +192,7 @@ public  class ImpedanceLinearResolution {
         }
 
         public DenseMatrix getEnBus() {
-            return  enBus;
+            return enBus;
         }
 
         public FeedersAtNetwork getEqSysFeeders() {
@@ -222,8 +222,8 @@ public  class ImpedanceLinearResolution {
 
         public void printResult() {
             System.out.println(" Zth(" + bus.getId() + ") = ");
-            System.out.println(" [ rth=" + rEq11 + "  -xth=" +  -xEq12 + "]");
-            System.out.println(" [ xth=" + xEq21 + "   rth=" +  rEq22 + "]");
+            System.out.println(" [ rth=" + rEq11 + "  -xth=" + -xEq12 + "]");
+            System.out.println(" [ xth=" + xEq21 + "   rth=" + rEq22 + "]");
 
             if (parameters.isVoltageUpdate()) {
                 /*for (Map.Entry<Integer, Double> b : dvr1.entrySet()) {
@@ -276,7 +276,7 @@ public  class ImpedanceLinearResolution {
             String branchId = lfBranch.getId();
             LfBranch.BranchType lfType = lfBranch.getBranchType();
 
-            if (lfType == LfBranch.BranchType.LINE ||  lfType == LfBranch.BranchType.TRANSFO_2) {
+            if (lfType == LfBranch.BranchType.LINE || lfType == LfBranch.BranchType.TRANSFO_2) {
                 if (iidmBranchId.equals(branchId)) {
                     if (branchSide == 1) {
                         bus = lfBranch.getBus1();

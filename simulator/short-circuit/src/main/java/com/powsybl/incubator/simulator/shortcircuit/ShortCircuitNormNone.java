@@ -114,7 +114,7 @@ public class ShortCircuitNormNone implements ShortCircuitNorm {
         return new T3wCoefs(1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1., 1.);
     }
 
-    public Pair<Double, Double>  getAdjustedLoadfromInfo(Load load, double defaultRd, double defaultXd) {
+    public Pair<Double, Double> getAdjustedLoadfromInfo(Load load, double defaultRd, double defaultXd) {
 
         return new Pair<>(defaultRd, defaultXd);
     }
@@ -175,7 +175,7 @@ public class ShortCircuitNormNone implements ShortCircuitNorm {
             if (ztk != 0.) {
                 LOGGER.warn("Transformer {} has r or x equal to zero and computed rk or xk is non null, short circuit calculation might be wrong", id);
             }
-            return  1.;
+            return 1.;
         } else {
             return ztk / zt;
         }

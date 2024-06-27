@@ -32,7 +32,7 @@
     </modules>
 
     <properties>
-        <java.version>11</java.version>
+        <java.version>17</java.version>
         <junit-jupiter.version>5.8.2</junit-jupiter.version>
     </properties>
 

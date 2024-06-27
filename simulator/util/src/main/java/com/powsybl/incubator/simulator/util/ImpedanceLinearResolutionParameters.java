@@ -7,7 +7,7 @@
 package com.powsybl.incubator.simulator.util;
 
 import com.powsybl.math.matrix.MatrixFactory;
-import com.powsybl.openloadflow.ac.outerloop.AcLoadFlowParameters;
+import com.powsybl.openloadflow.ac.AcLoadFlowParameters;
 
 import java.util.List;
 import java.util.Objects;
@@ -38,7 +38,7 @@ public class ImpedanceLinearResolutionParameters {
 
     private final List<CalculationLocation> calculationLocations; // stores all calculation locations where only one bus is required in input
 
-    private List<CalculationLocation>  biphasedCalculationLocations; // stores all calculation locations where 2 busses are required in input
+    private List<CalculationLocation> biphasedCalculationLocations; // stores all calculation locations where 2 busses are required in input
 
     private final boolean ignoreShunts;
 
@@ -93,7 +93,7 @@ public class ImpedanceLinearResolutionParameters {
         return voltageProfileType;
     }
 
-    public List<CalculationLocation>  getBiphasedCalculationLocations() {
+    public List<CalculationLocation> getBiphasedCalculationLocations() {
         return biphasedCalculationLocations;
     }
 

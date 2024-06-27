@@ -27,8 +27,8 @@ public class BiphasedCommonSupportShortCircuitCalculator extends AbstractShortCi
     protected double rd21;
     protected double xd21;
 
-    protected double  v2dxInit;
-    protected double  v2dyInit;
+    protected double v2dxInit;
+    protected double v2dyInit;
 
     protected DenseMatrix zdf11;
     protected DenseMatrix zdf12;

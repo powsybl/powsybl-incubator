@@ -14,7 +14,7 @@ import com.powsybl.incubator.simulator.util.AdmittanceEquationSystem;
 import com.powsybl.incubator.simulator.util.CalculationLocation;
 import com.powsybl.incubator.simulator.util.extensions.ShortCircuitExtensions;
 import com.powsybl.openloadflow.OpenLoadFlowParameters;
-import com.powsybl.openloadflow.ac.outerloop.AcLoadFlowParameters;
+import com.powsybl.openloadflow.ac.AcLoadFlowParameters;
 import com.powsybl.openloadflow.graph.EvenShiloachGraphDecrementalConnectivityFactory;
 import com.powsybl.openloadflow.network.LfNetwork;
 import com.powsybl.openloadflow.network.LfNetworkParameters;
@@ -82,7 +82,7 @@ public abstract class AbstractShortCircuitEngine {
         List<ShortCircuitFault> scfSystematic = new ArrayList<>();
         parameters.setVoltageUpdate(false);
         for (Bus bus : network.getBusBreakerView().getBuses()) {
-            ShortCircuitFault sc = new ShortCircuitFault(bus.getId(), bus.getId(),  0., 0., type); //TODO : check validity of voltage levels if no connexity
+            ShortCircuitFault sc = new ShortCircuitFault(bus.getId(), bus.getId(), 0., 0., type); //TODO : check validity of voltage levels if no connexity
             scfSystematic.add(sc);
         }
         parameters.setShortCircuitFaults(scfSystematic);

@@ -53,6 +53,6 @@ public class ReductionParameters {
     }
 
     public ReductionEngine.ReductionType getReductionType() {
-        return  reductionType;
+        return reductionType;
     }
 }

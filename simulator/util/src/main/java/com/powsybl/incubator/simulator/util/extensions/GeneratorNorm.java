@@ -9,7 +9,7 @@ package com.powsybl.incubator.simulator.util.extensions;
 /**
  * @author Jean-Baptiste Heyberger <jbheyberger at gmail.com>
  */
-public class GeneratorNorm  {
+public class GeneratorNorm {
 
     public static final String NAME = "generatorNorm";
 

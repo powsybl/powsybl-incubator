@@ -61,7 +61,7 @@ public class ScGenerator {
     }
 
     public double getStepUpTfoX() {
-        return  stepUpTfoX;
+        return stepUpTfoX;
     }
 
     public double getTransRd() {
@@ -73,7 +73,7 @@ public class ScGenerator {
     }
 
     public double getStepUpTfoR() {
-        return  stepUpTfoR;
+        return stepUpTfoR;
     }
 
     public boolean isGrounded() {
@@ -89,11 +89,11 @@ public class ScGenerator {
     }
 
     public double getRo() {
-        return  ro;
+        return ro;
     }
 
     public double getXo() {
-        return  xo;
+        return xo;
     }
 
 }

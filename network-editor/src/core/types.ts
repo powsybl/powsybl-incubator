@@ -34,6 +34,10 @@ export const DELETABLE_TYPES: ReadonlySet<ElementType> = new Set<ElementType>([
     ...DELETABLE_BAY_TYPES,
 ]);
 
+export const SELECTABLE_TYPES: ReadonlySet<ElementType> = DELETABLE_TYPES;
+export const SELECTED_CLASS = 'ne-selected';
+
+
 export const COMPONENT_TYPE_MAP: Readonly<Record<string, ElementType>> = {
     BUS: 'BUS',
     BUSBAR_SECTION: 'BUS',
@@ -151,7 +155,7 @@ export type ChangeSet = ChangeSetEntry[];
 export interface EditorEvents {
     'element:added': { id: string; type: ElementType; voltageLevelId: string };
     'element:removed': { id: string; type: ElementType };
-    'element:selected': { id: string ; type: ElementType };
+    'element:selected': { id: string | null ; type: ElementType | null };
     'history:changed': { canUndo: boolean; canRedo: boolean };
     'model:changed': { changeSet: ChangeSet };
 }

@@ -11,6 +11,10 @@ export class SvgDomService {
         return this.container.querySelector('svg');
     }
 
+    getContainer(): HTMLElement {
+        return this.container;
+    }
+
     findElementById(elementId: string): SVGElement | null {
         const svg = this.getSvgRoot();
         if (!svg || !elementId) return null;

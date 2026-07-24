@@ -1,0 +1,52 @@
+{
+  "name": "@powsybl/network-editor",
+  "version": "0.1.0",
+  "description": "React/TypeScript component extending powsybl-network-viewer SLD/NAD with network editing capabilities.",
+  "type": "module",
+  "main": "./dist/network-editor.cjs",
+  "module": "./dist/network-editor.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/network-editor.js"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/network-editor.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "dev": "vite",
+    "check": "tsc --noEmit",
+    "build": "vite build",
+    "test": "vitest run"
+  },
+  "peerDependencies": {
+    "@powsybl/network-viewer-core": "^3.5.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@powsybl/network-viewer-core": "^3.5.1",
+    "@types/node": "^26.1.0",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.1",
+    "jsdom": "^29.1.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "typescript": "~6.0.2",
+    "vite": "^8.1.1",
+    "vite-plugin-dts": "^4",
+    "vitest": "^4.1.10"
+  }
+}

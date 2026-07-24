@@ -1,6 +1,7 @@
 import {useEffect, useRef, useState} from 'react';
 import {
     NetworkEditor,
+    type ChangeSet,
     type EditorEvents,
     type EquipmentInfo,
     type SLDMetadata,
@@ -26,6 +27,7 @@ export function DiagramEditor({title, svgUrl, metadata}: DiagramEditorProps) {
     const editorRef = useRef<NetworkEditor | null>(null);
     const [svgContent, setSvgContent] = useState<string | null>(null);
     const [history, setHistory] = useState({canUndo: false, canRedo: false});
+    const [pendingChanges, setPendingChanges] = useState<ChangeSet>([]);
     const [menu, setMenu] = useState<MenuState | null>(null);
 
     useEffect(() => {
@@ -47,6 +49,9 @@ export function DiagramEditor({title, svgUrl, metadata}: DiagramEditorProps) {
             onEvent: (name, payload) => {
                 if (name === 'history:changed') {
                     setHistory(payload as EditorEvents['history:changed']);
+                }
+                if (name === 'model:changed') {
+                    setPendingChanges((payload as EditorEvents['model:changed']).changeSet);
                 }
             },
         });
@@ -98,9 +103,27 @@ export function DiagramEditor({title, svgUrl, metadata}: DiagramEditorProps) {
                         backgroundColor: '#f8f9fa',
                     }}
                 />
-
-
-
+                <div style={{
+                    flex: 1,
+                    height: 800,
+                    border: '1px solid #ccc',
+                    padding: '0 16px',
+                    overflowY: 'auto',
+                    backgroundColor: '#fff'
+                }}>
+                    <h3>Modifications en attente</h3>
+                    {pendingChanges.length === 0 ? (
+                        <p>Aucune modification</p>
+                    ) : (
+                        <ul style={{paddingLeft: 20}}>
+                            {pendingChanges.map((change, index) => (
+                                <li key={index} style={{marginBottom: 8}}>
+                                    <strong>{change.op}</strong>: {change.equipmentType} ({change.equipmentId})
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </div>
             </div>
             {menu && (
                 <ContextMenu

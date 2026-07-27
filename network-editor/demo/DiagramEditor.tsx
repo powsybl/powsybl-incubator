@@ -4,9 +4,12 @@ import {
     type ChangeSet,
     type EditorEvents,
     type EquipmentInfo,
+    type EquipmentProperties,
     type SLDMetadata,
 } from '../src';
 import {ContextMenu} from './ContextMenu';
+import {PropertyPanel} from './PropertyPanel';
+import {PROPERTY_SCHEMAS, type PropertyDescriptor} from './properties/properties.ts';
 
 interface MenuState {
     info: EquipmentInfo;
@@ -14,14 +17,21 @@ interface MenuState {
     y: number;
 }
 
+interface Selection {
+    id: string;
+    schema: PropertyDescriptor[];
+    values: EquipmentProperties;
+}
 
 interface DiagramEditorProps {
     title: string;
     svgUrl: string;
     metadata: SLDMetadata;
+    /** Real values, typically fetched from the backend. */
+    initialProperties?: Record<string, EquipmentProperties>;
 }
 
-export function DiagramEditor({title, svgUrl, metadata}: DiagramEditorProps) {
+export function DiagramEditor({title, svgUrl, metadata, initialProperties}: DiagramEditorProps) {
 
     const containerRef = useRef<HTMLDivElement | null>(null);
     const editorRef = useRef<NetworkEditor | null>(null);
@@ -29,6 +39,7 @@ export function DiagramEditor({title, svgUrl, metadata}: DiagramEditorProps) {
     const [history, setHistory] = useState({canUndo: false, canRedo: false});
     const [pendingChanges, setPendingChanges] = useState<ChangeSet>([]);
     const [menu, setMenu] = useState<MenuState | null>(null);
+    const [selection, setSelection] = useState<Selection | null>(null);
 
     useEffect(() => {
         fetch(svgUrl)
@@ -44,6 +55,7 @@ export function DiagramEditor({title, svgUrl, metadata}: DiagramEditorProps) {
             container: containerRef.current,
             svgContent,
             metadata,
+            initialProperties,
             onEquipmentContextMenu: ({info, position}) =>
                 setMenu({info, x: position.x, y: position.y}),
             onEvent: (name, payload) => {
@@ -53,6 +65,28 @@ export function DiagramEditor({title, svgUrl, metadata}: DiagramEditorProps) {
                 if (name === 'model:changed') {
                     setPendingChanges((payload as EditorEvents['model:changed']).changeSet);
                 }
+                if (name === 'element:selected') {
+                    // The editor knows nothing about schemas: the app picks one.
+                    const {id, type} = payload as EditorEvents['element:selected'];
+                    setSelection(
+                        id === null || type === null
+                            ? null
+                            : {
+                                  id,
+                                  schema: PROPERTY_SCHEMAS[type] ?? [],
+                                  values: editor.getProperties(id),
+                              },
+                    );
+                }
+                if (name === 'properties:changed') {
+                    // Refresh the panel after an apply/undo/redo.
+                    const {id} = payload as EditorEvents['properties:changed'];
+                    setSelection((prev) =>
+                        prev && prev.id === id
+                            ? {...prev, values: editor.getProperties(id)}
+                            : prev,
+                    );
+                }
             },
         });
         editorRef.current = editor;
@@ -61,7 +95,7 @@ export function DiagramEditor({title, svgUrl, metadata}: DiagramEditorProps) {
             editor.destroy();
             editorRef.current = null;
         };
-    }, [svgContent, metadata]);
+    }, [svgContent, metadata, initialProperties]);
 
     const closeMenu = () => setMenu(null);
     const handleDelete = () => {
@@ -111,9 +145,19 @@ export function DiagramEditor({title, svgUrl, metadata}: DiagramEditorProps) {
                     overflowY: 'auto',
                     backgroundColor: '#fff'
                 }}>
-                    <h3>Modifications en attente</h3>
+                    <h3>Properties</h3>
+                    <PropertyPanel
+                        equipmentId={selection?.id ?? null}
+                        schema={selection?.schema ?? []}
+                        values={selection?.values ?? {}}
+                        onApply={(changes) =>
+                            selection &&
+                            editorRef.current?.applyProperties(selection.id, changes)
+                        }
+                    />
+                    <h3>Pending changes</h3>
                     {pendingChanges.length === 0 ? (
-                        <p>Aucune modification</p>
+                        <p>No change</p>
                     ) : (
                         <ul style={{paddingLeft: 20}}>
                             {pendingChanges.map((change, index) => (

@@ -9,6 +9,8 @@ import type {
 
 export type { SLDMetadata };
 
+export type EquipmentProperties = Record<string, number | string | boolean>;
+
 export type ElementType =
     | 'BUS'
     | 'LOAD'
@@ -130,6 +132,7 @@ export interface EditorOptions {
     callbacks?: ViewerCallbacks;
     onEvent?: EditorEventListener;
     onEquipmentContextMenu?: (event: EquipmentContextMenuEvent) => void;
+    initialProperties?: Record<string, EquipmentProperties>;
 }
 
 export const EDITOR_OPTION_DEFAULTS = {
@@ -156,6 +159,7 @@ export interface EditorEvents {
     'element:added': { id: string; type: ElementType; voltageLevelId: string };
     'element:removed': { id: string; type: ElementType };
     'element:selected': { id: string | null ; type: ElementType | null };
+    'properties:changed': { id: string; changes: Record<string, unknown> };
     'history:changed': { canUndo: boolean; canRedo: boolean };
     'model:changed': { changeSet: ChangeSet };
 }

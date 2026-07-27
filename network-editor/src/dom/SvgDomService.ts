@@ -43,5 +43,12 @@ export class SvgDomService {
         if (!snapshot.parent) return;
         snapshot.parent.insertBefore(snapshot.element, snapshot.nextElement);
     }
+
+    setSwitchState(nodeId: string, open: boolean): void {
+        const element = this.findElementById(nodeId);
+        if (!element) return;
+        element.classList.toggle('sld-open', open);
+        element.classList.toggle('sld-closed', !open);
+    }
 }
 

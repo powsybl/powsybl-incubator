@@ -1,11 +1,13 @@
 import {
     BAY_TRAVERSABLE_TYPES,
+    SWITCH_TYPES,
     type EditorMetadata,
     type FeederInfoMetadata,
     type NodeMetadata,
     type SLDMetadata,
     type WireMetadata,
 } from './types';
+import type { EquipmentProperties } from './types';
 
 export class EditorModel {
     private readonly metadata: EditorMetadata;
@@ -18,14 +20,23 @@ export class EditorModel {
 
     private readonly feederInfosById = new Map<string, FeederInfoMetadata>();
 
-    constructor(metadata: SLDMetadata) {
+    private readonly properties = new Map<string, EquipmentProperties>();
+
+    constructor(
+        metadata: SLDMetadata,
+        initialProperties?: Record<string, EquipmentProperties>,
+    ) {
         this.metadata = metadata as EditorMetadata;
         this.buildIndexes();
+        for (const [equipmentId, values] of Object.entries(initialProperties ?? {})) {
+            this.seedProperties(equipmentId, values);
+        }
     }
 
     private buildIndexes(): void {
         for (const node of this.metadata.nodes) {
             this.indexNode(node);
+            this.seedSwitchState(node);
         }
 
         for (const wire of this.metadata.wires) {
@@ -47,6 +58,12 @@ export class EditorModel {
         } else {
             this.nodesByEquipmentId.set(node.equipmentId, [node]);
         }
+    }
+
+    private seedSwitchState(node: NodeMetadata): void {
+        if (!node.equipmentId || node.open === undefined) return;
+        if (!SWITCH_TYPES.has(node.componentType)) return;
+        this.properties.set(node.equipmentId, { open: node.open });
     }
 
     private linkWire(nodeId: string, wire: WireMetadata): void {
@@ -231,6 +248,37 @@ export class EditorModel {
         );
     }
 
+    getProperties(equipmentId: string): EquipmentProperties {
+        return { ...this.properties.get(equipmentId) };
+    }
+
+    seedProperties(equipmentId: string, values: EquipmentProperties): void {
+        this.properties.set(equipmentId, { ...values });
+        this.updateSwitchMetadata(equipmentId, values.open);
+    }
+
+    setProperties(equipmentId: string, values: EquipmentProperties): void {
+        const merged: EquipmentProperties = {
+            ...this.properties.get(equipmentId),
+            ...values,
+        };
+        for (const key of Object.keys(merged)) {
+            if (merged[key] === undefined) delete merged[key];
+        }
+        this.properties.set(equipmentId, merged);
+        this.updateSwitchMetadata(equipmentId, merged.open);
+    }
+
+
+    private updateSwitchMetadata(
+        equipmentId: string,
+        open: EquipmentProperties[string] | undefined,
+    ): void {
+        if (typeof open !== 'boolean') return;
+        for (const node of this.getNodesForEquipment(equipmentId)) {
+            if (SWITCH_TYPES.has(node.componentType)) node.open = open;
+        }
+    }
 }
 
 function canTraverseNode(node: NodeMetadata): boolean {

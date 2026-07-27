@@ -8,6 +8,7 @@ import {
     type ChangeSet,
     type EditorOptions,
     type EquipmentInfo,
+    type EquipmentProperties,
 } from './types';
 
 
@@ -21,7 +22,7 @@ export class NetworkEditor {
         const { callbacks } = options;
 
         this.container = opts.container;
-        const model = new EditorModel(opts.metadata);
+        const model = new EditorModel(opts.metadata, opts.initialProperties);
 
         this.viewer = new SingleLineDiagramViewer(
             opts.container,
@@ -83,6 +84,22 @@ export class NetworkEditor {
 
     deleteFeederBay(equipmentId: string): boolean {
         return this.core.deleteFeederBay(equipmentId);
+    }
+
+    getSelectedEquipmentId(): string | null {
+        return this.core.getSelectedEquipmentId();
+    }
+
+    getProperties(equipmentId: string): EquipmentProperties {
+        return this.core.getProperties(equipmentId);
+    }
+
+    seedProperties(equipmentId: string, values: EquipmentProperties): void {
+        this.core.seedProperties(equipmentId, values);
+    }
+
+    applyProperties(equipmentId: string, changes: EquipmentProperties): boolean {
+        return this.core.applyProperties(equipmentId, changes);
     }
 
     private readonly onContextMenu = (event: MouseEvent): void => {

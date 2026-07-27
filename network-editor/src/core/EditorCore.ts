@@ -1,17 +1,22 @@
 import { EditorModel } from './EditorModel';
 import { CommandStack } from './commands/CommandStack';
 import { DeleteElementCommand } from './commands/DeleteElementCommand';
+import { UpdatePropertiesCommand } from './commands/UpdatePropertiesCommand';
 import { SvgDomService } from '../dom/SvgDomService';
 import {
     DELETABLE_TYPES,
+    SWITCH_TYPES,
     toElementType,
     type ChangeSet,
+    type EquipmentProperties,
     type EditorEventListener,
     type EditorEvents,
     type EquipmentContextMenuEvent,
     type EquipmentInfo,
     type NodeMetadata, DELETABLE_BAY_TYPES, SELECTABLE_TYPES, SELECTED_CLASS,
 } from './types';
+
+const DRAG_THRESHOLD = 10;
 
 export class EditorCore {
     private destroyed = false;
@@ -24,8 +29,8 @@ export class EditorCore {
 
     private selectedEquipmentId: string | null = null;
     private highlighted: Element[] = [];
-    private mouseDownX: number = 0;
-    private mouseDownY: number = 0;
+    private mouseDownX = 0;
+    private mouseDownY = 0;
 
     constructor(
         private readonly model: EditorModel,
@@ -40,6 +45,10 @@ export class EditorCore {
 
     destroy(): void {
         this.destroyed = true;
+        const container: HTMLElement = this.dom.getContainer();
+        container.removeEventListener('mousedown', this.onMouseDown);
+        container.removeEventListener('mouseup', this.onMouseUp);
+        this.clearHighlight();
         this.history.clear();
     }
 
@@ -52,25 +61,25 @@ export class EditorCore {
     }
 
     private readonly onMouseDown = (event: MouseEvent) => {
-        this.mouseDownX = event.clientX
-        this.mouseDownY = event.clientY
-    }
+        this.mouseDownX = event.clientX;
+        this.mouseDownY = event.clientY;
+    };
 
     private readonly onMouseUp = (event: MouseEvent) => {
+        if (event.button !== 0) return;
+        const moved = Math.hypot(
+            event.clientX - this.mouseDownX,
+            event.clientY - this.mouseDownY,
+        );
+        if (moved > DRAG_THRESHOLD) return;
+
         const node = this.resolveNodeAt(event.target as Element | null);
-        if (!node) return;
-
-        const deltaX = event.clientX - this.mouseDownX;
-        const deltaY = event.clientY - this.mouseDownY;
-        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-        if (distance > 10) return;
-
         if (node) {
-            this.selectEquipement(node)
+            this.selectEquipement(node);
         } else {
-            this.clearSelection()
+            this.clearSelection();
         }
-    }
+    };
 
     private selectEquipement(node: NodeMetadata) {
         const type = toElementType(node.componentType);
@@ -196,6 +205,35 @@ export class EditorCore {
         return true;
     }
 
+    getSelectedEquipmentId(): string | null {
+        return this.selectedEquipmentId;
+    }
+
+    getProperties(equipmentId: string): EquipmentProperties {
+        return this.model.getProperties(equipmentId);
+    }
+
+    seedProperties(equipmentId: string, values: EquipmentProperties): void {
+        this.model.seedProperties(equipmentId, values);
+    }
+
+    applyProperties(equipmentId: string, changes: EquipmentProperties): boolean {
+        if (Object.keys(changes).length === 0) return false;
+        const node = this.resolveEquipmentNode(equipmentId);
+        if (!node) return false;
+
+        this.history.push(
+            new UpdatePropertiesCommand(
+                node.equipmentId ?? node.id,
+                toElementType(node.componentType),
+                changes,
+                this.model,
+                this.emit,
+            ),
+        );
+        return true;
+    }
+
     /** First node of an equipment (or a raw node id) — undefined if unknown. */
     private resolveEquipmentNode(equipmentId: string): NodeMetadata | undefined {
         return (
@@ -213,6 +251,25 @@ export class EditorCore {
         payload: EditorEvents[K],
     ): void => {
         if (this.destroyed) return;
+
+        if (name === 'element:removed') {
+            const { id } = payload as EditorEvents['element:removed'];
+            if (id === this.selectedEquipmentId) this.clearSelection();
+        }
+
+        if (name === 'properties:changed') {
+            const { id, changes } = payload as EditorEvents['properties:changed'];
+            if (typeof  changes.open === 'boolean') this.updateSwitchState(id, Boolean(changes.open));
+        }
+
         this.onEvent?.(name, payload);
     };
+
+    private updateSwitchState(equipmentId: string, open: boolean): void {
+        for (const node of this.model.getNodesForEquipment(equipmentId)) {
+            if (SWITCH_TYPES.has(node.componentType)) {
+                this.dom.setSwitchState(node.id, open);
+            }
+        }
+    }
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { SELECTED_CLASS, type SLDMetadata } from '../src';
+import { BUSBAR_TARGET_CLASS, SELECTED_CLASS, type SLDMetadata } from '../src';
 import metadata1 from './data/metadata.json';
 import metadata2 from './data/metadata2.json';
 import {DiagramEditor} from "./DiagramEditor.tsx";
@@ -12,6 +12,13 @@ const m2 = metadata2 as unknown as SLDMetadata;
 const selectionStyle = `
 .${SELECTED_CLASS} { outline: 2px dashed #1976d2; outline-offset: 2px; }
 .${SELECTED_CLASS} .sld-label { fill: #1976d2; }
+
+/* Busbar connection marker: looks only — the editor decides where it sits. */
+.${BUSBAR_TARGET_CLASS} {
+    fill: #1976d2;
+    stroke: #fff;
+    stroke-width: 2px;
+}
 `;
 
 const App = () => (

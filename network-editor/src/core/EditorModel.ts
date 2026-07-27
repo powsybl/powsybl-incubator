@@ -1,5 +1,6 @@
 import {
     BAY_TRAVERSABLE_TYPES,
+    isFeederNode,
     SWITCH_TYPES,
     type EditorMetadata,
     type FeederInfoMetadata,
@@ -19,6 +20,8 @@ export class EditorModel {
     private readonly wiresByNode = new Map<string, WireMetadata[]>();
 
     private readonly feederInfosById = new Map<string, FeederInfoMetadata>();
+
+    private readonly nodesByVoltageLevel = new Map<string, NodeMetadata[]>();
 
     private readonly properties = new Map<string, EquipmentProperties>();
 
@@ -57,6 +60,14 @@ export class EditorModel {
             siblings.push(node);
         } else {
             this.nodesByEquipmentId.set(node.equipmentId, [node]);
+        }
+        if (node.vid) {
+            const siblingsInVl = this.nodesByVoltageLevel.get(node.vid);
+            if (siblingsInVl) {
+                siblingsInVl.push(node);
+            } else {
+                this.nodesByVoltageLevel.set(node.vid, [node]);
+            }
         }
     }
 
@@ -98,6 +109,14 @@ export class EditorModel {
 
     getNodesForEquipment(equipmentId: string): NodeMetadata[] {
         return this.nodesByEquipmentId.get(equipmentId) ?? [];
+    }
+
+    getNodesForVoltageLevel(voltageLevelId: string): NodeMetadata[] {
+        return this.nodesByVoltageLevel.get(voltageLevelId) ?? [];
+    }
+
+    getFeedersForVoltageLevel(voltageLevelId: string): NodeMetadata[] {
+        return this.getNodesForVoltageLevel(voltageLevelId).filter(isFeederNode);
     }
 
     getWiresForNode(nodeId: string): WireMetadata[] {

@@ -6,6 +6,7 @@ import { SvgDomService } from '../dom/SvgDomService';
 import {
     EDITOR_OPTION_DEFAULTS,
     type ChangeSet,
+    type ConnectionTarget,
     type EditorOptions,
     type EquipmentInfo,
     type EquipmentProperties,
@@ -47,6 +48,10 @@ export class NetworkEditor {
             dom,
             opts.onEvent,
             opts.onEquipmentContextMenu,
+            {
+                interactive: opts.connectionPointsInteractive,
+                radius: opts.connectionPointRadius,
+            },
         );
 
         this.container.addEventListener('contextmenu', this.onContextMenu);
@@ -100,6 +105,18 @@ export class NetworkEditor {
 
     applyProperties(equipmentId: string, changes: EquipmentProperties): boolean {
         return this.core.applyProperties(equipmentId, changes);
+    }
+
+    setConnectionPointsInteractive(enabled: boolean): void {
+        this.core.setConnectionPointsInteractive(enabled);
+    }
+
+    highlightConnectionPointsNear(clientX: number, clientY: number): ConnectionTarget | null {
+        return this.core.highlightConnectionPointsNear(clientX, clientY);
+    }
+
+    clearConnectionPointHighlight(): void {
+        this.core.clearConnectionPointHighlight();
     }
 
     private readonly onContextMenu = (event: MouseEvent): void => {

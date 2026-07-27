@@ -2,12 +2,14 @@ import { EditorModel } from './EditorModel';
 import { CommandStack } from './commands/CommandStack';
 import { DeleteElementCommand } from './commands/DeleteElementCommand';
 import { UpdatePropertiesCommand } from './commands/UpdatePropertiesCommand';
-import { SvgDomService } from '../dom/SvgDomService';
+import { SvgDomService, type BusbarSegment } from '../dom/SvgDomService';
 import {
+    BUSBAR_SECTION_TYPE,
     DELETABLE_TYPES,
     SWITCH_TYPES,
     toElementType,
     type ChangeSet,
+    type ConnectionTarget,
     type EquipmentProperties,
     type EditorEventListener,
     type EditorEvents,
@@ -17,6 +19,8 @@ import {
 } from './types';
 
 const DRAG_THRESHOLD = 10;
+const DEFAULT_CONNECTION_POINT_RADIUS = 40;
+const BUSBAR_SWITCH_TOLERANCE = 12;
 
 export class EditorCore {
     private destroyed = false;
@@ -32,15 +36,25 @@ export class EditorCore {
     private mouseDownX = 0;
     private mouseDownY = 0;
 
+    private connectionPointsInteractive: boolean;
+    private readonly connectionPointRadius: number;
+    private hoverFrame: number | null = null;
+
     constructor(
         private readonly model: EditorModel,
         private readonly dom: SvgDomService,
         private readonly onEvent?: EditorEventListener,
         private readonly onEquipmentContextMenu?: (event: EquipmentContextMenuEvent, )=> void,
+        connectionPoints: { interactive?: boolean; radius?: number } = {},
     ) {
         const container: HTMLElement = this.dom.getContainer();
         container.addEventListener('mousedown', this.onMouseDown);
         container.addEventListener('mouseup', this.onMouseUp);
+        container.addEventListener('mousemove', this.onMouseMove);
+        container.addEventListener('mouseleave', this.onMouseLeave);
+        this.connectionPointsInteractive = connectionPoints.interactive ?? true;
+        this.connectionPointRadius = connectionPoints.radius ?? DEFAULT_CONNECTION_POINT_RADIUS;
+        this.dom.setConnectionPointsInteractive(this.connectionPointsInteractive);
     }
 
     destroy(): void {
@@ -48,8 +62,144 @@ export class EditorCore {
         const container: HTMLElement = this.dom.getContainer();
         container.removeEventListener('mousedown', this.onMouseDown);
         container.removeEventListener('mouseup', this.onMouseUp);
+        container.removeEventListener('mousemove', this.onMouseMove);
+        container.removeEventListener('mouseleave', this.onMouseLeave);
+        this.cancelHoverFrame();
+        this.dom.setConnectionPointsInteractive(false);
         this.clearHighlight();
         this.history.clear();
+    }
+
+    setConnectionPointsInteractive(enabled: boolean): void {
+        this.connectionPointsInteractive = enabled;
+        this.dom.setConnectionPointsInteractive(enabled);
+    }
+
+    /**
+     * Marks the busbar spot the cursor is closest to and describes it in IIDM
+     * terms. Meant to be called from a `dragover` handler too, so a drop knows
+     * what it would attach to.
+     */
+    highlightConnectionPointsNear(clientX: number, clientY: number): ConnectionTarget | null {
+        if (!this.connectionPointsInteractive) return null;
+
+        const hovered = this.resolveNodeAt(
+            document.elementFromPoint?.(clientX, clientY) ?? null,
+        );
+        if (hovered && hovered.componentType !== BUSBAR_SECTION_TYPE) {
+            this.dom.clearConnectionPointHighlight();
+            return null;
+        }
+
+        const cursor = this.dom.toDiagramPoint(clientX, clientY);
+        if (!cursor) {
+            this.dom.clearConnectionPointHighlight();
+            return null;
+        }
+
+        const slot = this.findFreeSlot(cursor, this.connectionPointRadius / cursor.scale);
+        if (!slot) {
+            this.dom.clearConnectionPointHighlight();
+            return null;
+        }
+        this.dom.showBusbarMarker(slot.point);
+        return this.toBusbarTarget(slot, cursor.y);
+    }
+
+    private findFreeSlot(
+        cursor: { x: number; y: number },
+        radius: number,
+    ): { svgId: string; point: { x: number; y: number }; busbarY: number } | null {
+        let best: { svgId: string; point: { x: number; y: number }; busbarY: number } | null = null;
+        let bestDistance = Infinity;
+
+        for (const busbar of this.dom.getBusbarSegments()) {
+            const projected = projectOnSegment(cursor, busbar);
+            if (!projected || projected.distance > radius || projected.distance >= bestDistance) {
+                continue;
+            }
+
+            // Gap containing the projected point, between the switches on the bar.
+            const bounds = [busbar.x1, ...this.findSwitchesOnBusbar(busbar), busbar.x2];
+            let start = bounds[0];
+            let end = bounds[bounds.length - 1];
+            for (let index = 0; index < bounds.length - 1; index++) {
+                if (projected.point.x <= bounds[index + 1]) {
+                    start = bounds[index];
+                    end = bounds[index + 1];
+                    break;
+                }
+                start = bounds[index];
+                end = bounds[index + 1];
+            }
+
+            bestDistance = projected.distance;
+            best = {
+                svgId: busbar.id,
+                point: { x: (start + end) / 2, y: projected.point.y },
+                busbarY: projected.point.y,
+            };
+        }
+        return best;
+    }
+
+
+    private findSwitchesOnBusbar(busbar: BusbarSegment): number[] {
+        const voltageLevelId = this.model.getNodeById(busbar.id)?.vid;
+        if (!voltageLevelId) return [];
+
+        const positions: number[] = [];
+        for (const node of this.model.getNodesForVoltageLevel(voltageLevelId)) {
+            if (!SWITCH_TYPES.has(node.componentType)) continue;
+            const at = this.dom.getNodePosition(node.id);
+            if (!at || Math.abs(at.y - busbar.y1) > BUSBAR_SWITCH_TOLERANCE) continue;
+            positions.push(at.x);
+        }
+        return positions.sort((a, b) => a - b);
+    }
+
+
+    private toBusbarTarget(
+        slot: { svgId: string; point: { x: number; y: number }; busbarY: number },
+        cursorY: number,
+    ): ConnectionTarget | null {
+        const busbar = this.model.getNodeById(slot.svgId);
+        if (!busbar?.equipmentId || !busbar.vid) return null;
+
+        return {
+            kind: 'busbar',
+            busbarSectionId: busbar.equipmentId,
+            voltageLevelId: busbar.vid,
+            svgId: slot.svgId,
+            direction: cursorY < slot.busbarY ? 'TOP' : 'BOTTOM',
+            position: slot.point,
+            ...this.findFeederNeighbours(busbar.vid, slot.point.x),
+        };
+    }
+
+    private findFeederNeighbours(
+        voltageLevelId: string,
+        x: number,
+    ): { previousEquipmentId?: string; nextEquipmentId?: string } {
+        const placed = this.model
+            .getFeedersForVoltageLevel(voltageLevelId)
+            .flatMap((node) => {
+                const equipmentId = node.equipmentId;
+                const at = equipmentId && this.dom.getNodePosition(node.id);
+                return at ? [{ equipmentId, x: at.x }] : [];
+            })
+            .sort((a, b) => a.x - b.x);
+
+        const previous = placed.filter((feeder) => feeder.x <= x).at(-1);
+        const next = placed.find((feeder) => feeder.x > x);
+        return {
+            previousEquipmentId: previous?.equipmentId,
+            nextEquipmentId: next?.equipmentId,
+        };
+    }
+
+    clearConnectionPointHighlight(): void {
+        this.dom.clearConnectionPointHighlight();
     }
 
     undo(): void {
@@ -65,6 +215,27 @@ export class EditorCore {
         this.mouseDownY = event.clientY;
     };
 
+    private readonly onMouseMove = (event: MouseEvent) => {
+        if (!this.connectionPointsInteractive || this.hoverFrame !== null) return;
+        const { clientX, clientY } = event;
+        this.hoverFrame = requestAnimationFrame(() => {
+            this.hoverFrame = null;
+            if (this.destroyed) return;
+            this.highlightConnectionPointsNear(clientX, clientY);
+        });
+    };
+
+    private readonly onMouseLeave = () => {
+        this.cancelHoverFrame();
+        this.dom.clearConnectionPointHighlight();
+    };
+
+    private cancelHoverFrame(): void {
+        if (this.hoverFrame === null) return;
+        cancelAnimationFrame(this.hoverFrame);
+        this.hoverFrame = null;
+    }
+
     private readonly onMouseUp = (event: MouseEvent) => {
         if (event.button !== 0) return;
         const moved = Math.hypot(
@@ -74,6 +245,18 @@ export class EditorCore {
         if (moved > DRAG_THRESHOLD) return;
 
         const node = this.resolveNodeAt(event.target as Element | null);
+
+        if (node && node.componentType !== BUSBAR_SECTION_TYPE) {
+            this.selectEquipement(node);
+            return;
+        }
+
+        const target = this.highlightConnectionPointsNear(event.clientX, event.clientY);
+        if (target) {
+            this.emit('connection-point:picked', target);
+            return;
+        }
+
         if (node) {
             this.selectEquipement(node);
         } else {
@@ -252,6 +435,10 @@ export class EditorCore {
     ): void => {
         if (this.destroyed) return;
 
+        if (name === 'element:removed' || name === 'element:added') {
+            this.dom.refreshConnectionPoints();
+        }
+
         if (name === 'element:removed') {
             const { id } = payload as EditorEvents['element:removed'];
             if (id === this.selectedEquipmentId) this.clearSelection();
@@ -272,4 +459,24 @@ export class EditorCore {
             }
         }
     }
+}
+
+function projectOnSegment(
+    point: { x: number; y: number },
+    segment: BusbarSegment,
+): { point: { x: number; y: number }; distance: number } | null {
+    const dx = segment.x2 - segment.x1;
+    const dy = segment.y2 - segment.y1;
+    const lengthSquared = dx * dx + dy * dy;
+    if (lengthSquared === 0) return null;
+
+    const ratio = Math.min(
+        1,
+        Math.max(0, ((point.x - segment.x1) * dx + (point.y - segment.y1) * dy) / lengthSquared),
+    );
+    const projected = { x: segment.x1 + ratio * dx, y: segment.y1 + ratio * dy };
+    return {
+        point: projected,
+        distance: Math.hypot(projected.x - point.x, projected.y - point.y),
+    };
 }

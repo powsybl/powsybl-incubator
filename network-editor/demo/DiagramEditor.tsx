@@ -2,6 +2,7 @@ import {useEffect, useRef, useState} from 'react';
 import {
     NetworkEditor,
     type ChangeSet,
+    type ConnectionTarget,
     type EditorEvents,
     type EquipmentInfo,
     type EquipmentProperties,
@@ -17,6 +18,34 @@ interface MenuState {
     y: number;
 }
 
+/**
+ * The picked target, spelled as the pypowsybl call it feeds. `position_order`
+ * is left to the backend: it reads the neighbours' orders with
+ * `get_connectables_order_positions(network, voltage_level_id)`.
+ */
+function toPypowsyblCall(target: ConnectionTarget): string {
+    const between = [target.previousEquipmentId, target.nextEquipmentId]
+        .map((id) => id ?? 'end of busbar')
+        .join(' / ');
+    return `pp.network.create_line_bays(
+    network, id='NEW_LINE', r=0.1, x=10, b1=0, g1=0, b2=0, g2=0,
+    bus_or_busbar_section_id_1='${target.busbarSectionId}',
+    direction_1='${target.direction}',
+    position_order_1=...,  # between ${between}
+    bus_or_busbar_section_id_2='<other voltage level>',
+    direction_2='TOP', position_order_2=...,
+)`;
+}
+
+const pypowsyblStyle = {
+    background: '#f6f8fa',
+    border: '1px solid #ddd',
+    borderRadius: 4,
+    fontSize: 11,
+    padding: 8,
+    overflowX: 'auto',
+} as const;
+
 interface Selection {
     id: string;
     schema: PropertyDescriptor[];
@@ -27,7 +56,6 @@ interface DiagramEditorProps {
     title: string;
     svgUrl: string;
     metadata: SLDMetadata;
-    /** Real values, typically fetched from the backend. */
     initialProperties?: Record<string, EquipmentProperties>;
 }
 
@@ -40,6 +68,8 @@ export function DiagramEditor({title, svgUrl, metadata, initialProperties}: Diag
     const [pendingChanges, setPendingChanges] = useState<ChangeSet>([]);
     const [menu, setMenu] = useState<MenuState | null>(null);
     const [selection, setSelection] = useState<Selection | null>(null);
+    const [connectionPoint, setConnectionPoint] =
+        useState<EditorEvents['connection-point:picked'] | null>(null);
 
     useEffect(() => {
         fetch(svgUrl)
@@ -77,6 +107,9 @@ export function DiagramEditor({title, svgUrl, metadata, initialProperties}: Diag
                                   values: editor.getProperties(id),
                               },
                     );
+                }
+                if (name === 'connection-point:picked') {
+                    setConnectionPoint(payload as EditorEvents['connection-point:picked']);
                 }
                 if (name === 'properties:changed') {
                     // Refresh the panel after an apply/undo/redo.
@@ -155,6 +188,33 @@ export function DiagramEditor({title, svgUrl, metadata, initialProperties}: Diag
                             editorRef.current?.applyProperties(selection.id, changes)
                         }
                     />
+                    <h3>Connection point</h3>
+                    {connectionPoint === null ? (
+                        <p style={{color: '#888'}}>Click on or near a busbar.</p>
+                    ) : (
+                        <>
+                            <ul style={{paddingLeft: 20, fontSize: 13}}>
+                                <li>
+                                    <strong>busbarSectionId</strong>:{' '}
+                                    {connectionPoint.busbarSectionId}
+                                </li>
+                                <li>
+                                    <strong>voltageLevelId</strong>:{' '}
+                                    {connectionPoint.voltageLevelId}
+                                </li>
+                                <li><strong>direction</strong>: {connectionPoint.direction}</li>
+                                <li>
+                                    <strong>between</strong>:{' '}
+                                    {connectionPoint.previousEquipmentId ?? '—'} /{' '}
+                                    {connectionPoint.nextEquipmentId ?? '—'}
+                                </li>
+                            </ul>
+                            <p style={{fontSize: 12, color: '#666', marginBottom: 4}}>
+                                What a backend would call:
+                            </p>
+                            <pre style={pypowsyblStyle}>{toPypowsyblCall(connectionPoint)}</pre>
+                        </>
+                    )}
                     <h3>Pending changes</h3>
                     {pendingChanges.length === 0 ? (
                         <p>No change</p>

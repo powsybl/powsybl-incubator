@@ -15,8 +15,13 @@ export type ElementType =
     | 'BUS'
     | 'LOAD'
     | 'GENERATOR'
+    | 'BATTERY'
     | 'LINE'
+    | 'HVDC_LINE'
+    | 'HVDC_CONVERTER_STATION'
     | 'CAPACITOR'
+    | 'INDUCTOR'
+    | 'STATIC_VAR_COMPENSATOR'
     | 'BREAKER'
     | 'THREE_WINDINGS_TRANSFORMER'
     | 'TWO_WINDINGS_TRANSFORMER'
@@ -25,10 +30,15 @@ export type ElementType =
 export const DELETABLE_BAY_TYPES: ReadonlySet<ElementType> = new Set<ElementType>([
     'LOAD',
     'GENERATOR',
+    'BATTERY',
     'TWO_WINDINGS_TRANSFORMER',
     'THREE_WINDINGS_TRANSFORMER',
     'CAPACITOR',
-    'LINE'
+    'INDUCTOR',
+    'STATIC_VAR_COMPENSATOR',
+    'HVDC_CONVERTER_STATION',
+    'LINE',
+    'HVDC_LINE',
 ]);
 
 export const DELETABLE_TYPES: ReadonlySet<ElementType> = new Set<ElementType>([
@@ -39,15 +49,25 @@ export const DELETABLE_TYPES: ReadonlySet<ElementType> = new Set<ElementType>([
 export const SELECTABLE_TYPES: ReadonlySet<ElementType> = DELETABLE_TYPES;
 export const SELECTED_CLASS = 'ne-selected';
 
+export const BUSBAR_SECTION_TYPE = 'BUSBAR_SECTION';
+
+export type FeederDirection = 'TOP' | 'BOTTOM';
 
 export const COMPONENT_TYPE_MAP: Readonly<Record<string, ElementType>> = {
     BUS: 'BUS',
     BUSBAR_SECTION: 'BUS',
     LOAD: 'LOAD',
     GENERATOR: 'GENERATOR',
+    BATTERY: 'BATTERY',
     LINE: 'LINE',
     BOUNDARY_LINE: 'LINE',
+    TIE_LINE: 'LINE',
+    HVDC_LINE: 'HVDC_LINE',
+    VSC_CONVERTER_STATION: 'HVDC_CONVERTER_STATION',
+    LCC_CONVERTER_STATION: 'HVDC_CONVERTER_STATION',
     CAPACITOR: 'CAPACITOR',
+    INDUCTOR: 'INDUCTOR',
+    STATIC_VAR_COMPENSATOR: 'STATIC_VAR_COMPENSATOR',
     BREAKER: 'BREAKER',
     DISCONNECTOR: 'BREAKER',
     LOAD_BREAK_SWITCH: 'BREAKER',
@@ -105,6 +125,19 @@ export interface EquipmentContextMenuEvent {
     position: { x: number; y: number };
 }
 
+export interface BusbarConnectionTarget {
+    kind: 'busbar';
+    busbarSectionId: string;
+    voltageLevelId: string;
+    svgId: string;
+    direction: FeederDirection;
+    position: { x: number; y: number };
+    previousEquipmentId?: string;
+    nextEquipmentId?: string;
+}
+
+export type ConnectionTarget = BusbarConnectionTarget;
+
 export interface ViewerCallbacks {
     onNextVoltage?: OnNextVoltageCallbackType;
     onBreaker?: OnBreakerCallbackType;
@@ -133,6 +166,8 @@ export interface EditorOptions {
     onEvent?: EditorEventListener;
     onEquipmentContextMenu?: (event: EquipmentContextMenuEvent) => void;
     initialProperties?: Record<string, EquipmentProperties>;
+    connectionPointsInteractive?: boolean;
+    connectionPointRadius?: number;
 }
 
 export const EDITOR_OPTION_DEFAULTS = {
@@ -142,6 +177,8 @@ export const EDITOR_OPTION_DEFAULTS = {
     maxWidth: 2000,
     maxHeight: 2000,
     selectionBackColor: 'white',
+    connectionPointsInteractive: true,
+    connectionPointRadius: 40,
 } as const;
 
 export type ChangeOp = 'create' | 'delete' | 'update' | 'delete-bay';
@@ -159,6 +196,7 @@ export interface EditorEvents {
     'element:added': { id: string; type: ElementType; voltageLevelId: string };
     'element:removed': { id: string; type: ElementType };
     'element:selected': { id: string | null ; type: ElementType | null };
+    'connection-point:picked': ConnectionTarget;
     'properties:changed': { id: string; changes: Record<string, unknown> };
     'history:changed': { canUndo: boolean; canRedo: boolean };
     'model:changed': { changeSet: ChangeSet };
@@ -182,4 +220,8 @@ export const BAY_TRAVERSABLE_TYPES: ReadonlySet<string> = new Set([
     'BUS_CONNECTION',  // busbar attachment points ("idBUSCO_…")
     ...SWITCH_TYPES,
 ]);
+
+export function isFeederNode(node: NodeMetadata): boolean {
+    return node.direction === 'TOP' || node.direction === 'BOTTOM';
+}
 

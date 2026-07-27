@@ -12,6 +12,7 @@ import {
 
 interface PropertyPanelProps {
     equipmentId: string | null;
+    componentType: string | null;
     schema: PropertyDescriptor[];
     values: EquipmentProperties;
     onApply: (changes: EquipmentProperties) => void;
@@ -20,6 +21,7 @@ interface PropertyPanelProps {
 
 export function PropertyPanel({
     equipmentId,
+    componentType,
     schema,
     values,
     onApply,
@@ -48,7 +50,10 @@ export function PropertyPanel({
 
     return (
         <>
-            <p style={{ color: '#666', fontSize: 12 }}>{equipmentId}</p>
+            <p style={{ color: '#666', fontSize: 12 }}>
+                {equipmentId}
+                {componentType && ` — ${componentType}`}
+            </p>
             {schema.length === 0 && (
                 <p style={{ color: '#888' }}>No editable property for this type.</p>
             )}
@@ -67,10 +72,16 @@ export function PropertyPanel({
                                 {descriptor.unit ? ` (${descriptor.unit})` : ''}
                             </span>
                             {renderInput(descriptor, form[descriptor.key], setField, error)}
-                            {error && (
+                            {error ? (
                                 <span style={{ color: '#dc3545', fontSize: 11 }}>
                                     {formatFieldError(error)}
                                 </span>
+                            ) : (
+                                descriptor.help && (
+                                    <span style={{ color: '#888', fontSize: 11 }}>
+                                        {descriptor.help}
+                                    </span>
+                                )
                             )}
                         </label>
                     );
@@ -113,6 +124,7 @@ function renderInput(
                 onChange={(e) => setField(descriptor.key, e.target.value)}
                 style={inputStyle(error)}
             >
+                {!descriptor.required && <option value="" />}
                 {(descriptor.options ?? []).map((option) => (
                     <option key={option} value={option}>
                         {option}
@@ -121,12 +133,14 @@ function renderInput(
             </select>
         );
     }
+    const numeric = descriptor.type === 'number' || descriptor.type === 'integer';
     return (
         <input
-            type={descriptor.type === 'number' ? 'number' : 'text'}
+            type={numeric ? 'number' : 'text'}
             value={String(value ?? '')}
             min={descriptor.min}
             max={descriptor.max}
+            step={descriptor.type === 'integer' ? 1 : 'any'}
             onChange={(e) => setField(descriptor.key, e.target.value)}
             style={inputStyle(error)}
         />

@@ -33,7 +33,8 @@ export function parseField(
     }
     if (raw === '') return undefined;
     const parsed = Number(raw);
-    return Number.isNaN(parsed) ? undefined : parsed;
+    if (Number.isNaN(parsed)) return undefined;
+    return descriptor.type === 'integer' && !Number.isInteger(parsed) ? undefined : parsed;
 }
 
 /**
@@ -45,6 +46,7 @@ export function parseField(
 export type FieldError =
     | { code: 'required' }
     | { code: 'notANumber' }
+    | { code: 'notAnInteger' }
     | { code: 'min'; min: number }
     | { code: 'max'; max: number }
     | { code: 'unknownProperty' };
@@ -57,7 +59,7 @@ export function fieldError(
     if (descriptor.type === 'boolean') return null;
     if (raw === '' || raw === undefined)
         return descriptor.required ? { code: 'required' } : null;
-    if (descriptor.type !== 'number') return null;
+    if (descriptor.type !== 'number' && descriptor.type !== 'integer') return null;
     return validateValue(descriptor, Number(raw));
 }
 
@@ -68,6 +70,8 @@ export function formatFieldError(error: FieldError): string {
             return 'value required';
         case 'notANumber':
             return 'invalid number';
+        case 'notAnInteger':
+            return 'must be a whole number';
         case 'min':
             return `must be ≥ ${error.min}`;
         case 'max':
@@ -103,8 +107,11 @@ export function validateValue(
     value: number | string | boolean | undefined,
 ): FieldError | null {
     if (value === undefined) return descriptor.required ? { code: 'required' } : null;
-    if (descriptor.type === 'number') {
+    if (descriptor.type === 'number' || descriptor.type === 'integer') {
         if (typeof value !== 'number' || Number.isNaN(value)) return { code: 'notANumber' };
+        if (descriptor.type === 'integer' && !Number.isInteger(value)) {
+            return { code: 'notAnInteger' };
+        }
         if (descriptor.min !== undefined && value < descriptor.min)
             return { code: 'min', min: descriptor.min };
         if (descriptor.max !== undefined && value > descriptor.max)

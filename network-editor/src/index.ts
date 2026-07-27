@@ -10,13 +10,14 @@ export type { RemovedDomElement } from './dom/SvgDomService';
 
 export {
     BUSBAR_SECTION_TYPE,
-    COMPONENT_TYPE_MAP,
+    BRANCH_TYPES,
+    INJECTION_TYPES,
+    SWITCH_TYPES,
     DELETABLE_TYPES,
     isFeederNode,
     SELECTABLE_TYPES,
     SELECTED_CLASS,
     EDITOR_OPTION_DEFAULTS,
-    toElementType,
 } from './core/types';
 
 export type {
@@ -31,7 +32,6 @@ export type {
     EditorEventName,
     EditorEvents,
     EditorOptions,
-    ElementType,
     EquipmentContextMenuEvent,
     EquipmentProperties,
     FeederDirection,

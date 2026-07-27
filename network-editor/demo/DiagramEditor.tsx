@@ -10,7 +10,7 @@ import {
 } from '../src';
 import {ContextMenu} from './ContextMenu';
 import {PropertyPanel} from './PropertyPanel';
-import {PROPERTY_SCHEMAS, type PropertyDescriptor} from './properties/properties.ts';
+import {getPropertySchema, type PropertyDescriptor} from './properties/properties.ts';
 
 interface MenuState {
     info: EquipmentInfo;
@@ -48,6 +48,7 @@ const pypowsyblStyle = {
 
 interface Selection {
     id: string;
+    componentType: string | null;
     schema: PropertyDescriptor[];
     values: EquipmentProperties;
 }
@@ -96,14 +97,14 @@ export function DiagramEditor({title, svgUrl, metadata, initialProperties}: Diag
                     setPendingChanges((payload as EditorEvents['model:changed']).changeSet);
                 }
                 if (name === 'element:selected') {
-                    // The editor knows nothing about schemas: the app picks one.
-                    const {id, type} = payload as EditorEvents['element:selected'];
+                    const {id, componentType} = payload as EditorEvents['element:selected'];
                     setSelection(
-                        id === null || type === null
+                        id === null
                             ? null
                             : {
                                   id,
-                                  schema: PROPERTY_SCHEMAS[type] ?? [],
+                                  componentType,
+                                  schema: getPropertySchema(componentType),
                                   values: editor.getProperties(id),
                               },
                     );
@@ -181,6 +182,7 @@ export function DiagramEditor({title, svgUrl, metadata, initialProperties}: Diag
                     <h3>Properties</h3>
                     <PropertyPanel
                         equipmentId={selection?.id ?? null}
+                        componentType={selection?.componentType ?? null}
                         schema={selection?.schema ?? []}
                         values={selection?.values ?? {}}
                         onApply={(changes) =>
@@ -222,7 +224,7 @@ export function DiagramEditor({title, svgUrl, metadata, initialProperties}: Diag
                         <ul style={{paddingLeft: 20}}>
                             {pendingChanges.map((change, index) => (
                                 <li key={index} style={{marginBottom: 8}}>
-                                    <strong>{change.op}</strong>: {change.equipmentType} ({change.equipmentId})
+                                    <strong>{change.op}</strong>: {change.componentType} ({change.equipmentId})
                                 </li>
                             ))}
                         </ul>

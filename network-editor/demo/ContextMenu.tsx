@@ -79,7 +79,7 @@ export function ContextMenu({info, x, y, onDelete, onDeleteBay, onClose}: Contex
                     fontSize: 12,
                 }}
             >
-                {info.type} — {info.label}
+                {info.componentType} — {info.label}
             </div>
             <MenuItem label="Delete" enabled={info.deletable} onClick={onDelete} />
             <MenuItem

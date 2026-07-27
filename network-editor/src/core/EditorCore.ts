@@ -7,7 +7,6 @@ import {
     BUSBAR_SECTION_TYPE,
     DELETABLE_TYPES,
     SWITCH_TYPES,
-    toElementType,
     type ChangeSet,
     type ConnectionTarget,
     type EquipmentProperties,
@@ -265,8 +264,7 @@ export class EditorCore {
     };
 
     private selectEquipement(node: NodeMetadata) {
-        const type = toElementType(node.componentType);
-        if (!SELECTABLE_TYPES.has(type)) {
+        if (!SELECTABLE_TYPES.has(node.componentType)) {
             this.clearSelection();
             return;
         }
@@ -285,14 +283,17 @@ export class EditorCore {
             element.classList.add(SELECTED_CLASS);
             this.highlighted.push(element);
         }
-        this.emit('element:selected', { id: equipmentId, type });
+        this.emit('element:selected', {
+            id: equipmentId,
+            componentType: node.componentType,
+        });
     }
 
     private clearSelection(): void {
         if (this.selectedEquipmentId === null) return;
         this.clearHighlight();
         this.selectedEquipmentId = null;
-        this.emit('element:selected', { id: null, type: null });
+        this.emit('element:selected', { id: null, componentType: null });
     }
 
     private clearHighlight(): void {
@@ -316,13 +317,12 @@ export class EditorCore {
         const node = this.resolveEquipmentNode(equipmentId);
         if (!node) return null;
 
-        const type = toElementType(node.componentType);
         return {
             equipmentId: node.equipmentId ?? node.id,
-            type,
+            componentType: node.componentType,
             label: this.getEquipmentLabel(node),
-            deletable: DELETABLE_TYPES.has(type),
-            bayDeletable: DELETABLE_BAY_TYPES.has(type)
+            deletable: DELETABLE_TYPES.has(node.componentType),
+            bayDeletable: DELETABLE_BAY_TYPES.has(node.componentType),
         };
     }
 
@@ -332,7 +332,8 @@ export class EditorCore {
         if (!node) return;
 
         const info = this.getEquipmentInfo(node.equipmentId ?? node.id);
-        if (!info || info.type === 'UNKNOWN') return;
+        // Nothing to offer on a component the editor can neither delete nor edit.
+        if (!info || (!info.deletable && !info.bayDeletable)) return;
 
         event.preventDefault();
         this.onEquipmentContextMenu({
@@ -364,7 +365,7 @@ export class EditorCore {
     private deleteCommand(equipmentId: string, kind: 'element' | 'bay'): boolean {
         const node = this.resolveEquipmentNode(equipmentId);
         const deletable = kind === 'bay' ? DELETABLE_BAY_TYPES : DELETABLE_TYPES;
-        if (!node || !deletable.has(toElementType(node.componentType))) {
+        if (!node || !deletable.has(node.componentType)) {
             return false;
         }
 
@@ -408,7 +409,7 @@ export class EditorCore {
         this.history.push(
             new UpdatePropertiesCommand(
                 node.equipmentId ?? node.id,
-                toElementType(node.componentType),
+                node.componentType,
                 changes,
                 this.model,
                 this.emit,

@@ -3,7 +3,6 @@ import type { EditorModel } from '../EditorModel';
 import type {
     ChangeSetEntry,
     EditorEventListener,
-    ElementType,
     EquipmentProperties,
 } from '../types';
 
@@ -13,12 +12,12 @@ export class UpdatePropertiesCommand implements Command {
 
     constructor(
         private readonly equipmentId: string,
-        private readonly type: ElementType,
+        private readonly componentType: string,
         private readonly changes: EquipmentProperties,
         private readonly model: EditorModel,
         private readonly emit: EditorEventListener,
     ) {
-        this.label = `Update ${type} ${equipmentId}`;
+        this.label = `Update ${componentType} ${equipmentId}`;
         this.changes = {...changes}
     }
 
@@ -39,7 +38,7 @@ export class UpdatePropertiesCommand implements Command {
     toChangeSetEntry(): ChangeSetEntry {
         return {
             op: 'update',
-            equipmentType: this.type,
+            componentType: this.componentType,
             equipmentId: this.equipmentId,
             payload: { ...this.changes },
         };

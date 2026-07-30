@@ -1,14 +1,19 @@
 import { EditorModel } from './EditorModel';
 import { CommandStack } from './commands/CommandStack';
+import { CreateEquipmentCommand } from './commands/CreateEquipmentCommand';
 import { DeleteElementCommand } from './commands/DeleteElementCommand';
 import { UpdatePropertiesCommand } from './commands/UpdatePropertiesCommand';
-import { SvgDomService, type BusbarSegment } from '../dom/SvgDomService';
+import { SvgDomService } from '../dom/SvgDomService';
 import {
-    BUSBAR_SECTION_TYPE,
+    CONNECTION_POINT_CLASS,
+    CREATABLE_TYPES,
     DELETABLE_TYPES,
     SWITCH_TYPES,
+    toElementType,
     type ChangeSet,
-    type ConnectionTarget,
+    type ConnectionPoint,
+    type ConnectionPointClickEvent,
+    type CreateEquipmentSpec,
     type EquipmentProperties,
     type EditorEventListener,
     type EditorEvents,
@@ -18,42 +23,37 @@ import {
 } from './types';
 
 const DRAG_THRESHOLD = 10;
-const DEFAULT_CONNECTION_POINT_RADIUS = 40;
-const BUSBAR_SWITCH_TOLERANCE = 12;
 
 export class EditorCore {
     private destroyed = false;
 
     private readonly history = new CommandStack((state) => {
         if (this.destroyed) return;
+        this.refreshConnectionPoints();
         this.emit('history:changed', state);
         this.emit('model:changed', { changeSet: this.getPendingChanges() });
     });
+
+    private connectionPoints = new Map<string, ConnectionPoint>();
+
+    private createCounter = 0;
 
     private selectedEquipmentId: string | null = null;
     private highlighted: Element[] = [];
     private mouseDownX = 0;
     private mouseDownY = 0;
 
-    private connectionPointsInteractive: boolean;
-    private readonly connectionPointRadius: number;
-    private hoverFrame: number | null = null;
-
     constructor(
         private readonly model: EditorModel,
         private readonly dom: SvgDomService,
         private readonly onEvent?: EditorEventListener,
         private readonly onEquipmentContextMenu?: (event: EquipmentContextMenuEvent, )=> void,
-        connectionPoints: { interactive?: boolean; radius?: number } = {},
+        private readonly onConnectionPointClick?: (event: ConnectionPointClickEvent) => void,
     ) {
         const container: HTMLElement = this.dom.getContainer();
         container.addEventListener('mousedown', this.onMouseDown);
         container.addEventListener('mouseup', this.onMouseUp);
-        container.addEventListener('mousemove', this.onMouseMove);
-        container.addEventListener('mouseleave', this.onMouseLeave);
-        this.connectionPointsInteractive = connectionPoints.interactive ?? true;
-        this.connectionPointRadius = connectionPoints.radius ?? DEFAULT_CONNECTION_POINT_RADIUS;
-        this.dom.setConnectionPointsInteractive(this.connectionPointsInteractive);
+        this.refreshConnectionPoints();
     }
 
     destroy(): void {
@@ -61,144 +61,9 @@ export class EditorCore {
         const container: HTMLElement = this.dom.getContainer();
         container.removeEventListener('mousedown', this.onMouseDown);
         container.removeEventListener('mouseup', this.onMouseUp);
-        container.removeEventListener('mousemove', this.onMouseMove);
-        container.removeEventListener('mouseleave', this.onMouseLeave);
-        this.cancelHoverFrame();
-        this.dom.setConnectionPointsInteractive(false);
         this.clearHighlight();
+        this.dom.setConnectionPoints([]);
         this.history.clear();
-    }
-
-    setConnectionPointsInteractive(enabled: boolean): void {
-        this.connectionPointsInteractive = enabled;
-        this.dom.setConnectionPointsInteractive(enabled);
-    }
-
-    /**
-     * Marks the busbar spot the cursor is closest to and describes it in IIDM
-     * terms. Meant to be called from a `dragover` handler too, so a drop knows
-     * what it would attach to.
-     */
-    highlightConnectionPointsNear(clientX: number, clientY: number): ConnectionTarget | null {
-        if (!this.connectionPointsInteractive) return null;
-
-        const hovered = this.resolveNodeAt(
-            document.elementFromPoint?.(clientX, clientY) ?? null,
-        );
-        if (hovered && hovered.componentType !== BUSBAR_SECTION_TYPE) {
-            this.dom.clearConnectionPointHighlight();
-            return null;
-        }
-
-        const cursor = this.dom.toDiagramPoint(clientX, clientY);
-        if (!cursor) {
-            this.dom.clearConnectionPointHighlight();
-            return null;
-        }
-
-        const slot = this.findFreeSlot(cursor, this.connectionPointRadius / cursor.scale);
-        if (!slot) {
-            this.dom.clearConnectionPointHighlight();
-            return null;
-        }
-        this.dom.showBusbarMarker(slot.point);
-        return this.toBusbarTarget(slot, cursor.y);
-    }
-
-    private findFreeSlot(
-        cursor: { x: number; y: number },
-        radius: number,
-    ): { svgId: string; point: { x: number; y: number }; busbarY: number } | null {
-        let best: { svgId: string; point: { x: number; y: number }; busbarY: number } | null = null;
-        let bestDistance = Infinity;
-
-        for (const busbar of this.dom.getBusbarSegments()) {
-            const projected = projectOnSegment(cursor, busbar);
-            if (!projected || projected.distance > radius || projected.distance >= bestDistance) {
-                continue;
-            }
-
-            // Gap containing the projected point, between the switches on the bar.
-            const bounds = [busbar.x1, ...this.findSwitchesOnBusbar(busbar), busbar.x2];
-            let start = bounds[0];
-            let end = bounds[bounds.length - 1];
-            for (let index = 0; index < bounds.length - 1; index++) {
-                if (projected.point.x <= bounds[index + 1]) {
-                    start = bounds[index];
-                    end = bounds[index + 1];
-                    break;
-                }
-                start = bounds[index];
-                end = bounds[index + 1];
-            }
-
-            bestDistance = projected.distance;
-            best = {
-                svgId: busbar.id,
-                point: { x: (start + end) / 2, y: projected.point.y },
-                busbarY: projected.point.y,
-            };
-        }
-        return best;
-    }
-
-
-    private findSwitchesOnBusbar(busbar: BusbarSegment): number[] {
-        const voltageLevelId = this.model.getNodeById(busbar.id)?.vid;
-        if (!voltageLevelId) return [];
-
-        const positions: number[] = [];
-        for (const node of this.model.getNodesForVoltageLevel(voltageLevelId)) {
-            if (!SWITCH_TYPES.has(node.componentType)) continue;
-            const at = this.dom.getNodePosition(node.id);
-            if (!at || Math.abs(at.y - busbar.y1) > BUSBAR_SWITCH_TOLERANCE) continue;
-            positions.push(at.x);
-        }
-        return positions.sort((a, b) => a - b);
-    }
-
-
-    private toBusbarTarget(
-        slot: { svgId: string; point: { x: number; y: number }; busbarY: number },
-        cursorY: number,
-    ): ConnectionTarget | null {
-        const busbar = this.model.getNodeById(slot.svgId);
-        if (!busbar?.equipmentId || !busbar.vid) return null;
-
-        return {
-            kind: 'busbar',
-            busbarSectionId: busbar.equipmentId,
-            voltageLevelId: busbar.vid,
-            svgId: slot.svgId,
-            direction: cursorY < slot.busbarY ? 'TOP' : 'BOTTOM',
-            position: slot.point,
-            ...this.findFeederNeighbours(busbar.vid, slot.point.x),
-        };
-    }
-
-    private findFeederNeighbours(
-        voltageLevelId: string,
-        x: number,
-    ): { previousEquipmentId?: string; nextEquipmentId?: string } {
-        const placed = this.model
-            .getFeedersForVoltageLevel(voltageLevelId)
-            .flatMap((node) => {
-                const equipmentId = node.equipmentId;
-                const at = equipmentId && this.dom.getNodePosition(node.id);
-                return at ? [{ equipmentId, x: at.x }] : [];
-            })
-            .sort((a, b) => a.x - b.x);
-
-        const previous = placed.filter((feeder) => feeder.x <= x).at(-1);
-        const next = placed.find((feeder) => feeder.x > x);
-        return {
-            previousEquipmentId: previous?.equipmentId,
-            nextEquipmentId: next?.equipmentId,
-        };
-    }
-
-    clearConnectionPointHighlight(): void {
-        this.dom.clearConnectionPointHighlight();
     }
 
     undo(): void {
@@ -214,27 +79,6 @@ export class EditorCore {
         this.mouseDownY = event.clientY;
     };
 
-    private readonly onMouseMove = (event: MouseEvent) => {
-        if (!this.connectionPointsInteractive || this.hoverFrame !== null) return;
-        const { clientX, clientY } = event;
-        this.hoverFrame = requestAnimationFrame(() => {
-            this.hoverFrame = null;
-            if (this.destroyed) return;
-            this.highlightConnectionPointsNear(clientX, clientY);
-        });
-    };
-
-    private readonly onMouseLeave = () => {
-        this.cancelHoverFrame();
-        this.dom.clearConnectionPointHighlight();
-    };
-
-    private cancelHoverFrame(): void {
-        if (this.hoverFrame === null) return;
-        cancelAnimationFrame(this.hoverFrame);
-        this.hoverFrame = null;
-    }
-
     private readonly onMouseUp = (event: MouseEvent) => {
         if (event.button !== 0) return;
         const moved = Math.hypot(
@@ -243,19 +87,18 @@ export class EditorCore {
         );
         if (moved > DRAG_THRESHOLD) return;
 
+        // Before the selection branch: a connection point is a hidden node, so
+        // `resolveNodeAt` would resolve it and clear the selection instead.
+        const point = this.resolveConnectionPointAt(event.target as Element | null);
+        if (point) {
+            this.onConnectionPointClick?.({
+                point,
+                position: { x: event.clientX, y: event.clientY },
+            });
+            return;
+        }
+
         const node = this.resolveNodeAt(event.target as Element | null);
-
-        if (node && node.componentType !== BUSBAR_SECTION_TYPE) {
-            this.selectEquipement(node);
-            return;
-        }
-
-        const target = this.highlightConnectionPointsNear(event.clientX, event.clientY);
-        if (target) {
-            this.emit('connection-point:picked', target);
-            return;
-        }
-
         if (node) {
             this.selectEquipement(node);
         } else {
@@ -264,7 +107,8 @@ export class EditorCore {
     };
 
     private selectEquipement(node: NodeMetadata) {
-        if (!SELECTABLE_TYPES.has(node.componentType)) {
+        const type = toElementType(node.componentType);
+        if (!SELECTABLE_TYPES.has(type)) {
             this.clearSelection();
             return;
         }
@@ -283,17 +127,14 @@ export class EditorCore {
             element.classList.add(SELECTED_CLASS);
             this.highlighted.push(element);
         }
-        this.emit('element:selected', {
-            id: equipmentId,
-            componentType: node.componentType,
-        });
+        this.emit('element:selected', { id: equipmentId, type });
     }
 
     private clearSelection(): void {
         if (this.selectedEquipmentId === null) return;
         this.clearHighlight();
         this.selectedEquipmentId = null;
-        this.emit('element:selected', { id: null, componentType: null });
+        this.emit('element:selected', { id: null, type: null });
     }
 
     private clearHighlight(): void {
@@ -313,16 +154,21 @@ export class EditorCore {
         return [...this.history.pending.map((command) => command.toChangeSetEntry())];
     }
 
+    clearPendingChanges(): void {
+        this.history.clear();
+    }
+
     getEquipmentInfo(equipmentId: string): EquipmentInfo | null {
         const node = this.resolveEquipmentNode(equipmentId);
         if (!node) return null;
 
+        const type = toElementType(node.componentType);
         return {
             equipmentId: node.equipmentId ?? node.id,
-            componentType: node.componentType,
-            label: this.getEquipmentLabel(node),
-            deletable: DELETABLE_TYPES.has(node.componentType),
-            bayDeletable: DELETABLE_BAY_TYPES.has(node.componentType),
+            type,
+            label: this.dom.findEquipmentLabelByNodeId(node.id) ?? node.equipmentId ?? node.id,
+            deletable: DELETABLE_TYPES.has(type),
+            bayDeletable: DELETABLE_BAY_TYPES.has(type)
         };
     }
 
@@ -332,14 +178,18 @@ export class EditorCore {
         if (!node) return;
 
         const info = this.getEquipmentInfo(node.equipmentId ?? node.id);
-        // Nothing to offer on a component the editor can neither delete nor edit.
-        if (!info || (!info.deletable && !info.bayDeletable)) return;
+        if (!info || info.type === 'UNKNOWN') return;
 
         event.preventDefault();
         this.onEquipmentContextMenu({
             info,
             position: { x: event.clientX, y: event.clientY },
         });
+    }
+
+    private resolveConnectionPointAt(target: Element | null): ConnectionPoint | undefined {
+        const marker = target?.closest<SVGGElement>(`g.${CONNECTION_POINT_CLASS}`);
+        return marker ? this.connectionPoints.get(marker.id) : undefined;
     }
 
     private resolveNodeAt(target: Element | null): NodeMetadata | undefined {
@@ -365,7 +215,7 @@ export class EditorCore {
     private deleteCommand(equipmentId: string, kind: 'element' | 'bay'): boolean {
         const node = this.resolveEquipmentNode(equipmentId);
         const deletable = kind === 'bay' ? DELETABLE_BAY_TYPES : DELETABLE_TYPES;
-        if (!node || !deletable.has(node.componentType)) {
+        if (!node || !deletable.has(toElementType(node.componentType))) {
             return false;
         }
 
@@ -389,6 +239,60 @@ export class EditorCore {
         return true;
     }
 
+    /** Debug overlay: shows the IIDM node each element stands on. */
+    showIidmNodes(enabled: boolean): void {
+        this.dom.setIidmOverlay(
+            enabled ? this.model.collectIidmNodes() : new Map(),
+            enabled ? this.model.collectFictitiousNodes() : new Map(),
+        );
+    }
+
+    getConnectionPoints(): ConnectionPoint[] {
+        return [...this.connectionPoints.values()];
+    }
+
+    createEquipment(pointId: string, spec: CreateEquipmentSpec): boolean {
+        const point = this.connectionPoints.get(pointId);
+        if (!point || !CREATABLE_TYPES.has(spec.type)) return false;
+
+        const equipmentId =
+            spec.provisionalId ?? `NEW_${spec.type}_${++this.createCounter}`;
+
+        this.history.push(
+            new CreateEquipmentCommand(
+                equipmentId,
+                spec.type,
+                point,
+                spec.properties,
+                this.emit,
+            ),
+        );
+        return true;
+    }
+
+
+    private refreshConnectionPoints(): void {
+        const taken = this.pendingCreatePointIds();
+        const points = this.model
+            .collectConnectionPoints()
+            .filter((point) => !taken.has(point.id));
+
+        this.connectionPoints = new Map(points.map((point) => [point.id, point]));
+        this.dom.setConnectionPoints(points.map((point) => point.id));
+        this.emit('connection:changed', { points });
+    }
+
+    /** Read back from the change set */
+    private pendingCreatePointIds(): Set<string> {
+        const ids = new Set<string>();
+        for (const entry of this.getPendingChanges()) {
+            if (entry.op !== 'create') continue;
+            const pointId = (entry.payload as { pointId?: string } | undefined)?.pointId;
+            if (pointId) ids.add(pointId);
+        }
+        return ids;
+    }
+
     getSelectedEquipmentId(): string | null {
         return this.selectedEquipmentId;
     }
@@ -409,7 +313,7 @@ export class EditorCore {
         this.history.push(
             new UpdatePropertiesCommand(
                 node.equipmentId ?? node.id,
-                node.componentType,
+                toElementType(node.componentType),
                 changes,
                 this.model,
                 this.emit,
@@ -426,19 +330,11 @@ export class EditorCore {
         );
     }
 
-    private getEquipmentLabel(node: NodeMetadata): string {
-        return this.dom.findEquipmentLabelByNodeId(node.id);
-    }
-
     private readonly emit: EditorEventListener = <K extends keyof EditorEvents>(
         name: K,
         payload: EditorEvents[K],
     ): void => {
         if (this.destroyed) return;
-
-        if (name === 'element:removed' || name === 'element:added') {
-            this.dom.refreshConnectionPoints();
-        }
 
         if (name === 'element:removed') {
             const { id } = payload as EditorEvents['element:removed'];
@@ -460,24 +356,4 @@ export class EditorCore {
             }
         }
     }
-}
-
-function projectOnSegment(
-    point: { x: number; y: number },
-    segment: BusbarSegment,
-): { point: { x: number; y: number }; distance: number } | null {
-    const dx = segment.x2 - segment.x1;
-    const dy = segment.y2 - segment.y1;
-    const lengthSquared = dx * dx + dy * dy;
-    if (lengthSquared === 0) return null;
-
-    const ratio = Math.min(
-        1,
-        Math.max(0, ((point.x - segment.x1) * dx + (point.y - segment.y1) * dy) / lengthSquared),
-    );
-    const projected = { x: segment.x1 + ratio * dx, y: segment.y1 + ratio * dy };
-    return {
-        point: projected,
-        distance: Math.hypot(projected.x - point.x, projected.y - point.y),
-    };
 }

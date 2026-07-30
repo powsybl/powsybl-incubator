@@ -1,16 +1,18 @@
 import {useEffect, useRef, useState} from 'react';
 import {
+    CREATABLE_TYPES,
     NetworkEditor,
     type ChangeSet,
-    type ConnectionTarget,
+    type ConnectionPoint,
     type EditorEvents,
+    type ElementType,
     type EquipmentInfo,
     type EquipmentProperties,
     type SLDMetadata,
 } from '../src';
-import {ContextMenu} from './ContextMenu';
+import {ContextMenu, type MenuItemSpec} from './ContextMenu';
 import {PropertyPanel} from './PropertyPanel';
-import {getPropertySchema, type PropertyDescriptor} from './properties/properties.ts';
+import {PROPERTY_SCHEMAS, type PropertyDescriptor} from './properties/properties.ts';
 
 interface MenuState {
     info: EquipmentInfo;
@@ -18,37 +20,20 @@ interface MenuState {
     y: number;
 }
 
-/**
- * The picked target, spelled as the pypowsybl call it feeds. `position_order`
- * is left to the backend: it reads the neighbours' orders with
- * `get_connectables_order_positions(network, voltage_level_id)`.
- */
-function toPypowsyblCall(target: ConnectionTarget): string {
-    const between = [target.previousEquipmentId, target.nextEquipmentId]
-        .map((id) => id ?? 'end of busbar')
-        .join(' / ');
-    return `pp.network.create_line_bays(
-    network, id='NEW_LINE', r=0.1, x=10, b1=0, g1=0, b2=0, g2=0,
-    bus_or_busbar_section_id_1='${target.busbarSectionId}',
-    direction_1='${target.direction}',
-    position_order_1=...,  # between ${between}
-    bus_or_busbar_section_id_2='<other voltage level>',
-    direction_2='TOP', position_order_2=...,
-)`;
+interface PickerState {
+    point: ConnectionPoint;
+    x: number;
+    y: number;
 }
 
-const pypowsyblStyle = {
-    background: '#f6f8fa',
-    border: '1px solid #ddd',
-    borderRadius: 4,
-    fontSize: 11,
-    padding: 8,
-    overflowX: 'auto',
-} as const;
+/** An equipment being filled in, not yet recorded in the change set. */
+interface Draft {
+    point: ConnectionPoint;
+    type: ElementType;
+}
 
 interface Selection {
     id: string;
-    componentType: string | null;
     schema: PropertyDescriptor[];
     values: EquipmentProperties;
 }
@@ -57,6 +42,7 @@ interface DiagramEditorProps {
     title: string;
     svgUrl: string;
     metadata: SLDMetadata;
+    /** Real values, typically fetched from the backend. */
     initialProperties?: Record<string, EquipmentProperties>;
 }
 
@@ -68,9 +54,10 @@ export function DiagramEditor({title, svgUrl, metadata, initialProperties}: Diag
     const [history, setHistory] = useState({canUndo: false, canRedo: false});
     const [pendingChanges, setPendingChanges] = useState<ChangeSet>([]);
     const [menu, setMenu] = useState<MenuState | null>(null);
+    const [picker, setPicker] = useState<PickerState | null>(null);
+    const [showIidmNodes, setShowIidmNodes] = useState(false);
+    const [draft, setDraft] = useState<Draft | null>(null);
     const [selection, setSelection] = useState<Selection | null>(null);
-    const [connectionPoint, setConnectionPoint] =
-        useState<EditorEvents['connection-point:picked'] | null>(null);
 
     useEffect(() => {
         fetch(svgUrl)
@@ -89,6 +76,8 @@ export function DiagramEditor({title, svgUrl, metadata, initialProperties}: Diag
             initialProperties,
             onEquipmentContextMenu: ({info, position}) =>
                 setMenu({info, x: position.x, y: position.y}),
+            onConnectionPointClick: ({point, position}) =>
+                setPicker({point, x: position.x, y: position.y}),
             onEvent: (name, payload) => {
                 if (name === 'history:changed') {
                     setHistory(payload as EditorEvents['history:changed']);
@@ -96,21 +85,24 @@ export function DiagramEditor({title, svgUrl, metadata, initialProperties}: Diag
                 if (name === 'model:changed') {
                     setPendingChanges((payload as EditorEvents['model:changed']).changeSet);
                 }
+                if (name === 'connection:changed') {
+                    const {points} = payload as EditorEvents['connection:changed'];
+                    const alive = new Set(points.map((point) => point.id));
+                    setDraft((prev) => (prev && alive.has(prev.point.id) ? prev : null));
+                    setPicker((prev) => (prev && alive.has(prev.point.id) ? prev : null));
+                }
                 if (name === 'element:selected') {
-                    const {id, componentType} = payload as EditorEvents['element:selected'];
+                    // The editor knows nothing about schemas: the app picks one.
+                    const {id, type} = payload as EditorEvents['element:selected'];
                     setSelection(
-                        id === null
+                        id === null || type === null
                             ? null
                             : {
                                   id,
-                                  componentType,
-                                  schema: getPropertySchema(componentType),
+                                  schema: PROPERTY_SCHEMAS[type] ?? [],
                                   values: editor.getProperties(id),
                               },
                     );
-                }
-                if (name === 'connection-point:picked') {
-                    setConnectionPoint(payload as EditorEvents['connection-point:picked']);
                 }
                 if (name === 'properties:changed') {
                     // Refresh the panel after an apply/undo/redo.
@@ -132,6 +124,8 @@ export function DiagramEditor({title, svgUrl, metadata, initialProperties}: Diag
     }, [svgContent, metadata, initialProperties]);
 
     const closeMenu = () => setMenu(null);
+    const closePicker = () => setPicker(null);
+
     const handleDelete = () => {
         if (menu) editorRef.current?.deleteElement(menu.info.equipmentId);
         closeMenu();
@@ -139,6 +133,34 @@ export function DiagramEditor({title, svgUrl, metadata, initialProperties}: Diag
     const handleDeleteBay = () => {
         if (menu) editorRef.current?.deleteFeederBay(menu.info.equipmentId);
         closeMenu();
+    };
+
+    const equipmentItems: MenuItemSpec[] = menu
+        ? [
+              {label: 'Delete', enabled: menu.info.deletable, tone: 'danger', onClick: handleDelete},
+              {
+                  label: 'Delete feeder bay',
+                  enabled: menu.info.bayDeletable,
+                  tone: 'danger',
+                  onClick: handleDeleteBay,
+              },
+          ]
+        : [];
+
+    const createItems: MenuItemSpec[] = picker
+        ? [...CREATABLE_TYPES].map((type) => ({
+              label: `Add ${type}`,
+              onClick: () => {
+                  setDraft({point: picker.point, type});
+                  closePicker();
+              },
+          }))
+        : [];
+
+    const submitDraft = (properties: EquipmentProperties) => {
+        if (!draft) return;
+        editorRef.current?.createEquipment(draft.point.id, {type: draft.type, properties});
+        setDraft(null);
     };
 
     return (
@@ -158,6 +180,16 @@ export function DiagramEditor({title, svgUrl, metadata, initialProperties}: Diag
                     style={{marginLeft: 10, padding: '8px 16px'}}
                 >
                     ↪ Redo
+                </button>
+                <button
+                    onClick={() => {
+                        const next = !showIidmNodes;
+                        setShowIidmNodes(next);
+                        editorRef.current?.showIidmNodes(next);
+                    }}
+                    style={{marginLeft: 10, padding: '8px 16px'}}
+                >
+                    {showIidmNodes ? '⬡ Hide IIDM nodes' : '⬡ Show IIDM nodes'}
                 </button>
             </div>
             {!svgContent && <p>Loading diagram...</p>}
@@ -179,42 +211,43 @@ export function DiagramEditor({title, svgUrl, metadata, initialProperties}: Diag
                     overflowY: 'auto',
                     backgroundColor: '#fff'
                 }}>
-                    <h3>Properties</h3>
-                    <PropertyPanel
-                        equipmentId={selection?.id ?? null}
-                        componentType={selection?.componentType ?? null}
-                        schema={selection?.schema ?? []}
-                        values={selection?.values ?? {}}
-                        onApply={(changes) =>
-                            selection &&
-                            editorRef.current?.applyProperties(selection.id, changes)
-                        }
-                    />
-                    <h3>Connection point</h3>
-                    {connectionPoint === null ? (
-                        <p style={{color: '#888'}}>Click on or near a busbar.</p>
+                    {draft ? (
+                        <>
+                            <h3>New {draft.type}</h3>
+                            <p style={{color: '#666', fontSize: 12}}>
+                                on {draft.point.anchor.attachedTo}
+                                {draft.point.anchor.node !== undefined
+                                    ? ` — IIDM node ${draft.point.anchor.node}`
+                                    : ''}
+                            </p>
+                            <PropertyPanel
+                                equipmentId={draft.point.id}
+                                schema={(PROPERTY_SCHEMAS[draft.type] ?? []).filter(
+                                    (descriptor) => !descriptor.editOnly,
+                                )}
+                                values={{}}
+                                mode="create"
+                                onApply={submitDraft}
+                            />
+                            <button
+                                onClick={() => setDraft(null)}
+                                style={{marginTop: 8, padding: '8px 16px'}}
+                            >
+                                Cancel
+                            </button>
+                        </>
                     ) : (
                         <>
-                            <ul style={{paddingLeft: 20, fontSize: 13}}>
-                                <li>
-                                    <strong>busbarSectionId</strong>:{' '}
-                                    {connectionPoint.busbarSectionId}
-                                </li>
-                                <li>
-                                    <strong>voltageLevelId</strong>:{' '}
-                                    {connectionPoint.voltageLevelId}
-                                </li>
-                                <li><strong>direction</strong>: {connectionPoint.direction}</li>
-                                <li>
-                                    <strong>between</strong>:{' '}
-                                    {connectionPoint.previousEquipmentId ?? '—'} /{' '}
-                                    {connectionPoint.nextEquipmentId ?? '—'}
-                                </li>
-                            </ul>
-                            <p style={{fontSize: 12, color: '#666', marginBottom: 4}}>
-                                What a backend would call:
-                            </p>
-                            <pre style={pypowsyblStyle}>{toPypowsyblCall(connectionPoint)}</pre>
+                            <h3>Properties</h3>
+                            <PropertyPanel
+                                equipmentId={selection?.id ?? null}
+                                schema={selection?.schema ?? []}
+                                values={selection?.values ?? {}}
+                                onApply={(changes) =>
+                                    selection &&
+                                    editorRef.current?.applyProperties(selection.id, changes)
+                                }
+                            />
                         </>
                     )}
                     <h3>Pending changes</h3>
@@ -224,7 +257,7 @@ export function DiagramEditor({title, svgUrl, metadata, initialProperties}: Diag
                         <ul style={{paddingLeft: 20}}>
                             {pendingChanges.map((change, index) => (
                                 <li key={index} style={{marginBottom: 8}}>
-                                    <strong>{change.op}</strong>: {change.componentType} ({change.equipmentId})
+                                    <strong>{change.op}</strong>: {change.equipmentType} ({change.equipmentId})
                                 </li>
                             ))}
                         </ul>
@@ -233,12 +266,20 @@ export function DiagramEditor({title, svgUrl, metadata, initialProperties}: Diag
             </div>
             {menu && (
                 <ContextMenu
-                    info={menu.info}
+                    header={`${menu.info.type} — ${menu.info.label}`}
+                    items={equipmentItems}
                     x={menu.x}
                     y={menu.y}
-                    onDelete={handleDelete}
-                    onDeleteBay={handleDeleteBay}
                     onClose={closeMenu}
+                />
+            )}
+            {picker && (
+                <ContextMenu
+                    header="Free connection point"
+                    items={createItems}
+                    x={picker.x}
+                    y={picker.y}
+                    onClose={closePicker}
                 />
             )}
         </div>

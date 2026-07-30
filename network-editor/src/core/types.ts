@@ -11,57 +11,81 @@ export type { SLDMetadata };
 
 export type EquipmentProperties = Record<string, number | string | boolean>;
 
-export const SWITCH_TYPES: ReadonlySet<string> = new Set([
+export type ElementType =
+    | 'BUS'
+    | 'LOAD'
+    | 'GENERATOR'
+    | 'LINE'
+    | 'SHUNT'
+    | 'VSC_CONVERTER_STATION'
+    | 'LCC_CONVERTER_STATION'
+    | 'BREAKER'
+    | 'DISCONNECTOR'
+    | 'LOAD_BREAK_SWITCH'
+    | 'THREE_WINDINGS_TRANSFORMER'
+    | 'TWO_WINDINGS_TRANSFORMER'
+    | 'UNKNOWN';
+
+export const DELETABLE_BAY_TYPES: ReadonlySet<ElementType> = new Set<ElementType>([
+    'LOAD',
+    'GENERATOR',
+    'TWO_WINDINGS_TRANSFORMER',
+    'THREE_WINDINGS_TRANSFORMER',
+    'SHUNT',
+    'VSC_CONVERTER_STATION',
+    'LCC_CONVERTER_STATION',
+    'LINE'
+]);
+
+export const DELETABLE_TYPES: ReadonlySet<ElementType> = new Set<ElementType>([
     'BREAKER',
     'DISCONNECTOR',
     'LOAD_BREAK_SWITCH',
-]);
-
-export const INJECTION_TYPES: ReadonlySet<string> = new Set([
-    'LOAD',
-    'GENERATOR',
-    'BATTERY',
-    'CAPACITOR',
-    'INDUCTOR',
-    'STATIC_VAR_COMPENSATOR',
-    'VSC_CONVERTER_STATION',
-    'LCC_CONVERTER_STATION',
-    'BOUNDARY_LINE',
-]);
-
-export const BRANCH_TYPES: ReadonlySet<string> = new Set([
-    'LINE',
-    'TIE_LINE',
-    'HVDC_LINE',
-    'TWO_WINDINGS_TRANSFORMER',
-    'TWO_WINDINGS_TRANSFORMER_LEG',
-    'PHASE_SHIFT_TRANSFORMER',
-    'PHASE_SHIFT_TRANSFORMER_LEG',
-    'THREE_WINDINGS_TRANSFORMER',
-    'THREE_WINDINGS_TRANSFORMER_LEG',
-]);
-
-export const DELETABLE_BAY_TYPES: ReadonlySet<string> = new Set([
-    ...INJECTION_TYPES,
-    ...BRANCH_TYPES,
-]);
-
-export const DELETABLE_TYPES: ReadonlySet<string> = new Set([
     ...DELETABLE_BAY_TYPES,
-    ...SWITCH_TYPES,
 ]);
 
-export const SELECTABLE_TYPES: ReadonlySet<string> = DELETABLE_TYPES;
+export const SELECTABLE_TYPES: ReadonlySet<ElementType> = DELETABLE_TYPES;
 export const SELECTED_CLASS = 'ne-selected';
 
-export const BUSBAR_SECTION_TYPE = 'BUSBAR_SECTION';
+export const CREATABLE_TYPES: ReadonlySet<ElementType> = new Set<ElementType>([
+    'LOAD',
+    'GENERATOR',
+]);
 
-export type FeederDirection = 'TOP' | 'BOTTOM';
+export const CONNECTION_POINT_CLASS = 'ne-connection-point';
+
+
+export const COMPONENT_TYPE_MAP: Readonly<Record<string, ElementType>> = {
+    BUSBAR_SECTION: 'BUS',
+    LOAD: 'LOAD',
+    GENERATOR: 'GENERATOR',
+    LINE: 'LINE',
+    BOUNDARY_LINE: 'LINE',
+    CAPACITOR: 'SHUNT',
+    INDUCTOR: 'SHUNT',
+    VSC_CONVERTER_STATION: 'VSC_CONVERTER_STATION',
+    LCC_CONVERTER_STATION: 'LCC_CONVERTER_STATION',
+    BREAKER: 'BREAKER',
+    DISCONNECTOR: 'DISCONNECTOR',
+    LOAD_BREAK_SWITCH: 'LOAD_BREAK_SWITCH',
+    THREE_WINDINGS_TRANSFORMER: 'THREE_WINDINGS_TRANSFORMER',
+    THREE_WINDINGS_TRANSFORMER_LEG: 'THREE_WINDINGS_TRANSFORMER',
+    TWO_WINDINGS_TRANSFORMER: 'TWO_WINDINGS_TRANSFORMER',
+    TWO_WINDINGS_TRANSFORMER_LEG: 'TWO_WINDINGS_TRANSFORMER',
+    PHASE_SHIFT_TRANSFORMER: 'TWO_WINDINGS_TRANSFORMER',
+    PHASE_SHIFT_TRANSFORMER_LEG: 'TWO_WINDINGS_TRANSFORMER',
+};
+
+export function toElementType(componentType: string | undefined): ElementType {
+    if (!componentType) return 'UNKNOWN';
+    return COMPONENT_TYPE_MAP[componentType] ?? 'UNKNOWN';
+}
 
 
 export interface NodeMetadata {
     id: string;
     equipmentId?: string;
+    iidmNode?: number;
     componentType: string;
     vid?: string;
     nextVId?: string;
@@ -86,9 +110,14 @@ export interface FeederInfoMetadata {
     componentType: string;
 }
 
+export interface DeleteScope {
+    nodes: NodeMetadata[];
+    wires: WireMetadata[];
+}
+
 export interface EquipmentInfo {
     equipmentId: string;
-    componentType: string;
+    type: ElementType;
     label: string;
     deletable: boolean;
     bayDeletable: boolean;
@@ -99,18 +128,28 @@ export interface EquipmentContextMenuEvent {
     position: { x: number; y: number };
 }
 
-export interface BusbarConnectionTarget {
-    kind: 'busbar';
-    busbarSectionId: string;
-    voltageLevelId: string;
-    svgId: string;
-    direction: FeederDirection;
-    position: { x: number; y: number };
-    previousEquipmentId?: string;
-    nextEquipmentId?: string;
+export interface ConnectionAnchor {
+    kind: 'FREE_NODE';
+    vlId: string;
+    attachedTo: string;
+    node?: number;
 }
 
-export type ConnectionTarget = BusbarConnectionTarget;
+export interface ConnectionPoint {
+    id: string;
+    anchor: ConnectionAnchor;
+}
+
+export interface CreateEquipmentSpec {
+    type: ElementType;
+    properties: EquipmentProperties;
+    provisionalId?: string;
+}
+
+export interface ConnectionPointClickEvent {
+    point: ConnectionPoint;
+    position: { x: number; y: number };
+}
 
 export interface ViewerCallbacks {
     onNextVoltage?: OnNextVoltageCallbackType;
@@ -139,9 +178,8 @@ export interface EditorOptions {
     callbacks?: ViewerCallbacks;
     onEvent?: EditorEventListener;
     onEquipmentContextMenu?: (event: EquipmentContextMenuEvent) => void;
+    onConnectionPointClick?: (event: ConnectionPointClickEvent) => void;
     initialProperties?: Record<string, EquipmentProperties>;
-    connectionPointsInteractive?: boolean;
-    connectionPointRadius?: number;
 }
 
 export const EDITOR_OPTION_DEFAULTS = {
@@ -151,15 +189,13 @@ export const EDITOR_OPTION_DEFAULTS = {
     maxWidth: 2000,
     maxHeight: 2000,
     selectionBackColor: 'white',
-    connectionPointsInteractive: true,
-    connectionPointRadius: 40,
 } as const;
 
 export type ChangeOp = 'create' | 'delete' | 'update' | 'delete-bay';
 
 export interface ChangeSetEntry {
     op: ChangeOp;
-    componentType: string;
+    equipmentType: ElementType;
     equipmentId: string;
     payload?: Record<string, unknown>;
 }
@@ -167,10 +203,11 @@ export interface ChangeSetEntry {
 export type ChangeSet = ChangeSetEntry[];
 
 export interface EditorEvents {
-    'element:added': { id: string; componentType: string; voltageLevelId: string };
-    'element:removed': { id: string; componentType: string };
-    'element:selected': { id: string | null; componentType: string | null };
-    'connection-point:picked': ConnectionTarget;
+    'element:added': { id: string; type: ElementType; voltageLevelId: string };
+    'element:created': { id: string; type: ElementType; anchor: ConnectionAnchor };
+    'element:removed': { id: string; type: ElementType };
+    'connection:changed': { points: readonly ConnectionPoint[] };
+    'element:selected': { id: string | null ; type: ElementType | null };
     'properties:changed': { id: string; changes: Record<string, unknown> };
     'history:changed': { canUndo: boolean; canRedo: boolean };
     'model:changed': { changeSet: ChangeSet };
@@ -183,13 +220,16 @@ export type EditorEventListener = <K extends EditorEventName>(
     payload: EditorEvents[K],
 ) => void;
 
-export const BAY_TRAVERSABLE_TYPES: ReadonlySet<string> = new Set([
-    'NODE',            // fictitious internal nodes ("idINTERNAL_…")
-    'BUS_CONNECTION',  // busbar attachment points ("idBUSCO_…")
-    ...SWITCH_TYPES,
+export const SWITCH_TYPES: ReadonlySet<string> = new Set([
+    'BREAKER',
+    'DISCONNECTOR',
+    'LOAD_BREAK_SWITCH',
 ]);
 
-export function isFeederNode(node: NodeMetadata): boolean {
-    return node.direction === 'TOP' || node.direction === 'BOTTOM';
-}
+export const HIDDEN_NODE_TYPE = 'NODE';
+
+export const BAY_TRAVERSABLE_TYPES: ReadonlySet<string> = new Set([
+    HIDDEN_NODE_TYPE,
+    ...SWITCH_TYPES,
+]);
 

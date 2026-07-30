@@ -1,24 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BUSBAR_TARGET_CLASS, SELECTED_CLASS, type SLDMetadata } from '../src';
-import metadata1 from './data/metadata.json';
-import metadata2 from './data/metadata2.json';
+import { SELECTED_CLASS, type EquipmentProperties, type SLDMetadata } from '../src';
+import metadata1 from './data/vl1_metadata.json';
+import properties1 from './data/vl1_properties.json';
 import {DiagramEditor} from "./DiagramEditor.tsx";
 
 const m1 =  metadata1 as unknown as SLDMetadata;
-const m2 = metadata2 as unknown as SLDMetadata;
-
+// Real IIDM values, as a backend would serve them.
+const p1 = properties1 as Record<string, EquipmentProperties>;
 
 const selectionStyle = `
 .${SELECTED_CLASS} { outline: 2px dashed #1976d2; outline-offset: 2px; }
 .${SELECTED_CLASS} .sld-label { fill: #1976d2; }
-
-/* Busbar connection marker: looks only — the editor decides where it sits. */
-.${BUSBAR_TARGET_CLASS} {
-    fill: #1976d2;
-    stroke: #fff;
-    stroke-width: 2px;
-}
 `;
 
 const App = () => (
@@ -27,15 +20,9 @@ const App = () => (
         <div>
             <DiagramEditor
                 title="Network Editor Demo — sld-example"
-                svgUrl="/demo/data/reseau.svg"
+                svgUrl="/demo/data/v1.svg"
                 metadata={m1}
-            />
-        </div>
-        <div>
-            <DiagramEditor
-                title="Network Editor Demo — sld-example"
-                svgUrl="/demo/data/reseau2.svg"
-                metadata={m2}
+                initialProperties={p1}
             />
         </div>
 

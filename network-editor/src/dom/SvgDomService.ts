@@ -1,3 +1,56 @@
+import { CONNECTION_POINT_CLASS } from '../core/types';
+
+const CONNECTION_POINT_STYLE_ID = 'connection-points';
+
+const CONNECTION_POINT_STYLE = `
+.sld-node.${CONNECTION_POINT_CLASS} {
+    visibility: visible;
+    fill: #1e88e5;
+    cursor: pointer;
+}
+.sld-node.${CONNECTION_POINT_CLASS} circle {
+    stroke: #ffffff;
+    stroke-width: 1.5;
+    vector-effect: non-scaling-stroke;
+}
+.sld-node.${CONNECTION_POINT_CLASS}:hover {
+    fill: #0d47a1;
+}
+`;
+
+const IIDM_LINKED_CLASS = 'ne-iidm-linked';
+const IIDM_UNLINKED_CLASS = 'ne-iidm-unlinked';
+const IIDM_LABEL_CLASS = 'ne-iidm-label';
+const IIDM_NODE_STYLE_ID = 'iidm-nodes';
+
+/**
+ * Debug overlay. Fictitious nodes are drawn by powsybl-diagram as a hidden dot;
+ * revealing it and setting the group's `fill` colours that very dot, so nothing
+ * is added to the DOM: green when the node names an IIDM node, red when it names
+ * none — a bus hook, on which nothing can be attached.
+ */
+const IIDM_NODE_STYLE = `
+.sld-node.${IIDM_LINKED_CLASS},
+.sld-node.${IIDM_UNLINKED_CLASS} {
+    visibility: visible;
+}
+.sld-node.${IIDM_LINKED_CLASS} {
+    fill: #2e7d32;
+}
+.sld-node.${IIDM_UNLINKED_CLASS} {
+    fill: #c62828;
+}
+text.${IIDM_LABEL_CLASS} {
+    fill: #1a237e;
+    stroke: #ffffff;
+    stroke-width: 0.6;
+    paint-order: stroke;
+    font-size: 6px;
+    font-weight: bold;
+    pointer-events: none;
+}
+`;
+
 export interface RemovedDomElement {
     element: Element;
     parent: Node | null;
@@ -6,10 +59,6 @@ export interface RemovedDomElement {
 
 export class SvgDomService {
     constructor(private readonly container: HTMLElement) {}
-
-    getSvgRoot(): SVGSVGElement | null {
-        return this.container.querySelector('svg');
-    }
 
     getContainer(): HTMLElement {
         return this.container;
@@ -22,11 +71,12 @@ export class SvgDomService {
         return svg.querySelector<SVGElement>(selector);
     }
 
-    findEquipmentLabelByNodeId(nodeId: string): string {
-        const text = this.findElementById(nodeId)
-            ?.querySelector('.sld-label, text')
-            ?.textContent?.trim();
-        return text || nodeId;
+    findEquipmentLabelByNodeId(nodeId: string): string | undefined {
+        return (
+            this.findElementById(nodeId)
+                ?.querySelector('.sld-label, text')
+                ?.textContent?.trim() || undefined
+        );
     }
 
     removeAndSnapshot(element: Element): RemovedDomElement {
@@ -44,6 +94,59 @@ export class SvgDomService {
         snapshot.parent.insertBefore(snapshot.element, snapshot.nextElement);
     }
 
+    setConnectionPoints(pointIds: readonly string[]): void {
+        const svg = this.getSvgRoot();
+        if (!svg) return;
+        this.ensureStyle(CONNECTION_POINT_STYLE_ID, CONNECTION_POINT_STYLE);
+
+        for (const marked of svg.querySelectorAll(`.${CONNECTION_POINT_CLASS}`)) {
+            marked.classList.remove(CONNECTION_POINT_CLASS);
+        }
+
+        for (const pointId of pointIds) {
+            this.findElementById(pointId)?.classList.add(CONNECTION_POINT_CLASS);
+        }
+    }
+
+    /**
+     * Colours every fictitious node — green when it names an IIDM node, red
+     * when it names none — and writes each number next to the node standing on
+     * it. Labels go inside the node's own `<g>`, so they inherit its
+     * translation and no coordinate has to be computed.
+     */
+    setIidmOverlay(
+        labels: ReadonlyMap<string, number>,
+        fictitious: ReadonlyMap<string, boolean>,
+    ): void {
+        const svg = this.getSvgRoot();
+        if (!svg) return;
+        this.ensureStyle(IIDM_NODE_STYLE_ID, IIDM_NODE_STYLE);
+
+        for (const label of svg.querySelectorAll(`text.${IIDM_LABEL_CLASS}`)) label.remove();
+        for (const marked of svg.querySelectorAll(
+            `.${IIDM_LINKED_CLASS}, .${IIDM_UNLINKED_CLASS}`,
+        )) {
+            marked.classList.remove(IIDM_LINKED_CLASS, IIDM_UNLINKED_CLASS);
+        }
+
+        for (const [nodeId, linked] of fictitious) {
+            this.findElementById(nodeId)
+                ?.classList.add(linked ? IIDM_LINKED_CLASS : IIDM_UNLINKED_CLASS);
+        }
+
+        for (const [nodeId, iidmNode] of labels) {
+            const element = this.findElementById(nodeId);
+            if (!element) continue;
+
+            const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            label.setAttribute('class', IIDM_LABEL_CLASS);
+            label.setAttribute('x', '7');
+            label.setAttribute('y', '-1');
+            label.textContent = String(iidmNode);
+            element.appendChild(label);
+        }
+    }
+
     setSwitchState(nodeId: string, open: boolean): void {
         const element = this.findElementById(nodeId);
         if (!element) return;
@@ -51,153 +154,16 @@ export class SvgDomService {
         element.classList.toggle('sld-closed', !open);
     }
 
-    /**
-     * Arms the busbar connection marker. Busbars are already visible, so there
-     * is nothing to reveal — the only injected CSS keeps the marker out of hit
-     * testing; its looks belong to the host.
-     */
-    setConnectionPointsInteractive(enabled: boolean): void {
-        this.container.classList.toggle(CONNECTION_POINTS_CLASS, enabled);
-        const existing = this.container.querySelector(`#${CONNECTION_POINTS_STYLE_ID}`);
-        if (!enabled) {
-            this.clearConnectionPointHighlight();
-            existing?.remove();
-            return;
-        }
-        if (existing) return;
+    private getSvgRoot(): SVGSVGElement | null {
+        return this.container.querySelector('svg');
+    }
+
+    private ensureStyle(id: string, css: string): void {
+        if (this.container.querySelector(`style[data-ne-style="${id}"]`)) return;
         const style = document.createElement('style');
-        style.id = CONNECTION_POINTS_STYLE_ID;
-        style.textContent = CONNECTION_POINTS_CSS;
-        this.container.prepend(style);
-    }
-
-    /** Busbar segments in diagram coordinates, still attached to the SVG. */
-    getBusbarSegments(): readonly BusbarSegment[] {
-        return this.getBusbars().filter((busbar) => busbar.element.isConnected);
-    }
-
-    /** Marks a spot on a busbar — what a click, or later a drop, attaches to. */
-    showBusbarMarker(at: { x: number; y: number }): void {
-        const svg = this.getSvgRoot();
-        if (!svg) return;
-        if (!this.busbarMarker?.isConnected) {
-            const marker = document.createElementNS(SVG_NS, 'circle');
-            marker.setAttribute('class', BUSBAR_TARGET_CLASS);
-            marker.setAttribute('r', '6');
-            svg.append(marker);
-            this.busbarMarker = marker;
-        }
-        this.busbarMarker.setAttribute('cx', String(at.x));
-        this.busbarMarker.setAttribute('cy', String(at.y));
-    }
-
-    clearConnectionPointHighlight(): void {
-        this.busbarMarker?.remove();
-        this.busbarMarker = null;
-    }
-
-    /** Drops the cached busbar geometry — call after swapping the SVG. */
-    refreshConnectionPoints(): void {
-        this.busbars = null;
-    }
-
-    getNodePosition(nodeId: string): { x: number; y: number } | null {
-        return parseTranslate(this.findElementById(nodeId)?.getAttribute('transform'));
-    }
-
-    /** Screen position in diagram coordinates, with the current zoom scale. */
-    toDiagramPoint(
-        clientX: number,
-        clientY: number,
-    ): { x: number; y: number; scale: number } | null {
-        return this.clientToDiagram(clientX, clientY);
-    }
-
-    private busbars: BusbarSegment[] | null = null;
-    private busbarMarker: SVGCircleElement | null = null;
-
-    private getBusbars(): BusbarSegment[] {
-        if (this.busbars) return this.busbars;
-        const svg = this.getSvgRoot();
-        if (!svg) return [];
-
-        const segments: BusbarSegment[] = [];
-        for (const element of svg.querySelectorAll<SVGGElement>(BUSBAR_SELECTOR)) {
-            const origin = element.id && parseTranslate(element.getAttribute('transform'));
-            const line = element.querySelector('line');
-            if (!origin || !line) continue;
-            // The <line> coordinates are relative to the group's translate.
-            segments.push({
-                id: element.id,
-                element,
-                x1: origin.x + numberAttribute(line, 'x1'),
-                y1: origin.y + numberAttribute(line, 'y1'),
-                x2: origin.x + numberAttribute(line, 'x2'),
-                y2: origin.y + numberAttribute(line, 'y2'),
-            });
-        }
-        this.busbars = segments;
-        return segments;
-    }
-
-    private clientToDiagram(
-        clientX: number,
-        clientY: number,
-    ): { x: number; y: number; scale: number } | null {
-        const svg = this.getSvgRoot();
-        if (!svg) return null;
-
-        const matrix = svg.getScreenCTM?.();
-        if (matrix) {
-            const inverse = matrix.inverse();
-            return {
-                x: clientX * inverse.a + clientY * inverse.c + inverse.e,
-                y: clientX * inverse.b + clientY * inverse.d + inverse.f,
-                scale: Math.abs(matrix.a) || 1,
-            };
-        }
-
-        const box = svg.getAttribute('viewBox')?.split(/[\s,]+/).map(Number);
-        const rect = svg.getBoundingClientRect();
-        if (!box || box.length !== 4 || !rect.width || !box[2]) return null;
-        const scale = rect.width / box[2];
-        return {
-            x: box[0] + (clientX - rect.left) / scale,
-            y: box[1] + (clientY - rect.top) / scale,
-            scale,
-        };
+        style.dataset.neStyle = id;
+        style.textContent = css;
+        this.container.appendChild(style);
     }
 }
-
-export interface BusbarSegment {
-    id: string;
-    element: SVGGElement;
-    x1: number;
-    y1: number;
-    x2: number;
-    y2: number;
-}
-
-function parseTranslate(transform: string | null | undefined): { x: number; y: number } | null {
-    const match = transform?.match(/translate\(\s*([-\d.]+)[\s,]+([-\d.]+)\s*\)/);
-    return match ? { x: Number(match[1]), y: Number(match[2]) } : null;
-}
-
-function numberAttribute(element: Element, name: string): number {
-    return Number(element.getAttribute(name) ?? 0);
-}
-
-const SVG_NS = 'http://www.w3.org/2000/svg';
-const CONNECTION_POINTS_CLASS = 'ne-connection-points';
-const CONNECTION_POINTS_STYLE_ID = 'ne-connection-points-style';
-const BUSBAR_SELECTOR = '.sld-busbar-section[id]';
-
-/** On the marker drawn where the cursor projects onto a busbar. */
-export const BUSBAR_TARGET_CLASS = 'ne-busbar-target';
-
-const CONNECTION_POINTS_CSS = `
-.${CONNECTION_POINTS_CLASS} .${BUSBAR_TARGET_CLASS} {
-    pointer-events: none;
-}
-`;
 

@@ -1,24 +1,22 @@
 import { useEffect } from 'react';
-import type { EquipmentInfo } from '../src';
+
+export interface MenuItemSpec {
+    label: string;
+    enabled?: boolean;
+    tone?: 'default' | 'danger';
+    onClick: () => void;
+}
 
 interface ContextMenuProps {
-    info: EquipmentInfo;
+    header: string;
+    items: MenuItemSpec[];
     x: number;
     y: number;
-    onDelete: () => void;
-    onDeleteBay: () => void;
     onClose: () => void;
 }
 
-function MenuItem({
-    label,
-    enabled,
-    onClick,
-}: {
-    label: string;
-    enabled: boolean;
-    onClick: () => void;
-}) {
+function MenuItem({ label, enabled = true, tone = 'default', onClick }: MenuItemSpec) {
+    const color = enabled ? (tone === 'danger' ? '#dc3545' : '#212529') : '#aaa';
     return (
         <button
             type="button"
@@ -32,7 +30,7 @@ function MenuItem({
                 border: 'none',
                 background: 'none',
                 cursor: enabled ? 'pointer' : 'not-allowed',
-                color: enabled ? '#dc3545' : '#aaa',
+                color,
             }}
         >
             {label}
@@ -40,7 +38,8 @@ function MenuItem({
     );
 }
 
-export function ContextMenu({info, x, y, onDelete, onDeleteBay, onClose}: ContextMenuProps) {
+/** Positioned menu, shared by the equipment actions and the creation picker. */
+export function ContextMenu({ header, items, x, y, onClose }: ContextMenuProps) {
     useEffect(() => {
         const onKey = (e: KeyboardEvent) => {
             if (e.key === 'Escape') onClose();
@@ -79,14 +78,11 @@ export function ContextMenu({info, x, y, onDelete, onDeleteBay, onClose}: Contex
                     fontSize: 12,
                 }}
             >
-                {info.componentType} — {info.label}
+                {header}
             </div>
-            <MenuItem label="Delete" enabled={info.deletable} onClick={onDelete} />
-            <MenuItem
-                label="Delete feeder bay"
-                enabled={info.bayDeletable}
-                onClick={onDeleteBay}
-            />
+            {items.map((item) => (
+                <MenuItem key={item.label} {...item} />
+            ))}
         </div>
     );
 }

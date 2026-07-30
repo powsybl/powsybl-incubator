@@ -6,7 +6,8 @@ import { SvgDomService } from '../dom/SvgDomService';
 import {
     EDITOR_OPTION_DEFAULTS,
     type ChangeSet,
-    type ConnectionTarget,
+    type ConnectionPoint,
+    type CreateEquipmentSpec,
     type EditorOptions,
     type EquipmentInfo,
     type EquipmentProperties,
@@ -48,10 +49,7 @@ export class NetworkEditor {
             dom,
             opts.onEvent,
             opts.onEquipmentContextMenu,
-            {
-                interactive: opts.connectionPointsInteractive,
-                radius: opts.connectionPointRadius,
-            },
+            opts.onConnectionPointClick,
         );
 
         this.container.addEventListener('contextmenu', this.onContextMenu);
@@ -79,6 +77,11 @@ export class NetworkEditor {
         return this.core.getPendingChanges();
     }
 
+    /** To be called once the backend applied them and a fresh diagram is loaded. */
+    clearPendingChanges(): void {
+        this.core.clearPendingChanges();
+    }
+
     getEquipmentInfo(equipmentId: string): EquipmentInfo | null {
         return this.core.getEquipmentInfo(equipmentId);
     }
@@ -89,6 +92,19 @@ export class NetworkEditor {
 
     deleteFeederBay(equipmentId: string): boolean {
         return this.core.deleteFeederBay(equipmentId);
+    }
+
+    /** Debug overlay: shows the IIDM node each element stands on. */
+    showIidmNodes(enabled: boolean): void {
+        this.core.showIidmNodes(enabled);
+    }
+
+    getConnectionPoints(): ConnectionPoint[] {
+        return this.core.getConnectionPoints();
+    }
+
+    createEquipment(pointId: string, spec: CreateEquipmentSpec): boolean {
+        return this.core.createEquipment(pointId, spec);
     }
 
     getSelectedEquipmentId(): string | null {
@@ -105,18 +121,6 @@ export class NetworkEditor {
 
     applyProperties(equipmentId: string, changes: EquipmentProperties): boolean {
         return this.core.applyProperties(equipmentId, changes);
-    }
-
-    setConnectionPointsInteractive(enabled: boolean): void {
-        this.core.setConnectionPointsInteractive(enabled);
-    }
-
-    highlightConnectionPointsNear(clientX: number, clientY: number): ConnectionTarget | null {
-        return this.core.highlightConnectionPointsNear(clientX, clientY);
-    }
-
-    clearConnectionPointHighlight(): void {
-        this.core.clearConnectionPointHighlight();
     }
 
     private readonly onContextMenu = (event: MouseEvent): void => {

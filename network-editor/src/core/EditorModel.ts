@@ -1,7 +1,9 @@
 import {
     BAY_TRAVERSABLE_TYPES,
-    isFeederNode,
+    HIDDEN_NODE_TYPE,
     SWITCH_TYPES,
+    type ConnectionPoint,
+    type DeleteScope,
     type EditorMetadata,
     type FeederInfoMetadata,
     type NodeMetadata,
@@ -21,9 +23,9 @@ export class EditorModel {
 
     private readonly feederInfosById = new Map<string, FeederInfoMetadata>();
 
-    private readonly nodesByVoltageLevel = new Map<string, NodeMetadata[]>();
-
     private readonly properties = new Map<string, EquipmentProperties>();
+
+    private readonly initialWireCount = new Map<string, number>();
 
     constructor(
         metadata: SLDMetadata,
@@ -50,6 +52,25 @@ export class EditorModel {
         for (const info of this.metadata.feederInfos ?? []) {
             this.feederInfosById.set(info.id, info);
         }
+
+        for (const [nodeId, wires] of this.wiresByNode) {
+            this.initialWireCount.set(nodeId, wires.length);
+        }
+
+        this.setIidmIdToHiddenNodes();
+    }
+
+    private setIidmIdToHiddenNodes(): void {
+        for (const node of this.metadata.nodes) {
+            if (node.iidmNode === undefined || !node.equipmentId) continue;
+
+            for (const wire of this.getWiresForNode(node.id)) {
+                const otherEnd = this.otherEnd(wire, node.id);
+                if (otherEnd && otherEnd.iidmNode === undefined && isHiddenNode(otherEnd)) {
+                    otherEnd.iidmNode = node.iidmNode;
+                }
+            }
+        }
     }
 
     private indexNode(node: NodeMetadata): void {
@@ -60,14 +81,6 @@ export class EditorModel {
             siblings.push(node);
         } else {
             this.nodesByEquipmentId.set(node.equipmentId, [node]);
-        }
-        if (node.vid) {
-            const siblingsInVl = this.nodesByVoltageLevel.get(node.vid);
-            if (siblingsInVl) {
-                siblingsInVl.push(node);
-            } else {
-                this.nodesByVoltageLevel.set(node.vid, [node]);
-            }
         }
     }
 
@@ -87,10 +100,6 @@ export class EditorModel {
         }
     }
 
-    getMetadata(): EditorMetadata {
-        return this.metadata;
-    }
-
     getNodeById(nodeId: string): NodeMetadata | undefined {
         return this.nodesById.get(nodeId);
     }
@@ -107,16 +116,26 @@ export class EditorModel {
         return byPrefix ?? this.getNodesForEquipment(info.equipmentId)[0];
     }
 
+    /** SLD node id -> IIDM node it stands on, for every node that names one. */
+    collectIidmNodes(): Map<string, number> {
+        const iidmNodes = new Map<string, number>();
+        for (const node of this.metadata.nodes) {
+            if (node.iidmNode !== undefined) iidmNodes.set(node.id, node.iidmNode);
+        }
+        return iidmNodes;
+    }
+
+    /** Fictitious node id -> whether it names an IIDM node. */
+    collectFictitiousNodes(): Map<string, boolean> {
+        const fictitious = new Map<string, boolean>();
+        for (const node of this.metadata.nodes) {
+            if (isHiddenNode(node)) fictitious.set(node.id, node.iidmNode !== undefined);
+        }
+        return fictitious;
+    }
+
     getNodesForEquipment(equipmentId: string): NodeMetadata[] {
         return this.nodesByEquipmentId.get(equipmentId) ?? [];
-    }
-
-    getNodesForVoltageLevel(voltageLevelId: string): NodeMetadata[] {
-        return this.nodesByVoltageLevel.get(voltageLevelId) ?? [];
-    }
-
-    getFeedersForVoltageLevel(voltageLevelId: string): NodeMetadata[] {
-        return this.getNodesForVoltageLevel(voltageLevelId).filter(isFeederNode);
     }
 
     getWiresForNode(nodeId: string): WireMetadata[] {
@@ -192,7 +211,7 @@ export class EditorModel {
     }
 
     /** Scope of a plain equipment delete: its nodes and their direct wires. */
-    collectElementScope(equipmentId: string): { nodes: NodeMetadata[]; wires: WireMetadata[] } {
+    collectElementScope(equipmentId: string): DeleteScope {
         const nodes = this.getNodesForEquipment(equipmentId);
         const wires = new Map<string, WireMetadata>();
 
@@ -205,7 +224,7 @@ export class EditorModel {
         return {nodes: [...nodes], wires: [...wires.values()]};
     }
 
-    collectBay(equipmentId: string): { nodes: NodeMetadata[]; wires: WireMetadata[] } {
+    collectBay(equipmentId: string): DeleteScope {
         const nodes = new Map(
             this.getNodesForEquipment(equipmentId).map((node) => [node.id, node]),
         );
@@ -227,6 +246,40 @@ export class EditorModel {
             }
         }
         return {nodes: [...nodes.values()], wires: [...wires.values()]};
+    }
+
+    collectConnectionPoints(): ConnectionPoint[] {
+        const occupied = new Set(
+            this.metadata.nodes
+                .filter((node) => node.equipmentId && node.iidmNode !== undefined)
+                .map((node) => node.iidmNode),
+        );
+        const points: ConnectionPoint[] = [];
+
+        for (const node of this.metadata.nodes) {
+            if (!isHiddenNode(node) || occupied.has(node.iidmNode)) continue;
+
+            if (node.iidmNode === undefined) continue;
+
+            const wires = this.getWiresForNode(node.id);
+            if (wires.length >= (this.initialWireCount.get(node.id) ?? 0)) continue;
+
+            const attachedTo = wires
+                .map((wire) => this.otherEnd(wire, node.id)?.equipmentId)
+                .find((equipmentId) => equipmentId !== undefined);
+            if (!attachedTo) continue;
+
+            points.push({
+                id: node.id,
+                anchor: {
+                    kind: 'FREE_NODE',
+                    vlId: node.vid ?? '',
+                    attachedTo,
+                    node: node.iidmNode,
+                },
+            });
+        }
+        return points;
     }
 
     private isSharedFork(
@@ -301,7 +354,11 @@ export class EditorModel {
 }
 
 function canTraverseNode(node: NodeMetadata): boolean {
-    return BAY_TRAVERSABLE_TYPES.has(node.componentType ?? '');
+    return BAY_TRAVERSABLE_TYPES.has(node.componentType);
+}
+
+function isHiddenNode(node: NodeMetadata): boolean {
+    return node.componentType === HIDDEN_NODE_TYPE && !node.equipmentId;
 }
 
 function removeById<T extends { id: string }>(

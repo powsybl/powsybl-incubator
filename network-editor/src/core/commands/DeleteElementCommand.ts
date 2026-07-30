@@ -2,8 +2,11 @@ import type { Command } from './Command';
 import type { EditorModel } from '../EditorModel';
 import type { SvgDomService, RemovedDomElement } from '../../dom/SvgDomService';
 import {
+    toElementType,
     type ChangeSetEntry,
+    type DeleteScope,
     type EditorEventListener,
+    type ElementType,
     type FeederInfoMetadata,
     type NodeMetadata,
     type WireMetadata,
@@ -13,7 +16,7 @@ export class DeleteElementCommand implements Command {
     readonly label: string;
 
     private readonly equipmentId: string;
-    private readonly componentType: string;
+    private readonly type: ElementType;
 
     private domSnapshots: RemovedDomElement[] = [];
     private nodeMetas: NodeMetadata[] = [];
@@ -22,15 +25,15 @@ export class DeleteElementCommand implements Command {
 
     constructor(
         private readonly node: NodeMetadata,
-        private readonly scope: { nodes: NodeMetadata[]; wires: WireMetadata[] },
+        private readonly scope: DeleteScope,
         private readonly kind: 'element' | 'bay',
         private readonly model: EditorModel,
         private readonly dom: SvgDomService,
         private readonly emit: EditorEventListener,
     ) {
         this.equipmentId = node.equipmentId ?? node.id;
-        this.componentType = node.componentType;
-        this.label = `Delete ${this.kind} ${this.componentType} ${this.equipmentId}`;
+        this.type = toElementType(node.componentType);
+        this.label = `Delete ${this.kind} ${this.type} ${this.equipmentId}`;
     }
 
     execute(): void {
@@ -58,7 +61,7 @@ export class DeleteElementCommand implements Command {
             if (meta) this.nodeMetas.push(meta);
         }
 
-        this.emit('element:removed', { id: this.equipmentId, componentType: this.componentType });
+        this.emit('element:removed', { id: this.equipmentId, type: this.type });
     }
 
     undo(): void {
@@ -78,7 +81,7 @@ export class DeleteElementCommand implements Command {
 
         this.emit('element:added', {
             id: this.equipmentId,
-            componentType: this.componentType,
+            type: this.type,
             voltageLevelId: this.node.vid ?? '',
         });
     }
@@ -86,7 +89,7 @@ export class DeleteElementCommand implements Command {
     toChangeSetEntry(): ChangeSetEntry {
         return {
             op: this.kind === 'bay' ? 'delete-bay' : 'delete',
-            componentType: this.componentType,
+            equipmentType: this.type,
             equipmentId: this.equipmentId,
         };
     }

@@ -4,6 +4,7 @@ import type { PropertyDescriptor } from './properties/properties.ts';
 import {
     buildForm,
     computeChanges,
+    computeValues,
     fieldError,
     formatFieldError,
     type FieldError,
@@ -12,19 +13,21 @@ import {
 
 interface PropertyPanelProps {
     equipmentId: string | null;
-    componentType: string | null;
     schema: PropertyDescriptor[];
     values: EquipmentProperties;
     onApply: (changes: EquipmentProperties) => void;
+    mode?: 'edit' | 'create';
+    submitLabel?: string;
     translate?: (key: string) => string;
 }
 
 export function PropertyPanel({
     equipmentId,
-    componentType,
     schema,
     values,
     onApply,
+    mode = 'edit',
+    submitLabel,
     translate = (key) => key,
 }: PropertyPanelProps) {
     const baseline = useMemo(() => buildForm(schema, values), [schema, values]);
@@ -40,27 +43,27 @@ export function PropertyPanel({
         );
     }
 
+    const isCreate = mode === 'create';
     const errors = schema.map((descriptor) => fieldError(descriptor, form[descriptor.key]));
     const hasError = errors.some((error) => error !== null);
-    const changes = computeChanges(schema, form, baseline);
-    const hasChanges = Object.keys(changes).length > 0;
+    const changes = isCreate
+        ? computeValues(schema, form)
+        : computeChanges(schema, form, baseline);
+    const canSubmit = !hasError && (isCreate || Object.keys(changes).length > 0);
 
     const setField = (key: string, value: string | boolean) =>
         setForm((prev) => ({ ...prev, [key]: value }));
 
     return (
         <>
-            <p style={{ color: '#666', fontSize: 12 }}>
-                {equipmentId}
-                {componentType && ` — ${componentType}`}
-            </p>
+            <p style={{ color: '#666', fontSize: 12 }}>{equipmentId}</p>
             {schema.length === 0 && (
                 <p style={{ color: '#888' }}>No editable property for this type.</p>
             )}
             <form
                 onSubmit={(event) => {
                     event.preventDefault();
-                    if (!hasError && hasChanges) onApply(changes);
+                    if (canSubmit) onApply(changes);
                 }}
             >
                 {schema.map((descriptor, index) => {
@@ -72,30 +75,24 @@ export function PropertyPanel({
                                 {descriptor.unit ? ` (${descriptor.unit})` : ''}
                             </span>
                             {renderInput(descriptor, form[descriptor.key], setField, error)}
-                            {error ? (
+                            {error && (
                                 <span style={{ color: '#dc3545', fontSize: 11 }}>
                                     {formatFieldError(error)}
                                 </span>
-                            ) : (
-                                descriptor.help && (
-                                    <span style={{ color: '#888', fontSize: 11 }}>
-                                        {descriptor.help}
-                                    </span>
-                                )
                             )}
                         </label>
                     );
                 })}
                 <button
                     type="submit"
-                    disabled={hasError || !hasChanges}
+                    disabled={!canSubmit}
                     style={{
                         marginTop: 8,
                         padding: '8px 16px',
-                        cursor: hasError || !hasChanges ? 'not-allowed' : 'pointer',
+                        cursor: canSubmit ? 'pointer' : 'not-allowed',
                     }}
                 >
-                    Apply
+                    {submitLabel ?? (isCreate ? 'Create' : 'Apply')}
                 </button>
             </form>
         </>
@@ -124,7 +121,6 @@ function renderInput(
                 onChange={(e) => setField(descriptor.key, e.target.value)}
                 style={inputStyle(error)}
             >
-                {!descriptor.required && <option value="" />}
                 {(descriptor.options ?? []).map((option) => (
                     <option key={option} value={option}>
                         {option}
@@ -133,14 +129,12 @@ function renderInput(
             </select>
         );
     }
-    const numeric = descriptor.type === 'number' || descriptor.type === 'integer';
     return (
         <input
-            type={numeric ? 'number' : 'text'}
+            type={descriptor.type === 'number' ? 'number' : 'text'}
             value={String(value ?? '')}
             min={descriptor.min}
             max={descriptor.max}
-            step={descriptor.type === 'integer' ? 1 : 'any'}
             onChange={(e) => setField(descriptor.key, e.target.value)}
             style={inputStyle(error)}
         />

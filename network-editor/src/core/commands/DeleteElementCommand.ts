@@ -1,40 +1,28 @@
 import type { Command } from './Command';
 import type { EditorModel } from '../EditorModel';
 import type { SvgDomService, RemovedDomElement } from '../../dom/SvgDomService';
-import {
-    toElementType,
-    type ChangeSetEntry,
-    type DeleteScope,
-    type EditorEventListener,
-    type ElementType,
-    type FeederInfoMetadata,
-    type NodeMetadata,
-    type WireMetadata,
+import type {
+    ChangeSetEntry,
+    DeleteScope,
+    FeederInfoMetadata,
+    NodeMetadata,
+    WireMetadata,
 } from '../types';
 
 export class DeleteElementCommand implements Command {
-    readonly label: string;
-
-    private readonly equipmentId: string;
-    private readonly type: ElementType;
-
     private domSnapshots: RemovedDomElement[] = [];
     private nodeMetas: NodeMetadata[] = [];
     private wireMetas: WireMetadata[] = [];
     private feederInfoMetas: FeederInfoMetadata[] = [];
 
     constructor(
-        private readonly node: NodeMetadata,
+        readonly equipmentId: string,
         private readonly scope: DeleteScope,
         private readonly kind: 'element' | 'bay',
         private readonly model: EditorModel,
         private readonly dom: SvgDomService,
-        private readonly emit: EditorEventListener,
-    ) {
-        this.equipmentId = node.equipmentId ?? node.id;
-        this.type = toElementType(node.componentType);
-        this.label = `Delete ${this.kind} ${this.type} ${this.equipmentId}`;
-    }
+        private readonly onRemoved: (equipmentId: string) => void,
+    ) {}
 
     execute(): void {
         this.domSnapshots = [];
@@ -61,7 +49,7 @@ export class DeleteElementCommand implements Command {
             if (meta) this.nodeMetas.push(meta);
         }
 
-        this.emit('element:removed', { id: this.equipmentId, type: this.type });
+        this.onRemoved(this.equipmentId);
     }
 
     undo(): void {
@@ -79,17 +67,11 @@ export class DeleteElementCommand implements Command {
         this.wireMetas = [];
         this.feederInfoMetas = [];
 
-        this.emit('element:added', {
-            id: this.equipmentId,
-            type: this.type,
-            voltageLevelId: this.node.vid ?? '',
-        });
     }
 
     toChangeSetEntry(): ChangeSetEntry {
         return {
             op: this.kind === 'bay' ? 'delete-bay' : 'delete',
-            equipmentType: this.type,
             equipmentId: this.equipmentId,
         };
     }

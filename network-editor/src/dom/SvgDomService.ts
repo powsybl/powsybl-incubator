@@ -1,35 +1,44 @@
-import { CONNECTION_POINT_CLASS } from '../core/types';
+import {NODE_TARGET_CLASS, PENDING_CREATE_CLASS, type NodeDiagnostic, SELECTED_CLASS} from '../core/types';
 
-const CONNECTION_POINT_STYLE_ID = 'connection-points';
-
-const CONNECTION_POINT_STYLE = `
-.sld-node.${CONNECTION_POINT_CLASS} {
-    visibility: visible;
-    fill: #1e88e5;
-    cursor: pointer;
-}
-.sld-node.${CONNECTION_POINT_CLASS} circle {
-    stroke: #ffffff;
-    stroke-width: 1.5;
-    vector-effect: non-scaling-stroke;
-}
-.sld-node.${CONNECTION_POINT_CLASS}:hover {
-    fill: #0d47a1;
-}
-`;
+const SVG_NS = 'http://www.w3.org/2000/svg';
 
 const IIDM_LINKED_CLASS = 'ne-iidm-linked';
 const IIDM_UNLINKED_CLASS = 'ne-iidm-unlinked';
 const IIDM_LABEL_CLASS = 'ne-iidm-label';
-const IIDM_NODE_STYLE_ID = 'iidm-nodes';
 
-/**
- * Debug overlay. Fictitious nodes are drawn by powsybl-diagram as a hidden dot;
- * revealing it and setting the group's `fill` colours that very dot, so nothing
- * is added to the DOM: green when the node names an IIDM node, red when it names
- * none — a bus hook, on which nothing can be attached.
- */
-const IIDM_NODE_STYLE = `
+const EDITOR_STYLE = `
+.sld-node.${NODE_TARGET_CLASS} {
+    visibility: visible;
+    fill: #1e88e5;
+    cursor: pointer;
+}
+.sld-node.${NODE_TARGET_CLASS} circle {
+    stroke: #ffffff;
+    stroke-width: 1.5;
+    vector-effect: non-scaling-stroke;
+}
+.sld-node.${NODE_TARGET_CLASS}:hover {
+    fill: #0d47a1;
+}
+
+g.${PENDING_CREATE_CLASS} {
+    visibility: visible;
+    pointer-events: none;
+}
+g.${PENDING_CREATE_CLASS} rect {
+    fill: #e3f2fd;
+    stroke: #1e88e5;
+    stroke-width: 0.8;
+    stroke-dasharray: 2 1.5;
+    rx: 1.5;
+}
+g.${PENDING_CREATE_CLASS} text {
+    fill: #0d47a1;
+    font-size: 6px;
+    font-weight: bold;
+    text-anchor: middle;
+}
+
 .sld-node.${IIDM_LINKED_CLASS},
 .sld-node.${IIDM_UNLINKED_CLASS} {
     visibility: visible;
@@ -58,25 +67,20 @@ export interface RemovedDomElement {
 }
 
 export class SvgDomService {
-    constructor(private readonly container: HTMLElement) {}
+    constructor(private readonly container: HTMLElement) {
+        const style = document.createElement('style');
+        style.dataset.neStyle = 'editor';
+        style.textContent = EDITOR_STYLE;
+        container.appendChild(style);
+    }
 
     getContainer(): HTMLElement {
         return this.container;
     }
 
     findElementById(elementId: string): SVGElement | null {
-        const svg = this.getSvgRoot();
-        if (!svg || !elementId) return null;
-        const selector = `[id="${CSS.escape(elementId)}"]`;
-        return svg.querySelector<SVGElement>(selector);
-    }
-
-    findEquipmentLabelByNodeId(nodeId: string): string | undefined {
-        return (
-            this.findElementById(nodeId)
-                ?.querySelector('.sld-label, text')
-                ?.textContent?.trim() || undefined
-        );
+        if (!elementId) return null;
+        return this.container.querySelector<SVGElement>(`[id="${CSS.escape(elementId)}"]`);
     }
 
     removeAndSnapshot(element: Element): RemovedDomElement {
@@ -94,33 +98,64 @@ export class SvgDomService {
         snapshot.parent.insertBefore(snapshot.element, snapshot.nextElement);
     }
 
-    setConnectionPoints(pointIds: readonly string[]): void {
+    getDiagramX(nodeId: string): number | undefined {
+        const element = this.findElementById(nodeId);
+        if (!(element instanceof SVGGraphicsElement)) return undefined;
+        return element.getCTM()?.e;
+    }
+
+    toDiagramX(clientX: number, clientY: number): number | undefined {
+        const svg = this.getSvgRoot();
+        const screen = svg?.getScreenCTM?.();
+        if (!svg || !screen) return undefined;
+
+        const point = new DOMPoint(clientX, clientY);
+        return point.matrixTransform(screen.inverse()).x;
+    }
+
+    setNodeTargets(targetIds: readonly string[]): void {
         const svg = this.getSvgRoot();
         if (!svg) return;
-        this.ensureStyle(CONNECTION_POINT_STYLE_ID, CONNECTION_POINT_STYLE);
 
-        for (const marked of svg.querySelectorAll(`.${CONNECTION_POINT_CLASS}`)) {
-            marked.classList.remove(CONNECTION_POINT_CLASS);
+        for (const marked of svg.querySelectorAll(`.${NODE_TARGET_CLASS}`)) {
+            marked.classList.remove(NODE_TARGET_CLASS);
         }
 
-        for (const pointId of pointIds) {
-            this.findElementById(pointId)?.classList.add(CONNECTION_POINT_CLASS);
+        for (const targetId of targetIds) {
+            this.findElementById(targetId)?.classList.add(NODE_TARGET_CLASS);
         }
     }
 
-    /**
-     * Colours every fictitious node — green when it names an IIDM node, red
-     * when it names none — and writes each number next to the node standing on
-     * it. Labels go inside the node's own `<g>`, so they inherit its
-     * translation and no coordinate has to be computed.
-     */
-    setIidmOverlay(
-        labels: ReadonlyMap<string, number>,
-        fictitious: ReadonlyMap<string, boolean>,
-    ): void {
+    setSelection(nodeIds: readonly string[]): void {
+
         const svg = this.getSvgRoot();
         if (!svg) return;
-        this.ensureStyle(IIDM_NODE_STYLE_ID, IIDM_NODE_STYLE);
+
+        for (const marked of svg.querySelectorAll(`.${SELECTED_CLASS}`)) {
+            marked.classList.remove(SELECTED_CLASS);
+        }
+
+        for (const nodeId of nodeIds) {
+            this.findElementById(nodeId)?.classList.add(SELECTED_CLASS);
+        }
+    }
+
+    setPendingCreations(labels: ReadonlyMap<string, readonly string[]>): void {
+        const svg = this.getSvgRoot();
+        if (!svg) return;
+
+        for (const marker of svg.querySelectorAll(`g.${PENDING_CREATE_CLASS}`)) marker.remove();
+
+        for (const [nodeId, pending] of labels) {
+            const host = this.findElementById(nodeId);
+            if (!host) continue;
+            pending.forEach((label, index) => host.appendChild(createPendingMarker(label, index)));
+        }
+    }
+
+    setIidmOverlay(diagnostics: ReadonlyMap<string, NodeDiagnostic>): void {
+        const svg = this.getSvgRoot();
+        if (!svg) return;
 
         for (const label of svg.querySelectorAll(`text.${IIDM_LABEL_CLASS}`)) label.remove();
         for (const marked of svg.querySelectorAll(
@@ -129,16 +164,18 @@ export class SvgDomService {
             marked.classList.remove(IIDM_LINKED_CLASS, IIDM_UNLINKED_CLASS);
         }
 
-        for (const [nodeId, linked] of fictitious) {
-            this.findElementById(nodeId)
-                ?.classList.add(linked ? IIDM_LINKED_CLASS : IIDM_UNLINKED_CLASS);
-        }
-
-        for (const [nodeId, iidmNode] of labels) {
+        for (const [nodeId, { iidmNode, hidden }] of diagnostics) {
             const element = this.findElementById(nodeId);
             if (!element) continue;
 
-            const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            if (hidden) {
+                element.classList.add(
+                    iidmNode === undefined ? IIDM_UNLINKED_CLASS : IIDM_LINKED_CLASS,
+                );
+            }
+            if (iidmNode === undefined) continue;
+
+            const label = document.createElementNS(SVG_NS, 'text');
             label.setAttribute('class', IIDM_LABEL_CLASS);
             label.setAttribute('x', '7');
             label.setAttribute('y', '-1');
@@ -157,13 +194,32 @@ export class SvgDomService {
     private getSvgRoot(): SVGSVGElement | null {
         return this.container.querySelector('svg');
     }
+}
 
-    private ensureStyle(id: string, css: string): void {
-        if (this.container.querySelector(`style[data-ne-style="${id}"]`)) return;
-        const style = document.createElement('style');
-        style.dataset.neStyle = id;
-        style.textContent = css;
-        this.container.appendChild(style);
-    }
+const MARKER_HEIGHT = 10;
+const MARKER_BASELINE = 7;
+const MARKER_TOP = -14;
+const NODE_CENTRE = 4;
+
+function createPendingMarker(label: string, index = 0): SVGGElement {
+    const width = label.length * 3.4 + 8;
+    const top = MARKER_TOP - index * (MARKER_HEIGHT + 2);
+
+    const marker = document.createElementNS(SVG_NS, 'g');
+    marker.setAttribute('class', PENDING_CREATE_CLASS);
+
+    const box = document.createElementNS(SVG_NS, 'rect');
+    box.setAttribute('x', String(NODE_CENTRE - width / 2));
+    box.setAttribute('y', String(top));
+    box.setAttribute('width', String(width));
+    box.setAttribute('height', String(MARKER_HEIGHT));
+
+    const text = document.createElementNS(SVG_NS, 'text');
+    text.setAttribute('x', String(NODE_CENTRE));
+    text.setAttribute('y', String(top + MARKER_BASELINE));
+    text.textContent = label;
+
+    marker.append(box, text);
+    return marker;
 }
 

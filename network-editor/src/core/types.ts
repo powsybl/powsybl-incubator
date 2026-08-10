@@ -15,54 +15,72 @@ export type ElementType =
     | 'BUS'
     | 'LOAD'
     | 'GENERATOR'
-    | 'LINE'
+    | 'BATTERY'
     | 'SHUNT'
+    | 'STATIC_VAR_COMPENSATOR'
     | 'VSC_CONVERTER_STATION'
     | 'LCC_CONVERTER_STATION'
+    | 'BOUNDARY_LINE'
+    | 'GROUND'
+    | 'LINE'
+    | 'TWO_WINDINGS_TRANSFORMER'
+    | 'THREE_WINDINGS_TRANSFORMER'
     | 'BREAKER'
     | 'DISCONNECTOR'
     | 'LOAD_BREAK_SWITCH'
-    | 'THREE_WINDINGS_TRANSFORMER'
-    | 'TWO_WINDINGS_TRANSFORMER'
     | 'UNKNOWN';
 
-export const DELETABLE_BAY_TYPES: ReadonlySet<ElementType> = new Set<ElementType>([
+export const INJECTION_TYPES: ReadonlySet<ElementType> = new Set<ElementType>([
     'LOAD',
     'GENERATOR',
-    'TWO_WINDINGS_TRANSFORMER',
-    'THREE_WINDINGS_TRANSFORMER',
+    'BATTERY',
     'SHUNT',
+    'STATIC_VAR_COMPENSATOR',
     'VSC_CONVERTER_STATION',
     'LCC_CONVERTER_STATION',
-    'LINE'
+    'BOUNDARY_LINE',
 ]);
 
-export const DELETABLE_TYPES: ReadonlySet<ElementType> = new Set<ElementType>([
+export const BRANCH_TYPES: ReadonlySet<ElementType> = new Set<ElementType>([
+    'LINE',
+    'TWO_WINDINGS_TRANSFORMER',
+    'THREE_WINDINGS_TRANSFORMER',
+]);
+
+export const SWITCH_TYPES: ReadonlySet<ElementType> = new Set<ElementType>([
     'BREAKER',
     'DISCONNECTOR',
     'LOAD_BREAK_SWITCH',
-    ...DELETABLE_BAY_TYPES,
 ]);
 
-export const SELECTABLE_TYPES: ReadonlySet<ElementType> = DELETABLE_TYPES;
+export const DELETABLE_BAY_TYPES: ReadonlySet<ElementType> = new Set<ElementType>([
+    ...INJECTION_TYPES,
+    ...BRANCH_TYPES,
+]);
+
+export const DELETABLE_TYPES: ReadonlySet<ElementType> = new Set<ElementType>([
+    ...DELETABLE_BAY_TYPES,
+    ...SWITCH_TYPES,
+]);
+
 export const SELECTED_CLASS = 'ne-selected';
 
-export const CREATABLE_TYPES: ReadonlySet<ElementType> = new Set<ElementType>([
-    'LOAD',
-    'GENERATOR',
-]);
+export const NODE_TARGET_CLASS = 'ne-node-target';
 
-export const CONNECTION_POINT_CLASS = 'ne-connection-point';
+export const PENDING_CREATE_CLASS = 'ne-pending-create';
 
 
 export const COMPONENT_TYPE_MAP: Readonly<Record<string, ElementType>> = {
     BUSBAR_SECTION: 'BUS',
     LOAD: 'LOAD',
     GENERATOR: 'GENERATOR',
+    BATTERY: 'BATTERY',
     LINE: 'LINE',
-    BOUNDARY_LINE: 'LINE',
+    BOUNDARY_LINE: 'BOUNDARY_LINE',
     CAPACITOR: 'SHUNT',
     INDUCTOR: 'SHUNT',
+    STATIC_VAR_COMPENSATOR: 'STATIC_VAR_COMPENSATOR',
+    GROUND: 'GROUND',
     VSC_CONVERTER_STATION: 'VSC_CONVERTER_STATION',
     LCC_CONVERTER_STATION: 'LCC_CONVERTER_STATION',
     BREAKER: 'BREAKER',
@@ -81,11 +99,22 @@ export function toElementType(componentType: string | undefined): ElementType {
     return COMPONENT_TYPE_MAP[componentType] ?? 'UNKNOWN';
 }
 
+export type FeederDirection = 'TOP' | 'BOTTOM';
+
+export function toDirection(direction: string | undefined): FeederDirection | undefined {
+    return direction === 'TOP' || direction === 'BOTTOM' ? direction : undefined;
+}
+
 
 export interface NodeMetadata {
     id: string;
     equipmentId?: string;
     iidmNode?: number;
+    iidmNode1?: number;
+    iidmNode2?: number;
+    order?: number;
+    busbarIndex?: number;
+    sectionIndex?: number;
     componentType: string;
     vid?: string;
     nextVId?: string;
@@ -115,40 +144,113 @@ export interface DeleteScope {
     wires: WireMetadata[];
 }
 
-export interface EquipmentInfo {
+export interface NodeDiagnostic {
+    iidmNode?: number;
+    hidden: boolean;
+}
+
+export interface NodeTarget {
+    kind: 'NODE';
+    id: string;
+    vlId: string;
+    node: number;
+}
+
+export interface GapTarget {
+    kind: 'GAP';
+    id: string;
+    vlId: string;
+    node1: number;
+    node2: number;
+}
+
+export interface BaySlot {
+    vlId: string;
+    sectionIndex: number;
+}
+
+export interface BusbarTarget extends BaySlot {
+    kind: 'BUSBAR';
+    id: string;
+    busbarSectionId: string;
+    busbarIndex: number;
+}
+
+export interface EquipmentTarget {
+    kind: 'EQUIPMENT';
+    id: string;
+    vlId: string;
     equipmentId: string;
     type: ElementType;
-    label: string;
-    deletable: boolean;
-    bayDeletable: boolean;
-}
-
-export interface EquipmentContextMenuEvent {
-    info: EquipmentInfo;
-    position: { x: number; y: number };
-}
-
-export interface ConnectionAnchor {
-    kind: 'FREE_NODE';
-    vlId: string;
-    attachedTo: string;
     node?: number;
+    order?: number;
+    direction?: FeederDirection;
+    pending?: boolean;
 }
 
-export interface ConnectionPoint {
-    id: string;
-    anchor: ConnectionAnchor;
+export type EditTarget = NodeTarget | GapTarget | BusbarTarget | EquipmentTarget;
+
+export type EditOperation =
+    | 'CREATE_INJECTION'
+    | 'CREATE_SWITCH'
+    | 'CREATE_FEEDER_BAY'
+    | 'CREATE_COUPLING'
+    | 'DELETE'
+    | 'DELETE_BAY'
+    | 'UPDATE_PROPERTIES'
+    | 'UPDATE_BAY_POSITION'
+    | 'MOVE_BAY';
+
+export const IMPLEMENTED_OPERATIONS: ReadonlySet<EditOperation> = new Set<EditOperation>([
+    'CREATE_INJECTION',
+    'CREATE_SWITCH',
+    'CREATE_FEEDER_BAY',
+    'DELETE',
+    'DELETE_BAY',
+    'UPDATE_PROPERTIES',
+    'UPDATE_BAY_POSITION',
+    'MOVE_BAY',
+]);
+
+export const ORDER_STEP = 10;
+
+export interface BayPosition {
+    order: number;
+    direction: FeederDirection;
 }
 
-export interface CreateEquipmentSpec {
+
+export interface PendingOrders {
+    claimed: ReadonlyMap<number, readonly number[]>;
+    vacated: ReadonlySet<string>;
+}
+
+export const NO_PENDING_ORDERS: PendingOrders = { claimed: new Map(), vacated: new Set() };
+
+export interface OrderClaim extends BaySlot {
+    order: number;
+    vacatedNodeId?: string;
+}
+
+export interface CreateSpec {
     type: ElementType;
     properties: EquipmentProperties;
-    provisionalId?: string;
+    provisionalId: string;
+    direction?: FeederDirection;
+    order?: number;
 }
 
-export interface ConnectionPointClickEvent {
-    point: ConnectionPoint;
+export interface BayInsertion {
+    order: number;
+    afterEquipmentId?: string;
+    beforeEquipmentId?: string;
+}
+
+export interface TargetEvent {
+    targets: readonly EditTarget[];
+    trigger: 'click' | 'contextmenu';
     position: { x: number; y: number };
+    insertion?: BayInsertion;
 }
 
 export interface ViewerCallbacks {
@@ -177,8 +279,7 @@ export interface EditorOptions {
     selectionBackColor?: string;
     callbacks?: ViewerCallbacks;
     onEvent?: EditorEventListener;
-    onEquipmentContextMenu?: (event: EquipmentContextMenuEvent) => void;
-    onConnectionPointClick?: (event: ConnectionPointClickEvent) => void;
+    onTargets?: (event: TargetEvent) => void;
     initialProperties?: Record<string, EquipmentProperties>;
 }
 
@@ -191,40 +292,75 @@ export const EDITOR_OPTION_DEFAULTS = {
     selectionBackColor: 'white',
 } as const;
 
-export type ChangeOp = 'create' | 'delete' | 'update' | 'delete-bay';
+export type ChangeOp = ChangeSetEntry['op'];
 
-export interface ChangeSetEntry {
-    op: ChangeOp;
-    equipmentType: ElementType;
-    equipmentId: string;
-    payload?: Record<string, unknown>;
-}
+export type ChangeSetEntry =
+    | {
+          op: 'create';
+          equipmentId: string;
+          payload: {
+              equipmentType: ElementType;
+              vlId: string;
+              node: number;
+              properties: EquipmentProperties;
+          };
+      }
+    | {
+          op: 'create-bay';
+          equipmentId: string;
+          payload: {
+              equipmentType: ElementType;
+              busbarSectionId: string;
+              order: number;
+              direction: FeederDirection;
+              properties: EquipmentProperties;
+          };
+      }
+    | {
+          op: 'create-switch';
+          equipmentId: string;
+          payload: {
+              equipmentType: ElementType;
+              vlId: string;
+              node1: number;
+              node2: number;
+              properties: EquipmentProperties;
+          };
+      }
+    | {
+          op: 'move-bay';
+          equipmentId: string;
+          payload: { node: number; targetBusbarSectionId: string };
+      }
+    | {
+          op: 'update-position';
+          equipmentId: string;
+          payload: { node: number; order: number; direction: FeederDirection };
+      }
+    | { op: 'update'; equipmentId: string; payload: EquipmentProperties }
+    | { op: 'delete' | 'delete-bay'; equipmentId: string };
 
 export type ChangeSet = ChangeSetEntry[];
 
 export interface EditorEvents {
-    'element:added': { id: string; type: ElementType; voltageLevelId: string };
-    'element:created': { id: string; type: ElementType; anchor: ConnectionAnchor };
-    'element:removed': { id: string; type: ElementType };
-    'connection:changed': { points: readonly ConnectionPoint[] };
-    'element:selected': { id: string | null ; type: ElementType | null };
-    'properties:changed': { id: string; changes: Record<string, unknown> };
+    'targets:changed': { targets: readonly EditTarget[] };
+    'element:selected': { id: string | null; type: ElementType | null };
     'history:changed': { canUndo: boolean; canRedo: boolean };
     'model:changed': { changeSet: ChangeSet };
 }
 
 export type EditorEventName = keyof EditorEvents;
 
-export type EditorEventListener = <K extends EditorEventName>(
+export type EditorEvent = {
+    [K in EditorEventName]: { name: K } & EditorEvents[K];
+}[EditorEventName];
+
+export type EditorEventListener = (event: EditorEvent) => void;
+
+export type EditorEmit = <K extends EditorEventName>(
     name: K,
     payload: EditorEvents[K],
 ) => void;
-
-export const SWITCH_TYPES: ReadonlySet<string> = new Set([
-    'BREAKER',
-    'DISCONNECTOR',
-    'LOAD_BREAK_SWITCH',
-]);
 
 export const HIDDEN_NODE_TYPE = 'NODE';
 
@@ -232,4 +368,7 @@ export const BAY_TRAVERSABLE_TYPES: ReadonlySet<string> = new Set([
     HIDDEN_NODE_TYPE,
     ...SWITCH_TYPES,
 ]);
+
+export const BUSBAR_SECTION_TYPE = 'BUSBAR_SECTION';
+
 

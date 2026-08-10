@@ -198,250 +198,250 @@
                     <path class="sld-sw-open" d="M8,0 0,8"/>
                 </g>
             </g>
-            <g class="sld-extern-cell sld-cell-direction-bottom" id="idEXTERN_32_1">
+            <g class="sld-extern-cell sld-cell-direction-top" id="idEXTERN_32_1">
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_S1VL2_95_BBS1_95_TWT_95_DISCONNECTOR_95_INTERNAL_95_S1VL2_95_2">
-                    <polyline points="515.0,252.0,515.0,307.0"/>
+                    <polyline points="165.0,252.0,165.0,222.0"/>
                 </g>
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_S1VL2_95_BBS2_95_TWT_95_DISCONNECTOR_95_INTERNAL_95_S1VL2_95_2">
-                    <polyline points="515.0,277.0,515.0,307.0"/>
+                    <polyline points="165.0,277.0,165.0,222.0"/>
                 </g>
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_INTERNAL_95_S1VL2_95_2_95_S1VL2_95_TWT_95_BREAKER">
-                    <polyline points="515.0,307.0,515.0,337.0"/>
+                    <polyline points="165.0,222.0,165.0,192.0"/>
                 </g>
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_S1VL2_95_TWT_95_BREAKER_95_INTERNAL_95_S1VL2_95_TWT_95_TWO">
-                    <polyline points="515.0,357.0,515.0,387.0"/>
+                    <polyline points="165.0,172.0,165.0,142.0"/>
                 </g>
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_INTERNAL_95_S1VL2_95_TWT_95_TWO_95_TWT_95_TWO">
-                    <polyline points="515.0,387.0,515.0,449.0"/>
+                    <polyline points="165.0,142.0,165.0,80.0"/>
                 </g>
-                <g class="sld-feeder-info sld-out sld-reactive-power" id="idTWT_95_TWO_95_ARROW_95_REACTIVE" transform="translate(510.0,424.0)">
-                    <polygon class="sld-arrow-out" points="5,0 10,10 0,10" transform="rotate(180.0,5.0,5.0)"/>
-                    <polygon class="sld-arrow-in" points="0,0 10,0 5,10" transform="rotate(180.0,5.0,5.0)"/>
-                    <text class="sld-label" x="15.0" y="5.0">5</text>
-                </g>
-                <g class="sld-feeder-info sld-out sld-active-power" id="idTWT_95_TWO_95_ARROW_95_ACTIVE" transform="translate(510.0,404.0)">
-                    <polygon class="sld-arrow-out" points="5,0 10,10 0,10" transform="rotate(180.0,5.0,5.0)"/>
-                    <polygon class="sld-arrow-in" points="0,0 10,0 5,10" transform="rotate(180.0,5.0,5.0)"/>
+                <g class="sld-feeder-info sld-out sld-active-power" id="idTWT_95_TWO_95_ARROW_95_ACTIVE" transform="translate(160.0,95.0)">
+                    <polygon class="sld-arrow-out" points="5,0 10,10 0,10"/>
+                    <polygon class="sld-arrow-in" points="0,0 10,0 5,10"/>
                     <text class="sld-label" x="15.0" y="5.0">80</text>
                 </g>
-                <g class="sld-disconnector sld-closed sld-vl300to500 sld-bus-0" id="idS1VL2_95_BBS1_95_TWT_95_DISCONNECTOR" transform="translate(511.0,248.0)">
+                <g class="sld-feeder-info sld-out sld-reactive-power" id="idTWT_95_TWO_95_ARROW_95_REACTIVE" transform="translate(160.0,115.0)">
+                    <polygon class="sld-arrow-out" points="5,0 10,10 0,10"/>
+                    <polygon class="sld-arrow-in" points="0,0 10,0 5,10"/>
+                    <text class="sld-label" x="15.0" y="5.0">5</text>
+                </g>
+                <g class="sld-disconnector sld-closed sld-vl300to500 sld-bus-0" id="idS1VL2_95_BBS1_95_TWT_95_DISCONNECTOR" transform="translate(161.0,248.0)">
                     <path class="sld-sw-closed" d="M0,0 8,8 M8,0 0,8"/>
                     <path class="sld-sw-open" d="M8,0 0,8"/>
                 </g>
-                <g class="sld-node sld-hidden-node sld-fictitious sld-vl300to500 sld-bus-0" id="idINTERNAL_95_S1VL2_95_2" transform="translate(511.0,303.0)">
+                <g class="sld-node sld-hidden-node sld-fictitious sld-vl300to500 sld-bus-0" id="idINTERNAL_95_S1VL2_95_2" transform="translate(161.0,218.0)">
                     <circle cx="4" cy="4" r="4"/>
                 </g>
-                <g class="sld-disconnector sld-open sld-vl300to500 sld-disconnected" id="idS1VL2_95_BBS2_95_TWT_95_DISCONNECTOR" transform="translate(511.0,273.0)">
+                <g class="sld-disconnector sld-open sld-vl300to500 sld-disconnected" id="idS1VL2_95_BBS2_95_TWT_95_DISCONNECTOR" transform="translate(161.0,273.0)">
                     <path class="sld-sw-closed" d="M0,0 8,8 M8,0 0,8"/>
                     <path class="sld-sw-open" d="M8,0 0,8"/>
                 </g>
-                <g class="sld-breaker sld-closed sld-vl300to500 sld-bus-0" id="idS1VL2_95_TWT_95_BREAKER" transform="translate(505.0,337.0)">
+                <g class="sld-breaker sld-closed sld-vl300to500 sld-bus-0" id="idS1VL2_95_TWT_95_BREAKER" transform="translate(155.0,172.0)">
                     <path class="sld-sw-closed" d="M1,1 V19 H19 V1z M10,5 V15"/>
                     <path class="sld-sw-open" d="M1,1 V19 H19 V1z M5,10 H15"/>
                 </g>
-                <g class="sld-node sld-hidden-node sld-fictitious sld-vl300to500 sld-bus-0" id="idINTERNAL_95_S1VL2_95_TWT_95_TWO" transform="translate(511.0,383.0)">
+                <g class="sld-node sld-hidden-node sld-fictitious sld-vl300to500 sld-bus-0" id="idINTERNAL_95_S1VL2_95_TWT_95_TWO" transform="translate(161.0,138.0)">
                     <circle cx="4" cy="4" r="4"/>
                 </g>
-                <g class="sld-bottom-feeder sld-vl300to500 sld-bus-0" id="idTWT_95_TWO" transform="translate(515.0,449.0)">
-                    <text class="sld-label" id="idTWT_95_TWO_95_S_95_LABEL" x="-5.0" y="11.0">TWT</text>
+                <g class="sld-top-feeder sld-vl300to500 sld-bus-0" id="idTWT_95_TWO" transform="translate(165.0,80.0)">
+                    <text class="sld-label" id="idTWT_95_TWO_95_N_95_LABEL" x="-5.0" y="-11.0">TWT</text>
                 </g>
             </g>
             <g class="sld-extern-cell sld-cell-direction-bottom" id="idEXTERN_32_2">
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_S1VL2_95_BBS1_95_VSC1_95_DISCONNECTOR_95_INTERNAL_95_S1VL2_95_4">
-                    <polyline points="615.0,252.0,615.0,307.0"/>
+                    <polyline points="215.0,252.0,215.0,307.0"/>
                 </g>
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_S1VL2_95_BBS2_95_VSC1_95_DISCONNECTOR_95_INTERNAL_95_S1VL2_95_4">
-                    <polyline points="615.0,277.0,615.0,307.0"/>
+                    <polyline points="215.0,277.0,215.0,307.0"/>
                 </g>
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_INTERNAL_95_S1VL2_95_4_95_S1VL2_95_VSC1_95_BREAKER">
-                    <polyline points="615.0,307.0,615.0,337.0"/>
+                    <polyline points="215.0,307.0,215.0,337.0"/>
                 </g>
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_S1VL2_95_VSC1_95_BREAKER_95_INTERNAL_95_S1VL2_95_VSC1">
-                    <polyline points="615.0,357.0,615.0,387.0"/>
+                    <polyline points="215.0,357.0,215.0,387.0"/>
                 </g>
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_INTERNAL_95_S1VL2_95_VSC1_95_VSC1">
-                    <polyline points="615.0,387.0,615.0,443.0"/>
+                    <polyline points="215.0,387.0,215.0,443.0"/>
                 </g>
-                <g class="sld-feeder-info sld-in sld-reactive-power" id="idVSC1_95_ARROW_95_REACTIVE" transform="translate(610.0,418.0)">
+                <g class="sld-feeder-info sld-in sld-reactive-power" id="idVSC1_95_ARROW_95_REACTIVE" transform="translate(210.0,418.0)">
                     <polygon class="sld-arrow-out" points="5,0 10,10 0,10" transform="rotate(180.0,5.0,5.0)"/>
                     <polygon class="sld-arrow-in" points="0,0 10,0 5,10" transform="rotate(180.0,5.0,5.0)"/>
                     <text class="sld-label" x="15.0" y="5.0">-512</text>
                 </g>
-                <g class="sld-feeder-info sld-out sld-active-power" id="idVSC1_95_ARROW_95_ACTIVE" transform="translate(610.0,398.0)">
+                <g class="sld-feeder-info sld-out sld-active-power" id="idVSC1_95_ARROW_95_ACTIVE" transform="translate(210.0,398.0)">
                     <polygon class="sld-arrow-out" points="5,0 10,10 0,10" transform="rotate(180.0,5.0,5.0)"/>
                     <polygon class="sld-arrow-in" points="0,0 10,0 5,10" transform="rotate(180.0,5.0,5.0)"/>
                     <text class="sld-label" x="15.0" y="5.0">10</text>
                 </g>
-                <g class="sld-disconnector sld-open sld-vl300to500 sld-disconnected" id="idS1VL2_95_BBS1_95_VSC1_95_DISCONNECTOR" transform="translate(611.0,248.0)">
+                <g class="sld-disconnector sld-open sld-vl300to500 sld-disconnected" id="idS1VL2_95_BBS1_95_VSC1_95_DISCONNECTOR" transform="translate(211.0,248.0)">
                     <path class="sld-sw-closed" d="M0,0 8,8 M8,0 0,8"/>
                     <path class="sld-sw-open" d="M8,0 0,8"/>
                 </g>
-                <g class="sld-node sld-hidden-node sld-fictitious sld-vl300to500 sld-bus-0" id="idINTERNAL_95_S1VL2_95_4" transform="translate(611.0,303.0)">
+                <g class="sld-node sld-hidden-node sld-fictitious sld-vl300to500 sld-bus-0" id="idINTERNAL_95_S1VL2_95_4" transform="translate(211.0,303.0)">
                     <circle cx="4" cy="4" r="4"/>
                 </g>
-                <g class="sld-disconnector sld-closed sld-vl300to500 sld-bus-0" id="idS1VL2_95_BBS2_95_VSC1_95_DISCONNECTOR" transform="translate(611.0,273.0)">
+                <g class="sld-disconnector sld-closed sld-vl300to500 sld-bus-0" id="idS1VL2_95_BBS2_95_VSC1_95_DISCONNECTOR" transform="translate(211.0,273.0)">
                     <path class="sld-sw-closed" d="M0,0 8,8 M8,0 0,8"/>
                     <path class="sld-sw-open" d="M8,0 0,8"/>
                 </g>
-                <g class="sld-breaker sld-closed sld-vl300to500 sld-bus-0" id="idS1VL2_95_VSC1_95_BREAKER" transform="translate(605.0,337.0)">
+                <g class="sld-breaker sld-closed sld-vl300to500 sld-bus-0" id="idS1VL2_95_VSC1_95_BREAKER" transform="translate(205.0,337.0)">
                     <path class="sld-sw-closed" d="M1,1 V19 H19 V1z M10,5 V15"/>
                     <path class="sld-sw-open" d="M1,1 V19 H19 V1z M5,10 H15"/>
                 </g>
-                <g class="sld-node sld-hidden-node sld-fictitious sld-vl300to500 sld-bus-0" id="idINTERNAL_95_S1VL2_95_VSC1" transform="translate(611.0,383.0)">
+                <g class="sld-node sld-hidden-node sld-fictitious sld-vl300to500 sld-bus-0" id="idINTERNAL_95_S1VL2_95_VSC1" transform="translate(211.0,383.0)">
                     <circle cx="4" cy="4" r="4"/>
                 </g>
-                <g class="sld-vsc sld-bottom-feeder sld-vl300to500 sld-bus-0" id="idVSC1" transform="translate(607.0,445.0)">
+                <g class="sld-vsc sld-bottom-feeder sld-vl300to500 sld-bus-0" id="idVSC1" transform="translate(207.0,445.0)">
                     <text x="-15.5" y="6.6">AC / DC - VSC</text>
-                    <text class="sld-label" id="idVSC1_95_S_95_LABEL" x="-5.0" y="15.0">HVDC1</text>
+                    <text class="sld-label" id="idVSC1_95_S_95_LABEL" x="-5.0" y="15.0">VSC1</text>
                 </g>
             </g>
             <g class="sld-extern-cell sld-cell-direction-top" id="idEXTERN_32_3">
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_S1VL2_95_BBS1_95_GH1_95_DISCONNECTOR_95_INTERNAL_95_S1VL2_95_6">
-                    <polyline points="165.0,252.0,165.0,222.0"/>
+                    <polyline points="265.0,252.0,265.0,222.0"/>
                 </g>
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_S1VL2_95_BBS2_95_GH1_95_DISCONNECTOR_95_INTERNAL_95_S1VL2_95_6">
-                    <polyline points="165.0,277.0,165.0,222.0"/>
+                    <polyline points="265.0,277.0,265.0,222.0"/>
                 </g>
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_INTERNAL_95_S1VL2_95_6_95_S1VL2_95_GH1_95_BREAKER">
-                    <polyline points="165.0,222.0,165.0,192.0"/>
+                    <polyline points="265.0,222.0,265.0,192.0"/>
                 </g>
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_S1VL2_95_GH1_95_BREAKER_95_INTERNAL_95_S1VL2_95_GH1">
-                    <polyline points="165.0,172.0,165.0,142.0"/>
+                    <polyline points="265.0,172.0,265.0,142.0"/>
                 </g>
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_INTERNAL_95_S1VL2_95_GH1_95_GH1">
-                    <polyline points="165.0,142.0,165.0,86.0"/>
+                    <polyline points="265.0,142.0,265.0,86.0"/>
                 </g>
-                <g class="sld-feeder-info sld-in sld-active-power" id="idGH1_95_ARROW_95_ACTIVE" transform="translate(160.0,101.0)">
+                <g class="sld-feeder-info sld-in sld-active-power" id="idGH1_95_ARROW_95_ACTIVE" transform="translate(260.0,101.0)">
                     <polygon class="sld-arrow-out" points="5,0 10,10 0,10"/>
                     <polygon class="sld-arrow-in" points="0,0 10,0 5,10"/>
                     <text class="sld-label" x="15.0" y="5.0">-85</text>
                 </g>
-                <g class="sld-feeder-info sld-in sld-reactive-power" id="idGH1_95_ARROW_95_REACTIVE" transform="translate(160.0,121.0)">
+                <g class="sld-feeder-info sld-in sld-reactive-power" id="idGH1_95_ARROW_95_REACTIVE" transform="translate(260.0,121.0)">
                     <polygon class="sld-arrow-out" points="5,0 10,10 0,10"/>
                     <polygon class="sld-arrow-in" points="0,0 10,0 5,10"/>
                     <text class="sld-label" x="15.0" y="5.0">-512</text>
                 </g>
-                <g class="sld-disconnector sld-closed sld-vl300to500 sld-bus-0" id="idS1VL2_95_BBS1_95_GH1_95_DISCONNECTOR" transform="translate(161.0,248.0)">
+                <g class="sld-disconnector sld-closed sld-vl300to500 sld-bus-0" id="idS1VL2_95_BBS1_95_GH1_95_DISCONNECTOR" transform="translate(261.0,248.0)">
                     <path class="sld-sw-closed" d="M0,0 8,8 M8,0 0,8"/>
                     <path class="sld-sw-open" d="M8,0 0,8"/>
                 </g>
-                <g class="sld-node sld-hidden-node sld-fictitious sld-vl300to500 sld-bus-0" id="idINTERNAL_95_S1VL2_95_6" transform="translate(161.0,218.0)">
+                <g class="sld-node sld-hidden-node sld-fictitious sld-vl300to500 sld-bus-0" id="idINTERNAL_95_S1VL2_95_6" transform="translate(261.0,218.0)">
                     <circle cx="4" cy="4" r="4"/>
                 </g>
-                <g class="sld-disconnector sld-open sld-vl300to500 sld-disconnected" id="idS1VL2_95_BBS2_95_GH1_95_DISCONNECTOR" transform="translate(161.0,273.0)">
+                <g class="sld-disconnector sld-open sld-vl300to500 sld-disconnected" id="idS1VL2_95_BBS2_95_GH1_95_DISCONNECTOR" transform="translate(261.0,273.0)">
                     <path class="sld-sw-closed" d="M0,0 8,8 M8,0 0,8"/>
                     <path class="sld-sw-open" d="M8,0 0,8"/>
                 </g>
-                <g class="sld-breaker sld-closed sld-vl300to500 sld-bus-0" id="idS1VL2_95_GH1_95_BREAKER" transform="translate(155.0,172.0)">
+                <g class="sld-breaker sld-closed sld-vl300to500 sld-bus-0" id="idS1VL2_95_GH1_95_BREAKER" transform="translate(255.0,172.0)">
                     <path class="sld-sw-closed" d="M1,1 V19 H19 V1z M10,5 V15"/>
                     <path class="sld-sw-open" d="M1,1 V19 H19 V1z M5,10 H15"/>
                 </g>
-                <g class="sld-node sld-hidden-node sld-fictitious sld-vl300to500 sld-bus-0" id="idINTERNAL_95_S1VL2_95_GH1" transform="translate(161.0,138.0)">
+                <g class="sld-node sld-hidden-node sld-fictitious sld-vl300to500 sld-bus-0" id="idINTERNAL_95_S1VL2_95_GH1" transform="translate(261.0,138.0)">
                     <circle cx="4" cy="4" r="4"/>
                 </g>
-                <g class="sld-generator sld-top-feeder sld-vl300to500 sld-bus-0" id="idGH1" transform="translate(159.0,74.0)">
+                <g class="sld-generator sld-top-feeder sld-vl300to500 sld-bus-0" id="idGH1" transform="translate(259.0,74.0)">
                     <circle cx="6" cy="6" r="6"/>
                     <path d="M6,6 A 6 40 0 0 0 2,6"/>
                     <path d="M6,6 A 6 40 0 0 0 10,6"/>
                     <text class="sld-label" id="idGH1_95_N_95_LABEL" x="-5.0" y="-5.0">GH1</text>
                 </g>
             </g>
-            <g class="sld-extern-cell sld-cell-direction-bottom" id="idEXTERN_32_4">
+            <g class="sld-extern-cell sld-cell-direction-top" id="idEXTERN_32_4">
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_S1VL2_95_BBS1_95_GH2_95_DISCONNECTOR_95_INTERNAL_95_S1VL2_95_8">
-                    <polyline points="215.0,252.0,215.0,307.0"/>
+                    <polyline points="315.0,252.0,315.0,222.0"/>
                 </g>
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_S1VL2_95_BBS2_95_GH2_95_DISCONNECTOR_95_INTERNAL_95_S1VL2_95_8">
-                    <polyline points="215.0,277.0,215.0,307.0"/>
+                    <polyline points="315.0,277.0,315.0,222.0"/>
                 </g>
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_INTERNAL_95_S1VL2_95_8_95_S1VL2_95_GH2_95_BREAKER">
-                    <polyline points="215.0,307.0,215.0,337.0"/>
+                    <polyline points="315.0,222.0,315.0,192.0"/>
                 </g>
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_S1VL2_95_GH2_95_BREAKER_95_INTERNAL_95_S1VL2_95_GH2">
-                    <polyline points="215.0,357.0,215.0,387.0"/>
+                    <polyline points="315.0,172.0,315.0,142.0"/>
                 </g>
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_INTERNAL_95_S1VL2_95_GH2_95_GH2">
-                    <polyline points="215.0,387.0,215.0,443.0"/>
+                    <polyline points="315.0,142.0,315.0,86.0"/>
                 </g>
-                <g class="sld-feeder-info sld-in sld-reactive-power" id="idGH2_95_ARROW_95_REACTIVE" transform="translate(210.0,418.0)">
-                    <polygon class="sld-arrow-out" points="5,0 10,10 0,10" transform="rotate(180.0,5.0,5.0)"/>
-                    <polygon class="sld-arrow-in" points="0,0 10,0 5,10" transform="rotate(180.0,5.0,5.0)"/>
-                    <text class="sld-label" x="15.0" y="5.0">-512</text>
-                </g>
-                <g class="sld-feeder-info sld-in sld-active-power" id="idGH2_95_ARROW_95_ACTIVE" transform="translate(210.0,398.0)">
-                    <polygon class="sld-arrow-out" points="5,0 10,10 0,10" transform="rotate(180.0,5.0,5.0)"/>
-                    <polygon class="sld-arrow-in" points="0,0 10,0 5,10" transform="rotate(180.0,5.0,5.0)"/>
+                <g class="sld-feeder-info sld-in sld-active-power" id="idGH2_95_ARROW_95_ACTIVE" transform="translate(310.0,101.0)">
+                    <polygon class="sld-arrow-out" points="5,0 10,10 0,10"/>
+                    <polygon class="sld-arrow-in" points="0,0 10,0 5,10"/>
                     <text class="sld-label" x="15.0" y="5.0">-90</text>
                 </g>
-                <g class="sld-disconnector sld-closed sld-vl300to500 sld-bus-0" id="idS1VL2_95_BBS1_95_GH2_95_DISCONNECTOR" transform="translate(211.0,248.0)">
+                <g class="sld-feeder-info sld-in sld-reactive-power" id="idGH2_95_ARROW_95_REACTIVE" transform="translate(310.0,121.0)">
+                    <polygon class="sld-arrow-out" points="5,0 10,10 0,10"/>
+                    <polygon class="sld-arrow-in" points="0,0 10,0 5,10"/>
+                    <text class="sld-label" x="15.0" y="5.0">-512</text>
+                </g>
+                <g class="sld-disconnector sld-closed sld-vl300to500 sld-bus-0" id="idS1VL2_95_BBS1_95_GH2_95_DISCONNECTOR" transform="translate(311.0,248.0)">
                     <path class="sld-sw-closed" d="M0,0 8,8 M8,0 0,8"/>
                     <path class="sld-sw-open" d="M8,0 0,8"/>
                 </g>
-                <g class="sld-node sld-hidden-node sld-fictitious sld-vl300to500 sld-bus-0" id="idINTERNAL_95_S1VL2_95_8" transform="translate(211.0,303.0)">
+                <g class="sld-node sld-hidden-node sld-fictitious sld-vl300to500 sld-bus-0" id="idINTERNAL_95_S1VL2_95_8" transform="translate(311.0,218.0)">
                     <circle cx="4" cy="4" r="4"/>
                 </g>
-                <g class="sld-disconnector sld-open sld-vl300to500 sld-disconnected" id="idS1VL2_95_BBS2_95_GH2_95_DISCONNECTOR" transform="translate(211.0,273.0)">
+                <g class="sld-disconnector sld-open sld-vl300to500 sld-disconnected" id="idS1VL2_95_BBS2_95_GH2_95_DISCONNECTOR" transform="translate(311.0,273.0)">
                     <path class="sld-sw-closed" d="M0,0 8,8 M8,0 0,8"/>
                     <path class="sld-sw-open" d="M8,0 0,8"/>
                 </g>
-                <g class="sld-breaker sld-closed sld-vl300to500 sld-bus-0" id="idS1VL2_95_GH2_95_BREAKER" transform="translate(205.0,337.0)">
+                <g class="sld-breaker sld-closed sld-vl300to500 sld-bus-0" id="idS1VL2_95_GH2_95_BREAKER" transform="translate(305.0,172.0)">
                     <path class="sld-sw-closed" d="M1,1 V19 H19 V1z M10,5 V15"/>
                     <path class="sld-sw-open" d="M1,1 V19 H19 V1z M5,10 H15"/>
                 </g>
-                <g class="sld-node sld-hidden-node sld-fictitious sld-vl300to500 sld-bus-0" id="idINTERNAL_95_S1VL2_95_GH2" transform="translate(211.0,383.0)">
+                <g class="sld-node sld-hidden-node sld-fictitious sld-vl300to500 sld-bus-0" id="idINTERNAL_95_S1VL2_95_GH2" transform="translate(311.0,138.0)">
                     <circle cx="4" cy="4" r="4"/>
                 </g>
-                <g class="sld-generator sld-bottom-feeder sld-vl300to500 sld-bus-0" id="idGH2" transform="translate(209.0,443.0)">
+                <g class="sld-generator sld-top-feeder sld-vl300to500 sld-bus-0" id="idGH2" transform="translate(309.0,74.0)">
                     <circle cx="6" cy="6" r="6"/>
                     <path d="M6,6 A 6 40 0 0 0 2,6"/>
                     <path d="M6,6 A 6 40 0 0 0 10,6"/>
-                    <text class="sld-label" id="idGH2_95_S_95_LABEL" x="-5.0" y="17.0">GH2</text>
+                    <text class="sld-label" id="idGH2_95_N_95_LABEL" x="-5.0" y="-5.0">GH2</text>
                 </g>
             </g>
             <g class="sld-extern-cell sld-cell-direction-top" id="idEXTERN_32_5">
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_S1VL2_95_BBS1_95_GH3_95_DISCONNECTOR_95_INTERNAL_95_S1VL2_95_10">
-                    <polyline points="265.0,252.0,265.0,222.0"/>
+                    <polyline points="365.0,252.0,365.0,222.0"/>
                 </g>
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_S1VL2_95_BBS2_95_GH3_95_DISCONNECTOR_95_INTERNAL_95_S1VL2_95_10">
-                    <polyline points="265.0,277.0,265.0,222.0"/>
+                    <polyline points="365.0,277.0,365.0,222.0"/>
                 </g>
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_INTERNAL_95_S1VL2_95_10_95_S1VL2_95_GH3_95_BREAKER">
-                    <polyline points="265.0,222.0,265.0,192.0"/>
+                    <polyline points="365.0,222.0,365.0,192.0"/>
                 </g>
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_S1VL2_95_GH3_95_BREAKER_95_INTERNAL_95_S1VL2_95_GH3">
-                    <polyline points="265.0,172.0,265.0,142.0"/>
+                    <polyline points="365.0,172.0,365.0,142.0"/>
                 </g>
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_INTERNAL_95_S1VL2_95_GH3_95_GH3">
-                    <polyline points="265.0,142.0,265.0,86.0"/>
+                    <polyline points="365.0,142.0,365.0,86.0"/>
                 </g>
-                <g class="sld-feeder-info sld-in sld-active-power" id="idGH3_95_ARROW_95_ACTIVE" transform="translate(260.0,101.0)">
+                <g class="sld-feeder-info sld-in sld-active-power" id="idGH3_95_ARROW_95_ACTIVE" transform="translate(360.0,101.0)">
                     <polygon class="sld-arrow-out" points="5,0 10,10 0,10"/>
                     <polygon class="sld-arrow-in" points="0,0 10,0 5,10"/>
                     <text class="sld-label" x="15.0" y="5.0">-156</text>
                 </g>
-                <g class="sld-feeder-info sld-in sld-reactive-power" id="idGH3_95_ARROW_95_REACTIVE" transform="translate(260.0,121.0)">
+                <g class="sld-feeder-info sld-in sld-reactive-power" id="idGH3_95_ARROW_95_REACTIVE" transform="translate(360.0,121.0)">
                     <polygon class="sld-arrow-out" points="5,0 10,10 0,10"/>
                     <polygon class="sld-arrow-in" points="0,0 10,0 5,10"/>
                     <text class="sld-label" x="15.0" y="5.0">-512</text>
                 </g>
-                <g class="sld-disconnector sld-closed sld-vl300to500 sld-bus-0" id="idS1VL2_95_BBS1_95_GH3_95_DISCONNECTOR" transform="translate(261.0,248.0)">
+                <g class="sld-disconnector sld-closed sld-vl300to500 sld-bus-0" id="idS1VL2_95_BBS1_95_GH3_95_DISCONNECTOR" transform="translate(361.0,248.0)">
                     <path class="sld-sw-closed" d="M0,0 8,8 M8,0 0,8"/>
                     <path class="sld-sw-open" d="M8,0 0,8"/>
                 </g>
-                <g class="sld-node sld-hidden-node sld-fictitious sld-vl300to500 sld-bus-0" id="idINTERNAL_95_S1VL2_95_10" transform="translate(261.0,218.0)">
+                <g class="sld-node sld-hidden-node sld-fictitious sld-vl300to500 sld-bus-0" id="idINTERNAL_95_S1VL2_95_10" transform="translate(361.0,218.0)">
                     <circle cx="4" cy="4" r="4"/>
                 </g>
-                <g class="sld-disconnector sld-open sld-vl300to500 sld-disconnected" id="idS1VL2_95_BBS2_95_GH3_95_DISCONNECTOR" transform="translate(261.0,273.0)">
+                <g class="sld-disconnector sld-open sld-vl300to500 sld-disconnected" id="idS1VL2_95_BBS2_95_GH3_95_DISCONNECTOR" transform="translate(361.0,273.0)">
                     <path class="sld-sw-closed" d="M0,0 8,8 M8,0 0,8"/>
                     <path class="sld-sw-open" d="M8,0 0,8"/>
                 </g>
-                <g class="sld-breaker sld-closed sld-vl300to500 sld-bus-0" id="idS1VL2_95_GH3_95_BREAKER" transform="translate(255.0,172.0)">
+                <g class="sld-breaker sld-closed sld-vl300to500 sld-bus-0" id="idS1VL2_95_GH3_95_BREAKER" transform="translate(355.0,172.0)">
                     <path class="sld-sw-closed" d="M1,1 V19 H19 V1z M10,5 V15"/>
                     <path class="sld-sw-open" d="M1,1 V19 H19 V1z M5,10 H15"/>
                 </g>
-                <g class="sld-node sld-hidden-node sld-fictitious sld-vl300to500 sld-bus-0" id="idINTERNAL_95_S1VL2_95_GH3" transform="translate(261.0,138.0)">
+                <g class="sld-node sld-hidden-node sld-fictitious sld-vl300to500 sld-bus-0" id="idINTERNAL_95_S1VL2_95_GH3" transform="translate(361.0,138.0)">
                     <circle cx="4" cy="4" r="4"/>
                 </g>
-                <g class="sld-generator sld-top-feeder sld-vl300to500 sld-bus-0" id="idGH3" transform="translate(259.0,74.0)">
+                <g class="sld-generator sld-top-feeder sld-vl300to500 sld-bus-0" id="idGH3" transform="translate(359.0,74.0)">
                     <circle cx="6" cy="6" r="6"/>
                     <path d="M6,6 A 6 40 0 0 0 2,6"/>
                     <path d="M6,6 A 6 40 0 0 0 10,6"/>
@@ -450,151 +450,151 @@
             </g>
             <g class="sld-extern-cell sld-cell-direction-bottom" id="idEXTERN_32_6">
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_S1VL2_95_BBS1_95_LD2_95_DISCONNECTOR_95_INTERNAL_95_S1VL2_95_12">
-                    <polyline points="315.0,252.0,315.0,307.0"/>
+                    <polyline points="415.0,252.0,415.0,307.0"/>
                 </g>
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_S1VL2_95_BBS2_95_LD2_95_DISCONNECTOR_95_INTERNAL_95_S1VL2_95_12">
-                    <polyline points="315.0,277.0,315.0,307.0"/>
+                    <polyline points="415.0,277.0,415.0,307.0"/>
                 </g>
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_INTERNAL_95_S1VL2_95_12_95_S1VL2_95_LD2_95_BREAKER">
-                    <polyline points="315.0,307.0,315.0,337.0"/>
+                    <polyline points="415.0,307.0,415.0,337.0"/>
                 </g>
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_S1VL2_95_LD2_95_BREAKER_95_INTERNAL_95_S1VL2_95_LD2">
-                    <polyline points="315.0,357.0,315.0,387.0"/>
+                    <polyline points="415.0,357.0,415.0,387.0"/>
                 </g>
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_INTERNAL_95_S1VL2_95_LD2_95_LD2">
-                    <polyline points="315.0,387.0,315.0,444.5"/>
+                    <polyline points="415.0,387.0,415.0,444.5"/>
                 </g>
-                <g class="sld-feeder-info sld-out sld-reactive-power" id="idLD2_95_ARROW_95_REACTIVE" transform="translate(310.0,419.5)">
+                <g class="sld-feeder-info sld-out sld-reactive-power" id="idLD2_95_ARROW_95_REACTIVE" transform="translate(410.0,419.5)">
                     <polygon class="sld-arrow-out" points="5,0 10,10 0,10" transform="rotate(180.0,5.0,5.0)"/>
                     <polygon class="sld-arrow-in" points="0,0 10,0 5,10" transform="rotate(180.0,5.0,5.0)"/>
                     <text class="sld-label" x="15.0" y="5.0">5</text>
                 </g>
-                <g class="sld-feeder-info sld-out sld-active-power" id="idLD2_95_ARROW_95_ACTIVE" transform="translate(310.0,399.5)">
+                <g class="sld-feeder-info sld-out sld-active-power" id="idLD2_95_ARROW_95_ACTIVE" transform="translate(410.0,399.5)">
                     <polygon class="sld-arrow-out" points="5,0 10,10 0,10" transform="rotate(180.0,5.0,5.0)"/>
                     <polygon class="sld-arrow-in" points="0,0 10,0 5,10" transform="rotate(180.0,5.0,5.0)"/>
                     <text class="sld-label" x="15.0" y="5.0">60</text>
                 </g>
-                <g class="sld-disconnector sld-open sld-vl300to500 sld-disconnected" id="idS1VL2_95_BBS1_95_LD2_95_DISCONNECTOR" transform="translate(311.0,248.0)">
+                <g class="sld-disconnector sld-open sld-vl300to500 sld-disconnected" id="idS1VL2_95_BBS1_95_LD2_95_DISCONNECTOR" transform="translate(411.0,248.0)">
                     <path class="sld-sw-closed" d="M0,0 8,8 M8,0 0,8"/>
                     <path class="sld-sw-open" d="M8,0 0,8"/>
                 </g>
-                <g class="sld-node sld-hidden-node sld-fictitious sld-vl300to500 sld-bus-0" id="idINTERNAL_95_S1VL2_95_12" transform="translate(311.0,303.0)">
+                <g class="sld-node sld-hidden-node sld-fictitious sld-vl300to500 sld-bus-0" id="idINTERNAL_95_S1VL2_95_12" transform="translate(411.0,303.0)">
                     <circle cx="4" cy="4" r="4"/>
                 </g>
-                <g class="sld-disconnector sld-closed sld-vl300to500 sld-bus-0" id="idS1VL2_95_BBS2_95_LD2_95_DISCONNECTOR" transform="translate(311.0,273.0)">
+                <g class="sld-disconnector sld-closed sld-vl300to500 sld-bus-0" id="idS1VL2_95_BBS2_95_LD2_95_DISCONNECTOR" transform="translate(411.0,273.0)">
                     <path class="sld-sw-closed" d="M0,0 8,8 M8,0 0,8"/>
                     <path class="sld-sw-open" d="M8,0 0,8"/>
                 </g>
-                <g class="sld-breaker sld-closed sld-vl300to500 sld-bus-0" id="idS1VL2_95_LD2_95_BREAKER" transform="translate(305.0,337.0)">
+                <g class="sld-breaker sld-closed sld-vl300to500 sld-bus-0" id="idS1VL2_95_LD2_95_BREAKER" transform="translate(405.0,337.0)">
                     <path class="sld-sw-closed" d="M1,1 V19 H19 V1z M10,5 V15"/>
                     <path class="sld-sw-open" d="M1,1 V19 H19 V1z M5,10 H15"/>
                 </g>
-                <g class="sld-node sld-hidden-node sld-fictitious sld-vl300to500 sld-bus-0" id="idINTERNAL_95_S1VL2_95_LD2" transform="translate(311.0,383.0)">
+                <g class="sld-node sld-hidden-node sld-fictitious sld-vl300to500 sld-bus-0" id="idINTERNAL_95_S1VL2_95_LD2" transform="translate(411.0,383.0)">
                     <circle cx="4" cy="4" r="4"/>
                 </g>
-                <g class="sld-load sld-bottom-feeder sld-vl300to500 sld-bus-0" id="idLD2" transform="translate(307.0,444.5)">
+                <g class="sld-load sld-bottom-feeder sld-vl300to500 sld-bus-0" id="idLD2" transform="translate(407.0,444.5)">
                     <rect height="9" width="16"/>
                     <line x1="0" x2="16" y1="0" y2="9"/>
                     <line x1="16" x2="0" y1="0" y2="9"/>
                     <text class="sld-label" id="idLD2_95_S_95_LABEL" x="-5.0" y="15.5">LD2</text>
                 </g>
             </g>
-            <g class="sld-extern-cell sld-cell-direction-top" id="idEXTERN_32_7">
+            <g class="sld-extern-cell sld-cell-direction-bottom" id="idEXTERN_32_7">
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_S1VL2_95_BBS1_95_LD3_95_DISCONNECTOR_95_INTERNAL_95_S1VL2_95_14">
-                    <polyline points="365.0,252.0,365.0,222.0"/>
+                    <polyline points="465.0,252.0,465.0,307.0"/>
                 </g>
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_S1VL2_95_BBS2_95_LD3_95_DISCONNECTOR_95_INTERNAL_95_S1VL2_95_14">
-                    <polyline points="365.0,277.0,365.0,222.0"/>
+                    <polyline points="465.0,277.0,465.0,307.0"/>
                 </g>
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_INTERNAL_95_S1VL2_95_14_95_S1VL2_95_LD3_95_BREAKER">
-                    <polyline points="365.0,222.0,365.0,192.0"/>
+                    <polyline points="465.0,307.0,465.0,337.0"/>
                 </g>
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_S1VL2_95_LD3_95_BREAKER_95_INTERNAL_95_S1VL2_95_LD3">
-                    <polyline points="365.0,172.0,365.0,142.0"/>
+                    <polyline points="465.0,357.0,465.0,387.0"/>
                 </g>
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_INTERNAL_95_S1VL2_95_LD3_95_LD3">
-                    <polyline points="365.0,142.0,365.0,84.5"/>
+                    <polyline points="465.0,387.0,465.0,444.5"/>
                 </g>
-                <g class="sld-feeder-info sld-out sld-active-power" id="idLD3_95_ARROW_95_ACTIVE" transform="translate(360.0,99.5)">
-                    <polygon class="sld-arrow-out" points="5,0 10,10 0,10"/>
-                    <polygon class="sld-arrow-in" points="0,0 10,0 5,10"/>
-                    <text class="sld-label" x="15.0" y="5.0">60</text>
-                </g>
-                <g class="sld-feeder-info sld-out sld-reactive-power" id="idLD3_95_ARROW_95_REACTIVE" transform="translate(360.0,119.5)">
-                    <polygon class="sld-arrow-out" points="5,0 10,10 0,10"/>
-                    <polygon class="sld-arrow-in" points="0,0 10,0 5,10"/>
+                <g class="sld-feeder-info sld-out sld-reactive-power" id="idLD3_95_ARROW_95_REACTIVE" transform="translate(460.0,419.5)">
+                    <polygon class="sld-arrow-out" points="5,0 10,10 0,10" transform="rotate(180.0,5.0,5.0)"/>
+                    <polygon class="sld-arrow-in" points="0,0 10,0 5,10" transform="rotate(180.0,5.0,5.0)"/>
                     <text class="sld-label" x="15.0" y="5.0">5</text>
                 </g>
-                <g class="sld-disconnector sld-open sld-vl300to500 sld-disconnected" id="idS1VL2_95_BBS1_95_LD3_95_DISCONNECTOR" transform="translate(361.0,248.0)">
+                <g class="sld-feeder-info sld-out sld-active-power" id="idLD3_95_ARROW_95_ACTIVE" transform="translate(460.0,399.5)">
+                    <polygon class="sld-arrow-out" points="5,0 10,10 0,10" transform="rotate(180.0,5.0,5.0)"/>
+                    <polygon class="sld-arrow-in" points="0,0 10,0 5,10" transform="rotate(180.0,5.0,5.0)"/>
+                    <text class="sld-label" x="15.0" y="5.0">60</text>
+                </g>
+                <g class="sld-disconnector sld-open sld-vl300to500 sld-disconnected" id="idS1VL2_95_BBS1_95_LD3_95_DISCONNECTOR" transform="translate(461.0,248.0)">
                     <path class="sld-sw-closed" d="M0,0 8,8 M8,0 0,8"/>
                     <path class="sld-sw-open" d="M8,0 0,8"/>
                 </g>
-                <g class="sld-node sld-hidden-node sld-fictitious sld-vl300to500 sld-bus-0" id="idINTERNAL_95_S1VL2_95_14" transform="translate(361.0,218.0)">
+                <g class="sld-node sld-hidden-node sld-fictitious sld-vl300to500 sld-bus-0" id="idINTERNAL_95_S1VL2_95_14" transform="translate(461.0,303.0)">
                     <circle cx="4" cy="4" r="4"/>
                 </g>
-                <g class="sld-disconnector sld-closed sld-vl300to500 sld-bus-0" id="idS1VL2_95_BBS2_95_LD3_95_DISCONNECTOR" transform="translate(361.0,273.0)">
+                <g class="sld-disconnector sld-closed sld-vl300to500 sld-bus-0" id="idS1VL2_95_BBS2_95_LD3_95_DISCONNECTOR" transform="translate(461.0,273.0)">
                     <path class="sld-sw-closed" d="M0,0 8,8 M8,0 0,8"/>
                     <path class="sld-sw-open" d="M8,0 0,8"/>
                 </g>
-                <g class="sld-breaker sld-closed sld-vl300to500 sld-bus-0" id="idS1VL2_95_LD3_95_BREAKER" transform="translate(355.0,172.0)">
+                <g class="sld-breaker sld-closed sld-vl300to500 sld-bus-0" id="idS1VL2_95_LD3_95_BREAKER" transform="translate(455.0,337.0)">
                     <path class="sld-sw-closed" d="M1,1 V19 H19 V1z M10,5 V15"/>
                     <path class="sld-sw-open" d="M1,1 V19 H19 V1z M5,10 H15"/>
                 </g>
-                <g class="sld-node sld-hidden-node sld-fictitious sld-vl300to500 sld-bus-0" id="idINTERNAL_95_S1VL2_95_LD3" transform="translate(361.0,138.0)">
+                <g class="sld-node sld-hidden-node sld-fictitious sld-vl300to500 sld-bus-0" id="idINTERNAL_95_S1VL2_95_LD3" transform="translate(461.0,383.0)">
                     <circle cx="4" cy="4" r="4"/>
                 </g>
-                <g class="sld-load sld-top-feeder sld-vl300to500 sld-bus-0" id="idLD3" transform="translate(357.0,75.5)">
+                <g class="sld-load sld-bottom-feeder sld-vl300to500 sld-bus-0" id="idLD3" transform="translate(457.0,444.5)">
                     <rect height="9" width="16"/>
                     <line x1="0" x2="16" y1="0" y2="9"/>
                     <line x1="16" x2="0" y1="0" y2="9"/>
-                    <text class="sld-label" id="idLD3_95_N_95_LABEL" x="-5.0" y="-6.5">LD3</text>
+                    <text class="sld-label" id="idLD3_95_S_95_LABEL" x="-5.0" y="15.5">LD3</text>
                 </g>
             </g>
             <g class="sld-extern-cell sld-cell-direction-bottom" id="idEXTERN_32_8">
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_S1VL2_95_BBS1_95_LD4_95_DISCONNECTOR_95_INTERNAL_95_S1VL2_95_16">
-                    <polyline points="415.0,252.0,415.0,307.0"/>
+                    <polyline points="515.0,252.0,515.0,307.0"/>
                 </g>
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_S1VL2_95_BBS2_95_LD4_95_DISCONNECTOR_95_INTERNAL_95_S1VL2_95_16">
-                    <polyline points="415.0,277.0,415.0,307.0"/>
+                    <polyline points="515.0,277.0,515.0,307.0"/>
                 </g>
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_INTERNAL_95_S1VL2_95_16_95_S1VL2_95_LD4_95_BREAKER">
-                    <polyline points="415.0,307.0,415.0,337.0"/>
+                    <polyline points="515.0,307.0,515.0,337.0"/>
                 </g>
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_S1VL2_95_LD4_95_BREAKER_95_INTERNAL_95_S1VL2_95_LD4">
-                    <polyline points="415.0,357.0,415.0,387.0"/>
+                    <polyline points="515.0,357.0,515.0,387.0"/>
                 </g>
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_INTERNAL_95_S1VL2_95_LD4_95_LD4">
-                    <polyline points="415.0,387.0,415.0,444.5"/>
+                    <polyline points="515.0,387.0,515.0,444.5"/>
                 </g>
-                <g class="sld-feeder-info sld-out sld-reactive-power" id="idLD4_95_ARROW_95_REACTIVE" transform="translate(410.0,419.5)">
+                <g class="sld-feeder-info sld-out sld-reactive-power" id="idLD4_95_ARROW_95_REACTIVE" transform="translate(510.0,419.5)">
                     <polygon class="sld-arrow-out" points="5,0 10,10 0,10" transform="rotate(180.0,5.0,5.0)"/>
                     <polygon class="sld-arrow-in" points="0,0 10,0 5,10" transform="rotate(180.0,5.0,5.0)"/>
                     <text class="sld-label" x="15.0" y="5.0">5</text>
                 </g>
-                <g class="sld-feeder-info sld-out sld-active-power" id="idLD4_95_ARROW_95_ACTIVE" transform="translate(410.0,399.5)">
+                <g class="sld-feeder-info sld-out sld-active-power" id="idLD4_95_ARROW_95_ACTIVE" transform="translate(510.0,399.5)">
                     <polygon class="sld-arrow-out" points="5,0 10,10 0,10" transform="rotate(180.0,5.0,5.0)"/>
                     <polygon class="sld-arrow-in" points="0,0 10,0 5,10" transform="rotate(180.0,5.0,5.0)"/>
                     <text class="sld-label" x="15.0" y="5.0">40</text>
                 </g>
-                <g class="sld-disconnector sld-open sld-vl300to500 sld-disconnected" id="idS1VL2_95_BBS1_95_LD4_95_DISCONNECTOR" transform="translate(411.0,248.0)">
+                <g class="sld-disconnector sld-open sld-vl300to500 sld-disconnected" id="idS1VL2_95_BBS1_95_LD4_95_DISCONNECTOR" transform="translate(511.0,248.0)">
                     <path class="sld-sw-closed" d="M0,0 8,8 M8,0 0,8"/>
                     <path class="sld-sw-open" d="M8,0 0,8"/>
                 </g>
-                <g class="sld-node sld-hidden-node sld-fictitious sld-vl300to500 sld-bus-0" id="idINTERNAL_95_S1VL2_95_16" transform="translate(411.0,303.0)">
+                <g class="sld-node sld-hidden-node sld-fictitious sld-vl300to500 sld-bus-0" id="idINTERNAL_95_S1VL2_95_16" transform="translate(511.0,303.0)">
                     <circle cx="4" cy="4" r="4"/>
                 </g>
-                <g class="sld-disconnector sld-closed sld-vl300to500 sld-bus-0" id="idS1VL2_95_BBS2_95_LD4_95_DISCONNECTOR" transform="translate(411.0,273.0)">
+                <g class="sld-disconnector sld-closed sld-vl300to500 sld-bus-0" id="idS1VL2_95_BBS2_95_LD4_95_DISCONNECTOR" transform="translate(511.0,273.0)">
                     <path class="sld-sw-closed" d="M0,0 8,8 M8,0 0,8"/>
                     <path class="sld-sw-open" d="M8,0 0,8"/>
                 </g>
-                <g class="sld-breaker sld-closed sld-vl300to500 sld-bus-0" id="idS1VL2_95_LD4_95_BREAKER" transform="translate(405.0,337.0)">
+                <g class="sld-breaker sld-closed sld-vl300to500 sld-bus-0" id="idS1VL2_95_LD4_95_BREAKER" transform="translate(505.0,337.0)">
                     <path class="sld-sw-closed" d="M1,1 V19 H19 V1z M10,5 V15"/>
                     <path class="sld-sw-open" d="M1,1 V19 H19 V1z M5,10 H15"/>
                 </g>
-                <g class="sld-node sld-hidden-node sld-fictitious sld-vl300to500 sld-bus-0" id="idINTERNAL_95_S1VL2_95_LD4" transform="translate(411.0,383.0)">
+                <g class="sld-node sld-hidden-node sld-fictitious sld-vl300to500 sld-bus-0" id="idINTERNAL_95_S1VL2_95_LD4" transform="translate(511.0,383.0)">
                     <circle cx="4" cy="4" r="4"/>
                 </g>
-                <g class="sld-load sld-bottom-feeder sld-vl300to500 sld-bus-0" id="idLD4" transform="translate(407.0,444.5)">
+                <g class="sld-load sld-bottom-feeder sld-vl300to500 sld-bus-0" id="idLD4" transform="translate(507.0,444.5)">
                     <rect height="9" width="16"/>
                     <line x1="0" x2="16" y1="0" y2="9"/>
                     <line x1="16" x2="0" y1="0" y2="9"/>
@@ -603,102 +603,102 @@
             </g>
             <g class="sld-extern-cell sld-cell-direction-top" id="idEXTERN_32_9">
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_S1VL2_95_BBS1_95_SHUNT_95_DISCONNECTOR_95_INTERNAL_95_S1VL2_95_18">
-                    <polyline points="465.0,252.0,465.0,222.0"/>
+                    <polyline points="565.0,252.0,565.0,222.0"/>
                 </g>
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_S1VL2_95_BBS2_95_SHUNT_95_DISCONNECTOR_95_INTERNAL_95_S1VL2_95_18">
-                    <polyline points="465.0,277.0,465.0,222.0"/>
+                    <polyline points="565.0,277.0,565.0,222.0"/>
                 </g>
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_INTERNAL_95_S1VL2_95_18_95_S1VL2_95_SHUNT_95_BREAKER">
-                    <polyline points="465.0,222.0,465.0,192.0"/>
+                    <polyline points="565.0,222.0,565.0,192.0"/>
                 </g>
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_S1VL2_95_SHUNT_95_BREAKER_95_INTERNAL_95_S1VL2_95_SHUNT">
-                    <polyline points="465.0,172.0,465.0,142.0"/>
+                    <polyline points="565.0,172.0,565.0,142.0"/>
                 </g>
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_INTERNAL_95_S1VL2_95_SHUNT_95_SHUNT">
-                    <polyline points="465.0,142.0,465.0,84.0"/>
+                    <polyline points="565.0,142.0,565.0,84.0"/>
                 </g>
-                <g class="sld-feeder-info sld-in sld-active-power" id="idSHUNT_95_ARROW_95_ACTIVE" transform="translate(460.0,99.0)">
+                <g class="sld-feeder-info sld-in sld-active-power" id="idSHUNT_95_ARROW_95_ACTIVE" transform="translate(560.0,99.0)">
                     <polygon class="sld-arrow-out" points="5,0 10,10 0,10"/>
                     <polygon class="sld-arrow-in" points="0,0 10,0 5,10"/>
                     <text class="sld-label" x="15.0" y="5.0">—</text>
                 </g>
-                <g class="sld-feeder-info sld-out sld-reactive-power" id="idSHUNT_95_ARROW_95_REACTIVE" transform="translate(460.0,119.0)">
+                <g class="sld-feeder-info sld-out sld-reactive-power" id="idSHUNT_95_ARROW_95_REACTIVE" transform="translate(560.0,119.0)">
                     <polygon class="sld-arrow-out" points="5,0 10,10 0,10"/>
                     <polygon class="sld-arrow-in" points="0,0 10,0 5,10"/>
                     <text class="sld-label" x="15.0" y="5.0">1,920</text>
                 </g>
-                <g class="sld-disconnector sld-closed sld-vl300to500 sld-bus-0" id="idS1VL2_95_BBS1_95_SHUNT_95_DISCONNECTOR" transform="translate(461.0,248.0)">
+                <g class="sld-disconnector sld-closed sld-vl300to500 sld-bus-0" id="idS1VL2_95_BBS1_95_SHUNT_95_DISCONNECTOR" transform="translate(561.0,248.0)">
                     <path class="sld-sw-closed" d="M0,0 8,8 M8,0 0,8"/>
                     <path class="sld-sw-open" d="M8,0 0,8"/>
                 </g>
-                <g class="sld-node sld-hidden-node sld-fictitious sld-vl300to500 sld-bus-0" id="idINTERNAL_95_S1VL2_95_18" transform="translate(461.0,218.0)">
+                <g class="sld-node sld-hidden-node sld-fictitious sld-vl300to500 sld-bus-0" id="idINTERNAL_95_S1VL2_95_18" transform="translate(561.0,218.0)">
                     <circle cx="4" cy="4" r="4"/>
                 </g>
-                <g class="sld-disconnector sld-open sld-vl300to500 sld-disconnected" id="idS1VL2_95_BBS2_95_SHUNT_95_DISCONNECTOR" transform="translate(461.0,273.0)">
+                <g class="sld-disconnector sld-open sld-vl300to500 sld-disconnected" id="idS1VL2_95_BBS2_95_SHUNT_95_DISCONNECTOR" transform="translate(561.0,273.0)">
                     <path class="sld-sw-closed" d="M0,0 8,8 M8,0 0,8"/>
                     <path class="sld-sw-open" d="M8,0 0,8"/>
                 </g>
-                <g class="sld-breaker sld-closed sld-vl300to500 sld-bus-0" id="idS1VL2_95_SHUNT_95_BREAKER" transform="translate(455.0,172.0)">
+                <g class="sld-breaker sld-closed sld-vl300to500 sld-bus-0" id="idS1VL2_95_SHUNT_95_BREAKER" transform="translate(555.0,172.0)">
                     <path class="sld-sw-closed" d="M1,1 V19 H19 V1z M10,5 V15"/>
                     <path class="sld-sw-open" d="M1,1 V19 H19 V1z M5,10 H15"/>
                 </g>
-                <g class="sld-node sld-hidden-node sld-fictitious sld-vl300to500 sld-bus-0" id="idINTERNAL_95_S1VL2_95_SHUNT" transform="translate(461.0,138.0)">
+                <g class="sld-node sld-hidden-node sld-fictitious sld-vl300to500 sld-bus-0" id="idINTERNAL_95_S1VL2_95_SHUNT" transform="translate(561.0,138.0)">
                     <circle cx="4" cy="4" r="4"/>
                 </g>
-                <g class="sld-inductor sld-top-feeder sld-vl300to500 sld-bus-0" id="idSHUNT" transform="translate(457.5,75.5)">
+                <g class="sld-inductor sld-top-feeder sld-vl300to500 sld-bus-0" id="idSHUNT" transform="translate(557.5,75.5)">
                     <path d="M5,5 A 5 20 0 0 0 0,5"/>
                     <path d="M10,5 A 5 20 0 0 0 5,5"/>
                     <path d="M15,5 A 5 20 0 0 0 10,5"/>
                     <text class="sld-label" id="idSHUNT_95_N_95_LABEL" x="-5.0" y="-6.5">SHUNT</text>
                 </g>
             </g>
-            <g class="sld-extern-cell sld-cell-direction-top" id="idEXTERN_32_10">
+            <g class="sld-extern-cell sld-cell-direction-bottom" id="idEXTERN_32_10">
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_S1VL2_95_BBS1_95_LCC1_95_DISCONNECTOR_95_INTERNAL_95_S1VL2_95_20">
-                    <polyline points="565.0,252.0,565.0,222.0"/>
+                    <polyline points="615.0,252.0,615.0,307.0"/>
                 </g>
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_S1VL2_95_BBS2_95_LCC1_95_DISCONNECTOR_95_INTERNAL_95_S1VL2_95_20">
-                    <polyline points="565.0,277.0,565.0,222.0"/>
+                    <polyline points="615.0,277.0,615.0,307.0"/>
                 </g>
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_INTERNAL_95_S1VL2_95_20_95_S1VL2_95_LCC1_95_BREAKER">
-                    <polyline points="565.0,222.0,565.0,192.0"/>
+                    <polyline points="615.0,307.0,615.0,337.0"/>
                 </g>
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_S1VL2_95_LCC1_95_BREAKER_95_INTERNAL_95_S1VL2_95_LCC1">
-                    <polyline points="565.0,172.0,565.0,142.0"/>
+                    <polyline points="615.0,357.0,615.0,387.0"/>
                 </g>
                 <g class="sld-wire sld-vl300to500 sld-bus-0" id="_95_S1VL2_95_INTERNAL_95_S1VL2_95_LCC1_95_LCC1">
-                    <polyline points="565.0,142.0,565.0,86.0"/>
+                    <polyline points="615.0,387.0,615.0,443.0"/>
                 </g>
-                <g class="sld-feeder-info sld-out sld-active-power" id="idLCC1_95_ARROW_95_ACTIVE" transform="translate(560.0,101.0)">
-                    <polygon class="sld-arrow-out" points="5,0 10,10 0,10"/>
-                    <polygon class="sld-arrow-in" points="0,0 10,0 5,10"/>
-                    <text class="sld-label" x="15.0" y="5.0">81</text>
-                </g>
-                <g class="sld-feeder-info sld-in sld-reactive-power" id="idLCC1_95_ARROW_95_REACTIVE" transform="translate(560.0,121.0)">
-                    <polygon class="sld-arrow-out" points="5,0 10,10 0,10"/>
-                    <polygon class="sld-arrow-in" points="0,0 10,0 5,10"/>
+                <g class="sld-feeder-info sld-in sld-reactive-power" id="idLCC1_95_ARROW_95_REACTIVE" transform="translate(610.0,418.0)">
+                    <polygon class="sld-arrow-out" points="5,0 10,10 0,10" transform="rotate(180.0,5.0,5.0)"/>
+                    <polygon class="sld-arrow-in" points="0,0 10,0 5,10" transform="rotate(180.0,5.0,5.0)"/>
                     <text class="sld-label" x="15.0" y="5.0">—</text>
                 </g>
-                <g class="sld-disconnector sld-open sld-vl300to500 sld-disconnected" id="idS1VL2_95_BBS1_95_LCC1_95_DISCONNECTOR" transform="translate(561.0,248.0)">
+                <g class="sld-feeder-info sld-out sld-active-power" id="idLCC1_95_ARROW_95_ACTIVE" transform="translate(610.0,398.0)">
+                    <polygon class="sld-arrow-out" points="5,0 10,10 0,10" transform="rotate(180.0,5.0,5.0)"/>
+                    <polygon class="sld-arrow-in" points="0,0 10,0 5,10" transform="rotate(180.0,5.0,5.0)"/>
+                    <text class="sld-label" x="15.0" y="5.0">81</text>
+                </g>
+                <g class="sld-disconnector sld-open sld-vl300to500 sld-disconnected" id="idS1VL2_95_BBS1_95_LCC1_95_DISCONNECTOR" transform="translate(611.0,248.0)">
                     <path class="sld-sw-closed" d="M0,0 8,8 M8,0 0,8"/>
                     <path class="sld-sw-open" d="M8,0 0,8"/>
                 </g>
-                <g class="sld-node sld-hidden-node sld-fictitious sld-vl300to500 sld-bus-0" id="idINTERNAL_95_S1VL2_95_20" transform="translate(561.0,218.0)">
+                <g class="sld-node sld-hidden-node sld-fictitious sld-vl300to500 sld-bus-0" id="idINTERNAL_95_S1VL2_95_20" transform="translate(611.0,303.0)">
                     <circle cx="4" cy="4" r="4"/>
                 </g>
-                <g class="sld-disconnector sld-closed sld-vl300to500 sld-bus-0" id="idS1VL2_95_BBS2_95_LCC1_95_DISCONNECTOR" transform="translate(561.0,273.0)">
+                <g class="sld-disconnector sld-closed sld-vl300to500 sld-bus-0" id="idS1VL2_95_BBS2_95_LCC1_95_DISCONNECTOR" transform="translate(611.0,273.0)">
                     <path class="sld-sw-closed" d="M0,0 8,8 M8,0 0,8"/>
                     <path class="sld-sw-open" d="M8,0 0,8"/>
                 </g>
-                <g class="sld-breaker sld-closed sld-vl300to500 sld-bus-0" id="idS1VL2_95_LCC1_95_BREAKER" transform="translate(555.0,172.0)">
+                <g class="sld-breaker sld-closed sld-vl300to500 sld-bus-0" id="idS1VL2_95_LCC1_95_BREAKER" transform="translate(605.0,337.0)">
                     <path class="sld-sw-closed" d="M1,1 V19 H19 V1z M10,5 V15"/>
                     <path class="sld-sw-open" d="M1,1 V19 H19 V1z M5,10 H15"/>
                 </g>
-                <g class="sld-node sld-hidden-node sld-fictitious sld-vl300to500 sld-bus-0" id="idINTERNAL_95_S1VL2_95_LCC1" transform="translate(561.0,138.0)">
+                <g class="sld-node sld-hidden-node sld-fictitious sld-vl300to500 sld-bus-0" id="idINTERNAL_95_S1VL2_95_LCC1" transform="translate(611.0,383.0)">
                     <circle cx="4" cy="4" r="4"/>
                 </g>
-                <g class="sld-lcc sld-top-feeder sld-vl300to500 sld-bus-0" id="idLCC1" transform="translate(557.0,76.0)">
+                <g class="sld-lcc sld-bottom-feeder sld-vl300to500 sld-bus-0" id="idLCC1" transform="translate(607.0,445.0)">
                     <text x="-15.5" y="6.6">AC / DC - LCC</text>
-                    <text class="sld-label" id="idLCC1_95_N_95_LABEL" x="-5.0" y="-7.0">HVDC2</text>
+                    <text class="sld-label" id="idLCC1_95_S_95_LABEL" x="-5.0" y="15.0">LCC1</text>
                 </g>
             </g>
         </g>
@@ -754,55 +754,55 @@
                     <text class="sld-label" id="idLD1_95_N_95_LABEL" x="-5.0" y="-6.5">LD1</text>
                 </g>
             </g>
-            <g class="sld-extern-cell sld-cell-direction-bottom" id="idEXTERN_32_1">
+            <g class="sld-extern-cell sld-cell-direction-top" id="idEXTERN_32_1">
                 <g class="sld-wire sld-vl180to300 sld-bus-0" id="_95_S1VL1_95_S1VL1_95_BBS_95_TWT_95_DISCONNECTOR_95_INTERNAL_95_S1VL1_95_S1VL1_95_BBS_95_TWT_95_DISCONNECTOR_45_S1VL1_95_TWT_95_BREAKER">
-                    <polyline points="755.0,252.0,755.0,282.0"/>
+                    <polyline points="755.0,252.0,755.0,222.0"/>
                 </g>
                 <g class="sld-wire sld-vl180to300 sld-bus-0" id="_95_S1VL1_95_INTERNAL_95_S1VL1_95_S1VL1_95_BBS_95_TWT_95_DISCONNECTOR_45_S1VL1_95_TWT_95_BREAKER_95_S1VL1_95_TWT_95_BREAKER">
-                    <polyline points="755.0,282.0,755.0,312.0"/>
+                    <polyline points="755.0,222.0,755.0,192.0"/>
                 </g>
                 <g class="sld-wire sld-vl180to300 sld-bus-0" id="_95_S1VL1_95_S1VL1_95_TWT_95_BREAKER_95_INTERNAL_95_S1VL1_95_TWT_95_ONE">
-                    <polyline points="755.0,332.0,755.0,362.0"/>
+                    <polyline points="755.0,172.0,755.0,142.0"/>
                 </g>
                 <g class="sld-wire sld-vl180to300 sld-bus-0" id="_95_S1VL1_95_INTERNAL_95_S1VL1_95_TWT_95_ONE_95_TWT_95_ONE">
-                    <polyline points="755.0,362.0,755.0,424.0"/>
+                    <polyline points="755.0,142.0,755.0,80.0"/>
                 </g>
-                <g class="sld-feeder-info sld-in sld-reactive-power" id="idTWT_95_ONE_95_ARROW_95_REACTIVE" transform="translate(750.0,399.0)">
-                    <polygon class="sld-arrow-out" points="5,0 10,10 0,10" transform="rotate(180.0,5.0,5.0)"/>
-                    <polygon class="sld-arrow-in" points="0,0 10,0 5,10" transform="rotate(180.0,5.0,5.0)"/>
-                    <text class="sld-label" x="15.0" y="5.0">-10</text>
-                </g>
-                <g class="sld-feeder-info sld-in sld-active-power" id="idTWT_95_ONE_95_ARROW_95_ACTIVE" transform="translate(750.0,379.0)">
-                    <polygon class="sld-arrow-out" points="5,0 10,10 0,10" transform="rotate(180.0,5.0,5.0)"/>
-                    <polygon class="sld-arrow-in" points="0,0 10,0 5,10" transform="rotate(180.0,5.0,5.0)"/>
+                <g class="sld-feeder-info sld-in sld-active-power" id="idTWT_95_ONE_95_ARROW_95_ACTIVE" transform="translate(750.0,95.0)">
+                    <polygon class="sld-arrow-out" points="5,0 10,10 0,10"/>
+                    <polygon class="sld-arrow-in" points="0,0 10,0 5,10"/>
                     <text class="sld-label" x="15.0" y="5.0">-80</text>
+                </g>
+                <g class="sld-feeder-info sld-in sld-reactive-power" id="idTWT_95_ONE_95_ARROW_95_REACTIVE" transform="translate(750.0,115.0)">
+                    <polygon class="sld-arrow-out" points="5,0 10,10 0,10"/>
+                    <polygon class="sld-arrow-in" points="0,0 10,0 5,10"/>
+                    <text class="sld-label" x="15.0" y="5.0">-10</text>
                 </g>
                 <g class="sld-disconnector sld-closed sld-vl180to300 sld-bus-0" id="idS1VL1_95_BBS_95_TWT_95_DISCONNECTOR" transform="translate(751.0,248.0)">
                     <path class="sld-sw-closed" d="M0,0 8,8 M8,0 0,8"/>
                     <path class="sld-sw-open" d="M8,0 0,8"/>
                 </g>
-                <g class="sld-node sld-hidden-node sld-fictitious sld-vl180to300 sld-bus-0" id="idINTERNAL_95_S1VL1_95_S1VL1_95_BBS_95_TWT_95_DISCONNECTOR_45_S1VL1_95_TWT_95_BREAKER" transform="translate(751.0,278.0)">
+                <g class="sld-node sld-hidden-node sld-fictitious sld-vl180to300 sld-bus-0" id="idINTERNAL_95_S1VL1_95_S1VL1_95_BBS_95_TWT_95_DISCONNECTOR_45_S1VL1_95_TWT_95_BREAKER" transform="translate(751.0,218.0)">
                     <circle cx="4" cy="4" r="4"/>
                 </g>
-                <g class="sld-breaker sld-closed sld-vl180to300 sld-bus-0" id="idS1VL1_95_TWT_95_BREAKER" transform="translate(745.0,312.0)">
+                <g class="sld-breaker sld-closed sld-vl180to300 sld-bus-0" id="idS1VL1_95_TWT_95_BREAKER" transform="translate(745.0,172.0)">
                     <path class="sld-sw-closed" d="M1,1 V19 H19 V1z M10,5 V15"/>
                     <path class="sld-sw-open" d="M1,1 V19 H19 V1z M5,10 H15"/>
                 </g>
-                <g class="sld-node sld-hidden-node sld-fictitious sld-vl180to300 sld-bus-0" id="idINTERNAL_95_S1VL1_95_TWT_95_ONE" transform="translate(751.0,358.0)">
+                <g class="sld-node sld-hidden-node sld-fictitious sld-vl180to300 sld-bus-0" id="idINTERNAL_95_S1VL1_95_TWT_95_ONE" transform="translate(751.0,138.0)">
                     <circle cx="4" cy="4" r="4"/>
                 </g>
-                <g class="sld-bottom-feeder sld-vl180to300 sld-bus-0" id="idTWT_95_ONE" transform="translate(755.0,424.0)">
-                    <text class="sld-label" id="idTWT_95_ONE_95_S_95_LABEL" x="-5.0" y="11.0">TWT</text>
+                <g class="sld-top-feeder sld-vl180to300 sld-bus-0" id="idTWT_95_ONE" transform="translate(755.0,80.0)">
+                    <text class="sld-label" id="idTWT_95_ONE_95_N_95_LABEL" x="-5.0" y="-11.0">TWT</text>
                 </g>
             </g>
         </g>
         <g class="sld-wire sld-vl180to300 sld-bus-0" id="idEDGE_95_TWT_95_ONE">
-            <polyline points="755.0,424.0,755.0,509.0,642.5,509.0"/>
+            <polyline points="755.0,80.0,755.0,20.0,467.5,20.0"/>
         </g>
         <g class="sld-wire sld-vl300to500 sld-bus-0" id="idEDGE_95_TWT_95_TWO">
-            <polyline points="515.0,449.0,515.0,509.0,627.5,509.0"/>
+            <polyline points="165.0,80.0,165.0,20.0,452.5,20.0"/>
         </g>
-        <g class="sld-pst sld-fictitious" id="idTWT" transform="translate(628.0,501.5)">
+        <g class="sld-pst sld-fictitious" id="idTWT" transform="translate(453.0,12.5)">
             <circle class="sld-vl180to300 sld-bus-0 sld-winding" cx="7" cy="10" r="5" transform="rotate(270.0,7.0,7.5)"/>
             <circle class="sld-vl300to500 sld-bus-0 sld-winding" cx="7" cy="5" r="5" transform="rotate(270.0,7.0,7.5)"/>
             <path class="sld-vl300to500 sld-bus-0 sld-pst-arrow" d="M14,0 0,14 M11,0 14,0 14,3" transform="rotate(270.0,7.0,7.5)"/>

@@ -3,13 +3,13 @@ import { SingleLineDiagramViewer } from '@powsybl/network-viewer-core';
 import { EditorModel } from './EditorModel';
 import { EditorCore } from './EditorCore';
 import { SvgDomService } from '../dom/SvgDomService';
+import { type EditorAction } from './actions';
 import {
     EDITOR_OPTION_DEFAULTS,
+    type BayInsertion,
     type ChangeSet,
-    type ConnectionPoint,
-    type CreateEquipmentSpec,
     type EditorOptions,
-    type EquipmentInfo,
+    type EditTarget,
     type EquipmentProperties,
 } from './types';
 
@@ -44,13 +44,7 @@ export class NetworkEditor {
         );
 
         const dom = new SvgDomService(opts.container);
-        this.core = new EditorCore(
-            model,
-            dom,
-            opts.onEvent,
-            opts.onEquipmentContextMenu,
-            opts.onConnectionPointClick,
-        );
+        this.core = new EditorCore(model, dom, opts.onEvent, opts.onTargets);
 
         this.container.addEventListener('contextmenu', this.onContextMenu);
     }
@@ -58,7 +52,7 @@ export class NetworkEditor {
     destroy(): void {
         this.container.removeEventListener('contextmenu', this.onContextMenu);
         this.core.destroy();
-        this.container.replaceChildren()
+        this.container.replaceChildren();
     }
 
     undo(): void {
@@ -82,29 +76,20 @@ export class NetworkEditor {
         this.core.clearPendingChanges();
     }
 
-    getEquipmentInfo(equipmentId: string): EquipmentInfo | null {
-        return this.core.getEquipmentInfo(equipmentId);
-    }
-
-    deleteElement(equipmentId: string): boolean {
-        return this.core.deleteElement(equipmentId);
-    }
-
-    deleteFeederBay(equipmentId: string): boolean {
-        return this.core.deleteFeederBay(equipmentId);
-    }
-
     /** Debug overlay: shows the IIDM node each element stands on. */
     showIidmNodes(enabled: boolean): void {
         this.core.showIidmNodes(enabled);
     }
 
-    getConnectionPoints(): ConnectionPoint[] {
-        return this.core.getConnectionPoints();
+    getTargets(): EditTarget[] {
+        return this.core.getTargets();
     }
 
-    createEquipment(pointId: string, spec: CreateEquipmentSpec): boolean {
-        return this.core.createEquipment(pointId, spec);
+    /**
+     * Every entry a host can put in a menu for this target
+     */
+    actionsFor(target: EditTarget, insertion?: BayInsertion): EditorAction[] {
+        return this.core.actionsFor(target, insertion);
     }
 
     getSelectedEquipmentId(): string | null {
@@ -117,10 +102,6 @@ export class NetworkEditor {
 
     seedProperties(equipmentId: string, values: EquipmentProperties): void {
         this.core.seedProperties(equipmentId, values);
-    }
-
-    applyProperties(equipmentId: string, changes: EquipmentProperties): boolean {
-        return this.core.applyProperties(equipmentId, changes);
     }
 
     private readonly onContextMenu = (event: MouseEvent): void => {

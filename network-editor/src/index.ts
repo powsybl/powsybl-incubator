@@ -1,28 +1,37 @@
 export { NetworkEditor } from './core/NetworkEditor';
 
 export {
-    CONNECTION_POINT_CLASS,
-    CREATABLE_TYPES,
-    SELECTED_CLASS,
-    toElementType,
-} from './core/types';
+    PROPERTY_SCHEMAS,
+    propertiesFor,
+    schemaFor,
+    validateProperties,
+    validateValues,
+    type PropertyDescriptor,
+    type PropertyMode,
+} from './properties';
+
+export type { ActionSubject, EditorAction } from './core/actions';
+
+export { NODE_TARGET_CLASS, PENDING_CREATE_CLASS, SELECTED_CLASS } from './core/types';
 
 export type {
+    BayInsertion,
+    BusbarTarget,
     ChangeOp,
     ChangeSet,
     ChangeSetEntry,
-    ConnectionAnchor,
-    ConnectionPoint,
-    ConnectionPointClickEvent,
-    CreateEquipmentSpec,
+    EditOperation,
     EditorEventListener,
     EditorEventName,
     EditorEvents,
     EditorOptions,
+    EditTarget,
     ElementType,
-    EquipmentContextMenuEvent,
-    EquipmentInfo,
     EquipmentProperties,
+    EquipmentTarget,
+    GapTarget,
+    NodeTarget,
     SLDMetadata,
+    TargetEvent,
     ViewerCallbacks,
 } from './core/types';

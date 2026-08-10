@@ -1,45 +1,69 @@
 import { EditorModel } from './EditorModel';
+import { buildActions, type EditorAction } from './actions';
+import {
+    availableOperations,
+    creatableTypesFor,
+    isSwitchNode,
+    operationsForEquipment,
+} from './operations';
+import { pushTo } from './utils.ts';
 import { CommandStack } from './commands/CommandStack';
-import { CreateEquipmentCommand } from './commands/CreateEquipmentCommand';
+import { CreateCommand } from './commands/CreateCommand';
 import { DeleteElementCommand } from './commands/DeleteElementCommand';
+import { MoveBayCommand } from './commands/MoveBayCommand';
+import { UpdateBayPositionCommand } from './commands/UpdateBayPositionCommand';
 import { UpdatePropertiesCommand } from './commands/UpdatePropertiesCommand';
 import { SvgDomService } from '../dom/SvgDomService';
 import {
-    CONNECTION_POINT_CLASS,
-    CREATABLE_TYPES,
     DELETABLE_TYPES,
-    SWITCH_TYPES,
     toElementType,
+    type BayInsertion,
+    type BayPosition,
+    type BusbarTarget,
     type ChangeSet,
-    type ConnectionPoint,
-    type ConnectionPointClickEvent,
-    type CreateEquipmentSpec,
+    type CreateSpec,
+    type EditOperation,
+    type EditTarget,
     type EquipmentProperties,
+    type EditorEmit,
+    type EditorEvent,
     type EditorEventListener,
-    type EditorEvents,
-    type EquipmentContextMenuEvent,
-    type EquipmentInfo,
-    type NodeMetadata, DELETABLE_BAY_TYPES, SELECTABLE_TYPES, SELECTED_CLASS,
+    type FeederDirection,
+    type NodeMetadata,
+    type PendingOrders,
+    type TargetEvent,
 } from './types';
 
 const DRAG_THRESHOLD = 10;
+
+type BuildableTarget = Exclude<EditTarget, { kind: 'EQUIPMENT' }>;
+
+const CREATE_OPERATIONS: Record<BuildableTarget['kind'], EditOperation> = {
+    NODE: 'CREATE_INJECTION',
+    BUSBAR: 'CREATE_FEEDER_BAY',
+    GAP: 'CREATE_SWITCH',
+};
+
+const EXCLUSIVE_TARGETS: ReadonlySet<EditTarget['kind']> = new Set<EditTarget['kind']>([
+    'NODE',
+    'GAP',
+]);
 
 export class EditorCore {
     private destroyed = false;
 
     private readonly history = new CommandStack((state) => {
         if (this.destroyed) return;
-        this.refreshConnectionPoints();
+        this.refreshTargets();
         this.emit('history:changed', state);
         this.emit('model:changed', { changeSet: this.getPendingChanges() });
     });
 
-    private connectionPoints = new Map<string, ConnectionPoint>();
+    private targets = new Map<string, EditTarget>();
 
-    private createCounter = 0;
+    private targetsByNodeId = new Map<string, EditTarget[]>();
 
     private selectedEquipmentId: string | null = null;
-    private highlighted: Element[] = [];
     private mouseDownX = 0;
     private mouseDownY = 0;
 
@@ -47,13 +71,12 @@ export class EditorCore {
         private readonly model: EditorModel,
         private readonly dom: SvgDomService,
         private readonly onEvent?: EditorEventListener,
-        private readonly onEquipmentContextMenu?: (event: EquipmentContextMenuEvent, )=> void,
-        private readonly onConnectionPointClick?: (event: ConnectionPointClickEvent) => void,
+        private readonly onTargets?: (event: TargetEvent) => void,
     ) {
         const container: HTMLElement = this.dom.getContainer();
         container.addEventListener('mousedown', this.onMouseDown);
         container.addEventListener('mouseup', this.onMouseUp);
-        this.refreshConnectionPoints();
+        this.refreshTargets();
     }
 
     destroy(): void {
@@ -61,8 +84,9 @@ export class EditorCore {
         const container: HTMLElement = this.dom.getContainer();
         container.removeEventListener('mousedown', this.onMouseDown);
         container.removeEventListener('mouseup', this.onMouseUp);
-        this.clearHighlight();
-        this.dom.setConnectionPoints([]);
+        this.dom.setSelection([]);
+        this.dom.setNodeTargets([]);
+        this.dom.setPendingCreations(new Map());
         this.history.clear();
     }
 
@@ -72,6 +96,193 @@ export class EditorCore {
 
     redo(): void {
         this.history.redo();
+    }
+
+    deleteElement(equipmentId: string): boolean {
+        return this.deleteCommand(equipmentId, 'element');
+    }
+
+    deleteFeederBay(equipmentId: string): boolean {
+        return this.deleteCommand(equipmentId, 'bay');
+    }
+
+    create(targetId: string, spec: CreateSpec): boolean {
+        const target = this.targets.get(targetId);
+        if (!target || target.kind === 'EQUIPMENT') return false;
+
+        const operation = CREATE_OPERATIONS[target.kind];
+        if (!creatableTypesFor(operation).has(spec.type)) return false;
+        if (!availableOperations(target).includes(operation)) return false;
+
+        let markerNodeId = target.id;
+        let bay: { order: number; direction: FeederDirection } | undefined;
+
+        if (target.kind === 'BUSBAR') {
+            const pending = this.pendingOrders(target.vlId);
+            const order =
+                spec.order === undefined
+                    ? this.model.nextOrderForBusbar(target, pending)
+                    : this.model.isOrderAvailable(target, spec.order, pending)
+                      ? spec.order
+                      : undefined;
+            if (order === undefined) return false;
+            bay = { order, direction: spec.direction ?? 'BOTTOM' };
+        }
+
+        if (target.kind === 'GAP') {
+            const host = [
+                ...this.model.getNodesForIidmNode(target.node1),
+                ...this.model.getNodesForIidmNode(target.node2),
+            ].find((node) => !node.equipmentId);
+            if (!host) return false;
+            markerNodeId = host.id;
+        }
+
+        const takenId = this.model.getNodesForEquipment(spec.provisionalId).length > 0 ||
+            this.history.pending.some((cmd) => cmd.equipmentId === spec.provisionalId)
+        if (takenId) return false;
+
+        this.history.push(
+            new CreateCommand(
+                spec.provisionalId,
+                spec.type,
+                target,
+                spec.properties,
+                markerNodeId,
+                bay,
+            ),
+        );
+        return true;
+    }
+
+    moveDestinations(equipmentId: string): BusbarTarget[] {
+        const feeder = this.targets.get(equipmentId);
+        if (feeder?.kind !== 'EQUIPMENT') return [];
+        if (!availableOperations(feeder).includes('MOVE_BAY')) return [];
+
+        return [...this.targets.values()].filter(
+            (target): target is BusbarTarget =>
+                target.kind === 'BUSBAR' && target.vlId === feeder.vlId,
+        );
+    }
+
+    moveFeederBay(equipmentId: string, busbarTargetId: string): boolean {
+        const feeder = this.targets.get(equipmentId);
+        if (feeder?.kind !== 'EQUIPMENT' || feeder.node === undefined) return false;
+
+        const destination = this.moveDestinations(equipmentId).find(
+            (target) => target.id === busbarTargetId,
+        );
+        if (!destination) return false;
+
+        const host = this.model.getNodesForEquipment(feeder.equipmentId)[0];
+        if (!host) return false;
+
+        this.history.push(new MoveBayCommand(feeder, destination, host.id));
+        return true;
+    }
+
+    actionsFor(target: EditTarget, insertion?: BayInsertion): EditorAction[] {
+        return buildActions(this, target, insertion);
+    }
+
+    /** The order a new bay would take here — undefined when the component abstains. */
+    proposedOrder(target: BusbarTarget, insertion?: BayInsertion): number | undefined {
+        return (
+            insertion?.order ??
+            this.model.nextOrderForBusbar(target, this.pendingOrders(target.vlId))
+        );
+    }
+
+    getBayPosition(equipmentId: string): BayPosition | undefined {
+        const target = this.targets.get(equipmentId);
+        if (target?.kind !== 'EQUIPMENT' || target.order === undefined) return undefined;
+        return { order: target.order, direction: target.direction ?? 'BOTTOM' };
+    }
+
+    setBayPosition(equipmentId: string, position: BayPosition): boolean {
+        const target = this.targets.get(equipmentId);
+        if (target?.kind !== 'EQUIPMENT' || target.node === undefined) return false;
+        if (!availableOperations(target).includes('UPDATE_BAY_POSITION')) return false;
+
+        const node = this.model
+            .getNodesForEquipment(equipmentId)
+            .find(
+                (candidate) =>
+                    candidate.order === target.order && (candidate.vid ?? '') === target.vlId,
+            );
+        const slot = node && this.model.slotOfFeeder(node);
+        if (!node || !slot) return false;
+
+        const pending = this.pendingOrders(slot.vlId, node.id);
+        if (!this.model.isOrderAvailable(slot, position.order, pending)) return false;
+
+        this.history.push(new UpdateBayPositionCommand(target, node, slot, position));
+        return true;
+    }
+
+    applyProperties(equipmentId: string, changes: EquipmentProperties): boolean {
+        if (Object.keys(changes).length === 0) return false;
+
+        this.history.push(
+            new UpdatePropertiesCommand(equipmentId, changes, this.model, this.syncSwitch),
+        );
+        return true;
+    }
+
+    private deleteCommand(equipmentId: string, kind: 'element' | 'bay'): boolean {
+        const operation: EditOperation = kind === 'bay' ? 'DELETE_BAY' : 'DELETE';
+        const target = this.targets.get(equipmentId);
+        if (target && !availableOperations(target).includes(operation)) return false;
+
+        const node = this.model.getNodesForEquipment(equipmentId)[0];
+        if (!node || !this.isOperationAllowed(node, operation)) {
+            return false;
+        }
+
+        const scope =
+            kind === 'bay'
+                ? this.model.collectBay(equipmentId)
+                : this.model.collectElementScope(equipmentId);
+        if (scope.nodes.length === 0) return false;
+
+        this.history.push(
+            new DeleteElementCommand(equipmentId, scope, kind, this.model, this.dom, this.dropSelection),
+        );
+        return true;
+    }
+
+    private isOperationAllowed(node: NodeMetadata, operation: EditOperation): boolean {
+        return operationsForEquipment(toElementType(node.componentType)).includes(operation);
+    }
+
+    getPendingChanges(): ChangeSet {
+        return this.history.pending.map((command) => command.toChangeSetEntry());
+    }
+
+    clearPendingChanges(): void {
+        this.history.clear();
+    }
+
+    getTargets(): EditTarget[] {
+        return [...this.targets.values()];
+    }
+
+    getSelectedEquipmentId(): string | null {
+        return this.selectedEquipmentId;
+    }
+
+    getProperties(equipmentId: string): EquipmentProperties {
+        return this.model.getProperties(equipmentId);
+    }
+
+    seedProperties(equipmentId: string, values: EquipmentProperties): void {
+        this.model.seedProperties(equipmentId, values);
+    }
+
+    /** Debug overlay: shows the IIDM node each element stands on. */
+    showIidmNodes(enabled: boolean): void {
+        this.dom.setIidmOverlay(enabled ? this.model.collectNodeStatus() : new Map());
     }
 
     private readonly onMouseDown = (event: MouseEvent) => {
@@ -87,109 +298,72 @@ export class EditorCore {
         );
         if (moved > DRAG_THRESHOLD) return;
 
-        // Before the selection branch: a connection point is a hidden node, so
-        // `resolveNodeAt` would resolve it and clear the selection instead.
-        const point = this.resolveConnectionPointAt(event.target as Element | null);
-        if (point) {
-            this.onConnectionPointClick?.({
-                point,
+        const node = this.resolveNodeAt(event.target as Element | null);
+
+        const buildable = this.targetsAt(node).filter((target) => target.kind !== 'EQUIPMENT');
+        if (buildable.length > 0) {
+            this.onTargets?.({
+                targets: buildable,
+                trigger: 'click',
                 position: { x: event.clientX, y: event.clientY },
+                insertion: this.insertionAt(buildable, event),
             });
             return;
         }
 
-        const node = this.resolveNodeAt(event.target as Element | null);
         if (node) {
-            this.selectEquipement(node);
+            this.selectEquipment(node);
         } else {
             this.clearSelection();
         }
     };
 
-    private selectEquipement(node: NodeMetadata) {
-        const type = toElementType(node.componentType);
-        if (!SELECTABLE_TYPES.has(type)) {
-            this.clearSelection();
-            return;
-        }
-
-        const equipmentId = node.equipmentId ?? node.id;
-        if (equipmentId === this.selectedEquipmentId) return;
-
-        this.clearHighlight();
-        this.selectedEquipmentId = equipmentId;
-        const nodes = node.equipmentId
-            ? this.model.getNodesForEquipment(equipmentId)
-            : [node];
-        for (const n of nodes) {
-            const element = this.dom.findElementById(n.id);
-            if (!element) continue;
-            element.classList.add(SELECTED_CLASS);
-            this.highlighted.push(element);
-        }
-        this.emit('element:selected', { id: equipmentId, type });
-    }
-
-    private clearSelection(): void {
-        if (this.selectedEquipmentId === null) return;
-        this.clearHighlight();
-        this.selectedEquipmentId = null;
-        this.emit('element:selected', { id: null, type: null });
-    }
-
-    private clearHighlight(): void {
-        for (const element of this.highlighted) element.classList.remove(SELECTED_CLASS);
-        this.highlighted = [];
-    }
-
-    get canUndo(): boolean {
-        return this.history.canUndo;
-    }
-
-    get canRedo(): boolean {
-        return this.history.canRedo;
-    }
-
-    getPendingChanges(): ChangeSet {
-        return [...this.history.pending.map((command) => command.toChangeSetEntry())];
-    }
-
-    clearPendingChanges(): void {
-        this.history.clear();
-    }
-
-    getEquipmentInfo(equipmentId: string): EquipmentInfo | null {
-        const node = this.resolveEquipmentNode(equipmentId);
-        if (!node) return null;
-
-        const type = toElementType(node.componentType);
-        return {
-            equipmentId: node.equipmentId ?? node.id,
-            type,
-            label: this.dom.findEquipmentLabelByNodeId(node.id) ?? node.equipmentId ?? node.id,
-            deletable: DELETABLE_TYPES.has(type),
-            bayDeletable: DELETABLE_BAY_TYPES.has(type)
-        };
-    }
-
     handleContextMenu(event: MouseEvent): void {
-        if (!this.onEquipmentContextMenu) return;
-        const node = this.resolveNodeAt(event.target as Element | null);
-        if (!node) return;
-
-        const info = this.getEquipmentInfo(node.equipmentId ?? node.id);
-        if (!info || info.type === 'UNKNOWN') return;
+        if (!this.onTargets) return;
+        const targets = this.targetsAt(this.resolveNodeAt(event.target as Element | null));
+        if (targets.length === 0) return;
 
         event.preventDefault();
-        this.onEquipmentContextMenu({
-            info,
+        this.onTargets({
+            targets,
+            trigger: 'contextmenu',
             position: { x: event.clientX, y: event.clientY },
+            insertion: this.insertionAt(targets, event),
         });
     }
 
-    private resolveConnectionPointAt(target: Element | null): ConnectionPoint | undefined {
-        const marker = target?.closest<SVGGElement>(`g.${CONNECTION_POINT_CLASS}`);
-        return marker ? this.connectionPoints.get(marker.id) : undefined;
+    private insertionAt(
+        targets: readonly EditTarget[],
+        event: MouseEvent,
+    ): BayInsertion | undefined {
+        const busbar = targets.find((target) => target.kind === 'BUSBAR');
+        if (!busbar) return undefined;
+
+        const x = this.dom.toDiagramX(event.clientX, event.clientY);
+        if (x === undefined) return undefined;
+
+        let left: NodeMetadata | undefined;
+        let right: NodeMetadata | undefined;
+        for (const feeder of this.model.feedersInSection(busbar)) {
+            const feederX = this.dom.getDiagramX(feeder.id);
+            if (feederX === undefined) continue;
+            if (feederX <= x) left = feeder;
+            else if (right === undefined) right = feeder;
+        }
+
+        const order = this.model.orderBetween(
+            busbar,
+            left?.order,
+            right?.order,
+            this.pendingOrders(busbar.vlId),
+        );
+        if (order === undefined) return undefined;
+
+        return {
+            order,
+            afterEquipmentId: left?.equipmentId,
+            beforeEquipmentId: right?.equipmentId,
+        };
     }
 
     private resolveNodeAt(target: Element | null): NodeMetadata | undefined {
@@ -204,156 +378,124 @@ export class EditorCore {
         return undefined;
     }
 
-    deleteElement(equipmentId: string): boolean {
-        return this.deleteCommand(equipmentId, 'element');
+    private targetsAt(node: NodeMetadata | undefined): EditTarget[] {
+        return node ? (this.targetsByNodeId.get(node.id) ?? []) : [];
     }
 
-    deleteFeederBay(equipmentId: string): boolean {
-        return this.deleteCommand(equipmentId, 'bay');
-    }
-
-    private deleteCommand(equipmentId: string, kind: 'element' | 'bay'): boolean {
-        const node = this.resolveEquipmentNode(equipmentId);
-        const deletable = kind === 'bay' ? DELETABLE_BAY_TYPES : DELETABLE_TYPES;
-        if (!node || !deletable.has(toElementType(node.componentType))) {
-            return false;
+    private selectEquipment(node: NodeMetadata): void {
+        const type = toElementType(node.componentType);
+        if (!DELETABLE_TYPES.has(type)) {
+            this.clearSelection();
+            return;
         }
 
-        const id = node.equipmentId ?? node.id;
-        const scope =
-            kind === 'bay'
-                ? this.model.collectBay(id)
-                : this.model.collectElementScope(id);
-        if (scope.nodes.length === 0) return false;
+        const equipmentId = node.equipmentId ?? node.id;
+        if (equipmentId === this.selectedEquipmentId) return;
 
-        this.history.push(
-            new DeleteElementCommand(
-                node,
-                scope,
-                kind,
-                this.model,
-                this.dom,
-                this.emit,
-            ),
+        this.selectedEquipmentId = equipmentId;
+        const nodes = node.equipmentId
+            ? this.model.getNodesForEquipment(equipmentId)
+            : [node];
+        this.dom.setSelection(nodes.map((n) => n.id));
+        this.emit('element:selected', { id: equipmentId, type });
+    }
+
+    private clearSelection(): void {
+        if (this.selectedEquipmentId === null) return;
+        this.dom.setSelection([]);
+        this.selectedEquipmentId = null;
+        this.emit('element:selected', { id: null, type: null });
+    }
+
+    private refreshTargets(): void {
+        const { consumed, markers } = this.pendingCreations();
+        const targets = this.model
+            .collectTargets()
+            .filter((target) => !EXCLUSIVE_TARGETS.has(target.kind) || !consumed.has(target.id))
+            .map((target) =>
+                target.kind === 'EQUIPMENT' && consumed.has(target.id)
+                    ? { ...target, pending: true }
+                    : target,
+            );
+
+        this.targets = new Map(targets.map((target) => [target.id, target]));
+        this.targetsByNodeId = this.indexByNode(targets);
+
+        this.dom.setNodeTargets(
+            targets.filter((target) => target.kind === 'NODE').map((target) => target.id),
         );
-        return true;
+        this.dom.setPendingCreations(markers);
+        this.emit('targets:changed', { targets });
     }
 
-    /** Debug overlay: shows the IIDM node each element stands on. */
-    showIidmNodes(enabled: boolean): void {
-        this.dom.setIidmOverlay(
-            enabled ? this.model.collectIidmNodes() : new Map(),
-            enabled ? this.model.collectFictitiousNodes() : new Map(),
-        );
-    }
+    private indexByNode(targets: readonly EditTarget[]): Map<string, EditTarget[]> {
+        const byNode = new Map<string, EditTarget[]>();
 
-    getConnectionPoints(): ConnectionPoint[] {
-        return [...this.connectionPoints.values()];
-    }
-
-    createEquipment(pointId: string, spec: CreateEquipmentSpec): boolean {
-        const point = this.connectionPoints.get(pointId);
-        if (!point || !CREATABLE_TYPES.has(spec.type)) return false;
-
-        const equipmentId =
-            spec.provisionalId ?? `NEW_${spec.type}_${++this.createCounter}`;
-
-        this.history.push(
-            new CreateEquipmentCommand(
-                equipmentId,
-                spec.type,
-                point,
-                spec.properties,
-                this.emit,
-            ),
-        );
-        return true;
-    }
-
-
-    private refreshConnectionPoints(): void {
-        const taken = this.pendingCreatePointIds();
-        const points = this.model
-            .collectConnectionPoints()
-            .filter((point) => !taken.has(point.id));
-
-        this.connectionPoints = new Map(points.map((point) => [point.id, point]));
-        this.dom.setConnectionPoints(points.map((point) => point.id));
-        this.emit('connection:changed', { points });
-    }
-
-    /** Read back from the change set */
-    private pendingCreatePointIds(): Set<string> {
-        const ids = new Set<string>();
-        for (const entry of this.getPendingChanges()) {
-            if (entry.op !== 'create') continue;
-            const pointId = (entry.payload as { pointId?: string } | undefined)?.pointId;
-            if (pointId) ids.add(pointId);
-        }
-        return ids;
-    }
-
-    getSelectedEquipmentId(): string | null {
-        return this.selectedEquipmentId;
-    }
-
-    getProperties(equipmentId: string): EquipmentProperties {
-        return this.model.getProperties(equipmentId);
-    }
-
-    seedProperties(equipmentId: string, values: EquipmentProperties): void {
-        this.model.seedProperties(equipmentId, values);
-    }
-
-    applyProperties(equipmentId: string, changes: EquipmentProperties): boolean {
-        if (Object.keys(changes).length === 0) return false;
-        const node = this.resolveEquipmentNode(equipmentId);
-        if (!node) return false;
-
-        this.history.push(
-            new UpdatePropertiesCommand(
-                node.equipmentId ?? node.id,
-                toElementType(node.componentType),
-                changes,
-                this.model,
-                this.emit,
-            ),
-        );
-        return true;
-    }
-
-    /** First node of an equipment (or a raw node id) — undefined if unknown. */
-    private resolveEquipmentNode(equipmentId: string): NodeMetadata | undefined {
-        return (
-            this.model.getNodesForEquipment(equipmentId)[0] ??
-            this.model.getNodeById(equipmentId)
-        );
-    }
-
-    private readonly emit: EditorEventListener = <K extends keyof EditorEvents>(
-        name: K,
-        payload: EditorEvents[K],
-    ): void => {
-        if (this.destroyed) return;
-
-        if (name === 'element:removed') {
-            const { id } = payload as EditorEvents['element:removed'];
-            if (id === this.selectedEquipmentId) this.clearSelection();
-        }
-
-        if (name === 'properties:changed') {
-            const { id, changes } = payload as EditorEvents['properties:changed'];
-            if (typeof  changes.open === 'boolean') this.updateSwitchState(id, Boolean(changes.open));
-        }
-
-        this.onEvent?.(name, payload);
-    };
-
-    private updateSwitchState(equipmentId: string, open: boolean): void {
-        for (const node of this.model.getNodesForEquipment(equipmentId)) {
-            if (SWITCH_TYPES.has(node.componentType)) {
-                this.dom.setSwitchState(node.id, open);
+        for (const target of targets) {
+            switch (target.kind) {
+                case 'NODE':
+                case 'BUSBAR':
+                    pushTo(byNode, target.id, target);
+                    break;
+                case 'EQUIPMENT':
+                    for (const node of this.model.getNodesForEquipment(target.equipmentId)) {
+                        pushTo(byNode, node.id, target);
+                    }
+                    break;
+                case 'GAP':
+                    for (const node of [
+                        ...this.model.getNodesForIidmNode(target.node1),
+                        ...this.model.getNodesForIidmNode(target.node2),
+                    ]) {
+                        if (!node.equipmentId) pushTo(byNode, node.id, target);
+                    }
+                    break;
             }
         }
+        return byNode;
     }
+
+    private pendingCreations(): { consumed: Set<string>; markers: Map<string, string[]> } {
+        const consumed = new Set<string>();
+        const markers = new Map<string, string[]>();
+
+        for (const command of this.history.pending) {
+            const marker = command.pendingMarker;
+            if (!marker) continue;
+            consumed.add(marker.targetId);
+            pushTo(markers, marker.nodeId, marker.label);
+        }
+        return { consumed, markers };
+    }
+
+    private pendingOrders(vlId: string, vacating?: string): PendingOrders {
+        const claimed = new Map<number, number[]>();
+        const vacated = new Set<string>(vacating ? [vacating] : []);
+
+        for (const command of this.history.pending) {
+            const claim = command.orderClaim;
+            if (!claim || claim.vlId !== vlId) continue;
+            pushTo(claimed, claim.sectionIndex, claim.order);
+            if (claim.vacatedNodeId) vacated.add(claim.vacatedNodeId);
+        }
+        return { claimed, vacated };
+    }
+
+    private readonly emit: EditorEmit = (name, payload) => {
+        if (this.destroyed) return;
+        this.onEvent?.({ name, ...payload } as EditorEvent);
+    };
+
+    private readonly dropSelection = (equipmentId: string): void => {
+        if (equipmentId === this.selectedEquipmentId) this.clearSelection();
+    };
+
+    private readonly syncSwitch = (equipmentId: string, changes: EquipmentProperties): void => {
+        const open = changes.open;
+        if (typeof open !== 'boolean') return;
+        for (const node of this.model.getNodesForEquipment(equipmentId)) {
+            if (isSwitchNode(node)) this.dom.setSwitchState(node.id, open);
+        }
+    };
 }
+

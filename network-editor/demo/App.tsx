@@ -28,6 +28,7 @@ const LABELS: Record<EditOperation, string> = {
     UPDATE_PROPERTIES: 'Properties',
     UPDATE_BAY_POSITION: 'Change bay position',
     MOVE_BAY: 'Move feeder bay',
+    RENAME: 'Rename',
 };
 
 const DANGEROUS: ReadonlySet<EditOperation> = new Set<EditOperation>(['DELETE', 'DELETE_BAY']);

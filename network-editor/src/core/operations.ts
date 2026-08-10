@@ -37,6 +37,7 @@ export function operationsForEquipment(type: ElementType): EditOperation[] {
     const operations: EditOperation[] = [];
     if (DELETABLE_TYPES.has(type)) operations.push('DELETE');
     if (DELETABLE_BAY_TYPES.has(type)) operations.push('DELETE_BAY', 'MOVE_BAY');
+    if (!SWITCH_TYPES.has(type)) operations.push('RENAME');
     operations.push('UPDATE_PROPERTIES');
     return operations;
 }
@@ -52,6 +53,7 @@ export function creatableTypesFor(operation: EditOperation): ReadonlySet<Element
         case 'DELETE':
         case 'DELETE_BAY':
         case 'MOVE_BAY':
+        case 'RENAME':
         case 'UPDATE_PROPERTIES':
         case 'UPDATE_BAY_POSITION':
             return NO_TYPES;

@@ -244,6 +244,28 @@ export class EditorModel {
         (this.metadata.feederInfos ??= []).push(info);
     }
 
+    renameEquipment(equipmentId: string, newId: string): void {
+        const nodes = this.nodesByEquipmentId.get(equipmentId);
+        if (!nodes) return;
+
+        this.nodesByEquipmentId.delete(equipmentId);
+        this.nodesByEquipmentId.set(newId, nodes);
+        for (const node of nodes) node.equipmentId = newId;
+
+        const infos = this.feederInfosByEquipmentId.get(equipmentId);
+        if (infos) {
+            this.feederInfosByEquipmentId.delete(equipmentId);
+            this.feederInfosByEquipmentId.set(newId, infos);
+            for (const info of infos) info.equipmentId = newId;
+        }
+
+        const properties = this.properties.get(equipmentId);
+        if (properties) {
+            this.properties.delete(equipmentId);
+            this.properties.set(newId, properties);
+        }
+    }
+
     private indexFeederInfo(info: FeederInfoMetadata): void {
         this.feederInfosById.set(info.id, info);
         pushTo(this.feederInfosByEquipmentId, info.equipmentId, info);

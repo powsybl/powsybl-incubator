@@ -11,6 +11,7 @@ import { CommandStack } from './commands/CommandStack';
 import { CreateCommand } from './commands/CreateCommand';
 import { DeleteElementCommand } from './commands/DeleteElementCommand';
 import { MoveBayCommand } from './commands/MoveBayCommand';
+import { RenameCommand } from './commands/RenameCommand';
 import { UpdateBayPositionCommand } from './commands/UpdateBayPositionCommand';
 import { UpdatePropertiesCommand } from './commands/UpdatePropertiesCommand';
 import { SvgDomService } from '../dom/SvgDomService';
@@ -138,9 +139,7 @@ export class EditorCore {
             markerNodeId = host.id;
         }
 
-        const takenId = this.model.getNodesForEquipment(spec.provisionalId).length > 0 ||
-            this.history.pending.some((cmd) => cmd.equipmentId === spec.provisionalId)
-        if (takenId) return false;
+        if (this.isExistingEquipmentId(spec.provisionalId)) return false;
 
         this.history.push(
             new CreateCommand(
@@ -153,6 +152,32 @@ export class EditorCore {
             ),
         );
         return true;
+    }
+
+    renameEquipment(equipmentId: string, newId: string): boolean {
+        if (!newId || newId === equipmentId) return false;
+
+        const target = this.targets.get(equipmentId);
+        if (target?.kind !== 'EQUIPMENT') return false;
+
+        if (!availableOperations(target).includes('RENAME')) return false;
+
+        const host = this.model.getNodesForEquipment(equipmentId)[0];
+        if (!host) return false;
+
+        if (this.isExistingEquipmentId(newId)) return false;
+
+        this.history.push(
+            new RenameCommand(equipmentId, newId, this.model, this.onRenamed, host.id),
+        );
+        return true;
+    }
+
+    private isExistingEquipmentId(equipmentId: string): boolean {
+        return (
+            this.model.getNodesForEquipment(equipmentId).length > 0 ||
+            this.history.pending.some((command) => command.equipmentId === equipmentId)
+        );
     }
 
     moveDestinations(equipmentId: string): BusbarTarget[] {
@@ -488,6 +513,13 @@ export class EditorCore {
 
     private readonly dropSelection = (equipmentId: string): void => {
         if (equipmentId === this.selectedEquipmentId) this.clearSelection();
+    };
+
+    private readonly onRenamed = (oldId: string, newId: string): void => {
+        if (this.selectedEquipmentId !== oldId) return;
+        this.selectedEquipmentId = newId;
+        const node = this.model.getNodesForEquipment(newId)[0];
+        this.emit('element:selected', { id: newId, type: toElementType(node?.componentType) });
     };
 
     private readonly syncSwitch = (equipmentId: string, changes: EquipmentProperties): void => {

@@ -37,6 +37,7 @@ export interface ActionHost {
     deleteFeederBay(equipmentId: string): boolean;
     moveDestinations(equipmentId: string): BusbarTarget[];
     moveFeederBay(equipmentId: string, busbarTargetId: string): boolean;
+    renameEquipment(equipmentId: string, newId: string): boolean;
     getBayPosition(equipmentId: string): BayPosition | undefined;
     setBayPosition(equipmentId: string, position: BayPosition): boolean;
     getProperties(equipmentId: string): EquipmentProperties;
@@ -189,6 +190,21 @@ function equipmentActions(
                 },
             ];
         }
+
+        case 'RENAME':
+            return [
+                {
+                    id: id(target, operation),
+                    operation,
+                    enabled: true,
+                    form: [EQUIPMENT_ID],
+                    initial: { equipmentId },
+                    run: (values = {}) => {
+                        const newId = text(values.equipmentId);
+                        return newId ? host.renameEquipment(equipmentId, newId) : false;
+                    },
+                },
+            ];
 
         default:
             return [];

@@ -199,7 +199,8 @@ export type EditOperation =
     | 'DELETE_BAY'
     | 'UPDATE_PROPERTIES'
     | 'UPDATE_BAY_POSITION'
-    | 'MOVE_BAY';
+    | 'MOVE_BAY'
+    | 'RENAME';
 
 export const IMPLEMENTED_OPERATIONS: ReadonlySet<EditOperation> = new Set<EditOperation>([
     'CREATE_INJECTION',
@@ -210,6 +211,7 @@ export const IMPLEMENTED_OPERATIONS: ReadonlySet<EditOperation> = new Set<EditOp
     'UPDATE_PROPERTIES',
     'UPDATE_BAY_POSITION',
     'MOVE_BAY',
+    'RENAME',
 ]);
 
 export const ORDER_STEP = 10;
@@ -338,7 +340,8 @@ export type ChangeSetEntry =
           payload: { node: number; order: number; direction: FeederDirection };
       }
     | { op: 'update'; equipmentId: string; payload: EquipmentProperties }
-    | { op: 'delete' | 'delete-bay'; equipmentId: string };
+    | { op: 'delete' | 'delete-bay'; equipmentId: string }
+    | { op: 'rename'; equipmentId: string; payload: { newId: string } };
 
 export type ChangeSet = ChangeSetEntry[];
 

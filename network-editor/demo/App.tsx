@@ -71,6 +71,7 @@ export function App() {
     const [menu, setMenu] = useState<Menu | null>(null);
     const [panel, setPanel] = useState<EditorAction | null>(null);
     const [overlay, setOverlay] = useState(false);
+    const [targetsVisible, setTargetsVisible] = useState(false);
 
     useEffect(() => {
         const instance = new NetworkEditor({
@@ -122,6 +123,14 @@ export function App() {
                     }}
                 >
                     ⬡ {overlay ? 'Hide' : 'Show'} IIDM nodes
+                </button>
+                <button
+                    onClick={() => {
+                        setTargetsVisible(!targetsVisible);
+                        editor?.setNodeTargetsVisible(!targetsVisible);
+                    }}
+                >
+                    ⬡ {targetsVisible ? 'Hide' : 'Show'} target nodes
                 </button>
             </div>
 

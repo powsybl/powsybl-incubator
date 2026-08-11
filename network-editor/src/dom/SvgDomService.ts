@@ -7,19 +7,6 @@ const IIDM_UNLINKED_CLASS = 'ne-iidm-unlinked';
 const IIDM_LABEL_CLASS = 'ne-iidm-label';
 
 const EDITOR_STYLE = `
-.sld-node.${NODE_TARGET_CLASS} {
-    visibility: visible;
-    fill: #1e88e5;
-    cursor: pointer;
-}
-.sld-node.${NODE_TARGET_CLASS} circle {
-    stroke: #ffffff;
-    stroke-width: 1.5;
-    vector-effect: non-scaling-stroke;
-}
-.sld-node.${NODE_TARGET_CLASS}:hover {
-    fill: #0d47a1;
-}
 
 g.${PENDING_CREATE_CLASS} {
     visibility: visible;
@@ -57,6 +44,20 @@ text.${IIDM_LABEL_CLASS} {
     font-size: 6px;
     font-weight: bold;
     pointer-events: none;
+}
+
+.sld-node.${NODE_TARGET_CLASS} {
+    visibility: visible;
+    fill: #1e88e5;
+    cursor: pointer;
+}
+.sld-node.${NODE_TARGET_CLASS} circle {
+    stroke: #ffffff;
+    stroke-width: 1.5;
+    vector-effect: non-scaling-stroke;
+}
+.sld-node.${NODE_TARGET_CLASS}:hover {
+    fill: #0d47a1;
 }
 `;
 

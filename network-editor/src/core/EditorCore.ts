@@ -52,6 +52,7 @@ const EXCLUSIVE_TARGETS: ReadonlySet<EditTarget['kind']> = new Set<EditTarget['k
 
 export class EditorCore {
     private destroyed = false;
+    private allNodesTargets = false;
 
     private readonly history = new CommandStack((state) => {
         if (this.destroyed) return;
@@ -61,7 +62,6 @@ export class EditorCore {
     });
 
     private targets = new Map<string, EditTarget>();
-
     private targetsByNodeId = new Map<string, EditTarget[]>();
 
     private selectedEquipmentId: string | null = null;
@@ -310,6 +310,12 @@ export class EditorCore {
         this.dom.setIidmOverlay(enabled ? this.model.collectNodeStatus() : new Map());
     }
 
+    setNodeTargetsVisible(enabled: boolean): void {
+        if (enabled === this.allNodesTargets) return;
+        this.allNodesTargets = enabled;
+        this.refreshTargets();
+    }
+
     private readonly onMouseDown = (event: MouseEvent) => {
         this.mouseDownX = event.clientX;
         this.mouseDownY = event.clientY;
@@ -435,7 +441,7 @@ export class EditorCore {
     private refreshTargets(): void {
         const { consumed, markers } = this.pendingCreations();
         const targets = this.model
-            .collectTargets()
+            .collectTargets(this.allNodesTargets)
             .filter((target) => !EXCLUSIVE_TARGETS.has(target.kind) || !consumed.has(target.id))
             .map((target) =>
                 target.kind === 'EQUIPMENT' && consumed.has(target.id)

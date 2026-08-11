@@ -313,9 +313,11 @@ export class EditorModel {
         return {nodes: [...nodes.values()], wires: [...wires.values()]};
     }
 
-    collectTargets(): EditTarget[] {
+    collectTargets(allNodes = false): EditTarget[] {
         const targets: EditTarget[] = [];
         const seenEquipments = new Set<string>();
+        const seenIidmNodes = new Set<number>();
+
         const occupied = new Set(
             this.metadata.nodes
                 .filter((node) => node.equipmentId !== undefined)
@@ -361,7 +363,8 @@ export class EditorModel {
                 continue;
             }
 
-            if (this.isFreeNode(node, occupied)) {
+            if (this.isFreeNode(node, occupied, allNodes) && !seenIidmNodes.has(node.iidmNode!)) {
+                seenIidmNodes.add(node.iidmNode!);
                 targets.push({ kind: 'NODE', id: node.id, vlId, node: node.iidmNode! });
             }
         }
@@ -370,9 +373,10 @@ export class EditorModel {
         return targets;
     }
 
-    private isFreeNode(node: NodeMetadata, occupied: ReadonlySet<number>): boolean {
+    private isFreeNode(node: NodeMetadata, occupied: ReadonlySet<number>, allNodes: boolean): boolean {
         if (!isHiddenNode(node) || node.iidmNode === undefined) return false;
         if (occupied.has(node.iidmNode)) return false;
+        if (allNodes) return true;
         return this.getWiresForNode(node.id).length < (this.initialWireCount.get(node.id) ?? 0);
     }
 

@@ -11,6 +11,7 @@ import {
     type EditorOptions,
     type EditTarget,
     type EquipmentProperties,
+    type SelectionState,
 } from './types';
 
 
@@ -87,6 +88,14 @@ export class NetworkEditor {
 
     getTargets(): EditTarget[] {
         return this.core.getTargets();
+    }
+
+    getSelection(): SelectionState | null {
+        return this.core.getSelection();
+    }
+
+    cancelSelection(): void {
+        this.core.cancelSelection();
     }
 
     /**

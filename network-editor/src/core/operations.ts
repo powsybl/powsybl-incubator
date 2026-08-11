@@ -16,7 +16,7 @@ const NO_TYPES: ReadonlySet<ElementType> = new Set<ElementType>();
 export function availableOperations(target: EditTarget): EditOperation[] {
     switch (target.kind) {
         case 'NODE':
-            return ['CREATE_INJECTION'];
+            return target.occupied ? ['CREATE_SWITCH'] : ['CREATE_INJECTION', 'CREATE_SWITCH'];
         case 'GAP':
             return ['CREATE_SWITCH'];
         case 'BUSBAR':

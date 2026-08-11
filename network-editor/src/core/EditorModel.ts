@@ -316,13 +316,12 @@ export class EditorModel {
     collectTargets(allNodes = false): EditTarget[] {
         const targets: EditTarget[] = [];
         const seenEquipments = new Set<string>();
-        const seenIidmNodes = new Set<number>();
+        const seenIidmNodes = new Set<string>();
 
         const occupied = new Set(
             this.metadata.nodes
-                .filter((node) => node.equipmentId !== undefined)
-                .map((node) => node.iidmNode)
-                .filter((iidmNode): iidmNode is number => iidmNode !== undefined),
+                .filter((node) => node.equipmentId !== undefined && node.iidmNode !== undefined)
+                .map((node) => iidmKey(node.vid ?? '', node.iidmNode!)),
         );
 
         for (const node of this.metadata.nodes) {
@@ -342,6 +341,7 @@ export class EditorModel {
                         busbarSectionId: node.equipmentId,
                         busbarIndex: node.busbarIndex,
                         sectionIndex: node.sectionIndex,
+                        node: node.iidmNode,
                     });
                 }
                 continue;
@@ -363,9 +363,17 @@ export class EditorModel {
                 continue;
             }
 
-            if (this.isFreeNode(node, occupied, allNodes) && !seenIidmNodes.has(node.iidmNode!)) {
-                seenIidmNodes.add(node.iidmNode!);
-                targets.push({ kind: 'NODE', id: node.id, vlId, node: node.iidmNode! });
+            const state = this.nodeTargetFor(node, occupied, allNodes);
+            const seen = state && iidmKey(vlId, node.iidmNode!);
+            if (state && seen !== undefined && !seenIidmNodes.has(seen)) {
+                seenIidmNodes.add(seen);
+                targets.push({
+                    kind: 'NODE',
+                    id: node.id,
+                    vlId,
+                    node: node.iidmNode!,
+                    occupied: state.occupied,
+                });
             }
         }
 
@@ -373,11 +381,31 @@ export class EditorModel {
         return targets;
     }
 
-    private isFreeNode(node: NodeMetadata, occupied: ReadonlySet<number>, allNodes: boolean): boolean {
-        if (!isHiddenNode(node) || node.iidmNode === undefined) return false;
-        if (occupied.has(node.iidmNode)) return false;
-        if (allNodes) return true;
-        return this.getWiresForNode(node.id).length < (this.initialWireCount.get(node.id) ?? 0);
+    private nodeTargetFor(
+        node: NodeMetadata,
+        occupied: ReadonlySet<string>,
+        allNodes: boolean,
+    ): { occupied: boolean } | undefined {
+        if (!isHiddenNode(node) || node.iidmNode === undefined) return undefined;
+
+        const taken = occupied.has(iidmKey(node.vid ?? '', node.iidmNode));
+        if (allNodes) return { occupied: taken };
+        if (taken) return undefined;
+
+        return this.getWiresForNode(node.id).length < (this.initialWireCount.get(node.id) ?? 0)
+            ? { occupied: false }
+            : undefined;
+    }
+
+    hasSwitchBetween(vlId: string, a: number, b: number): boolean {
+        return this.metadata.nodes.some(
+            (node) =>
+                (node.vid ?? '') === vlId &&
+                node.iidmNode1 !== undefined &&
+                node.iidmNode2 !== undefined &&
+                ((node.iidmNode1 === a && node.iidmNode2 === b) ||
+                    (node.iidmNode1 === b && node.iidmNode2 === a)),
+        );
     }
 
     private collectGaps(): GapTarget[] {
@@ -553,6 +581,10 @@ export class EditorModel {
 
 function canTraverseNode(node: NodeMetadata): boolean {
     return BAY_TRAVERSABLE_TYPES.has(node.componentType);
+}
+
+function iidmKey(vlId: string, iidmNode: number): string {
+    return `${vlId}#${iidmNode}`;
 }
 
 function isHiddenNode(node: NodeMetadata): boolean {

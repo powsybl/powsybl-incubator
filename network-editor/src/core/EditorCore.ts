@@ -9,6 +9,7 @@ import {
 import { pushTo } from './utils.ts';
 import { CommandStack } from './commands/CommandStack';
 import { CreateCommand } from './commands/CreateCommand';
+import { CreateLinkCommand } from './commands/CreateLinkCommand';
 import { DeleteElementCommand } from './commands/DeleteElementCommand';
 import { MoveBayCommand } from './commands/MoveBayCommand';
 import { RenameCommand } from './commands/RenameCommand';
@@ -31,7 +32,9 @@ import {
     type EditorEventListener,
     type FeederDirection,
     type NodeMetadata,
+    type NodeTarget,
     type PendingOrders,
+    type SelectionState,
     type TargetEvent,
 } from './types';
 
@@ -52,7 +55,11 @@ const EXCLUSIVE_TARGETS: ReadonlySet<EditTarget['kind']> = new Set<EditTarget['k
 
 export class EditorCore {
     private destroyed = false;
-    private allNodesTargets = false;
+    private allNodesTargets = true;
+
+    private selection: SelectionState | null = null;
+
+    private pendingSpec?: CreateSpec;
 
     private readonly history = new CommandStack((state) => {
         if (this.destroyed) return;
@@ -85,6 +92,7 @@ export class EditorCore {
         const container: HTMLElement = this.dom.getContainer();
         container.removeEventListener('mousedown', this.onMouseDown);
         container.removeEventListener('mouseup', this.onMouseUp);
+        this.cancelSelection();
         this.dom.setSelection([]);
         this.dom.setNodeTargets([]);
         this.dom.setPendingCreations(new Map());
@@ -331,6 +339,11 @@ export class EditorCore {
 
         const node = this.resolveNodeAt(event.target as Element | null);
 
+        if (this.selection) {
+            this.completeSelection(node);
+            return;
+        }
+
         const buildable = this.targetsAt(node).filter((target) => target.kind !== 'EQUIPMENT');
         if (buildable.length > 0) {
             this.onTargets?.({
@@ -362,6 +375,84 @@ export class EditorCore {
             insertion: this.insertionAt(targets, event),
         });
     }
+
+    beginLink(targetId: string, spec: CreateSpec): boolean {
+        const first = this.targets.get(targetId);
+        if (first?.kind !== 'NODE') return false;
+        if (!creatableTypesFor('CREATE_SWITCH').has(spec.type)) return false;
+        if (!availableOperations(first).includes('CREATE_SWITCH')) return false;
+        if (this.isExistingEquipmentId(spec.provisionalId)) return false;
+
+        const candidates = this.linkCandidates(first);
+        if (candidates.length === 0) return false;
+
+        this.selection = { operation: 'CREATE_SWITCH', first, candidates };
+        this.pendingSpec = spec;
+        document.addEventListener('keydown', this.onKeyDown);
+        this.paintSelection();
+        this.emit('selection:changed', { selection: this.selection });
+        return true;
+    }
+
+    cancelSelection(): void {
+        if (!this.selection) return;
+        this.selection = null;
+        this.pendingSpec = undefined;
+        document.removeEventListener('keydown', this.onKeyDown);
+        this.paintSelection();
+        this.emit('selection:changed', { selection: null });
+    }
+
+    getSelection(): SelectionState | null {
+        return this.selection;
+    }
+
+    private linkCandidates(first: NodeTarget): EditTarget[] {
+        return [...this.targets.values()].filter((target): target is NodeTarget | BusbarTarget => {
+            if (target.kind !== 'NODE' && target.kind !== 'BUSBAR') return false;
+            if (target.vlId !== first.vlId || target.node === first.node) return false;
+            return !this.model.hasSwitchBetween(first.vlId, first.node, target.node);
+        });
+    }
+
+    private completeSelection(node: NodeMetadata | undefined): void {
+        const selection = this.selection;
+        const spec = this.pendingSpec;
+        if (!selection || !spec) return;
+
+        const eligible = new Set(selection.candidates.map((target) => target.id));
+        const second = this.targetsAt(node).find((target) => eligible.has(target.id));
+        if (!second || (second.kind !== 'NODE' && second.kind !== 'BUSBAR')) {
+            this.cancelSelection();
+            return;
+        }
+
+        const first = selection.first as NodeTarget;
+        this.cancelSelection();
+        this.history.push(
+            new CreateLinkCommand(
+                spec.provisionalId,
+                spec.type,
+                first.vlId,
+                first.node,
+                second.node,
+                spec.properties,
+                first.id,
+                first.id,
+            ),
+        );
+    }
+
+    private paintSelection(): void {
+        this.dom.setSelectionCandidates(
+            this.selection?.first.id ?? null,
+            this.selection?.candidates.map((target) => target.id) ?? [],
+        );
+    }
+
+    private readonly onKeyDown = (event: KeyboardEvent): void => {
+        if (event.key === 'Escape') this.cancelSelection();
+    };
 
     private insertionAt(
         targets: readonly EditTarget[],
@@ -439,6 +530,7 @@ export class EditorCore {
     }
 
     private refreshTargets(): void {
+        this.cancelSelection();
         const { consumed, markers } = this.pendingCreations();
         const targets = this.model
             .collectTargets(this.allNodesTargets)
@@ -493,7 +585,7 @@ export class EditorCore {
         for (const command of this.history.pending) {
             const marker = command.pendingMarker;
             if (!marker) continue;
-            consumed.add(marker.targetId);
+            if (marker.consumes !== false) consumed.add(marker.targetId);
             pushTo(markers, marker.nodeId, marker.label);
         }
         return { consumed, markers };

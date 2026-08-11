@@ -38,6 +38,7 @@ export interface ActionHost {
     moveDestinations(equipmentId: string): BusbarTarget[];
     moveFeederBay(equipmentId: string, busbarTargetId: string): boolean;
     renameEquipment(equipmentId: string, newId: string): boolean;
+    beginLink(targetId: string, spec: CreateSpec): boolean;
     getBayPosition(equipmentId: string): BayPosition | undefined;
     setBayPosition(equipmentId: string, position: BayPosition): boolean;
     getProperties(equipmentId: string): EquipmentProperties;
@@ -109,6 +110,9 @@ function createAction(
             const { equipmentId, order, direction, ...properties } = values;
             const provisionalId = text(equipmentId);
             if (!provisionalId) return false;
+            if (operation === 'CREATE_SWITCH' && target.kind === 'NODE') {
+                return host.beginLink(target.id, { type, properties, provisionalId });
+            }
             return host.create(target.id, {
                 type,
                 properties,

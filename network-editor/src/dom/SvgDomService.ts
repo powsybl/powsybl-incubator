@@ -1,4 +1,11 @@
-import {NODE_TARGET_CLASS, PENDING_CREATE_CLASS, type NodeDiagnostic, SELECTED_CLASS} from '../core/types';
+import {
+    NODE_TARGET_CLASS,
+    PENDING_CREATE_CLASS,
+    SELECTED_CLASS,
+    SELECTION_CANDIDATE_CLASS,
+    SELECTION_FIRST_CLASS,
+    type NodeDiagnostic,
+} from '../core/types';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
@@ -58,6 +65,25 @@ text.${IIDM_LABEL_CLASS} {
 }
 .sld-node.${NODE_TARGET_CLASS}:hover {
     fill: #0d47a1;
+}
+
+.sld-node.${SELECTION_CANDIDATE_CLASS} {
+    visibility: visible;
+    fill: #f9a825;
+    cursor: pointer;
+}
+.sld-node.${SELECTION_CANDIDATE_CLASS}:hover {
+    fill: #ef6c00;
+}
+.sld-node.${SELECTION_FIRST_CLASS} {
+    visibility: visible;
+    fill: #ef6c00;
+}
+/* A busbar is no .sld-node: it is highlighted through its own line. */
+.${SELECTION_CANDIDATE_CLASS} .sld-busbar-section {
+    stroke: #f9a825;
+    stroke-width: 3;
+    cursor: pointer;
 }
 `;
 
@@ -125,6 +151,23 @@ export class SvgDomService {
         for (const targetId of targetIds) {
             this.findElementById(targetId)?.classList.add(NODE_TARGET_CLASS);
         }
+    }
+
+    /** The two-target gesture: the chosen end, and every end still eligible. */
+    setSelectionCandidates(firstId: string | null, candidateIds: readonly string[]): void {
+        const svg = this.getSvgRoot();
+        if (!svg) return;
+
+        for (const marked of svg.querySelectorAll(
+            `.${SELECTION_FIRST_CLASS}, .${SELECTION_CANDIDATE_CLASS}`,
+        )) {
+            marked.classList.remove(SELECTION_FIRST_CLASS, SELECTION_CANDIDATE_CLASS);
+        }
+
+        for (const candidateId of candidateIds) {
+            this.findElementById(candidateId)?.classList.add(SELECTION_CANDIDATE_CLASS);
+        }
+        if (firstId) this.findElementById(firstId)?.classList.add(SELECTION_FIRST_CLASS);
     }
 
     setSelection(nodeIds: readonly string[]): void {

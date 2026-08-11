@@ -7,6 +7,7 @@ import {
     type EditorAction,
     type EditTarget,
     type EquipmentProperties,
+    type SelectionState,
     type SLDMetadata,
 } from '../src';
 import { ContextMenu, type MenuItemSpec } from './ContextMenu';
@@ -20,7 +21,7 @@ const initialProperties = propertiesJson as Record<string, EquipmentProperties>;
 
 const LABELS: Record<EditOperation, string> = {
     CREATE_INJECTION: 'Add injection',
-    CREATE_SWITCH: 'Put a switch back',
+    CREATE_SWITCH: 'Add a switch',
     CREATE_FEEDER_BAY: 'Create a feeder bay',
     CREATE_COUPLING: 'Create a coupling',
     DELETE: 'Delete',
@@ -72,6 +73,7 @@ export function App() {
     const [panel, setPanel] = useState<EditorAction | null>(null);
     const [overlay, setOverlay] = useState(false);
     const [targetsVisible, setTargetsVisible] = useState(false);
+    const [selection, setSelection] = useState<SelectionState | null>(null);
 
     useEffect(() => {
         const instance = new NetworkEditor({
@@ -86,6 +88,10 @@ export function App() {
                 if (event.name === 'history:changed') setHistory(event);
                 if (event.name === 'model:changed') setChanges(event.changeSet);
                 if (event.name === 'targets:changed') setMenu(null);
+                if (event.name === 'selection:changed') {
+                    setSelection(event.selection);
+                    if (event.selection) setMenu(null);
+                }
                 if (event.name === 'element:selected') {
                     setPanel(propertiesAction(instance, event.id));
                 }
@@ -133,6 +139,13 @@ export function App() {
                     ⬡ {targetsVisible ? 'Hide' : 'Show'} target nodes
                 </button>
             </div>
+
+            {selection && (
+                <p className="hint">
+                    Pick the far end of the link — {selection.candidates.length} candidates.
+                    Esc cancels.
+                </p>
+            )}
 
             <div className="columns">
                 <div className="diagram" ref={container} />

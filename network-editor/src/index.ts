@@ -12,7 +12,13 @@ export {
 
 export type { ActionSubject, EditorAction } from './core/actions';
 
-export { NODE_TARGET_CLASS, PENDING_CREATE_CLASS, SELECTED_CLASS } from './core/types';
+export {
+    NODE_TARGET_CLASS,
+    PENDING_CREATE_CLASS,
+    SELECTED_CLASS,
+    SELECTION_CANDIDATE_CLASS,
+    SELECTION_FIRST_CLASS,
+} from './core/types';
 
 export type {
     BayInsertion,
@@ -31,6 +37,7 @@ export type {
     EquipmentTarget,
     GapTarget,
     NodeTarget,
+    SelectionState,
     SLDMetadata,
     TargetEvent,
     ViewerCallbacks,

@@ -69,6 +69,10 @@ export const NODE_TARGET_CLASS = 'ne-node-target';
 
 export const PENDING_CREATE_CLASS = 'ne-pending-create';
 
+export const SELECTION_FIRST_CLASS = 'ne-selection-first';
+
+export const SELECTION_CANDIDATE_CLASS = 'ne-selection-candidate';
+
 
 export const COMPONENT_TYPE_MAP: Readonly<Record<string, ElementType>> = {
     BUSBAR_SECTION: 'BUS',
@@ -103,6 +107,12 @@ export type FeederDirection = 'TOP' | 'BOTTOM';
 
 export function toDirection(direction: string | undefined): FeederDirection | undefined {
     return direction === 'TOP' || direction === 'BOTTOM' ? direction : undefined;
+}
+
+export interface SelectionState {
+    operation: EditOperation;
+    first: EditTarget;
+    candidates: readonly EditTarget[];
 }
 
 
@@ -154,6 +164,7 @@ export interface NodeTarget {
     id: string;
     vlId: string;
     node: number;
+    occupied?: boolean;
 }
 
 export interface GapTarget {
@@ -174,6 +185,7 @@ export interface BusbarTarget extends BaySlot {
     id: string;
     busbarSectionId: string;
     busbarIndex: number;
+    node: number;
 }
 
 export interface EquipmentTarget {
@@ -350,6 +362,7 @@ export interface EditorEvents {
     'element:selected': { id: string | null; type: ElementType | null };
     'history:changed': { canUndo: boolean; canRedo: boolean };
     'model:changed': { changeSet: ChangeSet };
+    'selection:changed': { selection: SelectionState | null };
 }
 
 export type EditorEventName = keyof EditorEvents;

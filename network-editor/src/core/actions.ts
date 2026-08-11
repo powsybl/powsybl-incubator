@@ -2,7 +2,9 @@ import { availableOperations, creatableTypesFor } from './operations';
 import { defaultsOf, schemaFor, type PropertyDescriptor } from '../properties';
 import {
     IMPLEMENTED_OPERATIONS,
+    SWITCH_TYPES,
     toDirection,
+    toElementType,
     type BayInsertion,
     type BayPosition,
     type BusbarTarget,
@@ -39,6 +41,7 @@ export interface ActionHost {
     moveFeederBay(equipmentId: string, busbarTargetId: string): boolean;
     renameEquipment(equipmentId: string, newId: string): boolean;
     beginLink(targetId: string, spec: CreateSpec): boolean;
+    createSwitchedInjection(targetId: string, spec: CreateSpec): boolean;
     getBayPosition(equipmentId: string): BayPosition | undefined;
     setBayPosition(equipmentId: string, position: BayPosition): boolean;
     getProperties(equipmentId: string): EquipmentProperties;
@@ -48,6 +51,14 @@ export interface ActionHost {
 const EQUIPMENT_ID: PropertyDescriptor = { key: 'equipmentId', type: 'string', required: true };
 
 const ORDER: PropertyDescriptor = { key: 'order', type: 'number', required: true, min: 0 };
+
+const SWITCH_KIND: PropertyDescriptor = {
+    key: 'switchKind',
+    type: 'select',
+    options: [...SWITCH_TYPES],
+    required: true,
+    defaultValue: 'BREAKER',
+};
 
 const DIRECTION: PropertyDescriptor = {
     key: 'direction',
@@ -85,9 +96,11 @@ function createAction(
     insertion?: BayInsertion,
 ): EditorAction {
     const onBusbar = target.kind === 'BUSBAR';
+    const behindSwitch = operation === 'CREATE_SWITCHED_INJECTION';
     const form = [
         EQUIPMENT_ID,
         ...(onBusbar ? [ORDER, DIRECTION] : []),
+        ...(behindSwitch ? [SWITCH_KIND] : []),
         ...schemaFor(type, 'create'),
     ];
 
@@ -112,6 +125,15 @@ function createAction(
             if (!provisionalId) return false;
             if (operation === 'CREATE_SWITCH' && target.kind === 'NODE') {
                 return host.beginLink(target.id, { type, properties, provisionalId });
+            }
+            if (behindSwitch && target.kind === 'NODE') {
+                const { switchKind, ...rest } = properties;
+                return host.createSwitchedInjection(target.id, {
+                    type,
+                    properties: rest,
+                    provisionalId,
+                    switchType: toElementType(text(switchKind)),
+                });
             }
             return host.create(target.id, {
                 type,

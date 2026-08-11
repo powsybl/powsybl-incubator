@@ -197,6 +197,7 @@ export type EditTarget = NodeTarget | BusbarTarget | EquipmentTarget;
 export type EditOperation =
     | 'CREATE_INJECTION'
     | 'CREATE_SWITCH'
+    | 'CREATE_SWITCHED_INJECTION'
     | 'CREATE_FEEDER_BAY'
     | 'CREATE_COUPLING'
     | 'DELETE'
@@ -209,6 +210,7 @@ export type EditOperation =
 export const IMPLEMENTED_OPERATIONS: ReadonlySet<EditOperation> = new Set<EditOperation>([
     'CREATE_INJECTION',
     'CREATE_SWITCH',
+    'CREATE_SWITCHED_INJECTION',
     'CREATE_FEEDER_BAY',
     'DELETE',
     'DELETE_BAY',
@@ -244,6 +246,7 @@ export interface CreateSpec {
     provisionalId: string;
     direction?: FeederDirection;
     order?: number;
+    switchType?: ElementType;
 }
 
 export interface BayInsertion {
@@ -330,6 +333,18 @@ export type ChangeSetEntry =
               vlId: string;
               node1: number;
               node2: number;
+              properties: EquipmentProperties;
+          };
+      }
+    | {
+          op: 'create-switched-injection';
+          equipmentId: string;
+          payload: {
+              equipmentType: ElementType;
+              vlId: string;
+              node: number;
+              switchType: ElementType;
+              switchId: string;
               properties: EquipmentProperties;
           };
       }

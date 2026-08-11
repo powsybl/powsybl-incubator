@@ -10,6 +10,7 @@ import { pushTo } from './utils.ts';
 import { CommandStack } from './commands/CommandStack';
 import { CreateCommand } from './commands/CreateCommand';
 import { CreateLinkCommand } from './commands/CreateLinkCommand';
+import { CreateSwitchedInjectionCommand } from './commands/CreateSwitchedInjectionCommand';
 import { DeleteElementCommand } from './commands/DeleteElementCommand';
 import { MoveBayCommand } from './commands/MoveBayCommand';
 import { RenameCommand } from './commands/RenameCommand';
@@ -18,6 +19,7 @@ import { UpdatePropertiesCommand } from './commands/UpdatePropertiesCommand';
 import { SvgDomService } from '../dom/SvgDomService';
 import {
     DELETABLE_TYPES,
+    SWITCH_TYPES,
     toElementType,
     type BayInsertion,
     type BayPosition,
@@ -118,7 +120,6 @@ export class EditorCore {
         if (!creatableTypesFor(operation).has(spec.type)) return false;
         if (!availableOperations(target).includes(operation)) return false;
 
-        let markerNodeId = target.id;
         let bay: { order: number; direction: FeederDirection } | undefined;
 
         if (target.kind === 'BUSBAR') {
@@ -141,7 +142,7 @@ export class EditorCore {
                 spec.type,
                 target,
                 spec.properties,
-                markerNodeId,
+                target.id,
                 bay,
             ),
         );
@@ -343,7 +344,7 @@ export class EditorCore {
     };
 
     handleContextMenu(event: MouseEvent): void {
-        if (!this.onTargets) return;
+        if (!this.onTargets || this.selection) return;
         const targets = this.targetsAt(this.resolveNodeAt(event.target as Element | null));
         if (targets.length === 0) return;
 
@@ -374,6 +375,35 @@ export class EditorCore {
         return true;
     }
 
+    createSwitchedInjection(targetId: string, spec: CreateSpec): boolean {
+        const target = this.targets.get(targetId);
+        if (target?.kind !== 'NODE') return false;
+        if (!creatableTypesFor('CREATE_SWITCHED_INJECTION').has(spec.type)) return false;
+        if (!availableOperations(target).includes('CREATE_SWITCHED_INJECTION')) return false;
+
+        const switchType = spec.switchType;
+        if (!switchType || !SWITCH_TYPES.has(switchType)) return false;
+
+        const switchId = `${spec.provisionalId}_${switchType}`;
+        if (this.isExistingEquipmentId(spec.provisionalId)) return false;
+        if (this.isExistingEquipmentId(switchId)) return false;
+
+        this.history.push(
+            new CreateSwitchedInjectionCommand(
+                spec.provisionalId,
+                spec.type,
+                target.vlId,
+                target.node,
+                switchType,
+                switchId,
+                spec.properties,
+                target.id,
+                target.id,
+            ),
+        );
+        return true;
+    }
+
     cancelSelection(): void {
         if (!this.selection) return;
         this.selection = null;
@@ -388,10 +418,14 @@ export class EditorCore {
     }
 
     private linkCandidates(first: NodeTarget): EditTarget[] {
+        const seen = new Set<number>();
         return [...this.targets.values()].filter((target): target is NodeTarget | BusbarTarget => {
             if (target.kind !== 'NODE' && target.kind !== 'BUSBAR') return false;
             if (target.vlId !== first.vlId || target.node === first.node) return false;
-            return !this.model.hasSwitchBetween(first.vlId, first.node, target.node);
+            if (seen.has(target.node)) return false;
+            if (this.model.hasSwitchBetween(first.vlId, first.node, target.node)) return false;
+            seen.add(target.node);
+            return true;
         });
     }
 

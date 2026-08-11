@@ -30,6 +30,7 @@ const LABELS: Record<EditOperation, string> = {
     UPDATE_BAY_POSITION: 'Change bay position',
     MOVE_BAY: 'Move feeder bay',
     RENAME: 'Rename',
+    CREATE_SWITCHED_INJECTION: 'Add behind a switch',
 };
 
 const DANGEROUS: ReadonlySet<EditOperation> = new Set<EditOperation>(['DELETE', 'DELETE_BAY']);

@@ -17,8 +17,6 @@ export function availableOperations(target: EditTarget): EditOperation[] {
     switch (target.kind) {
         case 'NODE':
             return target.occupied ? ['CREATE_SWITCH'] : ['CREATE_INJECTION', 'CREATE_SWITCH'];
-        case 'GAP':
-            return ['CREATE_SWITCH'];
         case 'BUSBAR':
             return ['CREATE_FEEDER_BAY', 'CREATE_COUPLING'];
         case 'EQUIPMENT':

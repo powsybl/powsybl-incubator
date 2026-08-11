@@ -13,7 +13,6 @@ import {
     type EditorMetadata,
     type EditTarget,
     type FeederInfoMetadata,
-    type GapTarget,
     type NodeDiagnostic,
     type NodeMetadata,
     type PendingOrders,
@@ -36,12 +35,6 @@ export class EditorModel {
     private readonly feederInfosByEquipmentId = new Map<string, FeederInfoMetadata[]>();
 
     private readonly properties = new Map<string, EquipmentProperties>();
-
-    private readonly initialWireCount = new Map<string, number>();
-
-    private readonly nodesByIidmNode = new Map<number, NodeMetadata[]>();
-
-    private readonly gaps = new Map<string, GapTarget>();
 
     constructor(
         metadata: SLDMetadata,
@@ -69,15 +62,7 @@ export class EditorModel {
             this.indexFeederInfo(info);
         }
 
-        for (const [nodeId, wires] of this.wiresByNode) {
-            this.initialWireCount.set(nodeId, wires.length);
-        }
-
         this.resolveHiddenNodes();
-
-        for (const node of this.metadata.nodes) {
-            this.indexIidmNode(node);
-        }
     }
 
     private resolveHiddenNodes(): void {
@@ -117,10 +102,6 @@ export class EditorModel {
         }
 
         return candidates?.size === 1 ? [...candidates][0] : undefined;
-    }
-
-    private indexIidmNode(node: NodeMetadata): void {
-        if (node.iidmNode !== undefined) pushTo(this.nodesByIidmNode, node.iidmNode, node);
     }
 
     private indexNode(node: NodeMetadata): void {
@@ -183,35 +164,13 @@ export class EditorModel {
 
         this.nodesById.delete(nodeId);
         if (node.equipmentId) removeFrom(this.nodesByEquipmentId, node.equipmentId, node);
-        if (node.iidmNode !== undefined) removeFrom(this.nodesByIidmNode, node.iidmNode, node);
-        this.openGap(node);
         removeById(this.metadata.nodes, nodeId);
         return node;
     }
 
     addNode(node: NodeMetadata): void {
         this.indexNode(node);
-        this.indexIidmNode(node);
-        this.gaps.delete(node.id);
         this.metadata.nodes.push(node);
-    }
-
-    /** Removing a switch leaves its two nodes facing each other: that is a gap. */
-    private openGap(node: NodeMetadata): void {
-        if (!isSwitchNode(node)) return;
-        if (node.iidmNode1 === undefined || node.iidmNode2 === undefined) return;
-
-        this.gaps.set(node.id, {
-            kind: 'GAP',
-            id: `GAP_${node.iidmNode1}_${node.iidmNode2}`,
-            vlId: node.vid ?? '',
-            node1: node.iidmNode1,
-            node2: node.iidmNode2,
-        });
-    }
-
-    getNodesForIidmNode(iidmNode: number): NodeMetadata[] {
-        return this.nodesByIidmNode.get(iidmNode) ?? [];
     }
 
     removeWire(wireId: string): WireMetadata | undefined {
@@ -313,7 +272,7 @@ export class EditorModel {
         return {nodes: [...nodes.values()], wires: [...wires.values()]};
     }
 
-    collectTargets(allNodes = false): EditTarget[] {
+    collectTargets(): EditTarget[] {
         const targets: EditTarget[] = [];
         const seenEquipments = new Set<string>();
         const seenIidmNodes = new Set<string>();
@@ -363,38 +322,22 @@ export class EditorModel {
                 continue;
             }
 
-            const state = this.nodeTargetFor(node, occupied, allNodes);
-            const seen = state && iidmKey(vlId, node.iidmNode!);
-            if (state && seen !== undefined && !seenIidmNodes.has(seen)) {
-                seenIidmNodes.add(seen);
-                targets.push({
-                    kind: 'NODE',
-                    id: node.id,
-                    vlId,
-                    node: node.iidmNode!,
-                    occupied: state.occupied,
-                });
-            }
+            if (!isHiddenNode(node) || node.iidmNode === undefined) continue;
+
+            const seen = iidmKey(vlId, node.iidmNode);
+            if (seenIidmNodes.has(seen)) continue;
+            seenIidmNodes.add(seen);
+
+            targets.push({
+                kind: 'NODE',
+                id: node.id,
+                vlId,
+                node: node.iidmNode,
+                occupied: occupied.has(seen),
+            });
         }
 
-        targets.push(...this.collectGaps());
         return targets;
-    }
-
-    private nodeTargetFor(
-        node: NodeMetadata,
-        occupied: ReadonlySet<string>,
-        allNodes: boolean,
-    ): { occupied: boolean } | undefined {
-        if (!isHiddenNode(node) || node.iidmNode === undefined) return undefined;
-
-        const taken = occupied.has(iidmKey(node.vid ?? '', node.iidmNode));
-        if (allNodes) return { occupied: taken };
-        if (taken) return undefined;
-
-        return this.getWiresForNode(node.id).length < (this.initialWireCount.get(node.id) ?? 0)
-            ? { occupied: false }
-            : undefined;
     }
 
     hasSwitchBetween(vlId: string, a: number, b: number): boolean {
@@ -405,14 +348,6 @@ export class EditorModel {
                 node.iidmNode2 !== undefined &&
                 ((node.iidmNode1 === a && node.iidmNode2 === b) ||
                     (node.iidmNode1 === b && node.iidmNode2 === a)),
-        );
-    }
-
-    private collectGaps(): GapTarget[] {
-        return [...this.gaps.values()].filter(
-            (gap) =>
-                this.getNodesForIidmNode(gap.node1).length > 0 &&
-                this.getNodesForIidmNode(gap.node2).length > 0,
         );
     }
 

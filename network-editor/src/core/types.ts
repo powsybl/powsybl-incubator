@@ -167,14 +167,6 @@ export interface NodeTarget {
     occupied?: boolean;
 }
 
-export interface GapTarget {
-    kind: 'GAP';
-    id: string;
-    vlId: string;
-    node1: number;
-    node2: number;
-}
-
 export interface BaySlot {
     vlId: string;
     sectionIndex: number;
@@ -200,7 +192,7 @@ export interface EquipmentTarget {
     pending?: boolean;
 }
 
-export type EditTarget = NodeTarget | GapTarget | BusbarTarget | EquipmentTarget;
+export type EditTarget = NodeTarget | BusbarTarget | EquipmentTarget;
 
 export type EditOperation =
     | 'CREATE_INJECTION'

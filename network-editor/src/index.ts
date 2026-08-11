@@ -35,7 +35,6 @@ export type {
     ElementType,
     EquipmentProperties,
     EquipmentTarget,
-    GapTarget,
     NodeTarget,
     SelectionState,
     SLDMetadata,

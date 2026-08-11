@@ -5,7 +5,6 @@ import type {
     ElementType,
     EquipmentProperties,
     FeederDirection,
-    GapTarget,
     NodeTarget,
     OrderClaim,
 } from '../types';
@@ -18,7 +17,7 @@ export class CreateCommand implements Command {
     constructor(
         readonly equipmentId: string,
         private readonly type: ElementType,
-        private readonly target: NodeTarget | BusbarTarget | GapTarget,
+        private readonly target: NodeTarget | BusbarTarget,
         private readonly properties: EquipmentProperties,
         markerNodeId: string,
         private readonly bay?: { order: number; direction: FeederDirection },
@@ -61,18 +60,6 @@ export class CreateCommand implements Command {
                         busbarSectionId: this.target.busbarSectionId,
                         order: this.bay!.order,
                         direction: this.bay!.direction,
-                        properties: this.properties,
-                    },
-                };
-            case 'GAP':
-                return {
-                    op: 'create-switch',
-                    equipmentId,
-                    payload: {
-                        equipmentType: this.type,
-                        vlId: this.target.vlId,
-                        node1: this.target.node1,
-                        node2: this.target.node2,
                         properties: this.properties,
                     },
                 };

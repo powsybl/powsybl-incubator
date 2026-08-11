@@ -52,9 +52,7 @@ function label(action: EditorAction): string {
 function describe(target: EditTarget): string {
     switch (target.kind) {
         case 'NODE':
-            return `Free node ${target.node}`;
-        case 'GAP':
-            return `Gap ${target.node1}–${target.node2}`;
+            return target.occupied ? `Node ${target.node} (taken)` : `Node ${target.node}`;
         case 'BUSBAR':
             return `Busbar ${target.busbarSectionId}`;
         case 'EQUIPMENT':
@@ -72,7 +70,6 @@ export function App() {
     const [menu, setMenu] = useState<Menu | null>(null);
     const [panel, setPanel] = useState<EditorAction | null>(null);
     const [overlay, setOverlay] = useState(false);
-    const [targetsVisible, setTargetsVisible] = useState(false);
     const [selection, setSelection] = useState<SelectionState | null>(null);
 
     useEffect(() => {
@@ -129,14 +126,6 @@ export function App() {
                     }}
                 >
                     ⬡ {overlay ? 'Hide' : 'Show'} IIDM nodes
-                </button>
-                <button
-                    onClick={() => {
-                        setTargetsVisible(!targetsVisible);
-                        editor?.setNodeTargetsVisible(!targetsVisible);
-                    }}
-                >
-                    ⬡ {targetsVisible ? 'Hide' : 'Show'} target nodes
                 </button>
             </div>
 

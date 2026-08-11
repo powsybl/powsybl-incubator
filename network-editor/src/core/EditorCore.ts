@@ -45,17 +45,12 @@ type BuildableTarget = Exclude<EditTarget, { kind: 'EQUIPMENT' }>;
 const CREATE_OPERATIONS: Record<BuildableTarget['kind'], EditOperation> = {
     NODE: 'CREATE_INJECTION',
     BUSBAR: 'CREATE_FEEDER_BAY',
-    GAP: 'CREATE_SWITCH',
 };
 
-const EXCLUSIVE_TARGETS: ReadonlySet<EditTarget['kind']> = new Set<EditTarget['kind']>([
-    'NODE',
-    'GAP',
-]);
+const EXCLUSIVE_TARGETS: ReadonlySet<EditTarget['kind']> = new Set<EditTarget['kind']>(['NODE']);
 
 export class EditorCore {
     private destroyed = false;
-    private allNodesTargets = true;
 
     private selection: SelectionState | null = null;
 
@@ -136,15 +131,6 @@ export class EditorCore {
                       : undefined;
             if (order === undefined) return false;
             bay = { order, direction: spec.direction ?? 'BOTTOM' };
-        }
-
-        if (target.kind === 'GAP') {
-            const host = [
-                ...this.model.getNodesForIidmNode(target.node1),
-                ...this.model.getNodesForIidmNode(target.node2),
-            ].find((node) => !node.equipmentId);
-            if (!host) return false;
-            markerNodeId = host.id;
         }
 
         if (this.isExistingEquipmentId(spec.provisionalId)) return false;
@@ -316,12 +302,6 @@ export class EditorCore {
     /** Debug overlay: shows the IIDM node each element stands on. */
     showIidmNodes(enabled: boolean): void {
         this.dom.setIidmOverlay(enabled ? this.model.collectNodeStatus() : new Map());
-    }
-
-    setNodeTargetsVisible(enabled: boolean): void {
-        if (enabled === this.allNodesTargets) return;
-        this.allNodesTargets = enabled;
-        this.refreshTargets();
     }
 
     private readonly onMouseDown = (event: MouseEvent) => {
@@ -533,7 +513,7 @@ export class EditorCore {
         this.cancelSelection();
         const { consumed, markers } = this.pendingCreations();
         const targets = this.model
-            .collectTargets(this.allNodesTargets)
+            .collectTargets()
             .filter((target) => !EXCLUSIVE_TARGETS.has(target.kind) || !consumed.has(target.id))
             .map((target) =>
                 target.kind === 'EQUIPMENT' && consumed.has(target.id)
@@ -563,14 +543,6 @@ export class EditorCore {
                 case 'EQUIPMENT':
                     for (const node of this.model.getNodesForEquipment(target.equipmentId)) {
                         pushTo(byNode, node.id, target);
-                    }
-                    break;
-                case 'GAP':
-                    for (const node of [
-                        ...this.model.getNodesForIidmNode(target.node1),
-                        ...this.model.getNodesForIidmNode(target.node2),
-                    ]) {
-                        if (!node.equipmentId) pushTo(byNode, node.id, target);
                     }
                     break;
             }

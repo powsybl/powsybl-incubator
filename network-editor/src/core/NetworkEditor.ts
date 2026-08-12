@@ -106,6 +106,10 @@ export class NetworkEditor {
         return this.core.getSelectedEquipmentId();
     }
 
+    getSelectedEquipmentIds(): readonly string[] {
+        return this.core.getSelectedEquipmentIds();
+    }
+
     getProperties(equipmentId: string): EquipmentProperties {
         return this.core.getProperties(equipmentId);
     }

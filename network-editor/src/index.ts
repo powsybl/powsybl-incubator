@@ -36,6 +36,7 @@ export type {
     EquipmentProperties,
     EquipmentTarget,
     NodeTarget,
+    SelectedElement,
     SelectionState,
     SLDMetadata,
     TargetEvent,

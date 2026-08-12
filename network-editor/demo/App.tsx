@@ -7,6 +7,7 @@ import {
     type EditorAction,
     type EditTarget,
     type EquipmentProperties,
+    type SelectedElement,
     type SelectionState,
     type SLDMetadata,
 } from '../src';
@@ -45,6 +46,8 @@ function label(action: EditorAction): string {
             return `${base}: ${action.subject.type}`;
         case 'BUSBAR':
             return `${base}: ${action.subject.busbarSectionId}`;
+        case 'SELECTION':
+            return `${base} (${action.subject.size})`;
         default:
             return base;
     }
@@ -74,6 +77,7 @@ export function App() {
     const [panel, setPanel] = useState<EditorAction | null>(null);
     const [overlay, setOverlay] = useState(false);
     const [selection, setSelection] = useState<SelectionState | null>(null);
+    const [selected, setSelected] = useState<readonly SelectedElement[]>([]);
 
     useEffect(() => {
         const instance = new NetworkEditor({
@@ -93,7 +97,13 @@ export function App() {
                     if (event.selection) setMenu(null);
                 }
                 if (event.name === 'element:selected') {
-                    setPanel(propertiesAction(instance, event.id));
+                    setSelected(event.elements);
+                    // One equipment: its properties. Several: nothing to show but the count.
+                    setPanel(
+                        event.elements.length === 1
+                            ? propertiesAction(instance, event.elements[0].id)
+                            : null,
+                    );
                 }
             },
         });
@@ -131,6 +141,13 @@ export function App() {
                     ⬡ {overlay ? 'Hide' : 'Show'} IIDM nodes
                 </button>
             </div>
+
+            {selected.length > 1 && (
+                <p className="hint">
+                    {selected.length} elements selected — Shift+click to add or remove, right-click
+                    to delete them all.
+                </p>
+            )}
 
             {selection && (
                 <p className="hint">

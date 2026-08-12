@@ -372,9 +372,14 @@ export type ChangeSetEntry =
 
 export type ChangeSet = ChangeSetEntry[];
 
+export interface SelectedElement {
+    id: string;
+    type: ElementType;
+}
+
 export interface EditorEvents {
     'targets:changed': { targets: readonly EditTarget[] };
-    'element:selected': { id: string | null; type: ElementType | null };
+    'element:selected': { elements: readonly SelectedElement[] };
     'history:changed': { canUndo: boolean; canRedo: boolean };
     'model:changed': { changeSet: ChangeSet };
     'selection:changed': { selection: SelectionState | null };

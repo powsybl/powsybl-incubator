@@ -30,6 +30,7 @@ import {
     type EditOperation,
     type EditTarget,
     type ElementType,
+    type EquipmentTarget,
     type EquipmentProperties,
     type EditorEmit,
     type EditorEvent,
@@ -68,7 +69,7 @@ export class EditorCore {
     private targets = new Map<string, EditTarget>();
     private targetsByNodeId = new Map<string, EditTarget[]>();
 
-    private selectedEquipmentId: string | null = null;
+    private selectedEquipmentIds: string[] = [];
     private mouseDownX = 0;
     private mouseDownY = 0;
 
@@ -105,11 +106,11 @@ export class EditorCore {
     }
 
     deleteElement(equipmentId: string): boolean {
-        return this.deleteCommand(equipmentId, 'element');
+        return this.deleteElements([equipmentId], 'element');
     }
 
     deleteFeederBay(equipmentId: string): boolean {
-        return this.deleteCommand(equipmentId, 'bay');
+        return this.deleteElements([equipmentId], 'bay');
     }
 
     create(targetId: string, spec: CreateSpec): boolean {
@@ -274,40 +275,65 @@ export class EditorCore {
         return true;
     }
 
-    private deleteCommand(equipmentId: string, kind: 'element' | 'bay'): boolean {
-        const created = this.findPendingCreate(equipmentId);
-        if (created) {
-            this.dropSelection(equipmentId);
-            return this.history.remove(created);
+    /** One step for the whole batch: a single undo brings every equipment back. */
+    deleteElements(equipmentIds: readonly string[], kind: 'element' | 'bay'): boolean {
+        const creations: PendingCreateCommand[] = [];
+        const commands: Command[] = [];
+
+        for (const equipmentId of equipmentIds) {
+            const created = this.findPendingCreate(equipmentId);
+            if (created) {
+                creations.push(created);
+                continue;
+            }
+            const command = this.deleteCommandFor(equipmentId, kind);
+            // One refusal sinks the batch: half a deletion is never what was asked.
+            if (!command) return false;
+            commands.push(command);
         }
 
+        for (const created of creations) {
+            // A creation is dropped from the change set, never turned into a delete entry.
+            this.dropSelection(created.equipmentId);
+            this.history.remove(created);
+        }
+        this.history.pushAll(commands);
+        return creations.length + commands.length > 0;
+    }
+
+    /** The equipments a batch operation would act on, in selection order. */
+    selectedTargets(): EquipmentTarget[] {
+        return this.selectedEquipmentIds.flatMap((equipmentId) => {
+            const target = this.targets.get(equipmentId);
+            return target?.kind === 'EQUIPMENT' ? target : [];
+        });
+    }
+
+    private deleteCommandFor(equipmentId: string, kind: 'element' | 'bay'): Command | undefined {
         const operation: EditOperation = kind === 'bay' ? 'DELETE_BAY' : 'DELETE';
         const target = this.targets.get(equipmentId);
-        if (target && !availableOperations(target).includes(operation)) return false;
+        if (target && !availableOperations(target).includes(operation)) return undefined;
 
         const node = this.model.getNodesForEquipment(equipmentId)[0];
         if (!node || !this.isOperationAllowed(node, operation)) {
-            return false;
+            return undefined;
         }
 
         const scope =
             kind === 'bay'
                 ? this.model.collectBay(equipmentId)
                 : this.model.collectElementScope(equipmentId);
-        if (scope.nodes.length === 0) return false;
+        if (scope.nodes.length === 0) return undefined;
 
-        this.history.push(
-            new DeleteElementCommand(
-                equipmentId,
-                toElementType(node.componentType),
-                scope,
-                kind,
-                this.model,
-                this.dom,
-                this.dropSelection,
-            ),
+        return new DeleteElementCommand(
+            equipmentId,
+            toElementType(node.componentType),
+            scope,
+            kind,
+            this.model,
+            this.dom,
+            this.dropSelection,
         );
-        return true;
     }
 
     /** Every entry says what it acts on, so the backend never has to look the equipment up. */
@@ -333,7 +359,11 @@ export class EditorCore {
     }
 
     getSelectedEquipmentId(): string | null {
-        return this.selectedEquipmentId;
+        return this.selectedEquipmentIds[0] ?? null;
+    }
+
+    getSelectedEquipmentIds(): readonly string[] {
+        return this.selectedEquipmentIds;
     }
 
     getProperties(equipmentId: string): EquipmentProperties {
@@ -369,7 +399,9 @@ export class EditorCore {
             return;
         }
 
-        const buildable = this.targetsAt(node).filter((target) => target.kind !== 'EQUIPMENT');
+        const buildable = event.shiftKey
+            ? []
+            : this.targetsAt(node).filter((target) => target.kind !== 'EQUIPMENT');
         if (buildable.length > 0) {
             this.onTargets?.({
                 targets: buildable,
@@ -381,8 +413,8 @@ export class EditorCore {
         }
 
         if (node) {
-            this.selectEquipment(node);
-        } else {
+            this.selectEquipment(node, event.shiftKey);
+        } else if (!event.shiftKey) {
             this.clearSelection();
         }
     };
@@ -585,29 +617,47 @@ export class EditorCore {
         return node ? (this.targetsByNodeId.get(node.id) ?? []) : [];
     }
 
-    private selectEquipment(node: NodeMetadata): void {
+    private selectEquipment(node: NodeMetadata, additive: boolean): void {
         const type = toElementType(node.componentType);
         if (!DELETABLE_TYPES.has(type)) {
-            this.clearSelection();
+            if (!additive) this.setSelection([]);
             return;
         }
 
         const equipmentId = node.equipmentId ?? node.id;
-        if (equipmentId === this.selectedEquipmentId) return;
+        const selected = this.selectedEquipmentIds;
 
-        this.selectedEquipmentId = equipmentId;
-        const nodes = node.equipmentId
-            ? this.model.getNodesForEquipment(equipmentId)
-            : [node];
-        this.dom.setSelection(nodes.map((n) => n.id));
-        this.emit('element:selected', { id: equipmentId, type });
+        this.setSelection(
+            !additive
+                ? [equipmentId]
+                : selected.includes(equipmentId)
+                  ? selected.filter((id) => id !== equipmentId)
+                  : [...selected, equipmentId],
+        );
     }
 
     private clearSelection(): void {
-        if (this.selectedEquipmentId === null) return;
-        this.dom.setSelection([]);
-        this.selectedEquipmentId = null;
-        this.emit('element:selected', { id: null, type: null });
+        this.setSelection([]);
+    }
+
+    /** The one way in: paints the selection and publishes it, and never twice for nothing. */
+    private setSelection(equipmentIds: readonly string[]): void {
+        if (this.selectedEquipmentIds.join() === equipmentIds.join()) return;
+
+        this.selectedEquipmentIds = [...equipmentIds];
+        this.dom.setSelection(
+            // An equipment is drawn by its nodes; a node with no equipmentId stands for itself.
+            equipmentIds.flatMap((id) => {
+                const nodes = this.model.getNodesForEquipment(id);
+                return nodes.length > 0 ? nodes.map((node) => node.id) : [id];
+            }),
+        );
+        this.emit('element:selected', {
+            elements: this.selectedTargets().map(({ equipmentId, type }) => ({
+                id: equipmentId,
+                type,
+            })),
+        });
     }
 
     private refreshTargets(): void {
@@ -689,14 +739,11 @@ export class EditorCore {
     };
 
     private readonly dropSelection = (equipmentId: string): void => {
-        if (equipmentId === this.selectedEquipmentId) this.clearSelection();
+        this.setSelection(this.selectedEquipmentIds.filter((id) => id !== equipmentId));
     };
 
     private readonly onRenamed = (oldId: string, newId: string): void => {
-        if (this.selectedEquipmentId !== oldId) return;
-        this.selectedEquipmentId = newId;
-        const node = this.model.getNodesForEquipment(newId)[0];
-        this.emit('element:selected', { id: newId, type: toElementType(node?.componentType) });
+        this.setSelection(this.selectedEquipmentIds.map((id) => (id === oldId ? newId : id)));
     };
 
     private readonly syncSwitch = (equipmentId: string, changes: EquipmentProperties): void => {

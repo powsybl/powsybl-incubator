@@ -18,7 +18,8 @@ import {
 
 export type ActionSubject =
     | { kind: 'TYPE'; type: ElementType }
-    | { kind: 'BUSBAR'; busbarSectionId: string };
+    | { kind: 'BUSBAR'; busbarSectionId: string }
+    | { kind: 'SELECTION'; size: number };
 
 
 export interface EditorAction {
@@ -37,6 +38,8 @@ export interface ActionHost {
     applyProperties(equipmentId: string, changes: EquipmentProperties): boolean;
     deleteElement(equipmentId: string): boolean;
     deleteFeederBay(equipmentId: string): boolean;
+    deleteElements(equipmentIds: readonly string[], kind: 'element' | 'bay'): boolean;
+    selectedTargets(): readonly EquipmentTarget[];
     moveDestinations(equipmentId: string): BusbarTarget[];
     moveFeederBay(equipmentId: string, busbarTargetId: string): boolean;
     renameEquipment(equipmentId: string, newId: string): boolean;
@@ -73,6 +76,11 @@ export function buildActions(
     target: EditTarget,
     insertion?: BayInsertion,
 ): EditorAction[] {
+    const batch = host.selectedTargets();
+    if (batch.length > 1 && batch.some((selected) => selected.id === target.id)) {
+        return batchActions(host, target, batch);
+    }
+
     return availableOperations(target).flatMap((operation) => {
         if (!IMPLEMENTED_OPERATIONS.has(operation)) {
             return [{ id: id(target, operation), operation, enabled: false, form: [], initial: {}, run: no }];
@@ -245,6 +253,31 @@ function equipmentActions(
         default:
             return [];
     }
+}
+
+function batchActions(
+    host: ActionHost,
+    target: EditTarget,
+    batch: readonly EquipmentTarget[],
+): EditorAction[] {
+    const equipmentIds = batch.map((selected) => selected.equipmentId);
+
+    return ([
+        ['DELETE', 'element'],
+        ['DELETE_BAY', 'bay'],
+    ] as const)
+        .filter(([operation]) =>
+            batch.every((selected) => availableOperations(selected).includes(operation)),
+        )
+        .map(([operation, kind]) => ({
+            id: id(target, operation),
+            operation,
+            subject: { kind: 'SELECTION' as const, size: batch.length },
+            enabled: true,
+            form: [],
+            initial: {},
+            run: () => host.deleteElements(equipmentIds, kind),
+        }));
 }
 
 function plain(target: EditTarget, operation: EditOperation, run: () => boolean): EditorAction {

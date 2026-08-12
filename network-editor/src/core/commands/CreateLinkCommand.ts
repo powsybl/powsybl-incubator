@@ -1,13 +1,20 @@
-import type { Command } from './Command';
-import type { ChangeSetEntry, ElementType, EquipmentProperties } from '../types';
+import type { PendingCreateCommand } from './Command';
+import type { EditorModel } from '../EditorModel';
+import {
+    NODE_COMPONENT_TYPE,
+    createdNodeId,
+    type ChangeSetEntry,
+    type CreateSpec,
+    type ElementType,
+    type EquipmentProperties,
+    type NodeMetadata,
+} from '../types';
 
-export class CreateLinkCommand implements Command {
-    readonly pendingMarker: {
-        targetId: string;
-        nodeId: string;
-        label: string;
-        consumes: boolean;
-    };
+export class CreateLinkCommand implements PendingCreateCommand {
+    readonly pendingMarker: { targetId: string; nodeId: string; label: string; elementId: string };
+
+    /** Both IIDM ends are known, so the model can already tell this pair is taken. */
+    private readonly node: NodeMetadata;
 
     constructor(
         readonly equipmentId: string,
@@ -17,19 +24,35 @@ export class CreateLinkCommand implements Command {
         private readonly node2: number,
         private readonly properties: EquipmentProperties,
         markerNodeId: string,
-        targetId: string,
+        private readonly targetId: string,
+        private readonly model: EditorModel,
     ) {
+        this.node = {
+            id: createdNodeId(equipmentId),
+            equipmentId,
+            componentType: NODE_COMPONENT_TYPE[type],
+            vid: vlId,
+            iidmNode1: node1,
+            iidmNode2: node2,
+            open: properties.open === true,
+        };
         this.pendingMarker = {
             targetId,
             nodeId: markerNodeId,
             label: equipmentId,
-            consumes: false,
+            elementId: this.node.id,
         };
     }
 
-    execute(): void {}
+    execute(): void {
+        this.model.addNode(this.node);
+        this.model.seedProperties(this.equipmentId, this.properties);
+    }
 
-    undo(): void {}
+    undo(): void {
+        this.model.removeNode(this.node.id);
+        this.model.clearProperties(this.equipmentId);
+    }
 
     toChangeSetEntry(): ChangeSetEntry {
         return {
@@ -43,5 +66,27 @@ export class CreateLinkCommand implements Command {
                 properties: this.properties,
             },
         };
+    }
+
+    get createSpec(): CreateSpec {
+        return {
+            type: this.type,
+            properties: { ...this.properties },
+            provisionalId: this.equipmentId,
+        };
+    }
+
+    withSpec(spec: CreateSpec): CreateLinkCommand {
+        return new CreateLinkCommand(
+            spec.provisionalId,
+            this.type, // the equipment type stays put: changing it means cancel and recreate
+            this.vlId,
+            this.node1,
+            this.node2,
+            spec.properties,
+            this.pendingMarker.nodeId,
+            this.targetId,
+            this.model,
+        );
     }
 }

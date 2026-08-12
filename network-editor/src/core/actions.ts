@@ -88,6 +88,34 @@ export function buildActions(
     });
 }
 
+function createForm(
+    type: ElementType,
+    onBusbar: boolean,
+    behindSwitch: boolean,
+): PropertyDescriptor[] {
+    return [
+        EQUIPMENT_ID,
+        ...(onBusbar ? [ORDER, DIRECTION] : []),
+        ...(behindSwitch ? [SWITCH_KIND] : []),
+        ...schemaFor(type, 'create'),
+    ];
+}
+
+function specFromValues(type: ElementType, values: EquipmentProperties): CreateSpec | undefined {
+    const { equipmentId, order, direction, switchKind, ...properties } = values;
+    const provisionalId = text(equipmentId);
+    if (!provisionalId) return undefined;
+
+    return {
+        type,
+        properties,
+        provisionalId,
+        order: typeof order === 'number' ? order : undefined,
+        direction: toDirection(text(direction)),
+        switchType: switchKind === undefined ? undefined : toElementType(text(switchKind)),
+    };
+}
+
 function createAction(
     host: ActionHost,
     target: EditTarget,
@@ -97,12 +125,7 @@ function createAction(
 ): EditorAction {
     const onBusbar = target.kind === 'BUSBAR';
     const behindSwitch = operation === 'CREATE_SWITCHED_INJECTION';
-    const form = [
-        EQUIPMENT_ID,
-        ...(onBusbar ? [ORDER, DIRECTION] : []),
-        ...(behindSwitch ? [SWITCH_KIND] : []),
-        ...schemaFor(type, 'create'),
-    ];
+    const form = createForm(type, onBusbar, behindSwitch);
 
     const initial = defaultsOf(form);
     initial.equipmentId = 'NEW_' + type
@@ -120,28 +143,15 @@ function createAction(
         form,
         initial,
         run: (values = {}) => {
-            const { equipmentId, order, direction, ...properties } = values;
-            const provisionalId = text(equipmentId);
-            if (!provisionalId) return false;
+            const spec = specFromValues(type, values);
+            if (!spec) return false;
             if (operation === 'CREATE_SWITCH' && target.kind === 'NODE') {
-                return host.beginLink(target.id, { type, properties, provisionalId });
+                return host.beginLink(target.id, spec);
             }
             if (behindSwitch && target.kind === 'NODE') {
-                const { switchKind, ...rest } = properties;
-                return host.createSwitchedInjection(target.id, {
-                    type,
-                    properties: rest,
-                    provisionalId,
-                    switchType: toElementType(text(switchKind)),
-                });
+                return host.createSwitchedInjection(target.id, spec);
             }
-            return host.create(target.id, {
-                type,
-                properties,
-                provisionalId,
-                order: typeof order === 'number' ? order : undefined,
-                direction: toDirection(text(direction)),
-            });
+            return host.create(target.id, spec);
         },
     };
 }
@@ -191,7 +201,7 @@ function equipmentActions(
         }
 
         case 'UPDATE_PROPERTIES': {
-            const form = schemaFor(target.type, 'edit');
+            const form = schemaFor(target.type, target.created ? 'create' : 'edit');
             return [
                 {
                     id: id(target, operation),

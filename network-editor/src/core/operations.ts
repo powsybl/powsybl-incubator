@@ -13,6 +13,12 @@ import {
 
 const NO_TYPES: ReadonlySet<ElementType> = new Set<ElementType>();
 
+const CREATED_OPERATIONS: ReadonlySet<EditOperation> = new Set<EditOperation>([
+    'DELETE',
+    'RENAME',
+    'UPDATE_PROPERTIES',
+]);
+
 export function availableOperations(target: EditTarget): EditOperation[] {
     switch (target.kind) {
         case 'NODE':
@@ -28,7 +34,10 @@ export function availableOperations(target: EditTarget): EditOperation[] {
 
 function operationsForTarget(target: EquipmentTarget): EditOperation[] {
     if (target.pending) return ['UPDATE_PROPERTIES'];
-    const operations = operationsForEquipment(target.type);
+
+    const operations = operationsForEquipment(target.type).filter(
+        (operation) => !target.created || CREATED_OPERATIONS.has(operation),
+    );
     if (target.order !== undefined) operations.push('UPDATE_BAY_POSITION');
     return operations;
 }

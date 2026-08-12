@@ -32,18 +32,39 @@ export class CommandStack {
         this.notify();
     }
 
-    get canUndo(): boolean { return this.undoStack.length > 0; }
-    get canRedo(): boolean { return this.redoStack.length > 0; }
-
-    get pending(): readonly Command[] {
-        return this.undoStack;
-    }
-
     clear(): void {
         if (this.undoStack.length === 0 && this.redoStack.length === 0) return;
         this.undoStack.length = 0;
         this.redoStack.length = 0;
         this.notify();
+    }
+
+    replace(previous: Command, next: Command): boolean {
+        const index = this.undoStack.indexOf(previous);
+        if (index === -1) return false;
+        previous.undo();
+        next.execute();
+        this.undoStack[index] = next;
+        this.redoStack.length = 0;
+        this.notify();
+        return true;
+    }
+
+    remove(command: Command): boolean {
+        const index = this.undoStack.indexOf(command);
+        if (index === -1) return false;
+        command.undo();
+        this.undoStack.splice(index, 1);
+        this.redoStack.length = 0;
+        this.notify();
+        return true;
+    }
+
+    get canUndo(): boolean { return this.undoStack.length > 0; }
+    get canRedo(): boolean { return this.redoStack.length > 0; }
+
+    get pending(): readonly Command[] {
+        return this.undoStack;
     }
 
     private notify(): void {

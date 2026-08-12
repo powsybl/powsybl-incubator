@@ -26,6 +26,14 @@ g.${PENDING_CREATE_CLASS} rect {
     stroke-dasharray: 2 1.5;
     rx: 1.5;
 }
+/* Only creations carry an id — they are the element, so they take clicks. */
+g.${PENDING_CREATE_CLASS}[id] {
+    pointer-events: auto;
+    cursor: pointer;
+}
+g.${PENDING_CREATE_CLASS}[id]:hover rect {
+    fill: #bbdefb;
+}
 g.${PENDING_CREATE_CLASS} text {
     fill: #0d47a1;
     font-size: 6px;
@@ -86,6 +94,12 @@ text.${IIDM_LABEL_CLASS} {
     cursor: pointer;
 }
 `;
+
+/** One pending marker to draw; a creation passes the SVG id its badge must take. */
+export interface PendingMarkerView {
+    id?: string;
+    label: string;
+}
 
 export interface RemovedDomElement {
     element: Element;
@@ -184,16 +198,16 @@ export class SvgDomService {
         }
     }
 
-    setPendingCreations(labels: ReadonlyMap<string, readonly string[]>): void {
+    setPendingCreations(markers: ReadonlyMap<string, readonly PendingMarkerView[]>): void {
         const svg = this.getSvgRoot();
         if (!svg) return;
 
         for (const marker of svg.querySelectorAll(`g.${PENDING_CREATE_CLASS}`)) marker.remove();
 
-        for (const [nodeId, pending] of labels) {
+        for (const [nodeId, pending] of markers) {
             const host = this.findElementById(nodeId);
             if (!host) continue;
-            pending.forEach((label, index) => host.appendChild(createPendingMarker(label, index)));
+            pending.forEach((view, index) => host.appendChild(createPendingMarker(view, index)));
         }
     }
 
@@ -245,12 +259,14 @@ const MARKER_BASELINE = 7;
 const MARKER_TOP = -14;
 const NODE_CENTRE = 4;
 
-function createPendingMarker(label: string, index = 0): SVGGElement {
+function createPendingMarker(view: PendingMarkerView, index = 0): SVGGElement {
+    const { label } = view;
     const width = label.length * 3.4 + 8;
     const top = MARKER_TOP - index * (MARKER_HEIGHT + 2);
 
     const marker = document.createElementNS(SVG_NS, 'g');
     marker.setAttribute('class', PENDING_CREATE_CLASS);
+    if (view.id) marker.id = view.id;
 
     const box = document.createElementNS(SVG_NS, 'rect');
     box.setAttribute('x', String(NODE_CENTRE - width / 2));

@@ -57,7 +57,9 @@ function describe(target: EditTarget): string {
         case 'BUSBAR':
             return `Busbar ${target.busbarSectionId}`;
         case 'EQUIPMENT':
-            return `${target.type} ${target.equipmentId}`;
+            return target.created
+                ? `${target.type} ${target.equipmentId} (pending)`
+                : `${target.type} ${target.equipmentId}`;
     }
 }
 

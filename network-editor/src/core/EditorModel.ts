@@ -490,6 +490,10 @@ export class EditorModel {
         this.updateSwitchMetadata(equipmentId, values.open);
     }
 
+    clearProperties(equipmentId: string): void {
+        this.properties.delete(equipmentId);
+    }
+
     setProperties(equipmentId: string, values: EquipmentProperties): void {
         const merged: EquipmentProperties = {
             ...this.properties.get(equipmentId),

@@ -4,6 +4,7 @@ import type { SvgDomService, RemovedDomElement } from '../../dom/SvgDomService';
 import type {
     ChangeSetEntry,
     DeleteScope,
+    ElementType,
     FeederInfoMetadata,
     NodeMetadata,
     WireMetadata,
@@ -17,6 +18,7 @@ export class DeleteElementCommand implements Command {
 
     constructor(
         readonly equipmentId: string,
+        private readonly type: ElementType,
         private readonly scope: DeleteScope,
         private readonly kind: 'element' | 'bay',
         private readonly model: EditorModel,
@@ -73,6 +75,7 @@ export class DeleteElementCommand implements Command {
         return {
             op: this.kind === 'bay' ? 'delete-bay' : 'delete',
             equipmentId: this.equipmentId,
+            equipmentType: this.type,
         };
     }
 

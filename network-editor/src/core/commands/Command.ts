@@ -1,4 +1,4 @@
-import type { ChangeSetEntry, OrderClaim } from '../types';
+import type { ChangeSetEntry, CreateSpec, OrderClaim } from '../types';
 
 export interface Command {
     execute(): void;
@@ -8,8 +8,19 @@ export interface Command {
         targetId: string;
         nodeId: string;
         label: string;
-        consumes?: boolean;
+        elementId?: string;
     };
     readonly orderClaim?: OrderClaim;
     readonly equipmentId: string;
+}
+
+export interface PendingCreate {
+    readonly createSpec: CreateSpec;
+    withSpec(spec: CreateSpec): PendingCreateCommand;
+}
+
+export type PendingCreateCommand = Command & PendingCreate;
+
+export function isPendingCreate(command: Command): command is PendingCreateCommand {
+    return typeof (command as Partial<PendingCreate>).withSpec === 'function';
 }

@@ -1,6 +1,6 @@
 import type { Command } from './Command';
 import type { EditorModel } from '../EditorModel';
-import type { ChangeSetEntry, EquipmentProperties } from '../types';
+import type { ChangeSetEntry, ElementType, EquipmentProperties } from '../types';
 
 export class UpdatePropertiesCommand implements Command {
     private previous: EquipmentProperties = {};
@@ -9,6 +9,7 @@ export class UpdatePropertiesCommand implements Command {
 
     constructor(
         readonly equipmentId: string,
+        private readonly type: ElementType,
         changes: EquipmentProperties,
         private readonly model: EditorModel,
         private readonly onChanged: (equipmentId: string, changes: EquipmentProperties) => void,
@@ -34,6 +35,7 @@ export class UpdatePropertiesCommand implements Command {
         return {
             op: 'update',
             equipmentId: this.equipmentId,
+            equipmentType: this.type,
             payload: { ...this.changes },
         };
     }

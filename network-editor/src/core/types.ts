@@ -190,6 +190,9 @@ export interface EquipmentTarget {
     order?: number;
     direction?: FeederDirection;
     pending?: boolean;
+    created?: boolean;
+    createdBy?: EditOperation;
+    hostNodeId?: string;
 }
 
 export type EditTarget = NodeTarget | BusbarTarget | EquipmentTarget;
@@ -358,8 +361,13 @@ export type ChangeSetEntry =
           equipmentId: string;
           payload: { node: number; order: number; direction: FeederDirection };
       }
-    | { op: 'update'; equipmentId: string; payload: EquipmentProperties }
-    | { op: 'delete' | 'delete-bay'; equipmentId: string }
+    | {
+          op: 'update';
+          equipmentId: string;
+          equipmentType: ElementType;
+          payload: EquipmentProperties;
+      }
+    | { op: 'delete' | 'delete-bay'; equipmentId: string; equipmentType: ElementType }
     | { op: 'rename'; equipmentId: string; payload: { newId: string } };
 
 export type ChangeSet = ChangeSetEntry[];
@@ -394,4 +402,26 @@ export const BAY_TRAVERSABLE_TYPES: ReadonlySet<string> = new Set([
 
 export const BUSBAR_SECTION_TYPE = 'BUSBAR_SECTION';
 
+export const NODE_COMPONENT_TYPE: Readonly<Record<ElementType, string>> = {
+    BUS: BUSBAR_SECTION_TYPE,
+    LOAD: 'LOAD',
+    GENERATOR: 'GENERATOR',
+    BATTERY: 'BATTERY',
+    SHUNT: 'CAPACITOR',
+    STATIC_VAR_COMPENSATOR: 'STATIC_VAR_COMPENSATOR',
+    VSC_CONVERTER_STATION: 'VSC_CONVERTER_STATION',
+    LCC_CONVERTER_STATION: 'LCC_CONVERTER_STATION',
+    BOUNDARY_LINE: 'BOUNDARY_LINE',
+    GROUND: 'GROUND',
+    LINE: 'LINE',
+    TWO_WINDINGS_TRANSFORMER: 'TWO_WINDINGS_TRANSFORMER',
+    THREE_WINDINGS_TRANSFORMER: 'THREE_WINDINGS_TRANSFORMER',
+    BREAKER: 'BREAKER',
+    DISCONNECTOR: 'DISCONNECTOR',
+    LOAD_BREAK_SWITCH: 'LOAD_BREAK_SWITCH',
+    UNKNOWN: HIDDEN_NODE_TYPE,
+};
 
+export function createdNodeId(equipmentId: string): string {
+    return `ne-${equipmentId}`;
+}

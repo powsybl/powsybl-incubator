@@ -274,7 +274,6 @@ export class EditorCore {
         return true;
     }
 
-    /** One step for the whole batch: a single undo brings every equipment back. */
     deleteElements(equipmentIds: readonly string[], kind: 'element' | 'bay'): boolean {
         const creations: PendingCreateCommand[] = [];
         const commands: Command[] = [];
@@ -286,13 +285,11 @@ export class EditorCore {
                 continue;
             }
             const command = this.deleteCommandFor(equipmentId, kind);
-            // One refusal sinks the batch: half a deletion is never what was asked.
             if (!command) return false;
             commands.push(command);
         }
 
         for (const created of creations) {
-            // A creation is dropped from the change set, never turned into a delete entry.
             this.dropSelection(created.equipmentId);
             this.history.remove(created);
         }
@@ -300,7 +297,6 @@ export class EditorCore {
         return creations.length + commands.length > 0;
     }
 
-    /** The equipments a batch operation would act on, in selection order. */
     selectedTargets(): EquipmentTarget[] {
         return this.selectedEquipmentIds.flatMap((equipmentId) => {
             const target = this.targets.get(equipmentId);
@@ -335,7 +331,6 @@ export class EditorCore {
         );
     }
 
-    /** Every entry says what it acts on, so the backend never has to look the equipment up. */
     private equipmentType(equipmentId: string): ElementType | undefined {
         const node = this.model.getNodesForEquipment(equipmentId)[0];
         return node && toElementType(node.componentType);
@@ -424,6 +419,7 @@ export class EditorCore {
         if (targets.length === 0) return;
 
         event.preventDefault();
+        event.stopPropagation();
         this.onTargets({
             targets,
             trigger: 'contextmenu',

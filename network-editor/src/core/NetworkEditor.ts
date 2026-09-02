@@ -47,11 +47,11 @@ export class NetworkEditor {
         const dom = new SvgDomService(opts.container);
         this.core = new EditorCore(model, dom, opts.onEvent, opts.onTargets);
 
-        this.container.addEventListener('contextmenu', this.onContextMenu);
+        this.container.addEventListener('contextmenu', this.onContextMenu, true);
     }
 
     destroy(): void {
-        this.container.removeEventListener('contextmenu', this.onContextMenu);
+        this.container.removeEventListener('contextmenu', this.onContextMenu, true);
         this.core.destroy();
         this.container.replaceChildren();
     }

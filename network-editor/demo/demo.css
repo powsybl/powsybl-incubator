@@ -142,8 +142,6 @@ h2 {
     color: #dc3545;
 }
 
-/* The one class the component publishes without styling: the host owns the look. */
-
 .ne-selected {
     outline: 2px dashed #1976d2;
     outline-offset: 2px;

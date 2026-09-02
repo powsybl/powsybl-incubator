@@ -6,13 +6,11 @@ interface PropertyFormProps {
     initial: EquipmentProperties;
     submitLabel: string;
     onSubmit: (values: EquipmentProperties) => void;
+    rename: boolean
 }
 
-/**
- * The component publishes the fields to ask and the rules to check them: this
- * form only renders them. It knows no equipment type and no operation.
- */
-export function PropertyForm({ schema, initial, submitLabel, onSubmit }: PropertyFormProps) {
+
+export function PropertyForm({ schema, initial, submitLabel, onSubmit, rename }: PropertyFormProps) {
     const [values, setValues] = useState(initial);
     const [invalid, setInvalid] = useState<ReadonlySet<string>>(new Set());
 
@@ -39,7 +37,7 @@ export function PropertyForm({ schema, initial, submitLabel, onSubmit }: Propert
                         {descriptor.required && ' *'}
                     </span>
 
-                    {input(descriptor, values[descriptor.key], set)}
+                    {input(descriptor, values[descriptor.key], set, rename)}
                 </label>
             ))}
             <button type="submit">{submitLabel}</button>
@@ -51,6 +49,7 @@ function input(
     descriptor: PropertyDescriptor,
     value: EquipmentProperties[string] | undefined,
     set: (key: string, value: EquipmentProperties[string]) => void,
+    rename: boolean
 ) {
     if (descriptor.type === 'boolean') {
         return (
@@ -72,6 +71,7 @@ function input(
     }
     return (
         <input
+            disabled={descriptor.key === 'equipmentId' && !rename}
             type={descriptor.type === 'number' ? 'number' : 'text'}
             value={String(value ?? '')}
             onChange={(e) =>

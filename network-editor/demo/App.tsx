@@ -186,7 +186,6 @@ export function App() {
     );
 }
 
-/** One panel for every operation: the action says what to ask and what to run. */
 function ActionPanel({ action, onDone }: { action: EditorAction; onDone: () => void }) {
     const [refused, setRefused] = useState(false);
 
@@ -202,6 +201,7 @@ function ActionPanel({ action, onDone }: { action: EditorAction; onDone: () => v
                     setRefused(!applied);
                     if (applied) onDone();
                 }}
+                rename={action.operation === 'RENAME'}
             />
             {refused && <p className="hint invalid">Refused by the component</p>}
             <button onClick={onDone}>Cancel</button>

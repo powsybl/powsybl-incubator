@@ -36,10 +36,11 @@ import {
     type EditorEvent,
     type EditorEventListener,
     type FeederDirection,
+    type LinkEnd,
+    type LinkGesture,
     type NodeMetadata,
     type NodeTarget,
     type PendingOrders,
-    type SelectionState,
     type TargetEvent,
 } from './types';
 
@@ -55,9 +56,7 @@ const CREATE_OPERATIONS: Record<BuildableTarget['kind'], EditOperation> = {
 export class EditorCore {
     private destroyed = false;
 
-    private selection: SelectionState | null = null;
-
-    private pendingSpec?: CreateSpec;
+    private link: LinkGesture | null = null;
 
     private readonly history = new CommandStack((state) => {
         if (this.destroyed) return;
@@ -68,6 +67,7 @@ export class EditorCore {
 
     private targets = new Map<string, EditTarget>();
     private targetsByNodeId = new Map<string, EditTarget[]>();
+    private nodeTargetIds: string[] = [];
 
     private selectedEquipmentIds: string[] = [];
     private mouseDownX = 0;
@@ -90,7 +90,7 @@ export class EditorCore {
         const container: HTMLElement = this.dom.getContainer();
         container.removeEventListener('mousedown', this.onMouseDown);
         container.removeEventListener('mouseup', this.onMouseUp);
-        this.cancelSelection();
+        this.cancelLink();
         this.dom.setSelection([]);
         this.dom.setNodeTargets([]);
         this.dom.setPendingCreations(new Map());
@@ -143,7 +143,6 @@ export class EditorCore {
                 spec.type,
                 target,
                 spec.properties,
-                target.id,
                 this.model,
                 bay,
             ),
@@ -394,8 +393,8 @@ export class EditorCore {
 
         const node = this.resolveNodeAt(event.target as Element | null);
 
-        if (this.selection) {
-            this.completeSelection(node);
+        if (this.link) {
+            this.completeLink(node);
             return;
         }
 
@@ -415,12 +414,12 @@ export class EditorCore {
         if (node) {
             this.selectEquipment(node, event.shiftKey);
         } else if (!event.shiftKey) {
-            this.clearSelection();
+            this.setSelection([]);
         }
     };
 
     handleContextMenu(event: MouseEvent): void {
-        if (!this.onTargets || this.selection) return;
+        if (!this.onTargets || this.link) return;
         const targets = this.targetsAt(this.resolveNodeAt(event.target as Element | null));
         if (targets.length === 0) return;
 
@@ -443,11 +442,10 @@ export class EditorCore {
         const candidates = this.linkCandidates(first);
         if (candidates.length === 0) return false;
 
-        this.selection = { operation: 'CREATE_SWITCH', first, candidates };
-        this.pendingSpec = spec;
+        this.link = { first, candidates, spec };
         document.addEventListener('keydown', this.onKeyDown);
-        this.paintSelection();
-        this.emit('selection:changed', { selection: this.selection });
+        this.paintTargets();
+        this.emit('link:changed', { link: this.link });
         return true;
     }
 
@@ -473,7 +471,6 @@ export class EditorCore {
                 switchType,
                 switchId,
                 spec.properties,
-                target.id,
                 target.id,
                 this.model,
             ),
@@ -502,22 +499,21 @@ export class EditorCore {
         );
     }
 
-    cancelSelection(): void {
-        if (!this.selection) return;
-        this.selection = null;
-        this.pendingSpec = undefined;
+    cancelLink(): void {
+        if (!this.link) return;
+        this.link = null;
         document.removeEventListener('keydown', this.onKeyDown);
-        this.paintSelection();
-        this.emit('selection:changed', { selection: null });
+        this.paintTargets();
+        this.emit('link:changed', { link: null });
     }
 
-    getSelection(): SelectionState | null {
-        return this.selection;
+    getLink(): LinkGesture | null {
+        return this.link;
     }
 
-    private linkCandidates(first: NodeTarget): EditTarget[] {
+    private linkCandidates(first: NodeTarget): LinkEnd[] {
         const seen = new Set<number>();
-        return [...this.targets.values()].filter((target): target is NodeTarget | BusbarTarget => {
+        return [...this.targets.values()].filter((target): target is LinkEnd => {
             if (target.kind !== 'NODE' && target.kind !== 'BUSBAR') return false;
             if (target.vlId !== first.vlId || target.node === first.node) return false;
             if (seen.has(target.node)) return false;
@@ -527,20 +523,17 @@ export class EditorCore {
         });
     }
 
-    private completeSelection(node: NodeMetadata | undefined): void {
-        const selection = this.selection;
-        const spec = this.pendingSpec;
-        if (!selection || !spec) return;
+    private completeLink(node: NodeMetadata | undefined): void {
+        const link = this.link;
+        if (!link) return;
 
-        const eligible = new Set(selection.candidates.map((target) => target.id));
-        const second = this.targetsAt(node).find((target) => eligible.has(target.id));
-        if (!second || (second.kind !== 'NODE' && second.kind !== 'BUSBAR')) {
-            this.cancelSelection();
-            return;
-        }
+        const clicked = new Set(this.targetsAt(node).map((target) => target.id));
+        const second = link.candidates.find((end) => clicked.has(end.id));
 
-        const first = selection.first as NodeTarget;
-        this.cancelSelection();
+        const { first, spec } = link;
+        this.cancelLink();
+        if (!second) return;
+
         this.history.push(
             new CreateLinkCommand(
                 spec.provisionalId,
@@ -550,21 +543,19 @@ export class EditorCore {
                 second.node,
                 spec.properties,
                 first.id,
-                first.id,
                 this.model,
             ),
         );
     }
 
-    private paintSelection(): void {
-        this.dom.setSelectionCandidates(
-            this.selection?.first.id ?? null,
-            this.selection?.candidates.map((target) => target.id) ?? [],
-        );
+    private paintTargets(): void {
+        const link = this.link;
+        this.dom.setNodeTargets(link ? [] : this.nodeTargetIds);
+        this.dom.setLinkEnds(link?.first.id ?? null, link?.candidates.map((end) => end.id) ?? []);
     }
 
     private readonly onKeyDown = (event: KeyboardEvent): void => {
-        if (event.key === 'Escape') this.cancelSelection();
+        if (event.key === 'Escape') this.cancelLink();
     };
 
     private insertionAt(
@@ -636,10 +627,6 @@ export class EditorCore {
         );
     }
 
-    private clearSelection(): void {
-        this.setSelection([]);
-    }
-
     /** The one way in: paints the selection and publishes it, and never twice for nothing. */
     private setSelection(equipmentIds: readonly string[]): void {
         if (this.selectedEquipmentIds.join() === equipmentIds.join()) return;
@@ -661,7 +648,7 @@ export class EditorCore {
     }
 
     private refreshTargets(): void {
-        this.cancelSelection();
+        this.cancelLink();
         const { consumed, created, markers } = this.pendingCreations();
 
         const targets = this.model.collectTargets().map((target) => {
@@ -673,9 +660,11 @@ export class EditorCore {
         this.targets = new Map(targets.map((target) => [target.id, target]));
         this.targetsByNodeId = this.indexByNode(targets);
 
-        this.dom.setNodeTargets(
-            targets.filter((target) => target.kind === 'NODE').map((target) => target.id),
-        );
+        this.nodeTargetIds = targets
+            .filter((target) => target.kind === 'NODE')
+            .map((target) => target.id);
+
+        this.paintTargets();
         this.dom.setPendingCreations(markers);
         this.emit('targets:changed', { targets });
     }

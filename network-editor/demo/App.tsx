@@ -7,8 +7,8 @@ import {
     type EditorAction,
     type EditTarget,
     type EquipmentProperties,
+    type LinkGesture,
     type SelectedElement,
-    type SelectionState,
     type SLDMetadata,
 } from '../src';
 import { ContextMenu, type MenuItemSpec } from './ContextMenu';
@@ -76,7 +76,7 @@ export function App() {
     const [menu, setMenu] = useState<Menu | null>(null);
     const [panel, setPanel] = useState<EditorAction | null>(null);
     const [overlay, setOverlay] = useState(false);
-    const [selection, setSelection] = useState<SelectionState | null>(null);
+    const [link, setLink] = useState<LinkGesture | null>(null);
     const [selected, setSelected] = useState<readonly SelectedElement[]>([]);
 
     useEffect(() => {
@@ -92,9 +92,9 @@ export function App() {
                 if (event.name === 'history:changed') setHistory(event);
                 if (event.name === 'model:changed') setChanges(event.changeSet);
                 if (event.name === 'targets:changed') setMenu(null);
-                if (event.name === 'selection:changed') {
-                    setSelection(event.selection);
-                    if (event.selection) setMenu(null);
+                if (event.name === 'link:changed') {
+                    setLink(event.link);
+                    if (event.link) setMenu(null);
                 }
                 if (event.name === 'element:selected') {
                     setSelected(event.elements);
@@ -149,10 +149,10 @@ export function App() {
                 </p>
             )}
 
-            {selection && (
+            {link && (
                 <p className="hint">
-                    Pick the far end of the link — {selection.candidates.length} candidates.
-                    Esc cancels.
+                    Pick the far end of the link — {link.candidates.length} candidates. Esc
+                    cancels.
                 </p>
             )}
 

@@ -27,7 +27,6 @@ export class CreateSwitchedInjectionCommand implements PendingCreateCommand {
         private readonly switchType: ElementType,
         readonly switchId: string,
         private readonly properties: EquipmentProperties,
-        markerNodeId: string,
         private readonly targetId: string,
         private readonly model: EditorModel,
     ) {
@@ -39,7 +38,7 @@ export class CreateSwitchedInjectionCommand implements PendingCreateCommand {
         };
         this.pendingMarker = {
             targetId,
-            nodeId: markerNodeId,
+            nodeId: targetId,
             label: equipmentId,
             elementId: this.node.id,
         };
@@ -89,7 +88,6 @@ export class CreateSwitchedInjectionCommand implements PendingCreateCommand {
             switchType,
             `${spec.provisionalId}_${switchType}`,
             spec.properties,
-            this.pendingMarker.nodeId,
             this.targetId,
             this.model,
         );

@@ -69,10 +69,9 @@ export const NODE_TARGET_CLASS = 'ne-node-target';
 
 export const PENDING_CREATE_CLASS = 'ne-pending-create';
 
-export const SELECTION_FIRST_CLASS = 'ne-selection-first';
+export const LINK_START_CLASS = 'ne-link-start';
 
-export const SELECTION_CANDIDATE_CLASS = 'ne-selection-candidate';
-
+export const LINK_END_CLASS = 'ne-link-end';
 
 export const COMPONENT_TYPE_MAP: Readonly<Record<string, ElementType>> = {
     BUSBAR_SECTION: 'BUS',
@@ -109,12 +108,13 @@ export function toDirection(direction: string | undefined): FeederDirection | un
     return direction === 'TOP' || direction === 'BOTTOM' ? direction : undefined;
 }
 
-export interface SelectionState {
-    operation: EditOperation;
-    first: EditTarget;
-    candidates: readonly EditTarget[];
-}
+export type LinkEnd = NodeTarget | BusbarTarget;
 
+export interface LinkGesture {
+    first: NodeTarget;
+    candidates: readonly LinkEnd[];
+    spec: CreateSpec;
+}
 
 export interface NodeMetadata {
     id: string;
@@ -382,7 +382,7 @@ export interface EditorEvents {
     'element:selected': { elements: readonly SelectedElement[] };
     'history:changed': { canUndo: boolean; canRedo: boolean };
     'model:changed': { changeSet: ChangeSet };
-    'selection:changed': { selection: SelectionState | null };
+    'link:changed': { link: LinkGesture | null };
 }
 
 export type EditorEventName = keyof EditorEvents;

@@ -1,9 +1,9 @@
 import {
+    LINK_END_CLASS,
+    LINK_START_CLASS,
     NODE_TARGET_CLASS,
     PENDING_CREATE_CLASS,
     SELECTED_CLASS,
-    SELECTION_CANDIDATE_CLASS,
-    SELECTION_FIRST_CLASS,
     type NodeDiagnostic,
 } from '../core/types';
 
@@ -26,7 +26,6 @@ g.${PENDING_CREATE_CLASS} rect {
     stroke-dasharray: 2 1.5;
     rx: 1.5;
 }
-/* Only creations carry an id — they are the element, so they take clicks. */
 g.${PENDING_CREATE_CLASS}[id] {
     pointer-events: auto;
     cursor: pointer;
@@ -61,41 +60,42 @@ text.${IIDM_LABEL_CLASS} {
     pointer-events: none;
 }
 
-.sld-node.${NODE_TARGET_CLASS} {
+.sld-node.${NODE_TARGET_CLASS},
+.sld-node.${LINK_END_CLASS},
+.sld-node.${LINK_START_CLASS} {
     visibility: visible;
-    fill: #1e88e5;
     cursor: pointer;
 }
-.sld-node.${NODE_TARGET_CLASS} circle {
+.sld-node.${NODE_TARGET_CLASS} circle,
+.sld-node.${LINK_END_CLASS} circle,
+.sld-node.${LINK_START_CLASS} circle {
     stroke: #ffffff;
     stroke-width: 1.5;
     vector-effect: non-scaling-stroke;
 }
+.sld-node.${NODE_TARGET_CLASS} {
+    fill: #1e88e5;
+}
 .sld-node.${NODE_TARGET_CLASS}:hover {
     fill: #0d47a1;
 }
-
-.sld-node.${SELECTION_CANDIDATE_CLASS} {
-    visibility: visible;
+.sld-node.${LINK_END_CLASS} {
     fill: #f9a825;
-    cursor: pointer;
 }
-.sld-node.${SELECTION_CANDIDATE_CLASS}:hover {
+.sld-node.${LINK_END_CLASS}:hover {
     fill: #ef6c00;
 }
-.sld-node.${SELECTION_FIRST_CLASS} {
-    visibility: visible;
+.sld-node.${LINK_START_CLASS} {
     fill: #ef6c00;
+    cursor: default;
 }
-/* A busbar is no .sld-node: it is highlighted through its own line. */
-.${SELECTION_CANDIDATE_CLASS} .sld-busbar-section {
+.${LINK_END_CLASS} .sld-busbar-section {
     stroke: #f9a825;
     stroke-width: 3;
     cursor: pointer;
 }
 `;
 
-/** One pending marker to draw; a creation passes the SVG id its badge must take. */
 export interface PendingMarkerView {
     id?: string;
     label: string;
@@ -155,47 +155,16 @@ export class SvgDomService {
     }
 
     setNodeTargets(targetIds: readonly string[]): void {
-        const svg = this.getSvgRoot();
-        if (!svg) return;
-
-        for (const marked of svg.querySelectorAll(`.${NODE_TARGET_CLASS}`)) {
-            marked.classList.remove(NODE_TARGET_CLASS);
-        }
-
-        for (const targetId of targetIds) {
-            this.findElementById(targetId)?.classList.add(NODE_TARGET_CLASS);
-        }
+        this.mark(NODE_TARGET_CLASS, targetIds);
     }
 
-    /** The two-target gesture: the chosen end, and every end still eligible. */
-    setSelectionCandidates(firstId: string | null, candidateIds: readonly string[]): void {
-        const svg = this.getSvgRoot();
-        if (!svg) return;
-
-        for (const marked of svg.querySelectorAll(
-            `.${SELECTION_FIRST_CLASS}, .${SELECTION_CANDIDATE_CLASS}`,
-        )) {
-            marked.classList.remove(SELECTION_FIRST_CLASS, SELECTION_CANDIDATE_CLASS);
-        }
-
-        for (const candidateId of candidateIds) {
-            this.findElementById(candidateId)?.classList.add(SELECTION_CANDIDATE_CLASS);
-        }
-        if (firstId) this.findElementById(firstId)?.classList.add(SELECTION_FIRST_CLASS);
+    setLinkEnds(firstId: string | null, candidateIds: readonly string[]): void {
+        this.mark(LINK_END_CLASS, candidateIds);
+        this.mark(LINK_START_CLASS, firstId ? [firstId] : []);
     }
 
     setSelection(nodeIds: readonly string[]): void {
-
-        const svg = this.getSvgRoot();
-        if (!svg) return;
-
-        for (const marked of svg.querySelectorAll(`.${SELECTED_CLASS}`)) {
-            marked.classList.remove(SELECTED_CLASS);
-        }
-
-        for (const nodeId of nodeIds) {
-            this.findElementById(nodeId)?.classList.add(SELECTED_CLASS);
-        }
+        this.mark(SELECTED_CLASS, nodeIds);
     }
 
     setPendingCreations(markers: ReadonlyMap<string, readonly PendingMarkerView[]>): void {
@@ -247,6 +216,17 @@ export class SvgDomService {
         if (!element) return;
         element.classList.toggle('sld-open', open);
         element.classList.toggle('sld-closed', !open);
+    }
+
+    private mark(className: string, ids: readonly string[]): void {
+        const svg = this.getSvgRoot();
+        if (!svg) return;
+
+        for (const marked of svg.querySelectorAll(`.${className}`)) {
+            marked.classList.remove(className);
+        }
+
+        for (const id of ids) this.findElementById(id)?.classList.add(className);
     }
 
     private getSvgRoot(): SVGSVGElement | null {

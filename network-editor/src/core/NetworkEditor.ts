@@ -11,7 +11,7 @@ import {
     type EditorOptions,
     type EditTarget,
     type EquipmentProperties,
-    type SelectionState,
+    type LinkGesture,
 } from './types';
 
 
@@ -87,12 +87,12 @@ export class NetworkEditor {
         return this.core.getTargets();
     }
 
-    getSelection(): SelectionState | null {
-        return this.core.getSelection();
+    getLink(): LinkGesture | null {
+        return this.core.getLink();
     }
 
-    cancelSelection(): void {
-        this.core.cancelSelection();
+    cancelLink(): void {
+        this.core.cancelLink();
     }
 
     /**

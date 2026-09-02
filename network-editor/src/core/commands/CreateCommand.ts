@@ -26,7 +26,6 @@ export class CreateCommand implements PendingCreateCommand {
         private readonly type: ElementType,
         private readonly target: NodeTarget | BusbarTarget,
         private readonly properties: EquipmentProperties,
-        markerNodeId: string,
         private readonly model: EditorModel,
         private readonly bay?: { order: number; direction: FeederDirection },
     ) {
@@ -41,7 +40,7 @@ export class CreateCommand implements PendingCreateCommand {
         };
         this.pendingMarker = {
             targetId: target.id,
-            nodeId: markerNodeId,
+            nodeId: target.id,
             label: equipmentId,
             elementId: this.node.id,
         };
@@ -110,7 +109,6 @@ export class CreateCommand implements PendingCreateCommand {
             this.type,
             this.target,
             spec.properties,
-            this.pendingMarker.nodeId,
             this.model,
             this.bay && {
                 order: spec.order ?? this.bay.order,

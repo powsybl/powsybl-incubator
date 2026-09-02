@@ -23,7 +23,6 @@ export class CreateLinkCommand implements PendingCreateCommand {
         private readonly node1: number,
         private readonly node2: number,
         private readonly properties: EquipmentProperties,
-        markerNodeId: string,
         private readonly targetId: string,
         private readonly model: EditorModel,
     ) {
@@ -38,7 +37,7 @@ export class CreateLinkCommand implements PendingCreateCommand {
         };
         this.pendingMarker = {
             targetId,
-            nodeId: markerNodeId,
+            nodeId: targetId,
             label: equipmentId,
             elementId: this.node.id,
         };
@@ -84,7 +83,6 @@ export class CreateLinkCommand implements PendingCreateCommand {
             this.node1,
             this.node2,
             spec.properties,
-            this.pendingMarker.nodeId,
             this.targetId,
             this.model,
         );

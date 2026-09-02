@@ -1,9 +1,11 @@
 import {
+    BAY_SLOT_CLASS,
     LINK_END_CLASS,
     LINK_START_CLASS,
     NODE_TARGET_CLASS,
     PENDING_CREATE_CLASS,
     SELECTED_CLASS,
+    type BaySlotCandidate,
     type NodeDiagnostic,
 } from '../core/types';
 
@@ -12,6 +14,7 @@ const SVG_NS = 'http://www.w3.org/2000/svg';
 const IIDM_LINKED_CLASS = 'ne-iidm-linked';
 const IIDM_UNLINKED_CLASS = 'ne-iidm-unlinked';
 const IIDM_LABEL_CLASS = 'ne-iidm-label';
+const BAY_SLOT_LAYER_CLASS = 'ne-bay-slot-layer';
 
 const EDITOR_STYLE = `
 
@@ -94,6 +97,19 @@ text.${IIDM_LABEL_CLASS} {
     stroke-width: 3;
     cursor: pointer;
 }
+
+g.${BAY_SLOT_CLASS} {
+    cursor: pointer;
+}
+g.${BAY_SLOT_CLASS} circle {
+    fill: #f9a825;
+    stroke: #ffffff;
+    stroke-width: 1.5;
+    vector-effect: non-scaling-stroke;
+}
+g.${BAY_SLOT_CLASS}:hover circle {
+    fill: #ef6c00;
+}
 `;
 
 export interface PendingMarkerView {
@@ -139,10 +155,15 @@ export class SvgDomService {
         snapshot.parent.insertBefore(snapshot.element, snapshot.nextElement);
     }
 
-    getDiagramX(nodeId: string): number | undefined {
-        const element = this.findElementById(nodeId);
+    getDiagramPoint(elementId: string): { x: number; y: number } | undefined {
+        const element = this.findElementById(elementId);
         if (!(element instanceof SVGGraphicsElement)) return undefined;
-        return element.getCTM()?.e;
+        const matrix = element.getCTM();
+        return matrix ? { x: matrix.e, y: matrix.f } : undefined;
+    }
+
+    getDiagramX(nodeId: string): number | undefined {
+        return this.getDiagramPoint(nodeId)?.x;
     }
 
     toDiagramX(clientX: number, clientY: number): number | undefined {
@@ -161,6 +182,27 @@ export class SvgDomService {
     setLinkEnds(firstId: string | null, candidateIds: readonly string[]): void {
         this.mark(LINK_END_CLASS, candidateIds);
         this.mark(LINK_START_CLASS, firstId ? [firstId] : []);
+    }
+
+    setBaySlots(slots: readonly BaySlotCandidate[]): void {
+        const svg = this.getSvgRoot();
+        if (!svg) return;
+
+        svg.querySelector(`g.${BAY_SLOT_LAYER_CLASS}`)?.remove();
+        if (slots.length === 0) return;
+
+        const layer = document.createElementNS(SVG_NS, 'g');
+        layer.setAttribute('class', BAY_SLOT_LAYER_CLASS);
+        for (const slot of slots) layer.appendChild(createBaySlot(slot));
+        svg.appendChild(layer);
+    }
+
+    shiftBay(feederNodeId: string, dx: number): void {
+        const cell = this.findElementById(feederNodeId)?.closest('g.sld-extern-cell');
+        if (!cell) return;
+
+        if (dx === 0) cell.removeAttribute('transform');
+        else cell.setAttribute('transform', `translate(${dx},0)`);
     }
 
     setSelection(nodeIds: readonly string[]): void {
@@ -238,6 +280,20 @@ const MARKER_HEIGHT = 10;
 const MARKER_BASELINE = 7;
 const MARKER_TOP = -14;
 const NODE_CENTRE = 4;
+const SLOT_RADIUS = 4;
+
+function createBaySlot(slot: BaySlotCandidate): SVGGElement {
+    const point = document.createElementNS(SVG_NS, 'g');
+    point.setAttribute('class', BAY_SLOT_CLASS);
+    point.id = slot.id;
+    point.setAttribute('transform', `translate(${slot.x},${slot.y})`);
+
+    const dot = document.createElementNS(SVG_NS, 'circle');
+    dot.setAttribute('r', String(SLOT_RADIUS));
+    point.appendChild(dot);
+
+    return point;
+}
 
 function createPendingMarker(view: PendingMarkerView, index = 0): SVGGElement {
     const { label } = view;

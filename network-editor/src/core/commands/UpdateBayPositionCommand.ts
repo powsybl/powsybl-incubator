@@ -1,4 +1,5 @@
 import type { Command } from './Command';
+import type { SvgDomService } from '../../dom/SvgDomService';
 import type {
     BayPosition,
     BaySlot,
@@ -13,12 +14,20 @@ export class UpdateBayPositionCommand implements Command {
 
     readonly orderClaim: OrderClaim;
 
+    private readonly nodeId: string;
+
+    private readonly dx: number;
+
     constructor(
         private readonly feeder: EquipmentTarget,
         node: NodeMetadata,
         slot: BaySlot,
         private readonly position: BayPosition,
+        private readonly dom: SvgDomService,
+        toX?: number,
     ) {
+        this.nodeId = node.id;
+        this.dx = toX === undefined ? 0 : toX - (dom.getDiagramX(node.id) ?? toX);
         this.pendingMarker = {
             targetId: feeder.id,
             nodeId: node.id,
@@ -31,9 +40,13 @@ export class UpdateBayPositionCommand implements Command {
         return this.feeder.equipmentId;
     }
 
-    execute(): void {}
+    execute(): void {
+        this.dom.shiftBay(this.nodeId, this.dx);
+    }
 
-    undo(): void {}
+    undo(): void {
+        this.dom.shiftBay(this.nodeId, 0);
+    }
 
     toChangeSetEntry(): ChangeSetEntry {
         return {

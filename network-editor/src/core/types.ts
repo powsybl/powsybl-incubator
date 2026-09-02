@@ -73,6 +73,8 @@ export const LINK_START_CLASS = 'ne-link-start';
 
 export const LINK_END_CLASS = 'ne-link-end';
 
+export const BAY_SLOT_CLASS = 'ne-bay-slot';
+
 export const COMPONENT_TYPE_MAP: Readonly<Record<string, ElementType>> = {
     BUSBAR_SECTION: 'BUS',
     LOAD: 'LOAD',
@@ -115,6 +117,24 @@ export interface LinkGesture {
     candidates: readonly LinkEnd[];
     spec: CreateSpec;
 }
+
+export interface BaySlotCandidate {
+    id: string;
+    order: number;
+    x: number;
+    y: number;
+}
+
+export interface BayMoveGesture {
+    equipmentId: string;
+    slot: BaySlot;
+    direction: FeederDirection;
+    candidates: readonly BaySlotCandidate[];
+}
+
+export type Gesture =
+    | ({ kind: 'LINK' } & LinkGesture)
+    | ({ kind: 'BAY_MOVE' } & BayMoveGesture);
 
 export interface NodeMetadata {
     id: string;
@@ -207,6 +227,7 @@ export type EditOperation =
     | 'DELETE_BAY'
     | 'UPDATE_PROPERTIES'
     | 'UPDATE_BAY_POSITION'
+    | 'FLIP_BAY_DIRECTION'
     | 'MOVE_BAY'
     | 'RENAME';
 
@@ -219,6 +240,7 @@ export const IMPLEMENTED_OPERATIONS: ReadonlySet<EditOperation> = new Set<EditOp
     'DELETE_BAY',
     'UPDATE_PROPERTIES',
     'UPDATE_BAY_POSITION',
+    'FLIP_BAY_DIRECTION',
     'MOVE_BAY',
     'RENAME',
 ]);
@@ -382,7 +404,7 @@ export interface EditorEvents {
     'element:selected': { elements: readonly SelectedElement[] };
     'history:changed': { canUndo: boolean; canRedo: boolean };
     'model:changed': { changeSet: ChangeSet };
-    'link:changed': { link: LinkGesture | null };
+    'gesture:changed': { gesture: Gesture | null };
 }
 
 export type EditorEventName = keyof EditorEvents;

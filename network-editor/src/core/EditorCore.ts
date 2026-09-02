@@ -19,11 +19,15 @@ import { UpdateBayPositionCommand } from './commands/UpdateBayPositionCommand';
 import { UpdatePropertiesCommand } from './commands/UpdatePropertiesCommand';
 import { SvgDomService, type PendingMarkerView } from '../dom/SvgDomService';
 import {
+    BAY_SLOT_CLASS,
     DELETABLE_TYPES,
     SWITCH_TYPES,
     toElementType,
     type BayInsertion,
+    type BayMoveGesture,
     type BayPosition,
+    type BaySlot,
+    type BaySlotCandidate,
     type BusbarTarget,
     type ChangeSet,
     type CreateSpec,
@@ -36,6 +40,7 @@ import {
     type EditorEvent,
     type EditorEventListener,
     type FeederDirection,
+    type Gesture,
     type LinkEnd,
     type LinkGesture,
     type NodeMetadata,
@@ -45,6 +50,8 @@ import {
 } from './types';
 
 const DRAG_THRESHOLD = 10;
+
+const SLOT_PITCH = 50;
 
 type BuildableTarget = Exclude<EditTarget, { kind: 'EQUIPMENT' }>;
 
@@ -56,7 +63,7 @@ const CREATE_OPERATIONS: Record<BuildableTarget['kind'], EditOperation> = {
 export class EditorCore {
     private destroyed = false;
 
-    private link: LinkGesture | null = null;
+    private gesture: Gesture | null = null;
 
     private readonly history = new CommandStack((state) => {
         if (this.destroyed) return;
@@ -90,7 +97,7 @@ export class EditorCore {
         const container: HTMLElement = this.dom.getContainer();
         container.removeEventListener('mousedown', this.onMouseDown);
         container.removeEventListener('mouseup', this.onMouseUp);
-        this.cancelLink();
+        this.cancelGesture();
         this.dom.setSelection([]);
         this.dom.setNodeTargets([]);
         this.dom.setPendingCreations(new Map());
@@ -231,7 +238,7 @@ export class EditorCore {
         return { order: target.order, direction: target.direction ?? 'BOTTOM' };
     }
 
-    setBayPosition(equipmentId: string, position: BayPosition): boolean {
+    setBayPosition(equipmentId: string, position: BayPosition, toX?: number): boolean {
         const created = this.findPendingCreate(equipmentId);
         if (created) return this.amendBayPosition(created, position);
 
@@ -239,19 +246,16 @@ export class EditorCore {
         if (target?.kind !== 'EQUIPMENT' || target.node === undefined) return false;
         if (!availableOperations(target).includes('UPDATE_BAY_POSITION')) return false;
 
-        const node = this.model
-            .getNodesForEquipment(equipmentId)
-            .find(
-                (candidate) =>
-                    candidate.order === target.order && (candidate.vid ?? '') === target.vlId,
-            );
+        const node = this.feederNodeOf(target);
         const slot = node && this.model.slotOfFeeder(node);
         if (!node || !slot) return false;
 
         const pending = this.pendingOrders(slot.vlId, node.id);
         if (!this.model.isOrderAvailable(slot, position.order, pending)) return false;
 
-        this.history.push(new UpdateBayPositionCommand(target, node, slot, position));
+        this.history.push(
+            new UpdateBayPositionCommand(target, node, slot, position, this.dom, toX),
+        );
         return true;
     }
 
@@ -386,12 +390,12 @@ export class EditorCore {
         );
         if (moved > DRAG_THRESHOLD) return;
 
-        const node = this.resolveNodeAt(event.target as Element | null);
-
-        if (this.link) {
-            this.completeLink(node);
+        if (this.gesture) {
+            this.completeGesture(event);
             return;
         }
+
+        const node = this.resolveNodeAt(event.target as Element | null);
 
         const buildable = event.shiftKey
             ? []
@@ -414,7 +418,7 @@ export class EditorCore {
     };
 
     handleContextMenu(event: MouseEvent): void {
-        if (!this.onTargets || this.link) return;
+        if (!this.onTargets || this.gesture) return;
         const targets = this.targetsAt(this.resolveNodeAt(event.target as Element | null));
         if (targets.length === 0) return;
 
@@ -438,11 +442,7 @@ export class EditorCore {
         const candidates = this.linkCandidates(first);
         if (candidates.length === 0) return false;
 
-        this.link = { first, candidates, spec };
-        document.addEventListener('keydown', this.onKeyDown);
-        this.paintTargets();
-        this.emit('link:changed', { link: this.link });
-        return true;
+        return this.arm({ kind: 'LINK', first, candidates, spec });
     }
 
     createSwitchedInjection(targetId: string, spec: CreateSpec): boolean {
@@ -495,16 +495,45 @@ export class EditorCore {
         );
     }
 
-    cancelLink(): void {
-        if (!this.link) return;
-        this.link = null;
-        document.removeEventListener('keydown', this.onKeyDown);
-        this.paintTargets();
-        this.emit('link:changed', { link: null });
+    beginBayMove(equipmentId: string): boolean {
+        const target = this.targets.get(equipmentId);
+        if (target?.kind !== 'EQUIPMENT') return false;
+        if (!availableOperations(target).includes('UPDATE_BAY_POSITION')) return false;
+
+        const node = this.feederNodeOf(target);
+        const slot = node && this.model.slotOfFeeder(node);
+        if (!node || !slot) return false;
+
+        const candidates = this.baySlotCandidates(slot, node.id);
+        if (candidates.length === 0) return false;
+
+        return this.arm({
+            kind: 'BAY_MOVE',
+            equipmentId,
+            slot,
+            direction: target.direction ?? 'BOTTOM',
+            candidates,
+        });
     }
 
-    getLink(): LinkGesture | null {
-        return this.link;
+    cancelGesture(): void {
+        if (!this.gesture) return;
+        this.gesture = null;
+        document.removeEventListener('keydown', this.onKeyDown);
+        this.paintTargets();
+        this.emit('gesture:changed', { gesture: null });
+    }
+
+    getGesture(): Gesture | null {
+        return this.gesture;
+    }
+
+    private arm(gesture: Gesture): boolean {
+        this.gesture = gesture;
+        document.addEventListener('keydown', this.onKeyDown);
+        this.paintTargets();
+        this.emit('gesture:changed', { gesture });
+        return true;
     }
 
     private linkCandidates(first: NodeTarget): LinkEnd[] {
@@ -519,17 +548,23 @@ export class EditorCore {
         });
     }
 
-    private completeLink(node: NodeMetadata | undefined): void {
-        const link = this.link;
-        if (!link) return;
+    private completeGesture(event: MouseEvent): void {
+        const gesture = this.gesture;
+        if (!gesture) return;
 
+        const target = event.target as Element | null;
+        this.cancelGesture();
+
+        if (gesture.kind === 'LINK') this.createLink(gesture, this.resolveNodeAt(target));
+        else this.moveBay(gesture, target);
+    }
+
+    private createLink(link: LinkGesture, node: NodeMetadata | undefined): void {
         const clicked = new Set(this.targetsAt(node).map((target) => target.id));
         const second = link.candidates.find((end) => clicked.has(end.id));
-
-        const { first, spec } = link;
-        this.cancelLink();
         if (!second) return;
 
+        const { first, spec } = link;
         this.history.push(
             new CreateLinkCommand(
                 spec.provisionalId,
@@ -544,14 +579,79 @@ export class EditorCore {
         );
     }
 
+    private moveBay(bayMove: BayMoveGesture, target: Element | null): void {
+        const clicked = target?.closest<SVGGElement>(`g.${BAY_SLOT_CLASS}`)?.id;
+        const chosen = bayMove.candidates.find((candidate) => candidate.id === clicked);
+        if (!chosen) return;
+
+        const { equipmentId, direction } = bayMove;
+        this.setBayPosition(equipmentId, { order: chosen.order, direction }, chosen.x);
+    }
+
+    private baySlotCandidates(slot: BaySlot, movingNodeId: string): BaySlotCandidate[] {
+        const y = this.busbarY(slot);
+        if (y === undefined) return [];
+
+        const pending = this.pendingOrders(slot.vlId, movingNodeId);
+        const columns = this.feederColumns(slot, movingNodeId);
+        const positions = gapPositions(columns);
+        const candidates: BaySlotCandidate[] = [];
+
+        for (let gap = 0; gap < positions.length; gap += 1) {
+            const order = this.model.orderBetween(
+                slot,
+                columns[gap - 1]?.node.order,
+                columns[gap]?.node.order,
+                pending,
+            );
+            if (order === undefined) continue;
+            candidates.push({ id: `ne-slot-${order}`, order, x: positions[gap], y });
+        }
+        return candidates;
+    }
+
+    private feederColumns(
+        slot: BaySlot,
+        excludeNodeId?: string,
+    ): { node: NodeMetadata; x: number }[] {
+        return this.model.feedersInSection(slot).flatMap((node) => {
+            if (node.id === excludeNodeId) return [];
+            const x = this.dom.getDiagramX(node.id);
+            return x === undefined ? [] : [{ node, x }];
+        });
+    }
+
+    private feederNodeOf(target: EquipmentTarget): NodeMetadata | undefined {
+        return this.model
+            .getNodesForEquipment(target.equipmentId)
+            .find(
+                (candidate) =>
+                    candidate.order === target.order && (candidate.vid ?? '') === target.vlId,
+            );
+    }
+
     private paintTargets(): void {
-        const link = this.link;
-        this.dom.setNodeTargets(link ? [] : this.nodeTargetIds);
+        const gesture = this.gesture;
+        const link = gesture?.kind === 'LINK' ? gesture : undefined;
+        const bayMove = gesture?.kind === 'BAY_MOVE' ? gesture : undefined;
+
+        this.dom.setNodeTargets(gesture ? [] : this.nodeTargetIds);
         this.dom.setLinkEnds(link?.first.id ?? null, link?.candidates.map((end) => end.id) ?? []);
+        this.dom.setBaySlots(bayMove?.candidates ?? []);
+    }
+
+    private busbarY(slot: BaySlot): number | undefined {
+        const busbar = [...this.targets.values()].find(
+            (target) =>
+                target.kind === 'BUSBAR' &&
+                target.vlId === slot.vlId &&
+                target.sectionIndex === slot.sectionIndex,
+        );
+        return busbar && this.dom.getDiagramPoint(busbar.id)?.y;
     }
 
     private readonly onKeyDown = (event: KeyboardEvent): void => {
-        if (event.key === 'Escape') this.cancelLink();
+        if (event.key === 'Escape') this.cancelGesture();
     };
 
     private insertionAt(
@@ -564,14 +664,10 @@ export class EditorCore {
         const x = this.dom.toDiagramX(event.clientX, event.clientY);
         if (x === undefined) return undefined;
 
-        let left: NodeMetadata | undefined;
-        let right: NodeMetadata | undefined;
-        for (const feeder of this.model.feedersInSection(busbar)) {
-            const feederX = this.dom.getDiagramX(feeder.id);
-            if (feederX === undefined) continue;
-            if (feederX <= x) left = feeder;
-            else if (right === undefined) right = feeder;
-        }
+        const columns = this.feederColumns(busbar);
+        const gap = columns.filter((column) => column.x <= x).length;
+        const left = columns[gap - 1]?.node;
+        const right = columns[gap]?.node;
 
         const order = this.model.orderBetween(
             busbar,
@@ -644,7 +740,7 @@ export class EditorCore {
     }
 
     private refreshTargets(): void {
-        this.cancelLink();
+        this.cancelGesture();
         const { consumed, created, markers } = this.pendingCreations();
 
         const targets = this.model.collectTargets().map((target) => {
@@ -740,3 +836,15 @@ export class EditorCore {
     };
 }
 
+function gapPositions(columns: readonly { x: number }[]): number[] {
+    if (columns.length === 0) return [];
+
+    let pitch = SLOT_PITCH;
+    for (let i = 1; i < columns.length; i += 1) {
+        pitch = Math.min(pitch, columns[i].x - columns[i - 1].x);
+    }
+    const half = pitch / 2;
+
+    const between = columns.slice(1).map((column, i) => (columns[i].x + column.x) / 2);
+    return [columns[0].x - half, ...between, columns[columns.length - 1].x + half];
+}

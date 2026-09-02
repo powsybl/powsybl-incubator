@@ -13,6 +13,7 @@ export {
 export type { ActionSubject, EditorAction } from './core/actions';
 
 export {
+    BAY_SLOT_CLASS,
     LINK_END_CLASS,
     LINK_START_CLASS,
     NODE_TARGET_CLASS,
@@ -34,6 +35,9 @@ export type {
     EditTarget,
     ElementType,
     EquipmentProperties,
+    BayMoveGesture,
+    BaySlotCandidate,
+    Gesture,
     EquipmentTarget,
     LinkEnd,
     LinkGesture,

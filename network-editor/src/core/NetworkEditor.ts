@@ -11,7 +11,7 @@ import {
     type EditorOptions,
     type EditTarget,
     type EquipmentProperties,
-    type LinkGesture,
+    type Gesture,
 } from './types';
 
 
@@ -87,12 +87,12 @@ export class NetworkEditor {
         return this.core.getTargets();
     }
 
-    getLink(): LinkGesture | null {
-        return this.core.getLink();
+    getGesture(): Gesture | null {
+        return this.core.getGesture();
     }
 
-    cancelLink(): void {
-        this.core.cancelLink();
+    cancelGesture(): void {
+        this.core.cancelGesture();
     }
 
     /**

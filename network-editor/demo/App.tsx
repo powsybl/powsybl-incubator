@@ -7,7 +7,7 @@ import {
     type EditorAction,
     type EditTarget,
     type EquipmentProperties,
-    type LinkGesture,
+    type Gesture,
     type SelectedElement,
     type SLDMetadata,
 } from '../src';
@@ -76,7 +76,7 @@ export function App() {
     const [menu, setMenu] = useState<Menu | null>(null);
     const [panel, setPanel] = useState<EditorAction | null>(null);
     const [overlay, setOverlay] = useState(false);
-    const [link, setLink] = useState<LinkGesture | null>(null);
+    const [gesture, setGesture] = useState<Gesture | null>(null);
     const [selected, setSelected] = useState<readonly SelectedElement[]>([]);
 
     useEffect(() => {
@@ -92,9 +92,9 @@ export function App() {
                 if (event.name === 'history:changed') setHistory(event);
                 if (event.name === 'model:changed') setChanges(event.changeSet);
                 if (event.name === 'targets:changed') setMenu(null);
-                if (event.name === 'link:changed') {
-                    setLink(event.link);
-                    if (event.link) setMenu(null);
+                if (event.name === 'gesture:changed') {
+                    setGesture(event.gesture);
+                    if (event.gesture) setMenu(null);
                 }
                 if (event.name === 'element:selected') {
                     setSelected(event.elements);
@@ -149,10 +149,12 @@ export function App() {
                 </p>
             )}
 
-            {link && (
+            {gesture && (
                 <p className="hint">
-                    Pick the far end of the link — {link.candidates.length} candidates. Esc
-                    cancels.
+                    {gesture.kind === 'LINK'
+                        ? `Pick the far end of the link — ${gesture.candidates.length} candidates.`
+                        : `Pick the new position of ${gesture.equipmentId} — ${gesture.candidates.length} slots on the busbar.`}{' '}
+                    Esc cancels.
                 </p>
             )}
 

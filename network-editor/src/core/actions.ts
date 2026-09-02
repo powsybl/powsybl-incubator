@@ -44,6 +44,7 @@ export interface ActionHost {
     moveFeederBay(equipmentId: string, busbarTargetId: string): boolean;
     renameEquipment(equipmentId: string, newId: string): boolean;
     beginLink(targetId: string, spec: CreateSpec): boolean;
+    beginBayMove(equipmentId: string): boolean;
     createSwitchedInjection(targetId: string, spec: CreateSpec): boolean;
     getBayPosition(equipmentId: string): BayPosition | undefined;
     setBayPosition(equipmentId: string, position: BayPosition): boolean;
@@ -189,22 +190,19 @@ function equipmentActions(
                 run: () => host.moveFeederBay(equipmentId, destination.id),
             }));
 
-        case 'UPDATE_BAY_POSITION': {
+        case 'UPDATE_BAY_POSITION':
+            return [plain(target, operation, () => host.beginBayMove(equipmentId))];
+
+        case 'FLIP_BAY_DIRECTION': {
             const current = host.getBayPosition(equipmentId);
             if (!current) return [];
             return [
-                {
-                    id: id(target, operation),
-                    operation,
-                    enabled: true,
-                    form: [ORDER, DIRECTION],
-                    initial: { order: current.order, direction: current.direction },
-                    run: (values = {}) =>
-                        host.setBayPosition(equipmentId, {
-                            order: Number(values.order),
-                            direction: toDirection(text(values.direction)) ?? current.direction,
-                        }),
-                },
+                plain(target, operation, () =>
+                    host.setBayPosition(equipmentId, {
+                        order: current.order,
+                        direction: current.direction === 'TOP' ? 'BOTTOM' : 'TOP',
+                    }),
+                ),
             ];
         }
 

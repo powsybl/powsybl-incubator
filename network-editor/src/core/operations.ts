@@ -38,7 +38,9 @@ function operationsForTarget(target: EquipmentTarget): EditOperation[] {
     const operations = operationsForEquipment(target.type).filter(
         (operation) => !target.created || CREATED_OPERATIONS.has(operation),
     );
-    if (target.order !== undefined) operations.push('UPDATE_BAY_POSITION');
+    if (target.order !== undefined) {
+        operations.push('UPDATE_BAY_POSITION', 'FLIP_BAY_DIRECTION');
+    }
     return operations;
 }
 
@@ -66,6 +68,7 @@ export function creatableTypesFor(operation: EditOperation): ReadonlySet<Element
         case 'RENAME':
         case 'UPDATE_PROPERTIES':
         case 'UPDATE_BAY_POSITION':
+        case 'FLIP_BAY_DIRECTION':
             return NO_TYPES;
     }
 }

@@ -13,6 +13,17 @@ export {
 export type { ActionSubject, EditorAction } from './core/actions';
 
 export {
+    ACTION_LABELS,
+    actionLabel,
+    describeTarget,
+    describeTargets,
+    menuItemsFor,
+    type ActionMenuItem,
+    type ActionSource,
+    type MenuSubjects,
+} from './menu';
+
+export {
     BAY_SLOT_CLASS,
     LINK_END_CLASS,
     LINK_START_CLASS,

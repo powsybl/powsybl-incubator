@@ -141,12 +141,3 @@ h2 {
 .menu button.danger {
     color: #dc3545;
 }
-
-.ne-selected {
-    outline: 2px dashed #1976d2;
-    outline-offset: 2px;
-}
-
-.ne-selected .sld-label {
-    fill: #1976d2;
-}

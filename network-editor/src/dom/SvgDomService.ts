@@ -110,6 +110,14 @@ g.${BAY_SLOT_CLASS} circle {
 g.${BAY_SLOT_CLASS}:hover circle {
     fill: #ef6c00;
 }
+
+.${SELECTED_CLASS} {
+    outline: 2px dashed #1976d2;
+    outline-offset: 2px;
+}
+.${SELECTED_CLASS} .sld-label {
+    fill: #1976d2;
+}
 `;
 
 export interface PendingMarkerView {

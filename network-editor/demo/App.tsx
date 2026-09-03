@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import {
+    actionLabel,
+    describeTargets,
+    menuItemsFor,
     NetworkEditor,
     type BayInsertion,
     type ChangeSet,
-    type EditOperation,
     type EditorAction,
     type EditTarget,
     type EquipmentProperties,
@@ -19,52 +21,6 @@ import propertiesJson from './data/vl1_properties.json';
 
 const metadata = metadataJson as unknown as SLDMetadata;
 const initialProperties = propertiesJson as Record<string, EquipmentProperties>;
-
-const LABELS: Record<EditOperation, string> = {
-    CREATE_INJECTION: 'Add injection',
-    CREATE_SWITCH: 'Add a switch',
-    CREATE_FEEDER_BAY: 'Create a feeder bay',
-    CREATE_COUPLING: 'Create a coupling',
-    DELETE: 'Delete',
-    DELETE_BAY: 'Delete feeder bay',
-    UPDATE_PROPERTIES: 'Properties',
-    UPDATE_BAY_POSITION: 'Change bay position',
-    MOVE_BAY: 'Move feeder bay',
-    RENAME: 'Rename',
-    CREATE_SWITCHED_INJECTION: 'Add behind a switch',
-};
-
-const DANGEROUS: ReadonlySet<EditOperation> = new Set<EditOperation>(['DELETE', 'DELETE_BAY']);
-
-/** The component hands over data; putting it into words is the host's job. */
-function label(action: EditorAction): string {
-    const base = LABELS[action.operation];
-    if (!action.enabled) return `${base} — not implemented`;
-
-    switch (action.subject?.kind) {
-        case 'TYPE':
-            return `${base}: ${action.subject.type}`;
-        case 'BUSBAR':
-            return `${base}: ${action.subject.busbarSectionId}`;
-        case 'SELECTION':
-            return `${base} (${action.subject.size})`;
-        default:
-            return base;
-    }
-}
-
-function describe(target: EditTarget): string {
-    switch (target.kind) {
-        case 'NODE':
-            return target.occupied ? `Node ${target.node} (taken)` : `Node ${target.node}`;
-        case 'BUSBAR':
-            return `Busbar ${target.busbarSectionId}`;
-        case 'EQUIPMENT':
-            return target.created
-                ? `${target.type} ${target.equipmentId} (pending)`
-                : `${target.type} ${target.equipmentId}`;
-    }
-}
 
 type Menu = { targets: readonly EditTarget[]; x: number; y: number; insertion?: BayInsertion };
 
@@ -111,16 +67,15 @@ export function App() {
         return () => instance.destroy();
     }, []);
 
-    // The whole menu: the component says what is possible and what it needs.
     const items: MenuItemSpec[] =
-        menu?.targets
-            .flatMap((target) => editor?.actionsFor(target, menu.insertion) ?? [])
-            .map((action) => ({
-                label: label(action),
-                enabled: action.enabled,
-                danger: DANGEROUS.has(action.operation),
-                onClick: () => (action.form.length > 0 ? setPanel(action) : action.run()),
-            })) ?? [];
+        editor && menu
+            ? menuItemsFor(editor, menu).map((item) => ({
+                  label: item.label,
+                  enabled: item.enabled,
+                  danger: item.danger,
+                  onClick: () => (item.needsForm ? setPanel(item.action) : item.action.run()),
+              }))
+            : [];
 
     return (
         <>
@@ -177,7 +132,7 @@ export function App() {
 
             {menu && items.length > 0 && (
                 <ContextMenu
-                    header={menu.targets.map(describe).join(' · ')}
+                    header={describeTargets(menu.targets)}
                     items={items}
                     x={menu.x}
                     y={menu.y}
@@ -193,7 +148,7 @@ function ActionPanel({ action, onDone }: { action: EditorAction; onDone: () => v
 
     return (
         <>
-            <h2>{label(action)}</h2>
+            <h2>{actionLabel(action)}</h2>
             <PropertyForm
                 schema={action.form}
                 initial={action.initial}

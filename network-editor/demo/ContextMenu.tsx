@@ -15,7 +15,6 @@ interface ContextMenuProps {
     onClose: () => void;
 }
 
-/** Plain positioned menu: the only place this demo does real UI work. */
 export function ContextMenu({ header, items, x, y, onClose }: ContextMenuProps) {
     useEffect(() => {
         const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();

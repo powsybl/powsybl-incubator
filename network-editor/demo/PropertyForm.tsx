@@ -6,21 +6,19 @@ interface PropertyFormProps {
     initial: EquipmentProperties;
     submitLabel: string;
     onSubmit: (values: EquipmentProperties) => void;
-    rename: boolean
 }
 
-
-export function PropertyForm({ schema, initial, submitLabel, onSubmit, rename }: PropertyFormProps) {
+export function PropertyForm({ schema, initial, submitLabel, onSubmit }: PropertyFormProps) {
     const [values, setValues] = useState(initial);
     const [invalid, setInvalid] = useState<ReadonlySet<string>>(new Set());
 
     const set = (key: string, value: EquipmentProperties[string]) =>
-        setValues((previous) => ({ ...previous, [key]: value }));
+        setValues((current) => ({ ...current, [key]: value }));
 
     return (
         <form
-            onSubmit={(event) => {
-                event.preventDefault();
+            onSubmit={(e) => {
+                e.preventDefault();
                 const offending = validateValues(schema, values);
                 setInvalid(new Set(offending));
                 if (offending.length === 0) onSubmit(values);
@@ -36,8 +34,7 @@ export function PropertyForm({ schema, initial, submitLabel, onSubmit, rename }:
                         {descriptor.unit && ` (${descriptor.unit})`}
                         {descriptor.required && ' *'}
                     </span>
-
-                    {input(descriptor, values[descriptor.key], set, rename)}
+                    {input(descriptor, values[descriptor.key], set)}
                 </label>
             ))}
             <button type="submit">{submitLabel}</button>
@@ -49,20 +46,24 @@ function input(
     descriptor: PropertyDescriptor,
     value: EquipmentProperties[string] | undefined,
     set: (key: string, value: EquipmentProperties[string]) => void,
-    rename: boolean
 ) {
     if (descriptor.type === 'boolean') {
         return (
             <input
                 type="checkbox"
                 checked={value === true}
+                disabled={descriptor.readOnly}
                 onChange={(e) => set(descriptor.key, e.target.checked)}
             />
         );
     }
     if (descriptor.type === 'select') {
         return (
-            <select value={String(value ?? '')} onChange={(e) => set(descriptor.key, e.target.value)}>
+            <select
+                value={String(value ?? '')}
+                disabled={descriptor.readOnly}
+                onChange={(e) => set(descriptor.key, e.target.value)}
+            >
                 {descriptor.options?.map((option) => (
                     <option key={option}>{option}</option>
                 ))}
@@ -71,15 +72,18 @@ function input(
     }
     return (
         <input
-            disabled={descriptor.key === 'equipmentId' && !rename}
             type={descriptor.type === 'number' ? 'number' : 'text'}
             value={String(value ?? '')}
-            onChange={(e) =>
-                set(
-                    descriptor.key,
-                    descriptor.type === 'number' ? Number(e.target.value) : e.target.value,
-                )
-            }
+            disabled={descriptor.readOnly}
+            min={descriptor.min}
+            max={descriptor.max}
+            onChange={(e) => set(descriptor.key, coerce(descriptor, e.target.value))}
         />
     );
+}
+
+/** An emptied number field must stay empty, not become 0. */
+function coerce(descriptor: PropertyDescriptor, raw: string): EquipmentProperties[string] {
+    if (descriptor.type !== 'number') return raw;
+    return raw === '' ? '' : Number(raw);
 }

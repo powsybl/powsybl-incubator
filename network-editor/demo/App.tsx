@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import {
+    actionFor,
     actionLabel,
     describeTargets,
     menuItemsFor,
@@ -54,10 +55,9 @@ export function App() {
                 }
                 if (event.name === 'element:selected') {
                     setSelected(event.elements);
-                    // One equipment: its properties. Several: nothing to show but the count.
                     setPanel(
                         event.elements.length === 1
-                            ? propertiesAction(instance, event.elements[0].id)
+                            ? actionFor(instance, event.elements[0].id, 'UPDATE_PROPERTIES')
                             : null,
                     );
                 }
@@ -158,17 +158,9 @@ function ActionPanel({ action, onDone }: { action: EditorAction; onDone: () => v
                     setRefused(!applied);
                     if (applied) onDone();
                 }}
-                rename={action.operation === 'RENAME'}
             />
             {refused && <p className="hint invalid">Refused by the component</p>}
             <button onClick={onDone}>Cancel</button>
         </>
     );
-}
-
-/** Selecting an equipment opens its properties — the action carries the values. */
-function propertiesAction(editor: NetworkEditor, equipmentId: string | null): EditorAction | null {
-    const target = editor.getTargets().find((candidate) => candidate.id === equipmentId);
-    if (!target) return null;
-    return editor.actionsFor(target).find((a) => a.operation === 'UPDATE_PROPERTIES') ?? null;
 }

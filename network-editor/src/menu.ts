@@ -1,7 +1,6 @@
 import type { ActionSubject, EditorAction } from './core/actions';
 import type { BayInsertion, EditOperation, EditTarget } from './core/types';
 
-/** English wording for every operation. Hosts doing i18n key off `operation` instead. */
 export const ACTION_LABELS: Record<EditOperation, string> = {
     CREATE_INJECTION: 'Add injection',
     CREATE_SWITCH: 'Add a switch',
@@ -21,22 +20,19 @@ const DANGEROUS: ReadonlySet<EditOperation> = new Set<EditOperation>(['DELETE', 
 
 export interface ActionMenuItem {
     action: EditorAction;
-    /** Doubles as an i18n message id. */
     operation: EditOperation;
     subject?: ActionSubject;
     label: string;
     enabled: boolean;
     danger: boolean;
-    /** true when run() needs values: open a form instead of firing the action. */
     needsForm: boolean;
 }
 
-/** Anything handing out actions — NetworkEditor satisfies it. */
 export interface ActionSource {
+    getTargets(): EditTarget[];
     actionsFor(target: EditTarget, insertion?: BayInsertion): EditorAction[];
 }
 
-/** What a menu is opened on: the TargetEvent itself, or whatever the host kept of it. */
 export interface MenuSubjects {
     targets: readonly EditTarget[];
     insertion?: BayInsertion;
@@ -75,7 +71,16 @@ export function describeTargets(targets: readonly EditTarget[]): string {
     return targets.map(describeTarget).join(' · ');
 }
 
-/** Every entry a host can put in a menu, already worded and flagged. */
+export function actionFor(
+    source: ActionSource,
+    equipmentId: string | null,
+    operation: EditOperation,
+): EditorAction | null {
+    const target = source.getTargets().find((candidate) => candidate.id === equipmentId);
+    if (!target) return null;
+    return source.actionsFor(target).find((action) => action.operation === operation) ?? null;
+}
+
 export function menuItemsFor(source: ActionSource, subjects: MenuSubjects): ActionMenuItem[] {
     return subjects.targets
         .flatMap((target) => source.actionsFor(target, subjects.insertion))

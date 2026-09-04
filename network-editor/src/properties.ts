@@ -12,9 +12,10 @@ export interface PropertyDescriptor {
     max?: number;
     defaultValue?: number | string | boolean;
     editOnly?: boolean;
+    readOnly?: boolean;
 }
 
-const EQUIPMENTID: PropertyDescriptor = {
+export const EQUIPMENT_ID: PropertyDescriptor = {
     key: 'equipmentId',
     type: 'string',
     required: true,
@@ -32,7 +33,7 @@ const SWITCH_SCHEMA: PropertyDescriptor[] = [
 ];
 
 const BRANCH_SCHEMA: PropertyDescriptor[] = [
-    EQUIPMENTID,
+    EQUIPMENT_ID,
     { key: 'r', unit: 'Ω', type: 'number', required: true, min: 0, defaultValue: 0.1 },
     { key: 'x', unit: 'Ω', type: 'number', required: true, defaultValue: 1 },
     { key: 'connected1', type: 'boolean', defaultValue: true, editOnly: true },
@@ -41,13 +42,13 @@ const BRANCH_SCHEMA: PropertyDescriptor[] = [
 
 export const PROPERTY_SCHEMAS: Partial<Record<ElementType, PropertyDescriptor[]>> = {
     LOAD: [
-        EQUIPMENTID,
+        EQUIPMENT_ID,
         { key: 'p0', unit: 'MW', type: 'number', required: true, defaultValue: 10 },
         { key: 'q0', unit: 'MVar', type: 'number', required: true, defaultValue: 0 },
         CONNECTED,
     ],
     GENERATOR: [
-        EQUIPMENTID,
+        EQUIPMENT_ID,
         { key: 'targetP', unit: 'MW', type: 'number', required: true, defaultValue: 100 },
         { key: 'targetV', unit: 'kV', type: 'number', defaultValue: 400 },
         { key: 'targetQ', unit: 'MVar', type: 'number', defaultValue: 0 },
@@ -57,7 +58,7 @@ export const PROPERTY_SCHEMAS: Partial<Record<ElementType, PropertyDescriptor[]>
         CONNECTED,
     ],
     BATTERY: [
-        EQUIPMENTID,
+        EQUIPMENT_ID,
         { key: 'targetP', unit: 'MW', type: 'number', required: true, defaultValue: 0 },
         { key: 'targetQ', unit: 'MVar', type: 'number', required: true, defaultValue: 0 },
         { key: 'minP', unit: 'MW', type: 'number', required: true, defaultValue: -10 },
@@ -65,7 +66,7 @@ export const PROPERTY_SCHEMAS: Partial<Record<ElementType, PropertyDescriptor[]>
         CONNECTED,
     ],
     SHUNT: [
-        EQUIPMENTID,
+        EQUIPMENT_ID,
         { key: 'sectionCount', type: 'number', required: true, min: 0, defaultValue: 1 },
         { key: 'maximumSectionCount', type: 'number', required: true, min: 1, defaultValue: 1 },
         { key: 'bPerSection', unit: 'S', type: 'number', required: true, defaultValue: 1e-5 },
@@ -73,7 +74,7 @@ export const PROPERTY_SCHEMAS: Partial<Record<ElementType, PropertyDescriptor[]>
         CONNECTED,
     ],
     STATIC_VAR_COMPENSATOR: [
-        EQUIPMENTID,
+        EQUIPMENT_ID,
         { key: 'bMin', unit: 'S', type: 'number', required: true, defaultValue: -0.01 },
         { key: 'bMax', unit: 'S', type: 'number', required: true, defaultValue: 0.01 },
         {
@@ -89,7 +90,7 @@ export const PROPERTY_SCHEMAS: Partial<Record<ElementType, PropertyDescriptor[]>
         CONNECTED,
     ],
     VSC_CONVERTER_STATION: [
-        EQUIPMENTID,
+        EQUIPMENT_ID,
         { key: 'lossFactor', unit: '%', type: 'number', required: true, min: 0, defaultValue: 1.1 },
         { key: 'voltageRegulatorOn', type: 'boolean', required: true, defaultValue: false },
         { key: 'voltageSetpoint', unit: 'kV', type: 'number' },
@@ -97,13 +98,13 @@ export const PROPERTY_SCHEMAS: Partial<Record<ElementType, PropertyDescriptor[]>
         CONNECTED,
     ],
     LCC_CONVERTER_STATION: [
-        EQUIPMENTID,
+        EQUIPMENT_ID,
         { key: 'lossFactor', unit: '%', type: 'number', required: true, min: 0, defaultValue: 1.1 },
         { key: 'powerFactor', type: 'number', required: true, min: -1, max: 1, defaultValue: 0.5 },
         CONNECTED,
     ],
     BOUNDARY_LINE: [
-        EQUIPMENTID,
+        EQUIPMENT_ID,
         { key: 'p0', unit: 'MW', type: 'number', required: true, defaultValue: 0 },
         { key: 'q0', unit: 'MVar', type: 'number', required: true, defaultValue: 0 },
         { key: 'r', unit: 'Ω', type: 'number', required: true, min: 0, defaultValue: 0.1 },
@@ -116,7 +117,7 @@ export const PROPERTY_SCHEMAS: Partial<Record<ElementType, PropertyDescriptor[]>
     LINE: BRANCH_SCHEMA,
     TWO_WINDINGS_TRANSFORMER: BRANCH_SCHEMA,
     THREE_WINDINGS_TRANSFORMER: [1, 2, 3].flatMap((leg): PropertyDescriptor[] => [
-        EQUIPMENTID,
+        EQUIPMENT_ID,
         { key: `r${leg}`, unit: 'Ω', type: 'number', required: true, min: 0, defaultValue: 0.1 },
         { key: `x${leg}`, unit: 'Ω', type: 'number', required: true, defaultValue: 1 },
         { key: `connected${leg}`, type: 'boolean', defaultValue: true, editOnly: true },
@@ -131,10 +132,6 @@ export function schemaFor(type: ElementType, mode: PropertyMode = 'edit'): Prope
     return mode === 'create' ? schema.filter((descriptor) => !descriptor.editOnly) : schema;
 }
 
-export function propertiesFor(type: ElementType): EquipmentProperties {
-    return defaultsOf(schemaFor(type, 'create'));
-}
-
 export function defaultsOf(schema: readonly PropertyDescriptor[]): EquipmentProperties {
     const values: EquipmentProperties = {};
     for (const descriptor of schema) {
@@ -142,14 +139,6 @@ export function defaultsOf(schema: readonly PropertyDescriptor[]): EquipmentProp
         values[descriptor.key] = descriptor.defaultValue;
     }
     return values;
-}
-
-export function validateProperties(
-    type: ElementType,
-    values: EquipmentProperties,
-    mode: PropertyMode = 'edit',
-): string[] {
-    return validateValues(schemaFor(type, mode), values);
 }
 
 export function validateValues(

@@ -89,8 +89,8 @@ h2 {
     padding: 4px 6px;
 }
 
-.field.invalid input,
-.field.invalid select {
+.field input:user-invalid,
+.field select:user-invalid {
     border-color: #dc3545;
 }
 

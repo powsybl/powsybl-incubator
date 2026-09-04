@@ -116,12 +116,14 @@ export const PROPERTY_SCHEMAS: Partial<Record<ElementType, PropertyDescriptor[]>
     GROUND: [CONNECTED],
     LINE: BRANCH_SCHEMA,
     TWO_WINDINGS_TRANSFORMER: BRANCH_SCHEMA,
-    THREE_WINDINGS_TRANSFORMER: [1, 2, 3].flatMap((leg): PropertyDescriptor[] => [
+    THREE_WINDINGS_TRANSFORMER: [
         EQUIPMENT_ID,
-        { key: `r${leg}`, unit: 'Ω', type: 'number', required: true, min: 0, defaultValue: 0.1 },
-        { key: `x${leg}`, unit: 'Ω', type: 'number', required: true, defaultValue: 1 },
-        { key: `connected${leg}`, type: 'boolean', defaultValue: true, editOnly: true },
-    ]),
+        ...[1, 2, 3].flatMap((leg): PropertyDescriptor[] => [
+            { key: `r${leg}`, unit: 'Ω', type: 'number', required: true, min: 0, defaultValue: 0.1 },
+            { key: `x${leg}`, unit: 'Ω', type: 'number', required: true, defaultValue: 1 },
+            { key: `connected${leg}`, type: 'boolean', defaultValue: true, editOnly: true },
+        ]),
+    ],
     BREAKER: SWITCH_SCHEMA,
     DISCONNECTOR: SWITCH_SCHEMA,
     LOAD_BREAK_SWITCH: SWITCH_SCHEMA,

@@ -27,7 +27,24 @@
         "default": "./dist/network-editor.cjs"
       }
     },
+    "./react": {
+      "import": {
+        "types": "./dist/src/react/index.d.ts",
+        "default": "./dist/react.js"
+      },
+      "require": {
+        "types": "./dist/src/react/index.d.ts",
+        "default": "./dist/react.cjs"
+      }
+    },
     "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "react": [
+        "./dist/src/react/index.d.ts"
+      ]
+    }
   },
   "scripts": {
     "dev": "vite",
@@ -36,7 +53,8 @@
     "test": "vitest run --passWithNoTests"
   },
   "peerDependencies": {
-    "@powsybl/network-viewer-core": "^3.5.1"
+    "@powsybl/network-viewer-core": "^3.5.1",
+    "react": "^18.0.0 || ^19.0.0"
   },
   "devDependencies": {
     "@powsybl/network-viewer-core": "^3.5.1",
@@ -51,5 +69,10 @@
     "vite-plugin-dts": "^4",
     "@vitejs/plugin-react": "^6.0.5",
     "vitest": "^4.1.10"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
   }
 }

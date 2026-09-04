@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
     plugins: [
-        react({ include: 'demo/**/*.tsx' }),
+        react({ include: ['demo/**/*.tsx', 'src/**/*.tsx'] }),
         // entryRoot pins the declarations to src/, so the emitted entry really is
         // dist/index.d.ts — without it they land under dist/src/ and "types" dangles.
         // tsconfig.build.json narrows the program to src/, so the declarations are
@@ -18,18 +18,15 @@ export default defineConfig({
     ],
     build: {
         lib: {
-            entry: path.resolve(__dirname, 'src/index.ts'),
-            name: 'NetworkEditor',
-            fileName: 'network-editor',
+            entry: {
+                'network-editor': path.resolve(__dirname, 'src/index.ts'),
+                react: path.resolve(__dirname, 'src/react/index.ts'),
+            },
+            fileName: (format, entryName) => `${entryName}.${format === 'es' ? 'js' : 'cjs'}`,
             formats: ['es', 'cjs']
         },
         rollupOptions: {
-            external: ['@powsybl/network-viewer-core'],
-            output: {
-                globals: {
-                    '@powsybl/network-viewer-core': 'PowsyblNetworkViewerCore'
-                }
-            }
+            external: ['@powsybl/network-viewer-core', 'react', 'react-dom', 'react/jsx-runtime'],
         },
     },
     test: {

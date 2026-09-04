@@ -15,7 +15,7 @@ import {
     type SLDMetadata,
 } from '../src';
 import { ContextMenu, type MenuItemSpec } from './ContextMenu';
-import { PropertyForm } from './PropertyForm';
+import { PropertyForm } from '../src/react';
 import svgContent from './data/v1.svg?raw';
 import metadataJson from './data/vl1_metadata.json';
 import propertiesJson from './data/vl1_properties.json';
@@ -117,7 +117,11 @@ export function App() {
                 <div className="diagram" ref={container} />
                 <div className="panel">
                     {panel ? (
-                        <ActionPanel key={panel.id} action={panel} onDone={() => setPanel(null)} />
+                        <>
+                            <h2>{actionLabel(panel)}</h2>
+                            <PropertyForm action={panel} onDone={() => setPanel(null)} />
+                            <button onClick={() => setPanel(null)}>Cancel</button>
+                        </>
                     ) : (
                         <p className="hint">Click or right-click the diagram.</p>
                     )}
@@ -139,28 +143,6 @@ export function App() {
                     onClose={() => setMenu(null)}
                 />
             )}
-        </>
-    );
-}
-
-function ActionPanel({ action, onDone }: { action: EditorAction; onDone: () => void }) {
-    const [refused, setRefused] = useState(false);
-
-    return (
-        <>
-            <h2>{actionLabel(action)}</h2>
-            <PropertyForm
-                schema={action.form}
-                initial={action.initial}
-                submitLabel="Apply"
-                onSubmit={(values) => {
-                    const applied = action.run(values);
-                    setRefused(!applied);
-                    if (applied) onDone();
-                }}
-            />
-            {refused && <p className="hint invalid">Refused by the component</p>}
-            <button onClick={onDone}>Cancel</button>
         </>
     );
 }

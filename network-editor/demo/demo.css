@@ -55,8 +55,9 @@ h2 {
     font-size: 12px;
 }
 
-.hint.invalid {
+.refused {
     color: #dc3545;
+    font-size: 12px;
 }
 
 

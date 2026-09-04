@@ -56,7 +56,7 @@
     font-size: 14px;
   }
 
-  .invalid {
+  .refused {
     color: #dc3545;
     font-size: 12px;
   }
@@ -79,8 +79,8 @@
     align-self: start;
   }
 
-  &.invalid input,
-  &.invalid select {
+  input:user-invalid,
+  select:user-invalid {
     border-color: #dc3545;
   }
 }

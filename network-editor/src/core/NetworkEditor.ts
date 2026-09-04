@@ -82,7 +82,6 @@ export class NetworkEditor {
         this.core.showIidmNodes(enabled);
     }
 
-
     getTargets(): EditTarget[] {
         return this.core.getTargets();
     }

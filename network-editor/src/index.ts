@@ -2,9 +2,7 @@ export { NetworkEditor } from './core/NetworkEditor';
 
 export {
     PROPERTY_SCHEMAS,
-    propertiesFor,
     schemaFor,
-    validateProperties,
     validateValues,
     type PropertyDescriptor,
     type PropertyMode,
@@ -14,6 +12,7 @@ export type { ActionSubject, EditorAction } from './core/actions';
 
 export {
     ACTION_LABELS,
+    actionFor,
     actionLabel,
     describeTarget,
     describeTargets,

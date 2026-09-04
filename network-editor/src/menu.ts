@@ -29,6 +29,7 @@ export interface ActionMenuItem {
 }
 
 export interface ActionSource {
+    getTargets(): EditTarget[];
     actionsFor(target: EditTarget, insertion?: BayInsertion): EditorAction[];
 }
 
@@ -68,6 +69,16 @@ export function describeTarget(target: EditTarget): string {
 
 export function describeTargets(targets: readonly EditTarget[]): string {
     return targets.map(describeTarget).join(' · ');
+}
+
+export function actionFor(
+    source: ActionSource,
+    equipmentId: string | null,
+    operation: EditOperation,
+): EditorAction | null {
+    const target = source.getTargets().find((candidate) => candidate.id === equipmentId);
+    if (!target) return null;
+    return source.actionsFor(target).find((action) => action.operation === operation) ?? null;
 }
 
 export function menuItemsFor(source: ActionSource, subjects: MenuSubjects): ActionMenuItem[] {

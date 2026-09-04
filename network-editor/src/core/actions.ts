@@ -1,5 +1,5 @@
 import { availableOperations, creatableTypesFor } from './operations';
-import { defaultsOf, schemaFor, type PropertyDescriptor } from '../properties';
+import { defaultsOf, EQUIPMENT_ID, schemaFor, type PropertyDescriptor } from '../properties';
 import {
     IMPLEMENTED_OPERATIONS,
     SWITCH_TYPES,
@@ -20,7 +20,6 @@ export type ActionSubject =
     | { kind: 'TYPE'; type: ElementType }
     | { kind: 'BUSBAR'; busbarSectionId: string }
     | { kind: 'SELECTION'; size: number };
-
 
 export interface EditorAction {
     id: string;
@@ -51,8 +50,6 @@ export interface ActionHost {
     getProperties(equipmentId: string): EquipmentProperties;
     proposedOrder(target: BusbarTarget, insertion?: BayInsertion): number | undefined;
 }
-
-const EQUIPMENT_ID: PropertyDescriptor = { key: 'equipmentId', type: 'string', required: true };
 
 const ORDER: PropertyDescriptor = { key: 'order', type: 'number', required: true, min: 0 };
 
@@ -137,7 +134,7 @@ function createAction(
     const form = createForm(type, onBusbar, behindSwitch);
 
     const initial = defaultsOf(form);
-    initial.equipmentId = 'NEW_' + type
+    initial.equipmentId = 'NEW_' + type;
 
     if (onBusbar) {
         const order = host.proposedOrder(target, insertion);
@@ -207,7 +204,12 @@ function equipmentActions(
         }
 
         case 'UPDATE_PROPERTIES': {
-            const form = schemaFor(target.type, target.created ? 'create' : 'edit');
+            const form = schemaFor(target.type, target.created ? 'create' : 'edit').map(
+                (descriptor) =>
+                    descriptor.key === 'equipmentId'
+                        ? { ...descriptor, readOnly: true }
+                        : descriptor,
+            );
             return [
                 {
                     id: id(target, operation),

@@ -1,4 +1,4 @@
-import {Button, Card, Header, Loader, Select} from "@design-system-rte/react";
+import {Banner, Button, Card, Header, Loader, Select} from "@design-system-rte/react";
 import { useEffect, useRef, useState} from "react";
 import type {NetworkInfo, Sld} from "./types.ts";
 import {deleteBay, deleteElement, getSld, getVoltageLevelIds, loadNetwork, update} from "./api.ts";
@@ -162,157 +162,150 @@ export default function App() {
                 ]}
             />
 
-            <div>
-                <Button
-                    label="Charger le réseau"
-                    onClick={() => load()}
-                    variant="primary"
+            {error &&
+                <Banner
+                    type="error"
+                    position="push"
+                    message={error}
+                    isOpen
+                    isCompact
+                    closable
+                    onClose={() => setError("")}
                 />
-            </div>
+            }
 
-            <div>
-                {error && <p>{error}</p>}
-            </div>
+            <main className="app">
+                <aside className="sidebar">
+                    <Card cardType="outlined" width="100%">
+                        <div className="card-body">
+                            <h2 className="block-title">Réseau</h2>
 
-            <div>
-                {loading && <Loader
-                    appearance="brand"
-                    label="Loading..."
-                    labelPosition="right"
-                    showLabel
-                    size="medium"
-                />
-                }
+                            <Button
+                                label="Charger le réseau"
+                                onClick={() => load()}
+                                variant="primary"
+                                disabled={loading}
+                            />
 
-                {info &&
-                    <Card
-                        cardType="default"
-                        onClick={function Hs() {
-                        }}
-                        width="480px"
-                    >
-                        <div
-                            style={{
-                                padding: '16px'
-                            }}
-                        >
-                            <h2
-                                style={{
-                                    fontSize: '20px',
-                                    fontWeight: '600',
-                                    margin: '0 0 12px 0'
-                                }}
-                            >
-                                Informations sur le reseau
-                            </h2>
-                            <p
-                                style={{
-                                    color: '#666',
-                                    lineHeight: '1.5',
-                                    margin: '0 0 16px 0'
-                                }}
-                            >
-                                {info.id}
-                            </p>
-                            <ul>
-                                <li>Substations : {info.substation_count}</li>
-                                <li>Voltages level : {info.vl_count}</li>
-                            </ul>
+                            {loading &&
+                                <Loader
+                                    appearance="brand"
+                                    label="Chargement..."
+                                    labelPosition="right"
+                                    showLabel
+                                    size="medium"
+                                />
+                            }
+
+                            {info &&
+                                <dl className="infos">
+                                    <dt>Identifiant</dt>
+                                    <dd>{info.id}</dd>
+                                    <dt>Postes</dt>
+                                    <dd>{info.substation_count}</dd>
+                                    <dt>Niveaux de tension</dt>
+                                    <dd>{info.vl_count}</dd>
+                                </dl>
+                            }
                         </div>
                     </Card>
-                }
 
-                {
-                    vlIds &&
-                    <div
-                        style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: '16px'
-                        }}
-                    >
-                        <Select
-                            id="selectVl"
-                            label="Choisir un voltageLevel"
-                            onChange={(value) => setSelectedVlId(value)}
-                            optionToDisplay="first-selected"
-                            options={vlIds.map(id => ({
-                                label: id,
-                                value: id
-                            }))}
-                            placeholder="Select an option"
-                            showLabel
-                            value={selectedVlId ?? ""}
-                        />
-                    </div>
-                }
-            </div>
-
-            <div style={{display: 'flex', gap: '16px', alignItems: 'flex-start'}}>
-                {sld &&
-                    <div>
-                        <div>
-                            <Button
-                                disabled={!history.canRedo}
-                                label="redo"
-                                variant="primary"
-                                onClick={() => editor?.redo()}
-                            />
-                            <Button
-                                disabled={!history.canUndo}
-                                label="undo"
-                                variant="primary"
-                                onClick={() => editor?.undo()}
-
-                            />
-                            <Button
-                                disabled={!changes.length}
-                                label="Valider les modifications"
-                                variant="secondary"
-                                onClick={() => applyChanges()}
-                            />
-                        </div>
-
-                        <div ref={container}/>
-
-
-                    </div>
-                }
-
-                <div>
-                    {panel &&
-                        <div className="panel">
-                            <h2>{actionLabel(panel)}</h2>
-                            <PropertyForm
-                                action={panel}
-                                submitLabel="Valider"
-                                refusedLabel="Refusé par le composant"
-                                onDone={() => setPanel(null)}
-                                children={<Button label="Valider" variant="secondary" type="submit" />}
-                            />
-                            <Button label="Annuler" variant="secondary" onClick={() => setPanel(null)}/>
-                        </div>
+                    {vlIds &&
+                        <Card cardType="outlined" width="100%">
+                            <div className="card-body">
+                                <Select
+                                    id="selectVl"
+                                    label="Niveau de tension"
+                                    onChange={(value) => setSelectedVlId(value)}
+                                    optionToDisplay="first-selected"
+                                    options={vlIds.map(id => ({
+                                        label: id,
+                                        value: id
+                                    }))}
+                                    placeholder="Choisir un niveau de tension"
+                                    showLabel
+                                    value={selectedVlId ?? ""}
+                                />
+                            </div>
+                        </Card>
                     }
-                </div>
+                </aside>
 
-                <div>
-                    {menu  &&
-                        <Menu
-                            header={describeTargets(menu.targets)}
-                            x={menu.x}
-                            y={menu.y}
-                            onClose={() => setMenu(null)}
-                            items={menuItems}
-                        />
+                <section className="workspace">
+                    {sld ?
+                        <>
+                            <div className="toolbar">
+                                <div className="toolbar-group">
+                                    <Button
+                                        label="Annuler"
+                                        variant="secondary"
+                                        disabled={!history.canUndo}
+                                        onClick={() => editor?.undo()}
+                                    />
+                                    <Button
+                                        label="Rétablir"
+                                        variant="secondary"
+                                        disabled={!history.canRedo}
+                                        onClick={() => editor?.redo()}
+                                    />
+                                </div>
+
+                                <div className="toolbar-group">
+                                    {changes.length > 0 &&
+                                        <span className="pending">
+                                            {changes.length} modification{changes.length > 1 ? 's' : ''} en attente
+                                        </span>
+                                    }
+                                    <Button
+                                        label="Valider les modifications"
+                                        variant="primary"
+                                        disabled={!changes.length}
+                                        onClick={() => applyChanges()}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="diagram" ref={container}/>
+                        </>
+                        :
+                        <p className="empty">
+                            Charge le réseau, puis choisis un niveau de tension pour afficher son schéma.
+                        </p>
                     }
-                </div>
-            </div>
+                </section>
+
+                {panel &&
+                    <aside className="properties">
+                        <h2 className="block-title">{actionLabel(panel)}</h2>
+                        <PropertyForm
+                            action={panel}
+                            submitLabel="Valider"
+                            refusedLabel="Refusé par le composant"
+                            onDone={() => setPanel(null)}
+                        >
+                            <div className="properties-actions">
+                                <Button label="Valider" variant="primary" type="submit"/>
+                                <Button
+                                    label="Fermer"
+                                    variant="secondary"
+                                    type="button"
+                                    onClick={() => setPanel(null)}
+                                />
+                            </div>
+                        </PropertyForm>
+                    </aside>
+                }
+
+                {menu &&
+                    <Menu
+                        header={describeTargets(menu.targets)}
+                        x={menu.x}
+                        y={menu.y}
+                        onClose={() => setMenu(null)}
+                        items={menuItems}
+                    />
+                }
+            </main>
         </>
-
     );
-
-
-
 }
-
-

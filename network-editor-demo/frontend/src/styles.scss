@@ -3,84 +3,245 @@
 
 @include theme-selector('bleu_iceberg', 'light');
 
+@mixin surface {
+  background: var(--background-default);
+  border: $width-xs solid var(--border-divider);
+  border-radius: $radius-m;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--background-neutral-subtle-default);
+  color: var(--content-primary);
+
+  @include typography-text-m;
+}
+
+/* Header, banner, then the workspace filling what is left. */
+#root {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Layout: sidebar, diagram, properties. */
+
+.app {
+  display: flex;
+  flex: 1;
+  align-items: stretch;
+  gap: $positive-spacing_200;
+  min-height: 0;
+  padding: $positive-spacing_200;
+}
+
+.sidebar {
+  display: flex;
+  flex: 0 0 300px;
+  flex-direction: column;
+  gap: $positive-spacing_200;
+}
+
+.workspace {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: $positive-spacing_150;
+  min-width: 0;
+}
+
+/* Cards keep the design system shell, this fills them left aligned. */
+.card-body {
+  display: flex;
+  flex-direction: column;
+  gap: $positive-spacing_150;
+  width: 100%;
+  padding: $positive-spacing_200;
+  text-align: left;
+}
+
+.block-title {
+  margin: 0;
+
+  @include typography-heading-xs;
+}
+
+.infos {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: $positive-spacing_050 $positive-spacing_150;
+  margin: 0;
+
+  @include typography-text-s;
+
+  dt {
+    color: var(--content-tertiary);
+  }
+
+  dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: $positive-spacing_150;
+}
+
+.toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: $positive-spacing_100;
+}
+
+.pending {
+  color: var(--content-tertiary);
+
+  @include typography-text-s;
+}
+
+.diagram {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  padding: $positive-spacing_200;
+
+  @include surface;
+
+  /* The viewer sizes the svg to the diagram; its viewBox lets it scale to the box instead. */
+  > svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.empty {
+  flex: 1;
+  margin: 0;
+  padding: $positive-spacing_600 $positive-spacing_200;
+  color: var(--content-tertiary);
+  text-align: center;
+
+  @include surface;
+}
+
+.properties {
+  display: flex;
+  flex: 0 0 280px;
+  flex-direction: column;
+  gap: $positive-spacing_150;
+  padding: $positive-spacing_200;
+
+  @include surface;
+
+  .refused {
+    margin: 0;
+    color: var(--content-danger-default);
+
+    @include typography-text-s;
+  }
+}
+
+.properties-actions {
+  display: flex;
+  gap: $positive-spacing_100;
+  margin-top: $positive-spacing_100;
+}
+
+/* Property form fields, rendered by the editor. */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: $positive-spacing_050;
+  margin-bottom: $positive-spacing_150;
+
+  @include typography-text-s;
+
+  span {
+    color: var(--content-secondary);
+  }
+
+  input,
+  select {
+    padding: $positive-spacing_075 $positive-spacing_100;
+    background: var(--background-default);
+    border: $width-xs solid var(--border-secondary);
+    border-radius: $radius-s;
+    color: inherit;
+    font: inherit;
+
+    &:focus-visible {
+      border-color: var(--border-brand-focused);
+      outline: none;
+    }
+  }
+
+  input[type='checkbox'] {
+    align-self: start;
+    accent-color: var(--background-brand-default);
+  }
+
+  input:user-invalid,
+  select:user-invalid {
+    border-color: var(--border-danger);
+  }
+}
+
+/* Context menu, rendered on right click over the diagram. */
+
 .menu {
   position: fixed;
   z-index: 1000;
-  min-width: 190px;
+  min-width: 200px;
   overflow: hidden;
-  background: #fff;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
+  background: var(--background-default);
+  border: $width-xs solid var(--border-divider);
+  border-radius: $radius-m;
+  box-shadow:
+    0 4px 8px 0 var(--elevation-shadow-key),
+    0 0 2px 0 var(--elevation-shadow-ambient);
 
   header {
-    padding: 6px 12px;
-    border-bottom: 1px solid #eee;
-    color: #666;
-    font-size: 12px;
+    padding: $positive-spacing_100 $positive-spacing_150;
+    border-bottom: $width-xs solid var(--border-divider);
+    color: var(--content-tertiary);
+
+    @include typography-text-s;
   }
 
   button {
     display: block;
     width: 100%;
-    padding: 8px 12px;
+    padding: $positive-spacing_100 $positive-spacing_150;
     border: none;
     background: none;
-    font: inherit;
+    color: var(--content-primary);
     text-align: left;
     cursor: pointer;
 
+    @include typography-text-s;
+
     &:hover:enabled {
-      background: #f1f3f5;
+      background: var(--background-hover);
     }
 
     &:disabled {
-      color: #aaa;
+      color: var(--content-disabled);
       cursor: not-allowed;
     }
 
     &.danger {
-      color: #dc3545;
+      color: var(--content-danger-default);
     }
-  }
-}
-
-.panel {
-  min-width: 260px;
-  padding: 0 16px 16px;
-  background: #fff;
-  border: 1px solid #ccc;
-
-  h2 {
-    margin: 16px 0 8px;
-    font-size: 14px;
-  }
-
-  .refused {
-    color: #dc3545;
-    font-size: 12px;
-  }
-}
-
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  margin-bottom: 10px;
-
-  input,
-  select {
-    padding: 4px 6px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-
-  input[type='checkbox'] {
-    align-self: start;
-  }
-
-  input:user-invalid,
-  select:user-invalid {
-    border-color: #dc3545;
   }
 }

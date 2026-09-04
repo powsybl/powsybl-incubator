@@ -1,7 +1,7 @@
 import {Banner, Button, Card, Header, Loader, Select} from "@design-system-rte/react";
 import { useEffect, useRef, useState} from "react";
 import type {NetworkInfo, Sld} from "./types.ts";
-import {deleteBay, deleteElement, getSld, getVoltageLevelIds, loadNetwork, update} from "./api.ts";
+import {applyChange, deleteBay, deleteElement, getSld, getVoltageLevelIds, loadNetwork} from "./api.ts";
 import {describeTargets, menuItemsFor, NetworkEditor} from "@powsybl/network-editor";
 import type {BayInsertion, EditTarget} from "@powsybl/network-editor";
 import type {MenuItem} from "./components/Menu.tsx";
@@ -147,8 +147,9 @@ export default function App() {
                     case 'delete-bay' :
                         await deleteBay(change.equipmentId)
                         break;
+                    case 'create' :
                     case 'update' :
-                        await update(change)
+                        await applyChange(change)
                         break;
                 }
             }

@@ -111,7 +111,7 @@ public class Controller {
     @PostMapping("/changes")
     public Dto.ApplyChangesResponse changeElement(@RequestBody Dto.ChangeEntry change){
         try {
-            service.update(networkState.get(), change);
+            service.apply(networkState.get(), change);
         } catch (PowsyblException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to change element : " + e.getMessage(), e);
         }

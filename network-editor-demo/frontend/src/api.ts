@@ -22,5 +22,5 @@ export const deleteElement = (elementId: string) =>
 export const deleteBay = (elementId: string) =>
     axios.delete(`/api/network/bay/${String(elementId)}`).then((res) => res.data)
 
-export const update = (change: ChangeSetEntry) =>
+export const applyChange = (change: ChangeSetEntry) =>
     axios.post('/api/network/changes', change).then((res) => res.data)

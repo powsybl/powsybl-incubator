@@ -154,6 +154,82 @@ public class Service {
         }
     }
 
+    public void apply(Network network, Dto.ChangeEntry change) {
+        switch (change.op()) {
+            case "create" -> create(network, change);
+            case "update" -> update(network, change);
+            default -> throw new PowsyblException("Unsupported change '" + change.op() + "'");
+        }
+    }
+
+    public void create(Network network, Dto.ChangeEntry change) {
+        Map<String, Object> payload = change.payload();
+        String equipmentId = change.equipmentId();
+        String vlId = requireText(payload, "vlId");
+        int node = requireInt(payload, "node");
+
+        VoltageLevel voltageLevel = network.getVoltageLevel(vlId);
+        if (voltageLevel == null) {
+            throw new PowsyblException("Unknown voltage level '" + vlId + "'");
+        }
+        if (network.getIdentifiable(equipmentId) != null) {
+            throw new PowsyblException("Element '" + equipmentId + "' already exists");
+        }
+
+        switch (requireText(payload, "equipmentType")) {
+            case "LOAD" -> voltageLevel.newLoad()
+                    .setId(equipmentId).setNode(node)
+                    .setP0(0).setQ0(0)
+                    .add();
+
+            case "GENERATOR" -> voltageLevel.newGenerator()
+                    .setId(equipmentId).setNode(node)
+                    .setMinP(0).setMaxP(0).setTargetP(0)
+                    .setVoltageRegulatorOn(false).setTargetQ(0)
+                    .add();
+
+            case "BATTERY" -> voltageLevel.newBattery()
+                    .setId(equipmentId).setNode(node)
+                    .setMinP(0).setMaxP(0).setTargetP(0).setTargetQ(0)
+                    .add();
+
+            case "SHUNT" -> voltageLevel.newShuntCompensator()
+                    .setId(equipmentId).setNode(node)
+                    .setSectionCount(0)
+                    .newLinearModel().setBPerSection(1).setMaximumSectionCount(1).add()
+                    .add();
+
+            case "STATIC_VAR_COMPENSATOR" -> voltageLevel.newStaticVarCompensator()
+                    .setId(equipmentId).setNode(node)
+                    .setBmin(0).setBmax(0)
+                    .setRegulationMode(StaticVarCompensator.RegulationMode.REACTIVE_POWER)
+                    .setRegulating(false).setReactivePowerSetpoint(0)
+                    .add();
+
+            case "VSC_CONVERTER_STATION" -> voltageLevel.newVscConverterStation()
+                    .setId(equipmentId).setNode(node)
+                    .setLossFactor(0)
+                    .setVoltageRegulatorOn(false).setReactivePowerSetpoint(0)
+                    .add();
+
+            case "LCC_CONVERTER_STATION" -> voltageLevel.newLccConverterStation()
+                    .setId(equipmentId).setNode(node)
+                    .setLossFactor(0).setPowerFactor(1)
+                    .add();
+
+            case "BOUNDARY_LINE" -> voltageLevel.newBoundaryLine()
+                    .setId(equipmentId).setNode(node)
+                    .setP0(0).setQ0(0)
+                    .setR(0).setX(0).setG(0).setB(0)
+                    .add();
+
+            default -> throw new PowsyblException(
+                    "Cannot create '" + requireText(payload, "equipmentType") + "'");
+        }
+
+        applyProperties(network.getIdentifiable(equipmentId), properties(payload));
+    }
+
     public void update(Network network, Dto.ChangeEntry change) {
         Identifiable<?> identifiable = network.getIdentifiable(change.equipmentId());
         if (identifiable == null) {
@@ -292,6 +368,28 @@ public class Service {
         if (value != null) {
             setter.accept(String.valueOf(value));
         }
+    }
+
+    private static String requireText(Map<String, Object> payload, String key) {
+        Object value = payload.get(key);
+        if (value == null) {
+            throw new PowsyblException("Missing property '" + key + "'");
+        }
+        return String.valueOf(value);
+    }
+
+    private static int requireInt(Map<String, Object> payload, String key) {
+        Object value = payload.get(key);
+        if (!(value instanceof Number number)) {
+            throw new PowsyblException("Property '" + key + "' must be a number");
+        }
+        return number.intValue();
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Map<String, Object> properties(Map<String, Object> payload) {
+        Object values = payload.get("properties");
+        return values instanceof Map ? (Map<String, Object>) values : Map.of();
     }
 
     private static void setConnected(Map<String, Object> payload, String key, Terminal terminal) {

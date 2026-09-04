@@ -1,13 +1,14 @@
 import {Button, Card, Header, Loader, Select} from "@design-system-rte/react";
 import { useEffect, useRef, useState} from "react";
 import type {NetworkInfo, Sld} from "./types.ts";
-import {getSld, getVoltageLevelIds, loadNetwork} from "./api.ts";
+import {deleteBay, deleteElement, getSld, getVoltageLevelIds, loadNetwork, update} from "./api.ts";
 import {describeTargets, menuItemsFor, NetworkEditor} from "@powsybl/network-editor";
 import type {BayInsertion, EditTarget} from "@powsybl/network-editor";
 import type {MenuItem} from "./components/Menu.tsx";
 import {Menu} from "./components/Menu.tsx";
 import {actionFor, actionLabel, type EditorAction} from "@powsybl/network-editor";
 import {PropertyForm} from "@powsybl/network-editor/react";
+import type {ChangeSetEntry} from "@powsybl/network-editor";
 
 export default function App() {
 
@@ -21,6 +22,7 @@ export default function App() {
     const [sld, setSld] = useState<Sld | null>(null)
 
     const [history, setHistory] = useState<{ canUndo: boolean; canRedo: boolean }>({canUndo: false, canRedo: false})
+    const [changes, setChanges] = useState<ChangeSetEntry[]>([])
 
     const [editor, setEditor] = useState<NetworkEditor | null>(null);
     const [menu, setMenu] = useState<{
@@ -80,6 +82,7 @@ export default function App() {
             container: container.current,
             metadata: sld.metadata,
             svgContent: sld.svg,
+            initialProperties: sld.properties,
 
             onTargets: ({targets, position, insertion}) =>
                 setMenu({targets, x: position.x, y: position.y, insertion}),
@@ -94,6 +97,11 @@ export default function App() {
                             : null,
                     )
                 }
+                if (event.name === 'model:changed') {
+                    setChanges(event.changeSet);
+                    console.log(event.changeSet);
+                }
+
             },
         });
         setEditor(instance);
@@ -110,6 +118,34 @@ export default function App() {
                 onClick: () => (item.needsForm ? setPanel(item.action) : item.action.run()),
             }))
             : [];
+
+
+    const applyChanges = async () => {
+
+        if (!selectedVlId || !editor) return;
+        setError("")
+
+        try {
+            for (const change of changes) {
+                switch (change.op) {
+                    case 'delete' :
+                        await deleteElement(change.equipmentId)
+                        break;
+                    case 'delete-bay' :
+                        await deleteBay(change.equipmentId)
+                        break;
+                    case 'update' :
+                        await update(change)
+                        break;
+                }
+            }
+
+            editor.clearPendingChanges();
+            setSld(await getSld(selectedVlId));
+        } catch (error) {
+            setError(String(error));
+        }
+    }
 
     return (
         <>
@@ -228,6 +264,12 @@ export default function App() {
                                 variant="primary"
                                 onClick={() => editor?.undo()}
 
+                            />
+                            <Button
+                                disabled={!changes.length}
+                                label="Valider les modifications"
+                                variant="secondary"
+                                onClick={() => applyChanges()}
                             />
                         </div>
 

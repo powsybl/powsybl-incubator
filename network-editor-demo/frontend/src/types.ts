@@ -1,4 +1,5 @@
 import type {SLDMetadata} from "@powsybl/network-viewer-core";
+import type {EquipmentProperties} from "@powsybl/network-editor";
 
 export interface NetworkInfo {
     id: string
@@ -9,4 +10,5 @@ export interface NetworkInfo {
 export interface Sld {
     svg: string
     metadata: SLDMetadata
+    properties: Record<string, EquipmentProperties>
 }

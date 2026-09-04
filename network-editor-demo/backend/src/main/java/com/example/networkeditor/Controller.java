@@ -5,19 +5,15 @@ import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.sld.SingleLineDiagram;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.StringWriter;
@@ -32,9 +28,11 @@ public class Controller {
 
     private final NetworkState networkState;
     private final ObjectMapper objectMapper;
+    private final Service service;
 
     Controller(NetworkState networkState) {
         this.networkState = networkState;
+        this.service = new Service();
         this.objectMapper = new ObjectMapper();
     }
 
@@ -77,7 +75,10 @@ public class Controller {
         }
 
         try {
-            return new Dto.SldResponse(svg.toString(), objectMapper.readTree(metadata.toString()));
+            return new Dto.SldResponse(
+                    svg.toString(),
+                    objectMapper.readTree(metadata.toString()),
+                    service.readProperties(networkState.get(), request.vlId()));
         } catch (JsonProcessingException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to get metadata : " + e.getMessage(), e );
         }
@@ -87,6 +88,35 @@ public class Controller {
 
     // MODIFICATORS
 
+    @DeleteMapping("/elements/{elementId}")
+    public Dto.ElementResponse deleteElement(@PathVariable String elementId){
+        try {
+            service.removeElement(networkState.get(), elementId);
+        } catch (PowsyblException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to delete element : " + e.getMessage(), e);
+        }
+        return new Dto.ElementResponse("Element deleted", elementId);
+    }
+
+    @DeleteMapping("/bay/{elementId}")
+    public Dto.ElementResponse deleteBay(@PathVariable String elementId){
+        try {
+            service.removeBay(networkState.get(), elementId);
+        } catch (PowsyblException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to delete bay : " + e.getMessage(), e);
+        }
+        return new Dto.ElementResponse("bay deleted", elementId);
+    }
+
+    @PostMapping("/changes")
+    public Dto.ApplyChangesResponse changeElement(@RequestBody Dto.ChangeEntry change){
+        try {
+            service.update(networkState.get(), change);
+        } catch (PowsyblException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to change element : " + e.getMessage(), e);
+        }
+        return new Dto.ApplyChangesResponse("Element changed", true);
+    }
 
 
 

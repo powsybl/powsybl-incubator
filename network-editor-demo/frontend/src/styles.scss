@@ -3,6 +3,16 @@
 
 @include theme-selector('bleu_iceberg', 'light');
 
+
+.app,
+.card-body,
+.diagram,
+.empty,
+.properties,
+.menu {
+  box-sizing: border-box;
+}
+
 @mixin surface {
   background: var(--background-default);
   border: $width-xs solid var(--border-divider);
@@ -45,6 +55,7 @@ body {
   flex: 0 0 300px;
   flex-direction: column;
   gap: $positive-spacing_200;
+  overflow-y: auto;
 }
 
 .workspace {
@@ -55,38 +66,79 @@ body {
   min-width: 0;
 }
 
-/* Cards keep the design system shell, this fills them left aligned. */
 .card-body {
   display: flex;
   flex-direction: column;
   gap: $positive-spacing_150;
   width: 100%;
+  min-width: 0;
   padding: $positive-spacing_200;
   text-align: left;
 }
 
 .block-title {
   margin: 0;
+  overflow-wrap: anywhere;
 
   @include typography-heading-xs;
 }
 
 .infos {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: $positive-spacing_050 $positive-spacing_150;
+  display: flex;
+  flex-direction: column;
+  gap: $positive-spacing_100;
   margin: 0;
-
-  @include typography-text-s;
 
   dt {
     color: var(--content-tertiary);
+
+    @include typography-text-xs;
   }
 
   dd {
     margin: 0;
     overflow-wrap: anywhere;
+
+    @include typography-text-s;
   }
+}
+
+.changes {
+  display: flex;
+  flex-direction: column;
+  gap: $positive-spacing_100;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    flex-direction: column;
+    gap: $positive-spacing_025;
+    padding: $positive-spacing_100;
+    background: var(--background-neutral-subtle-default);
+    border-radius: $radius-s;
+  }
+}
+
+.change-op {
+  overflow-wrap: anywhere;
+
+  @include typography-text-s-bold;
+}
+
+.change-id {
+  overflow-wrap: anywhere;
+  color: var(--content-tertiary);
+
+  @include typography-text-xs;
+}
+
+.changes-empty {
+  margin: 0;
+  color: var(--content-tertiary);
+
+  @include typography-text-s;
 }
 
 .toolbar {
@@ -179,7 +231,6 @@ body {
     border-radius: $radius-s;
     color: inherit;
     font: inherit;
-
     &:focus-visible {
       border-color: var(--border-brand-focused);
       outline: none;
@@ -197,7 +248,6 @@ body {
   }
 }
 
-/* Context menu, rendered on right click over the diagram. */
 
 .menu {
   position: fixed;

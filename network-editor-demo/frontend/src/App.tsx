@@ -8,7 +8,20 @@ import type {MenuItem} from "./components/Menu.tsx";
 import {Menu} from "./components/Menu.tsx";
 import {actionFor, actionLabel, type EditorAction} from "@powsybl/network-editor";
 import {PropertyForm} from "@powsybl/network-editor/react";
-import type {ChangeSetEntry} from "@powsybl/network-editor";
+import type {ChangeOp, ChangeSetEntry} from "@powsybl/network-editor";
+
+const CHANGE_LABELS: Record<ChangeOp, string> = {
+    'create': 'Création',
+    'create-bay': 'Création de travée',
+    'create-switch': 'Création d\'organe de coupure',
+    'create-switched-injection': 'Création derrière un organe de coupure',
+    'move-bay': 'Déplacement de travée',
+    'update-position': 'Changement de position',
+    'update': 'Modification',
+    'delete': 'Suppression',
+    'delete-bay': 'Suppression de travée',
+    'rename': 'Renommage',
+}
 
 export default function App() {
 
@@ -176,7 +189,7 @@ export default function App() {
 
             <main className="app">
                 <aside className="sidebar">
-                    <Card cardType="outlined" width="100%">
+                    <Card cardType="outlined" width="95%">
                         <div className="card-body">
                             <h2 className="block-title">Réseau</h2>
 
@@ -211,11 +224,12 @@ export default function App() {
                     </Card>
 
                     {vlIds &&
-                        <Card cardType="outlined" width="100%">
+                        <Card cardType="outlined" width="95%">
                             <div className="card-body">
                                 <Select
                                     id="selectVl"
                                     label="Niveau de tension"
+                                    width={240}
                                     onChange={(value) => setSelectedVlId(value)}
                                     optionToDisplay="first-selected"
                                     options={vlIds.map(id => ({
@@ -226,6 +240,27 @@ export default function App() {
                                     showLabel
                                     value={selectedVlId ?? ""}
                                 />
+                            </div>
+                        </Card>
+                    }
+
+                    {sld &&
+                        <Card cardType="outlined" width="100%">
+                            <div className="card-body">
+                                <h2 className="block-title">Modifications en attente</h2>
+
+                                {changes.length === 0 ?
+                                    <p className="changes-empty">Aucune modification.</p>
+                                    :
+                                    <ul className="changes">
+                                        {changes.map((change, index) =>
+                                            <li key={`${change.op}-${change.equipmentId}-${index}`}>
+                                                <span className="change-op">{CHANGE_LABELS[change.op]}</span>
+                                                <span className="change-id">{change.equipmentId}</span>
+                                            </li>
+                                        )}
+                                    </ul>
+                                }
                             </div>
                         </Card>
                     }

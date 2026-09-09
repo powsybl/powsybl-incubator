@@ -298,8 +298,11 @@ function createBaySlot(slot: BaySlotCandidate): SVGGElement {
 
     const dot = document.createElementNS(SVG_NS, 'circle');
     dot.setAttribute('r', String(SLOT_RADIUS));
-    point.appendChild(dot);
 
+    const hint = document.createElementNS(SVG_NS, 'title');
+    hint.textContent = `Order ${slot.order}`;
+
+    point.append(dot, hint);
     return point;
 }
 

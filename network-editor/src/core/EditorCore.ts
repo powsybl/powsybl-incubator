@@ -77,6 +77,8 @@ export class EditorCore {
     private nodeTargetIds: string[] = [];
 
     private selectedEquipmentIds: string[] = [];
+    private hoveredBusbarId: string | null = null;
+    private hoverSlots: readonly BaySlotCandidate[] = [];
     private mouseDownX = 0;
     private mouseDownY = 0;
 
@@ -89,6 +91,7 @@ export class EditorCore {
         const container: HTMLElement = this.dom.getContainer();
         container.addEventListener('mousedown', this.onMouseDown);
         container.addEventListener('mouseup', this.onMouseUp);
+        container.addEventListener('mousemove', this.onMouseMove);
         this.refreshTargets();
     }
 
@@ -97,6 +100,9 @@ export class EditorCore {
         const container: HTMLElement = this.dom.getContainer();
         container.removeEventListener('mousedown', this.onMouseDown);
         container.removeEventListener('mouseup', this.onMouseUp);
+        container.removeEventListener('mousemove', this.onMouseMove);
+        this.clearHoverSlots();
+        this.dom.setBaySlots([]);
         this.cancelGesture();
         this.dom.setSelection([]);
         this.dom.setNodeTargets([]);
@@ -395,17 +401,18 @@ export class EditorCore {
             return;
         }
 
+        if (this.openHoveredSlot(event)) return;
+
         const node = this.resolveNodeAt(event.target as Element | null);
 
         const buildable = event.shiftKey
             ? []
-            : this.targetsAt(node).filter((target) => target.kind !== 'EQUIPMENT');
+            : this.targetsAt(node).filter((target) => target.kind === 'NODE');
         if (buildable.length > 0) {
             this.onTargets?.({
                 targets: buildable,
                 trigger: 'click',
                 position: { x: event.clientX, y: event.clientY },
-                insertion: this.insertionAt(buildable, event),
             });
             return;
         }
@@ -416,6 +423,49 @@ export class EditorCore {
             this.setSelection([]);
         }
     };
+
+    private readonly onMouseMove = (event: MouseEvent): void => {
+        if (this.gesture) return;
+
+        const element = event.target as Element | null;
+        if (element?.closest(`g.${BAY_SLOT_CLASS}`)) return;
+
+        this.showHoverSlots(
+            this.targetsAt(this.resolveNodeAt(element)).find(
+                (target): target is BusbarTarget => target.kind === 'BUSBAR',
+            ),
+        );
+    };
+
+    private showHoverSlots(busbar?: BusbarTarget): void {
+        if ((busbar?.id ?? null) === this.hoveredBusbarId) return;
+
+        this.hoveredBusbarId = busbar?.id ?? null;
+        this.hoverSlots = busbar ? this.baySlotCandidates(busbar) : [];
+        this.paintTargets();
+    }
+
+    private clearHoverSlots(): void {
+        this.hoveredBusbarId = null;
+        this.hoverSlots = [];
+    }
+
+    private openHoveredSlot(event: MouseEvent): boolean {
+        const slotId = (event.target as Element | null)?.closest<SVGGElement>(
+            `g.${BAY_SLOT_CLASS}`,
+        )?.id;
+        const slot = this.hoverSlots.find((candidate) => candidate.id === slotId);
+        const busbar = this.hoveredBusbarId ? this.targets.get(this.hoveredBusbarId) : undefined;
+        if (!slot || busbar?.kind !== 'BUSBAR') return false;
+
+        this.onTargets?.({
+            targets: [busbar],
+            trigger: 'click',
+            position: { x: event.clientX, y: event.clientY },
+            insertion: { order: slot.order },
+        });
+        return true;
+    }
 
     handleContextMenu(event: MouseEvent): void {
         if (!this.onTargets || this.gesture) return;
@@ -502,9 +552,10 @@ export class EditorCore {
 
         const node = this.feederNodeOf(target);
         const slot = node && this.model.slotOfFeeder(node);
-        if (!node || !slot) return false;
+        const busbar = slot && this.busbarOf(slot);
+        if (!node || !slot || !busbar) return false;
 
-        const candidates = this.baySlotCandidates(slot, node.id);
+        const candidates = this.baySlotCandidates(busbar, node.id);
         if (candidates.length === 0) return false;
 
         return this.arm({
@@ -530,6 +581,7 @@ export class EditorCore {
 
     private arm(gesture: Gesture): boolean {
         this.gesture = gesture;
+        this.clearHoverSlots();
         document.addEventListener('keydown', this.onKeyDown);
         this.paintTargets();
         this.emit('gesture:changed', { gesture });
@@ -588,18 +640,27 @@ export class EditorCore {
         this.setBayPosition(equipmentId, { order: chosen.order, direction }, chosen.x);
     }
 
-    private baySlotCandidates(slot: BaySlot, movingNodeId: string): BaySlotCandidate[] {
-        const y = this.busbarY(slot);
-        if (y === undefined) return [];
+    private baySlotCandidates(busbar: BusbarTarget, movingNodeId?: string): BaySlotCandidate[] {
+        const point = this.dom.getDiagramPoint(busbar.id);
+        if (!point) return [];
 
-        const pending = this.pendingOrders(slot.vlId, movingNodeId);
-        const columns = this.feederColumns(slot, movingNodeId);
+        const { x, y } = point;
+        const pending = this.pendingOrders(busbar.vlId, movingNodeId);
+        const columns = this.feederColumns(busbar, movingNodeId);
+
+        if (columns.length === 0) {
+            const order = this.model.nextOrderForBusbar(busbar, pending);
+            return order === undefined
+                ? []
+                : [{ id: `ne-slot-${order}`, order, x: x + SLOT_PITCH, y }];
+        }
+
         const positions = gapPositions(columns);
         const candidates: BaySlotCandidate[] = [];
 
         for (let gap = 0; gap < positions.length; gap += 1) {
             const order = this.model.orderBetween(
-                slot,
+                busbar,
                 columns[gap - 1]?.node.order,
                 columns[gap]?.node.order,
                 pending,
@@ -637,17 +698,16 @@ export class EditorCore {
 
         this.dom.setNodeTargets(gesture ? [] : this.nodeTargetIds);
         this.dom.setLinkEnds(link?.first.id ?? null, link?.candidates.map((end) => end.id) ?? []);
-        this.dom.setBaySlots(bayMove?.candidates ?? []);
+        this.dom.setBaySlots(bayMove?.candidates ?? this.hoverSlots);
     }
 
-    private busbarY(slot: BaySlot): number | undefined {
-        const busbar = [...this.targets.values()].find(
-            (target) =>
+    private busbarOf(slot: BaySlot): BusbarTarget | undefined {
+        return [...this.targets.values()].find(
+            (target): target is BusbarTarget =>
                 target.kind === 'BUSBAR' &&
                 target.vlId === slot.vlId &&
                 target.sectionIndex === slot.sectionIndex,
         );
-        return busbar && this.dom.getDiagramPoint(busbar.id)?.y;
     }
 
     private readonly onKeyDown = (event: KeyboardEvent): void => {
@@ -741,6 +801,7 @@ export class EditorCore {
 
     private refreshTargets(): void {
         this.cancelGesture();
+        this.clearHoverSlots();
         const { consumed, created, markers } = this.pendingCreations();
 
         const targets = this.model.collectTargets().map((target) => {

@@ -248,34 +248,43 @@ export class EditorModel {
 
         const occupied = new Set(
             this.metadata.nodes
-                .filter((node) => node.equipmentId !== undefined && node.iidmNode !== undefined)
+                .filter((node) => isEquipmentNode(node) && node.iidmNode !== undefined)
                 .map((node) => iidmKey(node.vid ?? '', node.iidmNode!)),
         );
 
         for (const node of this.metadata.nodes) {
             const vlId = node.vid ?? '';
 
-            if (node.componentType === BUSBAR_SECTION_TYPE) {
-                if (
-                    node.equipmentId &&
-                    node.iidmNode !== undefined &&
-                    node.busbarIndex !== undefined &&
-                    node.sectionIndex !== undefined
-                ) {
-                    targets.push({
-                        kind: 'BUSBAR',
-                        id: node.id,
-                        vlId,
-                        busbarSectionId: node.equipmentId,
-                        busbarIndex: node.busbarIndex,
-                        sectionIndex: node.sectionIndex,
-                        node: node.iidmNode,
-                    });
-                }
+            if (isBusBarNode(node)) {
+                targets.push({
+                    kind: 'BUSBAR',
+                    id: node.id,
+                    vlId,
+                    busbarSectionId: node.equipmentId,
+                    busbarIndex: node.busbarIndex,
+                    sectionIndex: node.sectionIndex,
+                    node: node.iidmNode,
+                });
                 continue;
             }
 
-            if (node.equipmentId) {
+            if (isHiddenNode(node)) {
+                if (node.iidmNode === undefined) continue;
+                const seen = iidmKey(vlId, node.iidmNode);
+                if (seenIidmNodes.has(seen)) continue;
+                seenIidmNodes.add(seen);
+
+                targets.push({
+                    kind: 'NODE',
+                    id: node.id,
+                    vlId,
+                    node: node.iidmNode,
+                    occupied: occupied.has(seen),
+                });
+                continue;
+            }
+
+            if (isEquipmentNode(node)) {
                 if (seenEquipments.has(node.equipmentId)) continue;
                 seenEquipments.add(node.equipmentId);
                 targets.push({
@@ -291,19 +300,6 @@ export class EditorModel {
                 continue;
             }
 
-            if (!isHiddenNode(node) || node.iidmNode === undefined) continue;
-
-            const seen = iidmKey(vlId, node.iidmNode);
-            if (seenIidmNodes.has(seen)) continue;
-            seenIidmNodes.add(seen);
-
-            targets.push({
-                kind: 'NODE',
-                id: node.id,
-                vlId,
-                node: node.iidmNode,
-                occupied: occupied.has(seen),
-            });
         }
 
         return targets;
@@ -496,6 +492,25 @@ function iidmKey(vlId: string, iidmNode: number): string {
 }
 
 function isHiddenNode(node: NodeMetadata): boolean {
-    return node.componentType === HIDDEN_NODE_TYPE && !node.equipmentId;
+    return node.componentType === HIDDEN_NODE_TYPE;
+}
+
+function isEquipmentNode(node: NodeMetadata): node is NodeMetadata & {equipmentId: string} {
+    return node.equipmentId !== undefined && !isHiddenNode(node);
+}
+
+function isBusBarNode(node: NodeMetadata): node is NodeMetadata & {
+    equipmentId: string;
+    iidmNode: number;
+    busbarIndex: number;
+    sectionIndex: number;
+} {
+    return (
+        node.componentType === BUSBAR_SECTION_TYPE &&
+        Boolean(node.equipmentId) &&
+        node.iidmNode !== undefined &&
+        node.busbarIndex !== undefined &&
+        node.sectionIndex !== undefined
+    );
 }
 

@@ -101,10 +101,6 @@ export class NetworkEditor {
         return this.core.actionsFor(target, insertion);
     }
 
-    getSelectedEquipmentId(): string | null {
-        return this.core.getSelectedEquipmentId();
-    }
-
     getSelectedEquipmentIds(): readonly string[] {
         return this.core.getSelectedEquipmentIds();
     }

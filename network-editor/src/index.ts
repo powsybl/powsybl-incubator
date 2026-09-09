@@ -3,7 +3,6 @@ export { NetworkEditor } from './core/NetworkEditor';
 export {
     PROPERTY_SCHEMAS,
     schemaFor,
-    validateValues,
     type PropertyDescriptor,
     type PropertyMode,
 } from './properties';

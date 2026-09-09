@@ -343,9 +343,10 @@ export class EditorCore {
         if (target && !availableOperations(target).includes(operation)) return undefined;
 
         const node = this.model.getNodesForEquipment(equipmentId)[0];
-        if (!node || !this.isOperationAllowed(node, operation)) {
-            return undefined;
-        }
+        if (!node) return undefined;
+
+        const type = toElementType(node.componentType);
+        if (!target && !operationsForEquipment(type).includes(operation)) return undefined;
 
         const scope =
             kind === 'bay'
@@ -355,7 +356,7 @@ export class EditorCore {
 
         return new DeleteElementCommand(
             equipmentId,
-            toElementType(node.componentType),
+            type,
             scope,
             kind,
             this.model,
@@ -369,10 +370,6 @@ export class EditorCore {
         return node && toElementType(node.componentType);
     }
 
-    private isOperationAllowed(node: NodeMetadata, operation: EditOperation): boolean {
-        return operationsForEquipment(toElementType(node.componentType)).includes(operation);
-    }
-
     getPendingChanges(): ChangeSet {
         return this.history.pending.map((command) => command.toChangeSetEntry());
     }
@@ -383,10 +380,6 @@ export class EditorCore {
 
     getTargets(): EditTarget[] {
         return [...this.targets.values()];
-    }
-
-    getSelectedEquipmentId(): string | null {
-        return this.selectedEquipmentIds[0] ?? null;
     }
 
     getSelectedEquipmentIds(): readonly string[] {
@@ -718,7 +711,7 @@ export class EditorCore {
 
     private feederAxisX(node: NodeMetadata): number | undefined {
         const x = this.dom.getDiagramX(node.id);
-        return x === undefined ? undefined : x + this.model.halfWidthOf(node.componentType);
+        return x === undefined ? undefined : x + this.model.componentSize(node.componentType).width / 2;
     }
 
     private feederNodeOf(target: EquipmentTarget): NodeMetadata | undefined {

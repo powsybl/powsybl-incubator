@@ -142,30 +142,3 @@ export function defaultsOf(schema: readonly PropertyDescriptor[]): EquipmentProp
     }
     return values;
 }
-
-export function validateValues(
-    schema: readonly PropertyDescriptor[],
-    values: EquipmentProperties,
-): string[] {
-    const invalid: string[] = [];
-
-    for (const descriptor of schema) {
-        const value = values[descriptor.key];
-
-        if (value === undefined || value === '') {
-            if (descriptor.required) invalid.push(descriptor.key);
-        } else if (descriptor.type === 'number') {
-            const numeric = Number(value);
-            if (!Number.isFinite(numeric)) {
-                invalid.push(descriptor.key);
-            } else if (descriptor.min !== undefined && numeric < descriptor.min) {
-                invalid.push(descriptor.key);
-            } else if (descriptor.max !== undefined && numeric > descriptor.max) {
-                invalid.push(descriptor.key);
-            }
-        } else if (descriptor.type === 'select' && descriptor.options) {
-            if (!descriptor.options.includes(String(value))) invalid.push(descriptor.key);
-        }
-    }
-    return invalid;
-}

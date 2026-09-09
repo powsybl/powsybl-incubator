@@ -73,10 +73,6 @@ export class EditorModel {
         return this.componentSizes.get(componentType) ?? { width: 0, height: 0 };
     }
 
-    halfWidthOf(componentType: string): number {
-        return this.componentSize(componentType).width / 2;
-    }
-
     private indexNode(node: NodeMetadata): void {
         this.nodesById.set(node.id, node);
         if (node.equipmentId) pushTo(this.nodesByEquipmentId, node.equipmentId, node);

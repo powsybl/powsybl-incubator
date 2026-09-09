@@ -216,6 +216,7 @@
     "componentType" : "NODE",
     "open" : false,
     "vlabel" : false,
+    "iidmNode" : 3,
     "labels" : [ ]
   }, {
     "id" : "idGH2",
@@ -406,6 +407,7 @@
     "componentType" : "NODE",
     "open" : false,
     "vlabel" : false,
+    "iidmNode" : 21,
     "labels" : [ ]
   }, {
     "id" : "idINTERNAL_95_S1VL2_95_LD4",
@@ -413,6 +415,7 @@
     "componentType" : "NODE",
     "open" : false,
     "vlabel" : false,
+    "iidmNode" : 17,
     "labels" : [ ]
   }, {
     "id" : "idINTERNAL_95_S1VL2_95_LD3",
@@ -420,6 +423,7 @@
     "componentType" : "NODE",
     "open" : false,
     "vlabel" : false,
+    "iidmNode" : 15,
     "labels" : [ ]
   }, {
     "id" : "idINTERNAL_95_S1VL1_95_LD1",
@@ -427,6 +431,7 @@
     "componentType" : "NODE",
     "open" : false,
     "vlabel" : false,
+    "iidmNode" : 2,
     "labels" : [ ]
   }, {
     "id" : "idS1VL2_95_TWT_95_BREAKER",
@@ -444,6 +449,7 @@
     "componentType" : "NODE",
     "open" : false,
     "vlabel" : false,
+    "iidmNode" : 13,
     "labels" : [ ]
   }, {
     "id" : "idS1VL1_95_BBS_95_TWT_95_DISCONNECTOR",
@@ -471,6 +477,7 @@
     "componentType" : "NODE",
     "open" : false,
     "vlabel" : false,
+    "iidmNode" : 1,
     "labels" : [ ]
   }, {
     "id" : "idS1VL2_95_LCC1_95_BREAKER",
@@ -644,6 +651,7 @@
     "componentType" : "NODE",
     "open" : false,
     "vlabel" : false,
+    "iidmNode" : 9,
     "labels" : [ ]
   }, {
     "id" : "idTWT",
@@ -669,6 +677,7 @@
     "componentType" : "NODE",
     "open" : false,
     "vlabel" : false,
+    "iidmNode" : 7,
     "labels" : [ ]
   }, {
     "id" : "idINTERNAL_95_S1VL2_95_16",
@@ -692,6 +701,7 @@
     "componentType" : "NODE",
     "open" : false,
     "vlabel" : false,
+    "iidmNode" : 5,
     "labels" : [ ]
   }, {
     "id" : "idINTERNAL_95_S1VL1_95_S1VL1_95_BBS_95_TWT_95_DISCONNECTOR_45_S1VL1_95_TWT_95_BREAKER",
@@ -699,6 +709,7 @@
     "componentType" : "NODE",
     "open" : false,
     "vlabel" : false,
+    "iidmNode" : 3,
     "labels" : [ ]
   }, {
     "id" : "idINTERNAL_95_S1VL2_95_GH3",
@@ -706,6 +717,7 @@
     "componentType" : "NODE",
     "open" : false,
     "vlabel" : false,
+    "iidmNode" : 11,
     "labels" : [ ]
   }, {
     "id" : "idINTERNAL_95_S1VL2_95_18",
@@ -721,6 +733,7 @@
     "componentType" : "NODE",
     "open" : false,
     "vlabel" : false,
+    "iidmNode" : 22,
     "labels" : [ ]
   }, {
     "id" : "idLD1",
@@ -802,6 +815,7 @@
     "componentType" : "NODE",
     "open" : false,
     "vlabel" : false,
+    "iidmNode" : 19,
     "labels" : [ ]
   }, {
     "id" : "idS1VL2_95_BBS2_95_VSC1_95_DISCONNECTOR",
@@ -977,6 +991,7 @@
     "componentType" : "NODE",
     "open" : false,
     "vlabel" : false,
+    "iidmNode" : 4,
     "labels" : [ ]
   }, {
     "id" : "idTWT_95_ONE",
@@ -1009,6 +1024,7 @@
     "componentType" : "NODE",
     "open" : false,
     "vlabel" : false,
+    "iidmNode" : 23,
     "labels" : [ ]
   } ],
   "wires" : [ {

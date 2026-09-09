@@ -61,47 +61,6 @@ export class EditorModel {
         for (const info of this.metadata.feederInfos ?? []) {
             this.indexFeederInfo(info);
         }
-
-        this.resolveHiddenNodes();
-    }
-
-    private resolveHiddenNodes(): void {
-        let resolvedOne = true;
-        while (resolvedOne) {
-            resolvedOne = false;
-            for (const node of this.metadata.nodes) {
-                if (node.iidmNode !== undefined || !isHiddenNode(node)) continue;
-
-                const resolved = this.intersectNeighbours(node);
-                if (resolved !== undefined) {
-                    node.iidmNode = resolved;
-                    resolvedOne = true;
-                }
-            }
-        }
-    }
-
-    private intersectNeighbours(node: NodeMetadata): number | undefined {
-        let candidates: Set<number> | undefined;
-
-        for (const wire of this.getWiresForNode(node.id)) {
-            const other = this.otherEnd(wire, node.id);
-            const ends = other ? namedNodes(other) : [];
-            if (ends.length === 0) continue;
-
-            if (candidates === undefined) {
-                candidates = new Set(ends);
-            } else {
-                const kept = new Set<number>();
-                for (const end of ends) {
-                    if (candidates.has(end)) kept.add(end);
-                }
-                candidates = kept;
-            }
-            if (candidates.size === 0) return undefined;
-        }
-
-        return candidates?.size === 1 ? [...candidates][0] : undefined;
     }
 
     private indexNode(node: NodeMetadata): void {
@@ -528,13 +487,5 @@ function iidmKey(vlId: string, iidmNode: number): string {
 
 function isHiddenNode(node: NodeMetadata): boolean {
     return node.componentType === HIDDEN_NODE_TYPE && !node.equipmentId;
-}
-
-function namedNodes(node: NodeMetadata): number[] {
-    if (node.iidmNode !== undefined) return [node.iidmNode];
-    if (node.iidmNode1 !== undefined && node.iidmNode2 !== undefined) {
-        return [node.iidmNode1, node.iidmNode2];
-    }
-    return [];
 }
 

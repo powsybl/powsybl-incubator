@@ -1,8 +1,10 @@
 package com.example.networkeditor;
 
 import com.powsybl.commons.PowsyblException;
+import com.powsybl.iidm.modification.topology.CreateFeederBayBuilder;
 import com.powsybl.iidm.modification.topology.RemoveFeederBayBuilder;
 import com.powsybl.iidm.network.*;
+import com.powsybl.iidm.network.extensions.ConnectablePosition;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -157,6 +159,7 @@ public class Service {
     public void apply(Network network, Dto.ChangeEntry change) {
         switch (change.op()) {
             case "create" -> create(network, change);
+            case "create-bay" -> createBay(network, change);
             case "update" -> update(network, change);
             default -> throw new PowsyblException("Unsupported change '" + change.op() + "'");
         }
@@ -164,68 +167,39 @@ public class Service {
 
     public void create(Network network, Dto.ChangeEntry change) {
         Map<String, Object> payload = change.payload();
+        VoltageLevel voltageLevel = requireVoltageLevel(network, requireText(payload, "vlId"));
+        requireNewId(network, change.equipmentId());
+
+        injectionAdder(voltageLevel, requireText(payload, "equipmentType"), change.equipmentId())
+                .setNode(requireInt(payload, "node"))
+                .add();
+
+        applyProperties(network.getIdentifiable(change.equipmentId()), properties(payload));
+    }
+
+    public void createBay(Network network, Dto.ChangeEntry change) {
+        Map<String, Object> payload = change.payload();
         String equipmentId = change.equipmentId();
-        String vlId = requireText(payload, "vlId");
-        int node = requireInt(payload, "node");
+        String bbsId = requireText(payload, "busbarSectionId");
 
-        VoltageLevel voltageLevel = network.getVoltageLevel(vlId);
-        if (voltageLevel == null) {
-            throw new PowsyblException("Unknown voltage level '" + vlId + "'");
-        }
-        if (network.getIdentifiable(equipmentId) != null) {
-            throw new PowsyblException("Element '" + equipmentId + "' already exists");
+        BusbarSection bbs = network.getBusbarSection(bbsId);
+        if (bbs == null) {
+            throw new PowsyblException("Unknown busbar section '" + bbsId + "'");
         }
 
-        switch (requireText(payload, "equipmentType")) {
-            case "LOAD" -> voltageLevel.newLoad()
-                    .setId(equipmentId).setNode(node)
-                    .setP0(0).setQ0(0)
-                    .add();
+        requireNewId(network, equipmentId);
 
-            case "GENERATOR" -> voltageLevel.newGenerator()
-                    .setId(equipmentId).setNode(node)
-                    .setMinP(0).setMaxP(0).setTargetP(0)
-                    .setVoltageRegulatorOn(false).setTargetQ(0)
-                    .add();
+        InjectionAdder<?, ?> adder = injectionAdder(bbs.getTerminal().getVoltageLevel(),
+                requireText(payload, "equipmentType"), equipmentId);
 
-            case "BATTERY" -> voltageLevel.newBattery()
-                    .setId(equipmentId).setNode(node)
-                    .setMinP(0).setMaxP(0).setTargetP(0).setTargetQ(0)
-                    .add();
-
-            case "SHUNT" -> voltageLevel.newShuntCompensator()
-                    .setId(equipmentId).setNode(node)
-                    .setSectionCount(0)
-                    .newLinearModel().setBPerSection(1).setMaximumSectionCount(1).add()
-                    .add();
-
-            case "STATIC_VAR_COMPENSATOR" -> voltageLevel.newStaticVarCompensator()
-                    .setId(equipmentId).setNode(node)
-                    .setBmin(0).setBmax(0)
-                    .setRegulationMode(StaticVarCompensator.RegulationMode.REACTIVE_POWER)
-                    .setRegulating(false).setReactivePowerSetpoint(0)
-                    .add();
-
-            case "VSC_CONVERTER_STATION" -> voltageLevel.newVscConverterStation()
-                    .setId(equipmentId).setNode(node)
-                    .setLossFactor(0)
-                    .setVoltageRegulatorOn(false).setReactivePowerSetpoint(0)
-                    .add();
-
-            case "LCC_CONVERTER_STATION" -> voltageLevel.newLccConverterStation()
-                    .setId(equipmentId).setNode(node)
-                    .setLossFactor(0).setPowerFactor(1)
-                    .add();
-
-            case "BOUNDARY_LINE" -> voltageLevel.newBoundaryLine()
-                    .setId(equipmentId).setNode(node)
-                    .setP0(0).setQ0(0)
-                    .setR(0).setX(0).setG(0).setB(0)
-                    .add();
-
-            default -> throw new PowsyblException(
-                    "Cannot create '" + requireText(payload, "equipmentType") + "'");
-        }
+        new CreateFeederBayBuilder()
+                .withInjectionAdder(adder)
+                .withBusOrBusbarSectionId(bbsId)
+                .withInjectionPositionOrder(requireInt(payload, "order"))
+                .withInjectionDirection(direction(requireText(payload, "direction")))
+                .withLogOrThrowIfIncorrectPositionOrder(true)
+                .build()
+                .apply(network);
 
         applyProperties(network.getIdentifiable(equipmentId), properties(payload));
     }
@@ -238,6 +212,73 @@ public class Service {
 
         applyProperties(identifiable, change.payload());
         applyConnections(identifiable, change.payload());
+    }
+
+    private InjectionAdder<?, ?> injectionAdder(VoltageLevel voltageLevel, String equipmentType, String equipmentId) {
+        return switch (equipmentType) {
+            case "LOAD" -> voltageLevel.newLoad()
+                    .setId(equipmentId)
+                    .setP0(0).setQ0(0);
+
+            case "GENERATOR" -> voltageLevel.newGenerator()
+                    .setId(equipmentId)
+                    .setMinP(0).setMaxP(0).setTargetP(0)
+                    .setVoltageRegulatorOn(false).setTargetQ(0);
+
+            case "BATTERY" -> voltageLevel.newBattery()
+                    .setId(equipmentId)
+                    .setMinP(0).setMaxP(0).setTargetP(0).setTargetQ(0);
+
+            case "SHUNT" -> voltageLevel.newShuntCompensator()
+                    .setId(equipmentId)
+                    .setSectionCount(0)
+                    .newLinearModel().setBPerSection(1).setMaximumSectionCount(1).add();
+
+            case "STATIC_VAR_COMPENSATOR" -> voltageLevel.newStaticVarCompensator()
+                    .setId(equipmentId)
+                    .setBmin(0).setBmax(0)
+                    .setRegulationMode(StaticVarCompensator.RegulationMode.REACTIVE_POWER)
+                    .setRegulating(false).setReactivePowerSetpoint(0);
+
+            case "VSC_CONVERTER_STATION" -> voltageLevel.newVscConverterStation()
+                    .setId(equipmentId)
+                    .setLossFactor(0)
+                    .setVoltageRegulatorOn(false).setReactivePowerSetpoint(0);
+
+            case "LCC_CONVERTER_STATION" -> voltageLevel.newLccConverterStation()
+                    .setId(equipmentId)
+                    .setLossFactor(0).setPowerFactor(1);
+
+            case "BOUNDARY_LINE" -> voltageLevel.newBoundaryLine()
+                    .setId(equipmentId)
+                    .setP0(0).setQ0(0)
+                    .setR(0).setX(0).setG(0).setB(0);
+
+            default -> throw new PowsyblException(
+                    "Cannot create '" + equipmentType + "'");
+        };
+    }
+
+    private static VoltageLevel requireVoltageLevel(Network network, String vlId) {
+        VoltageLevel voltageLevel = network.getVoltageLevel(vlId);
+        if (voltageLevel == null) {
+            throw new PowsyblException("Unknown voltage level '" + vlId + "'");
+        }
+        return voltageLevel;
+    }
+
+    private static void requireNewId(Network network, String equipmentId) {
+        if (network.getIdentifiable(equipmentId) != null) {
+            throw new PowsyblException("Element '" + equipmentId + "' already exists");
+        }
+    }
+
+    private static ConnectablePosition.Direction direction(String value) {
+        try {
+            return ConnectablePosition.Direction.valueOf(value);
+        } catch (IllegalArgumentException e) {
+            throw new PowsyblException("Unknown direction '" + value + "'");
+        }
     }
 
     private void applyProperties(Identifiable<?> identifiable, Map<String, Object> payload) {

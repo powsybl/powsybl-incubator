@@ -160,6 +160,7 @@ export default function App() {
                         await deleteBay(change.equipmentId)
                         break;
                     case 'create' :
+                    case 'create-bay' :
                     case 'update' :
                         await applyChange(change)
                         break;

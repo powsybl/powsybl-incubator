@@ -51,8 +51,6 @@ import {
 
 const DRAG_THRESHOLD = 10;
 
-const SLOT_PITCH = 50;
-
 type BuildableTarget = Exclude<EditTarget, { kind: 'EQUIPMENT' }>;
 
 const CREATE_OPERATIONS: Record<BuildableTarget['kind'], EditOperation> = {
@@ -259,8 +257,11 @@ export class EditorCore {
         const pending = this.pendingOrders(slot.vlId, node.id);
         if (!this.model.isOrderAvailable(slot, position.order, pending)) return false;
 
+        const axis = this.feederAxisX(node);
+        const dx = toX === undefined || axis === undefined ? 0 : toX - axis;
+
         this.history.push(
-            new UpdateBayPositionCommand(target, node, slot, position, this.dom, toX),
+            new UpdateBayPositionCommand(target, node, slot, position, this.dom, dx),
         );
         return true;
     }
@@ -641,45 +642,43 @@ export class EditorCore {
     }
 
     private baySlotCandidates(busbar: BusbarTarget, movingNodeId?: string): BaySlotCandidate[] {
-        const point = this.dom.getDiagramPoint(busbar.id);
-        if (!point) return [];
+        const span = this.dom.getDiagramSpan(busbar.id);
+        if (!span) return [];
 
-        const { x, y } = point;
         const pending = this.pendingOrders(busbar.vlId, movingNodeId);
         const columns = this.feederColumns(busbar, movingNodeId);
+        const bounds = [span.left, ...columns.map((column) => column.x), span.right];
 
-        if (columns.length === 0) {
-            const order = this.model.nextOrderForBusbar(busbar, pending);
-            return order === undefined
-                ? []
-                : [{ id: `ne-slot-${order}`, order, x: x + SLOT_PITCH, y }];
-        }
-
-        const positions = gapPositions(columns);
-        const candidates: BaySlotCandidate[] = [];
-
-        for (let gap = 0; gap < positions.length; gap += 1) {
+        return bounds.slice(1).flatMap((bound, gap) => {
             const order = this.model.orderBetween(
                 busbar,
                 columns[gap - 1]?.node.order,
                 columns[gap]?.node.order,
                 pending,
             );
-            if (order === undefined) continue;
-            candidates.push({ id: `ne-slot-${order}`, order, x: positions[gap], y });
-        }
-        return candidates;
+            if (order === undefined) return [];
+            return [{ id: `ne-slot-${order}`, order, x: (bounds[gap] + bound) / 2, y: span.y }];
+        });
     }
 
+    /** The bays of the section, on their axis, left to right. */
     private feederColumns(
         slot: BaySlot,
         excludeNodeId?: string,
     ): { node: NodeMetadata; x: number }[] {
-        return this.model.feedersInSection(slot).flatMap((node) => {
-            if (node.id === excludeNodeId) return [];
-            const x = this.dom.getDiagramX(node.id);
-            return x === undefined ? [] : [{ node, x }];
-        });
+        return this.model
+            .feedersInSection(slot)
+            .flatMap((node) => {
+                if (node.id === excludeNodeId) return [];
+                const x = this.feederAxisX(node);
+                return x === undefined ? [] : [{ node, x }];
+            })
+            .sort((a, b) => a.x - b.x);
+    }
+
+    private feederAxisX(node: NodeMetadata): number | undefined {
+        const x = this.dom.getDiagramX(node.id);
+        return x === undefined ? undefined : x + this.model.halfWidthOf(node.componentType);
     }
 
     private feederNodeOf(target: EquipmentTarget): NodeMetadata | undefined {
@@ -719,29 +718,15 @@ export class EditorCore {
         event: MouseEvent,
     ): BayInsertion | undefined {
         const busbar = targets.find((target) => target.kind === 'BUSBAR');
-        if (!busbar) return undefined;
-
         const x = this.dom.toDiagramX(event.clientX, event.clientY);
-        if (x === undefined) return undefined;
+        if (busbar?.kind !== 'BUSBAR' || x === undefined) return undefined;
 
-        const columns = this.feederColumns(busbar);
-        const gap = columns.filter((column) => column.x <= x).length;
-        const left = columns[gap - 1]?.node;
-        const right = columns[gap]?.node;
-
-        const order = this.model.orderBetween(
-            busbar,
-            left?.order,
-            right?.order,
-            this.pendingOrders(busbar.vlId),
+        const nearest = this.baySlotCandidates(busbar).reduce<BaySlotCandidate | undefined>(
+            (best, candidate) =>
+                best && Math.abs(best.x - x) <= Math.abs(candidate.x - x) ? best : candidate,
+            undefined,
         );
-        if (order === undefined) return undefined;
-
-        return {
-            order,
-            afterEquipmentId: left?.equipmentId,
-            beforeEquipmentId: right?.equipmentId,
-        };
+        return nearest && { order: nearest.order };
     }
 
     private resolveNodeAt(target: Element | null): NodeMetadata | undefined {
@@ -895,17 +880,4 @@ export class EditorCore {
             if (isSwitchNode(node)) this.dom.setSwitchState(node.id, open);
         }
     };
-}
-
-function gapPositions(columns: readonly { x: number }[]): number[] {
-    if (columns.length === 0) return [];
-
-    let pitch = SLOT_PITCH;
-    for (let i = 1; i < columns.length; i += 1) {
-        pitch = Math.min(pitch, columns[i].x - columns[i - 1].x);
-    }
-    const half = pitch / 2;
-
-    const between = columns.slice(1).map((column, i) => (columns[i].x + column.x) / 2);
-    return [columns[0].x - half, ...between, columns[columns.length - 1].x + half];
 }

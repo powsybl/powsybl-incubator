@@ -276,8 +276,6 @@ export interface CreateSpec {
 
 export interface BayInsertion {
     order: number;
-    afterEquipmentId?: string;
-    beforeEquipmentId?: string;
 }
 
 export interface TargetEvent {

@@ -36,7 +36,7 @@ export class EditorModel {
 
     private readonly properties = new Map<string, EquipmentProperties>();
 
-    private readonly componentWidths = new Map<string, number>();
+    private readonly componentSizes = new Map<string, { width: number; height: number }>();
 
     constructor(
         metadata: SLDMetadata,
@@ -65,12 +65,16 @@ export class EditorModel {
         }
 
         for (const component of this.metadata.components ?? []) {
-            this.componentWidths.set(component.type, component.size.width);
+            this.componentSizes.set(component.type, component.size);
         }
     }
 
+    componentSize(componentType: string): { width: number; height: number } {
+        return this.componentSizes.get(componentType) ?? { width: 0, height: 0 };
+    }
+
     halfWidthOf(componentType: string): number {
-        return (this.componentWidths.get(componentType) ?? 0) / 2;
+        return this.componentSize(componentType).width / 2;
     }
 
     private indexNode(node: NodeMetadata): void {

@@ -15,6 +15,7 @@ const IIDM_LINKED_CLASS = 'ne-iidm-linked';
 const IIDM_UNLINKED_CLASS = 'ne-iidm-unlinked';
 const IIDM_LABEL_CLASS = 'ne-iidm-label';
 const BAY_SLOT_LAYER_CLASS = 'ne-bay-slot-layer';
+const PENDING_LAYER_CLASS = 'ne-pending-layer';
 
 const EDITOR_STYLE = `
 
@@ -35,6 +36,12 @@ g.${PENDING_CREATE_CLASS}[id] {
 }
 g.${PENDING_CREATE_CLASS}[id]:hover rect {
     fill: #bbdefb;
+}
+g.${PENDING_CREATE_CLASS} line {
+    stroke: #1e88e5;
+    stroke-width: 1.2;
+    stroke-dasharray: 2 1.5;
+    pointer-events: none;
 }
 g.${PENDING_CREATE_CLASS} text {
     fill: #0d47a1;
@@ -125,6 +132,16 @@ export interface PendingMarkerView {
     label: string;
 }
 
+export interface PendingCreateView {
+    id: string;
+    label: string;
+    x: number;
+    y: number;
+    towards: 1 | -1;
+    withSwitch: boolean;
+    switchSize: number;
+}
+
 export interface DiagramSpan {
     left: number;
     right: number;
@@ -169,10 +186,16 @@ export class SvgDomService {
         snapshot.parent.insertBefore(snapshot.element, snapshot.nextElement);
     }
 
-    getDiagramX(nodeId: string): number | undefined {
+    getDiagramPoint(nodeId: string): { x: number; y: number } | undefined {
         const element = this.findElementById(nodeId);
         if (!(element instanceof SVGGraphicsElement)) return undefined;
-        return element.getCTM()?.e;
+
+        const matrix = element.getCTM();
+        return matrix ? { x: matrix.e, y: matrix.f } : undefined;
+    }
+
+    getDiagramX(nodeId: string): number | undefined {
+        return this.getDiagramPoint(nodeId)?.x;
     }
 
     getDiagramSpan(elementId: string): DiagramSpan | undefined {
@@ -238,13 +261,28 @@ export class SvgDomService {
         const svg = this.getSvgRoot();
         if (!svg) return;
 
-        for (const marker of svg.querySelectorAll(`g.${PENDING_CREATE_CLASS}`)) marker.remove();
+        for (const marker of svg.querySelectorAll(`g.${PENDING_CREATE_CLASS}`)) {
+            if (!marker.closest(`g.${PENDING_LAYER_CLASS}`)) marker.remove();
+        }
 
         for (const [nodeId, pending] of markers) {
             const host = this.findElementById(nodeId);
             if (!host) continue;
             pending.forEach((view, index) => host.appendChild(createPendingMarker(view, index)));
         }
+    }
+
+    setPendingStubs(views: readonly PendingCreateView[]): void {
+        const svg = this.getSvgRoot();
+        if (!svg) return;
+
+        svg.querySelector(`g.${PENDING_LAYER_CLASS}`)?.remove();
+        if (views.length === 0) return;
+
+        const layer = document.createElementNS(SVG_NS, 'g');
+        layer.setAttribute('class', PENDING_LAYER_CLASS);
+        for (const view of views) layer.appendChild(createPendingStub(view));
+        svg.appendChild(layer);
     }
 
     setIidmOverlay(diagnostics: ReadonlyMap<string, NodeDiagnostic>): void {
@@ -321,6 +359,66 @@ function createBaySlot(slot: BaySlotCandidate): SVGGElement {
 
     point.append(dot, hint);
     return point;
+}
+
+// The stub is drawn along one axis: distances run away from the anchor, `towards` gives the side.
+const STUB_LEAD = 16;
+const STUB_TAIL = 16;
+const STUB_PLAIN = 24;
+const LABEL_HEIGHT = 10;
+const LABEL_BASELINE = 7;
+
+function createPendingStub(view: PendingCreateView): SVGGElement {
+    const { label, towards, withSwitch, switchSize } = view;
+
+    const stub = document.createElementNS(SVG_NS, 'g');
+    stub.setAttribute('class', PENDING_CREATE_CLASS);
+    stub.id = view.id;
+    stub.setAttribute('transform', `translate(${view.x},${view.y})`);
+
+    if (withSwitch) {
+        stub.append(
+            stubLine(towards, 0, STUB_LEAD),
+            stubBox(towards, STUB_LEAD, STUB_LEAD + switchSize, switchSize),
+            stubLine(towards, STUB_LEAD + switchSize, STUB_LEAD + switchSize + STUB_TAIL),
+        );
+    } else {
+        stub.append(stubLine(towards, 0, STUB_PLAIN));
+    }
+
+    const from = withSwitch ? STUB_LEAD + switchSize + STUB_TAIL : STUB_PLAIN;
+    stub.append(
+        stubBox(towards, from, from + LABEL_HEIGHT, label.length * 3.4 + 8),
+        stubLabel(towards, from, label),
+    );
+    return stub;
+}
+
+function stubLine(towards: number, from: number, to: number): SVGLineElement {
+    const line = document.createElementNS(SVG_NS, 'line');
+    line.setAttribute('x1', '0');
+    line.setAttribute('x2', '0');
+    line.setAttribute('y1', String(towards * from));
+    line.setAttribute('y2', String(towards * to));
+    return line;
+}
+
+function stubBox(towards: number, from: number, to: number, width: number): SVGRectElement {
+    const box = document.createElementNS(SVG_NS, 'rect');
+    box.setAttribute('x', String(-width / 2));
+    box.setAttribute('y', String(Math.min(towards * from, towards * to)));
+    box.setAttribute('width', String(width));
+    box.setAttribute('height', String(to - from));
+    return box;
+}
+
+function stubLabel(towards: number, from: number, label: string): SVGTextElement {
+    const top = Math.min(towards * from, towards * (from + LABEL_HEIGHT));
+    const text = document.createElementNS(SVG_NS, 'text');
+    text.setAttribute('x', '0');
+    text.setAttribute('y', String(top + LABEL_BASELINE));
+    text.textContent = label;
+    return text;
 }
 
 function createPendingMarker(view: PendingMarkerView, index = 0): SVGGElement {

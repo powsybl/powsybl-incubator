@@ -17,10 +17,16 @@ import { MoveBayCommand } from './commands/MoveBayCommand';
 import { RenameCommand } from './commands/RenameCommand';
 import { UpdateBayPositionCommand } from './commands/UpdateBayPositionCommand';
 import { UpdatePropertiesCommand } from './commands/UpdatePropertiesCommand';
-import { SvgDomService, type PendingMarkerView } from '../dom/SvgDomService';
+import {
+    SvgDomService,
+    type DiagramSpan,
+    type PendingCreateView,
+    type PendingMarkerView,
+} from '../dom/SvgDomService';
 import {
     BAY_SLOT_CLASS,
     DELETABLE_TYPES,
+    NODE_COMPONENT_TYPE,
     SWITCH_TYPES,
     toElementType,
     type BayInsertion,
@@ -50,6 +56,21 @@ import {
 } from './types';
 
 const DRAG_THRESHOLD = 10;
+
+const DEFAULT_SWITCH_SIZE = 12;
+
+interface BayColumn {
+    x: number;
+    order?: number;
+}
+
+interface BayGeometry {
+    y: number;
+    columns: BayColumn[];
+    gaps: { x: number; leftOrder?: number; rightOrder?: number }[];
+}
+
+type StubShape = Omit<PendingCreateView, 'id' | 'label'>;
 
 type BuildableTarget = Exclude<EditTarget, { kind: 'EQUIPMENT' }>;
 
@@ -105,6 +126,7 @@ export class EditorCore {
         this.dom.setSelection([]);
         this.dom.setNodeTargets([]);
         this.dom.setPendingCreations(new Map());
+        this.dom.setPendingStubs([]);
         this.history.clear();
     }
 
@@ -641,37 +663,55 @@ export class EditorCore {
         this.setBayPosition(equipmentId, { order: chosen.order, direction }, chosen.x);
     }
 
-    private baySlotCandidates(busbar: BusbarTarget, movingNodeId?: string): BaySlotCandidate[] {
+    /**
+     * Where a bay can sit along the busbar: one gap midway between each pair of neighbours, the
+     * bar's own two ends counting as neighbours, each with the orders that frame it. An empty
+     * section therefore has a single gap, at the middle of the bar.
+     */
+    private bayGeometry(busbar: BusbarTarget, movingNodeId?: string): BayGeometry | undefined {
         const span = this.dom.getDiagramSpan(busbar.id);
-        if (!span) return [];
+        if (!span) return undefined;
 
-        const pending = this.pendingOrders(busbar.vlId, movingNodeId);
         const columns = this.feederColumns(busbar, movingNodeId);
+        const { claimed } = this.pendingOrders(busbar.vlId, movingNodeId);
+        for (const order of [...(claimed.get(busbar.sectionIndex) ?? [])].sort((a, b) => a - b)) {
+            insertPendingColumn(columns, order, span);
+        }
+
         const bounds = [span.left, ...columns.map((column) => column.x), span.right];
 
-        return bounds.slice(1).flatMap((bound, gap) => {
-            const order = this.model.orderBetween(
-                busbar,
-                columns[gap - 1]?.node.order,
-                columns[gap]?.node.order,
-                pending,
-            );
+        return {
+            y: span.y,
+            columns,
+            gaps: bounds.slice(1).map((bound, gap) => ({
+                x: (bounds[gap] + bound) / 2,
+                leftOrder: columns[gap - 1]?.order,
+                rightOrder: columns[gap]?.order,
+            })),
+        };
+    }
+
+    private baySlotCandidates(busbar: BusbarTarget, movingNodeId?: string): BaySlotCandidate[] {
+        const geometry = this.bayGeometry(busbar, movingNodeId);
+        if (!geometry) return [];
+
+        const pending = this.pendingOrders(busbar.vlId, movingNodeId);
+        return geometry.gaps.flatMap((gap) => {
+            const order = this.model.orderBetween(busbar, gap.leftOrder, gap.rightOrder, pending);
             if (order === undefined) return [];
-            return [{ id: `ne-slot-${order}`, order, x: (bounds[gap] + bound) / 2, y: span.y }];
+            return [{ id: `ne-slot-${order}`, order, x: gap.x, y: geometry.y }];
         });
     }
 
-    /** The bays of the section, on their axis, left to right. */
-    private feederColumns(
-        slot: BaySlot,
-        excludeNodeId?: string,
-    ): { node: NodeMetadata; x: number }[] {
+    private feederColumns(slot: BaySlot, excludeNodeId?: string): BayColumn[] {
+        const { vacated } = this.pendingOrders(slot.vlId, excludeNodeId);
+
         return this.model
             .feedersInSection(slot)
             .flatMap((node) => {
-                if (node.id === excludeNodeId) return [];
+                if (vacated.has(node.id)) return [];
                 const x = this.feederAxisX(node);
-                return x === undefined ? [] : [{ node, x }];
+                return x === undefined ? [] : [{ x, order: node.order }];
             })
             .sort((a, b) => a.x - b.x);
     }
@@ -787,7 +827,7 @@ export class EditorCore {
     private refreshTargets(): void {
         this.cancelGesture();
         this.clearHoverSlots();
-        const { consumed, created, markers } = this.pendingCreations();
+        const { consumed, created } = this.pendingScope();
 
         const targets = this.model.collectTargets().map((target) => {
             if (target.kind !== 'EQUIPMENT') return target;
@@ -803,7 +843,10 @@ export class EditorCore {
             .map((target) => target.id);
 
         this.paintTargets();
-        this.dom.setPendingCreations(markers);
+
+        const stubs = this.pendingCreateViews();
+        this.dom.setPendingStubs(stubs);
+        this.dom.setPendingCreations(this.pendingMarkers(new Set(stubs.map((stub) => stub.id))));
         this.emit('targets:changed', { targets });
     }
 
@@ -826,24 +869,107 @@ export class EditorCore {
         return byNode;
     }
 
-    private pendingCreations(): {
-        consumed: Set<string>;
-        created: Set<string>;
-        markers: Map<string, PendingMarkerView[]>;
-    } {
+    private pendingScope(): { consumed: Set<string>; created: Set<string> } {
         const consumed = new Set<string>();
         const created = new Set<string>();
-        const markers = new Map<string, PendingMarkerView[]>();
 
         for (const command of this.history.pending) {
             if (isPendingCreate(command)) created.add(command.equipmentId);
+            if (command.pendingMarker) consumed.add(command.pendingMarker.targetId);
+        }
+        return { consumed, created };
+    }
 
+    /** The labelled boxes, for every pending command the stubs do not already draw. */
+    private pendingMarkers(drawn: ReadonlySet<string>): Map<string, PendingMarkerView[]> {
+        const markers = new Map<string, PendingMarkerView[]>();
+
+        for (const command of this.history.pending) {
             const marker = command.pendingMarker;
-            if (!marker) continue;
-            consumed.add(marker.targetId);
+            if (!marker || (marker.elementId && drawn.has(marker.elementId))) continue;
             pushTo(markers, marker.nodeId, { id: marker.elementId, label: marker.label });
         }
-        return { consumed, created, markers };
+        return markers;
+    }
+
+    /**
+     * A stub for every creation that hangs off a node or a busbar, drawn where the equipment
+     * would land. Creations of another shape — a switch between two nodes — keep a plain marker.
+     */
+    private pendingCreateViews(): PendingCreateView[] {
+        const views: PendingCreateView[] = [];
+
+        for (const command of this.history.pending) {
+            if (!isPendingCreate(command)) continue;
+
+            const elementId = command.pendingMarker?.elementId;
+            const target = command.pendingMarker && this.targets.get(command.pendingMarker.targetId);
+            if (!elementId || !target) continue;
+
+            const spec = command.createSpec;
+            // A switch dropped between two nodes is no feeder: it keeps a plain marker.
+            if (SWITCH_TYPES.has(spec.type)) continue;
+
+            const stub =
+                target.kind === 'BUSBAR'
+                    ? this.bayStub(target, spec)
+                    : target.kind === 'NODE'
+                      ? this.injectionStub(target, spec)
+                      : undefined;
+            if (!stub) continue;
+
+            views.push({ ...stub, id: elementId, label: command.equipmentId });
+        }
+        return views;
+    }
+
+    /** A pending bay sits in the gap its claimed order falls into. */
+    /** A pending bay is a column like any other: the preview just reads where it landed. */
+    private bayStub(busbar: BusbarTarget, spec: CreateSpec): StubShape | undefined {
+        const geometry = spec.order === undefined ? undefined : this.bayGeometry(busbar);
+        const column = geometry?.columns.find((candidate) => candidate.order === spec.order);
+        if (!geometry || !column) return undefined;
+
+        return {
+            x: column.x,
+            y: geometry.y,
+            towards: spec.direction === 'TOP' ? -1 : 1,
+            withSwitch: true,
+            switchSize: this.switchSize(),
+        };
+    }
+
+    /** A pending injection hangs off its node, drawn away from the busbars of its voltage level. */
+    private injectionStub(target: NodeTarget, spec: CreateSpec): StubShape | undefined {
+        const node = this.model.getNodeById(target.id);
+        const point = node && this.dom.getDiagramPoint(node.id);
+        if (!node || !point) return undefined;
+
+        const size = this.model.componentSize(node.componentType);
+        const busbarY = this.busbarY(target.vlId);
+        const y = point.y + size.height / 2;
+
+        return {
+            x: point.x + size.width / 2,
+            y,
+            towards: busbarY !== undefined && y < busbarY ? -1 : 1,
+            withSwitch: spec.switchType !== undefined,
+            switchSize: this.switchSize(),
+        };
+    }
+
+    private busbarY(vlId: string): number | undefined {
+        for (const target of this.targets.values()) {
+            if (target.kind !== 'BUSBAR' || target.vlId !== vlId) continue;
+            const span = this.dom.getDiagramSpan(target.id);
+            if (span) return span.y;
+        }
+        return undefined;
+    }
+
+    /** The preview borrows the diagram's scale, never its symbols. */
+    private switchSize(): number {
+        return this.model.componentSize(NODE_COMPONENT_TYPE.BREAKER).width || DEFAULT_SWITCH_SIZE;
     }
 
     private pendingOrders(vlId: string, vacating?: string, ignore?: Command): PendingOrders {
@@ -880,4 +1006,18 @@ export class EditorCore {
             if (isSwitchNode(node)) this.dom.setSwitchState(node.id, open);
         }
     };
+}
+
+/**
+ * A pending bay takes the middle of the interval its order falls into — the very slot it was
+ * picked on. Inserted one by one, two bays of the same interval end up on either side of each
+ * other rather than on the same spot.
+ */
+function insertPendingColumn(columns: BayColumn[], order: number, span: DiagramSpan): void {
+    const after = columns.findIndex((column) => column.order !== undefined && column.order > order);
+    const index = after === -1 ? columns.length : after;
+
+    const left = columns[index - 1]?.x ?? span.left;
+    const right = columns[index]?.x ?? span.right;
+    columns.splice(index, 0, { x: (left + right) / 2, order });
 }

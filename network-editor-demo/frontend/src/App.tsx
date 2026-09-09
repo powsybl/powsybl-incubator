@@ -1,7 +1,7 @@
 import {Banner, Button, Card, Header, Loader, Select} from "@design-system-rte/react";
 import { useEffect, useRef, useState} from "react";
 import type {NetworkInfo, Sld} from "./types.ts";
-import {applyChange, deleteBay, deleteElement, getSld, getVoltageLevelIds, loadNetwork} from "./api.ts";
+import {applyChange, deleteBay, deleteElement, getSld, getVoltageLevelIds, uploadNetwork} from "./api.ts";
 import {describeTargets, menuItemsFor, NetworkEditor} from "@powsybl/network-editor";
 import type {BayInsertion, EditTarget} from "@powsybl/network-editor";
 import type {MenuItem} from "./components/Menu.tsx";
@@ -26,10 +26,12 @@ const CHANGE_LABELS: Record<ChangeOp, string> = {
 export default function App() {
 
     const container = useRef<HTMLDivElement>(null);
+    const fileInput = useRef<HTMLInputElement>(null);
 
     const [error, setError] = useState<string>("")
     const [loading, setLoading] = useState<boolean>(false)
     const [info, setInfo] = useState<NetworkInfo | null>(null)
+    const [fileName, setFileName] = useState<string>("")
     const [vlIds, setVlIds] = useState<string[] | null>(null)
     const [selectedVlId, setSelectedVlId] = useState<string | null>(null)
     const [sld, setSld] = useState<Sld | null>(null)
@@ -47,15 +49,25 @@ export default function App() {
     const [panel, setPanel] = useState<EditorAction | null>(null)
 
 
-    const load = () => {
+    const load = (file: File) => {
         setLoading(true)
-        loadNetwork("/home/leclercclm/Projects/powsybl/powsybl-incubator/network-editor-demo/data/reseau.xiidm").then(
-            async (loaded) => {
+        setError("")
+        setVlIds(null)
+        setSelectedVlId(null)
+        setSld(null)
+        setChanges([])
+        setPanel(null)
+        setMenu(null)
+
+        uploadNetwork(file).then(
+            (loaded) => {
                 setInfo(loaded)
-                console.log("Network loaded")
+                setFileName(file.name)
                 setLoading(false)
             }
         ).catch((err) => {
+            setInfo(null)
+            setFileName("")
             setError(String(err));
             setLoading(false)
         })
@@ -194,9 +206,21 @@ export default function App() {
                         <div className="card-body">
                             <h2 className="block-title">Réseau</h2>
 
+                            <input
+                                ref={fileInput}
+                                type="file"
+                                accept=".xiidm,.iidm"
+                                hidden
+                                onChange={(event) => {
+                                    const file = event.target.files?.[0]
+                                    if (file) load(file)
+                                    event.target.value = ""
+                                }}
+                            />
+
                             <Button
                                 label="Charger le réseau"
-                                onClick={() => load()}
+                                onClick={() => fileInput.current?.click()}
                                 variant="primary"
                                 disabled={loading}
                             />
@@ -213,6 +237,8 @@ export default function App() {
 
                             {info &&
                                 <dl className="infos">
+                                    <dt>Fichier</dt>
+                                    <dd>{fileName}</dd>
                                     <dt>Identifiant</dt>
                                     <dd>{info.id}</dd>
                                     <dt>Postes</dt>

@@ -5,6 +5,7 @@ import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.sld.SingleLineDiagram;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,10 +13,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.file.Path;
 import java.util.List;
@@ -50,7 +55,31 @@ public class Controller {
 
         networkState.set(network);
 
-        return new Dto.loadNetworkResponse(request.file_path(), new Dto.NetworkInfo(
+        return toResponse(request.file_path(), network);
+    }
+
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public Dto.loadNetworkResponse uploadNetwork(@RequestParam("file") MultipartFile file) {
+        if (file.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "uploaded file is empty");
+        }
+
+        String fileName = file.getOriginalFilename();
+        Network network;
+
+        try (InputStream data = file.getInputStream()) {
+            network = Network.read(fileName, data);
+        } catch (IOException | PowsyblException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "failed to read " + fileName + " : " + e.getMessage(), e);
+        }
+
+        networkState.set(network);
+
+        return toResponse(fileName, network);
+    }
+
+    private static Dto.loadNetworkResponse toResponse(String source, Network network) {
+        return new Dto.loadNetworkResponse(source, new Dto.NetworkInfo(
                 network.getId(),
                 network.getSubstationCount(),
                 network.getVoltageLevelCount()

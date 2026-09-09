@@ -7,6 +7,14 @@ export const loadNetwork = (filePath: string) =>
         .post<{ networkInfo: NetworkInfo }>('/api/network/load', { file_path: filePath })
         .then((res) => res.data.networkInfo)
 
+export const uploadNetwork = (file: File) => {
+    const formData = new FormData()
+    formData.append('file', file)
+    return axios
+        .post<{ networkInfo: NetworkInfo }>('/api/network/upload', formData)
+        .then((res) => res.data.networkInfo)
+}
+
 export const getVoltageLevelIds = () =>
     axios
         .get<string[]>('/api/network/infos/voltage_levels')

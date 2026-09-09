@@ -24,10 +24,10 @@ export class UpdateBayPositionCommand implements Command {
         slot: BaySlot,
         private readonly position: BayPosition,
         private readonly dom: SvgDomService,
-        toX?: number,
+        dx = 0,
     ) {
         this.nodeId = node.id;
-        this.dx = toX === undefined ? 0 : toX - (dom.getDiagramX(node.id) ?? toX);
+        this.dx = dx;
         this.pendingMarker = {
             targetId: feeder.id,
             nodeId: node.id,

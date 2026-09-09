@@ -125,6 +125,12 @@ export interface PendingMarkerView {
     label: string;
 }
 
+export interface DiagramSpan {
+    left: number;
+    right: number;
+    y: number;
+}
+
 export interface RemovedDomElement {
     element: Element;
     parent: Node | null;
@@ -163,15 +169,26 @@ export class SvgDomService {
         snapshot.parent.insertBefore(snapshot.element, snapshot.nextElement);
     }
 
-    getDiagramPoint(elementId: string): { x: number; y: number } | undefined {
-        const element = this.findElementById(elementId);
+    getDiagramX(nodeId: string): number | undefined {
+        const element = this.findElementById(nodeId);
         if (!(element instanceof SVGGraphicsElement)) return undefined;
-        const matrix = element.getCTM();
-        return matrix ? { x: matrix.e, y: matrix.f } : undefined;
+        return element.getCTM()?.e;
     }
 
-    getDiagramX(nodeId: string): number | undefined {
-        return this.getDiagramPoint(nodeId)?.x;
+    getDiagramSpan(elementId: string): DiagramSpan | undefined {
+        const element = this.findElementById(elementId);
+        if (!(element instanceof SVGGraphicsElement)) return undefined;
+
+        const line = element.querySelector('line');
+        const matrix = element.getCTM();
+        if (!line || !matrix) return undefined;
+
+        const start = new DOMPoint(line.x1.baseVal.value, line.y1.baseVal.value);
+        const end = new DOMPoint(line.x2.baseVal.value, line.y2.baseVal.value);
+        const from = start.matrixTransform(matrix);
+        const to = end.matrixTransform(matrix);
+
+        return { left: Math.min(from.x, to.x), right: Math.max(from.x, to.x), y: from.y };
     }
 
     toDiagramX(clientX: number, clientY: number): number | undefined {

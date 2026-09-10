@@ -8,6 +8,7 @@ import {
     type ElementType,
     type EquipmentProperties,
     type NodeMetadata,
+    type SwitchEnds,
 } from '../types';
 
 export class CreateSwitchCommand implements PendingCreateCommand {
@@ -22,7 +23,7 @@ export class CreateSwitchCommand implements PendingCreateCommand {
         private readonly node1: number,
         private readonly node2: number,
         private readonly properties: EquipmentProperties,
-        private readonly targetId: string,
+        readonly ends: SwitchEnds,
         private readonly model: EditorModel,
     ) {
         this.node = {
@@ -35,8 +36,8 @@ export class CreateSwitchCommand implements PendingCreateCommand {
             open: properties.open === true,
         };
         this.pendingMarker = {
-            targetId,
-            nodeId: targetId,
+            targetId: ends.first,
+            nodeId: ends.first,
             label: equipmentId,
             elementId: this.node.id,
         };
@@ -44,7 +45,7 @@ export class CreateSwitchCommand implements PendingCreateCommand {
 
     execute(): void {
         this.model.addNode(this.node);
-        this.model.seedProperties(this.equipmentId, this.properties);
+        this.model.replaceProperties(this.equipmentId, this.properties);
     }
 
     undo(): void {
@@ -82,7 +83,7 @@ export class CreateSwitchCommand implements PendingCreateCommand {
             this.node1,
             this.node2,
             spec.properties,
-            this.targetId,
+            this.ends,
             this.model,
         );
     }

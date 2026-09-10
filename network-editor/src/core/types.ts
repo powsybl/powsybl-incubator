@@ -121,6 +121,11 @@ export interface SwitchGesture {
 
 export type PickedSwitch = SwitchGesture & { second: SwitchEnd };
 
+export interface SwitchEnds {
+    first: string;
+    second: string;
+}
+
 export interface BayGeometry {
     y: number;
     columns: BayColumn[];
@@ -130,6 +135,17 @@ export interface BayGeometry {
 export interface BayColumn {
     x: number;
     order?: number;
+}
+
+export interface DiagramPoint {
+    x: number;
+    y: number;
+}
+
+export interface DiagramSpan {
+    left: number;
+    right: number;
+    y: number;
 }
 
 export interface BaySlotCandidate {
@@ -223,7 +239,7 @@ export interface EquipmentTarget {
     node?: number;
     order?: number;
     direction?: FeederDirection;
-    pending?: boolean;
+    claimed?: boolean;
     created?: boolean;
     createdBy?: EditOperation;
     hostNodeId?: string;

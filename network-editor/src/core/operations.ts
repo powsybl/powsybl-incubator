@@ -33,7 +33,7 @@ export function availableOperations(target: EditTarget): EditOperation[] {
 }
 
 function operationsForTarget(target: EquipmentTarget): EditOperation[] {
-    if (target.pending) return ['UPDATE_PROPERTIES'];
+    if (target.claimed) return ['UPDATE_PROPERTIES'];
 
     const operations = operationsForEquipment(target.type).filter(
         (operation) => !target.created || CREATED_OPERATIONS.has(operation),

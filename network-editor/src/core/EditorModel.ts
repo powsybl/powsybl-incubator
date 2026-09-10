@@ -1,4 +1,4 @@
-import { pushTo, removeById, removeFrom } from './utils.ts';
+import { pushTo, removeById, removeFrom } from './utils';
 import { isSwitchNode } from './operations';
 import {
     BAY_TRAVERSABLE_TYPES,
@@ -17,9 +17,9 @@ import {
     type NodeMetadata,
     type PendingOrders,
     type SLDMetadata,
+    type EquipmentProperties,
     type WireMetadata,
 } from './types';
-import type { EquipmentProperties } from './types';
 
 export class EditorModel {
     private readonly metadata: EditorMetadata;
@@ -45,7 +45,7 @@ export class EditorModel {
         this.metadata = metadata as EditorMetadata;
         this.buildIndexes();
         for (const [equipmentId, values] of Object.entries(initialProperties ?? {})) {
-            this.seedProperties(equipmentId, values);
+            this.replaceProperties(equipmentId, values);
         }
     }
 
@@ -92,7 +92,6 @@ export class EditorModel {
         return this.nodesById.get(nodeId);
     }
 
-
     resolveNodeForSvgId(svgId: string): NodeMetadata | undefined {
         const direct = this.nodesById.get(svgId);
         if (direct) return direct;
@@ -119,7 +118,7 @@ export class EditorModel {
         return this.nodesByEquipmentId.get(equipmentId) ?? [];
     }
 
-    getWiresForNode(nodeId: string): WireMetadata[] {
+    private getWiresForNode(nodeId: string): WireMetadata[] {
         return this.wiresByNode.get(nodeId) ?? [];
     }
 
@@ -214,7 +213,7 @@ export class EditorModel {
             }
         }
 
-        return {nodes: [...nodes], wires: [...wires.values()]};
+        return { nodes: [...nodes], wires: [...wires.values()] };
     }
 
     collectBay(equipmentId: string): DeleteScope {
@@ -232,77 +231,54 @@ export class EditorModel {
                 const other = this.otherEnd(wire, node.id);
                 if (!other || nodes.has(other.id)) continue;
                 if (!canTraverseNode(other)) continue;
-                if (this.isSharedFork(other, nodes)) continue;
+                if (this.isSharedWithAnotherBay(other, nodes)) continue;
 
                 nodes.set(other.id, other);
                 queue.push(other);
             }
         }
-        return {nodes: [...nodes.values()], wires: [...wires.values()]};
+        return { nodes: [...nodes.values()], wires: [...wires.values()] };
     }
 
     collectTargets(): EditTarget[] {
         const targets: EditTarget[] = [];
         const seenEquipments = new Set<string>();
         const seenIidmNodes = new Set<string>();
-
-        const occupied = new Set(
-            this.metadata.nodes
-                .filter((node) => isEquipmentNode(node) && node.iidmNode !== undefined)
-                .map((node) => iidmKey(node.vid ?? '', node.iidmNode!)),
-        );
+        const occupied = this.occupiedIidmNodes();
 
         for (const node of this.metadata.nodes) {
             const vlId = node.vid ?? '';
 
             if (isBusBarNode(node)) {
-                targets.push({
-                    kind: 'BUSBAR',
-                    id: node.id,
-                    vlId,
-                    busbarSectionId: node.equipmentId,
-                    busbarIndex: node.busbarIndex,
-                    sectionIndex: node.sectionIndex,
-                    node: node.iidmNode,
-                });
+                targets.push(busbarTarget(node, vlId));
                 continue;
             }
 
             if (isHiddenNode(node)) {
                 if (node.iidmNode === undefined) continue;
-                const seen = iidmKey(vlId, node.iidmNode);
-                if (seenIidmNodes.has(seen)) continue;
-                seenIidmNodes.add(seen);
+                const key = iidmKey(vlId, node.iidmNode);
+                if (seenIidmNodes.has(key)) continue;
+                seenIidmNodes.add(key);
 
-                targets.push({
-                    kind: 'NODE',
-                    id: node.id,
-                    vlId,
-                    node: node.iidmNode,
-                    occupied: occupied.has(seen),
-                });
+                targets.push(nodeTarget(node, vlId, occupied.has(key)));
                 continue;
             }
 
-            if (isEquipmentNode(node)) {
-                if (seenEquipments.has(node.equipmentId)) continue;
+            if (isEquipmentNode(node) && !seenEquipments.has(node.equipmentId)) {
                 seenEquipments.add(node.equipmentId);
-                targets.push({
-                    kind: 'EQUIPMENT',
-                    id: node.equipmentId,
-                    vlId,
-                    equipmentId: node.equipmentId,
-                    type: toElementType(node.componentType),
-                    node: node.iidmNode,
-                    order: node.order,
-                    direction: toDirection(node.direction),
-                });
-                continue;
+                targets.push(equipmentTarget(node, vlId));
             }
-
         }
 
         return targets;
+    }
+
+    private occupiedIidmNodes(): Set<string> {
+        return new Set(
+            this.metadata.nodes
+                .filter((node) => isEquipmentNode(node) && node.iidmNode !== undefined)
+                .map((node) => iidmKey(node.vid ?? '', node.iidmNode!)),
+        );
     }
 
     hasSwitchBetween(vlId: string, a: number, b: number): boolean {
@@ -316,7 +292,7 @@ export class EditorModel {
         );
     }
 
-    private isSharedFork(
+    private isSharedWithAnotherBay(
         node: NodeMetadata,
         bayNodes: ReadonlyMap<string, NodeMetadata>,
     ): boolean {
@@ -427,10 +403,15 @@ export class EditorModel {
         return orders;
     }
 
+    busbarNodes(vlId: string): NodeMetadata[] {
+        return this.metadata.nodes.filter(
+            (node) => node.componentType === BUSBAR_SECTION_TYPE && node.vid === vlId,
+        );
+    }
+
     private feedersBySection(vlId: string): Map<number, NodeMetadata[]> {
         const busbars = new Map<number, NodeMetadata[]>();
-        for (const node of this.metadata.nodes) {
-            if (node.componentType !== BUSBAR_SECTION_TYPE || node.vid !== vlId) continue;
+        for (const node of this.busbarNodes(vlId)) {
             if (node.sectionIndex !== undefined) pushTo(busbars, node.sectionIndex, node);
         }
 
@@ -450,7 +431,7 @@ export class EditorModel {
         return { ...this.properties.get(equipmentId) };
     }
 
-    seedProperties(equipmentId: string, values: EquipmentProperties): void {
+    replaceProperties(equipmentId: string, values: EquipmentProperties): void {
         this.properties.set(equipmentId, { ...values });
         this.updateSwitchMetadata(equipmentId, values.open);
     }
@@ -459,7 +440,7 @@ export class EditorModel {
         this.properties.delete(equipmentId);
     }
 
-    setProperties(equipmentId: string, values: EquipmentProperties): void {
+    mergeProperties(equipmentId: string, values: EquipmentProperties): void {
         const merged: EquipmentProperties = {
             ...this.properties.get(equipmentId),
             ...values,
@@ -471,7 +452,6 @@ export class EditorModel {
         this.updateSwitchMetadata(equipmentId, merged.open);
     }
 
-
     private updateSwitchMetadata(
         equipmentId: string,
         open: EquipmentProperties[string] | undefined,
@@ -481,6 +461,42 @@ export class EditorModel {
             if (isSwitchNode(node)) node.open = open;
         }
     }
+}
+
+type BusbarNode = NodeMetadata & {
+    equipmentId: string;
+    iidmNode: number;
+    busbarIndex: number;
+    sectionIndex: number;
+};
+
+function busbarTarget(node: BusbarNode, vlId: string): EditTarget {
+    return {
+        kind: 'BUSBAR',
+        id: node.id,
+        vlId,
+        busbarSectionId: node.equipmentId,
+        busbarIndex: node.busbarIndex,
+        sectionIndex: node.sectionIndex,
+        node: node.iidmNode,
+    };
+}
+
+function nodeTarget(node: NodeMetadata, vlId: string, occupied: boolean): EditTarget {
+    return { kind: 'NODE', id: node.id, vlId, node: node.iidmNode!, occupied };
+}
+
+function equipmentTarget(node: NodeMetadata & { equipmentId: string }, vlId: string): EditTarget {
+    return {
+        kind: 'EQUIPMENT',
+        id: node.equipmentId,
+        vlId,
+        equipmentId: node.equipmentId,
+        type: toElementType(node.componentType),
+        node: node.iidmNode,
+        order: node.order,
+        direction: toDirection(node.direction),
+    };
 }
 
 function canTraverseNode(node: NodeMetadata): boolean {
@@ -495,16 +511,11 @@ function isHiddenNode(node: NodeMetadata): boolean {
     return node.componentType === HIDDEN_NODE_TYPE;
 }
 
-function isEquipmentNode(node: NodeMetadata): node is NodeMetadata & {equipmentId: string} {
+function isEquipmentNode(node: NodeMetadata): node is NodeMetadata & { equipmentId: string } {
     return node.equipmentId !== undefined && !isHiddenNode(node);
 }
 
-function isBusBarNode(node: NodeMetadata): node is NodeMetadata & {
-    equipmentId: string;
-    iidmNode: number;
-    busbarIndex: number;
-    sectionIndex: number;
-} {
+function isBusBarNode(node: NodeMetadata): node is BusbarNode {
     return (
         node.componentType === BUSBAR_SECTION_TYPE &&
         Boolean(node.equipmentId) &&

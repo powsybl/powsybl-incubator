@@ -55,7 +55,7 @@ export class CreateCommand implements PendingCreateCommand {
 
     execute(): void {
         this.model.addNode(this.node);
-        this.model.seedProperties(this.equipmentId, this.properties);
+        this.model.replaceProperties(this.equipmentId, this.properties);
     }
 
     undo(): void {

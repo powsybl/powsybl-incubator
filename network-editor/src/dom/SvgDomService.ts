@@ -1,10 +1,10 @@
 import {
     BAY_SLOT_CLASS,
-    LINK_END_CLASS,
-    LINK_START_CLASS,
     NODE_TARGET_CLASS,
     PENDING_CREATE_CLASS,
     SELECTED_CLASS,
+    SWITCH_END_CLASS,
+    SWITCH_START_CLASS,
     type BaySlotCandidate,
     type NodeDiagnostic,
 } from '../core/types';
@@ -71,14 +71,14 @@ text.${IIDM_LABEL_CLASS} {
 }
 
 .sld-node.${NODE_TARGET_CLASS},
-.sld-node.${LINK_END_CLASS},
-.sld-node.${LINK_START_CLASS} {
+.sld-node.${SWITCH_END_CLASS},
+.sld-node.${SWITCH_START_CLASS} {
     visibility: visible;
     cursor: pointer;
 }
 .sld-node.${NODE_TARGET_CLASS} circle,
-.sld-node.${LINK_END_CLASS} circle,
-.sld-node.${LINK_START_CLASS} circle {
+.sld-node.${SWITCH_END_CLASS} circle,
+.sld-node.${SWITCH_START_CLASS} circle {
     stroke: #ffffff;
     stroke-width: 1.5;
     vector-effect: non-scaling-stroke;
@@ -89,17 +89,17 @@ text.${IIDM_LABEL_CLASS} {
 .sld-node.${NODE_TARGET_CLASS}:hover {
     fill: #0d47a1;
 }
-.sld-node.${LINK_END_CLASS} {
+.sld-node.${SWITCH_END_CLASS} {
     fill: #f9a825;
 }
-.sld-node.${LINK_END_CLASS}:hover {
+.sld-node.${SWITCH_END_CLASS}:hover {
     fill: #ef6c00;
 }
-.sld-node.${LINK_START_CLASS} {
+.sld-node.${SWITCH_START_CLASS} {
     fill: #ef6c00;
     cursor: default;
 }
-.${LINK_END_CLASS} .sld-busbar-section {
+.${SWITCH_END_CLASS} .sld-busbar-section {
     stroke: #f9a825;
     stroke-width: 3;
     cursor: pointer;
@@ -227,9 +227,9 @@ export class SvgDomService {
         this.mark(NODE_TARGET_CLASS, targetIds);
     }
 
-    setLinkEnds(firstId: string | null, candidateIds: readonly string[]): void {
-        this.mark(LINK_END_CLASS, candidateIds);
-        this.mark(LINK_START_CLASS, firstId ? [firstId] : []);
+    setSwitchEnds(firstId: string | null, candidateIds: readonly string[]): void {
+        this.mark(SWITCH_END_CLASS, candidateIds);
+        this.mark(SWITCH_START_CLASS, firstId ? [firstId] : []);
     }
 
     setBaySlots(slots: readonly BaySlotCandidate[]): void {

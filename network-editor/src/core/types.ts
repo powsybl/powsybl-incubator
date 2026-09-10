@@ -69,9 +69,9 @@ export const NODE_TARGET_CLASS = 'ne-node-target';
 
 export const PENDING_CREATE_CLASS = 'ne-pending-create';
 
-export const LINK_START_CLASS = 'ne-link-start';
+export const SWITCH_START_CLASS = 'ne-switch-start';
 
-export const LINK_END_CLASS = 'ne-link-end';
+export const SWITCH_END_CLASS = 'ne-switch-end';
 
 export const BAY_SLOT_CLASS = 'ne-bay-slot';
 
@@ -110,12 +110,26 @@ export function toDirection(direction: string | undefined): FeederDirection | un
     return direction === 'TOP' || direction === 'BOTTOM' ? direction : undefined;
 }
 
-export type LinkEnd = NodeTarget | BusbarTarget;
+export type SwitchEnd = NodeTarget | BusbarTarget;
 
-export interface LinkGesture {
+export interface SwitchGesture {
     first: NodeTarget;
-    candidates: readonly LinkEnd[];
-    spec: CreateSpec;
+    candidates: readonly SwitchEnd[];
+    type: ElementType;
+    second?: SwitchEnd;
+}
+
+export type PickedSwitch = SwitchGesture & { second: SwitchEnd };
+
+export interface BayGeometry {
+    y: number;
+    columns: BayColumn[];
+    gaps: { x: number; leftOrder?: number; rightOrder?: number }[];
+}
+
+export interface BayColumn {
+    x: number;
+    order?: number;
 }
 
 export interface BaySlotCandidate {
@@ -133,7 +147,7 @@ export interface BayMoveGesture {
 }
 
 export type Gesture =
-    | ({ kind: 'LINK' } & LinkGesture)
+    | ({ kind: 'SWITCH' } & SwitchGesture)
     | ({ kind: 'BAY_MOVE' } & BayMoveGesture);
 
 export interface NodeMetadata {

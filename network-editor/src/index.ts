@@ -23,11 +23,11 @@ export {
 
 export {
     BAY_SLOT_CLASS,
-    LINK_END_CLASS,
-    LINK_START_CLASS,
     NODE_TARGET_CLASS,
     PENDING_CREATE_CLASS,
     SELECTED_CLASS,
+    SWITCH_END_CLASS,
+    SWITCH_START_CLASS,
 } from './core/types';
 
 export type {
@@ -48,11 +48,11 @@ export type {
     BaySlotCandidate,
     Gesture,
     EquipmentTarget,
-    LinkEnd,
-    LinkGesture,
     NodeTarget,
     SelectedElement,
     SLDMetadata,
+    SwitchEnd,
+    SwitchGesture,
     TargetEvent,
     ViewerCallbacks,
 } from './core/types';

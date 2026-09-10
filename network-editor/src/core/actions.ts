@@ -14,6 +14,7 @@ import {
     type ElementType,
     type EquipmentProperties,
     type EquipmentTarget,
+    type PickedSwitch,
 } from './types';
 
 export type ActionSubject =
@@ -42,7 +43,8 @@ export interface ActionHost {
     moveDestinations(equipmentId: string): BusbarTarget[];
     moveFeederBay(equipmentId: string, busbarTargetId: string): boolean;
     renameEquipment(equipmentId: string, newId: string): boolean;
-    beginLink(targetId: string, spec: CreateSpec): boolean;
+    beginSwitch(targetId: string, type: ElementType): boolean;
+    createSwitch(spec: CreateSpec): boolean;
     beginBayMove(equipmentId: string): boolean;
     createSwitchedInjection(targetId: string, spec: CreateSpec): boolean;
     getBayPosition(equipmentId: string): BayPosition | undefined;
@@ -129,6 +131,18 @@ function createAction(
     type: ElementType,
     insertion?: BayInsertion,
 ): EditorAction {
+    if (operation === 'CREATE_SWITCH' && target.kind === 'NODE') {
+        return {
+            id: `${id(target, operation)}:${type}`,
+            operation,
+            subject: { kind: 'TYPE', type },
+            enabled: true,
+            form: [],
+            initial: {},
+            run: () => host.beginSwitch(target.id, type),
+        };
+    }
+
     const onBusbar = target.kind === 'BUSBAR';
     const behindSwitch = operation === 'CREATE_SWITCHED_INJECTION';
     const form = createForm(type, onBusbar, behindSwitch);
@@ -151,13 +165,29 @@ function createAction(
         run: (values = {}) => {
             const spec = specFromValues(type, values);
             if (!spec) return false;
-            if (operation === 'CREATE_SWITCH' && target.kind === 'NODE') {
-                return host.beginLink(target.id, spec);
-            }
             if (behindSwitch && target.kind === 'NODE') {
                 return host.createSwitchedInjection(target.id, spec);
             }
             return host.create(target.id, spec);
+        },
+    };
+}
+
+export function switchAction(host: ActionHost, picked: PickedSwitch): EditorAction {
+    const form = createForm(picked.type, false, false);
+    const initial = defaultsOf(form);
+    initial.equipmentId = 'NEW_' + picked.type;
+
+    return {
+        id: `${picked.first.id}:CREATE_SWITCH:${picked.second.id}`,
+        operation: 'CREATE_SWITCH',
+        subject: { kind: 'TYPE', type: picked.type },
+        enabled: true,
+        form,
+        initial,
+        run: (values = {}) => {
+            const spec = specFromValues(picked.type, values);
+            return spec ? host.createSwitch(spec) : false;
         },
     };
 }

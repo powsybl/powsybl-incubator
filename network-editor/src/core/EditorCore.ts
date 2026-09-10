@@ -1,5 +1,5 @@
 import { EditorModel } from './EditorModel';
-import { buildActions, type EditorAction } from './actions';
+import { buildActions, switchAction, type EditorAction } from './actions';
 import {
     availableOperations,
     creatableTypesFor,
@@ -10,7 +10,7 @@ import { pushTo } from './utils.ts';
 import { CommandStack } from './commands/CommandStack';
 import { isPendingCreate, type Command, type PendingCreateCommand } from './commands/Command';
 import { CreateCommand } from './commands/CreateCommand';
-import { CreateLinkCommand } from './commands/CreateLinkCommand';
+import { CreateSwitchCommand } from './commands/CreateSwitchCommand';
 import { CreateSwitchedInjectionCommand } from './commands/CreateSwitchedInjectionCommand';
 import { DeleteElementCommand } from './commands/DeleteElementCommand';
 import { MoveBayCommand } from './commands/MoveBayCommand';
@@ -29,6 +29,8 @@ import {
     NODE_COMPONENT_TYPE,
     SWITCH_TYPES,
     toElementType,
+    type BayColumn,
+    type BayGeometry,
     type BayInsertion,
     type BayMoveGesture,
     type BayPosition,
@@ -47,28 +49,18 @@ import {
     type EditorEventListener,
     type FeederDirection,
     type Gesture,
-    type LinkEnd,
-    type LinkGesture,
     type NodeMetadata,
     type NodeTarget,
     type PendingOrders,
+    type PickedSwitch,
+    type SwitchEnd,
+    type SwitchGesture,
     type TargetEvent,
 } from './types';
 
 const DRAG_THRESHOLD = 10;
 
 const DEFAULT_SWITCH_SIZE = 12;
-
-interface BayColumn {
-    x: number;
-    order?: number;
-}
-
-interface BayGeometry {
-    y: number;
-    columns: BayColumn[];
-    gaps: { x: number; leftOrder?: number; rightOrder?: number }[];
-}
 
 type StubShape = Omit<PendingCreateView, 'id' | 'label'>;
 
@@ -250,7 +242,6 @@ export class EditorCore {
         return buildActions(this, target, insertion);
     }
 
-    /** The order a new bay would take here — undefined when the component abstains. */
     proposedOrder(target: BusbarTarget, insertion?: BayInsertion): number | undefined {
         return (
             insertion?.order ??
@@ -413,7 +404,7 @@ export class EditorCore {
         if (moved > DRAG_THRESHOLD) return;
 
         if (this.gesture) {
-            this.completeGesture(event);
+            if (!this.pickedSwitch()) this.completeGesture(event);
             return;
         }
 
@@ -498,17 +489,49 @@ export class EditorCore {
         });
     }
 
-    beginLink(targetId: string, spec: CreateSpec): boolean {
+    beginSwitch(targetId: string, type: ElementType): boolean {
         const first = this.targets.get(targetId);
         if (first?.kind !== 'NODE') return false;
-        if (!creatableTypesFor('CREATE_SWITCH').has(spec.type)) return false;
+        if (!creatableTypesFor('CREATE_SWITCH').has(type)) return false;
         if (!availableOperations(first).includes('CREATE_SWITCH')) return false;
-        if (this.isExistingEquipmentId(spec.provisionalId)) return false;
 
-        const candidates = this.linkCandidates(first);
+        const candidates = this.switchEnds(first);
         if (candidates.length === 0) return false;
 
-        return this.arm({ kind: 'LINK', first, candidates, spec });
+        return this.arm({ kind: 'SWITCH', first, candidates, type });
+    }
+
+    switchAction(): EditorAction | null {
+        const picked = this.pickedSwitch();
+        return picked && switchAction(this, picked);
+    }
+
+    createSwitch(spec: CreateSpec): boolean {
+        const picked = this.pickedSwitch();
+        if (!picked) return false;
+        if (this.isExistingEquipmentId(spec.provisionalId)) return false;
+
+        const { first, second } = picked;
+        this.cancelGesture();
+        this.history.push(
+            new CreateSwitchCommand(
+                spec.provisionalId,
+                picked.type,
+                first.vlId,
+                first.node,
+                second.node,
+                spec.properties,
+                first.id,
+                this.model,
+            ),
+        );
+        return true;
+    }
+
+    private pickedSwitch(): PickedSwitch | null {
+        const gesture = this.gesture;
+        if (gesture?.kind !== 'SWITCH' || !gesture.second) return null;
+        return { ...gesture, second: gesture.second };
     }
 
     createSwitchedInjection(targetId: string, spec: CreateSpec): boolean {
@@ -604,9 +627,9 @@ export class EditorCore {
         return true;
     }
 
-    private linkCandidates(first: NodeTarget): LinkEnd[] {
+    private switchEnds(first: NodeTarget): SwitchEnd[] {
         const seen = new Set<number>();
-        return [...this.targets.values()].filter((target): target is LinkEnd => {
+        return [...this.targets.values()].filter((target): target is SwitchEnd => {
             if (target.kind !== 'NODE' && target.kind !== 'BUSBAR') return false;
             if (target.vlId !== first.vlId || target.node === first.node) return false;
             if (seen.has(target.node)) return false;
@@ -621,30 +644,23 @@ export class EditorCore {
         if (!gesture) return;
 
         const target = event.target as Element | null;
-        this.cancelGesture();
 
-        if (gesture.kind === 'LINK') this.createLink(gesture, this.resolveNodeAt(target));
-        else this.moveBay(gesture, target);
+        if (gesture.kind === 'SWITCH') {
+            this.pickSwitchEnd(gesture, this.resolveNodeAt(target));
+            return;
+        }
+
+        this.cancelGesture();
+        this.moveBay(gesture, target);
     }
 
-    private createLink(link: LinkGesture, node: NodeMetadata | undefined): void {
+    /** Second click: keep the far end and let the host ask for the properties. */
+    private pickSwitchEnd(gesture: SwitchGesture, node: NodeMetadata | undefined): void {
         const clicked = new Set(this.targetsAt(node).map((target) => target.id));
-        const second = link.candidates.find((end) => clicked.has(end.id));
+        const second = gesture.candidates.find((end) => clicked.has(end.id));
         if (!second) return;
 
-        const { first, spec } = link;
-        this.history.push(
-            new CreateLinkCommand(
-                spec.provisionalId,
-                spec.type,
-                first.vlId,
-                first.node,
-                second.node,
-                spec.properties,
-                first.id,
-                this.model,
-            ),
-        );
+        this.arm({ ...gesture, kind: 'SWITCH', second });
     }
 
     private moveBay(bayMove: BayMoveGesture, target: Element | null): void {
@@ -725,11 +741,13 @@ export class EditorCore {
 
     private paintTargets(): void {
         const gesture = this.gesture;
-        const link = gesture?.kind === 'LINK' ? gesture : undefined;
+        const newSwitch = gesture?.kind === 'SWITCH' ? gesture : undefined;
         const bayMove = gesture?.kind === 'BAY_MOVE' ? gesture : undefined;
 
+        const ends = newSwitch?.second ? [newSwitch.second] : (newSwitch?.candidates ?? []);
+
         this.dom.setNodeTargets(gesture ? [] : this.nodeTargetIds);
-        this.dom.setLinkEnds(link?.first.id ?? null, link?.candidates.map((end) => end.id) ?? []);
+        this.dom.setSwitchEnds(newSwitch?.first.id ?? null, ends.map((end) => end.id));
         this.dom.setBaySlots(bayMove?.candidates ?? this.hoverSlots);
     }
 

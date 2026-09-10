@@ -101,6 +101,10 @@ export class NetworkEditor {
         return this.core.actionsFor(target, insertion);
     }
 
+    switchAction(): EditorAction | null {
+        return this.core.switchAction();
+    }
+
     getSelectedEquipmentIds(): readonly string[] {
         return this.core.getSelectedEquipmentIds();
     }

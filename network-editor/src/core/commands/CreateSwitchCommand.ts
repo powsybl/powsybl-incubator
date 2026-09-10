@@ -10,10 +10,9 @@ import {
     type NodeMetadata,
 } from '../types';
 
-export class CreateLinkCommand implements PendingCreateCommand {
+export class CreateSwitchCommand implements PendingCreateCommand {
     readonly pendingMarker: { targetId: string; nodeId: string; label: string; elementId: string };
 
-    /** Both IIDM ends are known, so the model can already tell this pair is taken. */
     private readonly node: NodeMetadata;
 
     constructor(
@@ -75,10 +74,10 @@ export class CreateLinkCommand implements PendingCreateCommand {
         };
     }
 
-    withSpec(spec: CreateSpec): CreateLinkCommand {
-        return new CreateLinkCommand(
+    withSpec(spec: CreateSpec): CreateSwitchCommand {
+        return new CreateSwitchCommand(
             spec.provisionalId,
-            this.type, // the equipment type stays put: changing it means cancel and recreate
+            this.type,
             this.vlId,
             this.node1,
             this.node2,

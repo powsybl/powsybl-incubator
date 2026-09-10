@@ -160,6 +160,7 @@ public class Service {
         switch (change.op()) {
             case "create" -> create(network, change);
             case "create-bay" -> createBay(network, change);
+            case "create-busbar" -> createBusbar(network, change);
             case "update" -> update(network, change);
             default -> throw new PowsyblException("Unsupported change '" + change.op() + "'");
         }
@@ -214,6 +215,22 @@ public class Service {
         applyConnections(identifiable, change.payload());
     }
 
+    public void createBusbar(Network network, Dto.ChangeEntry change) {
+
+        Map<String, Object> payload = change.payload();
+        VoltageLevel voltageLevel = requireVoltageLevel(network, requireText(payload,"vlId"));
+        requireNewId(network, change.equipmentId());
+
+        voltageLevel.getNodeBreakerView().newBusbarSection()
+                .setId(change.equipmentId())
+                .setNode(voltageLevel.getNodeBreakerView().getMaximumNodeIndex() + 1)
+                .add();
+
+        applyProperties(network.getIdentifiable(change.equipmentId()), properties(change.payload()));
+
+    }
+
+    //HELPERS
     private InjectionAdder<?, ?> injectionAdder(VoltageLevel voltageLevel, String equipmentType, String equipmentId) {
         return switch (equipmentType) {
             case "LOAD" -> voltageLevel.newLoad()

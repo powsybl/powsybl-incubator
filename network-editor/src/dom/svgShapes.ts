@@ -22,7 +22,6 @@ export interface PendingBadgeView {
     label: string;
 }
 
-/** A feeder hangs off one anchor and runs away from it, above or below. */
 export interface FeederShape {
     x: number;
     y: number;

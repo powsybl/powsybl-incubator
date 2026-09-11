@@ -1,11 +1,6 @@
 import { EditorModel } from './EditorModel';
 import { buildActions, switchAction, type EditorAction } from './actions';
-import {
-    availableOperations,
-    creatableTypesFor,
-    isSwitchNode,
-    operationsForEquipment,
-} from './operations';
+import { availableOperations, creatableTypesFor, isSwitchNode } from './operations';
 import { pushTo } from './utils';
 import { CommandStack } from './commands/CommandStack';
 import { isPendingCreate, type Command, type PendingCreateCommand } from './commands/Command';
@@ -26,6 +21,7 @@ import type {
 } from '../dom/svgShapes';
 import {
     BAY_SLOT_CLASS,
+    DELETABLE_BAY_TYPES,
     DELETABLE_TYPES,
     NODE_COMPONENT_TYPE,
     SWITCH_TYPES,
@@ -64,13 +60,6 @@ import {
 const DRAG_THRESHOLD = 10;
 
 const DEFAULT_SWITCH_SIZE = 12;
-
-type BuildableTarget = Exclude<EditTarget, { kind: 'EQUIPMENT' }>;
-
-const CREATE_OPERATIONS: Record<BuildableTarget['kind'], EditOperation> = {
-    NODE: 'CREATE_INJECTION',
-    BUSBAR: 'CREATE_FEEDER_BAY',
-};
 
 export class EditorCore {
     private destroyed = false;
@@ -135,13 +124,15 @@ export class EditorCore {
         return this.deleteElements([equipmentId], 'bay');
     }
 
-    create(targetId: string, spec: CreateSpec): boolean {
+    create(targetId: string, operation: EditOperation, spec: CreateSpec): boolean {
         const target = this.targets.get(targetId);
         if (!target || target.kind === 'EQUIPMENT') return false;
 
-        const operation = CREATE_OPERATIONS[target.kind];
         if (!creatableTypesFor(operation).has(spec.type)) return false;
         if (!availableOperations(target).includes(operation)) return false;
+
+        // TODO
+        if (operation === 'CREATE_BUSBAR') return false;
 
         let bay: { order: number; direction: FeederDirection } | undefined;
 
@@ -340,7 +331,8 @@ export class EditorCore {
         if (!node) return undefined;
 
         const type = toElementType(node.componentType);
-        if (!target && !operationsForEquipment(type).includes(operation)) return undefined;
+        const deletable = kind === 'bay' ? DELETABLE_BAY_TYPES : DELETABLE_TYPES;
+        if (!target && !deletable.has(type)) return undefined;
 
         const scope =
             kind === 'bay'
@@ -964,7 +956,6 @@ export class EditorCore {
         return target.kind === 'NODE' ? this.nodePoint(target) : undefined;
     }
 
-    /** The centre of a node's symbol, where a preview starts. */
     private nodePoint(target: NodeTarget): DiagramPoint | undefined {
         const node = this.model.getNodeById(target.id);
         const point = node && this.dom.getDiagramPoint(node.id);

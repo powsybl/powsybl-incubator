@@ -1,29 +1,12 @@
 import type { ActionSubject, EditorAction } from './core/actions';
+import { OPERATIONS } from './core/operations';
 import type { BayInsertion, EditOperation, EditTarget } from './core/types';
-
-export const ACTION_LABELS: Record<EditOperation, string> = {
-    CREATE_INJECTION: 'Add injection',
-    CREATE_SWITCH: 'Add a switch',
-    CREATE_FEEDER_BAY: 'Create a feeder bay',
-    CREATE_COUPLING: 'Create a coupling',
-    DELETE: 'Delete',
-    DELETE_BAY: 'Delete feeder bay',
-    UPDATE_PROPERTIES: 'Properties',
-    UPDATE_BAY_POSITION: 'Change bay position',
-    FLIP_BAY_DIRECTION: 'Flip bay direction',
-    MOVE_BAY: 'Move feeder bay',
-    RENAME: 'Rename',
-    CREATE_SWITCHED_INJECTION: 'Add behind a switch',
-};
-
-const DANGEROUS: ReadonlySet<EditOperation> = new Set<EditOperation>(['DELETE', 'DELETE_BAY']);
 
 export interface ActionMenuItem {
     action: EditorAction;
     operation: EditOperation;
     subject?: ActionSubject;
     label: string;
-    enabled: boolean;
     danger: boolean;
     needsForm: boolean;
 }
@@ -39,8 +22,7 @@ export interface MenuSubjects {
 }
 
 export function actionLabel(action: EditorAction): string {
-    const base = ACTION_LABELS[action.operation];
-    if (!action.enabled) return `${base} — not implemented`;
+    const base = OPERATIONS[action.operation].label;
 
     switch (action.subject?.kind) {
         case 'TYPE':
@@ -89,8 +71,7 @@ export function menuItemsFor(source: ActionSource, subjects: MenuSubjects): Acti
             operation: action.operation,
             subject: action.subject,
             label: actionLabel(action),
-            enabled: action.enabled,
-            danger: DANGEROUS.has(action.operation),
+            danger: OPERATIONS[action.operation].danger ?? false,
             needsForm: action.form.length > 0,
         }));
 }

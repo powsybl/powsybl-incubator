@@ -61,7 +61,6 @@ export class DeleteElementCommand implements Command {
         }
         this.domSnapshots = [];
 
-        // Metadata: re-add the nodes, then their wires and feeder infos.
         for (const node of this.nodeMetas) this.model.addNode(node);
         for (const wire of this.wireMetas) this.model.addWire(wire);
         for (const info of this.feederInfoMetas) this.model.addFeederInfo(info);

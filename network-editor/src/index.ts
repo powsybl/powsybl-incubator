@@ -10,7 +10,6 @@ export {
 export type { ActionSubject, EditorAction } from './core/actions';
 
 export {
-    ACTION_LABELS,
     actionFor,
     actionLabel,
     describeTarget,
@@ -20,6 +19,8 @@ export {
     type ActionSource,
     type MenuSubjects,
 } from './menu';
+
+export { OPERATIONS, type OperationSpec } from './core/operations';
 
 export {
     BAY_SLOT_CLASS,

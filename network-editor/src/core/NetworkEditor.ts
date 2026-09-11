@@ -72,7 +72,6 @@ export class NetworkEditor {
         return this.core.getPendingChanges();
     }
 
-    /** To be called once the backend applied them and a fresh diagram is loaded. */
     clearPendingChanges(): void {
         this.core.clearPendingChanges();
     }
@@ -94,9 +93,7 @@ export class NetworkEditor {
         this.core.cancelGesture();
     }
 
-    /**
-     * Every entry a host can put in a menu for this target
-     */
+
     actionsFor(target: EditTarget, insertion?: BayInsertion): EditorAction[] {
         return this.core.actionsFor(target, insertion);
     }

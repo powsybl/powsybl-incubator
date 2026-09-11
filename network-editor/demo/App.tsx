@@ -72,7 +72,6 @@ export function App() {
         editor && menu
             ? menuItemsFor(editor, menu).map((item) => ({
                   label: item.label,
-                  enabled: item.enabled,
                   danger: item.danger,
                   onClick: () => (item.needsForm ? setPanel(item.action) : item.action.run()),
               }))

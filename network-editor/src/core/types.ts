@@ -41,6 +41,10 @@ export const INJECTION_TYPES: ReadonlySet<ElementType> = new Set<ElementType>([
     'BOUNDARY_LINE',
 ]);
 
+export const BUSBAR_TYPES: ReadonlySet<ElementType> = new Set<ElementType>([
+    'BUS',
+]);
+
 export const BRANCH_TYPES: ReadonlySet<ElementType> = new Set<ElementType>([
     'LINE',
     'TWO_WINDINGS_TRANSFORMER',
@@ -252,7 +256,7 @@ export type EditOperation =
     | 'CREATE_SWITCH'
     | 'CREATE_SWITCHED_INJECTION'
     | 'CREATE_FEEDER_BAY'
-    | 'CREATE_COUPLING'
+    | 'CREATE_BUSBAR'
     | 'DELETE'
     | 'DELETE_BAY'
     | 'UPDATE_PROPERTIES'
@@ -260,20 +264,6 @@ export type EditOperation =
     | 'FLIP_BAY_DIRECTION'
     | 'MOVE_BAY'
     | 'RENAME';
-
-export const IMPLEMENTED_OPERATIONS: ReadonlySet<EditOperation> = new Set<EditOperation>([
-    'CREATE_INJECTION',
-    'CREATE_SWITCH',
-    'CREATE_SWITCHED_INJECTION',
-    'CREATE_FEEDER_BAY',
-    'DELETE',
-    'DELETE_BAY',
-    'UPDATE_PROPERTIES',
-    'UPDATE_BAY_POSITION',
-    'FLIP_BAY_DIRECTION',
-    'MOVE_BAY',
-    'RENAME',
-]);
 
 export const ORDER_STEP = 10;
 

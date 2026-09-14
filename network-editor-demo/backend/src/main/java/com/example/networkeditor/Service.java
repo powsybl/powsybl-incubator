@@ -160,7 +160,7 @@ public class Service {
         switch (change.op()) {
             case "create" -> create(network, change);
             case "create-bay" -> createBay(network, change);
-            case "create-busbar" -> createBusbar(network, change);
+            case "create-switch" -> createSwitch(network, change);
             case "update" -> update(network, change);
             default -> throw new PowsyblException("Unsupported change '" + change.op() + "'");
         }
@@ -227,6 +227,37 @@ public class Service {
                 .add();
 
         applyProperties(network.getIdentifiable(change.equipmentId()), properties(change.payload()));
+
+    }
+
+    public void createSwitch(Network network, Dto.ChangeEntry change) {
+
+        Map<String, Object> payload = change.payload();
+        VoltageLevel voltageLevel = requireVoltageLevel(network, requireText(payload,"vlId"));
+        requireNewId(network, change.equipmentId());
+
+        String equipmentType = requireText(payload, "equipmentType");
+        switch (equipmentType) {
+            case "BREAKER" -> voltageLevel.getNodeBreakerView().newBreaker()
+                    .setId(change.equipmentId())
+                    .setNode1(requireInt(payload, "node1"))
+                    .setNode2(requireInt(payload, "node2"))
+                    .add();
+            case "DISCONNECTOR" -> voltageLevel.getNodeBreakerView().newDisconnector()
+                    .setId(change.equipmentId())
+                    .setNode1(requireInt(payload, "node1"))
+                    .setNode2(requireInt(payload, "node2"))
+                    .add();
+            case "LOAD_BREAK_SWITCH" -> voltageLevel.getNodeBreakerView().newSwitch()
+                    .setId(change.equipmentId())
+                    .setKind(SwitchKind.LOAD_BREAK_SWITCH)
+                    .setNode1(requireInt(payload, "node1"))
+                    .setNode2(requireInt(payload, "node2"))
+                    .add();
+            default -> throw new PowsyblException("Cannot create switch of type '" + equipmentType + "'");
+        }
+
+        applyProperties(network.getIdentifiable(change.equipmentId()), properties(payload));
 
     }
 

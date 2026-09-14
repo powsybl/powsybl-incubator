@@ -2,7 +2,7 @@ import {Banner, Button, Card, Header, Loader, Select} from "@design-system-rte/r
 import { useEffect, useRef, useState} from "react";
 import type {NetworkInfo, Sld} from "./types.ts";
 import {applyChange, deleteBay, deleteElement, getSld, getVoltageLevelIds, uploadNetwork} from "./api.ts";
-import {describeTargets, menuItemsFor, NetworkEditor} from "@powsybl/network-editor";
+import {describeTargets, type Gesture, menuItemsFor, NetworkEditor} from "@powsybl/network-editor";
 import type {BayInsertion, EditTarget} from "@powsybl/network-editor";
 import type {MenuItem} from "./components/Menu.tsx";
 import {Menu} from "./components/Menu.tsx";
@@ -38,6 +38,7 @@ export default function App() {
 
     const [history, setHistory] = useState<{ canUndo: boolean; canRedo: boolean }>({canUndo: false, canRedo: false})
     const [changes, setChanges] = useState<ChangeSetEntry[]>([])
+    const [gesture, setGesture] = useState<Gesture | null>(null)
 
     const [editor, setEditor] = useState<NetworkEditor | null>(null);
     const [menu, setMenu] = useState<{
@@ -126,6 +127,11 @@ export default function App() {
                     setChanges(event.changeSet);
                     console.log(event.changeSet);
                 }
+                if (event.name === 'gesture:changed') {
+                    setGesture(event.gesture);
+                    if (event.gesture) setMenu(null);
+                    setPanel(instance.switchAction());
+                }
 
             },
         });
@@ -138,7 +144,6 @@ export default function App() {
         editor && menu
             ? menuItemsFor(editor, menu).map((item) => ({
                 label: item.label,
-                enabled: item.enabled,
                 danger: item.danger,
                 onClick: () => (item.needsForm ? setPanel(item.action) : item.action.run()),
             }))
@@ -161,6 +166,7 @@ export default function App() {
                         break;
                     case 'create' :
                     case 'create-bay' :
+                    case 'create-switch' :
                     case 'update' :
                         await applyChange(change)
                         break;
@@ -263,7 +269,7 @@ export default function App() {
                                     options={vlIds.map(id => ({
                                         label: id,
                                         value: id
-                                    }))}
+                                    })).filter((a) => a.label.charAt(0)==='M')}
                                     placeholder="Choisir un niveau de tension"
                                     showLabel
                                     value={selectedVlId ?? ""}
@@ -352,7 +358,10 @@ export default function App() {
                                     label="Fermer"
                                     variant="secondary"
                                     type="button"
-                                    onClick={() => setPanel(null)}
+                                    onClick={() => {
+                                        setPanel(null)
+                                        editor?.cancelGesture();
+                                    }}
                                 />
                             </div>
                         </PropertyForm>

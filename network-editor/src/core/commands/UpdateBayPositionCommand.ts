@@ -12,7 +12,7 @@ import type {
 export class UpdateBayPositionCommand implements Command {
     readonly pendingMarker: { targetId: string; nodeId: string; label: string };
 
-    readonly orderClaim: OrderClaim;
+    readonly orderClaims: readonly OrderClaim[];
 
     private readonly nodeId: string;
 
@@ -33,7 +33,7 @@ export class UpdateBayPositionCommand implements Command {
             nodeId: node.id,
             label: `↕ ${position.order} ${position.direction}`,
         };
-        this.orderClaim = { ...slot, order: position.order, vacatedNodeId: node.id };
+        this.orderClaims = [{ ...slot, order: position.order, vacatedNodeId: node.id }];
     }
 
     get equipmentId(): string {

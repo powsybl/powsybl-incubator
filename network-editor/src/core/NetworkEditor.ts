@@ -1,4 +1,8 @@
-import { SingleLineDiagramViewer } from '@powsybl/network-viewer-core';
+import {
+    createSldComponentElement,
+    DefaultSldLibraryComponents,
+    SingleLineDiagramViewer,
+} from '@powsybl/network-viewer-core';
 
 import { EditorModel } from './EditorModel';
 import { EditorCore } from './EditorCore';
@@ -12,8 +16,8 @@ import {
     type EditTarget,
     type EquipmentProperties,
     type Gesture,
+    type SymbolProvider,
 } from './types';
-
 
 export class NetworkEditor {
     private readonly container: HTMLElement;
@@ -44,8 +48,18 @@ export class NetworkEditor {
             callbacks?.onToggleHover ?? null,
         );
 
+        const symbols: SymbolProvider = {
+            componentSize: (type) =>
+                model.componentSize(type) ??
+                DefaultSldLibraryComponents.find((component) => component.type === type)?.size ?? {
+                    width: 0,
+                    height: 0,
+                },
+            createSymbol: createSldComponentElement,
+        };
+
         const dom = new SvgDomService(opts.container);
-        this.core = new EditorCore(model, dom, opts.onEvent, opts.onTargets);
+        this.core = new EditorCore(model, dom, symbols, opts.onEvent, opts.onTargets);
 
         this.container.addEventListener('contextmenu', this.onContextMenu, true);
     }

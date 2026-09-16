@@ -5,6 +5,7 @@ import type {
     OnFeederCallbackType,
     OnBusCallbackType,
     OnToggleSldHoverCallbackType,
+    SldComponentOptions,
 } from '@powsybl/network-viewer-core';
 
 export type { SLDMetadata };
@@ -274,15 +275,16 @@ export interface BayPosition {
 
 
 export interface PendingOrders {
-    claimed: ReadonlyMap<number, readonly number[]>;
+    claims: readonly OrderClaim[];
     vacated: ReadonlySet<string>;
 }
 
-export const NO_PENDING_ORDERS: PendingOrders = { claimed: new Map(), vacated: new Set() };
+export const NO_PENDING_ORDERS: PendingOrders = { claims: [], vacated: new Set() };
 
 export interface OrderClaim extends BaySlot {
     order: number;
     vacatedNodeId?: string;
+    x?: number;
 }
 
 export interface CreateSpec {
@@ -336,7 +338,7 @@ export interface EditorOptions {
 }
 
 export const EDITOR_OPTION_DEFAULTS = {
-    svgType: 'SLD',
+    svgType: 'voltage-level',
     minWidth: 200,
     minHeight: 200,
     maxWidth: 2000,
@@ -467,6 +469,25 @@ export const NODE_COMPONENT_TYPE: Readonly<Record<ElementType, string>> = {
     UNKNOWN: HIDDEN_NODE_TYPE,
 };
 
+export function nodeComponentType(type: ElementType, properties: EquipmentProperties = {}): string {
+    if (type === 'SHUNT') {
+        const bPerSection = properties.bPerSection;
+        return typeof bPerSection === 'number' && bPerSection < 0 ? 'INDUCTOR' : 'CAPACITOR';
+    }
+    return NODE_COMPONENT_TYPE[type];
+}
+
+export interface SymbolProvider {
+    componentSize(componentType: string): { width: number; height: number };
+    createSymbol(componentType: string, options?: SldComponentOptions): SVGGElement;
+}
+
+const CREATED_NODE_PREFIX = 'ne-';
+
 export function createdNodeId(equipmentId: string): string {
-    return `ne-${equipmentId}`;
+    return `${CREATED_NODE_PREFIX}${equipmentId}`;
+}
+
+export function isCreatedNodeId(nodeId: string): boolean {
+    return nodeId.startsWith(CREATED_NODE_PREFIX);
 }

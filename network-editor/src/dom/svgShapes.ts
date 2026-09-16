@@ -4,17 +4,25 @@ import {
     type BaySlotCandidate,
     type DiagramPoint,
 } from '../core/types';
-import { PENDING_BADGE_CLASS } from './editorStyle';
+import { PENDING_BADGE_CLASS, PENDING_SYMBOL_CLASS } from './editorStyle';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
-const LEAD = 16;
-const TAIL = 16;
-const PLAIN_LENGTH = 24;
+// Default wire
+const WIRE_BEFORE_SWITCH = 16;
+const WIRE_AFTER_SWITCH = 16;
+const WIRE_WITHOUT_SWITCH = 24;
+
+// Label box next to a pending element.
 const LABEL_HEIGHT = 10;
-const LABEL_BASELINE = 7;
-const MARKER_TOP = -14;
-const NODE_CENTRE = 4;
+const LABEL_TEXT_BASELINE = 7;
+const LABEL_GAP = 5;
+
+// Badges stacked above a node that has pending changes.
+const BADGE_X = 4;
+const BADGE_FIRST_TOP = -14;
+const BADGE_STEP = LABEL_HEIGHT + 2;
+
 const SLOT_RADIUS = 4;
 
 export interface PendingBadgeView {
@@ -22,12 +30,25 @@ export interface PendingBadgeView {
     label: string;
 }
 
+export interface SymbolView {
+    element: SVGGElement;
+    width: number;
+    height: number;
+}
+
+export interface PlacedSymbol {
+    at: number;
+    symbol: SymbolView;
+}
+
 export interface FeederShape {
     x: number;
     y: number;
     side: 'UP' | 'DOWN';
-    withSwitch: boolean;
-    switchSize: number;
+    length: number;
+    switch?: PlacedSymbol;
+    terminal?: SymbolView;
+    busbars?: PlacedSymbol[];
 }
 
 export interface FeederPreview extends FeederShape {
@@ -42,7 +63,7 @@ export interface SwitchPreview {
     label: string;
     from: DiagramPoint;
     to: DiagramPoint;
-    switchSize: number;
+    symbol?: SymbolView;
 }
 
 export type PendingPreview = FeederPreview | SwitchPreview;
@@ -51,7 +72,8 @@ interface PreviewLayout {
     id: string;
     from: DiagramPoint;
     to: DiagramPoint;
-    box?: { at: number; size: number };
+    back?: number;
+    gap?: PlacedSymbol;
     label: { text: string; x: number; top: number };
 }
 
@@ -63,50 +85,69 @@ export function createPendingPreview(view: PendingPreview): SVGGElement {
     return view.kind === 'SWITCH' ? switchPreview(view) : feederPreview(view);
 }
 
-function feederPreview(view: FeederPreview): SVGGElement {
-    const { x, y, side, withSwitch, switchSize } = view;
-    const length = withSwitch ? LEAD + switchSize + TAIL : PLAIN_LENGTH;
-    const to = { x, y: y + (side === 'UP' ? -length : length) };
+export function defaultFeederLength(switchSize?: number): number {
+    return switchSize === undefined ? WIRE_WITHOUT_SWITCH : WIRE_BEFORE_SWITCH + switchSize + WIRE_AFTER_SWITCH;
+}
 
-    return drawPreview({
+export function defaultSwitchAt(switchSize: number): number {
+    return WIRE_BEFORE_SWITCH + switchSize / 2;
+}
+
+function feederPreview(view: FeederPreview): SVGGElement {
+    const { x, y, side, length, terminal, busbars = [] } = view;
+    const sign = side === 'UP' ? -1 : 1;
+    const end = y + sign * length;
+    const terminalHeight = terminal?.height ?? 0;
+    const labelTop =
+        side === 'UP' ? end - terminalHeight - LABEL_GAP - LABEL_HEIGHT : end + terminalHeight + LABEL_GAP;
+
+    const stub = drawPreview({
         id: view.id,
         from: { x, y },
-        to,
-        box: withSwitch ? { at: LEAD + switchSize / 2, size: switchSize } : undefined,
-        label: { text: view.label, x, top: side === 'UP' ? to.y - LABEL_HEIGHT : to.y },
+        to: { x, y: end },
+        back: Math.max(0, ...busbars.map((busbar) => -busbar.at)),
+        gap: view.switch,
+        label: { text: view.label, x, top: labelTop },
     });
+
+    for (const { at, symbol } of busbars) {
+        stub.prepend(placeSymbol(symbol, x, y + sign * at));
+    }
+    if (terminal) stub.append(placeSymbol(terminal, x, end + (sign * terminalHeight) / 2));
+    return stub;
 }
 
 function switchPreview(view: SwitchPreview): SVGGElement {
-    const { from, to } = view;
+    const { from, to, symbol } = view;
     const length = distance(from, to);
     const middle = { x: (from.x + to.x) / 2, y: (from.y + to.y) / 2 };
-    const size = Math.min(view.switchSize, length);
+    const height = symbol?.height ?? 0;
 
     return drawPreview({
         id: view.id,
         from,
         to,
-        box: { at: length / 2, size },
-        label: { text: view.label, x: middle.x, top: middle.y - size - LABEL_HEIGHT },
+        gap: symbol && { at: length / 2, symbol },
+        label: { text: view.label, x: middle.x, top: middle.y - height - LABEL_HEIGHT },
     });
 }
 
-function drawPreview({ id, from, to, box, label }: PreviewLayout): SVGGElement {
+function drawPreview({ id, from, to, back = 0, gap, label }: PreviewLayout): SVGGElement {
     const length = distance(from, to);
     const angle = (Math.atan2(to.y - from.y, to.x - from.x) * 180) / Math.PI;
 
     const segment = svgElement('g');
     segment.setAttribute('transform', `translate(${from.x},${from.y}) rotate(${angle})`);
-    segment.append(
-        ...(box
-            ? [
-                  dashLine(0, box.at - box.size / 2),
-                  dashBox(box.at, box.size),
-                  dashLine(box.at + box.size / 2, length),
-              ]
-            : [dashLine(0, length)]),
-    );
+    if (gap) {
+        const half = gap.symbol.width / 2;
+        segment.append(
+            dashLine(-back, gap.at - half),
+            placeSymbol(gap.symbol, gap.at, 0),
+            dashLine(gap.at + half, length),
+        );
+    } else {
+        segment.append(dashLine(-back, length));
+    }
 
     const stub = svgElement('g');
     stub.setAttribute('class', PENDING_CREATE_CLASS);
@@ -120,7 +161,7 @@ export function createPendingBadge(view: PendingBadgeView, index: number): SVGGE
     marker.setAttribute('class', PENDING_BADGE_CLASS);
     if (view.id) marker.id = view.id;
 
-    marker.append(...labelBox(NODE_CENTRE, MARKER_TOP - index * (LABEL_HEIGHT + 2), view.label));
+    marker.append(...labelBox(BADGE_X, BADGE_FIRST_TOP - index * BADGE_STEP, view.label));
     return marker;
 }
 
@@ -149,13 +190,12 @@ function dashLine(from: number, to: number): SVGLineElement {
     return line;
 }
 
-function dashBox(centre: number, size: number): SVGRectElement {
-    const box = svgElement('rect');
-    box.setAttribute('x', String(centre - size / 2));
-    box.setAttribute('y', String(-size / 2));
-    box.setAttribute('width', String(size));
-    box.setAttribute('height', String(size));
-    return box;
+function placeSymbol(symbol: SymbolView, cx: number, cy: number): SVGGElement {
+    const holder = svgElement('g');
+    holder.setAttribute('class', PENDING_SYMBOL_CLASS);
+    holder.setAttribute('transform', `translate(${cx - symbol.width / 2},${cy - symbol.height / 2})`);
+    holder.append(symbol.element);
+    return holder;
 }
 
 function labelBox(cx: number, top: number, label: string): [SVGRectElement, SVGTextElement] {
@@ -169,7 +209,7 @@ function labelBox(cx: number, top: number, label: string): [SVGRectElement, SVGT
 
     const text = svgElement('text');
     text.setAttribute('x', String(cx));
-    text.setAttribute('y', String(top + LABEL_BASELINE));
+    text.setAttribute('y', String(top + LABEL_TEXT_BASELINE));
     text.textContent = label;
 
     return [box, text];

@@ -12,6 +12,7 @@ import {
     type DeleteScope,
     type EditorMetadata,
     type EditTarget,
+    type FeederDirection,
     type FeederInfoMetadata,
     type NodeDiagnostic,
     type NodeMetadata,
@@ -69,8 +70,8 @@ export class EditorModel {
         }
     }
 
-    componentSize(componentType: string): { width: number; height: number } {
-        return this.componentSizes.get(componentType) ?? { width: 0, height: 0 };
+    componentSize(componentType: string): { width: number; height: number } | undefined {
+        return this.componentSizes.get(componentType);
     }
 
     private indexNode(node: NodeMetadata): void {
@@ -397,10 +398,21 @@ export class EditorModel {
                     .map((feeder) => feeder.order!),
             );
         }
-        for (const [section, claimed] of pending.claimed) {
-            for (const order of claimed) pushTo(orders, section, order);
+        for (const claim of pending.claims) {
+            pushTo(orders, claim.sectionIndex, claim.order);
         }
         return orders;
+    }
+
+    feederNodes(vlId: string, direction: FeederDirection): NodeMetadata[] {
+        return this.metadata.nodes
+            .filter((node) => node.vid === vlId && node.direction === direction)
+            .sort((a, b) => (a.order ?? Infinity) - (b.order ?? Infinity));
+    }
+
+    bayNodes(feeder: NodeMetadata): NodeMetadata[] {
+        if (!feeder.equipmentId) return [feeder];
+        return this.collectBay(feeder.equipmentId).nodes.filter((node) => node.vid === feeder.vid);
     }
 
     busbarNodes(vlId: string): NodeMetadata[] {

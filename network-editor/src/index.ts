@@ -52,6 +52,7 @@ export type {
     NodeTarget,
     SelectedElement,
     SLDMetadata,
+    SymbolProvider,
     SwitchEnd,
     SwitchGesture,
     TargetEvent,

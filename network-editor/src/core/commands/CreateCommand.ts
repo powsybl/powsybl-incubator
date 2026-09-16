@@ -17,7 +17,7 @@ import {
 export class CreateCommand implements PendingCreateCommand {
     readonly pendingMarker: { targetId: string; nodeId: string; label: string; elementId: string };
 
-    readonly orderClaim?: OrderClaim;
+    readonly orderClaims?: OrderClaim[];
 
     private readonly node: NodeMetadata;
 
@@ -45,11 +45,11 @@ export class CreateCommand implements PendingCreateCommand {
             elementId: this.node.id,
         };
         if (target.kind === 'BUSBAR' && bay) {
-            this.orderClaim = {
+            this.orderClaims = [{
                 vlId: target.vlId,
                 sectionIndex: target.sectionIndex,
                 order: bay.order,
-            };
+            }];
         }
     }
 

@@ -49,6 +49,11 @@ export class SvgDomService {
         return this.container.querySelector<SVGElement>(`[id="${CSS.escape(elementId)}"]`);
     }
 
+    getVoltageClasses(elementId: string): string[] {
+        const element = this.findElementById(elementId);
+        return element ? [...element.classList].filter((name) => /^sld-(vl|bus-)/.test(name)) : [];
+    }
+
     removeAndSnapshot(element: Element): RemovedDomElement {
         const snapshot: RemovedDomElement = {
             element,

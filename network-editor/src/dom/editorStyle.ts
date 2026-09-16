@@ -13,6 +13,7 @@ export const IIDM_LABEL_CLASS = 'ne-iidm-label';
 export const BAY_SLOT_LAYER_CLASS = 'ne-bay-slot-layer';
 export const PENDING_LAYER_CLASS = 'ne-pending-layer';
 export const PENDING_BADGE_CLASS = 'ne-pending-badge';
+export const PENDING_SYMBOL_CLASS = 'ne-symbol';
 
 const PENDING = `:is(.${PENDING_CREATE_CLASS}, .${PENDING_BADGE_CLASS})`;
 
@@ -24,7 +25,7 @@ g${PENDING} {
     visibility: visible;
     pointer-events: none;
 }
-g${PENDING} rect {
+g${PENDING} > rect {
     fill: #e3f2fd;
     stroke: #1e88e5;
     stroke-width: 0.8;
@@ -35,16 +36,20 @@ g${PENDING}[id] {
     pointer-events: auto;
     cursor: pointer;
 }
-g${PENDING}[id]:hover rect {
+g${PENDING}[id]:hover > rect {
     fill: #bbdefb;
 }
-g${PENDING} line {
+g${PENDING} .${PENDING_SYMBOL_CLASS} > g {
+    stroke-dasharray: 2 1.5;
+    opacity: 0.75;
+}
+g${PENDING} > g > line {
     stroke: #1e88e5;
     stroke-width: 1.2;
     stroke-dasharray: 2 1.5;
     pointer-events: none;
 }
-g${PENDING} text {
+g${PENDING} > text {
     fill: #0d47a1;
     font-size: 6px;
     font-weight: bold;

@@ -1,3 +1,5 @@
+import type { SldComponentOptions } from '@powsybl/network-viewer-core';
+
 import { EditorModel } from './EditorModel';
 import { buildActions, switchAction, type EditorAction } from './actions';
 import { availableOperations, creatableTypesFor, isSwitchNode } from './operations';
@@ -13,11 +15,15 @@ import { RenameCommand } from './commands/RenameCommand';
 import { UpdateBayPositionCommand } from './commands/UpdateBayPositionCommand';
 import { UpdatePropertiesCommand } from './commands/UpdatePropertiesCommand';
 import { SvgDomService } from '../dom/SvgDomService';
-import type {
-    FeederShape,
-    PendingBadgeView,
-    PendingPreview,
-    SwitchPreview,
+import {
+    defaultFeederLength,
+    defaultSwitchAt,
+    type FeederShape,
+    type PendingBadgeView,
+    type PendingPreview,
+    type PlacedSymbol,
+    type SwitchPreview,
+    type SymbolView,
 } from '../dom/svgShapes';
 import {
     BAY_SLOT_CLASS,
@@ -25,6 +31,8 @@ import {
     DELETABLE_TYPES,
     NODE_COMPONENT_TYPE,
     SWITCH_TYPES,
+    isCreatedNodeId,
+    nodeComponentType,
     toElementType,
     type BayColumn,
     type BayGeometry,
@@ -54,12 +62,16 @@ import {
     type PickedSwitch,
     type SwitchEnd,
     type SwitchGesture,
-    type TargetEvent,
+    type SymbolProvider,
+    type TargetEvent, type DeleteScope, type OrderClaim,
 } from './types';
 
 const DRAG_THRESHOLD = 10;
 
-const DEFAULT_SWITCH_SIZE = 12;
+interface FeederLevels {
+    feederY: number;
+    switchY?: number;
+}
 
 export class EditorCore {
     private destroyed = false;
@@ -86,6 +98,7 @@ export class EditorCore {
     constructor(
         private readonly model: EditorModel,
         private readonly dom: SvgDomService,
+        private readonly symbols: SymbolProvider,
         private readonly onEvent?: EditorEventListener,
         private readonly onTargets?: (event: TargetEvent) => void,
     ) {
@@ -322,6 +335,20 @@ export class EditorCore {
         });
     }
 
+    private standingBayClaims(equipmentId: string, scope: DeleteScope, kind: 'element' | 'bay'): OrderClaim[] {
+        if (kind !== 'element') return [];
+        if (this.model.collectBay(equipmentId).nodes.length <= scope.nodes.length) return [];
+
+        const claims: OrderClaim[] = [];
+        for (const node of scope.nodes) {
+            if (node.order === undefined) continue;
+            const slot = this.model.slotOfFeeder(node);
+            const x = this.feederAxisX(node);
+            if (slot && x !== undefined) claims.push({ ...slot, order: node.order, x });
+        }
+        return claims;
+    }
+
     private deleteCommandFor(equipmentId: string, kind: 'element' | 'bay'): Command | undefined {
         const operation: EditOperation = kind === 'bay' ? 'DELETE_BAY' : 'DELETE';
         const target = this.targets.get(equipmentId);
@@ -345,6 +372,7 @@ export class EditorCore {
             type,
             scope,
             kind,
+            this.standingBayClaims(equipmentId, scope, kind),
             this.model,
             this.dom,
             this.dropSelection,
@@ -677,9 +705,12 @@ export class EditorCore {
         if (!span) return undefined;
 
         const columns = this.feederColumns(busbar, movingNodeId);
-        const { claimed } = this.pendingOrders(busbar.vlId, movingNodeId);
-        for (const order of [...(claimed.get(busbar.sectionIndex) ?? [])].sort((a, b) => a - b)) {
-            insertPendingColumn(columns, order, span);
+        const { claims } = this.pendingOrders(busbar.vlId, movingNodeId);
+        const toCreate = claims
+            .filter((claim) => claim.sectionIndex === busbar.sectionIndex && claim.x === undefined)
+            .sort((a, b) => a.order - b.order);
+        for (const claim of toCreate) {
+            insertPendingColumn(columns, claim.order, span);
         }
 
         const bounds = [span.left, ...columns.map((column) => column.x), span.right];
@@ -708,23 +739,25 @@ export class EditorCore {
     }
 
     private feederColumns(slot: BaySlot, excludeNodeId?: string): BayColumn[] {
-        const { vacated } = this.pendingOrders(slot.vlId, excludeNodeId);
+        const { claims, vacated } = this.pendingOrders(slot.vlId, excludeNodeId);
 
-        return this.model
-            .feedersInSection(slot)
-            .flatMap((node) => {
-                if (vacated.has(node.id)) return [];
-                const x = this.feederAxisX(node);
-                return x === undefined ? [] : [{ x, order: node.order }];
-            })
-            .sort((a, b) => a.x - b.x);
+        const columns: BayColumn[] = [];
+        for (const node of this.model.feedersInSection(slot)) {
+            if (vacated.has(node.id)) continue;
+            const x = this.feederAxisX(node);
+            if (x !== undefined) columns.push({ x, order: node.order });
+        }
+        for (const { sectionIndex, order, x } of claims) {
+            if (sectionIndex === slot.sectionIndex && x !== undefined) columns.push({ x, order });
+        }
+        return columns.sort((a, b) => a.x - b.x);
     }
 
     private feederAxisX(node: NodeMetadata): number | undefined {
         const x = this.dom.getDiagramPoint(node.id)?.x;
         if (x === undefined) return undefined;
 
-        return x + this.model.componentSize(node.componentType).width / 2;
+        return x + this.componentSize(node.componentType).width / 2;
     }
 
     private feederNodeOf(target: EquipmentTarget): NodeMetadata | undefined {
@@ -947,7 +980,7 @@ export class EditorCore {
             label: command.equipmentId,
             from,
             to: isSpan(far) ? { x: clampToSpan(far, from.x), y: far.y } : far,
-            switchSize: this.switchSize(),
+            symbol: first && this.switchSymbol(command.createSpec.type, first.id),
         };
     }
 
@@ -961,7 +994,7 @@ export class EditorCore {
         const point = node && this.dom.getDiagramPoint(node.id);
         if (!node || !point) return undefined;
 
-        const size = this.model.componentSize(node.componentType);
+        const size = this.componentSize(node.componentType);
         return { x: point.x + size.width / 2, y: point.y + size.height / 2 };
     }
 
@@ -970,13 +1003,23 @@ export class EditorCore {
         const column = geometry?.columns.find((candidate) => candidate.order === spec.order);
         if (!geometry || !column) return undefined;
 
-        return {
-            x: column.x,
-            y: geometry.y,
-            side: spec.direction === 'TOP' ? 'UP' : 'DOWN',
-            withSwitch: true,
-            switchSize: this.switchSize(),
-        };
+        const side = spec.direction === 'TOP' ? 'UP' : 'DOWN';
+        const from = { x: column.x, y: geometry.y };
+        const busbars = this.crossedBusbars(busbar, from.y, side);
+        return this.feederShape(busbar.vlId, from, side, spec, spec.switchType ?? 'BREAKER', busbar.id, busbars);
+    }
+
+    private crossedBusbars(busbar: BusbarTarget, anchorY: number, side: 'UP' | 'DOWN'): PlacedSymbol[] {
+        const sign = side === 'UP' ? -1 : 1;
+        const crossed: PlacedSymbol[] = [];
+        for (const node of this.model.busbarNodes(busbar.vlId)) {
+            if (node.sectionIndex !== busbar.sectionIndex) continue;
+            const span = this.dom.getDiagramSpan(node.id);
+            const symbol =
+                span && this.symbolFor(NODE_COMPONENT_TYPE.DISCONNECTOR, { open: node.id !== busbar.id }, node.id);
+            if (symbol) crossed.push({ at: sign * (span.y - anchorY), symbol });
+        }
+        return crossed;
     }
 
     private feederPreview(target: NodeTarget, spec: CreateSpec): FeederShape | undefined {
@@ -984,14 +1027,73 @@ export class EditorCore {
         if (!point) return undefined;
 
         const busbarY = this.busbarY(target.vlId);
+        const side = busbarY !== undefined && point.y < busbarY ? 'UP' : 'DOWN';
+        return this.feederShape(target.vlId, point, side, spec, spec.switchType, target.id);
+    }
 
-        return {
-            x: point.x,
-            y: point.y,
-            side: busbarY !== undefined && point.y < busbarY ? 'UP' : 'DOWN',
-            withSwitch: spec.switchType !== undefined,
-            switchSize: this.switchSize(),
+    private feederShape(
+        vlId: string,
+        from: DiagramPoint,
+        side: 'UP' | 'DOWN',
+        spec: CreateSpec,
+        switchType: ElementType | undefined,
+        anchorNodeId: string,
+        busbars?: PlacedSymbol[],
+    ): FeederShape {
+        const terminal = this.terminalSymbol(spec, side, anchorNodeId);
+        const switchSize = switchType === undefined ? undefined : this.switchSize();
+        const extent = this.alignedExtent(vlId, from, side, terminal, switchSize);
+
+        const shape: FeederShape = {
+            ...from,
+            side,
+            length: extent.length ?? defaultFeederLength(switchSize),
+            terminal,
+            busbars,
         };
+        const symbol = switchType === undefined ? undefined : this.switchSymbol(switchType, anchorNodeId);
+        if (symbol && switchSize !== undefined) {
+            shape.switch = { at: extent.switchAt ?? defaultSwitchAt(switchSize), symbol };
+        }
+        return shape;
+    }
+
+    private alignedExtent(
+        vlId: string,
+        from: DiagramPoint,
+        side: 'UP' | 'DOWN',
+        terminal: SymbolView | undefined,
+        switchSize: number | undefined,
+    ): { length?: number; switchAt?: number } {
+        const levels = this.feederLevels(vlId, side === 'UP' ? 'TOP' : 'BOTTOM');
+        if (!levels) return {};
+
+        const sign = side === 'UP' ? -1 : 1;
+        const length = sign * (levels.feederY - from.y) - (terminal?.height ?? 0) / 2;
+        // shorter than the default stub: keep the stub
+        if (length < defaultFeederLength(switchSize)) return {};
+        if (switchSize === undefined) return { length };
+
+        const switchAt = levels.switchY === undefined ? undefined : sign * (levels.switchY - from.y);
+        const switchFits = switchAt !== undefined && switchAt > switchSize && switchAt < length - switchSize;
+        return { length, switchAt: switchFits ? switchAt : length / 2 };
+    }
+
+    private feederLevels(vlId: string, direction: FeederDirection): FeederLevels | undefined {
+        const feeder = this.model.feederNodes(vlId, direction).find((node) => !isCreatedNodeId(node.id));
+        const feederY = feeder && this.centreY(feeder);
+        if (!feeder || feederY === undefined) return undefined;
+
+        const bay = this.model.bayNodes(feeder);
+        const breaker =
+            bay.find((node) => node.componentType === NODE_COMPONENT_TYPE.BREAKER) ??
+            bay.find((node) => node.componentType === NODE_COMPONENT_TYPE.LOAD_BREAK_SWITCH);
+        return { feederY, switchY: breaker && this.centreY(breaker) };
+    }
+
+    private centreY(node: NodeMetadata): number | undefined {
+        const point = this.dom.getDiagramPoint(node.id);
+        return point && point.y + this.componentSize(node.componentType).height / 2;
     }
 
     private busbarY(vlId: string): number | undefined {
@@ -1002,23 +1104,48 @@ export class EditorCore {
         return undefined;
     }
 
-    /** The preview borrows the diagram's scale, never its symbols. */
     private switchSize(): number {
-        return this.model.componentSize(NODE_COMPONENT_TYPE.BREAKER).width || DEFAULT_SWITCH_SIZE;
+        return this.componentSize(NODE_COMPONENT_TYPE.BREAKER).width;
+    }
+
+    private componentSize(componentType: string): { width: number; height: number } {
+        return this.symbols.componentSize(componentType);
+    }
+
+    private switchSymbol(type: ElementType, anchorNodeId: string): SymbolView | undefined {
+        return this.symbolFor(NODE_COMPONENT_TYPE[type], { open: false, orientation: 'RIGHT' }, anchorNodeId);
+    }
+
+    private terminalSymbol(spec: CreateSpec, side: 'UP' | 'DOWN', anchorNodeId: string): SymbolView | undefined {
+        return this.symbolFor(nodeComponentType(spec.type, spec.properties), { orientation: side }, anchorNodeId);
+    }
+
+    private symbolFor(
+        componentType: string,
+        options: SldComponentOptions,
+        anchorNodeId: string,
+    ): SymbolView | undefined {
+        const { width, height } = this.componentSize(componentType);
+        if (width <= 0 || height <= 0) return undefined;
+        const element = this.symbols.createSymbol(componentType, options);
+        element.classList.add(...this.dom.getVoltageClasses(anchorNodeId));
+        return { element, width, height };
     }
 
     private pendingOrders(vlId: string, vacating?: string, ignore?: Command): PendingOrders {
-        const claimed = new Map<number, number[]>();
+        const claims: OrderClaim[] = [];
         const vacated = new Set<string>(vacating ? [vacating] : []);
 
         for (const command of this.history.pending) {
             if (command === ignore) continue;
-            const claim = command.orderClaim;
-            if (!claim || claim.vlId !== vlId) continue;
-            pushTo(claimed, claim.sectionIndex, claim.order);
-            if (claim.vacatedNodeId) vacated.add(claim.vacatedNodeId);
+            for (const claim of command.orderClaims ?? []) {
+                if (claim.vlId !== vlId) continue;
+                claims.push(claim);
+                if (claim.vacatedNodeId) vacated.add(claim.vacatedNodeId);
+
+            }
         }
-        return { claimed, vacated };
+        return { claims, vacated };
     }
 
     private readonly emit: EditorEmit = (name, payload) => {

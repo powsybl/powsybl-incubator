@@ -10,7 +10,7 @@ export interface Command {
         label: string;
         elementId?: string;
     };
-    readonly orderClaim?: OrderClaim;
+    readonly orderClaims?: readonly OrderClaim[];
     readonly equipmentId: string;
 }
 

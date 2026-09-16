@@ -6,7 +6,7 @@ import type {
     DeleteScope,
     ElementType,
     FeederInfoMetadata,
-    NodeMetadata,
+    NodeMetadata, OrderClaim,
     WireMetadata,
 } from '../types';
 
@@ -21,6 +21,7 @@ export class DeleteElementCommand implements Command {
         private readonly type: ElementType,
         private readonly scope: DeleteScope,
         private readonly kind: 'element' | 'bay',
+        readonly orderClaims: readonly OrderClaim[],
         private readonly model: EditorModel,
         private readonly dom: SvgDomService,
         private readonly onRemoved: (equipmentId: string) => void,

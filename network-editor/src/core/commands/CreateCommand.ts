@@ -76,6 +76,7 @@ export class CreateCommand implements PendingCreateCommand {
                         vlId: this.target.vlId,
                         node: this.target.node,
                         properties: this.properties,
+                        ...(this.bay && { order: this.bay.order, direction: this.bay.direction }),
                     },
                 };
             case 'BUSBAR':

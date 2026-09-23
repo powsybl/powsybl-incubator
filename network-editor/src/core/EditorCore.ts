@@ -162,6 +162,12 @@ export class EditorCore {
             bay = { order, direction: spec.direction ?? 'BOTTOM' };
         }
 
+        if (target.kind === 'NODE') {
+            const standing = this.pendingOrders(target.vlId).claims
+                .find((claim) => claim.iidmNode === target.node);
+            if (standing) bay = { order: standing.order, direction: standing.direction ?? 'BOTTOM' };
+        }
+
         if (this.isExistingEquipmentId(spec.provisionalId)) return false;
 
         this.history.push(
@@ -504,7 +510,7 @@ export class EditorCore {
             if (node.order === undefined) continue;
             const slot = this.model.slotOfFeeder(node);
             const x = this.feederAxisX(node);
-            if (slot && x !== undefined) claims.push({ ...slot, order: node.order, x });
+            if (slot && x !== undefined) claims.push({ ...slot, order: node.order, x, iidmNode: node.iidmNode, direction: node.direction as FeederDirection | undefined });
         }
         return claims;
     }

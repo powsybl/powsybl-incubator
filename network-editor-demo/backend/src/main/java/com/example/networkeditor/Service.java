@@ -5,8 +5,10 @@ import com.powsybl.iidm.modification.topology.CreateFeederBayBuilder;
 import com.powsybl.iidm.modification.topology.RemoveFeederBayBuilder;
 import com.powsybl.iidm.network.*;
 import com.powsybl.iidm.network.extensions.ConnectablePosition;
+import com.powsybl.iidm.network.extensions.ConnectablePositionAdder;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
@@ -43,6 +45,7 @@ public class Service {
             throw new PowsyblException("Failed to delete bay '" + elementId + "': " + e.getMessage());
         }
     }
+
 
     public Map<String, Map<String, Object>> readProperties(Network network, String vlId) {
         VoltageLevel voltageLevel = network.getVoltageLevel(vlId);
@@ -162,6 +165,7 @@ public class Service {
             case "create-bay" -> createBay(network, change);
             case "create-switch" -> createSwitch(network, change);
             case "update" -> update(network, change);
+            case "update-position" -> updatePosition(network, change);
             default -> throw new PowsyblException("Unsupported change '" + change.op() + "'");
         }
     }
@@ -174,6 +178,19 @@ public class Service {
         injectionAdder(voltageLevel, requireText(payload, "equipmentType"), change.equipmentId())
                 .setNode(requireInt(payload, "node"))
                 .add();
+
+        if (payload.get("order") instanceof Number) {
+            int order = requireInt(payload, "order");
+            ConnectablePosition.Direction direction = payload.get("direction") == null
+                    ? ConnectablePosition.Direction.BOTTOM
+                    : direction(requireText(payload, "direction"));
+            Connectable<?> connectable = network.getConnectable(change.equipmentId());
+            try {
+                setFeederPosition(connectable, 0, order, direction);
+            } catch (IllegalArgumentException e) {
+                throw new PowsyblException("Failed to set position of '" + change.equipmentId() + "': " + e.getMessage());
+            }
+        }
 
         applyProperties(network.getIdentifiable(change.equipmentId()), properties(payload));
     }
@@ -213,6 +230,69 @@ public class Service {
 
         applyProperties(identifiable, change.payload());
         applyConnections(identifiable, change.payload());
+    }
+
+    public void updatePosition(Network network, Dto.ChangeEntry change) {
+
+        Map<String, Object> payload = change.payload();
+        int node = requireInt(payload, "node");
+        int order = requireInt(payload, "order");
+        ConnectablePosition.Direction direction = direction(requireText(payload, "direction"));
+
+        Connectable<?> connectable = network.getConnectable(change.equipmentId());
+        if (connectable == null) {
+            throw new PowsyblException("Unknown element '" + change.equipmentId() + "'");
+        }
+
+        try {
+            setFeederPosition(connectable, sideOf(connectable,node), order, direction);
+        } catch (IllegalArgumentException e) {
+            throw new PowsyblException("Failed to update position for element '" + change.equipmentId() + "': " + e.getMessage());
+        }
+
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <C extends Connectable<C>> void setFeederPosition(Connectable<C> connectable, int side,int order, ConnectablePosition.Direction direction) {
+        ConnectablePosition<C> position = connectable.getExtension(ConnectablePosition.class);
+        if (position == null) {
+
+            ConnectablePositionAdder<C> adder = connectable.newExtension(ConnectablePositionAdder.class);
+            ConnectablePositionAdder.FeederAdder<C> feeder = switch(side) {
+                case 0 -> adder.newFeeder();
+                case 1 -> adder.newFeeder1();
+                case 2 -> adder.newFeeder2();
+                default -> adder.newFeeder3();
+            };
+            feeder.withName(connectable.getId()).withOrder(order).withDirection(direction).add();
+            adder.add();
+        } else {
+            ConnectablePosition.Feeder feeder = switch (side) {
+                case 0 -> position.getFeeder();
+                case 1 -> position.getFeeder1();
+                case 2 -> position.getFeeder2();
+                default -> position.getFeeder3();
+            };
+            if (feeder == null) {
+                throw new PowsyblException("No feeder for side " + side + " of '" + connectable.getId() + "'");
+            }
+            feeder.setOrder(order).setDirection(direction);
+        }
+
+    }
+
+    private static int sideOf( Connectable<?> connectable, int node) {
+        if ( connectable instanceof Injection<?>) {
+            return 0;
+        }
+
+        List<? extends Terminal> terminals = connectable.getTerminals();
+        for (int i=0; i< terminals.size(); i++) {
+            if (terminals.get(i).getNodeBreakerView().getNode() == node) {
+                return i+1;
+            }
+        }
+        throw new PowsyblException("Node " + node + " not found on connectable " + connectable.getId());
     }
 
     public void createBusbar(Network network, Dto.ChangeEntry change) {

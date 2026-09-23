@@ -75,6 +75,19 @@ export default function App() {
 
     }
 
+    useEffect(() => {
+
+        loadVlIds();
+        setSelectedVlId("MTPELP6")
+
+        getSld("MTPELP6").then(
+            async (sld) => {
+                setSld(sld)
+            }).catch((err) => {
+            setError(String(err))
+        })
+    }, [])
+
     const loadVlIds = () => {
         getVoltageLevelIds().then(
             async (ids) => {
@@ -116,13 +129,7 @@ export default function App() {
             onEvent: (event) => {
                 if (event.name === 'targets:changed') setMenu(null);
                 if (event.name === 'history:changed') setHistory({canRedo: event.canRedo, canUndo: event.canUndo});
-                if (event.name === 'element:selected') {
-                    setPanel(
-                        event.elements.length === 1
-                            ? actionFor(instance, event.elements[0].id, 'UPDATE_PROPERTIES')
-                            : null,
-                    )
-                }
+
                 if (event.name === 'model:changed') {
                     setChanges(event.changeSet);
                     console.log(event.changeSet);
@@ -166,7 +173,8 @@ export default function App() {
                         break;
                     case 'create' :
                     case 'create-bay' :
-                    case 'create-switch' :
+                    case 'create-switch':
+                    case 'update-position':
                     case 'update' :
                         await applyChange(change)
                         break;

@@ -282,6 +282,8 @@ export interface PendingOrders {
 export const NO_PENDING_ORDERS: PendingOrders = { claims: [], vacated: new Set() };
 
 export interface OrderClaim extends BaySlot {
+    iidmNode?: number;
+    direction?: FeederDirection;
     order: number;
     vacatedNodeId?: string;
     x?: number;
@@ -356,6 +358,8 @@ export type ChangeSetEntry =
               equipmentType: ElementType;
               vlId: string;
               node: number;
+              order?: number;
+              direction?: FeederDirection;
               properties: EquipmentProperties;
           };
       }

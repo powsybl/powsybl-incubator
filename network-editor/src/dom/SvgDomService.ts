@@ -1,3 +1,4 @@
+import { flipY, type BayFlip } from '../core/bayFlip';
 import {
     NODE_TARGET_CLASS,
     SELECTED_CLASS,
@@ -6,6 +7,7 @@ import {
     type BaySlotCandidate,
     type DiagramPoint,
     type DiagramSpan,
+    type FeederDirection,
     type NodeDiagnostic,
 } from '../core/types';
 import {
@@ -31,6 +33,28 @@ export interface RemovedDomElement {
     parent: Node | null;
     nextElement: Node | null;
 }
+
+/** Everything needed to turn an extern cell over its busbars, one way. */
+export interface CellFlip {
+    feederNodeId: string;
+    direction: FeederDirection;
+    y: BayFlip;
+    heights: ReadonlyMap<string, number>;
+    feeders: ReadonlyMap<string, string | null>;
+    arrows: ReadonlyMap<string, string | null>;
+}
+
+const TRANSLATE = /translate\(\s*([-\d.e]+)[\s,]+([-\d.e]+)\s*\)/;
+
+const SHAPE_TAGS: ReadonlySet<string> = new Set([
+    'path',
+    'circle',
+    'ellipse',
+    'rect',
+    'line',
+    'polyline',
+    'polygon',
+]);
 
 export class SvgDomService {
     constructor(private readonly container: HTMLElement) {
@@ -179,11 +203,68 @@ export class SvgDomService {
     }
 
     shiftBay(feederNodeId: string, dx: number): void {
-        const cell = this.findElementById(feederNodeId)?.closest('g.sld-extern-cell');
+        const cell = this.bayCell(feederNodeId);
         if (!cell) return;
 
         if (dx === 0) cell.removeAttribute('transform');
         else cell.setAttribute('transform', `translate(${dx},0)`);
+    }
+
+    bayCell(feederNodeId: string): Element | null {
+        return this.findElementById(feederNodeId)?.closest('g.sld-extern-cell') ?? null;
+    }
+
+    bayCellElementIds(feederNodeId: string): string[] {
+        const cell = this.bayCell(feederNodeId);
+        if (!cell) return [];
+        return [...cell.querySelectorAll(':scope > g[id]')].map((element) => element.id);
+    }
+
+    flipCell(flip: CellFlip): void {
+        const cell = this.bayCell(flip.feederNodeId);
+        if (!cell) return;
+
+        const top = flip.direction === 'TOP';
+        cell.classList.toggle('sld-cell-direction-top', top);
+        cell.classList.toggle('sld-cell-direction-bottom', !top);
+
+        for (const polyline of cell.querySelectorAll(':scope > g.sld-wire > polyline')) {
+            const values = (polyline.getAttribute('points') ?? '').trim().split(/[\s,]+/).map(Number);
+            const points: string[] = [];
+            for (let i = 0; i + 1 < values.length; i += 2) {
+                points.push(`${values[i]},${round(flipY(values[i + 1], flip.y))}`);
+            }
+            polyline.setAttribute('points', points.join(','));
+        }
+
+        for (const group of cell.querySelectorAll(':scope > g[transform]')) {
+            const match = TRANSLATE.exec(group.getAttribute('transform') ?? '');
+            if (!match) continue;
+            const x = Number(match[1]);
+            const y = Number(match[2]);
+            const half = (flip.heights.get(group.id) ?? 0) / 2;
+            group.setAttribute('transform', `translate(${x},${round(flipY(y + half, flip.y) - half)})`);
+        }
+
+        for (const [feederId, transform] of flip.feeders) {
+            const feeder = this.findElementById(feederId);
+            if (!feeder) continue;
+
+            feeder.classList.toggle('sld-top-feeder', top);
+            feeder.classList.toggle('sld-bottom-feeder', !top);
+            setShapesTransform(feeder, transform);
+
+            const height = flip.heights.get(feederId) ?? 0;
+            for (const label of feeder.querySelectorAll(':scope > text.sld-label')) {
+                const y = Number(label.getAttribute('y') ?? 0);
+                label.setAttribute('y', String(height - y));
+            }
+        }
+
+        for (const [arrowId, transform] of flip.arrows) {
+            const arrow = this.findElementById(arrowId);
+            if (arrow) setShapesTransform(arrow, transform);
+        }
     }
 
     private mark(className: string, ids: readonly string[]): void {
@@ -217,5 +298,17 @@ export class SvgDomService {
 
     private getSvgRoot(): SVGSVGElement | null {
         return this.container.querySelector('svg');
+    }
+}
+
+function round(value: number): number {
+    return Math.round(value * 1000) / 1000;
+}
+
+function setShapesTransform(component: Element, transform: string | null): void {
+    for (const shape of component.children) {
+        if (!SHAPE_TAGS.has(shape.localName)) continue;
+        if (transform) shape.setAttribute('transform', transform);
+        else shape.removeAttribute('transform');
     }
 }

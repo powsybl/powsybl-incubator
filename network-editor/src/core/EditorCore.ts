@@ -12,9 +12,10 @@ import { CreateSwitchedInjectionCommand } from './commands/CreateSwitchedInjecti
 import { DeleteElementCommand } from './commands/DeleteElementCommand';
 import { MoveBayCommand } from './commands/MoveBayCommand';
 import { RenameCommand } from './commands/RenameCommand';
-import { UpdateBayPositionCommand } from './commands/UpdateBayPositionCommand';
+import { UpdateBayPositionCommand, type BayTurn } from './commands/UpdateBayPositionCommand';
 import { UpdatePropertiesCommand } from './commands/UpdatePropertiesCommand';
-import { SvgDomService } from '../dom/SvgDomService';
+import { invertFlip, type BayFlip } from './bayFlip';
+import { SvgDomService, type CellFlip } from '../dom/SvgDomService';
 import {
     defaultFeederLength,
     defaultSwitchAt,
@@ -251,6 +252,9 @@ export class EditorCore {
     }
 
     getBayPosition(equipmentId: string): BayPosition | undefined {
+        const pending = this.pendingBayPosition(equipmentId);
+        if (pending) return pending.bayPosition;
+
         const target = this.targets.get(equipmentId);
         if (target?.kind !== 'EQUIPMENT' || target.order === undefined) return undefined;
         return { order: target.order, direction: target.direction ?? 'BOTTOM' };
@@ -271,13 +275,169 @@ export class EditorCore {
         const pending = this.pendingOrders(slot.vlId, node.id);
         if (!this.model.isOrderAvailable(slot, position.order, pending)) return false;
 
+        const previousDx = this.pendingBayPosition(equipmentId)?.shift ?? 0;
         const axis = this.feederAxisX(node);
-        const dx = toX === undefined || axis === undefined ? 0 : toX - axis;
+        const baseAxis = axis === undefined ? undefined : axis - previousDx;
+        const dx = toX === undefined || baseAxis === undefined ? previousDx : toX - baseAxis;
+        const x = baseAxis === undefined ? undefined : baseAxis + dx;
 
-        this.history.push(
-            new UpdateBayPositionCommand(target, node, slot, position, this.dom, dx),
+        const from: FeederDirection = node.direction === 'TOP' ? 'TOP' : 'BOTTOM';
+        if (position.direction === from) {
+            this.history.push(
+                new UpdateBayPositionCommand(
+                    target,
+                    node,
+                    slot,
+                    position,
+                    this.dom,
+                    this.model,
+                    dx,
+                    previousDx,
+                    x,
+                ),
+            );
+            return true;
+        }
+        return this.flipBay(target, node, slot, position, from, dx, previousDx, x);
+    }
+
+    private pendingBayPosition(equipmentId: string): UpdateBayPositionCommand | undefined {
+        return this.history.pending.findLast(
+            (command): command is UpdateBayPositionCommand =>
+                command instanceof UpdateBayPositionCommand && command.equipmentId === equipmentId,
         );
+    }
+
+    private flipBay(
+        target: EquipmentTarget,
+        node: NodeMetadata,
+        slot: BaySlot,
+        position: BayPosition,
+        from: FeederDirection,
+        dx: number,
+        previousDx: number,
+        x: number | undefined,
+    ): boolean {
+        const cell = this.dom.bayCell(node.id);
+        const cellFeeders = this.model
+            .feedersInSection(slot)
+            .filter((feeder) => this.dom.bayCell(feeder.id) === cell);
+        const turn = cell ? this.bayTurn(node, cellFeeders, from, position.direction) : undefined;
+        if (!turn) return false;
+
+        const commands: UpdateBayPositionCommand[] = [
+            new UpdateBayPositionCommand(
+                target,
+                node,
+                slot,
+                position,
+                this.dom,
+                this.model,
+                dx,
+                previousDx,
+                x,
+                turn,
+            ),
+        ];
+        for (const sibling of cellFeeders) {
+            if (sibling.id === node.id) continue;
+
+            const siblingTarget = sibling.equipmentId ? this.targets.get(sibling.equipmentId) : undefined;
+            if (siblingTarget?.kind !== 'EQUIPMENT' || siblingTarget.node === undefined) return false;
+            if (!availableOperations(siblingTarget).includes('UPDATE_BAY_POSITION')) return false;
+
+            const siblingPosition = { order: sibling.order!, direction: position.direction };
+            commands.push(
+                new UpdateBayPositionCommand(
+                    siblingTarget,
+                    sibling,
+                    slot,
+                    siblingPosition,
+                    this.dom,
+                    this.model,
+                    dx,
+                    previousDx,
+                    this.feederAxisX(sibling),
+                ),
+            );
+        }
+
+        this.history.pushAll(commands);
         return true;
+    }
+
+    private bayTurn(
+        feeder: NodeMetadata,
+        cellFeeders: readonly NodeMetadata[],
+        from: FeederDirection,
+        to: FeederDirection,
+    ): BayTurn | undefined {
+        const vlId = feeder.vid ?? '';
+        const busbarYs = this.model.busbarNodes(vlId).flatMap((busbar) => {
+            const span = this.dom.getDiagramSpan(busbar.id);
+            return span ? [span.y] : [];
+        });
+        const source = this.levelsOf(feeder);
+        if (busbarYs.length === 0 || !source) return undefined;
+
+        const busTop = Math.min(...busbarYs);
+        const busBottom = Math.max(...busbarYs);
+        // Nothing on the other side yet: mirror the bay as it is.
+        const target = this.feederLevels(vlId, to) ?? source;
+
+        const distance = (y: number, side: FeederDirection): number =>
+            side === 'TOP' ? busTop - y : y - busBottom;
+        const withSwitch = source.switchY !== undefined && target.switchY !== undefined;
+        const anchors = (levels: FeederLevels, side: FeederDirection): number[] =>
+            withSwitch
+                ? [0, distance(levels.switchY!, side), distance(levels.feederY, side)]
+                : [0, distance(levels.feederY, side)];
+
+        const y: BayFlip = {
+            busTop,
+            busBottom,
+            from,
+            source: anchors(source, from),
+            target: target === source ? anchors(source, from) : anchors(target, to),
+        };
+
+        const heights = new Map<string, number>();
+        for (const id of this.dom.bayCellElementIds(feeder.id)) {
+            const componentType =
+                this.model.getNodeById(id)?.componentType ??
+                this.model.getFeederInfoById(id)?.componentType;
+            if (componentType) heights.set(id, this.componentSize(componentType).height);
+        }
+
+        return {
+            forth: this.cellFlip(feeder, cellFeeders, to, y, heights),
+            back: this.cellFlip(feeder, cellFeeders, from, invertFlip(y), heights),
+            feederNodeIds: cellFeeders.map((cellFeeder) => cellFeeder.id),
+            from,
+        };
+    }
+
+    private cellFlip(
+        feeder: NodeMetadata,
+        cellFeeders: readonly NodeMetadata[],
+        direction: FeederDirection,
+        y: BayFlip,
+        heights: ReadonlyMap<string, number>,
+    ): CellFlip {
+        const orientation = direction === 'TOP' ? 'UP' : 'DOWN';
+        const feeders = new Map<string, string | null>();
+        const arrows = new Map<string, string | null>();
+
+        for (const cellFeeder of cellFeeders) {
+            const symbol = this.symbols.createSymbol(cellFeeder.componentType, { orientation });
+            feeders.set(cellFeeder.id, symbol.firstElementChild?.getAttribute('transform') ?? null);
+
+            for (const info of this.model.getFeederInfosForEquipment(cellFeeder.equipmentId ?? '')) {
+                const { width, height } = this.componentSize(info.componentType);
+                arrows.set(info.id, direction === 'BOTTOM' ? `rotate(180.0,${width / 2},${height / 2})` : null);
+            }
+        }
+        return { feederNodeId: feeder.id, direction, y, heights, feeders, arrows };
     }
 
     applyProperties(equipmentId: string, changes: EquipmentProperties): boolean {
@@ -1083,8 +1243,12 @@ export class EditorCore {
 
     private feederLevels(vlId: string, direction: FeederDirection): FeederLevels | undefined {
         const feeder = this.model.feederNodes(vlId, direction).find((node) => !isCreatedNodeId(node.id));
-        const feederY = feeder && this.centreY(feeder);
-        if (!feeder || feederY === undefined) return undefined;
+        return feeder && this.levelsOf(feeder);
+    }
+
+    private levelsOf(feeder: NodeMetadata): FeederLevels | undefined {
+        const feederY = this.centreY(feeder);
+        if (feederY === undefined) return undefined;
 
         const bay = this.model.bayNodes(feeder);
         const breaker =
@@ -1138,16 +1302,22 @@ export class EditorCore {
         const claims: OrderClaim[] = [];
         const vacated = new Set<string>(vacating ? [vacating] : []);
 
+        const lastClaims = new Map<string, OrderClaim>();
+
         for (const command of this.history.pending) {
             if (command === ignore) continue;
             for (const claim of command.orderClaims ?? []) {
                 if (claim.vlId !== vlId) continue;
-                claims.push(claim);
-                if (claim.vacatedNodeId) vacated.add(claim.vacatedNodeId);
+                if (!claim.vacatedNodeId) {
+                    claims.push(claim);
+                    continue;
+                }
+                vacated.add(claim.vacatedNodeId);
 
+                if (claim.vacatedNodeId !== vacating) lastClaims.set(claim.vacatedNodeId, claim);
             }
         }
-        return { claims, vacated };
+        return { claims: [...claims, ...lastClaims.values()], vacated };
     }
 
     private readonly emit: EditorEmit = (name, payload) => {

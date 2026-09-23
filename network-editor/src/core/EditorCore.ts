@@ -506,11 +506,13 @@ export class EditorCore {
         if (this.model.collectBay(equipmentId).nodes.length <= scope.nodes.length) return [];
 
         const claims: OrderClaim[] = [];
+        const movedPosition = this.pendingBayPosition(equipmentId)?.bayPosition;
         for (const node of scope.nodes) {
+            const order = movedPosition?.order ?? node.order;
             if (node.order === undefined) continue;
             const slot = this.model.slotOfFeeder(node);
             const x = this.feederAxisX(node);
-            if (slot && x !== undefined) claims.push({ ...slot, order: node.order, x, iidmNode: node.iidmNode, direction: node.direction as FeederDirection | undefined });
+            if (slot && x !== undefined) claims.push({ ...slot, order: order, x, iidmNode: node.iidmNode, direction:movedPosition ?? node.direction as FeederDirection | undefined });
         }
         return claims;
     }

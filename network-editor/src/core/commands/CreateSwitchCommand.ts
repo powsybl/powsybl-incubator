@@ -8,12 +8,12 @@ import {
     type ElementType,
     type EquipmentProperties,
     type NodeMetadata,
+    type SwitchEnds,
 } from '../types';
 
-export class CreateLinkCommand implements PendingCreateCommand {
+export class CreateSwitchCommand implements PendingCreateCommand {
     readonly pendingMarker: { targetId: string; nodeId: string; label: string; elementId: string };
 
-    /** Both IIDM ends are known, so the model can already tell this pair is taken. */
     private readonly node: NodeMetadata;
 
     constructor(
@@ -23,7 +23,7 @@ export class CreateLinkCommand implements PendingCreateCommand {
         private readonly node1: number,
         private readonly node2: number,
         private readonly properties: EquipmentProperties,
-        private readonly targetId: string,
+        readonly ends: SwitchEnds,
         private readonly model: EditorModel,
     ) {
         this.node = {
@@ -36,8 +36,8 @@ export class CreateLinkCommand implements PendingCreateCommand {
             open: properties.open === true,
         };
         this.pendingMarker = {
-            targetId,
-            nodeId: targetId,
+            targetId: ends.first,
+            nodeId: ends.first,
             label: equipmentId,
             elementId: this.node.id,
         };
@@ -45,7 +45,7 @@ export class CreateLinkCommand implements PendingCreateCommand {
 
     execute(): void {
         this.model.addNode(this.node);
-        this.model.seedProperties(this.equipmentId, this.properties);
+        this.model.replaceProperties(this.equipmentId, this.properties);
     }
 
     undo(): void {
@@ -75,15 +75,15 @@ export class CreateLinkCommand implements PendingCreateCommand {
         };
     }
 
-    withSpec(spec: CreateSpec): CreateLinkCommand {
-        return new CreateLinkCommand(
+    withSpec(spec: CreateSpec): CreateSwitchCommand {
+        return new CreateSwitchCommand(
             spec.provisionalId,
-            this.type, // the equipment type stays put: changing it means cancel and recreate
+            this.type,
             this.vlId,
             this.node1,
             this.node2,
             spec.properties,
-            this.targetId,
+            this.ends,
             this.model,
         );
     }

@@ -52,6 +52,7 @@ export function App() {
                 if (event.name === 'gesture:changed') {
                     setGesture(event.gesture);
                     if (event.gesture) setMenu(null);
+                    setPanel(instance.switchAction());
                 }
                 if (event.name === 'element:selected') {
                     setSelected(event.elements);
@@ -71,7 +72,6 @@ export function App() {
         editor && menu
             ? menuItemsFor(editor, menu).map((item) => ({
                   label: item.label,
-                  enabled: item.enabled,
                   danger: item.danger,
                   onClick: () => (item.needsForm ? setPanel(item.action) : item.action.run()),
               }))
@@ -106,9 +106,11 @@ export function App() {
 
             {gesture && (
                 <p className="hint">
-                    {gesture.kind === 'LINK'
-                        ? `Pick the far end of the link — ${gesture.candidates.length} candidates.`
-                        : `Pick the new position of ${gesture.equipmentId} — ${gesture.candidates.length} slots on the busbar.`}{' '}
+                    {gesture.kind !== 'SWITCH'
+                        ? `Pick the new position of ${gesture.equipmentId} — ${gesture.candidates.length} slots on the busbar.`
+                        : gesture.second
+                          ? 'Name the switch and apply to create it.'
+                          : `Pick the far end of the switch — ${gesture.candidates.length} candidates.`}{' '}
                     Esc cancels.
                 </p>
             )}
@@ -120,7 +122,14 @@ export function App() {
                         <>
                             <h2>{actionLabel(panel)}</h2>
                             <PropertyForm action={panel} onDone={() => setPanel(null)} />
-                            <button onClick={() => setPanel(null)}>Cancel</button>
+                            <button
+                                onClick={() => {
+                                    setPanel(null);
+                                    editor?.cancelGesture();
+                                }}
+                            >
+                                Cancel
+                            </button>
                         </>
                     ) : (
                         <p className="hint">Click or right-click the diagram.</p>

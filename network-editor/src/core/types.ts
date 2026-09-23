@@ -5,6 +5,7 @@ import type {
     OnFeederCallbackType,
     OnBusCallbackType,
     OnToggleSldHoverCallbackType,
+    SldComponentOptions,
 } from '@powsybl/network-viewer-core';
 
 export type { SLDMetadata };
@@ -41,6 +42,10 @@ export const INJECTION_TYPES: ReadonlySet<ElementType> = new Set<ElementType>([
     'BOUNDARY_LINE',
 ]);
 
+export const BUSBAR_TYPES: ReadonlySet<ElementType> = new Set<ElementType>([
+    'BUS',
+]);
+
 export const BRANCH_TYPES: ReadonlySet<ElementType> = new Set<ElementType>([
     'LINE',
     'TWO_WINDINGS_TRANSFORMER',
@@ -69,9 +74,9 @@ export const NODE_TARGET_CLASS = 'ne-node-target';
 
 export const PENDING_CREATE_CLASS = 'ne-pending-create';
 
-export const LINK_START_CLASS = 'ne-link-start';
+export const SWITCH_START_CLASS = 'ne-switch-start';
 
-export const LINK_END_CLASS = 'ne-link-end';
+export const SWITCH_END_CLASS = 'ne-switch-end';
 
 export const BAY_SLOT_CLASS = 'ne-bay-slot';
 
@@ -110,12 +115,42 @@ export function toDirection(direction: string | undefined): FeederDirection | un
     return direction === 'TOP' || direction === 'BOTTOM' ? direction : undefined;
 }
 
-export type LinkEnd = NodeTarget | BusbarTarget;
+export type SwitchEnd = NodeTarget | BusbarTarget;
 
-export interface LinkGesture {
+export interface SwitchGesture {
     first: NodeTarget;
-    candidates: readonly LinkEnd[];
-    spec: CreateSpec;
+    candidates: readonly SwitchEnd[];
+    type: ElementType;
+    second?: SwitchEnd;
+}
+
+export type PickedSwitch = SwitchGesture & { second: SwitchEnd };
+
+export interface SwitchEnds {
+    first: string;
+    second: string;
+}
+
+export interface BayGeometry {
+    y: number;
+    columns: BayColumn[];
+    gaps: { x: number; leftOrder?: number; rightOrder?: number }[];
+}
+
+export interface BayColumn {
+    x: number;
+    order?: number;
+}
+
+export interface DiagramPoint {
+    x: number;
+    y: number;
+}
+
+export interface DiagramSpan {
+    left: number;
+    right: number;
+    y: number;
 }
 
 export interface BaySlotCandidate {
@@ -133,7 +168,7 @@ export interface BayMoveGesture {
 }
 
 export type Gesture =
-    | ({ kind: 'LINK' } & LinkGesture)
+    | ({ kind: 'SWITCH' } & SwitchGesture)
     | ({ kind: 'BAY_MOVE' } & BayMoveGesture);
 
 export interface NodeMetadata {
@@ -209,7 +244,7 @@ export interface EquipmentTarget {
     node?: number;
     order?: number;
     direction?: FeederDirection;
-    pending?: boolean;
+    claimed?: boolean;
     created?: boolean;
     createdBy?: EditOperation;
     hostNodeId?: string;
@@ -222,7 +257,7 @@ export type EditOperation =
     | 'CREATE_SWITCH'
     | 'CREATE_SWITCHED_INJECTION'
     | 'CREATE_FEEDER_BAY'
-    | 'CREATE_COUPLING'
+    | 'CREATE_BUSBAR'
     | 'DELETE'
     | 'DELETE_BAY'
     | 'UPDATE_PROPERTIES'
@@ -230,20 +265,6 @@ export type EditOperation =
     | 'FLIP_BAY_DIRECTION'
     | 'MOVE_BAY'
     | 'RENAME';
-
-export const IMPLEMENTED_OPERATIONS: ReadonlySet<EditOperation> = new Set<EditOperation>([
-    'CREATE_INJECTION',
-    'CREATE_SWITCH',
-    'CREATE_SWITCHED_INJECTION',
-    'CREATE_FEEDER_BAY',
-    'DELETE',
-    'DELETE_BAY',
-    'UPDATE_PROPERTIES',
-    'UPDATE_BAY_POSITION',
-    'FLIP_BAY_DIRECTION',
-    'MOVE_BAY',
-    'RENAME',
-]);
 
 export const ORDER_STEP = 10;
 
@@ -254,15 +275,16 @@ export interface BayPosition {
 
 
 export interface PendingOrders {
-    claimed: ReadonlyMap<number, readonly number[]>;
+    claims: readonly OrderClaim[];
     vacated: ReadonlySet<string>;
 }
 
-export const NO_PENDING_ORDERS: PendingOrders = { claimed: new Map(), vacated: new Set() };
+export const NO_PENDING_ORDERS: PendingOrders = { claims: [], vacated: new Set() };
 
 export interface OrderClaim extends BaySlot {
     order: number;
     vacatedNodeId?: string;
+    x?: number;
 }
 
 export interface CreateSpec {
@@ -316,7 +338,7 @@ export interface EditorOptions {
 }
 
 export const EDITOR_OPTION_DEFAULTS = {
-    svgType: 'SLD',
+    svgType: 'voltage-level',
     minWidth: 200,
     minHeight: 200,
     maxWidth: 2000,
@@ -447,6 +469,25 @@ export const NODE_COMPONENT_TYPE: Readonly<Record<ElementType, string>> = {
     UNKNOWN: HIDDEN_NODE_TYPE,
 };
 
+export function nodeComponentType(type: ElementType, properties: EquipmentProperties = {}): string {
+    if (type === 'SHUNT') {
+        const bPerSection = properties.bPerSection;
+        return typeof bPerSection === 'number' && bPerSection < 0 ? 'INDUCTOR' : 'CAPACITOR';
+    }
+    return NODE_COMPONENT_TYPE[type];
+}
+
+export interface SymbolProvider {
+    componentSize(componentType: string): { width: number; height: number };
+    createSymbol(componentType: string, options?: SldComponentOptions): SVGGElement;
+}
+
+const CREATED_NODE_PREFIX = 'ne-';
+
 export function createdNodeId(equipmentId: string): string {
-    return `ne-${equipmentId}`;
+    return `${CREATED_NODE_PREFIX}${equipmentId}`;
+}
+
+export function isCreatedNodeId(nodeId: string): boolean {
+    return nodeId.startsWith(CREATED_NODE_PREFIX);
 }

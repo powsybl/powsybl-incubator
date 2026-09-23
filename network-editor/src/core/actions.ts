@@ -1,7 +1,6 @@
 import { availableOperations, creatableTypesFor } from './operations';
 import { defaultsOf, EQUIPMENT_ID, schemaFor, type PropertyDescriptor } from '../properties';
 import {
-    IMPLEMENTED_OPERATIONS,
     SWITCH_TYPES,
     toDirection,
     toElementType,
@@ -14,6 +13,7 @@ import {
     type ElementType,
     type EquipmentProperties,
     type EquipmentTarget,
+    type PickedSwitch,
 } from './types';
 
 export type ActionSubject =
@@ -25,15 +25,13 @@ export interface EditorAction {
     id: string;
     operation: EditOperation;
     subject?: ActionSubject;
-    /** false when the operation is announced but not implemented yet. */
-    enabled: boolean;
     form: readonly PropertyDescriptor[];
     initial: EquipmentProperties;
     run(values?: EquipmentProperties): boolean;
 }
 
 export interface ActionHost {
-    create(targetId: string, spec: CreateSpec): boolean;
+    create(targetId: string, operation: EditOperation, spec: CreateSpec): boolean;
     applyProperties(equipmentId: string, changes: EquipmentProperties): boolean;
     deleteElement(equipmentId: string): boolean;
     deleteFeederBay(equipmentId: string): boolean;
@@ -42,7 +40,8 @@ export interface ActionHost {
     moveDestinations(equipmentId: string): BusbarTarget[];
     moveFeederBay(equipmentId: string, busbarTargetId: string): boolean;
     renameEquipment(equipmentId: string, newId: string): boolean;
-    beginLink(targetId: string, spec: CreateSpec): boolean;
+    beginSwitch(targetId: string, type: ElementType): boolean;
+    createSwitch(spec: CreateSpec): boolean;
     beginBayMove(equipmentId: string): boolean;
     createSwitchedInjection(targetId: string, spec: CreateSpec): boolean;
     getBayPosition(equipmentId: string): BayPosition | undefined;
@@ -80,10 +79,6 @@ export function buildActions(
     }
 
     return availableOperations(target).flatMap((operation) => {
-        if (!IMPLEMENTED_OPERATIONS.has(operation)) {
-            return [{ id: id(target, operation), operation, enabled: false, form: [], initial: {}, run: no }];
-        }
-
         const creatable = creatableTypesFor(operation);
         if (creatable.size > 0) {
             return [...creatable].map((type) =>
@@ -129,14 +124,25 @@ function createAction(
     type: ElementType,
     insertion?: BayInsertion,
 ): EditorAction {
-    const onBusbar = target.kind === 'BUSBAR';
+    if (operation === 'CREATE_SWITCH' && target.kind === 'NODE') {
+        return {
+            id: `${id(target, operation)}:${type}`,
+            operation,
+            subject: { kind: 'TYPE', type },
+            form: [],
+            initial: {},
+            run: () => host.beginSwitch(target.id, type),
+        };
+    }
+
+    const onBusbar = operation === 'CREATE_FEEDER_BAY';
     const behindSwitch = operation === 'CREATE_SWITCHED_INJECTION';
     const form = createForm(type, onBusbar, behindSwitch);
 
     const initial = defaultsOf(form);
     initial.equipmentId = 'NEW_' + type;
 
-    if (onBusbar) {
+    if (onBusbar && target.kind === 'BUSBAR') {
         const order = host.proposedOrder(target, insertion);
         if (order !== undefined) initial.order = order;
     }
@@ -145,19 +151,33 @@ function createAction(
         id: `${id(target, operation)}:${type}`,
         operation,
         subject: { kind: 'TYPE', type },
-        enabled: true,
         form,
         initial,
         run: (values = {}) => {
             const spec = specFromValues(type, values);
             if (!spec) return false;
-            if (operation === 'CREATE_SWITCH' && target.kind === 'NODE') {
-                return host.beginLink(target.id, spec);
-            }
             if (behindSwitch && target.kind === 'NODE') {
                 return host.createSwitchedInjection(target.id, spec);
             }
-            return host.create(target.id, spec);
+            return host.create(target.id, operation, spec);
+        },
+    };
+}
+
+export function switchAction(host: ActionHost, picked: PickedSwitch): EditorAction {
+    const form = createForm(picked.type, false, false);
+    const initial = defaultsOf(form);
+    initial.equipmentId = 'NEW_' + picked.type;
+
+    return {
+        id: `${picked.first.id}:CREATE_SWITCH:${picked.second.id}`,
+        operation: 'CREATE_SWITCH',
+        subject: { kind: 'TYPE', type: picked.type },
+        form,
+        initial,
+        run: (values = {}) => {
+            const spec = specFromValues(picked.type, values);
+            return spec ? host.createSwitch(spec) : false;
         },
     };
 }
@@ -181,7 +201,6 @@ function equipmentActions(
                 id: `${id(target, operation)}:${destination.id}`,
                 operation,
                 subject: { kind: 'BUSBAR', busbarSectionId: destination.busbarSectionId },
-                enabled: true,
                 form: [],
                 initial: {},
                 run: () => host.moveFeederBay(equipmentId, destination.id),
@@ -214,7 +233,6 @@ function equipmentActions(
                 {
                     id: id(target, operation),
                     operation,
-                    enabled: true,
                     form,
                     initial: {
                         ...defaultsOf(form.filter((descriptor) => descriptor.editOnly)),
@@ -240,7 +258,6 @@ function equipmentActions(
                 {
                     id: id(target, operation),
                     operation,
-                    enabled: true,
                     form: [EQUIPMENT_ID],
                     initial: { equipmentId },
                     run: (values = {}) => {
@@ -273,7 +290,6 @@ function batchActions(
             id: id(target, operation),
             operation,
             subject: { kind: 'SELECTION' as const, size: batch.length },
-            enabled: true,
             form: [],
             initial: {},
             run: () => host.deleteElements(equipmentIds, kind),
@@ -281,7 +297,7 @@ function batchActions(
 }
 
 function plain(target: EditTarget, operation: EditOperation, run: () => boolean): EditorAction {
-    return { id: id(target, operation), operation, enabled: true, form: [], initial: {}, run };
+    return { id: id(target, operation), operation, form: [], initial: {}, run };
 }
 
 function id(target: EditTarget, operation: EditOperation): string {
@@ -290,8 +306,4 @@ function id(target: EditTarget, operation: EditOperation): string {
 
 function text(value: EquipmentProperties[string] | undefined): string | undefined {
     return typeof value === 'string' ? value : undefined;
-}
-
-function no(): boolean {
-    return false;
 }

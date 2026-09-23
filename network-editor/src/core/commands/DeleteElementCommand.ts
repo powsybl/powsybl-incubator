@@ -6,7 +6,7 @@ import type {
     DeleteScope,
     ElementType,
     FeederInfoMetadata,
-    NodeMetadata,
+    NodeMetadata, OrderClaim,
     WireMetadata,
 } from '../types';
 
@@ -21,6 +21,7 @@ export class DeleteElementCommand implements Command {
         private readonly type: ElementType,
         private readonly scope: DeleteScope,
         private readonly kind: 'element' | 'bay',
+        readonly orderClaims: readonly OrderClaim[],
         private readonly model: EditorModel,
         private readonly dom: SvgDomService,
         private readonly onRemoved: (equipmentId: string) => void,
@@ -61,7 +62,6 @@ export class DeleteElementCommand implements Command {
         }
         this.domSnapshots = [];
 
-        // Metadata: re-add the nodes, then their wires and feeder infos.
         for (const node of this.nodeMetas) this.model.addNode(node);
         for (const wire of this.wireMetas) this.model.addWire(wire);
         for (const info of this.feederInfoMetas) this.model.addFeederInfo(info);

@@ -22,12 +22,12 @@ export class UpdatePropertiesCommand implements Command {
         this.previous = Object.fromEntries(
             Object.keys(this.changes).map((key) => [key, current[key]]),
         );
-        this.model.setProperties(this.equipmentId, this.changes);
+        this.model.mergeProperties(this.equipmentId, this.changes);
         this.onChanged(this.equipmentId, this.changes);
     }
 
     undo(): void {
-        this.model.setProperties(this.equipmentId, this.previous);
+        this.model.mergeProperties(this.equipmentId, this.previous);
         this.onChanged(this.equipmentId, this.previous);
     }
 

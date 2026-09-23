@@ -972,6 +972,8 @@ export class EditorCore {
         const second = this.targets.get(command.ends.second);
         const from = first?.kind === 'NODE' ? this.nodePoint(first) : undefined;
         const far = second && this.endAnchor(second);
+        const open = command.createSpec.properties.open === true;
+
         if (!from || !far) return undefined;
 
         return {
@@ -980,7 +982,7 @@ export class EditorCore {
             label: command.equipmentId,
             from,
             to: isSpan(far) ? { x: clampToSpan(far, from.x), y: far.y } : far,
-            symbol: first && this.switchSymbol(command.createSpec.type, first.id),
+            symbol: first && this.switchSymbol(command.createSpec.type, first.id, open),
         };
     }
 
@@ -1112,8 +1114,8 @@ export class EditorCore {
         return this.symbols.componentSize(componentType);
     }
 
-    private switchSymbol(type: ElementType, anchorNodeId: string): SymbolView | undefined {
-        return this.symbolFor(NODE_COMPONENT_TYPE[type], { open: false, orientation: 'RIGHT' }, anchorNodeId);
+    private switchSymbol(type: ElementType, anchorNodeId: string, open = false,): SymbolView | undefined {
+        return this.symbolFor(NODE_COMPONENT_TYPE[type], { open: open, orientation: 'RIGHT' }, anchorNodeId);
     }
 
     private terminalSymbol(spec: CreateSpec, side: 'UP' | 'DOWN', anchorNodeId: string): SymbolView | undefined {

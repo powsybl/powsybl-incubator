@@ -16,9 +16,9 @@ import {
 } from '../src';
 import { ContextMenu, type MenuItemSpec } from './ContextMenu';
 import { PropertyForm } from '../src/react';
-import svgContent from './data/v1.svg?raw';
-import metadataJson from './data/vl1_metadata.json';
-import propertiesJson from './data/vl1_properties.json';
+import svgContent from './data/reseau.svg?raw';
+import metadataJson from './data/reseau_metadata.json';
+import propertiesJson from './data/reseau_properties.json';
 
 const metadata = metadataJson as unknown as SLDMetadata;
 const initialProperties = propertiesJson as Record<string, EquipmentProperties>;

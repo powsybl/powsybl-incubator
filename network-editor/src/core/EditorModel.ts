@@ -127,6 +127,15 @@ export class EditorModel {
         return this.feederInfosByEquipmentId.get(equipmentId) ?? [];
     }
 
+    getFeederInfoById(id: string): FeederInfoMetadata | undefined {
+        return this.feederInfosById.get(id);
+    }
+
+    setFeederDirection(nodeId: string, direction: FeederDirection): void {
+        const node = this.nodesById.get(nodeId);
+        if (node) node.direction = direction;
+    }
+
     removeNode(nodeId: string): NodeMetadata | undefined {
         const node = this.nodesById.get(nodeId);
         if (!node) return undefined;

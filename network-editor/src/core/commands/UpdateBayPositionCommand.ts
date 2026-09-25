@@ -18,30 +18,20 @@ export interface BayTurn {
     from: FeederDirection;
 }
 
-export interface BayShift {
-    dx: number;
-    previousDx: number;
-    x?: number;
-}
-
 export class UpdateBayPositionCommand implements Command {
 
     readonly orderClaims: readonly OrderClaim[];
-
-    private readonly nodeId: string;
 
     constructor(
         private readonly feeder: EquipmentTarget,
         node: NodeMetadata,
         slot: BaySlot,
         private readonly position: BayPosition,
-        private readonly offset: BayShift,
         private readonly dom: SvgDomService,
         private readonly model: EditorModel,
         private readonly turn?: BayTurn,
     ) {
-        this.nodeId = node.id;
-        this.orderClaims = [{ ...slot, order: position.order, vacatedNodeId: node.id, x: offset.x }];
+        this.orderClaims = [{ ...slot, order: position.order, vacatedNodeId: node.id }];
     }
 
     get equipmentId(): string {
@@ -52,12 +42,7 @@ export class UpdateBayPositionCommand implements Command {
         return this.position;
     }
 
-    get shift(): number {
-        return this.offset.dx;
-    }
-
     execute(): void {
-        this.dom.shiftBay(this.nodeId, this.offset.dx);
         if (!this.turn) return;
 
         this.dom.flipCell(this.turn.forth);
@@ -67,7 +52,6 @@ export class UpdateBayPositionCommand implements Command {
     }
 
     undo(): void {
-        this.dom.shiftBay(this.nodeId, this.offset.previousDx);
         if (!this.turn) return;
 
         this.dom.flipCell(this.turn.back);

@@ -3,6 +3,7 @@ import { isSwitchNode } from './operations';
 import {
     BAY_TRAVERSABLE_TYPES,
     BUSBAR_SECTION_TYPE,
+    DEFAULT_CELL_WIDTH,
     HIDDEN_NODE_TYPE,
     NO_PENDING_ORDERS,
     ORDER_STEP,
@@ -74,6 +75,19 @@ export class EditorModel {
 
     componentSize(componentType: string): { width: number; height: number } | undefined {
         return this.componentSizes.get(componentType);
+    }
+
+    /** Width of one bay column in powsybl-diagram (`LayoutParameters.cellWidth`). */
+    cellWidth(): number {
+        return this.metadata.layoutParams?.cellWidth ?? DEFAULT_CELL_WIDTH;
+    }
+
+    voltageLevelIds(): string[] {
+        const ids = new Set<string>();
+        for (const node of this.metadata.nodes) {
+            if (node.componentType === BUSBAR_SECTION_TYPE && node.vid) ids.add(node.vid);
+        }
+        return [...ids];
     }
 
     private indexNode(node: NodeMetadata): void {

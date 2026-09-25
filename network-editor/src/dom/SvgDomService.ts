@@ -201,12 +201,26 @@ export class SvgDomService {
         }
     }
 
-    shiftBay(feederNodeId: string, dx: number): void {
-        const cell = this.bayCell(feederNodeId);
-        if (!cell) return;
+    /** Extern and intern cells of the voltage level drawn around this busbar. */
+    voltageLevelCells(busbarId: string): Element[] {
+        const level = this.findElementById(busbarId)?.closest('g.sld-voltage-level');
+        if (!level) return [];
+        return [...level.querySelectorAll(':scope > g.sld-extern-cell, :scope > g.sld-intern-cell')];
+    }
 
-        if (dx === 0) cell.removeAttribute('transform');
-        else cell.setAttribute('transform', `translate(${dx},0)`);
+    cellElementIds(cell: Element): string[] {
+        return [...cell.querySelectorAll(':scope > g[id]')].map((element) => element.id);
+    }
+
+    getCellShift(cell: Element): number {
+        const match = TRANSLATE.exec(cell.getAttribute('transform') ?? '');
+        return match ? Number(match[1]) : 0;
+    }
+
+    setCellShift(cell: Element, dx: number): void {
+        const shift = round(dx);
+        if (shift === 0) cell.removeAttribute('transform');
+        else cell.setAttribute('transform', `translate(${shift},0)`);
     }
 
     bayCell(feederNodeId: string): Element | null {
@@ -215,8 +229,7 @@ export class SvgDomService {
 
     bayCellElementIds(feederNodeId: string): string[] {
         const cell = this.bayCell(feederNodeId);
-        if (!cell) return [];
-        return [...cell.querySelectorAll(':scope > g[id]')].map((element) => element.id);
+        return cell ? this.cellElementIds(cell) : [];
     }
 
     flipCell(flip: CellFlip): void {

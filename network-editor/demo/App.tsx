@@ -5,7 +5,6 @@ import {
     describeTargets,
     menuItemsFor,
     NetworkEditor,
-    type BayInsertion,
     type ChangeSet,
     type EditorAction,
     type EditTarget,
@@ -23,7 +22,7 @@ import propertiesJson from './data/reseau_properties.json';
 const metadata = metadataJson as unknown as SLDMetadata;
 const initialProperties = propertiesJson as Record<string, EquipmentProperties>;
 
-type Menu = { targets: readonly EditTarget[]; x: number; y: number; insertion?: BayInsertion };
+type Menu = { targets: readonly EditTarget[]; x: number; y: number; insertion?: number };
 
 export function App() {
     const container = useRef<HTMLDivElement>(null);

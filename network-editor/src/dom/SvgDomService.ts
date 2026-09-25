@@ -1,4 +1,4 @@
-import { flipY, type BayFlip } from '../core/bayFlip';
+import { flipY, type BayFlip } from '../core/bayGeometry';
 import {
     NODE_TARGET_CLASS,
     SELECTED_CLASS,

@@ -4,7 +4,6 @@ import {
     SWITCH_TYPES,
     toDirection,
     toElementType,
-    type BayInsertion,
     type BayPosition,
     type BusbarTarget,
     type CreateSpec,
@@ -47,7 +46,7 @@ export interface ActionHost {
     getBayPosition(equipmentId: string): BayPosition | undefined;
     setBayPosition(equipmentId: string, position: BayPosition): boolean;
     getProperties(equipmentId: string): EquipmentProperties;
-    proposedOrder(target: BusbarTarget, insertion?: BayInsertion): number | undefined;
+    proposedOrder(target: BusbarTarget, insertion?: number): number | undefined;
 }
 
 const ORDER: PropertyDescriptor = { key: 'order', type: 'number', required: true, min: 0 };
@@ -71,7 +70,7 @@ const DIRECTION: PropertyDescriptor = {
 export function buildActions(
     host: ActionHost,
     target: EditTarget,
-    insertion?: BayInsertion,
+    insertion?: number,
 ): EditorAction[] {
     const batch = host.selectedTargets();
     if (batch.length > 1 && batch.some((selected) => selected.id === target.id)) {
@@ -122,7 +121,7 @@ function createAction(
     target: EditTarget,
     operation: EditOperation,
     type: ElementType,
-    insertion?: BayInsertion,
+    insertion?: number,
 ): EditorAction {
     if (operation === 'CREATE_SWITCH' && target.kind === 'NODE') {
         return {

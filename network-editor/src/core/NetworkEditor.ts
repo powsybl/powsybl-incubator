@@ -10,7 +10,6 @@ import { SvgDomService } from '../dom/SvgDomService';
 import { type EditorAction } from './actions';
 import {
     EDITOR_OPTION_DEFAULTS,
-    type BayInsertion,
     type ChangeSet,
     type EditorOptions,
     type EditTarget,
@@ -108,7 +107,7 @@ export class NetworkEditor {
     }
 
 
-    actionsFor(target: EditTarget, insertion?: BayInsertion): EditorAction[] {
+    actionsFor(target: EditTarget, insertion?: number): EditorAction[] {
         return this.core.actionsFor(target, insertion);
     }
 

@@ -5,6 +5,7 @@ import {
     type DiagramPoint,
 } from '../core/types';
 import { PENDING_BADGE_CLASS, PENDING_SYMBOL_CLASS } from './editorStyle';
+import type { FeederLevels } from '../core/bayGeometry';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
@@ -217,4 +218,25 @@ function labelBox(cx: number, top: number, label: string): [SVGRectElement, SVGT
 
 function distance(from: DiagramPoint, to: DiagramPoint): number {
     return Math.hypot(to.x - from.x, to.y - from.y);
+}
+
+/** Length of a previewed feeder (and where its switch sits) so it lines up with the existing ones. */
+export function alignedExtent(
+    levels: FeederLevels | undefined,
+    fromY: number,
+    side: 'UP' | 'DOWN',
+    terminalHeight: number,
+    switchSize: number | undefined,
+): { length?: number; switchAt?: number } {
+    if (!levels) return {};
+
+    const sign = side === 'UP' ? -1 : 1;
+    const length = sign * (levels.feederY - fromY) - terminalHeight / 2;
+    // shorter than the default stub: keep the stub
+    if (length < defaultFeederLength(switchSize)) return {};
+    if (switchSize === undefined) return { length };
+
+    const switchAt = levels.switchY === undefined ? undefined : sign * (levels.switchY - fromY);
+    const switchFits = switchAt !== undefined && switchAt > switchSize && switchAt < length - switchSize;
+    return { length, switchAt: switchFits ? switchAt : length / 2 };
 }

@@ -131,17 +131,6 @@ export interface SwitchEnds {
     second: string;
 }
 
-export interface BayGeometry {
-    y: number;
-    columns: BayColumn[];
-    gaps: { x: number; leftOrder?: number; rightOrder?: number }[];
-}
-
-export interface BayColumn {
-    x: number;
-    order?: number;
-}
-
 export interface DiagramPoint {
     x: number;
     y: number;
@@ -297,15 +286,11 @@ export interface CreateSpec {
     switchType?: ElementType;
 }
 
-export interface BayInsertion {
-    order: number;
-}
-
 export interface TargetEvent {
     targets: readonly EditTarget[];
     trigger: 'click' | 'contextmenu';
     position: { x: number; y: number };
-    insertion?: BayInsertion;
+    insertion?: number;
 }
 
 export interface ViewerCallbacks {

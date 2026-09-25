@@ -1,6 +1,6 @@
 import type { ActionSubject, EditorAction } from './core/actions';
 import { OPERATIONS } from './core/operations';
-import type { BayInsertion, EditOperation, EditTarget } from './core/types';
+import type { EditOperation, EditTarget } from './core/types';
 
 export interface ActionMenuItem {
     action: EditorAction;
@@ -13,12 +13,12 @@ export interface ActionMenuItem {
 
 export interface ActionSource {
     getTargets(): EditTarget[];
-    actionsFor(target: EditTarget, insertion?: BayInsertion): EditorAction[];
+    actionsFor(target: EditTarget, insertion?: number): EditorAction[];
 }
 
 export interface MenuSubjects {
     targets: readonly EditTarget[];
-    insertion?: BayInsertion;
+    insertion?: number;
 }
 
 export function actionLabel(action: EditorAction): string {

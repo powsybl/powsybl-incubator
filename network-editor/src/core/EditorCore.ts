@@ -18,9 +18,18 @@ import {
     type BayTurn,
 } from './commands/UpdateBayPositionCommand';
 import { UpdatePropertiesCommand } from './commands/UpdatePropertiesCommand';
-import { invertFlip, type BayFlip } from './bayFlip';
+import {
+    buildBayFlip,
+    invertFlip,
+    layoutBay,
+    type BayColumn,
+    type BayFlip,
+    type BayGeometry,
+    type FeederLevels,
+} from './bayGeometry';
 import { SvgDomService, type CellFlip } from '../dom/SvgDomService';
 import {
+    alignedExtent,
     defaultFeederLength,
     defaultSwitchAt,
     type FeederShape,
@@ -40,9 +49,6 @@ import {
     nodeComponentType,
     toElementType,
     toDirection,
-    type BayColumn,
-    type BayGeometry,
-    type BayInsertion,
     type BayMoveGesture,
     type BayPosition,
     type BaySlot,
@@ -73,11 +79,6 @@ import {
 } from './types';
 
 const DRAG_THRESHOLD = 10;
-
-interface FeederLevels {
-    feederY: number;
-    switchY?: number;
-}
 
 export class EditorCore {
     private destroyed = false;
@@ -251,13 +252,13 @@ export class EditorCore {
         return true;
     }
 
-    actionsFor(target: EditTarget, insertion?: BayInsertion): EditorAction[] {
+    actionsFor(target: EditTarget, insertion?: number): EditorAction[] {
         return buildActions(this, target, insertion);
     }
 
-    proposedOrder(target: BusbarTarget, insertion?: BayInsertion): number | undefined {
+    proposedOrder(target: BusbarTarget, insertion?: number): number | undefined {
         return (
-            insertion?.order ??
+            insertion ??
             this.model.nextOrderForBusbar(target, this.pendingOrders(target.vlId))
         );
     }
@@ -325,7 +326,7 @@ export class EditorCore {
             if (!availableOperations(siblingTarget).includes('UPDATE_BAY_POSITION')) return false;
 
             const siblingPosition = { order: sibling.order!, direction: position.direction };
-            const siblingShift = { ...shift, x: this.feederAxisX(sibling) };
+            const siblingShift = { ...shift, x: this.nodeCentre(sibling)?.x };
             commands.push(
                 new UpdateBayPositionCommand(
                     siblingTarget,
@@ -357,26 +358,7 @@ export class EditorCore {
         const source = this.levelsOf(feeder);
         if (busbarYs.length === 0 || !source) return undefined;
 
-        const busTop = Math.min(...busbarYs);
-        const busBottom = Math.max(...busbarYs);
-        const targetLevels = this.feederLevels(vlId, to) ?? source;
-
-        const distance = (y: number, side: FeederDirection): number =>
-            side === 'TOP' ? busTop - y : y - busBottom;
-        const withSwitch = source.switchY !== undefined && targetLevels.switchY !== undefined;
-        const anchors = (levels: FeederLevels, side: FeederDirection): number[] =>
-            withSwitch
-                ? [0, distance(levels.switchY!, side), distance(levels.feederY, side)]
-                : [0, distance(levels.feederY, side)];
-
-        const sourceAnchors = anchors(source, from);
-        const flip: BayFlip = {
-            busTop,
-            busBottom,
-            from,
-            source: sourceAnchors,
-            target: targetLevels === source ? sourceAnchors : anchors(targetLevels, to),
-        };
+        const flip = buildBayFlip(busbarYs, source, this.feederLevels(vlId, to) ?? source, from, to);
 
         const heights = new Map<string, number>();
         for (const id of this.dom.bayCellElementIds(feeder.id)) {
@@ -482,7 +464,7 @@ export class EditorCore {
             const order = movedPosition?.order ?? node.order;
             if (order === undefined) continue;
             const slot = this.model.slotOfFeeder(node);
-            const x = this.feederAxisX(node);
+            const x = this.nodeCentre(node)?.x;
             if (!slot || x === undefined) continue;
 
             const direction = movedPosition?.direction ?? toDirection(node.direction);
@@ -634,7 +616,7 @@ export class EditorCore {
             targets: [busbar],
             trigger: 'click',
             position: { x: event.clientX, y: event.clientY },
-            insertion: { order: slot.order },
+            insertion: slot.order,
         });
         return true;
     }
@@ -856,25 +838,10 @@ export class EditorCore {
         const span = this.dom.getDiagramSpan(busbar.id);
         if (!span) return undefined;
 
-        const columns = this.feederColumns(busbar, pending);
         const toCreate = pending.claims
             .filter((claim) => claim.sectionIndex === busbar.sectionIndex && claim.x === undefined)
-            .sort((a, b) => a.order - b.order);
-        for (const claim of toCreate) {
-            insertPendingColumn(columns, claim.order, span);
-        }
-
-        const bounds = [span.left, ...columns.map((column) => column.x), span.right];
-
-        return {
-            y: span.y,
-            columns,
-            gaps: bounds.slice(1).map((bound, gap) => ({
-                x: (bounds[gap] + bound) / 2,
-                leftOrder: columns[gap - 1]?.order,
-                rightOrder: columns[gap]?.order,
-            })),
-        };
+            .map((claim) => claim.order);
+        return layoutBay(span, this.feederColumns(busbar, pending), toCreate);
     }
 
     private baySlotCandidates(
@@ -893,7 +860,7 @@ export class EditorCore {
 
     private bayShift(equipmentId: string, node: NodeMetadata, toX?: number): BayShift {
         const previousDx = this.pendingBayPosition(equipmentId)?.shift ?? 0;
-        const axis = this.feederAxisX(node);
+        const axis = this.nodeCentre(node)?.x;
         if (axis === undefined) return { dx: previousDx, previousDx };
         if (toX === undefined) return { dx: previousDx, previousDx, x: axis };
         return { dx: previousDx + toX - axis, previousDx, x: toX };
@@ -903,29 +870,13 @@ export class EditorCore {
         const columns: BayColumn[] = [];
         for (const node of this.model.feedersInSection(slot)) {
             if (vacated.has(node.id)) continue;
-            const x = this.feederAxisX(node);
+            const x = this.nodeCentre(node)?.x;
             if (x !== undefined) columns.push({ x, order: node.order });
         }
         for (const { sectionIndex, order, x } of claims) {
             if (sectionIndex === slot.sectionIndex && x !== undefined) columns.push({ x, order });
         }
         return columns.sort((a, b) => a.x - b.x);
-    }
-
-    private feederAxisX(node: NodeMetadata): number | undefined {
-        const x = this.dom.getDiagramPoint(node.id)?.x;
-        if (x === undefined) return undefined;
-
-        return x + this.componentSize(node.componentType).width / 2;
-    }
-
-    private feederNodeOf(target: EquipmentTarget): NodeMetadata | undefined {
-        return this.model
-            .getNodesForEquipment(target.equipmentId)
-            .find(
-                (candidate) =>
-                    candidate.order === target.order && (candidate.vid ?? '') === target.vlId,
-            );
     }
 
     private movableFeeder(
@@ -935,7 +886,7 @@ export class EditorCore {
         if (target?.kind !== 'EQUIPMENT' || target.node === undefined) return undefined;
         if (!availableOperations(target).includes('UPDATE_BAY_POSITION')) return undefined;
 
-        const node = this.feederNodeOf(target);
+        const node = this.model.feederNodeOf(target);
         const slot = node && this.model.slotOfFeeder(node);
         return node && slot ? { target, node, slot } : undefined;
     }
@@ -974,7 +925,7 @@ export class EditorCore {
     private insertionAt(
         targets: readonly EditTarget[],
         event: MouseEvent,
-    ): BayInsertion | undefined {
+    ): number | undefined {
         const busbar = targets.find((target) => target.kind === 'BUSBAR');
         const x = this.dom.toDiagramX(event.clientX, event.clientY);
         if (busbar?.kind !== 'BUSBAR' || x === undefined) return undefined;
@@ -984,7 +935,7 @@ export class EditorCore {
                 best && Math.abs(best.x - x) <= Math.abs(candidate.x - x) ? best : candidate,
             undefined,
         );
-        return nearest && { order: nearest.order };
+        return nearest?.order;
     }
 
     private resolveNodeAt(target: Element | null): NodeMetadata | undefined {
@@ -1164,11 +1115,7 @@ export class EditorCore {
 
     private nodePoint(target: NodeTarget): DiagramPoint | undefined {
         const node = this.model.getNodeById(target.id);
-        const point = node && this.dom.getDiagramPoint(node.id);
-        if (!node || !point) return undefined;
-
-        const size = this.componentSize(node.componentType);
-        return { x: point.x + size.width / 2, y: point.y + size.height / 2 };
+        return node && this.nodeCentre(node);
     }
 
     private bayPreview(busbar: BusbarTarget, spec: CreateSpec): FeederShape | undefined {
@@ -1218,7 +1165,8 @@ export class EditorCore {
     ): FeederShape {
         const terminal = this.terminalSymbol(spec, side, anchorNodeId);
         const switchSize = switchType === undefined ? undefined : this.switchSize();
-        const extent = this.alignedExtent(vlId, from, side, terminal, switchSize);
+        const levels = this.feederLevels(vlId, side === 'UP' ? 'TOP' : 'BOTTOM');
+        const extent = alignedExtent(levels, from.y, side, terminal?.height ?? 0, switchSize);
 
         const shape: FeederShape = {
             ...from,
@@ -1234,46 +1182,25 @@ export class EditorCore {
         return shape;
     }
 
-    private alignedExtent(
-        vlId: string,
-        from: DiagramPoint,
-        side: 'UP' | 'DOWN',
-        terminal: SymbolView | undefined,
-        switchSize: number | undefined,
-    ): { length?: number; switchAt?: number } {
-        const levels = this.feederLevels(vlId, side === 'UP' ? 'TOP' : 'BOTTOM');
-        if (!levels) return {};
-
-        const sign = side === 'UP' ? -1 : 1;
-        const length = sign * (levels.feederY - from.y) - (terminal?.height ?? 0) / 2;
-        // shorter than the default stub: keep the stub
-        if (length < defaultFeederLength(switchSize)) return {};
-        if (switchSize === undefined) return { length };
-
-        const switchAt = levels.switchY === undefined ? undefined : sign * (levels.switchY - from.y);
-        const switchFits = switchAt !== undefined && switchAt > switchSize && switchAt < length - switchSize;
-        return { length, switchAt: switchFits ? switchAt : length / 2 };
-    }
-
     private feederLevels(vlId: string, direction: FeederDirection): FeederLevels | undefined {
         const feeder = this.model.feederNodes(vlId, direction).find((node) => !isCreatedNodeId(node.id));
         return feeder && this.levelsOf(feeder);
     }
 
     private levelsOf(feeder: NodeMetadata): FeederLevels | undefined {
-        const feederY = this.centreY(feeder);
+        const feederY = this.nodeCentre(feeder)?.y;
         if (feederY === undefined) return undefined;
 
-        const bay = this.model.bayNodes(feeder);
-        const breaker =
-            bay.find((node) => node.componentType === NODE_COMPONENT_TYPE.BREAKER) ??
-            bay.find((node) => node.componentType === NODE_COMPONENT_TYPE.LOAD_BREAK_SWITCH);
-        return { feederY, switchY: breaker && this.centreY(breaker) };
+        const breaker = this.model.bayBreaker(feeder);
+        return { feederY, switchY: breaker && this.nodeCentre(breaker)?.y };
     }
 
-    private centreY(node: NodeMetadata): number | undefined {
+    private nodeCentre(node: NodeMetadata): DiagramPoint | undefined {
         const point = this.dom.getDiagramPoint(node.id);
-        return point && point.y + this.componentSize(node.componentType).height / 2;
+        if (!point) return undefined;
+
+        const { width, height } = this.componentSize(node.componentType);
+        return { x: point.x + width / 2, y: point.y + height / 2 };
     }
 
     private busbarY(vlId: string): number | undefined {
@@ -1357,15 +1284,6 @@ export class EditorCore {
             if (isSwitchNode(node)) this.dom.setSwitchState(node.id, open);
         }
     };
-}
-
-function insertPendingColumn(columns: BayColumn[], order: number, span: DiagramSpan): void {
-    const after = columns.findIndex((column) => column.order !== undefined && column.order > order);
-    const index = after === -1 ? columns.length : after;
-
-    const left = columns[index - 1]?.x ?? span.left;
-    const right = columns[index]?.x ?? span.right;
-    columns.splice(index, 0, { x: (left + right) / 2, order });
 }
 
 function isSpan(anchor: DiagramPoint | DiagramSpan): anchor is DiagramSpan {

@@ -1,11 +1,6 @@
 import type { FeederDirection } from './types';
 
-/**
- * How a bay turns over its busbars. Distances are measured from the busbar block (the band between
- * the highest and the lowest busbar), and both sides list the same anchors in the same order:
- * `[0, switch?, feeder]`. The two sides do not share their levels, so an anchor of the source side
- * lands on the matching anchor of the target side, and anything in between is interpolated.
- */
+
 export interface BayFlip {
     busTop: number;
     busBottom: number;
@@ -14,7 +9,6 @@ export interface BayFlip {
     target: readonly number[];
 }
 
-/** Where a y of the bay lands once flipped. What sits on the busbar block does not move. */
 export function flipY(y: number, flip: BayFlip): number {
     const { busTop, busBottom, from } = flip;
 
@@ -27,7 +21,6 @@ export function flipY(y: number, flip: BayFlip): number {
     return y;
 }
 
-/** The flip that puts the bay back where it was. */
 export function invertFlip(flip: BayFlip): BayFlip {
     return {
         busTop: flip.busTop,

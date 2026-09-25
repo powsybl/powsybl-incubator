@@ -119,7 +119,6 @@ export class SvgDomService {
         return new DOMPoint(clientX, clientY).matrixTransform(screen.inverse()).x;
     }
 
-    /** Takes every editor-owned mark and layer back off the diagram. */
     clear(): void {
         this.setNodeTargets([]);
         this.setSwitchEnds(null, []);
@@ -130,16 +129,16 @@ export class SvgDomService {
     }
 
     setNodeTargets(targetIds: readonly string[]): void {
-        this.mark(NODE_TARGET_CLASS, targetIds);
+        this.addClassToElement(NODE_TARGET_CLASS, targetIds);
     }
 
     setSwitchEnds(firstId: string | null, candidateIds: readonly string[]): void {
-        this.mark(SWITCH_END_CLASS, candidateIds);
-        this.mark(SWITCH_START_CLASS, firstId ? [firstId] : []);
+        this.addClassToElement(SWITCH_END_CLASS, candidateIds);
+        this.addClassToElement(SWITCH_START_CLASS, firstId ? [firstId] : []);
     }
 
     setSelection(nodeIds: readonly string[]): void {
-        this.mark(SELECTED_CLASS, nodeIds);
+        this.addClassToElement(SELECTED_CLASS, nodeIds);
     }
 
     setSwitchState(nodeId: string, open: boolean): void {
@@ -267,7 +266,7 @@ export class SvgDomService {
         }
     }
 
-    private mark(className: string, ids: readonly string[]): void {
+    private addClassToElement(className: string, ids: readonly string[]): void {
         const svg = this.getSvgRoot();
         if (!svg) return;
 

@@ -413,7 +413,7 @@ export type ChangeSetEntry =
           equipmentType: ElementType;
           payload: EquipmentProperties;
       }
-    | { op: 'delete' | 'delete-bay'; equipmentId: string; equipmentType: ElementType }
+    | { op: 'delete' | 'delete-bay'; equipmentId: string; equipmentType: ElementType, order?: number, direction?: FeederDirection }
     | { op: 'rename'; equipmentId: string; payload: { newId: string } };
 
 export type ChangeSet = ChangeSetEntry[];

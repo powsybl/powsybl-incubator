@@ -863,11 +863,7 @@ export class EditorCore {
         this.setBayPosition(equipmentId, { order: chosen.order, direction }, chosen.x);
     }
 
-    /**
-     * Where a bay can sit along the busbar: one gap midway between each pair of neighbours, the
-     * bar's own two ends counting as neighbours, each with the orders that frame it. An empty
-     * section therefore has a single gap, at the middle of the bar.
-     */
+
     private bayGeometry(busbar: BusbarTarget, movingNodeId?: string): BayGeometry | undefined {
         const span = this.dom.getDiagramSpan(busbar.id);
         if (!span) return undefined;

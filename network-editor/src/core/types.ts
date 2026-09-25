@@ -162,7 +162,6 @@ export interface BaySlotCandidate {
 
 export interface BayMoveGesture {
     equipmentId: string;
-    slot: BaySlot;
     direction: FeederDirection;
     candidates: readonly BaySlotCandidate[];
 }

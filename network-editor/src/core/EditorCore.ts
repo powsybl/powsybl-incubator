@@ -12,7 +12,11 @@ import { CreateSwitchedInjectionCommand } from './commands/CreateSwitchedInjecti
 import { DeleteElementCommand } from './commands/DeleteElementCommand';
 import { MoveBayCommand } from './commands/MoveBayCommand';
 import { RenameCommand } from './commands/RenameCommand';
-import { UpdateBayPositionCommand, type BayTurn } from './commands/UpdateBayPositionCommand';
+import {
+    UpdateBayPositionCommand,
+    type BayShift,
+    type BayTurn,
+} from './commands/UpdateBayPositionCommand';
 import { UpdatePropertiesCommand } from './commands/UpdatePropertiesCommand';
 import { invertFlip, type BayFlip } from './bayFlip';
 import { SvgDomService, type CellFlip } from '../dom/SvgDomService';
@@ -35,6 +39,7 @@ import {
     isCreatedNodeId,
     nodeComponentType,
     toElementType,
+    toDirection,
     type BayColumn,
     type BayGeometry,
     type BayInsertion,
@@ -159,7 +164,7 @@ export class EditorCore {
                       ? spec.order
                       : undefined;
             if (order === undefined) return false;
-            bay = { order, direction: spec.direction ?? 'BOTTOM' };
+            bay = { order, direction: spec.direction ?? 'TOP' };
         }
 
         if (target.kind === 'NODE') {
@@ -270,41 +275,21 @@ export class EditorCore {
         const created = this.findPendingCreate(equipmentId);
         if (created) return this.amendBayPosition(created, position);
 
-        const target = this.targets.get(equipmentId);
-        if (target?.kind !== 'EQUIPMENT' || target.node === undefined) return false;
-        if (!availableOperations(target).includes('UPDATE_BAY_POSITION')) return false;
-
-        const node = this.feederNodeOf(target);
-        const slot = node && this.model.slotOfFeeder(node);
-        if (!node || !slot) return false;
+        const feeder = this.movableFeeder(equipmentId);
+        if (!feeder) return false;
+        const { target, node, slot } = feeder;
 
         const pending = this.pendingOrders(slot.vlId, node.id);
         if (!this.model.isOrderAvailable(slot, position.order, pending)) return false;
 
-        const previousDx = this.pendingBayPosition(equipmentId)?.shift ?? 0;
-        const axis = this.feederAxisX(node);
-        const baseAxis = axis === undefined ? undefined : axis - previousDx;
-        const dx = toX === undefined || baseAxis === undefined ? previousDx : toX - baseAxis;
-        const x = baseAxis === undefined ? undefined : baseAxis + dx;
+        const shift = this.bayShift(equipmentId, node, toX);
+        const from = toDirection(node.direction) ?? 'BOTTOM';
+        if (position.direction !== from) return this.flipBay(target, node, slot, position, from, shift);
 
-        const from: FeederDirection = node.direction === 'TOP' ? 'TOP' : 'BOTTOM';
-        if (position.direction === from) {
-            this.history.push(
-                new UpdateBayPositionCommand(
-                    target,
-                    node,
-                    slot,
-                    position,
-                    this.dom,
-                    this.model,
-                    dx,
-                    previousDx,
-                    x,
-                ),
-            );
-            return true;
-        }
-        return this.flipBay(target, node, slot, position, from, dx, previousDx, x);
+        this.history.push(
+            new UpdateBayPositionCommand(target, node, slot, position, shift, this.dom, this.model),
+        );
+        return true;
     }
 
     private pendingBayPosition(equipmentId: string): UpdateBayPositionCommand | undefined {
@@ -320,9 +305,7 @@ export class EditorCore {
         slot: BaySlot,
         position: BayPosition,
         from: FeederDirection,
-        dx: number,
-        previousDx: number,
-        x: number | undefined,
+        shift: BayShift,
     ): boolean {
         const cell = this.dom.bayCell(node.id);
         const cellFeeders = this.model
@@ -332,18 +315,7 @@ export class EditorCore {
         if (!turn) return false;
 
         const commands: UpdateBayPositionCommand[] = [
-            new UpdateBayPositionCommand(
-                target,
-                node,
-                slot,
-                position,
-                this.dom,
-                this.model,
-                dx,
-                previousDx,
-                x,
-                turn,
-            ),
+            new UpdateBayPositionCommand(target, node, slot, position, shift, this.dom, this.model, turn),
         ];
         for (const sibling of cellFeeders) {
             if (sibling.id === node.id) continue;
@@ -353,17 +325,16 @@ export class EditorCore {
             if (!availableOperations(siblingTarget).includes('UPDATE_BAY_POSITION')) return false;
 
             const siblingPosition = { order: sibling.order!, direction: position.direction };
+            const siblingShift = { ...shift, x: this.feederAxisX(sibling) };
             commands.push(
                 new UpdateBayPositionCommand(
                     siblingTarget,
                     sibling,
                     slot,
                     siblingPosition,
+                    siblingShift,
                     this.dom,
                     this.model,
-                    dx,
-                    previousDx,
-                    this.feederAxisX(sibling),
                 ),
             );
         }
@@ -388,23 +359,23 @@ export class EditorCore {
 
         const busTop = Math.min(...busbarYs);
         const busBottom = Math.max(...busbarYs);
-        // Nothing on the other side yet: mirror the bay as it is.
-        const target = this.feederLevels(vlId, to) ?? source;
+        const targetLevels = this.feederLevels(vlId, to) ?? source;
 
         const distance = (y: number, side: FeederDirection): number =>
             side === 'TOP' ? busTop - y : y - busBottom;
-        const withSwitch = source.switchY !== undefined && target.switchY !== undefined;
+        const withSwitch = source.switchY !== undefined && targetLevels.switchY !== undefined;
         const anchors = (levels: FeederLevels, side: FeederDirection): number[] =>
             withSwitch
                 ? [0, distance(levels.switchY!, side), distance(levels.feederY, side)]
                 : [0, distance(levels.feederY, side)];
 
-        const y: BayFlip = {
+        const sourceAnchors = anchors(source, from);
+        const flip: BayFlip = {
             busTop,
             busBottom,
             from,
-            source: anchors(source, from),
-            target: target === source ? anchors(source, from) : anchors(target, to),
+            source: sourceAnchors,
+            target: targetLevels === source ? sourceAnchors : anchors(targetLevels, to),
         };
 
         const heights = new Map<string, number>();
@@ -416,8 +387,8 @@ export class EditorCore {
         }
 
         return {
-            forth: this.cellFlip(feeder, cellFeeders, to, y, heights),
-            back: this.cellFlip(feeder, cellFeeders, from, invertFlip(y), heights),
+            forth: this.cellFlip(feeder, cellFeeders, to, flip, heights),
+            back: this.cellFlip(feeder, cellFeeders, from, invertFlip(flip), heights),
             feederNodeIds: cellFeeders.map((cellFeeder) => cellFeeder.id),
             from,
         };
@@ -509,10 +480,13 @@ export class EditorCore {
         const movedPosition = this.pendingBayPosition(equipmentId)?.bayPosition;
         for (const node of scope.nodes) {
             const order = movedPosition?.order ?? node.order;
-            if (node.order === undefined) continue;
+            if (order === undefined) continue;
             const slot = this.model.slotOfFeeder(node);
             const x = this.feederAxisX(node);
-            if (slot && x !== undefined) claims.push({ ...slot, order: order, x, iidmNode: node.iidmNode, direction:movedPosition ?? node.direction as FeederDirection | undefined });
+            if (!slot || x === undefined) continue;
+
+            const direction = movedPosition?.direction ?? toDirection(node.direction);
+            claims.push({ ...slot, order, x, iidmNode: node.iidmNode, direction });
         }
         return claims;
     }
@@ -759,8 +733,8 @@ export class EditorCore {
     }
 
     private amendBayPosition(command: PendingCreateCommand, position: BayPosition): boolean {
-        const busbar = command.pendingMarker && this.targets.get(command.pendingMarker.targetId);
-        if (busbar?.kind !== 'BUSBAR') return false;
+        const busbar = this.pendingBusbar(command);
+        if (!busbar) return false;
 
         const pending = this.pendingOrders(busbar.vlId, undefined, command);
         if (!this.model.isOrderAvailable(busbar, position.order, pending)) return false;
@@ -776,25 +750,39 @@ export class EditorCore {
     }
 
     beginBayMove(equipmentId: string): boolean {
-        const target = this.targets.get(equipmentId);
-        if (target?.kind !== 'EQUIPMENT') return false;
-        if (!availableOperations(target).includes('UPDATE_BAY_POSITION')) return false;
+        const created = this.findPendingCreate(equipmentId);
+        if (created) return this.beginPendingBayMove(created);
 
-        const node = this.feederNodeOf(target);
-        const slot = node && this.model.slotOfFeeder(node);
-        const busbar = slot && this.busbarOf(slot);
-        if (!node || !slot || !busbar) return false;
+        const feeder = this.movableFeeder(equipmentId);
+        const busbar = feeder && this.busbarOf(feeder.slot);
+        if (!feeder || !busbar) return false;
 
-        const candidates = this.baySlotCandidates(busbar, node.id);
+        const pending = this.pendingOrders(busbar.vlId, feeder.node.id);
+        return this.startBayMove(equipmentId, busbar, feeder.target.direction ?? 'BOTTOM', pending);
+    }
+
+    private beginPendingBayMove(command: PendingCreateCommand): boolean {
+        const busbar = this.pendingBusbar(command);
+        if (!busbar) return false;
+
+        const pending = this.pendingOrders(busbar.vlId, undefined, command);
+        return this.startBayMove(command.equipmentId, busbar, command.createSpec.direction ?? 'TOP', pending);
+    }
+
+    private startBayMove(
+        equipmentId: string,
+        busbar: BusbarTarget,
+        direction: FeederDirection,
+        pending: PendingOrders,
+    ): boolean {
+        const candidates = this.baySlotCandidates(busbar, pending);
         if (candidates.length === 0) return false;
+        return this.setGesture({ kind: 'BAY_MOVE', equipmentId, direction, candidates });
+    }
 
-        return this.setGesture({
-            kind: 'BAY_MOVE',
-            equipmentId,
-            slot,
-            direction: target.direction ?? 'BOTTOM',
-            candidates,
-        });
+    private pendingBusbar(command: PendingCreateCommand): BusbarTarget | undefined {
+        const anchor = command.pendingMarker && this.targets.get(command.pendingMarker.targetId);
+        return anchor?.kind === 'BUSBAR' ? anchor : undefined;
     }
 
     cancelGesture(): void {
@@ -842,7 +830,7 @@ export class EditorCore {
         }
 
         this.cancelGesture();
-        this.moveBay(gesture, target);
+        this.placeBayAtSlot(gesture, target);
     }
 
     /** Second click: keep the far end and let the host ask for the properties. */
@@ -854,7 +842,7 @@ export class EditorCore {
         this.setGesture({ ...gesture, kind: 'SWITCH', second });
     }
 
-    private moveBay(bayMove: BayMoveGesture, target: Element | null): void {
+    private placeBayAtSlot(bayMove: BayMoveGesture, target: Element | null): void {
         const clicked = target?.closest<SVGGElement>(`g.${BAY_SLOT_CLASS}`)?.id;
         const chosen = bayMove.candidates.find((candidate) => candidate.id === clicked);
         if (!chosen) return;
@@ -864,13 +852,12 @@ export class EditorCore {
     }
 
 
-    private bayGeometry(busbar: BusbarTarget, movingNodeId?: string): BayGeometry | undefined {
+    private bayGeometry(busbar: BusbarTarget, pending: PendingOrders): BayGeometry | undefined {
         const span = this.dom.getDiagramSpan(busbar.id);
         if (!span) return undefined;
 
-        const columns = this.feederColumns(busbar, movingNodeId);
-        const { claims } = this.pendingOrders(busbar.vlId, movingNodeId);
-        const toCreate = claims
+        const columns = this.feederColumns(busbar, pending);
+        const toCreate = pending.claims
             .filter((claim) => claim.sectionIndex === busbar.sectionIndex && claim.x === undefined)
             .sort((a, b) => a.order - b.order);
         for (const claim of toCreate) {
@@ -890,11 +877,13 @@ export class EditorCore {
         };
     }
 
-    private baySlotCandidates(busbar: BusbarTarget, movingNodeId?: string): BaySlotCandidate[] {
-        const geometry = this.bayGeometry(busbar, movingNodeId);
+    private baySlotCandidates(
+        busbar: BusbarTarget,
+        pending: PendingOrders = this.pendingOrders(busbar.vlId),
+    ): BaySlotCandidate[] {
+        const geometry = this.bayGeometry(busbar, pending);
         if (!geometry) return [];
 
-        const pending = this.pendingOrders(busbar.vlId, movingNodeId);
         return geometry.gaps.flatMap((gap) => {
             const order = this.model.orderBetween(busbar, gap.leftOrder, gap.rightOrder, pending);
             if (order === undefined) return [];
@@ -902,9 +891,15 @@ export class EditorCore {
         });
     }
 
-    private feederColumns(slot: BaySlot, excludeNodeId?: string): BayColumn[] {
-        const { claims, vacated } = this.pendingOrders(slot.vlId, excludeNodeId);
+    private bayShift(equipmentId: string, node: NodeMetadata, toX?: number): BayShift {
+        const previousDx = this.pendingBayPosition(equipmentId)?.shift ?? 0;
+        const axis = this.feederAxisX(node);
+        if (axis === undefined) return { dx: previousDx, previousDx };
+        if (toX === undefined) return { dx: previousDx, previousDx, x: axis };
+        return { dx: previousDx + toX - axis, previousDx, x: toX };
+    }
 
+    private feederColumns(slot: BaySlot, { claims, vacated }: PendingOrders): BayColumn[] {
         const columns: BayColumn[] = [];
         for (const node of this.model.feedersInSection(slot)) {
             if (vacated.has(node.id)) continue;
@@ -931,6 +926,18 @@ export class EditorCore {
                 (candidate) =>
                     candidate.order === target.order && (candidate.vid ?? '') === target.vlId,
             );
+    }
+
+    private movableFeeder(
+        equipmentId: string,
+    ): { target: EquipmentTarget; node: NodeMetadata; slot: BaySlot } | undefined {
+        const target = this.targets.get(equipmentId);
+        if (target?.kind !== 'EQUIPMENT' || target.node === undefined) return undefined;
+        if (!availableOperations(target).includes('UPDATE_BAY_POSITION')) return undefined;
+
+        const node = this.feederNodeOf(target);
+        const slot = node && this.model.slotOfFeeder(node);
+        return node && slot ? { target, node, slot } : undefined;
     }
 
     private paintTargets(): void {
@@ -1165,7 +1172,10 @@ export class EditorCore {
     }
 
     private bayPreview(busbar: BusbarTarget, spec: CreateSpec): FeederShape | undefined {
-        const geometry = spec.order === undefined ? undefined : this.bayGeometry(busbar);
+        const geometry =
+            spec.order === undefined
+                ? undefined
+                : this.bayGeometry(busbar, this.pendingOrders(busbar.vlId));
         const column = geometry?.columns.find((candidate) => candidate.order === spec.order);
         if (!geometry || !column) return undefined;
 

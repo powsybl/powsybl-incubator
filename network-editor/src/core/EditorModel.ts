@@ -8,6 +8,7 @@ import {
     ORDER_STEP,
     toDirection,
     toElementType,
+    NODE_COMPONENT_TYPE,
     type BaySlot,
     type DeleteScope,
     type EditorMetadata,
@@ -19,6 +20,7 @@ import {
     type PendingOrders,
     type SLDMetadata,
     type EquipmentProperties,
+    type EquipmentTarget,
     type WireMetadata,
 } from './types';
 
@@ -427,6 +429,20 @@ export class EditorModel {
     busbarNodes(vlId: string): NodeMetadata[] {
         return this.metadata.nodes.filter(
             (node) => node.componentType === BUSBAR_SECTION_TYPE && node.vid === vlId,
+        );
+    }
+
+    feederNodeOf(target: EquipmentTarget): NodeMetadata | undefined {
+        return this.getNodesForEquipment(target.equipmentId).find(
+            (candidate) => candidate.order === target.order && (candidate.vid ?? '') === target.vlId,
+        );
+    }
+
+    bayBreaker(feeder: NodeMetadata): NodeMetadata | undefined {
+        const bay = this.bayNodes(feeder);
+        return (
+            bay.find((node) => node.componentType === NODE_COMPONENT_TYPE.BREAKER) ??
+            bay.find((node) => node.componentType === NODE_COMPONENT_TYPE.LOAD_BREAK_SWITCH)
         );
     }
 

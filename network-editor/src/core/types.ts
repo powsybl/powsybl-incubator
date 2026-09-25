@@ -131,17 +131,6 @@ export interface SwitchEnds {
     second: string;
 }
 
-export interface BayGeometry {
-    y: number;
-    columns: BayColumn[];
-    gaps: { x: number; leftOrder?: number; rightOrder?: number }[];
-}
-
-export interface BayColumn {
-    x: number;
-    order?: number;
-}
-
 export interface DiagramPoint {
     x: number;
     y: number;
@@ -162,7 +151,6 @@ export interface BaySlotCandidate {
 
 export interface BayMoveGesture {
     equipmentId: string;
-    slot: BaySlot;
     direction: FeederDirection;
     candidates: readonly BaySlotCandidate[];
 }
@@ -298,15 +286,11 @@ export interface CreateSpec {
     switchType?: ElementType;
 }
 
-export interface BayInsertion {
-    order: number;
-}
-
 export interface TargetEvent {
     targets: readonly EditTarget[];
     trigger: 'click' | 'contextmenu';
     position: { x: number; y: number };
-    insertion?: BayInsertion;
+    insertion?: number;
 }
 
 export interface ViewerCallbacks {
@@ -413,7 +397,7 @@ export type ChangeSetEntry =
           equipmentType: ElementType;
           payload: EquipmentProperties;
       }
-    | { op: 'delete' | 'delete-bay'; equipmentId: string; equipmentType: ElementType }
+    | { op: 'delete' | 'delete-bay'; equipmentId: string; equipmentType: ElementType, order?: number, direction?: FeederDirection }
     | { op: 'rename'; equipmentId: string; payload: { newId: string } };
 
 export type ChangeSet = ChangeSetEntry[];

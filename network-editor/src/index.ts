@@ -32,7 +32,6 @@ export {
 } from './core/types';
 
 export type {
-    BayInsertion,
     BusbarTarget,
     ChangeOp,
     ChangeSet,

@@ -1,4 +1,4 @@
-import { flipY, type BayFlip } from '../core/bayGeometry';
+import { flipY, type BayFlip } from '../core/bayFlip';
 import {
     NODE_TARGET_CLASS,
     SELECTED_CLASS,
@@ -44,6 +44,12 @@ export interface CellFlip {
     arrows: ReadonlyMap<string, string | null>;
 }
 
+interface BusbarOrigin {
+    x: number;
+    y: number;
+    x2: number;
+}
+
 const TRANSLATE = /translate\(\s*([-\d.e]+)[\s,]+([-\d.e]+)\s*\)/;
 
 const SHAPE_TAGS: ReadonlySet<string> = new Set([
@@ -57,6 +63,8 @@ const SHAPE_TAGS: ReadonlySet<string> = new Set([
 ]);
 
 export class SvgDomService {
+    private readonly busbarOrigins = new WeakMap<Element, BusbarOrigin>();
+
     constructor(private readonly container: HTMLElement) {
         const style = document.createElement('style');
         style.dataset.neStyle = 'editor';
@@ -201,12 +209,49 @@ export class SvgDomService {
         }
     }
 
-    shiftBay(feederNodeId: string, dx: number): void {
-        const cell = this.bayCell(feederNodeId);
-        if (!cell) return;
+    /** Extern and intern cells of the voltage level drawn around this busbar. */
+    voltageLevelCells(busbarId: string): Element[] {
+        const level = this.findElementById(busbarId)?.closest('g.sld-voltage-level');
+        if (!level) return [];
+        return [...level.querySelectorAll(':scope > g.sld-extern-cell, :scope > g.sld-intern-cell')];
+    }
 
-        if (dx === 0) cell.removeAttribute('transform');
-        else cell.setAttribute('transform', `translate(${dx},0)`);
+    cellElementIds(cell: Element): string[] {
+        return [...cell.querySelectorAll(':scope > g[id]')].map((element) => element.id);
+    }
+
+    getCellShift(cell: Element): number {
+        const match = TRANSLATE.exec(cell.getAttribute('transform') ?? '');
+        return match ? Number(match[1]) : 0;
+    }
+
+    setCellShift(cell: Element, dx: number): void {
+        const shift = round(dx);
+        if (shift === 0) cell.removeAttribute('transform');
+        else cell.setAttribute('transform', `translate(${shift},0)`);
+    }
+
+    setBusbarStretch(busbarId: string, dx: number, dWidth: number): void {
+        const element = this.findElementById(busbarId);
+        const line = element?.querySelector('line');
+        const origin = element && line && this.busbarOrigin(element, line);
+        if (!element || !line || !origin) return;
+
+        element.setAttribute('transform', `translate(${round(origin.x + dx)},${origin.y})`);
+        line.setAttribute('x2', String(round(origin.x2 + dWidth)));
+    }
+
+    /** Read once, before the first stretch: later stretches start again from there. */
+    private busbarOrigin(element: Element, line: SVGLineElement): BusbarOrigin | undefined {
+        const known = this.busbarOrigins.get(element);
+        if (known) return known;
+
+        const match = TRANSLATE.exec(element.getAttribute('transform') ?? '');
+        if (!match) return undefined;
+
+        const origin = { x: Number(match[1]), y: Number(match[2]), x2: Number(line.getAttribute('x2') ?? 0) };
+        this.busbarOrigins.set(element, origin);
+        return origin;
     }
 
     bayCell(feederNodeId: string): Element | null {
@@ -215,8 +260,7 @@ export class SvgDomService {
 
     bayCellElementIds(feederNodeId: string): string[] {
         const cell = this.bayCell(feederNodeId);
-        if (!cell) return [];
-        return [...cell.querySelectorAll(':scope > g[id]')].map((element) => element.id);
+        return cell ? this.cellElementIds(cell) : [];
     }
 
     flipCell(flip: CellFlip): void {

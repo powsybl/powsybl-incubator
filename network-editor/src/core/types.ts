@@ -256,6 +256,9 @@ export type EditOperation =
 
 export const ORDER_STEP = 10;
 
+/** powsybl-diagram default for `LayoutParameters.cellWidth`. */
+export const DEFAULT_CELL_WIDTH = 50;
+
 export interface BayPosition {
     order: number;
     direction: FeederDirection;
@@ -301,10 +304,16 @@ export interface ViewerCallbacks {
     onToggleHover?: OnToggleSldHoverCallbackType;
 }
 
-export interface EditorMetadata extends Omit<SLDMetadata, 'nodes' | 'wires'> {
+/** The part of powsybl-diagram `LayoutParameters` the editor reads. */
+export interface LayoutParams {
+    cellWidth: number;
+}
+
+export interface EditorMetadata extends Omit<SLDMetadata, 'nodes' | 'wires' | 'layoutParams'> {
     nodes: NodeMetadata[];
     wires: WireMetadata[];
     feederInfos?: FeederInfoMetadata[];
+    layoutParams?: Partial<LayoutParams>;
 }
 
 export interface EditorOptions {

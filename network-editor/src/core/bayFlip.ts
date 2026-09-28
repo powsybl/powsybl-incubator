@@ -1,15 +1,4 @@
-import type { DiagramSpan, FeederDirection } from './types';
-
-export interface BayGeometry {
-    y: number;
-    columns: BayColumn[];
-    gaps: { x: number; leftOrder?: number; rightOrder?: number }[];
-}
-
-export interface BayColumn {
-    x: number;
-    order?: number;
-}
+import type { FeederDirection } from './types';
 
 export interface BayFlip {
     busTop: number;
@@ -22,32 +11,6 @@ export interface BayFlip {
 export interface FeederLevels {
     feederY: number;
     switchY?: number;
-}
-
-export function layoutBay(span: DiagramSpan, columns: BayColumn[], pendingOrders: readonly number[]): BayGeometry {
-    for (const order of [...pendingOrders].sort((a, b) => a - b)) {
-        insertPendingColumn(columns, order, span);
-    }
-
-    const bounds = [span.left, ...columns.map((column) => column.x), span.right];
-    return {
-        y: span.y,
-        columns,
-        gaps: bounds.slice(1).map((bound, gap) => ({
-            x: (bounds[gap] + bound) / 2,
-            leftOrder: columns[gap - 1]?.order,
-            rightOrder: columns[gap]?.order,
-        })),
-    };
-}
-
-function insertPendingColumn(columns: BayColumn[], order: number, span: DiagramSpan): void {
-    const after = columns.findIndex((column) => column.order !== undefined && column.order > order);
-    const index = after === -1 ? columns.length : after;
-
-    const left = columns[index - 1]?.x ?? span.left;
-    const right = columns[index]?.x ?? span.right;
-    columns.splice(index, 0, { x: (left + right) / 2, order });
 }
 
 export function buildBayFlip(

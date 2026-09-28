@@ -5,7 +5,7 @@ import {
     type DiagramPoint,
 } from '../core/types';
 import { PENDING_BADGE_CLASS, PENDING_SYMBOL_CLASS } from './editorStyle';
-import type { FeederLevels } from '../core/bayGeometry';
+import type { FeederLevels } from '../core/bayFlip';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 

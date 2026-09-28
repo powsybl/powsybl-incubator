@@ -77,7 +77,6 @@ export class EditorModel {
         return this.componentSizes.get(componentType);
     }
 
-    /** Width of one bay column in powsybl-diagram (`LayoutParameters.cellWidth`). */
     cellWidth(): number {
         return this.metadata.layoutParams?.cellWidth ?? DEFAULT_CELL_WIDTH;
     }

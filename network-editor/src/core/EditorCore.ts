@@ -14,16 +14,17 @@ import { MoveBayCommand } from './commands/MoveBayCommand';
 import { RenameCommand } from './commands/RenameCommand';
 import { UpdateBayPositionCommand, type BayTurn } from './commands/UpdateBayPositionCommand';
 import { UpdatePropertiesCommand } from './commands/UpdatePropertiesCommand';
+import { buildBayFlip, invertFlip, type BayFlip, type FeederLevels } from './bayFlip';
 import {
-    buildBayFlip,
-    invertFlip,
+    busbarStretch,
+    cellWidthFromColumns,
     layoutBay,
+    reflowCells,
+    type AddedCell,
     type BayColumn,
-    type BayFlip,
     type BayGeometry,
-    type FeederLevels,
-} from './bayGeometry';
-import { cellWidthFromColumns, reflowCells, type LayoutCell } from './bayLayout';
+    type LayoutCell,
+} from './bayLayout';
 import { SvgDomService, type CellFlip } from '../dom/SvgDomService';
 import {
     alignedExtent,
@@ -97,6 +98,8 @@ export class EditorCore {
     private selectedEquipmentIds: string[] = [];
     private hoveredBusbarId: string | null = null;
     private hoverSlots: readonly BaySlotCandidate[] = [];
+    private readonly createdBayXs = new Map<string, number>();
+    private readonly drawnCells = new WeakMap<Element, Omit<LayoutCell, 'id' | 'order'>>();
     private mouseDownX = 0;
     private mouseDownY = 0;
 
@@ -111,6 +114,7 @@ export class EditorCore {
         container.addEventListener('mousedown', this.onMouseDown);
         container.addEventListener('mouseup', this.onMouseUp);
         container.addEventListener('mousemove', this.onMouseMove);
+        this.reflowBays();
         this.refreshTargets();
     }
 
@@ -823,15 +827,7 @@ export class EditorCore {
         const span = this.dom.getDiagramSpan(busbar.id);
         if (!span) return undefined;
 
-        const toCreate = pending.claims
-            .filter(
-                (claim) =>
-                    claim.sectionIndex === busbar.sectionIndex &&
-                    claim.x === undefined &&
-                    claim.vacatedNodeId === undefined,
-            )
-            .map((claim) => claim.order);
-        return layoutBay(span, this.feederColumns(busbar, pending), toCreate);
+        return layoutBay(span, this.feederColumns(busbar, pending));
     }
 
     private baySlotCandidates(
@@ -857,42 +853,76 @@ export class EditorCore {
         }
         for (const claim of claims) {
             if (claim.sectionIndex !== slot.sectionIndex) continue;
-            const x = claim.x ?? this.movedFeederX(claim);
+            const x = claim.x ?? this.reflowedX(claim);
             if (x !== undefined) columns.push({ x, order: claim.order });
         }
         return columns.sort((a, b) => a.x - b.x);
     }
 
-    /** Slides every cell to the place its pending order gives it, as powsybl-diagram would draw it. */
     private reflowBays(): void {
+        this.createdBayXs.clear();
+        for (const vlId of this.model.voltageLevelIds()) this.reflowVoltageLevel(vlId);
+    }
+
+    private reflowVoltageLevel(vlId: string): void {
         const cellWidth = this.model.cellWidth();
-        for (const vlId of this.model.voltageLevelIds()) {
-            const busbar = this.model.busbarNodes(vlId)[0];
-            const cells = busbar ? this.dom.voltageLevelCells(busbar.id) : [];
-            const orders = this.pendingOrdersByNode(vlId);
+        const busbars = this.model.busbarNodes(vlId);
+        const cells = busbars[0] ? this.dom.voltageLevelCells(busbars[0].id) : [];
+        const pending = this.pendingOrders(vlId);
 
-            const layout: LayoutCell[] = [];
-            cells.forEach((cell, index) => {
-                const measured = this.measureCell(cell, orders, cellWidth);
-                if (measured) layout.push({ id: String(index), ...measured });
-            });
+        const movedOrders = new Map<string, number>();
+        for (const claim of pending.claims) {
+            if (claim.vacatedNodeId) movedOrders.set(claim.vacatedNodeId, claim.order);
+        }
 
-            const lefts = reflowCells(layout);
-            for (const { id, left } of layout) {
-                this.dom.setCellShift(cells[Number(id)], lefts.get(id)! - left);
+        const layout: LayoutCell[] = [];
+        const removed: LayoutCell[] = [];
+        cells.forEach((cell, index) => {
+            const id = String(index);
+            const measured = this.measureCell(cell, movedOrders, cellWidth);
+            const drawn = this.drawnCells.get(cell);
+            if (measured) {
+                layout.push({ id, ...measured });
+                if (!drawn) {
+                    const { left, width, section } = measured;
+                    this.drawnCells.set(cell, { left, width, section });
+                }
+            } else if (drawn) {
+                removed.push({ id, ...drawn });
             }
+        });
+
+        const added: AddedCell[] = pending.claims.filter(isCreatedBay).map((claim) => ({
+            id: createdBayKey(vlId, claim.order),
+            width: cellWidth,
+            order: claim.order,
+            section: claim.sectionIndex,
+        }));
+
+        const lefts = reflowCells(layout, added, removed);
+        for (const { id, left } of layout) {
+            this.dom.setCellShift(cells[Number(id)], lefts.get(id)! - left);
+        }
+        for (const { id, width } of added) {
+            this.createdBayXs.set(id, lefts.get(id)! + width / 2);
+        }
+        for (const busbar of busbars) {
+            if (busbar.sectionIndex === undefined) continue;
+            const { dx, dWidth } = busbarStretch(busbar.sectionIndex, added, removed);
+            this.dom.setBusbarStretch(busbar.id, dx, dWidth);
         }
     }
 
     /** Where the cell stands before any editor shift, and the order it takes in the layout. */
     private measureCell(
         cell: Element,
-        orders: ReadonlyMap<string, number>,
+        movedOrders: ReadonlyMap<string, number>,
         cellWidth: number,
     ): Omit<LayoutCell, 'id'> | undefined {
         const extern = cell.classList.contains('sld-extern-cell');
         const xs: number[] = [];
         let order: number | undefined;
+        let section: number | undefined;
 
         for (const id of this.dom.cellElementIds(cell)) {
             const node = this.model.getNodeById(id);
@@ -900,9 +930,10 @@ export class EditorCore {
             if (!node || x === undefined) continue;
             xs.push(x);
 
-            // powsybl-diagram gives a cell the smallest order of its feeders.
-            const nodeOrder = orders.get(node.id) ?? node.order;
-            if (extern && nodeOrder !== undefined) order = Math.min(order ?? nodeOrder, nodeOrder);
+            const nodeOrder = movedOrders.get(node.id) ?? node.order;
+            if (!extern || nodeOrder === undefined) continue;
+            order = Math.min(order ?? nodeOrder, nodeOrder);
+            section ??= this.model.slotOfFeeder(node)?.sectionIndex;
         }
         if (xs.length === 0) return undefined;
 
@@ -912,20 +943,15 @@ export class EditorCore {
             left: minX - cellWidth / 2 - this.dom.getCellShift(cell),
             width: cellWidthFromColumns(minX, maxX, cellWidth),
             order,
+            section,
         };
     }
 
-    private pendingOrdersByNode(vlId: string): Map<string, number> {
-        const orders = new Map<string, number>();
-        for (const claim of this.pendingOrders(vlId).claims) {
-            if (claim.vacatedNodeId) orders.set(claim.vacatedNodeId, claim.order);
+    private reflowedX(claim: OrderClaim): number | undefined {
+        if (claim.vacatedNodeId === undefined) {
+            return this.createdBayXs.get(createdBayKey(claim.vlId, claim.order));
         }
-        return orders;
-    }
-
-    /** A moved bay is already drawn at its new place: read it from the diagram. */
-    private movedFeederX(claim: OrderClaim): number | undefined {
-        const node = claim.vacatedNodeId ? this.model.getNodeById(claim.vacatedNodeId) : undefined;
+        const node = this.model.getNodeById(claim.vacatedNodeId);
         return node && this.nodeCentre(node)?.x;
     }
 
@@ -1340,7 +1366,14 @@ function isSpan(anchor: DiagramPoint | DiagramSpan): anchor is DiagramSpan {
     return 'left' in anchor;
 }
 
-/** A switch drops onto a busbar, never past its ends. */
 function clampToSpan(span: DiagramSpan, x: number): number {
     return Math.min(Math.max(x, span.left), span.right);
+}
+
+function isCreatedBay(claim: OrderClaim): boolean {
+    return claim.vacatedNodeId === undefined && claim.x === undefined;
+}
+
+function createdBayKey(vlId: string, order: number): string {
+    return `${vlId}:${order}`;
 }

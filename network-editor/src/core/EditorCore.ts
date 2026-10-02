@@ -304,7 +304,8 @@ export class EditorCore {
         const host = this.model.getNodesForEquipment(feeder.equipmentId)[0];
         if (!host) return false;
 
-        this.history.push(new MoveBayCommand(feeder, destination, host.id));
+        // The bay keeps its place: the backend sets this position on the new bay.
+        this.history.push(new MoveBayCommand(feeder, destination, host.id, this.getBayPosition(equipmentId)));
         return true;
     }
 

@@ -1,5 +1,5 @@
 import type { Command } from './Command';
-import type { BusbarTarget, ChangeSetEntry, EquipmentTarget } from '../types';
+import type { BayPosition, BusbarTarget, ChangeSetEntry, EquipmentTarget } from '../types';
 
 export class MoveBayCommand implements Command {
     readonly pendingMarker: { targetId: string; nodeId: string; label: string };
@@ -8,6 +8,7 @@ export class MoveBayCommand implements Command {
         private readonly feeder: EquipmentTarget,
         private readonly destination: BusbarTarget,
         markerNodeId: string,
+        private readonly position?: BayPosition,
     ) {
         this.pendingMarker = {
             targetId: feeder.id,
@@ -31,6 +32,7 @@ export class MoveBayCommand implements Command {
             payload: {
                 node: this.feeder.node!,
                 targetBusbarSectionId: this.destination.busbarSectionId,
+                ...(this.position && { order: this.position.order, direction: this.position.direction }),
             },
         };
     }

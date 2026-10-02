@@ -6,7 +6,7 @@ import {describeTargets, type Gesture, menuItemsFor, NetworkEditor} from "@powsy
 import type {BayInsertion, EditTarget} from "@powsybl/network-editor";
 import type {MenuItem} from "./components/Menu.tsx";
 import {Menu} from "./components/Menu.tsx";
-import {actionFor, actionLabel, type EditorAction} from "@powsybl/network-editor";
+import { actionLabel, type EditorAction} from "@powsybl/network-editor";
 import {PropertyForm} from "@powsybl/network-editor/react";
 import type {ChangeOp, ChangeSetEntry} from "@powsybl/network-editor";
 
@@ -21,6 +21,7 @@ const CHANGE_LABELS: Record<ChangeOp, string> = {
     'delete': 'Suppression',
     'delete-bay': 'Suppression de travée',
     'rename': 'Renommage',
+    'replace': 'Remplacement'
 }
 
 export default function App() {
@@ -175,6 +176,10 @@ export default function App() {
                     case 'create-bay' :
                     case 'create-switch':
                     case 'update-position':
+                    case 'rename':
+                    case 'replace':
+                    case 'move-bay':
+                    case 'create-switched-injection':
                     case 'update' :
                         await applyChange(change)
                         break;

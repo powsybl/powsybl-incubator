@@ -151,6 +151,11 @@ export class EditorModel {
         if (node) node.direction = direction;
     }
 
+    setComponentType(nodeId: string, componentType: string): void {
+        const node = this.nodesById.get(nodeId);
+        if (node) node.componentType = componentType;
+    }
+
     removeNode(nodeId: string): NodeMetadata | undefined {
         const node = this.nodesById.get(nodeId);
         if (!node) return undefined;

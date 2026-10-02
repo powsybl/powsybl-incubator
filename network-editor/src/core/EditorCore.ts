@@ -12,6 +12,7 @@ import { CreateSwitchedInjectionCommand } from './commands/CreateSwitchedInjecti
 import { DeleteElementCommand } from './commands/DeleteElementCommand';
 import { MoveBayCommand } from './commands/MoveBayCommand';
 import { RenameCommand } from './commands/RenameCommand';
+import { ReplaceCommand } from './commands/ReplaceCommand';
 import { UpdateBayPositionCommand, type BayTurn } from './commands/UpdateBayPositionCommand';
 import { UpdatePropertiesCommand } from './commands/UpdatePropertiesCommand';
 import { buildBayFlip, invertFlip, type BayFlip, type FeederLevels } from './bayFlip';
@@ -40,6 +41,7 @@ import {
 import {
     DELETABLE_BAY_TYPES,
     DELETABLE_TYPES,
+    INJECTION_TYPES,
     NODE_COMPONENT_TYPE,
     SWITCH_TYPES,
     isCreatedNodeId,
@@ -187,6 +189,34 @@ export class EditorCore {
                 spec.properties,
                 this.model,
                 bay,
+            ),
+        );
+        return true;
+    }
+
+    replaceEquipment(equipmentId: string, spec: CreateSpec): boolean {
+        const target = this.targets.get(equipmentId);
+        if (target?.kind !== 'EQUIPMENT') return false;
+        if (!availableOperations(target).includes('REPLACE')) return false;
+        if (!INJECTION_TYPES.has(spec.type) || spec.type === target.type) return false;
+
+        const newId = spec.provisionalId;
+        if (newId !== equipmentId && this.isExistingEquipmentId(newId)) return false;
+
+        const node = this.model.getNodesForEquipment(equipmentId)[0];
+        if (!node) return false;
+
+        this.history.push(
+            new ReplaceCommand(
+                equipmentId,
+                newId,
+                spec.type,
+                spec.properties,
+                node,
+                this.model,
+                this.dom,
+                this.symbols,
+                this.onRenamed,
             ),
         );
         return true;
@@ -1155,7 +1185,8 @@ export class EditorCore {
         const labels = new Map<string, string>();
 
         for (const command of this.history.pending) {
-            if (!(command instanceof RenameCommand)) continue;
+            if (!(command instanceof RenameCommand || command instanceof ReplaceCommand)) continue;
+            if (command.newId === command.equipmentId) continue;
             for (const node of this.model.getNodesForEquipment(command.newId)) {
                 labels.set(node.id, command.newId);
             }

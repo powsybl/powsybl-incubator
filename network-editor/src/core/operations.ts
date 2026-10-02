@@ -64,6 +64,11 @@ export const OPERATIONS: Record<EditOperation, OperationSpec> = {
             target.kind === 'BUSBAR' ||
             target.kind === 'EQUIPMENT' && !SWITCH_TYPES.has(target.type),
     },
+    REPLACE: {
+        label: 'Replace',
+        creates: INJECTION_TYPES,
+        appliesTo: (target) => target.kind === 'EQUIPMENT' && INJECTION_TYPES.has(target.type),
+    },
     UPDATE_PROPERTIES: {
         label: 'Properties',
         appliesTo: (target) => target.kind === 'EQUIPMENT',

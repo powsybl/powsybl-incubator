@@ -32,6 +32,14 @@ import {
 
 const ORIGINAL_LABEL_ATTRIBUTE = 'data-ne-original-label';
 
+export interface SymbolSnapshot {
+    element: Element;
+    shapes: Element[];
+    className: string;
+    transform: string | null;
+    labelYs: (string | null)[];
+}
+
 export interface RemovedDomElement {
     element: Element;
     parent: Node | null;
@@ -339,6 +347,65 @@ export class SvgDomService {
             const arrow = this.findElementById(arrowId);
             if (arrow) setShapesTransform(arrow, transform);
         }
+    }
+
+    swapSymbol(
+        nodeId: string,
+        symbol: SVGGElement,
+        from: { width: number; height: number },
+        to: { width: number; height: number },
+    ): SymbolSnapshot | undefined {
+        const element = this.findElementById(nodeId);
+        if (!element) return undefined;
+
+        const labels = [...element.querySelectorAll(':scope > text.sld-label')];
+        const snapshot: SymbolSnapshot = {
+            element,
+            shapes: [...element.children].filter((child) => SHAPE_TAGS.has(child.localName)),
+            className: element.getAttribute('class') ?? '',
+            transform: element.getAttribute('transform'),
+            labelYs: labels.map((label) => label.getAttribute('y')),
+        };
+
+        for (const shape of snapshot.shapes) shape.remove();
+        element.prepend(...symbol.children);
+
+        const kept = [...element.classList].filter((name) =>
+            /^(sld-(vl|bus-|top-feeder|bottom-feeder)|ne-)/.test(name),
+        );
+        element.setAttribute('class', [...symbol.classList, ...kept].join(' '));
+
+        const match = TRANSLATE.exec(snapshot.transform ?? '');
+        if (match) {
+            const x = Number(match[1]) + (from.width - to.width) / 2;
+            const y = Number(match[2]) + (from.height - to.height) / 2;
+            element.setAttribute('transform', `translate(${round(x)},${round(y)})`);
+        }
+
+        if (element.classList.contains('sld-bottom-feeder')) {
+            for (const label of labels) {
+                const y = Number(label.getAttribute('y') ?? 0);
+                label.setAttribute('y', String(round(y + to.height - from.height)));
+            }
+        }
+        return snapshot;
+    }
+
+    restoreSymbol(snapshot: SymbolSnapshot): void {
+        const { element } = snapshot;
+        for (const child of [...element.children]) {
+            if (SHAPE_TAGS.has(child.localName)) child.remove();
+        }
+        element.prepend(...snapshot.shapes);
+        element.setAttribute('class', snapshot.className);
+        if (snapshot.transform === null) element.removeAttribute('transform');
+        else element.setAttribute('transform', snapshot.transform);
+
+        element.querySelectorAll(':scope > text.sld-label').forEach((label, index) => {
+            const y = snapshot.labelYs[index];
+            if (y === null || y === undefined) label.removeAttribute('y');
+            else label.setAttribute('y', y);
+        });
     }
 
     private addClassToElement(className: string, ids: readonly string[]): void {

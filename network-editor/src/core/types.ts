@@ -247,6 +247,7 @@ export type EditOperation =
     | 'CREATE_BUSBAR'
     | 'DELETE'
     | 'DELETE_BAY'
+    | 'REPLACE'
     | 'UPDATE_PROPERTIES'
     | 'UPDATE_BAY_POSITION'
     | 'FLIP_BAY_DIRECTION'
@@ -405,6 +406,17 @@ export type ChangeSetEntry =
           equipmentType: ElementType;
           payload: EquipmentProperties;
       }
+
+      | {
+          op: 'replace';
+          equipmentId: string;
+          payload: {
+              equipmentType: ElementType;
+              newId: string;
+              properties: EquipmentProperties;
+          };
+      }
+
     | { op: 'delete' | 'delete-bay'; equipmentId: string; equipmentType: ElementType, order?: number, direction?: FeederDirection }
     | { op: 'rename'; equipmentId: string; payload: { newId: string } };
 

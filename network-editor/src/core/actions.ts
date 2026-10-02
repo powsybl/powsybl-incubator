@@ -35,6 +35,7 @@ export interface ActionHost {
     deleteElement(equipmentId: string): boolean;
     deleteFeederBay(equipmentId: string): boolean;
     deleteElements(equipmentIds: readonly string[], kind: 'element' | 'bay'): boolean;
+    replaceEquipment(equipmentId: string, newEquipment: CreateSpec): boolean;
     selectedTargets(): readonly EquipmentTarget[];
     moveDestinations(equipmentId: string): BusbarTarget[];
     moveFeederBay(equipmentId: string, busbarTargetId: string): boolean;
@@ -80,9 +81,11 @@ export function buildActions(
     return availableOperations(target).flatMap((operation) => {
         const creatable = creatableTypesFor(operation);
         if (creatable.size > 0) {
-            return [...creatable].map((type) =>
-                createAction(host, target, operation, type, insertion),
-            );
+            // A replacement only offers the other types.
+            const current = operation === 'REPLACE' && target.kind === 'EQUIPMENT' ? target.type : undefined;
+            return [...creatable]
+                .filter((type) => type !== current)
+                .map((type) => createAction(host, target, operation, type, insertion));
         }
         if (target.kind === 'EQUIPMENT') return equipmentActions(host, target, operation);
         if (target.kind === 'BUSBAR') return busbarActions(host, target, operation);
@@ -133,6 +136,23 @@ function createAction(
             form: [],
             initial: {},
             run: () => host.beginSwitch(target.id, type),
+        };
+    }
+
+    if (operation === 'REPLACE' && target.kind === 'EQUIPMENT') {
+        const form = [EQUIPMENT_ID, ...schemaFor(type, 'create')];
+        const initial = defaultsOf(form);
+        initial.equipmentId = 'NEW_' + type;
+        return {
+            id: `${createOperationId(target, operation)}:${type}`,
+            operation,
+            subject: { kind: 'TYPE', type },
+            form,
+            initial,
+            run: (values = {}) => {
+                const spec = specFromValues(type, values);
+                return spec ? host.replaceEquipment(target.equipmentId, spec) : false;
+            },
         };
     }
 

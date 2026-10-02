@@ -84,7 +84,9 @@ export function buildActions(
                 createAction(host, target, operation, type, insertion),
             );
         }
-        return target.kind === 'EQUIPMENT' ? equipmentActions(host, target, operation) : [];
+        if (target.kind === 'EQUIPMENT') return equipmentActions(host, target, operation);
+        if (target.kind === 'BUSBAR') return busbarActions(host, target, operation);
+        return [];
     });
 }
 
@@ -125,7 +127,7 @@ function createAction(
 ): EditorAction {
     if (operation === 'CREATE_SWITCH' && target.kind === 'NODE') {
         return {
-            id: `${id(target, operation)}:${type}`,
+            id: `${createOperationId(target, operation)}:${type}`,
             operation,
             subject: { kind: 'TYPE', type },
             form: [],
@@ -147,7 +149,7 @@ function createAction(
     }
 
     return {
-        id: `${id(target, operation)}:${type}`,
+        id: `${createOperationId(target, operation)}:${type}`,
         operation,
         subject: { kind: 'TYPE', type },
         form,
@@ -197,7 +199,7 @@ function equipmentActions(
 
         case 'MOVE_BAY':
             return host.moveDestinations(equipmentId).map((destination) => ({
-                id: `${id(target, operation)}:${destination.id}`,
+                id: `${createOperationId(target, operation)}:${destination.id}`,
                 operation,
                 subject: { kind: 'BUSBAR', busbarSectionId: destination.busbarSectionId },
                 form: [],
@@ -230,7 +232,7 @@ function equipmentActions(
             );
             return [
                 {
-                    id: id(target, operation),
+                    id: createOperationId(target, operation),
                     operation,
                     form,
                     initial: {
@@ -253,22 +255,20 @@ function equipmentActions(
         }
 
         case 'RENAME':
-            return [
-                {
-                    id: id(target, operation),
-                    operation,
-                    form: [EQUIPMENT_ID],
-                    initial: { equipmentId },
-                    run: (values = {}) => {
-                        const newId = text(values.equipmentId);
-                        return newId ? host.renameEquipment(equipmentId, newId) : false;
-                    },
-                },
-            ];
+            return renameAction(operation, target, host);
 
         default:
             return [];
     }
+}
+
+function busbarActions(
+    host: ActionHost,
+    target: BusbarTarget,
+    operation: EditOperation,
+): EditorAction[] {
+    if (operation !== 'RENAME') return [];
+    return renameAction(operation, target, host);
 }
 
 function batchActions(
@@ -286,7 +286,7 @@ function batchActions(
             batch.every((selected) => availableOperations(selected).includes(operation)),
         )
         .map(([operation, kind]) => ({
-            id: id(target, operation),
+            id: createOperationId(target, operation),
             operation,
             subject: { kind: 'SELECTION' as const, size: batch.length },
             form: [],
@@ -295,11 +295,39 @@ function batchActions(
         }));
 }
 
-function plain(target: EditTarget, operation: EditOperation, run: () => boolean): EditorAction {
-    return { id: id(target, operation), operation, form: [], initial: {}, run };
+function renameAction(
+    operation: EditOperation,
+    target: EditTarget,
+    host: ActionHost,
+): EditorAction[] {
+    const equipmentId =
+        target.kind === 'EQUIPMENT'
+            ? target.equipmentId
+            : target.kind === 'BUSBAR'
+              ? target.busbarSectionId
+              : undefined;
+    if (!equipmentId) return [];
+
+    return [
+        {
+            id: createOperationId(target, operation),
+            operation,
+            form: [EQUIPMENT_ID],
+            initial: { equipmentId },
+            run: (values = {}) => {
+                const newId = text(values.equipmentId);
+                return newId ? host.renameEquipment(equipmentId, newId) : false;
+            },
+        },
+    ];
 }
 
-function id(target: EditTarget, operation: EditOperation): string {
+
+function plain(target: EditTarget, operation: EditOperation, run: () => boolean): EditorAction {
+    return { id: createOperationId(target, operation), operation, form: [], initial: {}, run };
+}
+
+function createOperationId(target: EditTarget, operation: EditOperation): string {
     return `${target.id}:${operation}`;
 }
 

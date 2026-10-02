@@ -18,6 +18,8 @@ import {
     IIDM_UNLINKED_CLASS,
     PENDING_LAYER_CLASS,
     PENDING_BADGE_CLASS,
+    MOVING_BAY_CLASS,
+    RENAMED_LABEL_CLASS,
 } from './editorStyle';
 import {
     createBaySlot,
@@ -27,6 +29,8 @@ import {
     type PendingPreview,
     type PendingBadgeView,
 } from './svgShapes';
+
+const ORIGINAL_LABEL_ATTRIBUTE = 'data-ne-original-label';
 
 export interface RemovedDomElement {
     element: Element;
@@ -134,6 +138,8 @@ export class SvgDomService {
         this.setBaySlots([]);
         this.setPendingPreviews([]);
         this.setPendingBadges(new Map());
+        this.setRenamedLabels(new Map());
+        this.setMovingBay(null);
     }
 
     setNodeTargets(targetIds: readonly string[]): void {
@@ -147,6 +153,11 @@ export class SvgDomService {
 
     setSelection(nodeIds: readonly string[]): void {
         this.addClassToElement(SELECTED_CLASS, nodeIds);
+    }
+
+    setMovingBay(elementId: string | null): void {
+        const bay = elementId ? (this.bayCell(elementId) ?? this.findElementById(elementId)) : null;
+        this.addClassToElement(MOVING_BAY_CLASS, bay?.id ? [bay.id] : []);
     }
 
     setSwitchState(nodeId: string, open: boolean): void {
@@ -174,6 +185,26 @@ export class SvgDomService {
             const host = this.findElementById(nodeId);
             if (!host) continue;
             pending.forEach((view, index) => host.appendChild(createPendingBadge(view, index)));
+        }
+    }
+
+    setRenamedLabels(labels: ReadonlyMap<string, string>): void {
+        const svg = this.getSvgRoot();
+        if (!svg) return;
+
+        for (const label of svg.querySelectorAll(`text.${RENAMED_LABEL_CLASS}`)) {
+            label.textContent = label.getAttribute(ORIGINAL_LABEL_ATTRIBUTE);
+            label.removeAttribute(ORIGINAL_LABEL_ATTRIBUTE);
+            label.classList.remove(RENAMED_LABEL_CLASS);
+        }
+
+        for (const [nodeId, text] of labels) {
+            const label = this.findElementById(nodeId)?.querySelector(':scope > text.sld-label');
+            if (!label) continue;
+
+            label.setAttribute(ORIGINAL_LABEL_ATTRIBUTE, label.textContent ?? '');
+            label.textContent = text;
+            label.classList.add(RENAMED_LABEL_CLASS);
         }
     }
 

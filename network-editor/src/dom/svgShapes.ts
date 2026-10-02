@@ -169,7 +169,6 @@ export function createPendingBadge(view: PendingBadgeView, index: number): SVGGE
 export function createBaySlot(slot: BaySlotCandidate): SVGGElement {
     const point = svgElement('g');
     point.setAttribute('class', BAY_SLOT_CLASS);
-    point.id = slot.id;
     point.setAttribute('transform', `translate(${slot.x},${slot.y})`);
 
     const dot = svgElement('circle');

@@ -18,6 +18,7 @@ import {
     IIDM_UNLINKED_CLASS,
     PENDING_LAYER_CLASS,
     PENDING_BADGE_CLASS,
+    MOVING_BAY_CLASS,
     RENAMED_LABEL_CLASS,
 } from './editorStyle';
 import {
@@ -138,6 +139,7 @@ export class SvgDomService {
         this.setPendingPreviews([]);
         this.setPendingBadges(new Map());
         this.setRenamedLabels(new Map());
+        this.setMovingBay(null);
     }
 
     setNodeTargets(targetIds: readonly string[]): void {
@@ -151,6 +153,11 @@ export class SvgDomService {
 
     setSelection(nodeIds: readonly string[]): void {
         this.addClassToElement(SELECTED_CLASS, nodeIds);
+    }
+
+    setMovingBay(elementId: string | null): void {
+        const bay = elementId ? (this.bayCell(elementId) ?? this.findElementById(elementId)) : null;
+        this.addClassToElement(MOVING_BAY_CLASS, bay?.id ? [bay.id] : []);
     }
 
     setSwitchState(nodeId: string, open: boolean): void {

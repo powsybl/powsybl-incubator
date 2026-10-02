@@ -143,7 +143,6 @@ export interface DiagramSpan {
 }
 
 export interface BaySlotCandidate {
-    id: string;
     order: number;
     x: number;
     y: number;

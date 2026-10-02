@@ -38,7 +38,6 @@ import {
     type SymbolView,
 } from '../dom/svgShapes';
 import {
-    BAY_SLOT_CLASS,
     DELETABLE_BAY_TYPES,
     DELETABLE_TYPES,
     NODE_COMPONENT_TYPE,
@@ -97,7 +96,8 @@ export class EditorCore {
 
     private selectedEquipmentIds: string[] = [];
     private hoveredBusbarId: string | null = null;
-    private hoverSlots: readonly BaySlotCandidate[] = [];
+    private hoverCandidates: readonly BaySlotCandidate[] = [];
+    private shownSlot: BaySlotCandidate | undefined;
     private readonly createdBayXs = new Map<string, number>();
     private readonly drawnCells = new WeakMap<Element, Omit<LayoutCell, 'id' | 'order'>>();
     private mouseDownX = 0;
@@ -568,9 +568,19 @@ export class EditorCore {
             return;
         }
 
-        if (this.openHoveredSlot(event)) return;
+        const element = event.target as Element | null;
+        const busbar = event.shiftKey ? undefined : this.busbarAt(element);
+        if (busbar) {
+            this.onTargets?.({
+                targets: [busbar],
+                trigger: 'click',
+                position: { x: event.clientX, y: event.clientY },
+                insertion: this.insertionAt([busbar], event),
+            });
+            return;
+        }
 
-        const node = this.resolveNodeAt(event.target as Element | null);
+        const node = this.resolveNodeAt(element);
 
         const buildable = event.shiftKey
             ? []
@@ -592,46 +602,39 @@ export class EditorCore {
     };
 
     private readonly onMouseMove = (event: MouseEvent): void => {
+        const x = this.dom.toDiagramX(event.clientX, event.clientY);
+
+        if (this.gesture?.kind === 'BAY_MOVE') {
+            this.showSlot(nearestSlot(this.gesture.candidates, x));
+            return;
+        }
         if (this.gesture) return;
 
-        const element = event.target as Element | null;
-        if (element?.closest(`g.${BAY_SLOT_CLASS}`)) return;
-
-        this.showHoverSlots(
-            this.targetsAt(this.resolveNodeAt(element)).find(
-                (target): target is BusbarTarget => target.kind === 'BUSBAR',
-            ),
-        );
+        const busbar = this.busbarAt(event.target as Element | null);
+        if ((busbar?.id ?? null) !== this.hoveredBusbarId) {
+            this.hoveredBusbarId = busbar?.id ?? null;
+            this.hoverCandidates = busbar ? this.baySlotCandidates(busbar) : [];
+        }
+        this.showSlot(nearestSlot(this.hoverCandidates, x));
     };
 
-    private showHoverSlots(busbar?: BusbarTarget): void {
-        if ((busbar?.id ?? null) === this.hoveredBusbarId) return;
+    private busbarAt(element: Element | null): BusbarTarget | undefined {
+        if (element?.closest('text.sld-label')) return undefined;
+        return this.targetsAt(this.resolveNodeAt(element)).find(
+            (target): target is BusbarTarget => target.kind === 'BUSBAR',
+        );
+    }
 
-        this.hoveredBusbarId = busbar?.id ?? null;
-        this.hoverSlots = busbar ? this.baySlotCandidates(busbar) : [];
-        this.paintTargets();
+    private showSlot(slot: BaySlotCandidate | undefined): void {
+        if (slot === this.shownSlot) return;
+        this.shownSlot = slot;
+        this.dom.setBaySlots(slot ? [slot] : []);
     }
 
     private clearHoverSlots(): void {
         this.hoveredBusbarId = null;
-        this.hoverSlots = [];
-    }
-
-    private openHoveredSlot(event: MouseEvent): boolean {
-        const slotId = (event.target as Element | null)?.closest<SVGGElement>(
-            `g.${BAY_SLOT_CLASS}`,
-        )?.id;
-        const slot = this.hoverSlots.find((candidate) => candidate.id === slotId);
-        const busbar = this.hoveredBusbarId ? this.targets.get(this.hoveredBusbarId) : undefined;
-        if (!slot || busbar?.kind !== 'BUSBAR') return false;
-
-        this.onTargets?.({
-            targets: [busbar],
-            trigger: 'click',
-            position: { x: event.clientX, y: event.clientY },
-            insertion: slot.order,
-        });
-        return true;
+        this.hoverCandidates = [];
+        this.shownSlot = undefined;
     }
 
     handleContextMenu(event: MouseEvent): void {
@@ -825,7 +828,7 @@ export class EditorCore {
         }
 
         this.cancelGesture();
-        this.placeBayAtSlot(gesture, target);
+        this.placeBayAt(gesture, this.dom.toDiagramX(event.clientX, event.clientY));
     }
 
     /** Second click: keep the far end and let the host ask for the properties. */
@@ -837,9 +840,8 @@ export class EditorCore {
         this.setGesture({ ...gesture, kind: 'SWITCH', second });
     }
 
-    private placeBayAtSlot(bayMove: BayMoveGesture, target: Element | null): void {
-        const clicked = target?.closest<SVGGElement>(`g.${BAY_SLOT_CLASS}`)?.id;
-        const chosen = bayMove.candidates.find((candidate) => candidate.id === clicked);
+    private placeBayAt(bayMove: BayMoveGesture, x: number | undefined): void {
+        const chosen = nearestSlot(bayMove.candidates, x);
         if (!chosen) return;
 
         const { equipmentId, direction } = bayMove;
@@ -864,7 +866,7 @@ export class EditorCore {
         return geometry.gaps.flatMap((gap) => {
             const order = this.model.orderBetween(busbar, gap.leftOrder, gap.rightOrder, pending);
             if (order === undefined) return [];
-            return [{ id: `ne-slot-${order}`, order, x: gap.x, y: geometry.y }];
+            return [{ order, x: gap.x, y: geometry.y }];
         });
     }
 
@@ -994,13 +996,19 @@ export class EditorCore {
     private paintTargets(): void {
         const gesture = this.gesture;
         const newSwitch = gesture?.kind === 'SWITCH' ? gesture : undefined;
-        const bayMove = gesture?.kind === 'BAY_MOVE' ? gesture : undefined;
 
         const ends = newSwitch?.second ? [newSwitch.second] : (newSwitch?.candidates ?? []);
 
         this.dom.setNodeTargets(gesture ? [] : this.nodeTargetIds);
         this.dom.setSwitchEnds(newSwitch?.first.id ?? null, ends.map((end) => end.id));
-        this.dom.setBaySlots(bayMove?.candidates ?? this.hoverSlots);
+        this.dom.setBaySlots(this.shownSlot ? [this.shownSlot] : []);
+        this.dom.setMovingBay(gesture?.kind === 'BAY_MOVE' ? this.movingElementId(gesture) : null);
+    }
+
+    private movingElementId({ equipmentId }: BayMoveGesture): string | null {
+        const created = this.findPendingCreate(equipmentId);
+        if (created) return created.pendingMarker?.elementId ?? null;
+        return this.movableFeeder(equipmentId)?.node.id ?? null;
     }
 
     private paintPending(): void {
@@ -1031,12 +1039,7 @@ export class EditorCore {
         const x = this.dom.toDiagramX(event.clientX, event.clientY);
         if (busbar?.kind !== 'BUSBAR' || x === undefined) return undefined;
 
-        const nearest = this.baySlotCandidates(busbar).reduce<BaySlotCandidate | undefined>(
-            (best, candidate) =>
-                best && Math.abs(best.x - x) <= Math.abs(candidate.x - x) ? best : candidate,
-            undefined,
-        );
-        return nearest?.order;
+        return nearestSlot(this.baySlotCandidates(busbar), x)?.order;
     }
 
     private resolveNodeAt(target: Element | null): NodeMetadata | undefined {
@@ -1397,6 +1400,18 @@ export class EditorCore {
             if (isSwitchNode(node)) this.dom.setSwitchState(node.id, open);
         }
     };
+}
+
+function nearestSlot(
+    candidates: readonly BaySlotCandidate[],
+    x: number | undefined,
+): BaySlotCandidate | undefined {
+    if (x === undefined) return undefined;
+    return candidates.reduce<BaySlotCandidate | undefined>(
+        (best, candidate) =>
+            best && Math.abs(best.x - x) <= Math.abs(candidate.x - x) ? best : candidate,
+        undefined,
+    );
 }
 
 function isSpan(anchor: DiagramPoint | DiagramSpan): anchor is DiagramSpan {

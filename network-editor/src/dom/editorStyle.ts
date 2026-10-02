@@ -11,6 +11,7 @@ export const IIDM_LINKED_CLASS = 'ne-iidm-linked';
 export const IIDM_UNLINKED_CLASS = 'ne-iidm-unlinked';
 export const IIDM_LABEL_CLASS = 'ne-iidm-label';
 export const RENAMED_LABEL_CLASS = 'ne-renamed-label';
+export const MOVING_BAY_CLASS = 'ne-moving-bay';
 export const BAY_SLOT_LAYER_CLASS = 'ne-bay-slot-layer';
 export const PENDING_LAYER_CLASS = 'ne-pending-layer';
 export const PENDING_BADGE_CLASS = 'ne-pending-badge';
@@ -108,6 +109,9 @@ text.${IIDM_LABEL_CLASS} {
 }
 
 g.${BAY_SLOT_CLASS} {
+    pointer-events: none;
+}
+.sld-busbar-section > line {
     cursor: pointer;
 }
 g.${BAY_SLOT_CLASS} circle {
@@ -116,15 +120,12 @@ g.${BAY_SLOT_CLASS} circle {
     stroke-width: 1.5;
     vector-effect: non-scaling-stroke;
 }
-g.${BAY_SLOT_CLASS}:hover circle {
-    fill: #ef6c00;
-}
 
-.${SELECTED_CLASS} {
+:is(.${SELECTED_CLASS}, .${MOVING_BAY_CLASS}) {
     outline: 2px dashed #1976d2;
     outline-offset: 2px;
 }
-.${SELECTED_CLASS} .sld-label {
+:is(.${SELECTED_CLASS}, .${MOVING_BAY_CLASS}) .sld-label {
     fill: #1976d2;
 }
 

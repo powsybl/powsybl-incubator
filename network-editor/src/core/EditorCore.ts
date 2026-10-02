@@ -304,7 +304,7 @@ export class EditorCore {
         const host = this.model.getNodesForEquipment(feeder.equipmentId)[0];
         if (!host) return false;
 
-        this.history.push(new MoveBayCommand(feeder, destination, host.id));
+        this.history.push(new MoveBayCommand(feeder, destination, host.id, this.getBayPosition(equipmentId)));
         return true;
     }
 

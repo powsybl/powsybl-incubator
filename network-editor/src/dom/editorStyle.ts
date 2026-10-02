@@ -10,6 +10,7 @@ import {
 export const IIDM_LINKED_CLASS = 'ne-iidm-linked';
 export const IIDM_UNLINKED_CLASS = 'ne-iidm-unlinked';
 export const IIDM_LABEL_CLASS = 'ne-iidm-label';
+export const RENAMED_LABEL_CLASS = 'ne-renamed-label';
 export const BAY_SLOT_LAYER_CLASS = 'ne-bay-slot-layer';
 export const PENDING_LAYER_CLASS = 'ne-pending-layer';
 export const PENDING_BADGE_CLASS = 'ne-pending-badge';
@@ -125,5 +126,10 @@ g.${BAY_SLOT_CLASS}:hover circle {
 }
 .${SELECTED_CLASS} .sld-label {
     fill: #1976d2;
+}
+
+text.${RENAMED_LABEL_CLASS} {
+    fill: #1e88e5;
+    font-style: italic;
 }
 `;

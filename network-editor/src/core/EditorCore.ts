@@ -153,8 +153,9 @@ export class EditorCore {
         if (!creatableTypesFor(operation).has(spec.type)) return false;
         if (!availableOperations(target).includes(operation)) return false;
 
-        // TODO
-        if (operation === 'CREATE_BUSBAR') return false;
+        if (operation === 'CREATE_BUSBAR') {
+            return false;
+        }
 
         let bay: { order: number; direction: FeederDirection } | undefined;
 
@@ -202,20 +203,43 @@ export class EditorCore {
             return true;
         }
 
-        const target = this.targets.get(equipmentId);
-        if (target?.kind !== 'EQUIPMENT') return false;
+        const target = this.renameTarget(equipmentId);
+        if (!target || !availableOperations(target).includes('RENAME')) return false;
 
-        if (!availableOperations(target).includes('RENAME')) return false;
-
-        const host = this.model.getNodesForEquipment(equipmentId)[0];
-        if (!host) return false;
+        const renamed = this.findAmendableRename(equipmentId);
+        if (renamed) {
+            if (newId === renamed.equipmentId) return this.history.remove(renamed);
+            if (this.isExistingEquipmentId(newId, renamed)) return false;
+            return this.history.replace(
+                renamed,
+                new RenameCommand(renamed.equipmentId, newId, this.model, this.onRenamed),
+            );
+        }
 
         if (this.isExistingEquipmentId(newId)) return false;
 
-        this.history.push(
-            new RenameCommand(equipmentId, newId, this.model, this.onRenamed, host.id),
-        );
+        this.history.push(new RenameCommand(equipmentId, newId, this.model, this.onRenamed));
         return true;
+    }
+
+    private findAmendableRename(equipmentId: string): RenameCommand | undefined {
+        const renamed = this.history.pending.find(
+            (command): command is RenameCommand =>
+                command instanceof RenameCommand && command.newId === equipmentId,
+        );
+        if (!renamed) return undefined;
+
+        const used = this.history.pending.some((command) => command.equipmentId === equipmentId);
+        return used ? undefined : renamed;
+    }
+
+    private renameTarget(equipmentId: string): EquipmentTarget | BusbarTarget | undefined {
+        const target = this.targets.get(equipmentId);
+        if (target?.kind === 'EQUIPMENT') return target;
+        return [...this.targets.values()].find(
+            (candidate): candidate is BusbarTarget =>
+                candidate.kind === 'BUSBAR' && candidate.busbarSectionId === equipmentId,
+        );
     }
 
     private isExistingEquipmentId(equipmentId: string, ignore?: Command): boolean {
@@ -982,6 +1006,7 @@ export class EditorCore {
     private paintPending(): void {
         const previews = this.pendingPreviews();
         this.dom.setPendingPreviews(previews);
+        this.dom.setRenamedLabels(this.renamedLabels());
         this.dom.setPendingBadges(this.pendingBadges(new Set(previews.map(({ id }) => id))));
     }
 
@@ -1032,7 +1057,7 @@ export class EditorCore {
 
     private selectEquipment(node: NodeMetadata, additive: boolean): void {
         const type = toElementType(node.componentType);
-        if (!DELETABLE_TYPES.has(type)) {
+        if (!DELETABLE_TYPES.has(type) && type !== 'BUS') {
             if (!additive) this.setSelection([]);
             return;
         }
@@ -1062,10 +1087,10 @@ export class EditorCore {
             }),
         );
         this.emit('element:selected', {
-            elements: this.selectedTargets().map(({ equipmentId, type }) => ({
-                id: equipmentId,
-                type,
-            })),
+            elements: this.selectedEquipmentIds.flatMap((id) => {
+                const type = this.equipmentType(id);
+                return type ? [{ id, type }] : [];
+            }),
         });
     }
 
@@ -1121,6 +1146,18 @@ export class EditorCore {
             if (command.pendingMarker) claimed.add(command.pendingMarker.targetId);
         }
         return { created, claimed };
+    }
+
+    private renamedLabels(): Map<string, string> {
+        const labels = new Map<string, string>();
+
+        for (const command of this.history.pending) {
+            if (!(command instanceof RenameCommand)) continue;
+            for (const node of this.model.getNodesForEquipment(command.newId)) {
+                labels.set(node.id, command.newId);
+            }
+        }
+        return labels;
     }
 
     private pendingBadges(drawn: ReadonlySet<string>): Map<string, PendingBadgeView[]> {

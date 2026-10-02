@@ -58,7 +58,11 @@ export function actionFor(
     equipmentId: string | null,
     operation: EditOperation,
 ): EditorAction | null {
-    const target = source.getTargets().find((candidate) => candidate.id === equipmentId);
+    const target = source.getTargets().find(
+        (candidate) =>
+            candidate.id === equipmentId ||
+            (candidate.kind === 'BUSBAR' && candidate.busbarSectionId === equipmentId),
+    );
     if (!target) return null;
     return source.actionsFor(target).find((action) => action.operation === operation) ?? null;
 }

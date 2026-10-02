@@ -55,9 +55,14 @@ export function App() {
                 }
                 if (event.name === 'element:selected') {
                     setSelected(event.elements);
+                    const [element] = event.elements;
                     setPanel(
                         event.elements.length === 1
-                            ? actionFor(instance, event.elements[0].id, 'UPDATE_PROPERTIES')
+                            ? actionFor(
+                                  instance,
+                                  element.id,
+                                  element.type === 'BUS' ? 'RENAME' : 'UPDATE_PROPERTIES',
+                              )
                             : null,
                     );
                 }

@@ -60,7 +60,9 @@ export const OPERATIONS: Record<EditOperation, OperationSpec> = {
     },
     RENAME: {
         label: 'Rename',
-        appliesTo: (target) => target.kind === 'EQUIPMENT' && !SWITCH_TYPES.has(target.type),
+        appliesTo: (target) =>
+            target.kind === 'BUSBAR' ||
+            target.kind === 'EQUIPMENT' && !SWITCH_TYPES.has(target.type),
     },
     UPDATE_PROPERTIES: {
         label: 'Properties',

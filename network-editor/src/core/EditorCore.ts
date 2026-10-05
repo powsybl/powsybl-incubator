@@ -302,9 +302,15 @@ export class EditorCore {
         if (!destination) return false;
 
         const host = this.model.getNodesForEquipment(feeder.equipmentId)[0];
-        if (!host) return false;
+        const node = this.model.feederNodeOf(feeder);
+        if (!host || !node) return false;
 
-        this.history.push(new MoveBayCommand(feeder, destination, host.id, this.getBayPosition(equipmentId)));
+        // The order must suit the target section: orders grow from one section to the next.
+        const order = this.model.nextOrderForBusbar(destination, this.pendingOrders(destination.vlId, node.id));
+        if (order === undefined) return false;
+
+        const direction = this.getBayPosition(equipmentId)?.direction ?? 'BOTTOM';
+        this.history.push(new MoveBayCommand(feeder, destination, host.id, { order, direction }));
         return true;
     }
 

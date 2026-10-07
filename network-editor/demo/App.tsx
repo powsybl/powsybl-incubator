@@ -14,10 +14,31 @@ import {
     type SLDMetadata,
 } from '../src';
 import { ContextMenu, type MenuItemSpec } from './ContextMenu';
-import { PropertyForm } from '../src/react';
+import { ActionFormHost, registryOf, type ActionFormComponent } from '../src/react';
 import svgContent from './data/reseau.svg?raw';
 import metadataJson from './data/reseau_metadata.json';
 import propertiesJson from './data/reseau_properties.json';
+
+// Stand-in for a gridsuite form: logs the placement instead of running the action.
+const FakeGridsuiteLoad: ActionFormComponent = ({ action, onDone, onCancel }) => (
+    <>
+        <pre>{JSON.stringify(action.placement, null, 2)}</pre>
+        <button
+            onClick={() => {
+                console.log('placement', action.placement);
+                onDone();
+            }}
+        >
+            Fake gridsuite form
+        </button>
+        <button onClick={onCancel}>Cancel</button>
+    </>
+);
+
+// Open the demo with ?gridsuite to inject it.
+const registry = new URLSearchParams(window.location.search).has('gridsuite')
+    ? registryOf({ 'CREATE_FEEDER_BAY:LOAD': FakeGridsuiteLoad })
+    : undefined;
 
 const metadata = metadataJson as unknown as SLDMetadata;
 const initialProperties = propertiesJson as Record<string, EquipmentProperties>;
@@ -125,7 +146,12 @@ export function App() {
                     {panel ? (
                         <>
                             <h2>{actionLabel(panel)}</h2>
-                            <PropertyForm action={panel} onDone={() => setPanel(null)} />
+                            <ActionFormHost
+                                action={panel}
+                                registry={registry}
+                                onDone={() => setPanel(null)}
+                                onCancel={() => setPanel(null)}
+                            />
                             <button
                                 onClick={() => {
                                     setPanel(null);

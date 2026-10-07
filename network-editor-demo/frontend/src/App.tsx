@@ -36,6 +36,7 @@ export default function App() {
     const [vlIds, setVlIds] = useState<string[] | null>(null)
     const [selectedVlId, setSelectedVlId] = useState<string | null>(null)
     const [sld, setSld] = useState<Sld | null>(null)
+    const [showIidmNodes, setShowIidmNodes] = useState<boolean>(false)
 
     const [history, setHistory] = useState<{ canUndo: boolean; canRedo: boolean }>({canUndo: false, canRedo: false})
     const [changes, setChanges] = useState<ChangeSetEntry[]>([])
@@ -107,7 +108,8 @@ export default function App() {
         if (!selectedVlId) return
         getSld(selectedVlId).then(
             async (sld) => {
-                setSld(sld)
+                setSld(sld);
+                setShowIidmNodes(false);
             }
         ).catch((err) => {
             setError(String(err))
@@ -329,6 +331,14 @@ export default function App() {
                                         variant="secondary"
                                         disabled={!history.canRedo}
                                         onClick={() => editor?.redo()}
+                                    />
+                                    <Button
+                                        label="Afficher Iidm"
+                                        variant="secondary"
+                                        onClick={() => {
+                                            editor?.showIidmNodes(!showIidmNodes)
+                                            setShowIidmNodes(!showIidmNodes)
+                                        }}
                                     />
                                 </div>
 

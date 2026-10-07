@@ -58,7 +58,15 @@ export class NetworkEditor {
         };
 
         const dom = new SvgDomService(opts.container);
-        this.core = new EditorCore(model, dom, symbols, opts.onEvent, opts.onTargets);
+        this.core = new EditorCore(
+            model,
+            dom,
+            symbols,
+            opts.onEvent,
+            opts.onTargets,
+            opts.mode,
+            opts.isSupported,
+        );
 
         this.container.addEventListener('contextmenu', this.onContextMenu, true);
     }

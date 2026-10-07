@@ -62,6 +62,7 @@ import {
     type ElementType,
     type EquipmentTarget,
     type EquipmentProperties,
+    type EditMode,
     type EditorEmit,
     type EditorEvent,
     type EditorEventListener,
@@ -84,13 +85,7 @@ export class EditorCore {
 
     private gesture: Gesture | null = null;
 
-    private readonly history = new CommandStack((state) => {
-        if (this.destroyed) return;
-        this.reflowBays();
-        this.refreshTargets();
-        this.emit('history:changed', state);
-        this.emit('model:changed', { changeSet: this.getPendingChanges() });
-    });
+    private readonly history: CommandStack;
 
     private targets = new Map<string, EditTarget>();
     private targetsByNodeId = new Map<string, EditTarget[]>();
@@ -111,7 +106,16 @@ export class EditorCore {
         private readonly symbols: SymbolProvider,
         private readonly onEvent?: EditorEventListener,
         private readonly onTargets?: (event: TargetEvent) => void,
+        mode: EditMode = 'pending',
+        private readonly isSupported: (action: EditorAction) => boolean = () => true,
     ) {
+        this.history = new CommandStack((state) => {
+            if (this.destroyed) return;
+            this.reflowBays();
+            this.refreshTargets();
+            this.emit('history:changed', state);
+            this.emit('model:changed', { changeSet: this.getPendingChanges() });
+        }, mode === 'immediate');
         const container: HTMLElement = this.dom.getContainer();
         container.addEventListener('mousedown', this.onMouseDown);
         container.addEventListener('mouseup', this.onMouseUp);
@@ -315,7 +319,7 @@ export class EditorCore {
     }
 
     actionsFor(target: EditTarget, insertion?: number): EditorAction[] {
-        return buildActions(this, target, insertion);
+        return buildActions(this, target, insertion).filter(this.isSupported);
     }
 
     proposedOrder(target: BusbarTarget, insertion?: number): number | undefined {
@@ -702,7 +706,9 @@ export class EditorCore {
 
     switchAction(): EditorAction | null {
         const picked = this.pickedSwitch();
-        return picked && switchAction(this, picked);
+        if (!picked) return null;
+        const action = switchAction(this, picked);
+        return this.isSupported(action) ? action : null;
     }
 
     createSwitch(spec: CreateSpec): boolean {

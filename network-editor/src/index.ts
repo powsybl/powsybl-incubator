@@ -7,7 +7,7 @@ export {
     type PropertyMode,
 } from './properties';
 
-export type { ActionSubject, EditorAction } from './core/actions';
+export type { ActionEquipment, ActionSubject, EditorAction } from './core/actions';
 
 export {
     actionFor,
@@ -41,6 +41,7 @@ export type {
     EditorEventListener,
     EditorEventName,
     EditorEvents,
+    EditMode,
     EditorOptions,
     EditTarget,
     ElementType,

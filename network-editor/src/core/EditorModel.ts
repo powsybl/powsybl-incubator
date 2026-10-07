@@ -364,8 +364,11 @@ export class EditorModel {
         slot: BaySlot,
         pending: PendingOrders = NO_PENDING_ORDERS,
     ): number | undefined {
-        const candidate = this.maxOrderInSection(slot, pending) + ORDER_STEP;
-        return this.isOrderAvailable(slot, candidate, pending) ? candidate : undefined;
+        const max = this.maxOrderInSection(slot, pending);
+        for (let candidate = max + ORDER_STEP; candidate > max; candidate--) {
+            if (this.isOrderAvailable(slot, candidate, pending)) return candidate;
+        }
+        return undefined;
     }
 
     orderBetween(
@@ -392,8 +395,10 @@ export class EditorModel {
     ): boolean {
         if (!Number.isInteger(order) || order < 0) return false;
 
+        const fictitious = this.fictitiousSections(slot.vlId);
         for (const [section, taken] of this.ordersBySection(slot.vlId, pending)) {
             if (taken.includes(order)) return false;
+            if (fictitious.has(section) || fictitious.has(slot.sectionIndex)) continue;
             if (section > slot.sectionIndex && taken.some((used) => used <= order)) return false;
             if (section < slot.sectionIndex && taken.some((used) => used >= order)) return false;
         }
@@ -415,6 +420,17 @@ export class EditorModel {
     private maxOrderInSection(slot: BaySlot, pending: PendingOrders): number {
         const orders = this.ordersBySection(slot.vlId, pending).get(slot.sectionIndex) ?? [];
         return orders.length === 0 ? 0 : Math.max(...orders);
+    }
+
+    private fictitiousSections(vlId: string): Set<number> {
+        const sections = new Set<number>();
+        const real = new Set<number>();
+        for (const node of this.busbarNodes(vlId)) {
+            if (node.sectionIndex === undefined) continue;
+            sections.add(node.sectionIndex);
+            if (!isFictitiousBus(node)) real.add(node.sectionIndex);
+        }
+        return new Set([...sections].filter((section) => !real.has(section)));
     }
 
     private ordersBySection(vlId: string, pending: PendingOrders): Map<number, number[]> {
@@ -560,6 +576,10 @@ function canTraverseNode(node: NodeMetadata): boolean {
 
 function iidmKey(vlId: string, iidmNode: number): string {
     return `${vlId}#${iidmNode}`;
+}
+
+function isFictitiousBus(node: NodeMetadata): boolean {
+    return node.componentType === BUSBAR_SECTION_TYPE && node.iidmNode === undefined;
 }
 
 function isHiddenNode(node: NodeMetadata): boolean {

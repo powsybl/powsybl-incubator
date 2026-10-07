@@ -7,6 +7,7 @@ import {
     type BayPosition,
     type BusbarTarget,
     type CreateSpec,
+    type CreationPlacement,
     type EditOperation,
     type EditTarget,
     type ElementType,
@@ -26,6 +27,7 @@ export interface EditorAction {
     subject?: ActionSubject;
     form: readonly PropertyDescriptor[];
     initial: EquipmentProperties;
+    placement?: CreationPlacement;
     run(values?: EquipmentProperties): boolean;
 }
 
@@ -43,6 +45,7 @@ export interface ActionHost {
     beginSwitch(targetId: string, type: ElementType): boolean;
     createSwitch(spec: CreateSpec): boolean;
     beginBayMove(equipmentId: string): boolean;
+    canBeginBayMove(equipmentId: string): boolean;
     createSwitchedInjection(targetId: string, spec: CreateSpec): boolean;
     getBayPosition(equipmentId: string): BayPosition | undefined;
     setBayPosition(equipmentId: string, position: BayPosition): boolean;
@@ -174,6 +177,7 @@ function createAction(
         subject: { kind: 'TYPE', type },
         form,
         initial,
+        placement: placementOf(target, type, initial),
         run: (values = {}) => {
             const spec = specFromValues(type, values);
             if (!spec) return false;
@@ -183,6 +187,26 @@ function createAction(
             return host.create(target.id, operation, spec);
         },
     };
+}
+
+function placementOf(
+    target: EditTarget,
+    type: ElementType,
+    initial: EquipmentProperties,
+): CreationPlacement | undefined {
+    if (target.kind === 'BUSBAR') {
+        return {
+            elementType: type,
+            vlId: target.vlId,
+            busbarSectionId: target.busbarSectionId,
+            order: typeof initial.order === 'number' ? initial.order : undefined,
+            direction: toDirection(text(initial.direction)),
+        };
+    }
+    if (target.kind === 'NODE') {
+        return { elementType: type, vlId: target.vlId, node: target.node };
+    }
+    return undefined;
 }
 
 export function switchAction(host: ActionHost, picked: PickedSwitch): EditorAction {
@@ -228,6 +252,7 @@ function equipmentActions(
             }));
 
         case 'UPDATE_BAY_POSITION':
+            if (!host.canBeginBayMove(equipmentId)) return [];
             return [plain(target, operation, () => host.beginBayMove(equipmentId))];
 
         case 'FLIP_BAY_DIRECTION': {

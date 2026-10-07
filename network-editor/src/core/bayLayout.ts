@@ -38,15 +38,19 @@ export function reflowCells(
     for (const cell of removed) removeRank(ranks, cell);
     for (const cell of [...added].sort((a, b) => a.order - b.order)) insertRank(ranks, cell);
 
-    const ordered = [...cells.filter((cell) => cell.order !== undefined), ...added].sort(
-        (a, b) => a.order! - b.order!,
-    );
+    const bySection = new Map<number | undefined, (LayoutCell | AddedCell)[]>();
+    for (const cell of [...cells.filter((cell) => cell.order !== undefined), ...added]) {
+        const section = bySection.get(cell.section) ?? [];
+        section.push(cell);
+        bySection.set(cell.section, section);
+    }
+    for (const section of bySection.values()) section.sort((a, b) => a.order! - b.order!);
 
     const lefts = new Map<string, number>();
-    let next = 0;
     let x = originals[0]?.left ?? 0;
     for (const rank of ranks) {
-        const cell = rank.cell.order === undefined ? rank.cell : ordered[next++];
+        const cell =
+            rank.cell.order === undefined ? rank.cell : (bySection.get(rank.cell.section)?.shift() ?? rank.cell);
         lefts.set(cell.id, x);
         x += cell.width + rank.space;
     }
@@ -111,6 +115,7 @@ export interface BayColumn {
 
 /** Places left between the bays of a busbar, from one end to the other. */
 export function layoutBay(span: DiagramSpan, columns: BayColumn[]): BayGeometry {
+    columns = columns.filter((column) => column.x >= span.left && column.x <= span.right);
     const bounds = [span.left, ...columns.map((column) => column.x), span.right];
     return {
         y: span.y,

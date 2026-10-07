@@ -37,6 +37,13 @@ export interface EditorAction {
     run(values?: EquipmentProperties): boolean;
 }
 
+/** `OPERATION:TYPE` for a creation (e.g. `CREATE_FEEDER_BAY:LOAD`), the operation otherwise. */
+export function actionKey(action: EditorAction): string {
+    return action.subject?.kind === 'TYPE'
+        ? `${action.operation}:${action.subject.type}`
+        : action.operation;
+}
+
 export interface ActionHost {
     create(targetId: string, operation: EditOperation, spec: CreateSpec): boolean;
     applyProperties(equipmentId: string, changes: EquipmentProperties): boolean;

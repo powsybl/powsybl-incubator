@@ -610,29 +610,14 @@ export class EditorCore {
 
         const element = event.target as Element | null;
         const busbar = event.shiftKey ? undefined : this.busbarAt(element);
-        if (busbar) {
-            this.onTargets?.({
-                targets: [busbar],
-                trigger: 'click',
-                position: { x: event.clientX, y: event.clientY },
-                insertion: this.insertionAt([busbar], event),
-            });
-            return;
-        }
+        if (busbar && this.emitTargets([busbar], 'click', event)) return;
 
         const node = this.resolveNodeAt(element);
 
         const buildable = event.shiftKey
             ? []
             : this.targetsAt(node).filter((target) => target.kind === 'NODE');
-        if (buildable.length > 0) {
-            this.onTargets?.({
-                targets: buildable,
-                trigger: 'click',
-                position: { x: event.clientX, y: event.clientY },
-            });
-            return;
-        }
+        if (this.emitTargets(buildable, 'click', event)) return;
 
         if (node) {
             this.selectEquipment(node, event.shiftKey);
@@ -677,19 +662,34 @@ export class EditorCore {
         this.shownSlot = undefined;
     }
 
+    /** Without a supported action, the event goes on to the viewer callbacks (onFeeder, onBus). */
     handleContextMenu(event: MouseEvent): void {
-        if (!this.onTargets || this.gesture) return;
+        if (this.gesture) return;
         const targets = this.targetsAt(this.resolveNodeAt(event.target as Element | null));
-        if (targets.length === 0) return;
+        if (!this.emitTargets(targets, 'contextmenu', event)) return;
 
         event.preventDefault();
         event.stopPropagation();
+    }
+
+    private emitTargets(
+        targets: readonly EditTarget[],
+        trigger: TargetEvent['trigger'],
+        event: MouseEvent,
+    ): boolean {
+        if (!this.onTargets || targets.length === 0) return false;
+
+        const insertion = this.insertionAt(targets, event);
+        const offered = targets.filter((target) => this.actionsFor(target, insertion).length > 0);
+        if (offered.length === 0) return false;
+
         this.onTargets({
-            targets,
-            trigger: 'contextmenu',
+            targets: offered,
+            trigger,
             position: { x: event.clientX, y: event.clientY },
-            insertion: this.insertionAt(targets, event),
+            insertion,
         });
+        return true;
     }
 
     beginSwitch(targetId: string, type: ElementType): boolean {

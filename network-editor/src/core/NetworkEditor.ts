@@ -18,16 +18,22 @@ import {
     type SymbolProvider,
 } from './types';
 
+export type DiagramViewBox = Parameters<SingleLineDiagramViewer['setViewBox']>[0];
+
+const editorByContainer = new WeakMap<HTMLElement, NetworkEditor>();
+
 export class NetworkEditor {
     private readonly container: HTMLElement;
     private readonly viewer: SingleLineDiagramViewer;
     private readonly core: EditorCore;
+    private destroyed = false;
 
     constructor(options: EditorOptions) {
         const opts = { ...EDITOR_OPTION_DEFAULTS, ...options };
         const { callbacks } = options;
 
         this.container = opts.container;
+        editorByContainer.get(opts.container)?.destroy();
         const model = new EditorModel(opts.metadata, opts.initialProperties);
 
         this.viewer = new SingleLineDiagramViewer(
@@ -69,12 +75,32 @@ export class NetworkEditor {
         );
 
         this.container.addEventListener('contextmenu', this.onContextMenu, true);
+        editorByContainer.set(opts.container, this);
     }
 
     destroy(): void {
+        if (this.destroyed) return;
+        this.destroyed = true;
         this.container.removeEventListener('contextmenu', this.onContextMenu, true);
         this.core.destroy();
+        editorByContainer.delete(this.container);
         this.container.replaceChildren();
+    }
+
+    getWidth(): number {
+        return this.viewer.getWidth();
+    }
+
+    getHeight(): number {
+        return this.viewer.getHeight();
+    }
+
+    getViewBox(): DiagramViewBox | undefined {
+        return this.viewer.getViewBox();
+    }
+
+    setViewBox(viewBox: DiagramViewBox): void {
+        this.viewer.setViewBox(viewBox);
     }
 
     undo(): void {

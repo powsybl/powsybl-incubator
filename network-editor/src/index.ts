@@ -1,4 +1,4 @@
-export { NetworkEditor } from './core/NetworkEditor';
+export { NetworkEditor, type DiagramViewBox } from './core/NetworkEditor';
 
 export {
     PROPERTY_SCHEMAS,
@@ -7,7 +7,7 @@ export {
     type PropertyMode,
 } from './properties';
 
-export type { ActionEquipment, ActionSubject, EditorAction } from './core/actions';
+export { actionKey, type ActionEquipment, type ActionSubject, type EditorAction } from './core/actions';
 
 export {
     actionFor,

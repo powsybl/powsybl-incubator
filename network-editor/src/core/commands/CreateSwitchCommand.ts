@@ -1,9 +1,9 @@
 import type { PendingCreateCommand } from './Command';
 import type { EditorModel } from '../EditorModel';
+import { switchKind, type NetworkModification } from '../modifications';
 import {
     NODE_COMPONENT_TYPE,
     createdNodeId,
-    type ChangeSetEntry,
     type CreateSpec,
     type ElementType,
     type EquipmentProperties,
@@ -53,18 +53,18 @@ export class CreateSwitchCommand implements PendingCreateCommand {
         this.model.clearProperties(this.equipmentId);
     }
 
-    toChangeSetEntry(): ChangeSetEntry {
-        return {
-            op: 'create-switch',
-            equipmentId: this.equipmentId,
-            payload: {
-                equipmentType: this.type,
-                vlId: this.vlId,
+    toModifications(): NetworkModification[] {
+        return [
+            {
+                type: 'SWITCH_CREATION',
+                equipmentId: this.equipmentId,
+                voltageLevelId: this.vlId,
+                switchKind: switchKind(this.type),
                 node1: this.node1,
                 node2: this.node2,
-                properties: this.properties,
+                open: this.properties.open === true,
             },
-        };
+        ];
     }
 
     get createSpec(): CreateSpec {

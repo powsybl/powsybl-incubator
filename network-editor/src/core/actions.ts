@@ -21,6 +21,12 @@ export type ActionSubject =
     | { kind: 'BUSBAR'; busbarSectionId: string }
     | { kind: 'SELECTION'; size: number };
 
+export interface ActionEquipment {
+    id: string;
+    type: ElementType;
+    vlId: string;
+}
+
 export interface EditorAction {
     id: string;
     operation: EditOperation;
@@ -28,7 +34,15 @@ export interface EditorAction {
     form: readonly PropertyDescriptor[];
     initial: EquipmentProperties;
     placement?: CreationPlacement;
+    equipment?: ActionEquipment;
     run(values?: EquipmentProperties): boolean;
+}
+
+/** `OPERATION:TYPE` for a creation (e.g. `CREATE_FEEDER_BAY:LOAD`), the operation otherwise. */
+export function actionKey(action: EditorAction): string {
+    return action.subject?.kind === 'TYPE'
+        ? `${action.operation}:${action.subject.type}`
+        : action.operation;
 }
 
 export interface ActionHost {
@@ -152,6 +166,7 @@ function createAction(
             subject: { kind: 'TYPE', type },
             form,
             initial,
+            equipment: equipmentOf(target),
             run: (values = {}) => {
                 const spec = specFromValues(type, values);
                 return spec ? host.replaceEquipment(target.equipmentId, spec) : false;
@@ -248,6 +263,7 @@ function equipmentActions(
                 subject: { kind: 'BUSBAR', busbarSectionId: destination.busbarSectionId },
                 form: [],
                 initial: {},
+                equipment: equipmentOf(target),
                 run: () => host.moveFeederBay(equipmentId, destination.id),
             }));
 
@@ -285,6 +301,7 @@ function equipmentActions(
                         ...host.getProperties(equipmentId),
                         equipmentId,
                     },
+                    equipment: equipmentOf(target),
                     run: (values = {}) => {
                         const { equipmentId: _newId, ...properties } = values;
                         const stored = host.getProperties(equipmentId);
@@ -345,13 +362,14 @@ function renameAction(
     target: EditTarget,
     host: ActionHost,
 ): EditorAction[] {
-    const equipmentId =
+    const equipment: ActionEquipment | undefined =
         target.kind === 'EQUIPMENT'
-            ? target.equipmentId
+            ? equipmentOf(target)
             : target.kind === 'BUSBAR'
-              ? target.busbarSectionId
+              ? { id: target.busbarSectionId, type: 'BUS', vlId: target.vlId }
               : undefined;
-    if (!equipmentId) return [];
+    if (!equipment) return [];
+    const equipmentId = equipment.id;
 
     return [
         {
@@ -359,6 +377,7 @@ function renameAction(
             operation,
             form: [EQUIPMENT_ID],
             initial: { equipmentId },
+            equipment,
             run: (values = {}) => {
                 const newId = text(values.equipmentId);
                 return newId ? host.renameEquipment(equipmentId, newId) : false;
@@ -368,8 +387,19 @@ function renameAction(
 }
 
 
-function plain(target: EditTarget, operation: EditOperation, run: () => boolean): EditorAction {
-    return { id: createOperationId(target, operation), operation, form: [], initial: {}, run };
+function plain(target: EquipmentTarget, operation: EditOperation, run: () => boolean): EditorAction {
+    return {
+        id: createOperationId(target, operation),
+        operation,
+        form: [],
+        initial: {},
+        equipment: equipmentOf(target),
+        run,
+    };
+}
+
+function equipmentOf(target: EquipmentTarget): ActionEquipment {
+    return { id: target.equipmentId, type: target.type, vlId: target.vlId };
 }
 
 function createOperationId(target: EditTarget, operation: EditOperation): string {

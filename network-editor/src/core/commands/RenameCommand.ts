@@ -1,6 +1,6 @@
 import type { Command } from './Command';
 import type { EditorModel } from '../EditorModel';
-import type { ChangeSetEntry } from '../types';
+import type { NetworkModification } from '../modifications';
 
 export class RenameCommand implements Command {
     constructor(
@@ -20,11 +20,7 @@ export class RenameCommand implements Command {
         this.onRenamed(this.newId, this.equipmentId);
     }
 
-    toChangeSetEntry(): ChangeSetEntry {
-        return {
-            op: 'rename',
-            equipmentId: this.equipmentId,
-            payload: { newId: this.newId },
-        };
+    toModifications(): NetworkModification[] {
+        return [{ type: 'EQUIPMENT_RENAME', equipmentId: this.equipmentId, newEquipmentId: this.newId }];
     }
 }

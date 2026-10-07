@@ -1,4 +1,31 @@
-export { NetworkEditor } from './core/NetworkEditor';
+export { NetworkEditor, type DiagramViewBox } from './core/NetworkEditor';
+
+export type {
+    AttributeModification,
+    BatteryCreation,
+    BoundaryLineCreation,
+    ConnectionDirection,
+    ConverterStationCreation,
+    ElementDeletion,
+    EquipmentAttributeModification,
+    EquipmentDeletion,
+    EquipmentModification,
+    EquipmentRename,
+    GeneratorCreation,
+    InjectionCreation,
+    InjectionCreationFields,
+    LccConverterStationCreation,
+    LoadCreation,
+    MoveFeederBay,
+    MoveVoltageLevelFeederBays,
+    NetworkModification,
+    NodeInjectionCreation,
+    ShuntCompensatorCreation,
+    StaticVarCompensatorCreation,
+    SwitchCreation,
+    SwitchedInjectionCreation,
+    SwitchKind,
+} from './core/modifications';
 
 export {
     PROPERTY_SCHEMAS,
@@ -7,7 +34,7 @@ export {
     type PropertyMode,
 } from './properties';
 
-export type { ActionSubject, EditorAction } from './core/actions';
+export { actionKey, type ActionEquipment, type ActionSubject, type EditorAction } from './core/actions';
 
 export {
     actionFor,
@@ -33,14 +60,13 @@ export {
 
 export type {
     BusbarTarget,
-    ChangeOp,
     ChangeSet,
-    ChangeSetEntry,
     CreationPlacement,
     EditOperation,
     EditorEventListener,
     EditorEventName,
     EditorEvents,
+    EditMode,
     EditorOptions,
     EditTarget,
     ElementType,

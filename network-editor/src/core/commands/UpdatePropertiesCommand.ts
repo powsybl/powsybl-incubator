@@ -1,6 +1,7 @@
 import type { Command } from './Command';
 import type { EditorModel } from '../EditorModel';
-import type { ChangeSetEntry, ElementType, EquipmentProperties } from '../types';
+import type { ElementType, EquipmentProperties } from '../types';
+import { equipmentModification, type NetworkModification } from '../modifications';
 
 export class UpdatePropertiesCommand implements Command {
     private previous: EquipmentProperties = {};
@@ -31,12 +32,7 @@ export class UpdatePropertiesCommand implements Command {
         this.onChanged(this.equipmentId, this.previous);
     }
 
-    toChangeSetEntry(): ChangeSetEntry {
-        return {
-            op: 'update',
-            equipmentId: this.equipmentId,
-            equipmentType: this.type,
-            payload: { ...this.changes },
-        };
+    toModifications(): NetworkModification[] {
+        return [equipmentModification(this.type, this.equipmentId, this.changes)];
     }
 }

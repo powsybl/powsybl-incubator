@@ -2,13 +2,13 @@
   "LD1" : {
     "p0" : 80.0,
     "q0" : 10.0,
-    "connected" : true
+    "terminalConnected" : true
   },
   "TWT" : {
     "r" : 2.0,
     "x" : 14.745,
-    "connected1" : true,
-    "connected2" : true
+    "terminal1Connected" : true,
+    "terminal2Connected" : true
   },
   "GH1" : {
     "minP" : 0.0,
@@ -16,8 +16,8 @@
     "targetP" : 85.357,
     "targetQ" : 512.081,
     "targetV" : 400.0,
-    "voltageRegulatorOn" : true,
-    "connected" : true
+    "voltageRegulationOn" : true,
+    "terminalConnected" : true
   },
   "GH2" : {
     "minP" : 0.0,
@@ -25,8 +25,8 @@
     "targetP" : 90.0,
     "targetQ" : 512.081,
     "targetV" : 400.0,
-    "voltageRegulatorOn" : true,
-    "connected" : true
+    "voltageRegulationOn" : true,
+    "terminalConnected" : true
   },
   "GH3" : {
     "minP" : 0.0,
@@ -34,27 +34,27 @@
     "targetP" : 155.714,
     "targetQ" : 512.081,
     "targetV" : 400.0,
-    "voltageRegulatorOn" : true,
-    "connected" : true
+    "voltageRegulationOn" : true,
+    "terminalConnected" : true
   },
   "LD2" : {
     "p0" : 60.0,
     "q0" : 5.0,
-    "connected" : true
+    "terminalConnected" : true
   },
   "LD3" : {
     "p0" : 60.0,
     "q0" : 5.0,
-    "connected" : true
+    "terminalConnected" : true
   },
   "LD4" : {
     "p0" : 40.0,
     "q0" : 5.0,
-    "connected" : true
+    "terminalConnected" : true
   },
   "SHUNT" : {
     "sectionCount" : 1,
-    "connected" : true
+    "terminalConnected" : true
   },
   "S1VL1_BBS_LD1_DISCONNECTOR" : {
     "open" : false

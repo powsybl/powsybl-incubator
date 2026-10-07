@@ -7,6 +7,8 @@ import type {
     OnToggleSldHoverCallbackType,
     SldComponentOptions,
 } from '@powsybl/network-viewer-core';
+import type { EditorAction } from './actions';
+import type { NetworkModification } from './modifications';
 
 export type { SLDMetadata };
 
@@ -325,6 +327,8 @@ export interface EditorMetadata extends Omit<SLDMetadata, 'nodes' | 'wires' | 'l
     layoutParams?: Partial<LayoutParams>;
 }
 
+export type EditMode = 'pending' | 'immediate';
+
 export interface EditorOptions {
     container: HTMLElement;
     svgContent: string;
@@ -339,6 +343,8 @@ export interface EditorOptions {
     onEvent?: EditorEventListener;
     onTargets?: (event: TargetEvent) => void;
     initialProperties?: Record<string, EquipmentProperties>;
+    mode?: EditMode;
+    isSupported?: (action: EditorAction) => boolean;
 }
 
 export const EDITOR_OPTION_DEFAULTS = {
@@ -348,88 +354,10 @@ export const EDITOR_OPTION_DEFAULTS = {
     maxWidth: 2000,
     maxHeight: 2000,
     selectionBackColor: 'white',
+    mode: 'pending',
 } as const;
 
-export type ChangeOp = ChangeSetEntry['op'];
-
-export type ChangeSetEntry =
-    | {
-          op: 'create';
-          equipmentId: string;
-          payload: {
-              equipmentType: ElementType;
-              vlId: string;
-              node: number;
-              order?: number;
-              direction?: FeederDirection;
-              properties: EquipmentProperties;
-          };
-      }
-    | {
-          op: 'create-bay';
-          equipmentId: string;
-          payload: {
-              equipmentType: ElementType;
-              busbarSectionId: string;
-              order: number;
-              direction: FeederDirection;
-              properties: EquipmentProperties;
-          };
-      }
-    | {
-          op: 'create-switch';
-          equipmentId: string;
-          payload: {
-              equipmentType: ElementType;
-              vlId: string;
-              node1: number;
-              node2: number;
-              properties: EquipmentProperties;
-          };
-      }
-    | {
-          op: 'create-switched-injection';
-          equipmentId: string;
-          payload: {
-              equipmentType: ElementType;
-              vlId: string;
-              node: number;
-              switchType: ElementType;
-              switchId: string;
-              properties: EquipmentProperties;
-          };
-      }
-    | {
-          op: 'move-bay';
-          equipmentId: string;
-          payload: { node: number; targetBusbarSectionId: string; order?: number; direction?: FeederDirection };
-      }
-    | {
-          op: 'update-position';
-          equipmentId: string;
-          payload: { node: number; order: number; direction: FeederDirection };
-      }
-    | {
-          op: 'update';
-          equipmentId: string;
-          equipmentType: ElementType;
-          payload: EquipmentProperties;
-      }
-
-      | {
-          op: 'replace';
-          equipmentId: string;
-          payload: {
-              equipmentType: ElementType;
-              newId: string;
-              properties: EquipmentProperties;
-          };
-      }
-
-    | { op: 'delete' | 'delete-bay'; equipmentId: string; equipmentType: ElementType, order?: number, direction?: FeederDirection }
-    | { op: 'rename'; equipmentId: string; payload: { newId: string } };
-
-export type ChangeSet = ChangeSetEntry[];
+export type ChangeSet = NetworkModification[];
 
 export interface SelectedElement {
     id: string;
@@ -488,8 +416,8 @@ export const NODE_COMPONENT_TYPE: Readonly<Record<ElementType, string>> = {
 
 export function nodeComponentType(type: ElementType, properties: EquipmentProperties = {}): string {
     if (type === 'SHUNT') {
-        const bPerSection = properties.bPerSection;
-        return typeof bPerSection === 'number' && bPerSection < 0 ? 'INDUCTOR' : 'CAPACITOR';
+        const susceptance = properties.maxSusceptance;
+        return typeof susceptance === 'number' && susceptance < 0 ? 'INDUCTOR' : 'CAPACITOR';
     }
     return NODE_COMPONENT_TYPE[type];
 }

@@ -22,7 +22,7 @@ export const EQUIPMENT_ID: PropertyDescriptor = {
 };
 
 const CONNECTED: PropertyDescriptor = {
-    key: 'connected',
+    key: 'terminalConnected',
     type: 'boolean',
     defaultValue: true,
     editOnly: true,
@@ -36,8 +36,8 @@ const BRANCH_SCHEMA: PropertyDescriptor[] = [
     EQUIPMENT_ID,
     { key: 'r', unit: 'Ω', type: 'number', required: true, min: 0, defaultValue: 0.1 },
     { key: 'x', unit: 'Ω', type: 'number', required: true, defaultValue: 1 },
-    { key: 'connected1', type: 'boolean', defaultValue: true, editOnly: true },
-    { key: 'connected2', type: 'boolean', defaultValue: true, editOnly: true },
+    { key: 'terminal1Connected', type: 'boolean', defaultValue: true, editOnly: true },
+    { key: 'terminal2Connected', type: 'boolean', defaultValue: true, editOnly: true },
 ];
 
 export const PROPERTY_SCHEMAS: Partial<Record<ElementType, PropertyDescriptor[]>> = {
@@ -52,7 +52,7 @@ export const PROPERTY_SCHEMAS: Partial<Record<ElementType, PropertyDescriptor[]>
         { key: 'targetP', unit: 'MW', type: 'number', required: true, defaultValue: 100 },
         { key: 'targetV', unit: 'kV', type: 'number', defaultValue: 400 },
         { key: 'targetQ', unit: 'MVar', type: 'number', defaultValue: 0 },
-        { key: 'voltageRegulatorOn', type: 'boolean', defaultValue: true },
+        { key: 'voltageRegulationOn', type: 'boolean', defaultValue: true },
         { key: 'minP', unit: 'MW', type: 'number', required: true, defaultValue: 0 },
         { key: 'maxP', unit: 'MW', type: 'number', required: true, defaultValue: 100 },
         CONNECTED,
@@ -69,14 +69,13 @@ export const PROPERTY_SCHEMAS: Partial<Record<ElementType, PropertyDescriptor[]>
         EQUIPMENT_ID,
         { key: 'sectionCount', type: 'number', required: true, min: 0, defaultValue: 1 },
         { key: 'maximumSectionCount', type: 'number', required: true, min: 1, defaultValue: 1 },
-        { key: 'bPerSection', unit: 'S', type: 'number', required: true, defaultValue: 1e-5 },
-        { key: 'gPerSection', unit: 'S', type: 'number', defaultValue: 0 },
+        { key: 'maxSusceptance', unit: 'S', type: 'number', required: true, defaultValue: 1e-5 },
         CONNECTED,
     ],
     STATIC_VAR_COMPENSATOR: [
         EQUIPMENT_ID,
-        { key: 'bMin', unit: 'S', type: 'number', required: true, defaultValue: -0.01 },
-        { key: 'bMax', unit: 'S', type: 'number', required: true, defaultValue: 0.01 },
+        { key: 'minSusceptance', unit: 'S', type: 'number', required: true, defaultValue: -0.01 },
+        { key: 'maxSusceptance', unit: 'S', type: 'number', required: true, defaultValue: 0.01 },
         {
             key: 'regulationMode',
             type: 'select',
@@ -92,7 +91,7 @@ export const PROPERTY_SCHEMAS: Partial<Record<ElementType, PropertyDescriptor[]>
     VSC_CONVERTER_STATION: [
         EQUIPMENT_ID,
         { key: 'lossFactor', unit: '%', type: 'number', required: true, min: 0, defaultValue: 1.1 },
-        { key: 'voltageRegulatorOn', type: 'boolean', required: true, defaultValue: false },
+        { key: 'voltageRegulationOn', type: 'boolean', required: true, defaultValue: false },
         { key: 'voltageSetpoint', unit: 'kV', type: 'number' },
         { key: 'reactivePowerSetpoint', unit: 'MVar', type: 'number', defaultValue: 0 },
         CONNECTED,
@@ -121,7 +120,7 @@ export const PROPERTY_SCHEMAS: Partial<Record<ElementType, PropertyDescriptor[]>
         ...[1, 2, 3].flatMap((leg): PropertyDescriptor[] => [
             { key: `r${leg}`, unit: 'Ω', type: 'number', required: true, min: 0, defaultValue: 0.1 },
             { key: `x${leg}`, unit: 'Ω', type: 'number', required: true, defaultValue: 1 },
-            { key: `connected${leg}`, type: 'boolean', defaultValue: true, editOnly: true },
+            { key: `terminal${leg}Connected`, type: 'boolean', defaultValue: true, editOnly: true },
         ]),
     ],
     BREAKER: SWITCH_SCHEMA,

@@ -3,6 +3,7 @@ package com.example.networkeditor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.powsybl.commons.PowsyblException;
 import com.powsybl.iidm.network.Network;
+import com.powsybl.iidm.network.VoltageLevel;
 import com.powsybl.sld.SingleLineDiagram;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -98,6 +99,10 @@ public class Controller {
         StringWriter metadata = new StringWriter();
 
         try {
+            VoltageLevel voltageLevel = networkState.get().getVoltageLevel(request.vlId());
+            if (voltageLevel != null) {
+                service.ensurePositions(voltageLevel);
+            }
             SingleLineDiagram.draw(networkState.get(), request.vlId(), svg, metadata);
         }catch (PowsyblException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to get svg : " + e.getMessage(), e );

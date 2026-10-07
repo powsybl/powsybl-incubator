@@ -6,9 +6,13 @@ import com.powsybl.iidm.modification.topology.MoveFeederBayBuilder;
 import com.powsybl.iidm.modification.topology.RemoveFeederBayBuilder;
 import com.powsybl.iidm.network.*;
 import com.powsybl.iidm.network.extensions.ConnectablePosition;
+import com.powsybl.iidm.network.extensions.BusbarSectionPosition;
 import com.powsybl.iidm.network.extensions.ConnectablePositionAdder;
+import com.powsybl.iidm.network.util.BusbarSectionFinderTraverser;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -301,9 +305,10 @@ public class Service {
 
     private static <C extends Connectable<C>> ConnectablePosition.Feeder feederOf(Connectable<C> connectable, int side) {
         ConnectablePosition<C> position = connectable.getExtension(ConnectablePosition.class);
-        if (position == null) {
-            return null;
-        }
+        return position == null ? null : feederAt(position, side);
+    }
+
+    private static ConnectablePosition.Feeder feederAt(ConnectablePosition<?> position, int side) {
         return switch (side) {
             case 0 -> position.getFeeder();
             case 1 -> position.getFeeder1();
@@ -359,30 +364,95 @@ public class Service {
     @SuppressWarnings("unchecked")
     private static <C extends Connectable<C>> void setFeederPosition(Connectable<C> connectable, int side,int order, ConnectablePosition.Direction direction) {
         ConnectablePosition<C> position = connectable.getExtension(ConnectablePosition.class);
-        if (position == null) {
-
-            ConnectablePositionAdder<C> adder = connectable.newExtension(ConnectablePositionAdder.class);
-            ConnectablePositionAdder.FeederAdder<C> feeder = switch(side) {
-                case 0 -> adder.newFeeder();
-                case 1 -> adder.newFeeder1();
-                case 2 -> adder.newFeeder2();
-                default -> adder.newFeeder3();
-            };
-            feeder.withName(connectable.getId()).withOrder(order).withDirection(direction).add();
-            adder.add();
-        } else {
-            ConnectablePosition.Feeder feeder = switch (side) {
-                case 0 -> position.getFeeder();
-                case 1 -> position.getFeeder1();
-                case 2 -> position.getFeeder2();
-                default -> position.getFeeder3();
-            };
-            if (feeder == null) {
-                throw new PowsyblException("No feeder for side " + side + " of '" + connectable.getId() + "'");
-            }
+        ConnectablePosition.Feeder feeder = position == null ? null : feederAt(position, side);
+        if (feeder != null) {
             feeder.setOrder(order).setDirection(direction);
+            return;
         }
 
+        ConnectablePositionAdder<C> adder = connectable.newExtension(ConnectablePositionAdder.class);
+        for (int s = 0; s <= 3; s++) {
+            ConnectablePosition.Feeder kept = position == null ? null : feederAt(position, s);
+            if (s == side) {
+                newFeeder(adder, s).withName(connectable.getId()).withOrder(order).withDirection(direction).add();
+            } else if (kept != null) {
+                ConnectablePositionAdder.FeederAdder<C> copy = newFeeder(adder, s)
+                        .withName(kept.getName().orElse(connectable.getId()))
+                        .withDirection(kept.getDirection());
+                kept.getOrder().ifPresent(copy::withOrder);
+                copy.add();
+            }
+        }
+        adder.add();
+    }
+
+    private static <C extends Connectable<C>> ConnectablePositionAdder.FeederAdder<C> newFeeder(ConnectablePositionAdder<C> adder, int side) {
+        return switch (side) {
+            case 0 -> adder.newFeeder();
+            case 1 -> adder.newFeeder1();
+            case 2 -> adder.newFeeder2();
+            default -> adder.newFeeder3();
+        };
+    }
+
+    private record FeederSlot(Connectable<?> connectable, int side, int section, Integer order,
+                              ConnectablePosition.Direction direction) {
+    }
+
+    public void ensurePositions(VoltageLevel voltageLevel) {
+        if (voltageLevel.getTopologyKind() != TopologyKind.NODE_BREAKER) {
+            return;
+        }
+
+        List<FeederSlot> feeders = new ArrayList<>();
+        for (Connectable<?> connectable : voltageLevel.getConnectables()) {
+            if (connectable instanceof BusbarSection) {
+                continue;
+            }
+            for (Terminal terminal : connectable.getTerminals()) {
+                if (terminal.getVoltageLevel() != voltageLevel) {
+                    continue;
+                }
+                int side = sideOf(connectable, terminal.getNodeBreakerView().getNode());
+                ConnectablePosition.Feeder feeder = feederOf(connectable, side);
+                ConnectablePosition.Direction direction = feeder == null
+                        || feeder.getDirection() == ConnectablePosition.Direction.UNDEFINED
+                        ? ConnectablePosition.Direction.BOTTOM : feeder.getDirection();
+                feeders.add(new FeederSlot(connectable, side, sectionOf(voltageLevel, terminal),
+                        feeder == null ? null : feeder.getOrder().orElse(null), direction));
+            }
+        }
+        feeders.sort(Comparator.comparingInt(FeederSlot::section)
+                .thenComparing(FeederSlot::order, Comparator.nullsLast(Comparator.naturalOrder()))
+                .thenComparing(feeder -> feeder.connectable().getId()));
+        if (isConsistent(feeders)) {
+            return;
+        }
+
+        int order = 0;
+        for (FeederSlot feeder : feeders) {
+            order += 10;
+            setFeederPosition(feeder.connectable(), feeder.side(), order, feeder.direction());
+        }
+    }
+
+    /** Sorted by section then order: every order is set, and they strictly grow along the busbars. */
+    private static boolean isConsistent(List<FeederSlot> sortedFeeders) {
+        int previous = Integer.MIN_VALUE;
+        for (FeederSlot feeder : sortedFeeders) {
+            if (feeder.order() == null || feeder.order() <= previous) {
+                return false;
+            }
+            previous = feeder.order();
+        }
+        return true;
+    }
+
+    private static int sectionOf(VoltageLevel voltageLevel, Terminal terminal) {
+        String bbsId = BusbarSectionFinderTraverser.findBusbarSectionId(terminal);
+        BusbarSection bbs = bbsId == null ? null : voltageLevel.getNodeBreakerView().getBusbarSection(bbsId);
+        BusbarSectionPosition position = bbs == null ? null : bbs.getExtension(BusbarSectionPosition.class);
+        return position == null ? 0 : position.getSectionIndex();
     }
 
     private static int sideOf( Connectable<?> connectable, int node) {

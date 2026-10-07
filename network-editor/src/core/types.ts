@@ -376,6 +376,7 @@ export type ChangeSetEntry =
           equipmentId: string;
           payload: {
               equipmentType: ElementType;
+              vlId: string;
               busbarSectionId: string;
               order: number;
               direction: FeederDirection;
@@ -408,12 +409,18 @@ export type ChangeSetEntry =
     | {
           op: 'move-bay';
           equipmentId: string;
-          payload: { node: number; targetBusbarSectionId: string; order?: number; direction?: FeederDirection };
+          payload: {
+              vlId: string;
+              node: number;
+              targetBusbarSectionId: string;
+              order?: number;
+              direction?: FeederDirection;
+          };
       }
     | {
           op: 'update-position';
           equipmentId: string;
-          payload: { node: number; order: number; direction: FeederDirection };
+          payload: { vlId: string; node: number; order: number; direction: FeederDirection };
       }
     | {
           op: 'update';

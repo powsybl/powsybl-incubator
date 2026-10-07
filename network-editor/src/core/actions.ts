@@ -24,6 +24,7 @@ export type ActionSubject =
 export interface ActionEquipment {
     id: string;
     type: ElementType;
+    vlId: string;
 }
 
 export interface EditorAction {
@@ -365,7 +366,7 @@ function renameAction(
         target.kind === 'EQUIPMENT'
             ? equipmentOf(target)
             : target.kind === 'BUSBAR'
-              ? { id: target.busbarSectionId, type: 'BUS' }
+              ? { id: target.busbarSectionId, type: 'BUS', vlId: target.vlId }
               : undefined;
     if (!equipment) return [];
     const equipmentId = equipment.id;
@@ -398,7 +399,7 @@ function plain(target: EquipmentTarget, operation: EditOperation, run: () => boo
 }
 
 function equipmentOf(target: EquipmentTarget): ActionEquipment {
-    return { id: target.equipmentId, type: target.type };
+    return { id: target.equipmentId, type: target.type, vlId: target.vlId };
 }
 
 function createOperationId(target: EditTarget, operation: EditOperation): string {

@@ -65,6 +65,7 @@ export class UpdateBayPositionCommand implements Command {
             op: 'update-position',
             equipmentId: this.equipmentId,
             payload: {
+                vlId: this.feeder.vlId,
                 node: this.feeder.node!,
                 order: this.position.order,
                 direction: this.position.direction,

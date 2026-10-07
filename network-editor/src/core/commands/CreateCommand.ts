@@ -85,6 +85,7 @@ export class CreateCommand implements PendingCreateCommand {
                     equipmentId,
                     payload: {
                         equipmentType: this.type,
+                        vlId: this.target.vlId,
                         busbarSectionId: this.target.busbarSectionId,
                         order: this.bay!.order,
                         direction: this.bay!.direction,

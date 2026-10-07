@@ -43,6 +43,7 @@ export class MoveBayCommand implements Command {
             op: 'move-bay',
             equipmentId: this.equipmentId,
             payload: {
+                vlId: this.destination.vlId,
                 node: this.feeder.node!,
                 targetBusbarSectionId: this.destination.busbarSectionId,
                 ...(this.position && { order: this.position.order, direction: this.position.direction }),

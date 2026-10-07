@@ -239,6 +239,15 @@ export interface EquipmentTarget {
 
 export type EditTarget = NodeTarget | BusbarTarget | EquipmentTarget;
 
+export interface CreationPlacement {
+    elementType: ElementType;
+    vlId: string;
+    busbarSectionId?: string;
+    node?: number;
+    order?: number;
+    direction?: FeederDirection;
+}
+
 export type EditOperation =
     | 'CREATE_INJECTION'
     | 'CREATE_SWITCH'

@@ -36,6 +36,7 @@ export type {
     ChangeOp,
     ChangeSet,
     ChangeSetEntry,
+    CreationPlacement,
     EditOperation,
     EditorEventListener,
     EditorEventName,

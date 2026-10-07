@@ -1,9 +1,10 @@
-import type { ChangeSetEntry, CreateSpec, OrderClaim } from '../types';
+import type { CreateSpec, OrderClaim } from '../types';
+import type { NetworkModification } from '../modifications';
 
 export interface Command {
     execute(): void;
     undo(): void;
-    toChangeSetEntry(): ChangeSetEntry;
+    toModifications(): NetworkModification[];
     readonly pendingMarker?: {
         targetId: string;
         nodeId: string;

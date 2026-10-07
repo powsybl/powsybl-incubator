@@ -1,8 +1,8 @@
 import type { Command } from './Command';
 import type { EditorModel } from '../EditorModel';
 import type { SvgDomService, RemovedDomElement } from '../../dom/SvgDomService';
+import { identifiableType, type NetworkModification } from '../modifications';
 import type {
-    ChangeSetEntry,
     DeleteScope,
     ElementType,
     FeederInfoMetadata,
@@ -71,12 +71,14 @@ export class DeleteElementCommand implements Command {
 
     }
 
-    toChangeSetEntry(): ChangeSetEntry {
-        return {
-            op: this.kind === 'bay' ? 'delete-bay' : 'delete',
-            equipmentId: this.equipmentId,
-            equipmentType: this.type,
-        };
+    toModifications(): NetworkModification[] {
+        return [
+            {
+                type: this.kind === 'bay' ? 'EQUIPMENT_DELETION' : 'ELEMENT_DELETION',
+                equipmentId: this.equipmentId,
+                equipmentType: identifiableType(this.type),
+            },
+        ];
     }
 
     private removeFromDom(svgId: string): void {

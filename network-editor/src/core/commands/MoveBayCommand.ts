@@ -1,5 +1,6 @@
 import type { Command } from './Command';
-import type { BayPosition, BusbarTarget, ChangeSetEntry, EquipmentTarget, OrderClaim } from '../types';
+import { moveFeederBay, type NetworkModification } from '../modifications';
+import type { BayPosition, BusbarTarget, EquipmentTarget, OrderClaim } from '../types';
 
 export class MoveBayCommand implements Command {
     readonly pendingMarker: { targetId: string; nodeId: string; label: string };
@@ -38,16 +39,15 @@ export class MoveBayCommand implements Command {
 
     undo(): void {}
 
-    toChangeSetEntry(): ChangeSetEntry {
-        return {
-            op: 'move-bay',
-            equipmentId: this.equipmentId,
-            payload: {
-                vlId: this.destination.vlId,
-                node: this.feeder.node!,
-                targetBusbarSectionId: this.destination.busbarSectionId,
-                ...(this.position && { order: this.position.order, direction: this.position.direction }),
-            },
-        };
+    toModifications(): NetworkModification[] {
+        return [
+            moveFeederBay(
+                this.destination.vlId,
+                this.equipmentId,
+                this.destination.busbarSectionId,
+                this.position?.order,
+                this.position?.direction,
+            ),
+        ];
     }
 }

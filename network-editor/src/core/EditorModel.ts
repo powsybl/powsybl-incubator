@@ -270,6 +270,20 @@ export class EditorModel {
         return { nodes: [...nodes.values()], wires: [...wires.values()] };
     }
 
+    busbarSectionOfBay(feeder: NodeMetadata): string | undefined {
+        const bay = feeder.equipmentId ? this.collectBay(feeder.equipmentId).nodes : [feeder];
+        let throughOpenSwitch: string | undefined;
+        for (const node of bay.filter((candidate) => candidate.vid === feeder.vid)) {
+            for (const wire of this.getWiresForNode(node.id)) {
+                const busbar = this.otherEnd(wire, node.id);
+                if (!busbar || !isBusBarNode(busbar)) continue;
+                if (this.getProperties(node.equipmentId ?? '').open !== true) return busbar.equipmentId;
+                throughOpenSwitch ??= busbar.equipmentId;
+            }
+        }
+        return throughOpenSwitch;
+    }
+
     collectTargets(): EditTarget[] {
         const targets: EditTarget[] = [];
         const seenEquipments = new Set<string>();

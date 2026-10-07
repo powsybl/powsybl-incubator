@@ -1,9 +1,15 @@
 import type { Command } from './Command';
 import type { EditorModel } from '../EditorModel';
+import {
+    identifiableType,
+    injectionCreation,
+    nodeInjectionCreation,
+    type NetworkModification,
+} from '../modifications';
 import type { SvgDomService, SymbolSnapshot } from '../../dom/SvgDomService';
 import {
     nodeComponentType,
-    type ChangeSetEntry,
+    toElementType,
     type ElementType,
     type EquipmentProperties,
     type NodeMetadata,
@@ -56,12 +62,28 @@ export class ReplaceCommand implements Command {
         this.rename(this.newId, this.equipmentId);
     }
 
-    toChangeSetEntry(): ChangeSetEntry {
-        return {
-            op: 'replace',
+    toModifications(): NetworkModification[] {
+        const deletion: NetworkModification = {
+            type: 'EQUIPMENT_DELETION',
             equipmentId: this.equipmentId,
-            payload: { equipmentType: this.type, newId: this.newId, properties: this.properties },
+            equipmentType: identifiableType(toElementType(this.oldComponentType)),
         };
+        const busbarSectionId = this.model.busbarSectionOfBay(this.node);
+        const creation =
+            busbarSectionId === undefined && this.node.iidmNode !== undefined
+                ? nodeInjectionCreation(this.type, this.newId, this.node.vid ?? '', this.node.iidmNode, this.properties)
+                : injectionCreation(
+                      this.type,
+                      this.newId,
+                      {
+                          voltageLevelId: this.node.vid ?? '',
+                          busbarSectionId: busbarSectionId ?? '',
+                          order: this.node.order ?? null,
+                          direction: this.node.direction,
+                      },
+                      this.properties,
+                  );
+        return [deletion, creation];
     }
 
     private rename(from: string, to: string): void {

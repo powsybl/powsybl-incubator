@@ -562,7 +562,7 @@ export class EditorCore {
     }
 
     getPendingChanges(): ChangeSet {
-        return this.history.pending.map((command) => command.toChangeSetEntry());
+        return this.history.pending.flatMap((command) => command.toModifications());
     }
 
     clearPendingChanges(): void {

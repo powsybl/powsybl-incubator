@@ -1,9 +1,9 @@
 import type { PendingCreateCommand } from './Command';
 import type { EditorModel } from '../EditorModel';
+import { nodeInjectionCreation, switchKind, type NetworkModification } from '../modifications';
 import {
     NODE_COMPONENT_TYPE,
     createdNodeId,
-    type ChangeSetEntry,
     type CreateSpec,
     type ElementType,
     type EquipmentProperties,
@@ -54,19 +54,18 @@ export class CreateSwitchedInjectionCommand implements PendingCreateCommand {
         this.model.clearProperties(this.equipmentId);
     }
 
-    toChangeSetEntry(): ChangeSetEntry {
-        return {
-            op: 'create-switched-injection',
-            equipmentId: this.equipmentId,
-            payload: {
-                equipmentType: this.type,
-                vlId: this.vlId,
+    toModifications(): NetworkModification[] {
+        const { creation } = nodeInjectionCreation(this.type, this.equipmentId, this.vlId, this.iidmNode, this.properties);
+        return [
+            {
+                type: 'SWITCHED_INJECTION_CREATION',
+                voltageLevelId: this.vlId,
                 node: this.iidmNode,
-                switchType: this.switchType,
                 switchId: this.switchId,
-                properties: this.properties,
+                switchKind: switchKind(this.switchType),
+                creation,
             },
-        };
+        ];
     }
 
     get createSpec(): CreateSpec {

@@ -1,10 +1,10 @@
 import type { PendingCreateCommand } from './Command';
 import type { EditorModel } from '../EditorModel';
+import { injectionCreation, nodeInjectionCreation, type NetworkModification } from '../modifications';
 import {
     NODE_COMPONENT_TYPE,
     createdNodeId,
     type BusbarTarget,
-    type ChangeSetEntry,
     type CreateSpec,
     type ElementType,
     type EquipmentProperties,
@@ -63,36 +63,17 @@ export class CreateCommand implements PendingCreateCommand {
         this.model.clearProperties(this.equipmentId);
     }
 
-    toChangeSetEntry(): ChangeSetEntry {
-        const equipmentId = this.equipmentId;
-
-        switch (this.target.kind) {
-            case 'NODE':
-                return {
-                    op: 'create',
-                    equipmentId,
-                    payload: {
-                        equipmentType: this.type,
-                        vlId: this.target.vlId,
-                        node: this.target.node,
-                        properties: this.properties,
-                        ...(this.bay && { order: this.bay.order, direction: this.bay.direction }),
-                    },
-                };
-            case 'BUSBAR':
-                return {
-                    op: 'create-bay',
-                    equipmentId,
-                    payload: {
-                        equipmentType: this.type,
-                        vlId: this.target.vlId,
-                        busbarSectionId: this.target.busbarSectionId,
-                        order: this.bay!.order,
-                        direction: this.bay!.direction,
-                        properties: this.properties,
-                    },
-                };
+    toModifications(): NetworkModification[] {
+        if (this.target.kind === 'NODE') {
+            return [nodeInjectionCreation(this.type, this.equipmentId, this.target.vlId, this.target.node, this.properties)];
         }
+        const placement = {
+            voltageLevelId: this.target.vlId,
+            busbarSectionId: this.target.busbarSectionId,
+            order: this.bay?.order ?? null,
+            direction: this.bay?.direction,
+        };
+        return [injectionCreation(this.type, this.equipmentId, placement, this.properties)];
     }
 
     get createSpec(): CreateSpec {

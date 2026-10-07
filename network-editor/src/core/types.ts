@@ -8,6 +8,7 @@ import type {
     SldComponentOptions,
 } from '@powsybl/network-viewer-core';
 import type { EditorAction } from './actions';
+import type { NetworkModification } from './modifications';
 
 export type { SLDMetadata };
 
@@ -356,93 +357,7 @@ export const EDITOR_OPTION_DEFAULTS = {
     mode: 'pending',
 } as const;
 
-export type ChangeOp = ChangeSetEntry['op'];
-
-export type ChangeSetEntry =
-    | {
-          op: 'create';
-          equipmentId: string;
-          payload: {
-              equipmentType: ElementType;
-              vlId: string;
-              node: number;
-              order?: number;
-              direction?: FeederDirection;
-              properties: EquipmentProperties;
-          };
-      }
-    | {
-          op: 'create-bay';
-          equipmentId: string;
-          payload: {
-              equipmentType: ElementType;
-              vlId: string;
-              busbarSectionId: string;
-              order: number;
-              direction: FeederDirection;
-              properties: EquipmentProperties;
-          };
-      }
-    | {
-          op: 'create-switch';
-          equipmentId: string;
-          payload: {
-              equipmentType: ElementType;
-              vlId: string;
-              node1: number;
-              node2: number;
-              properties: EquipmentProperties;
-          };
-      }
-    | {
-          op: 'create-switched-injection';
-          equipmentId: string;
-          payload: {
-              equipmentType: ElementType;
-              vlId: string;
-              node: number;
-              switchType: ElementType;
-              switchId: string;
-              properties: EquipmentProperties;
-          };
-      }
-    | {
-          op: 'move-bay';
-          equipmentId: string;
-          payload: {
-              vlId: string;
-              node: number;
-              targetBusbarSectionId: string;
-              order?: number;
-              direction?: FeederDirection;
-          };
-      }
-    | {
-          op: 'update-position';
-          equipmentId: string;
-          payload: { vlId: string; node: number; order: number; direction: FeederDirection };
-      }
-    | {
-          op: 'update';
-          equipmentId: string;
-          equipmentType: ElementType;
-          payload: EquipmentProperties;
-      }
-
-      | {
-          op: 'replace';
-          equipmentId: string;
-          payload: {
-              equipmentType: ElementType;
-              newId: string;
-              properties: EquipmentProperties;
-          };
-      }
-
-    | { op: 'delete' | 'delete-bay'; equipmentId: string; equipmentType: ElementType, order?: number, direction?: FeederDirection }
-    | { op: 'rename'; equipmentId: string; payload: { newId: string } };
-
-export type ChangeSet = ChangeSetEntry[];
+export type ChangeSet = NetworkModification[];
 
 export interface SelectedElement {
     id: string;
@@ -501,8 +416,8 @@ export const NODE_COMPONENT_TYPE: Readonly<Record<ElementType, string>> = {
 
 export function nodeComponentType(type: ElementType, properties: EquipmentProperties = {}): string {
     if (type === 'SHUNT') {
-        const bPerSection = properties.bPerSection;
-        return typeof bPerSection === 'number' && bPerSection < 0 ? 'INDUCTOR' : 'CAPACITOR';
+        const susceptance = properties.maxSusceptance;
+        return typeof susceptance === 'number' && susceptance < 0 ? 'INDUCTOR' : 'CAPACITOR';
     }
     return NODE_COMPONENT_TYPE[type];
 }

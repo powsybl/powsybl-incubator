@@ -1,10 +1,10 @@
 import type { Command } from './Command';
+import { moveFeederBay, type NetworkModification } from '../modifications';
 import type { EditorModel } from '../EditorModel';
 import type { CellFlip, SvgDomService } from '../../dom/SvgDomService';
 import type {
     BayPosition,
     BaySlot,
-    ChangeSetEntry,
     EquipmentTarget,
     FeederDirection,
     NodeMetadata,
@@ -24,7 +24,7 @@ export class UpdateBayPositionCommand implements Command {
 
     constructor(
         private readonly feeder: EquipmentTarget,
-        node: NodeMetadata,
+        private readonly node: NodeMetadata,
         slot: BaySlot,
         private readonly position: BayPosition,
         private readonly dom: SvgDomService,
@@ -60,16 +60,15 @@ export class UpdateBayPositionCommand implements Command {
         }
     }
 
-    toChangeSetEntry(): ChangeSetEntry {
-        return {
-            op: 'update-position',
-            equipmentId: this.equipmentId,
-            payload: {
-                vlId: this.feeder.vlId,
-                node: this.feeder.node!,
-                order: this.position.order,
-                direction: this.position.direction,
-            },
-        };
+    toModifications(): NetworkModification[] {
+        return [
+            moveFeederBay(
+                this.feeder.vlId,
+                this.equipmentId,
+                this.model.busbarSectionOfBay(this.node) ?? null,
+                this.position.order,
+                this.position.direction,
+            ),
+        ];
     }
 }

@@ -289,6 +289,27 @@ export class EditorModel {
         return throughOpenSwitch;
     }
 
+    connectedBusbarSection(feeder: NodeMetadata): string | undefined {
+        const seen = new Set([feeder.id]);
+        const queue = [feeder];
+        let throughOpenSwitch: string | undefined;
+        while (queue.length > 0) {
+            const node = queue.shift()!;
+            for (const wire of this.getWiresForNode(node.id)) {
+                const other = this.otherEnd(wire, node.id);
+                if (!other || seen.has(other.id) || other.vid !== feeder.vid) continue;
+                if (isBusBarNode(other)) {
+                    if (this.getProperties(node.equipmentId ?? '').open !== true) return other.equipmentId;
+                    throughOpenSwitch ??= other.equipmentId;
+                    continue;
+                }
+                seen.add(other.id);
+                if (canTraverseNode(other)) queue.push(other);
+            }
+        }
+        return throughOpenSwitch;
+    }
+
     collectTargets(): EditTarget[] {
         const targets: EditTarget[] = [];
         const seenEquipments = new Set<string>();

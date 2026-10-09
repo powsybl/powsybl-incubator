@@ -65,7 +65,7 @@ export class UpdateBayPositionCommand implements Command {
             moveFeederBay(
                 this.feeder.vlId,
                 this.equipmentId,
-                this.model.busbarSectionOfBay(this.node) ?? null,
+                this.model.connectedBusbarSection(this.node) ?? null,
                 this.position.order,
                 this.position.direction,
                 this.model.feederSide(this.node),

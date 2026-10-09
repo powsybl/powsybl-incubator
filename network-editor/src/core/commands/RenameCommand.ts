@@ -21,6 +21,13 @@ export class RenameCommand implements Command {
     }
 
     toModifications(): NetworkModification[] {
-        return [{ type: 'EQUIPMENT_RENAME', equipmentId: this.equipmentId, newEquipmentId: this.newId }];
+        return [
+            {
+                type: 'EQUIPMENT_RENAME',
+                equipmentId: this.equipmentId,
+                newEquipmentId: this.newId,
+                newConnectionName: this.newId,
+            },
+        ];
     }
 }

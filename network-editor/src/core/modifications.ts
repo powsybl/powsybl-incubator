@@ -175,6 +175,7 @@ export interface EquipmentRename {
     type: 'EQUIPMENT_RENAME';
     equipmentId: string;
     newEquipmentId: string;
+    newConnectionName?: string;
 }
 
 export type NetworkModification =

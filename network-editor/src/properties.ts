@@ -43,12 +43,26 @@ const BRANCH_SCHEMA: PropertyDescriptor[] = [
 export const PROPERTY_SCHEMAS: Partial<Record<ElementType, PropertyDescriptor[]>> = {
     LOAD: [
         EQUIPMENT_ID,
+        {
+            key: 'loadType',
+            type: 'select',
+            options: ['UNDEFINED', 'AUXILIARY', 'FICTITIOUS'],
+            required: true,
+            defaultValue: 'UNDEFINED',
+        },
         { key: 'p0', unit: 'MW', type: 'number', required: true, defaultValue: 10 },
         { key: 'q0', unit: 'MVar', type: 'number', required: true, defaultValue: 0 },
         CONNECTED,
     ],
     GENERATOR: [
         EQUIPMENT_ID,
+        {
+            key: 'energySource',
+            type: 'select',
+            options: ['HYDRO', 'NUCLEAR', 'WIND', 'THERMAL', 'SOLAR', 'OTHER'],
+            required: true,
+            defaultValue: 'OTHER',
+        },
         { key: 'targetP', unit: 'MW', type: 'number', required: true, defaultValue: 100 },
         { key: 'targetV', unit: 'kV', type: 'number', defaultValue: 400 },
         { key: 'targetQ', unit: 'MVar', type: 'number', defaultValue: 0 },
@@ -83,8 +97,8 @@ export const PROPERTY_SCHEMAS: Partial<Record<ElementType, PropertyDescriptor[]>
             required: true,
             defaultValue: 'VOLTAGE',
         },
-        { key: 'regulating', type: 'boolean', required: true, defaultValue: false },
-        { key: 'voltageSetpoint', unit: 'kV', type: 'number' },
+        { key: 'isRegulating', type: 'boolean', required: true, defaultValue: false },
+        { key: 'voltageSetpoint', unit: 'kV', type: 'number', defaultValue: 400 },
         { key: 'reactivePowerSetpoint', unit: 'MVar', type: 'number' },
         CONNECTED,
     ],

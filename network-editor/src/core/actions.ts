@@ -1,0 +1,411 @@
+import { availableOperations, creatableTypesFor } from './operations';
+import { defaultsOf, EQUIPMENT_ID, schemaFor, type PropertyDescriptor } from '../properties';
+import {
+    SWITCH_TYPES,
+    toDirection,
+    toElementType,
+    type BayPosition,
+    type BusbarTarget,
+    type CreateSpec,
+    type CreationPlacement,
+    type EditOperation,
+    type EditTarget,
+    type ElementType,
+    type EquipmentProperties,
+    type EquipmentTarget,
+    type PickedSwitch,
+} from './types';
+
+export type ActionSubject =
+    | { kind: 'TYPE'; type: ElementType }
+    | { kind: 'BUSBAR'; busbarSectionId: string }
+    | { kind: 'SELECTION'; size: number };
+
+export interface ActionEquipment {
+    id: string;
+    type: ElementType;
+    vlId: string;
+}
+
+export interface EditorAction {
+    id: string;
+    operation: EditOperation;
+    subject?: ActionSubject;
+    form: readonly PropertyDescriptor[];
+    initial: EquipmentProperties;
+    placement?: CreationPlacement;
+    equipment?: ActionEquipment;
+    run(values?: EquipmentProperties): boolean;
+}
+
+/** `OPERATION:TYPE` for a creation (e.g. `CREATE_FEEDER_BAY:LOAD`), the operation otherwise. */
+export function actionKey(action: EditorAction): string {
+    return action.subject?.kind === 'TYPE'
+        ? `${action.operation}:${action.subject.type}`
+        : action.operation;
+}
+
+export interface ActionHost {
+    create(targetId: string, operation: EditOperation, spec: CreateSpec): boolean;
+    applyProperties(equipmentId: string, changes: EquipmentProperties): boolean;
+    deleteElement(equipmentId: string): boolean;
+    deleteFeederBay(equipmentId: string): boolean;
+    deleteElements(equipmentIds: readonly string[], kind: 'element' | 'bay'): boolean;
+    replaceEquipment(equipmentId: string, newEquipment: CreateSpec): boolean;
+    selectedTargets(): readonly EquipmentTarget[];
+    moveDestinations(equipmentId: string): BusbarTarget[];
+    moveFeederBay(equipmentId: string, busbarTargetId: string): boolean;
+    renameEquipment(equipmentId: string, newId: string): boolean;
+    beginSwitch(targetId: string, type: ElementType): boolean;
+    createSwitch(spec: CreateSpec): boolean;
+    beginBayMove(equipmentId: string): boolean;
+    canBeginBayMove(equipmentId: string): boolean;
+    createSwitchedInjection(targetId: string, spec: CreateSpec): boolean;
+    getBayPosition(equipmentId: string): BayPosition | undefined;
+    setBayPosition(equipmentId: string, position: BayPosition): boolean;
+    getProperties(equipmentId: string): EquipmentProperties;
+    proposedOrder(target: BusbarTarget, insertion?: number): number | undefined;
+}
+
+const ORDER: PropertyDescriptor = { key: 'order', type: 'number', required: true, min: 0 };
+
+const SWITCH_KIND: PropertyDescriptor = {
+    key: 'switchKind',
+    type: 'select',
+    options: [...SWITCH_TYPES],
+    required: true,
+    defaultValue: 'BREAKER',
+};
+
+const DIRECTION: PropertyDescriptor = {
+    key: 'direction',
+    type: 'select',
+    options: ['TOP', 'BOTTOM'],
+    required: true,
+    defaultValue: 'BOTTOM',
+};
+
+export function buildActions(
+    host: ActionHost,
+    target: EditTarget,
+    insertion?: number,
+): EditorAction[] {
+    const batch = host.selectedTargets();
+    if (batch.length > 1 && batch.some((selected) => selected.id === target.id)) {
+        return batchActions(host, target, batch);
+    }
+
+    return availableOperations(target).flatMap((operation) => {
+        const creatable = creatableTypesFor(operation);
+        if (creatable.size > 0) {
+            // A replacement only offers the other types.
+            const current = operation === 'REPLACE' && target.kind === 'EQUIPMENT' ? target.type : undefined;
+            return [...creatable]
+                .filter((type) => type !== current)
+                .map((type) => createAction(host, target, operation, type, insertion));
+        }
+        if (target.kind === 'EQUIPMENT') return equipmentActions(host, target, operation);
+        if (target.kind === 'BUSBAR') return busbarActions(host, target, operation);
+        return [];
+    });
+}
+
+function createForm(
+    type: ElementType,
+    onBusbar: boolean,
+    behindSwitch: boolean,
+): PropertyDescriptor[] {
+    return [
+        EQUIPMENT_ID,
+        ...(onBusbar ? [ORDER, DIRECTION] : []),
+        ...(behindSwitch ? [SWITCH_KIND] : []),
+        ...schemaFor(type, 'create'),
+    ];
+}
+
+function specFromValues(type: ElementType, values: EquipmentProperties): CreateSpec | undefined {
+    const { equipmentId, order, direction, switchKind, ...properties } = values;
+    const provisionalId = text(equipmentId);
+    if (!provisionalId) return undefined;
+
+    return {
+        type,
+        properties,
+        provisionalId,
+        order: typeof order === 'number' ? order : undefined,
+        direction: toDirection(text(direction)),
+        switchType: switchKind === undefined ? undefined : toElementType(text(switchKind)),
+    };
+}
+
+function createAction(
+    host: ActionHost,
+    target: EditTarget,
+    operation: EditOperation,
+    type: ElementType,
+    insertion?: number,
+): EditorAction {
+    if (operation === 'CREATE_SWITCH' && target.kind === 'NODE') {
+        return {
+            id: `${createOperationId(target, operation)}:${type}`,
+            operation,
+            subject: { kind: 'TYPE', type },
+            form: [],
+            initial: {},
+            run: () => host.beginSwitch(target.id, type),
+        };
+    }
+
+    if (operation === 'REPLACE' && target.kind === 'EQUIPMENT') {
+        const form = [EQUIPMENT_ID, ...schemaFor(type, 'create')];
+        const initial = defaultsOf(form);
+        initial.equipmentId = 'NEW_' + type;
+        return {
+            id: `${createOperationId(target, operation)}:${type}`,
+            operation,
+            subject: { kind: 'TYPE', type },
+            form,
+            initial,
+            equipment: equipmentOf(target),
+            run: (values = {}) => {
+                const spec = specFromValues(type, values);
+                return spec ? host.replaceEquipment(target.equipmentId, spec) : false;
+            },
+        };
+    }
+
+    const onBusbar = operation === 'CREATE_FEEDER_BAY';
+    const behindSwitch = operation === 'CREATE_SWITCHED_INJECTION';
+    const form = createForm(type, onBusbar, behindSwitch);
+
+    const initial = defaultsOf(form);
+    initial.equipmentId = 'NEW_' + type;
+
+    if (onBusbar && target.kind === 'BUSBAR') {
+        const order = host.proposedOrder(target, insertion);
+        if (order !== undefined) initial.order = order;
+    }
+
+    return {
+        id: `${createOperationId(target, operation)}:${type}`,
+        operation,
+        subject: { kind: 'TYPE', type },
+        form,
+        initial,
+        placement: placementOf(target, type, initial),
+        run: (values = {}) => {
+            const spec = specFromValues(type, values);
+            if (!spec) return false;
+            if (behindSwitch && target.kind === 'NODE') {
+                return host.createSwitchedInjection(target.id, spec);
+            }
+            return host.create(target.id, operation, spec);
+        },
+    };
+}
+
+function placementOf(
+    target: EditTarget,
+    type: ElementType,
+    initial: EquipmentProperties,
+): CreationPlacement | undefined {
+    if (target.kind === 'BUSBAR') {
+        return {
+            elementType: type,
+            vlId: target.vlId,
+            busbarSectionId: target.busbarSectionId,
+            order: typeof initial.order === 'number' ? initial.order : undefined,
+            direction: toDirection(text(initial.direction)),
+        };
+    }
+    if (target.kind === 'NODE') {
+        return { elementType: type, vlId: target.vlId, node: target.node };
+    }
+    return undefined;
+}
+
+export function switchAction(host: ActionHost, picked: PickedSwitch): EditorAction {
+    const form = createForm(picked.type, false, false);
+    const initial = defaultsOf(form);
+    initial.equipmentId = 'NEW_' + picked.type;
+
+    return {
+        id: `${picked.first.id}:CREATE_SWITCH:${picked.second.id}`,
+        operation: 'CREATE_SWITCH',
+        subject: { kind: 'TYPE', type: picked.type },
+        form,
+        initial,
+        run: (values = {}) => {
+            const spec = specFromValues(picked.type, values);
+            return spec ? host.createSwitch(spec) : false;
+        },
+    };
+}
+
+function equipmentActions(
+    host: ActionHost,
+    target: EquipmentTarget,
+    operation: EditOperation,
+): EditorAction[] {
+    const { equipmentId } = target;
+
+    switch (operation) {
+        case 'DELETE':
+            return [plain(target, operation, () => host.deleteElement(equipmentId))];
+
+        case 'DELETE_BAY':
+            return [plain(target, operation, () => host.deleteFeederBay(equipmentId))];
+
+        case 'MOVE_BAY':
+            return host.moveDestinations(equipmentId).map((destination) => ({
+                id: `${createOperationId(target, operation)}:${destination.id}`,
+                operation,
+                subject: { kind: 'BUSBAR', busbarSectionId: destination.busbarSectionId },
+                form: [],
+                initial: {},
+                equipment: equipmentOf(target),
+                run: () => host.moveFeederBay(equipmentId, destination.id),
+            }));
+
+        case 'UPDATE_BAY_POSITION':
+            if (!host.canBeginBayMove(equipmentId)) return [];
+            return [plain(target, operation, () => host.beginBayMove(equipmentId))];
+
+        case 'FLIP_BAY_DIRECTION': {
+            const current = host.getBayPosition(equipmentId);
+            if (!current) return [];
+            return [
+                plain(target, operation, () =>
+                    host.setBayPosition(equipmentId, {
+                        order: current.order,
+                        direction: current.direction === 'TOP' ? 'BOTTOM' : 'TOP',
+                    }),
+                ),
+            ];
+        }
+
+        case 'UPDATE_PROPERTIES': {
+            const form = schemaFor(target.type, target.created ? 'create' : 'edit').map(
+                (descriptor) =>
+                    descriptor.key === 'equipmentId'
+                        ? { ...descriptor, readOnly: true }
+                        : descriptor,
+            );
+            return [
+                {
+                    id: createOperationId(target, operation),
+                    operation,
+                    form,
+                    initial: {
+                        ...defaultsOf(form.filter((descriptor) => descriptor.editOnly)),
+                        ...host.getProperties(equipmentId),
+                        equipmentId,
+                    },
+                    equipment: equipmentOf(target),
+                    run: (values = {}) => {
+                        const { equipmentId: _newId, ...properties } = values;
+                        const stored = host.getProperties(equipmentId);
+                        return host.applyProperties(
+                            equipmentId,
+                            Object.fromEntries(
+                                Object.entries(properties).filter(([key, v]) => v !== stored[key]),
+                            ),
+                        );
+                    },
+                },
+            ];
+        }
+
+        case 'RENAME':
+            return renameAction(operation, target, host);
+
+        default:
+            return [];
+    }
+}
+
+function busbarActions(
+    host: ActionHost,
+    target: BusbarTarget,
+    operation: EditOperation,
+): EditorAction[] {
+    if (operation !== 'RENAME') return [];
+    return renameAction(operation, target, host);
+}
+
+function batchActions(
+    host: ActionHost,
+    target: EditTarget,
+    batch: readonly EquipmentTarget[],
+): EditorAction[] {
+    const equipmentIds = batch.map((selected) => selected.equipmentId);
+
+    return ([
+        ['DELETE', 'element'],
+        ['DELETE_BAY', 'bay'],
+    ] as const)
+        .filter(([operation]) =>
+            batch.every((selected) => availableOperations(selected).includes(operation)),
+        )
+        .map(([operation, kind]) => ({
+            id: createOperationId(target, operation),
+            operation,
+            subject: { kind: 'SELECTION' as const, size: batch.length },
+            form: [],
+            initial: {},
+            run: () => host.deleteElements(equipmentIds, kind),
+        }));
+}
+
+function renameAction(
+    operation: EditOperation,
+    target: EditTarget,
+    host: ActionHost,
+): EditorAction[] {
+    const equipment: ActionEquipment | undefined =
+        target.kind === 'EQUIPMENT'
+            ? equipmentOf(target)
+            : target.kind === 'BUSBAR'
+              ? { id: target.busbarSectionId, type: 'BUS', vlId: target.vlId }
+              : undefined;
+    if (!equipment) return [];
+    const equipmentId = equipment.id;
+
+    return [
+        {
+            id: createOperationId(target, operation),
+            operation,
+            form: [EQUIPMENT_ID],
+            initial: { equipmentId },
+            equipment,
+            run: (values = {}) => {
+                const newId = text(values.equipmentId);
+                return newId ? host.renameEquipment(equipmentId, newId) : false;
+            },
+        },
+    ];
+}
+
+
+function plain(target: EquipmentTarget, operation: EditOperation, run: () => boolean): EditorAction {
+    return {
+        id: createOperationId(target, operation),
+        operation,
+        form: [],
+        initial: {},
+        equipment: equipmentOf(target),
+        run,
+    };
+}
+
+function equipmentOf(target: EquipmentTarget): ActionEquipment {
+    return { id: target.equipmentId, type: target.type, vlId: target.vlId };
+}
+
+function createOperationId(target: EditTarget, operation: EditOperation): string {
+    return `${target.id}:${operation}`;
+}
+
+function text(value: EquipmentProperties[string] | undefined): string | undefined {
+    return typeof value === 'string' ? value : undefined;
+}

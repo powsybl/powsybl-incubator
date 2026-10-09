@@ -146,6 +146,11 @@ export class EditorModel {
         return this.feederInfosById.get(id);
     }
 
+    feederSide(feeder: NodeMetadata): string | null {
+        const infos = this.getFeederInfosForEquipment(feeder.equipmentId ?? '');
+        return infos.find((info) => info.id.startsWith(feeder.id) && info.side)?.side ?? null;
+    }
+
     setFeederDirection(nodeId: string, direction: FeederDirection): void {
         const node = this.nodesById.get(nodeId);
         if (node) node.direction = direction;

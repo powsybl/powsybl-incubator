@@ -13,6 +13,7 @@ export class MoveBayCommand implements Command {
         markerNodeId: string,
         private readonly position?: BayPosition,
         feederNodeId?: string,
+        private readonly connectionSide: string | null = null,
     ) {
         this.orderClaims =
             position && feederNodeId
@@ -47,6 +48,7 @@ export class MoveBayCommand implements Command {
                 this.destination.busbarSectionId,
                 this.position?.order,
                 this.position?.direction,
+                this.connectionSide,
             ),
         ];
     }

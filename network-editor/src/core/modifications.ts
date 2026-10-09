@@ -327,6 +327,7 @@ export function moveFeederBay(
     busbarSectionId: string | null,
     order: number | undefined,
     direction: string | undefined,
+    connectionSide: string | null,
 ): MoveVoltageLevelFeederBays {
     return {
         type: 'MOVE_VOLTAGE_LEVEL_FEEDER_BAYS',
@@ -335,7 +336,7 @@ export function moveFeederBay(
             {
                 equipmentId,
                 busbarSectionId,
-                connectionSide: null,
+                connectionSide,
                 connectionPosition: order ?? null,
                 connectionName: null,
                 connectionDirection: connectionDirection(direction),

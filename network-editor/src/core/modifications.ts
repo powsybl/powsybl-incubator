@@ -19,14 +19,20 @@ export interface InjectionCreationFields {
     terminalConnected: boolean;
 }
 
+export type LoadType = 'UNDEFINED' | 'AUXILIARY' | 'FICTITIOUS';
+
 export interface LoadCreation extends InjectionCreationFields {
     type: 'LOAD_CREATION';
+    loadType: LoadType;
     p0: number;
     q0: number;
 }
 
+export type EnergySource = 'HYDRO' | 'NUCLEAR' | 'WIND' | 'THERMAL' | 'SOLAR' | 'OTHER';
+
 export interface GeneratorCreation extends InjectionCreationFields {
     type: 'GENERATOR_CREATION';
+    energySource: EnergySource;
     targetP: number;
     targetQ?: number;
     targetV?: number;
@@ -55,7 +61,7 @@ export interface StaticVarCompensatorCreation extends InjectionCreationFields {
     minSusceptance: number;
     maxSusceptance: number;
     regulationMode: string;
-    regulating: boolean;
+    isRegulating: boolean;
     voltageSetpoint?: number;
     reactivePowerSetpoint?: number;
 }

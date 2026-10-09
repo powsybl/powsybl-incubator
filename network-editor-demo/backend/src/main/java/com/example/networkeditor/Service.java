@@ -104,7 +104,7 @@ public class Service {
             putDouble(properties, "voltageSetpoint", svc.getVoltageSetpoint());
             putDouble(properties, "reactivePowerSetpoint", svc.getReactivePowerSetpoint());
             properties.put("regulationMode", svc.getRegulationMode().name());
-            properties.put("regulating", svc.isRegulating());
+            properties.put("isRegulating", svc.isRegulating());
 
         } else if (identifiable instanceof VscConverterStation vsc) {
             putDouble(properties, "lossFactor", vsc.getLossFactor());

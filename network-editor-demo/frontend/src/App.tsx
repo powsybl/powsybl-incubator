@@ -1,28 +1,47 @@
 import {Banner, Button, Card, Header, Loader, Select} from "@design-system-rte/react";
 import { useEffect, useRef, useState} from "react";
 import type {NetworkInfo, Sld} from "./types.ts";
-import {applyChange, deleteBay, deleteElement, getSld, getVoltageLevelIds, uploadNetwork} from "./api.ts";
-import {describeTargets, type Gesture, menuItemsFor, NetworkEditor} from "@powsybl/network-editor";
-import type {BayInsertion, EditTarget} from "@powsybl/network-editor";
+import {applyModifications, getSld, getVoltageLevelIds, uploadNetwork} from "./api.ts";
+import {isAxiosError} from "axios";
+import {describeTargets, type Gesture, menuItemsFor, NetworkEditor, type NetworkModification} from "@powsybl/network-editor";
+import type {EditTarget} from "@powsybl/network-editor";
 import type {MenuItem} from "./components/Menu.tsx";
 import {Menu} from "./components/Menu.tsx";
 import { actionLabel, type EditorAction} from "@powsybl/network-editor";
 import {PropertyForm} from "@powsybl/network-editor/react";
-import type {ChangeOp, ChangeSetEntry} from "@powsybl/network-editor";
 
-const CHANGE_LABELS: Record<ChangeOp, string> = {
-    'create': 'Création',
-    'create-bay': 'Création de travée',
-    'create-switch': 'Création d\'organe de coupure',
-    'create-switched-injection': 'Création derrière un organe de coupure',
-    'move-bay': 'Déplacement de travée',
-    'update-position': 'Changement de position',
-    'update': 'Modification',
-    'delete': 'Suppression',
-    'delete-bay': 'Suppression de travée',
-    'rename': 'Renommage',
-    'replace': 'Remplacement'
+const CHANGE_LABELS: Partial<Record<NetworkModification['type'], string>> = {
+    LOAD_CREATION: 'Création de charge',
+    GENERATOR_CREATION: 'Création de générateur',
+    BATTERY_CREATION: 'Création de batterie',
+    SHUNT_COMPENSATOR_CREATION: 'Création de compensateur shunt',
+    STATIC_VAR_COMPENSATOR_CREATION: 'Création de CSPR',
+    CONVERTER_STATION_CREATION: 'Création de station VSC',
+    LCC_CONVERTER_STATION_CREATION: 'Création de station LCC',
+    BOUNDARY_LINE_CREATION: 'Création de ligne frontière',
+    NODE_INJECTION_CREATION: 'Création sur un nœud',
+    SWITCHED_INJECTION_CREATION: 'Création derrière un organe de coupure',
+    SWITCH_CREATION: 'Création d\'organe de coupure',
+    MOVE_VOLTAGE_LEVEL_FEEDER_BAYS: 'Déplacement de travée',
+    EQUIPMENT_ATTRIBUTE_MODIFICATION: 'Modification d\'attribut',
+    EQUIPMENT_DELETION: 'Suppression',
+    ELEMENT_DELETION: 'Suppression d\'élément',
+    EQUIPMENT_RENAME: 'Renommage',
 }
+
+const changeLabel = (change: NetworkModification) =>
+    CHANGE_LABELS[change.type] ?? (change.type.endsWith('_MODIFICATION') ? 'Modification' : change.type)
+
+const changeTarget = (change: NetworkModification) => {
+    if ('equipmentId' in change) return change.equipmentId
+    if (change.type === 'NODE_INJECTION_CREATION' || change.type === 'SWITCHED_INJECTION_CREATION') {
+        return change.creation.equipmentId
+    }
+    return change.voltageLevelId
+}
+
+const errorMessage = (error: unknown) =>
+    isAxiosError(error) && error.response?.data?.message ? error.response.data.message : String(error)
 
 export default function App() {
 
@@ -39,7 +58,7 @@ export default function App() {
     const [showIidmNodes, setShowIidmNodes] = useState<boolean>(false)
 
     const [history, setHistory] = useState<{ canUndo: boolean; canRedo: boolean }>({canUndo: false, canRedo: false})
-    const [changes, setChanges] = useState<ChangeSetEntry[]>([])
+    const [changes, setChanges] = useState<NetworkModification[]>([])
     const [gesture, setGesture] = useState<Gesture | null>(null)
 
     const [editor, setEditor] = useState<NetworkEditor | null>(null);
@@ -47,7 +66,7 @@ export default function App() {
         targets: readonly EditTarget[],
         x: number,
         y: number,
-        insertion?: BayInsertion
+        insertion?: number
     } | null>(null)
     const [panel, setPanel] = useState<EditorAction | null>(null)
 
@@ -166,32 +185,12 @@ export default function App() {
         setError("")
 
         try {
-            for (const change of changes) {
-                switch (change.op) {
-                    case 'delete' :
-                        await deleteElement(change.equipmentId)
-                        break;
-                    case 'delete-bay' :
-                        await deleteBay(change.equipmentId)
-                        break;
-                    case 'create' :
-                    case 'create-bay' :
-                    case 'create-switch':
-                    case 'update-position':
-                    case 'rename':
-                    case 'replace':
-                    case 'move-bay':
-                    case 'create-switched-injection':
-                    case 'update' :
-                        await applyChange(change)
-                        break;
-                }
-            }
+            await applyModifications(changes);
 
             editor.clearPendingChanges();
             setSld(await getSld(selectedVlId));
         } catch (error) {
-            setError(String(error));
+            setError(errorMessage(error));
         }
     }
 
@@ -303,9 +302,9 @@ export default function App() {
                                     :
                                     <ul className="changes">
                                         {changes.map((change, index) =>
-                                            <li key={`${change.op}-${change.equipmentId}-${index}`}>
-                                                <span className="change-op">{CHANGE_LABELS[change.op]}</span>
-                                                <span className="change-id">{change.equipmentId}</span>
+                                            <li key={`${change.type}-${index}`}>
+                                                <span className="change-op">{changeLabel(change)}</span>
+                                                <span className="change-id">{changeTarget(change)}</span>
                                             </li>
                                         )}
                                     </ul>

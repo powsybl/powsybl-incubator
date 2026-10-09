@@ -2,9 +2,13 @@ package com.example.networkeditor;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.powsybl.commons.PowsyblException;
+import com.powsybl.commons.report.ReportNode;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.VoltageLevel;
+import com.powsybl.iidm.serde.NetworkSerDe;
 import com.powsybl.sld.SingleLineDiagram;
+import org.gridsuite.modification.context.ModificationContext;
+import org.gridsuite.modification.modifications.AbstractModification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -19,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import org.gridsuite.modification.dto.ModificationInfos;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -121,6 +126,23 @@ public class Controller {
 
 
     // MODIFICATORS
+
+    @PostMapping("/modifications")
+    public void applyModifications(@RequestBody List<ModificationInfos> modifications) {
+        Network copy = NetworkSerDe.copy(networkState.get());
+        for (int i = 0; i < modifications.size(); i++) {
+            ModificationInfos infos = modifications.get(i);
+            try {
+                AbstractModification modification = infos.toModification(ModificationContext.empty());
+                modification.check(copy);
+                modification.apply(copy, ReportNode.NO_OP);
+            } catch (RuntimeException e) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "Modification " + i + " (" + infos.getType() + ") : " + e.getMessage(), e);
+            }
+        }
+        networkState.set(copy);
+    }
 
     @DeleteMapping("/elements/{elementId}")
     public Dto.ElementResponse deleteElement(@PathVariable String elementId){

@@ -49,7 +49,8 @@ export default function App() {
     const fileInput = useRef<HTMLInputElement>(null);
 
     const [error, setError] = useState<string>("")
-    const [loading, setLoading] = useState<boolean>(false)
+    const [NetworkLoading, setNetworkLoading] = useState<boolean>(false)
+    const [applyLoading, setApplyLoading] = useState<boolean>(false)
     const [info, setInfo] = useState<NetworkInfo | null>(null)
     const [fileName, setFileName] = useState<string>("")
     const [vlIds, setVlIds] = useState<string[] | null>(null)
@@ -72,7 +73,7 @@ export default function App() {
 
 
     const load = (file: File) => {
-        setLoading(true)
+        setNetworkLoading(true)
         setError("")
         setVlIds(null)
         setSelectedVlId(null)
@@ -85,13 +86,13 @@ export default function App() {
             (loaded) => {
                 setInfo(loaded)
                 setFileName(file.name)
-                setLoading(false)
+                setNetworkLoading(false)
             }
         ).catch((err) => {
             setInfo(null)
             setFileName("")
             setError(String(err));
-            setLoading(false)
+            setNetworkLoading(false)
         })
 
     }
@@ -185,6 +186,7 @@ export default function App() {
         setError("")
 
         try {
+            setApplyLoading(true);
             await applyModifications(changes);
 
             editor.clearPendingChanges();
@@ -192,6 +194,7 @@ export default function App() {
         } catch (error) {
             setError(errorMessage(error));
         }
+        setApplyLoading(false)
     }
 
     return (
@@ -243,10 +246,10 @@ export default function App() {
                                 label="Charger le réseau"
                                 onClick={() => fileInput.current?.click()}
                                 variant="primary"
-                                disabled={loading}
+                                disabled={NetworkLoading}
                             />
 
-                            {loading &&
+                            {NetworkLoading &&
                                 <Loader
                                     appearance="brand"
                                     label="Chargement..."
@@ -350,9 +353,17 @@ export default function App() {
                                     <Button
                                         label="Valider les modifications"
                                         variant="primary"
-                                        disabled={!changes.length}
+                                        disabled={!changes.length || applyLoading}
                                         onClick={() => applyChanges()}
                                     />
+                                    { applyLoading &&  <Loader
+                                        appearance="brand"
+                                        label=""
+                                        labelPosition="right"
+                                        showLabel
+                                        size="medium"
+                                    />
+                                    }
                                 </div>
                             </div>
 

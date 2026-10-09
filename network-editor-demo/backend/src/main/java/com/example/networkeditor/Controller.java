@@ -144,36 +144,6 @@ public class Controller {
         networkState.set(copy);
     }
 
-    @DeleteMapping("/elements/{elementId}")
-    public Dto.ElementResponse deleteElement(@PathVariable String elementId){
-        try {
-            service.removeElement(networkState.get(), elementId);
-        } catch (PowsyblException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to delete element : " + e.getMessage(), e);
-        }
-        return new Dto.ElementResponse("Element deleted", elementId);
-    }
-
-    @DeleteMapping("/bay/{elementId}")
-    public Dto.ElementResponse deleteBay(@PathVariable String elementId){
-        try {
-            service.removeBay(networkState.get(), elementId);
-        } catch (PowsyblException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to delete bay : " + e.getMessage(), e);
-        }
-        return new Dto.ElementResponse("bay deleted", elementId);
-    }
-
-    @PostMapping("/changes")
-    public Dto.ApplyChangesResponse changeElement(@RequestBody Dto.ChangeEntry change){
-        try {
-            service.apply(networkState.get(), change);
-        } catch (PowsyblException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to change element : " + e.getMessage(), e);
-        }
-        return new Dto.ApplyChangesResponse("Element changed", true);
-    }
-
 
 
 

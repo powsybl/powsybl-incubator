@@ -191,6 +191,7 @@ export interface FeederInfoMetadata {
     id: string;
     equipmentId: string;
     componentType: string;
+    side?: string;
 }
 
 export interface DeleteScope {

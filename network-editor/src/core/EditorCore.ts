@@ -314,7 +314,9 @@ export class EditorCore {
         if (order === undefined) return false;
 
         const direction = this.getBayPosition(equipmentId)?.direction ?? 'BOTTOM';
-        this.history.push(new MoveBayCommand(feeder, destination, host.id, { order, direction }, node.id));
+        this.history.push(
+            new MoveBayCommand(feeder, destination, host.id, { order, direction }, node.id, this.model.feederSide(node)),
+        );
         return true;
     }
 

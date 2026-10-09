@@ -68,6 +68,7 @@ export class UpdateBayPositionCommand implements Command {
                 this.model.busbarSectionOfBay(this.node) ?? null,
                 this.position.order,
                 this.position.direction,
+                this.model.feederSide(this.node),
             ),
         ];
     }

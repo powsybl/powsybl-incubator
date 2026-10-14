@@ -6,7 +6,6 @@ export type {
     BoundaryLineCreation,
     ConnectionDirection,
     ConverterStationCreation,
-    ElementDeletion,
     EquipmentAttributeModification,
     EquipmentDeletion,
     EquipmentModification,
@@ -41,15 +40,9 @@ export { actionKey, type ActionEquipment, type ActionSubject, type EditorAction 
 export {
     actionFor,
     actionLabel,
-    describeTarget,
     describeTargets,
-    menuItemsFor,
     type ActionMenuItem,
-    type ActionSource,
-    type MenuSubjects,
-} from './menu';
-
-export { OPERATIONS, type OperationSpec } from './core/operations';
+} from './core/menu';
 
 export {
     BAY_SLOT_CLASS,
@@ -62,13 +55,12 @@ export {
 
 export type {
     BusbarTarget,
-    ChangeSet,
     CreationPlacement,
     EditOperation,
+    EditorEvent,
     EditorEventListener,
     EditorEventName,
     EditorEvents,
-    EditMode,
     EditorOptions,
     EditTarget,
     ElementType,
@@ -80,9 +72,7 @@ export type {
     NodeTarget,
     SelectedElement,
     SLDMetadata,
-    SymbolProvider,
     SwitchEnd,
     SwitchGesture,
-    TargetEvent,
     ViewerCallbacks,
 } from './core/types';

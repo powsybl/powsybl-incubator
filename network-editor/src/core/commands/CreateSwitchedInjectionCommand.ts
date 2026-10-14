@@ -1,6 +1,6 @@
 import type { PendingCreateCommand } from './Command';
 import type { EditorModel } from '../EditorModel';
-import { nodeInjectionCreation, switchKind, type NetworkModification } from '../modifications';
+import { injectionFields, switchKind, type NetworkModification } from '../modifications';
 import {
     NODE_COMPONENT_TYPE,
     createdNodeId,
@@ -55,7 +55,6 @@ export class CreateSwitchedInjectionCommand implements PendingCreateCommand {
     }
 
     toModifications(): NetworkModification[] {
-        const { creation } = nodeInjectionCreation(this.type, this.equipmentId, this.vlId, this.iidmNode, this.properties);
         return [
             {
                 type: 'SWITCHED_INJECTION_CREATION',
@@ -63,7 +62,7 @@ export class CreateSwitchedInjectionCommand implements PendingCreateCommand {
                 node: this.iidmNode,
                 switchId: this.switchId,
                 switchKind: switchKind(this.switchType),
-                creation,
+                creation: injectionFields(this.type, this.equipmentId, this.vlId, this.properties),
             },
         ];
     }

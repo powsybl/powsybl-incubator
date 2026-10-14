@@ -1,11 +1,9 @@
-import type { ActionSubject, EditorAction } from './core/actions';
-import { OPERATIONS } from './core/operations';
-import type { EditOperation, EditTarget } from './core/types';
+import type { EditorAction } from './actions';
+import { OPERATIONS } from './operations';
+import type { EditOperation, EditTarget } from './types';
 
 export interface ActionMenuItem {
     action: EditorAction;
-    operation: EditOperation;
-    subject?: ActionSubject;
     label: string;
     danger: boolean;
     needsForm: boolean;
@@ -72,8 +70,6 @@ export function menuItemsFor(source: ActionSource, subjects: MenuSubjects): Acti
         .flatMap((target) => source.actionsFor(target, subjects.insertion))
         .map((action) => ({
             action,
-            operation: action.operation,
-            subject: action.subject,
             label: actionLabel(action),
             danger: OPERATIONS[action.operation].danger ?? false,
             needsForm: action.form.length > 0,

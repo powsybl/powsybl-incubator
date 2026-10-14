@@ -9,6 +9,7 @@ import {
 import type { SvgDomService, SymbolSnapshot } from '../../dom/SvgDomService';
 import {
     nodeComponentType,
+    toDirection,
     toElementType,
     type ElementType,
     type EquipmentProperties,
@@ -79,7 +80,7 @@ export class ReplaceCommand implements Command {
                           voltageLevelId: this.node.vid ?? '',
                           busbarSectionId: busbarSectionId ?? '',
                           order: this.node.order ?? null,
-                          direction: this.node.direction,
+                          direction: toDirection(this.node.direction),
                       },
                       this.properties,
                   );

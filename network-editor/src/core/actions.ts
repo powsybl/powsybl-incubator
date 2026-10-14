@@ -48,8 +48,6 @@ export function actionKey(action: EditorAction): string {
 export interface ActionHost {
     create(targetId: string, operation: EditOperation, spec: CreateSpec): boolean;
     applyProperties(equipmentId: string, changes: EquipmentProperties): boolean;
-    deleteElement(equipmentId: string): boolean;
-    deleteFeederBay(equipmentId: string): boolean;
     deleteElements(equipmentIds: readonly string[], kind: 'element' | 'bay'): boolean;
     replaceEquipment(equipmentId: string, newEquipment: CreateSpec): boolean;
     selectedTargets(): readonly EquipmentTarget[];
@@ -65,6 +63,7 @@ export interface ActionHost {
     setBayPosition(equipmentId: string, position: BayPosition): boolean;
     getProperties(equipmentId: string): EquipmentProperties;
     proposedOrder(target: BusbarTarget, insertion?: number): number | undefined;
+    proposeEquipmentId(type: ElementType): string;
 }
 
 const ORDER: PropertyDescriptor = { key: 'order', type: 'number', required: true, min: 0 };
@@ -104,8 +103,8 @@ export function buildActions(
                 .filter((type) => type !== current)
                 .map((type) => createAction(host, target, operation, type, insertion));
         }
+        if (operation === 'RENAME') return renameAction(host, target);
         if (target.kind === 'EQUIPMENT') return equipmentActions(host, target, operation);
-        if (target.kind === 'BUSBAR') return busbarActions(host, target, operation);
         return [];
     });
 }
@@ -121,6 +120,14 @@ function createForm(
         ...(behindSwitch ? [SWITCH_KIND] : []),
         ...schemaFor(type, 'create'),
     ];
+}
+
+function creationInitial(
+    host: ActionHost,
+    form: readonly PropertyDescriptor[],
+    type: ElementType,
+): EquipmentProperties {
+    return { ...defaultsOf(form), equipmentId: host.proposeEquipmentId(type) };
 }
 
 function specFromValues(type: ElementType, values: EquipmentProperties): CreateSpec | undefined {
@@ -158,8 +165,7 @@ function createAction(
 
     if (operation === 'REPLACE' && target.kind === 'EQUIPMENT') {
         const form = [EQUIPMENT_ID, ...schemaFor(type, 'create')];
-        const initial = defaultsOf(form);
-        initial.equipmentId = 'NEW_' + type;
+        const initial = creationInitial(host, form, type);
         return {
             id: `${createOperationId(target, operation)}:${type}`,
             operation,
@@ -178,8 +184,7 @@ function createAction(
     const behindSwitch = operation === 'CREATE_SWITCHED_INJECTION';
     const form = createForm(type, onBusbar, behindSwitch);
 
-    const initial = defaultsOf(form);
-    initial.equipmentId = 'NEW_' + type;
+    const initial = creationInitial(host, form, type);
 
     if (onBusbar && target.kind === 'BUSBAR') {
         const order = host.proposedOrder(target, insertion);
@@ -226,8 +231,7 @@ function placementOf(
 
 export function switchAction(host: ActionHost, picked: PickedSwitch): EditorAction {
     const form = createForm(picked.type, false, false);
-    const initial = defaultsOf(form);
-    initial.equipmentId = 'NEW_' + picked.type;
+    const initial = creationInitial(host, form, picked.type);
 
     return {
         id: `${picked.first.id}:CREATE_SWITCH:${picked.second.id}`,
@@ -251,10 +255,10 @@ function equipmentActions(
 
     switch (operation) {
         case 'DELETE':
-            return [plain(target, operation, () => host.deleteElement(equipmentId))];
+            return [plain(target, operation, () => host.deleteElements([equipmentId], 'element'))];
 
         case 'DELETE_BAY':
-            return [plain(target, operation, () => host.deleteFeederBay(equipmentId))];
+            return [plain(target, operation, () => host.deleteElements([equipmentId], 'bay'))];
 
         case 'MOVE_BAY':
             return host.moveDestinations(equipmentId).map((destination) => ({
@@ -316,21 +320,9 @@ function equipmentActions(
             ];
         }
 
-        case 'RENAME':
-            return renameAction(operation, target, host);
-
         default:
             return [];
     }
-}
-
-function busbarActions(
-    host: ActionHost,
-    target: BusbarTarget,
-    operation: EditOperation,
-): EditorAction[] {
-    if (operation !== 'RENAME') return [];
-    return renameAction(operation, target, host);
 }
 
 function batchActions(
@@ -357,11 +349,7 @@ function batchActions(
         }));
 }
 
-function renameAction(
-    operation: EditOperation,
-    target: EditTarget,
-    host: ActionHost,
-): EditorAction[] {
+function renameAction(host: ActionHost, target: EditTarget): EditorAction[] {
     const equipment: ActionEquipment | undefined =
         target.kind === 'EQUIPMENT'
             ? equipmentOf(target)
@@ -373,8 +361,8 @@ function renameAction(
 
     return [
         {
-            id: createOperationId(target, operation),
-            operation,
+            id: createOperationId(target, 'RENAME'),
+            operation: 'RENAME',
             form: [EQUIPMENT_ID],
             initial: { equipmentId },
             equipment,

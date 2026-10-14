@@ -2,8 +2,10 @@ import type { SldComponentOptions } from '@powsybl/network-viewer-core';
 
 import { EditorModel } from './EditorModel';
 import { buildActions, switchAction, type EditorAction } from './actions';
-import { availableOperations, creatableTypesFor, isSwitchNode } from './operations';
+import { availableOperations, creatableTypesFor } from './operations';
 import { pushTo } from './utils';
+import { menuItemsFor } from './menu';
+import { mergeFeederBayMoves, type NetworkModification } from './modifications';
 import { CommandStack } from './commands/CommandStack';
 import { isPendingCreate, type Command, type PendingCreateCommand } from './commands/Command';
 import { CreateCommand } from './commands/CreateCommand';
@@ -45,6 +47,7 @@ import {
     NODE_COMPONENT_TYPE,
     SWITCH_TYPES,
     isCreatedNodeId,
+    isSwitchNode,
     nodeComponentType,
     toElementType,
     toDirection,
@@ -53,7 +56,6 @@ import {
     type BaySlot,
     type BaySlotCandidate,
     type BusbarTarget,
-    type ChangeSet,
     type CreateSpec,
     type DiagramPoint,
     type DiagramSpan,
@@ -62,7 +64,6 @@ import {
     type ElementType,
     type EquipmentTarget,
     type EquipmentProperties,
-    type EditMode,
     type EditorEmit,
     type EditorEvent,
     type EditorEventListener,
@@ -75,7 +76,8 @@ import {
     type SwitchEnd,
     type SwitchGesture,
     type SymbolProvider,
-    type TargetEvent, type DeleteScope, type OrderClaim,
+    type DeleteScope,
+    type OrderClaim,
 } from './types';
 
 const DRAG_THRESHOLD = 10;
@@ -105,8 +107,6 @@ export class EditorCore {
         private readonly dom: SvgDomService,
         private readonly symbols: SymbolProvider,
         private readonly onEvent?: EditorEventListener,
-        private readonly onTargets?: (event: TargetEvent) => void,
-        mode: EditMode = 'pending',
         private readonly isSupported: (action: EditorAction) => boolean = () => true,
     ) {
         this.history = new CommandStack((state) => {
@@ -114,8 +114,8 @@ export class EditorCore {
             this.reflowBays();
             this.refreshTargets();
             this.emit('history:changed', state);
-            this.emit('model:changed', { changeSet: this.getPendingChanges() });
-        }, mode === 'immediate');
+            this.emit('modifications:changed', { modifications: this.getModifications() });
+        });
         const container: HTMLElement = this.dom.getContainer();
         container.addEventListener('mousedown', this.onMouseDown);
         container.addEventListener('mouseup', this.onMouseUp);
@@ -144,14 +144,6 @@ export class EditorCore {
         this.history.redo();
     }
 
-    deleteElement(equipmentId: string): boolean {
-        return this.deleteElements([equipmentId], 'element');
-    }
-
-    deleteFeederBay(equipmentId: string): boolean {
-        return this.deleteElements([equipmentId], 'bay');
-    }
-
     create(targetId: string, operation: EditOperation, spec: CreateSpec): boolean {
         const target = this.targets.get(targetId);
         if (!target || target.kind === 'EQUIPMENT') return false;
@@ -159,11 +151,7 @@ export class EditorCore {
         if (!creatableTypesFor(operation).has(spec.type)) return false;
         if (!availableOperations(target).includes(operation)) return false;
 
-        if (operation === 'CREATE_BUSBAR') {
-            return false;
-        }
-
-        let bay: { order: number; direction: FeederDirection } | undefined;
+        let bay: BayPosition | undefined;
 
         if (target.kind === 'BUSBAR') {
             const pending = this.pendingOrders(target.vlId);
@@ -276,6 +264,16 @@ export class EditorCore {
         );
     }
 
+    /** `NEW_LOAD`, then `NEW_LOAD_1`, `NEW_LOAD_2`… the first id not taken yet. */
+    proposeEquipmentId(type: ElementType): string {
+        const base = `NEW_${type}`;
+        let equipmentId = base;
+        for (let index = 1; this.isExistingEquipmentId(equipmentId); index++) {
+            equipmentId = `${base}_${index}`;
+        }
+        return equipmentId;
+    }
+
     private isExistingEquipmentId(equipmentId: string, ignore?: Command): boolean {
         return (
             this.model.getNodesForEquipment(equipmentId).length > 0 ||
@@ -333,7 +331,7 @@ export class EditorCore {
 
     getBayPosition(equipmentId: string): BayPosition | undefined {
         const pending = this.pendingBayPosition(equipmentId);
-        if (pending) return pending.bayPosition;
+        if (pending) return pending.position;
 
         const target = this.targets.get(equipmentId);
         if (target?.kind !== 'EQUIPMENT' || target.order === undefined) return undefined;
@@ -514,7 +512,7 @@ export class EditorCore {
         if (this.model.collectBay(equipmentId).nodes.length <= scope.nodes.length) return [];
 
         const claims: OrderClaim[] = [];
-        const movedPosition = this.pendingBayPosition(equipmentId)?.bayPosition;
+        const movedPosition = this.pendingBayPosition(equipmentId)?.position;
         for (const node of scope.nodes) {
             const order = movedPosition?.order ?? node.order;
             if (order === undefined) continue;
@@ -563,11 +561,13 @@ export class EditorCore {
         return node && toElementType(node.componentType);
     }
 
-    getPendingChanges(): ChangeSet {
-        return this.history.pending.flatMap((command) => command.toModifications());
+    getModifications(): NetworkModification[] {
+        return this.history.pendingSteps.flatMap((step) =>
+            mergeFeederBayMoves(step.flatMap((command) => command.toModifications())),
+        );
     }
 
-    clearPendingChanges(): void {
+    clearModifications(): void {
         this.history.clear();
     }
 
@@ -676,20 +676,20 @@ export class EditorCore {
 
     private emitTargets(
         targets: readonly EditTarget[],
-        trigger: TargetEvent['trigger'],
+        trigger: 'click' | 'contextmenu',
         event: MouseEvent,
     ): boolean {
-        if (!this.onTargets || targets.length === 0) return false;
+        if (!this.onEvent || targets.length === 0) return false;
 
         const insertion = this.insertionAt(targets, event);
         const offered = targets.filter((target) => this.actionsFor(target, insertion).length > 0);
         if (offered.length === 0) return false;
 
-        this.onTargets({
+        this.emit('menu:requested', {
+            items: menuItemsFor(this, { targets: offered, insertion }),
             targets: offered,
             trigger,
             position: { x: event.clientX, y: event.clientY },
-            insertion,
         });
         return true;
     }
@@ -706,7 +706,7 @@ export class EditorCore {
         return this.setGesture({ kind: 'SWITCH', first, candidates, type });
     }
 
-    switchAction(): EditorAction | null {
+    private switchAction(): EditorAction | null {
         const picked = this.pickedSwitch();
         if (!picked) return null;
         const action = switchAction(this, picked);
@@ -841,7 +841,7 @@ export class EditorCore {
         this.gesture = null;
         document.removeEventListener('keydown', this.onKeyDown);
         this.paintTargets();
-        this.emit('gesture:changed', { gesture: null });
+        this.emit('gesture:changed', { gesture: null, action: null });
     }
 
     getGesture(): Gesture | null {
@@ -853,7 +853,7 @@ export class EditorCore {
         this.clearHoverSlots();
         document.addEventListener('keydown', this.onKeyDown);
         this.paintTargets();
-        this.emit('gesture:changed', { gesture });
+        this.emit('gesture:changed', { gesture, action: this.switchAction() });
         return true;
     }
 
@@ -1389,8 +1389,8 @@ export class EditorCore {
         return this.symbols.componentSize(componentType);
     }
 
-    private switchSymbol(type: ElementType, anchorNodeId: string, open = false,): SymbolView | undefined {
-        return this.symbolFor(NODE_COMPONENT_TYPE[type], { open: open, orientation: 'RIGHT' }, anchorNodeId);
+    private switchSymbol(type: ElementType, anchorNodeId: string, open = false): SymbolView | undefined {
+        return this.symbolFor(NODE_COMPONENT_TYPE[type], { open, orientation: 'RIGHT' }, anchorNodeId);
     }
 
     private terminalSymbol(spec: CreateSpec, side: 'UP' | 'DOWN', anchorNodeId: string): SymbolView | undefined {

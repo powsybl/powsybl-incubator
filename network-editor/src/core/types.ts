@@ -8,6 +8,7 @@ import type {
     SldComponentOptions,
 } from '@powsybl/network-viewer-core';
 import type { EditorAction } from './actions';
+import type { ActionMenuItem } from './menu';
 import type { NetworkModification } from './modifications';
 
 export type { SLDMetadata };
@@ -44,11 +45,7 @@ export const INJECTION_TYPES: ReadonlySet<ElementType> = new Set<ElementType>([
     'BOUNDARY_LINE',
 ]);
 
-export const BUSBAR_TYPES: ReadonlySet<ElementType> = new Set<ElementType>([
-    'BUS',
-]);
-
-export const BRANCH_TYPES: ReadonlySet<ElementType> = new Set<ElementType>([
+const BRANCH_TYPES: ReadonlySet<ElementType> = new Set<ElementType>([
     'LINE',
     'TWO_WINDINGS_TRANSFORMER',
     'THREE_WINDINGS_TRANSFORMER',
@@ -82,7 +79,7 @@ export const SWITCH_END_CLASS = 'ne-switch-end';
 
 export const BAY_SLOT_CLASS = 'ne-bay-slot';
 
-export const COMPONENT_TYPE_MAP: Readonly<Record<string, ElementType>> = {
+const COMPONENT_TYPE_MAP: Readonly<Record<string, ElementType>> = {
     BUSBAR_SECTION: 'BUS',
     LOAD: 'LOAD',
     GENERATOR: 'GENERATOR',
@@ -109,6 +106,10 @@ export const COMPONENT_TYPE_MAP: Readonly<Record<string, ElementType>> = {
 export function toElementType(componentType: string | undefined): ElementType {
     if (!componentType) return 'UNKNOWN';
     return COMPONENT_TYPE_MAP[componentType] ?? 'UNKNOWN';
+}
+
+export function isSwitchNode(node: NodeMetadata): boolean {
+    return SWITCH_TYPES.has(toElementType(node.componentType));
 }
 
 export type FeederDirection = 'TOP' | 'BOTTOM';
@@ -236,8 +237,6 @@ export interface EquipmentTarget {
     direction?: FeederDirection;
     claimed?: boolean;
     created?: boolean;
-    createdBy?: EditOperation;
-    hostNodeId?: string;
 }
 
 export type EditTarget = NodeTarget | BusbarTarget | EquipmentTarget;
@@ -256,7 +255,6 @@ export type EditOperation =
     | 'CREATE_SWITCH'
     | 'CREATE_SWITCHED_INJECTION'
     | 'CREATE_FEEDER_BAY'
-    | 'CREATE_BUSBAR'
     | 'DELETE'
     | 'DELETE_BAY'
     | 'REPLACE'
@@ -301,13 +299,6 @@ export interface CreateSpec {
     switchType?: ElementType;
 }
 
-export interface TargetEvent {
-    targets: readonly EditTarget[];
-    trigger: 'click' | 'contextmenu';
-    position: { x: number; y: number };
-    insertion?: number;
-}
-
 export interface ViewerCallbacks {
     onNextVoltage?: OnNextVoltageCallbackType;
     onBreaker?: OnBreakerCallbackType;
@@ -328,8 +319,6 @@ export interface EditorMetadata extends Omit<SLDMetadata, 'nodes' | 'wires' | 'l
     layoutParams?: Partial<LayoutParams>;
 }
 
-export type EditMode = 'pending' | 'immediate';
-
 export interface EditorOptions {
     container: HTMLElement;
     svgContent: string;
@@ -342,9 +331,7 @@ export interface EditorOptions {
     selectionBackColor?: string;
     callbacks?: ViewerCallbacks;
     onEvent?: EditorEventListener;
-    onTargets?: (event: TargetEvent) => void;
     initialProperties?: Record<string, EquipmentProperties>;
-    mode?: EditMode;
     isSupported?: (action: EditorAction) => boolean;
 }
 
@@ -355,10 +342,7 @@ export const EDITOR_OPTION_DEFAULTS = {
     maxWidth: 2000,
     maxHeight: 2000,
     selectionBackColor: 'white',
-    mode: 'pending',
 } as const;
-
-export type ChangeSet = NetworkModification[];
 
 export interface SelectedElement {
     id: string;
@@ -369,8 +353,14 @@ export interface EditorEvents {
     'targets:changed': { targets: readonly EditTarget[] };
     'element:selected': { elements: readonly SelectedElement[] };
     'history:changed': { canUndo: boolean; canRedo: boolean };
-    'model:changed': { changeSet: ChangeSet };
-    'gesture:changed': { gesture: Gesture | null };
+    'modifications:changed': { modifications: NetworkModification[] };
+    'gesture:changed': { gesture: Gesture | null; action: EditorAction | null };
+    'menu:requested': {
+        items: ActionMenuItem[];
+        targets: readonly EditTarget[];
+        trigger: 'click' | 'contextmenu';
+        position: { x: number; y: number };
+    };
 }
 
 export type EditorEventName = keyof EditorEvents;

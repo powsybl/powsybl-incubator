@@ -11,20 +11,17 @@ export class MoveBayCommand implements Command {
         private readonly feeder: EquipmentTarget,
         private readonly destination: BusbarTarget,
         markerNodeId: string,
-        private readonly position?: BayPosition,
-        feederNodeId?: string,
-        private readonly connectionSide: string | null = null,
+        private readonly position: BayPosition,
+        feederNodeId: string,
+        private readonly connectionSide: string | null,
     ) {
-        this.orderClaims =
-            position && feederNodeId
-                ? [{
-                      vlId: destination.vlId,
-                      sectionIndex: destination.sectionIndex,
-                      order: position.order,
-                      direction: position.direction,
-                      vacatedNodeId: feederNodeId,
-                  }]
-                : [];
+        this.orderClaims = [{
+            vlId: destination.vlId,
+            sectionIndex: destination.sectionIndex,
+            order: position.order,
+            direction: position.direction,
+            vacatedNodeId: feederNodeId,
+        }];
         this.pendingMarker = {
             targetId: feeder.id,
             nodeId: markerNodeId,
@@ -46,8 +43,8 @@ export class MoveBayCommand implements Command {
                 this.destination.vlId,
                 this.equipmentId,
                 this.destination.busbarSectionId,
-                this.position?.order,
-                this.position?.direction,
+                this.position.order,
+                this.position.direction,
                 this.connectionSide,
             ),
         ];

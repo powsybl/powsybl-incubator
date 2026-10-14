@@ -28,8 +28,8 @@ g${PENDING} {
     pointer-events: none;
 }
 g${PENDING} > rect {
-    fill: #e3f2fd;
-    stroke: #1e88e5;
+    fill: var(--ne-accent-soft, #e3f2fd);
+    stroke: var(--ne-accent, #1e88e5);
     stroke-width: 0.8;
     stroke-dasharray: 2 1.5;
     rx: 1.5;
@@ -39,20 +39,20 @@ g${PENDING}[id] {
     cursor: pointer;
 }
 g${PENDING}[id]:hover > rect {
-    fill: #bbdefb;
+    fill: var(--ne-accent-hover, #bbdefb);
 }
 g${PENDING} .${PENDING_SYMBOL_CLASS} > g {
     stroke-dasharray: 2 1.5;
     opacity: 0.75;
 }
 g${PENDING} > g > line {
-    stroke: #1e88e5;
+    stroke: var(--ne-accent, #1e88e5);
     stroke-width: 1.2;
     stroke-dasharray: 2 1.5;
     pointer-events: none;
 }
 g${PENDING} > text {
-    fill: #0d47a1;
+    fill: var(--ne-accent-strong, #0d47a1);
     font-size: 6px;
     font-weight: bold;
     text-anchor: middle;
@@ -82,28 +82,28 @@ text.${IIDM_LABEL_CLASS} {
     cursor: pointer;
 }
 .sld-node${NODE_MARK} circle {
-    stroke: #ffffff;
+    stroke: var(--ne-halo, #ffffff);
     stroke-width: 1.5;
     vector-effect: non-scaling-stroke;
 }
 .sld-node.${NODE_TARGET_CLASS} {
-    fill: #1e88e5;
+    fill: var(--ne-accent, #1e88e5);
 }
 .sld-node.${NODE_TARGET_CLASS}:hover {
-    fill: #0d47a1;
+    fill: var(--ne-accent-strong, #0d47a1);
 }
 .sld-node.${SWITCH_END_CLASS} {
-    fill: #f9a825;
+    fill: var(--ne-candidate, #f9a825);
 }
 .sld-node.${SWITCH_END_CLASS}:hover {
-    fill: #ef6c00;
+    fill: var(--ne-candidate-strong, #ef6c00);
 }
 .sld-node.${SWITCH_START_CLASS} {
-    fill: #ef6c00;
+    fill: var(--ne-candidate-strong, #ef6c00);
     cursor: default;
 }
 .${SWITCH_END_CLASS} .sld-busbar-section {
-    stroke: #f9a825;
+    stroke: var(--ne-candidate, #f9a825);
     stroke-width: 3;
     cursor: pointer;
 }
@@ -115,22 +115,22 @@ g.${BAY_SLOT_CLASS} {
     cursor: pointer;
 }
 g.${BAY_SLOT_CLASS} circle {
-    fill: #f9a825;
-    stroke: #ffffff;
+    fill: var(--ne-candidate, #f9a825);
+    stroke: var(--ne-halo, #ffffff);
     stroke-width: 1.5;
     vector-effect: non-scaling-stroke;
 }
 
 :is(.${SELECTED_CLASS}, .${MOVING_BAY_CLASS}) {
-    outline: 2px dashed #1976d2;
+    outline: 2px dashed var(--ne-selection, #1976d2);
     outline-offset: 2px;
 }
 :is(.${SELECTED_CLASS}, .${MOVING_BAY_CLASS}) .sld-label {
-    fill: #1976d2;
+    fill: var(--ne-selection, #1976d2);
 }
 
 text.${RENAMED_LABEL_CLASS} {
-    fill: #1e88e5;
+    fill: var(--ne-accent, #1e88e5);
     font-style: italic;
 }
 `;

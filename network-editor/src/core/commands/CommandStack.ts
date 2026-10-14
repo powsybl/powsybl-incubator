@@ -6,18 +6,14 @@ export class CommandStack {
     private readonly undoStack: Step[] = [];
     private readonly redoStack: Step[] = [];
 
-    constructor(
-        private readonly onChange: (state: { canUndo: boolean; canRedo: boolean }) => void,
-        /** Immediate mode: commands are dropped, so undo/redo/pending stay empty and onChange never fires. */
-        private readonly keepNothing = false,
-    ) {}
+    constructor(private readonly onChange: (state: { canUndo: boolean; canRedo: boolean }) => void) {}
 
     push(command: Command): void {
         this.pushAll([command]);
     }
 
     pushAll(commands: readonly Command[]): void {
-        if (commands.length === 0 || this.keepNothing) return;
+        if (commands.length === 0) return;
         for (const command of commands) command.execute();
         this.undoStack.push(commands);
         this.redoStack.length = 0;
@@ -79,6 +75,10 @@ export class CommandStack {
 
     get pending(): readonly Command[] {
         return this.undoStack.flat();
+    }
+
+    get pendingSteps(): readonly Step[] {
+        return this.undoStack;
     }
 
     private locate(command: Command): { step: number; index: number } | undefined {

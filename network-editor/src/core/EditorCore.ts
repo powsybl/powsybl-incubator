@@ -4,6 +4,7 @@ import { EditorModel } from './EditorModel';
 import { buildActions, switchAction, type EditorAction } from './actions';
 import { availableOperations, creatableTypesFor } from './operations';
 import { pushTo } from './utils';
+import { menuItemsFor } from './menu';
 import { mergeFeederBayMoves } from './modifications';
 import { CommandStack } from './commands/CommandStack';
 import { isPendingCreate, type Command, type PendingCreateCommand } from './commands/Command';
@@ -76,7 +77,6 @@ import {
     type SwitchEnd,
     type SwitchGesture,
     type SymbolProvider,
-    type TargetEvent,
     type DeleteScope,
     type OrderClaim,
 } from './types';
@@ -108,7 +108,6 @@ export class EditorCore {
         private readonly dom: SvgDomService,
         private readonly symbols: SymbolProvider,
         private readonly onEvent?: EditorEventListener,
-        private readonly onTargets?: (event: TargetEvent) => void,
         private readonly isSupported: (action: EditorAction) => boolean = () => true,
     ) {
         this.history = new CommandStack((state) => {
@@ -116,7 +115,7 @@ export class EditorCore {
             this.reflowBays();
             this.refreshTargets();
             this.emit('history:changed', state);
-            this.emit('model:changed', { changeSet: this.getPendingChanges() });
+            this.emit('modifications:changed', { modifications: this.getPendingChanges() });
         });
         const container: HTMLElement = this.dom.getContainer();
         container.addEventListener('mousedown', this.onMouseDown);
@@ -668,20 +667,20 @@ export class EditorCore {
 
     private emitTargets(
         targets: readonly EditTarget[],
-        trigger: TargetEvent['trigger'],
+        trigger: 'click' | 'contextmenu',
         event: MouseEvent,
     ): boolean {
-        if (!this.onTargets || targets.length === 0) return false;
+        if (!this.onEvent || targets.length === 0) return false;
 
         const insertion = this.insertionAt(targets, event);
         const offered = targets.filter((target) => this.actionsFor(target, insertion).length > 0);
         if (offered.length === 0) return false;
 
-        this.onTargets({
+        this.emit('menu:requested', {
+            items: menuItemsFor(this, { targets: offered, insertion }),
             targets: offered,
             trigger,
             position: { x: event.clientX, y: event.clientY },
-            insertion,
         });
         return true;
     }
@@ -698,7 +697,7 @@ export class EditorCore {
         return this.setGesture({ kind: 'SWITCH', first, candidates, type });
     }
 
-    switchAction(): EditorAction | null {
+    private switchAction(): EditorAction | null {
         const picked = this.pickedSwitch();
         if (!picked) return null;
         const action = switchAction(this, picked);
@@ -833,7 +832,7 @@ export class EditorCore {
         this.gesture = null;
         document.removeEventListener('keydown', this.onKeyDown);
         this.paintTargets();
-        this.emit('gesture:changed', { gesture: null });
+        this.emit('gesture:changed', { gesture: null, action: null });
     }
 
     getGesture(): Gesture | null {
@@ -845,7 +844,7 @@ export class EditorCore {
         this.clearHoverSlots();
         document.addEventListener('keydown', this.onKeyDown);
         this.paintTargets();
-        this.emit('gesture:changed', { gesture });
+        this.emit('gesture:changed', { gesture, action: this.switchAction() });
         return true;
     }
 

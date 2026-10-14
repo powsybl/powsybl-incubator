@@ -3,8 +3,8 @@ import {
     actionFor,
     actionLabel,
     describeTargets,
-    menuItemsFor,
     NetworkEditor,
+    type ActionMenuItem,
     type ChangeSet,
     type EditorAction,
     type EditTarget,
@@ -22,7 +22,7 @@ import propertiesJson from './data/reseau_properties.json';
 const metadata = metadataJson as unknown as SLDMetadata;
 const initialProperties = propertiesJson as Record<string, EquipmentProperties>;
 
-type Menu = { targets: readonly EditTarget[]; x: number; y: number; insertion?: number };
+type Menu = { items: ActionMenuItem[]; targets: readonly EditTarget[]; x: number; y: number };
 
 export function App() {
     const container = useRef<HTMLDivElement>(null);
@@ -41,17 +41,18 @@ export function App() {
             svgContent,
             metadata,
             initialProperties,
-            onTargets: ({ targets, position, insertion }) =>
-                setMenu({ targets, x: position.x, y: position.y, insertion }),
-
             onEvent: (event) => {
+                if (event.name === 'menu:requested') {
+                    const { items, targets, position } = event;
+                    setMenu({ items, targets, x: position.x, y: position.y });
+                }
                 if (event.name === 'history:changed') setHistory(event);
-                if (event.name === 'model:changed') setChanges(event.changeSet);
+                if (event.name === 'modifications:changed') setChanges(event.modifications);
                 if (event.name === 'targets:changed') setMenu(null);
                 if (event.name === 'gesture:changed') {
                     setGesture(event.gesture);
                     if (event.gesture) setMenu(null);
-                    setPanel(instance.switchAction());
+                    setPanel(event.action);
                 }
                 if (event.name === 'element:selected') {
                     setSelected(event.elements);
@@ -72,14 +73,11 @@ export function App() {
         return () => instance.destroy();
     }, []);
 
-    const items: MenuItemSpec[] =
-        editor && menu
-            ? menuItemsFor(editor, menu).map((item) => ({
-                  label: item.label,
-                  danger: item.danger,
-                  onClick: () => (item.needsForm ? setPanel(item.action) : item.action.run()),
-              }))
-            : [];
+    const items: MenuItemSpec[] = (menu?.items ?? []).map((item) => ({
+        label: item.label,
+        danger: item.danger,
+        onClick: () => (item.needsForm ? setPanel(item.action) : item.action.run()),
+    }));
 
     return (
         <>

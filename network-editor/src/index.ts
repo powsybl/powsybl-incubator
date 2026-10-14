@@ -40,13 +40,9 @@ export { actionKey, type ActionEquipment, type ActionSubject, type EditorAction 
 export {
     actionFor,
     actionLabel,
-    describeTarget,
     describeTargets,
-    menuItemsFor,
     type ActionMenuItem,
-    type ActionSource,
-    type MenuSubjects,
-} from './menu';
+} from './core/menu';
 
 export { OPERATIONS, type OperationSpec } from './core/operations';
 
@@ -81,6 +77,5 @@ export type {
     SymbolProvider,
     SwitchEnd,
     SwitchGesture,
-    TargetEvent,
     ViewerCallbacks,
 } from './core/types';

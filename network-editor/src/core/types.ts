@@ -8,6 +8,7 @@ import type {
     SldComponentOptions,
 } from '@powsybl/network-viewer-core';
 import type { EditorAction } from './actions';
+import type { ActionMenuItem } from './menu';
 import type { NetworkModification } from './modifications';
 
 export type { SLDMetadata };
@@ -298,13 +299,6 @@ export interface CreateSpec {
     switchType?: ElementType;
 }
 
-export interface TargetEvent {
-    targets: readonly EditTarget[];
-    trigger: 'click' | 'contextmenu';
-    position: { x: number; y: number };
-    insertion?: number;
-}
-
 export interface ViewerCallbacks {
     onNextVoltage?: OnNextVoltageCallbackType;
     onBreaker?: OnBreakerCallbackType;
@@ -337,7 +331,6 @@ export interface EditorOptions {
     selectionBackColor?: string;
     callbacks?: ViewerCallbacks;
     onEvent?: EditorEventListener;
-    onTargets?: (event: TargetEvent) => void;
     initialProperties?: Record<string, EquipmentProperties>;
     isSupported?: (action: EditorAction) => boolean;
 }
@@ -362,8 +355,14 @@ export interface EditorEvents {
     'targets:changed': { targets: readonly EditTarget[] };
     'element:selected': { elements: readonly SelectedElement[] };
     'history:changed': { canUndo: boolean; canRedo: boolean };
-    'model:changed': { changeSet: ChangeSet };
-    'gesture:changed': { gesture: Gesture | null };
+    'modifications:changed': { modifications: ChangeSet };
+    'gesture:changed': { gesture: Gesture | null; action: EditorAction | null };
+    'menu:requested': {
+        items: ActionMenuItem[];
+        targets: readonly EditTarget[];
+        trigger: 'click' | 'contextmenu';
+        position: { x: number; y: number };
+    };
 }
 
 export type EditorEventName = keyof EditorEvents;

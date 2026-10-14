@@ -69,7 +69,6 @@ export class NetworkEditor {
             dom,
             symbols,
             opts.onEvent,
-            opts.onTargets,
             opts.isSupported,
         );
 
@@ -142,10 +141,6 @@ export class NetworkEditor {
 
     actionsFor(target: EditTarget, insertion?: number): EditorAction[] {
         return this.core.actionsFor(target, insertion);
-    }
-
-    switchAction(): EditorAction | null {
-        return this.core.switchAction();
     }
 
     getSelectedEquipmentIds(): readonly string[] {

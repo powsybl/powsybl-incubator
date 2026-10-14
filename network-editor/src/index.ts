@@ -44,8 +44,6 @@ export {
     type ActionMenuItem,
 } from './core/menu';
 
-export { OPERATIONS, type OperationSpec } from './core/operations';
-
 export {
     BAY_SLOT_CLASS,
     NODE_TARGET_CLASS,
@@ -59,6 +57,7 @@ export type {
     BusbarTarget,
     CreationPlacement,
     EditOperation,
+    EditorEvent,
     EditorEventListener,
     EditorEventName,
     EditorEvents,
@@ -73,7 +72,6 @@ export type {
     NodeTarget,
     SelectedElement,
     SLDMetadata,
-    SymbolProvider,
     SwitchEnd,
     SwitchGesture,
     ViewerCallbacks,

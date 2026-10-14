@@ -1,71 +1,44 @@
 import { useEffect, useRef, useState } from 'react';
 import {
-    actionFor,
     actionLabel,
-    describeTargets,
     NetworkEditor,
     type ActionMenuItem,
     type EditorAction,
-    type EditTarget,
     type EquipmentProperties,
     type NetworkModification,
-    type Gesture,
-    type SelectedElement,
     type SLDMetadata,
 } from '../src';
-import { ContextMenu, type MenuItemSpec } from './ContextMenu';
 import { PropertyForm } from '../src/react';
 import svgContent from './data/reseau.svg?raw';
-import metadataJson from './data/reseau_metadata.json';
-import propertiesJson from './data/reseau_properties.json';
+import metadata from './data/reseau_metadata.json';
+import properties from './data/reseau_properties.json';
 
-const metadata = metadataJson as unknown as SLDMetadata;
-const initialProperties = propertiesJson as Record<string, EquipmentProperties>;
-
-type Menu = { items: ActionMenuItem[]; targets: readonly EditTarget[]; x: number; y: number };
+type Menu = { items: ActionMenuItem[]; x: number; y: number };
 
 export function App() {
     const container = useRef<HTMLDivElement>(null);
     const [editor, setEditor] = useState<NetworkEditor | null>(null);
-    const [history, setHistory] = useState({ canUndo: false, canRedo: false });
-    const [modifications, setModifications] = useState<NetworkModification[]>([]);
     const [menu, setMenu] = useState<Menu | null>(null);
-    const [panel, setPanel] = useState<EditorAction | null>(null);
-    const [overlay, setOverlay] = useState(false);
-    const [gesture, setGesture] = useState<Gesture | null>(null);
-    const [selected, setSelected] = useState<readonly SelectedElement[]>([]);
+    const [form, setForm] = useState<EditorAction | null>(null);
+    const [modifications, setModifications] = useState<NetworkModification[]>([]);
 
     useEffect(() => {
         const instance = new NetworkEditor({
             container: container.current!,
             svgContent,
-            metadata,
-            initialProperties,
+            metadata: metadata as unknown as SLDMetadata,
+            initialProperties: properties as Record<string, EquipmentProperties>,
             onEvent: (event) => {
-                if (event.name === 'menu:requested') {
-                    const { items, targets, position } = event;
-                    setMenu({ items, targets, x: position.x, y: position.y });
-                }
-                if (event.name === 'history:changed') setHistory(event);
-                if (event.name === 'modifications:changed') setModifications(event.modifications);
-                if (event.name === 'targets:changed') setMenu(null);
-                if (event.name === 'gesture:changed') {
-                    setGesture(event.gesture);
-                    if (event.gesture) setMenu(null);
-                    setPanel(event.action);
-                }
-                if (event.name === 'element:selected') {
-                    setSelected(event.elements);
-                    const [element] = event.elements;
-                    setPanel(
-                        event.elements.length === 1
-                            ? actionFor(
-                                  instance,
-                                  element.id,
-                                  element.type === 'BUS' ? 'RENAME' : 'UPDATE_PROPERTIES',
-                              )
-                            : null,
-                    );
+                switch (event.name) {
+                    case 'menu:requested':
+                        setMenu({ items: event.items, ...event.position });
+                        break;
+                    case 'gesture:changed':
+                        setForm(event.action);
+                        break;
+                    case 'modifications:changed':
+                        setModifications(event.modifications);
+                        break;
                 }
             },
         });
@@ -73,86 +46,62 @@ export function App() {
         return () => instance.destroy();
     }, []);
 
-    const items: MenuItemSpec[] = (menu?.items ?? []).map((item) => ({
-        label: item.label,
-        danger: item.danger,
-        onClick: () => (item.needsForm ? setPanel(item.action) : item.action.run()),
-    }));
+    const pick = (item: ActionMenuItem) => {
+        setMenu(null);
+        if (item.needsForm) setForm(item.action);
+        else item.action.run();
+    };
+
+    const cancel = () => {
+        setForm(null);
+        editor?.cancelGesture();
+    };
 
     return (
         <>
             <h1>network-editor — demo</h1>
-            <div className="toolbar">
-                <button onClick={() => editor?.undo()} disabled={!history.canUndo}>
-                    ↩ Undo
-                </button>
-                <button onClick={() => editor?.redo()} disabled={!history.canRedo}>
-                    ↪ Redo
-                </button>
-                <button
-                    onClick={() => {
-                        setOverlay(!overlay);
-                        editor?.showIidmNodes(!overlay);
-                    }}
-                >
-                    ⬡ {overlay ? 'Hide' : 'Show'} IIDM nodes
-                </button>
-            </div>
-
-            {selected.length > 1 && (
-                <p className="hint">
-                    {selected.length} elements selected — Shift+click to add or remove, right-click
-                    to delete them all.
-                </p>
-            )}
-
-            {gesture && (
-                <p className="hint">
-                    {gesture.kind !== 'SWITCH'
-                        ? `Pick the new position of ${gesture.equipmentId} — ${gesture.candidates.length} slots on the busbar.`
-                        : gesture.second
-                          ? 'Name the switch and apply to create it.'
-                          : `Pick the far end of the switch — ${gesture.candidates.length} candidates.`}{' '}
-                    Esc cancels.
-                </p>
-            )}
+            <p className="hint">Click or right-click the diagram to edit it. Esc cancels a gesture.</p>
 
             <div className="columns">
                 <div className="diagram" ref={container} />
-                <div className="panel">
-                    {panel ? (
+
+                <aside className="panel">
+                    <div className="toolbar">
+                        <button onClick={() => editor?.undo()}>↩ Undo</button>
+                        <button onClick={() => editor?.redo()}>↪ Redo</button>
+                    </div>
+
+                    {form && (
                         <>
-                            <h2>{actionLabel(panel)}</h2>
-                            <PropertyForm action={panel} onDone={() => setPanel(null)} />
-                            <button
-                                onClick={() => {
-                                    setPanel(null);
-                                    editor?.cancelGesture();
-                                }}
-                            >
-                                Cancel
-                            </button>
+                            <h2>{actionLabel(form)}</h2>
+                            <PropertyForm action={form} onDone={() => setForm(null)} />
+                            <button onClick={cancel}>Cancel</button>
                         </>
-                    ) : (
-                        <p className="hint">Click or right-click the diagram.</p>
                     )}
 
                     <h2>Modifications ({modifications.length})</h2>
-                    <p className="hint">
-                        The body a backend receives, verbatim — <code>POST /network/modifications</code>
-                    </p>
-                    <pre className="changeset">{JSON.stringify(modifications, null, 2)}</pre>
-                </div>
+                    <pre className="modifications">{JSON.stringify(modifications, null, 2)}</pre>
+                </aside>
             </div>
 
-            {menu && items.length > 0 && (
-                <ContextMenu
-                    header={describeTargets(menu.targets)}
-                    items={items}
-                    x={menu.x}
-                    y={menu.y}
-                    onClose={() => setMenu(null)}
-                />
+            {menu && (
+                <div className="backdrop" onMouseDown={() => setMenu(null)}>
+                    <div
+                        className="menu"
+                        style={{ left: menu.x, top: menu.y }}
+                        onMouseDown={(event) => event.stopPropagation()}
+                    >
+                        {menu.items.map((item) => (
+                            <button
+                                key={item.action.id}
+                                className={item.danger ? 'danger' : undefined}
+                                onClick={() => pick(item)}
+                            >
+                                {item.label}
+                            </button>
+                        ))}
+                    </div>
+                </div>
             )}
         </>
     );

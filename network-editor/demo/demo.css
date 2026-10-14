@@ -60,8 +60,7 @@ h2 {
     font-size: 12px;
 }
 
-
-.changeset {
+.modifications {
     margin: 0;
     padding: 8px 10px;
     border: 1px solid #e9ecef;
@@ -101,22 +100,20 @@ h2 {
 
 /* Context menu ------------------------------------------------------------ */
 
+.backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+}
+
 .menu {
     position: fixed;
-    z-index: 1000;
     min-width: 190px;
     background: #fff;
     border: 1px solid #ccc;
     border-radius: 4px;
     box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
     overflow: hidden;
-}
-
-.menu header {
-    padding: 6px 12px;
-    border-bottom: 1px solid #eee;
-    color: #666;
-    font-size: 12px;
 }
 
 .menu button {
@@ -130,13 +127,8 @@ h2 {
     cursor: pointer;
 }
 
-.menu button:hover:enabled {
+.menu button:hover {
     background: #f1f3f5;
-}
-
-.menu button:disabled {
-    color: #aaa;
-    cursor: not-allowed;
 }
 
 .menu button.danger {

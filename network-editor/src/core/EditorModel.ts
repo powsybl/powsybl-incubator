@@ -46,7 +46,7 @@ export class EditorModel {
         metadata: SLDMetadata,
         initialProperties?: Record<string, EquipmentProperties>,
     ) {
-        this.metadata = metadata as EditorMetadata;
+        this.metadata = structuredClone(metadata) as EditorMetadata;
         this.buildIndexes();
         for (const [equipmentId, values] of Object.entries(initialProperties ?? {})) {
             this.replaceProperties(equipmentId, values);

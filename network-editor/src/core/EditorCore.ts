@@ -264,6 +264,16 @@ export class EditorCore {
         );
     }
 
+    /** `NEW_LOAD`, then `NEW_LOAD_1`, `NEW_LOAD_2`… the first id not taken yet. */
+    proposeEquipmentId(type: ElementType): string {
+        const base = `NEW_${type}`;
+        let equipmentId = base;
+        for (let index = 1; this.isExistingEquipmentId(equipmentId); index++) {
+            equipmentId = `${base}_${index}`;
+        }
+        return equipmentId;
+    }
+
     private isExistingEquipmentId(equipmentId: string, ignore?: Command): boolean {
         return (
             this.model.getNodesForEquipment(equipmentId).length > 0 ||

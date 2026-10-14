@@ -63,6 +63,7 @@ export interface ActionHost {
     setBayPosition(equipmentId: string, position: BayPosition): boolean;
     getProperties(equipmentId: string): EquipmentProperties;
     proposedOrder(target: BusbarTarget, insertion?: number): number | undefined;
+    proposeEquipmentId(type: ElementType): string;
 }
 
 const ORDER: PropertyDescriptor = { key: 'order', type: 'number', required: true, min: 0 };
@@ -121,8 +122,12 @@ function createForm(
     ];
 }
 
-function creationInitial(form: readonly PropertyDescriptor[], type: ElementType): EquipmentProperties {
-    return { ...defaultsOf(form), equipmentId: `NEW_${type}` };
+function creationInitial(
+    host: ActionHost,
+    form: readonly PropertyDescriptor[],
+    type: ElementType,
+): EquipmentProperties {
+    return { ...defaultsOf(form), equipmentId: host.proposeEquipmentId(type) };
 }
 
 function specFromValues(type: ElementType, values: EquipmentProperties): CreateSpec | undefined {
@@ -160,7 +165,7 @@ function createAction(
 
     if (operation === 'REPLACE' && target.kind === 'EQUIPMENT') {
         const form = [EQUIPMENT_ID, ...schemaFor(type, 'create')];
-        const initial = creationInitial(form, type);
+        const initial = creationInitial(host, form, type);
         return {
             id: `${createOperationId(target, operation)}:${type}`,
             operation,
@@ -179,7 +184,7 @@ function createAction(
     const behindSwitch = operation === 'CREATE_SWITCHED_INJECTION';
     const form = createForm(type, onBusbar, behindSwitch);
 
-    const initial = creationInitial(form, type);
+    const initial = creationInitial(host, form, type);
 
     if (onBusbar && target.kind === 'BUSBAR') {
         const order = host.proposedOrder(target, insertion);
@@ -226,7 +231,7 @@ function placementOf(
 
 export function switchAction(host: ActionHost, picked: PickedSwitch): EditorAction {
     const form = createForm(picked.type, false, false);
-    const initial = creationInitial(form, picked.type);
+    const initial = creationInitial(host, form, picked.type);
 
     return {
         id: `${picked.first.id}:CREATE_SWITCH:${picked.second.id}`,

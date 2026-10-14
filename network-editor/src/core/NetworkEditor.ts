@@ -70,7 +70,6 @@ export class NetworkEditor {
             symbols,
             opts.onEvent,
             opts.onTargets,
-            opts.mode,
             opts.isSupported,
         );
 

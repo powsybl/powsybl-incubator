@@ -68,7 +68,6 @@ export type {
     EditorEventListener,
     EditorEventName,
     EditorEvents,
-    EditMode,
     EditorOptions,
     EditTarget,
     ElementType,

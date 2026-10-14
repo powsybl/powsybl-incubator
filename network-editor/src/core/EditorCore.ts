@@ -62,7 +62,6 @@ import {
     type ElementType,
     type EquipmentTarget,
     type EquipmentProperties,
-    type EditMode,
     type EditorEmit,
     type EditorEvent,
     type EditorEventListener,
@@ -106,7 +105,6 @@ export class EditorCore {
         private readonly symbols: SymbolProvider,
         private readonly onEvent?: EditorEventListener,
         private readonly onTargets?: (event: TargetEvent) => void,
-        mode: EditMode = 'pending',
         private readonly isSupported: (action: EditorAction) => boolean = () => true,
     ) {
         this.history = new CommandStack((state) => {
@@ -115,7 +113,7 @@ export class EditorCore {
             this.refreshTargets();
             this.emit('history:changed', state);
             this.emit('model:changed', { changeSet: this.getPendingChanges() });
-        }, mode === 'immediate');
+        });
         const container: HTMLElement = this.dom.getContainer();
         container.addEventListener('mousedown', this.onMouseDown);
         container.addEventListener('mouseup', this.onMouseUp);

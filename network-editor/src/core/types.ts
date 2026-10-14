@@ -328,8 +328,6 @@ export interface EditorMetadata extends Omit<SLDMetadata, 'nodes' | 'wires' | 'l
     layoutParams?: Partial<LayoutParams>;
 }
 
-export type EditMode = 'pending' | 'immediate';
-
 export interface EditorOptions {
     container: HTMLElement;
     svgContent: string;
@@ -344,7 +342,6 @@ export interface EditorOptions {
     onEvent?: EditorEventListener;
     onTargets?: (event: TargetEvent) => void;
     initialProperties?: Record<string, EquipmentProperties>;
-    mode?: EditMode;
     isSupported?: (action: EditorAction) => boolean;
 }
 
@@ -355,7 +352,6 @@ export const EDITOR_OPTION_DEFAULTS = {
     maxWidth: 2000,
     maxHeight: 2000,
     selectionBackColor: 'white',
-    mode: 'pending',
 } as const;
 
 export type ChangeSet = NetworkModification[];

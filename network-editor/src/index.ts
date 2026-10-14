@@ -6,7 +6,6 @@ export type {
     BoundaryLineCreation,
     ConnectionDirection,
     ConverterStationCreation,
-    ElementDeletion,
     EquipmentAttributeModification,
     EquipmentDeletion,
     EquipmentModification,

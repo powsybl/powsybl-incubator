@@ -1,10 +1,10 @@
 import { pushTo, removeById, removeFrom } from './utils';
-import { isSwitchNode } from './operations';
 import {
     BAY_TRAVERSABLE_TYPES,
     BUSBAR_SECTION_TYPE,
     DEFAULT_CELL_WIDTH,
     HIDDEN_NODE_TYPE,
+    isSwitchNode,
     NO_PENDING_ORDERS,
     ORDER_STEP,
     toDirection,
@@ -276,9 +276,16 @@ export class EditorModel {
     }
 
     busbarSectionOfBay(feeder: NodeMetadata): string | undefined {
-        const bay = feeder.equipmentId ? this.collectBay(feeder.equipmentId).nodes : [feeder];
+        return this.busbarSectionNear(this.bayNodes(feeder));
+    }
+
+    connectedBusbarSection(feeder: NodeMetadata): string | undefined {
+        return this.busbarSectionNear(this.connectedNodes(feeder));
+    }
+
+    private busbarSectionNear(nodes: readonly NodeMetadata[]): string | undefined {
         let throughOpenSwitch: string | undefined;
-        for (const node of bay.filter((candidate) => candidate.vid === feeder.vid)) {
+        for (const node of nodes) {
             for (const wire of this.getWiresForNode(node.id)) {
                 const busbar = this.otherEnd(wire, node.id);
                 if (!busbar || !isBusBarNode(busbar)) continue;
@@ -289,25 +296,19 @@ export class EditorModel {
         return throughOpenSwitch;
     }
 
-    connectedBusbarSection(feeder: NodeMetadata): string | undefined {
+    private connectedNodes(feeder: NodeMetadata): NodeMetadata[] {
         const seen = new Set([feeder.id]);
-        const queue = [feeder];
-        let throughOpenSwitch: string | undefined;
-        while (queue.length > 0) {
-            const node = queue.shift()!;
+        const reached = [feeder];
+        for (let index = 0; index < reached.length; index++) {
+            const node = reached[index];
             for (const wire of this.getWiresForNode(node.id)) {
                 const other = this.otherEnd(wire, node.id);
                 if (!other || seen.has(other.id) || other.vid !== feeder.vid) continue;
-                if (isBusBarNode(other)) {
-                    if (this.getProperties(node.equipmentId ?? '').open !== true) return other.equipmentId;
-                    throughOpenSwitch ??= other.equipmentId;
-                    continue;
-                }
                 seen.add(other.id);
-                if (canTraverseNode(other)) queue.push(other);
+                if (canTraverseNode(other)) reached.push(other);
             }
         }
-        return throughOpenSwitch;
+        return reached;
     }
 
     collectTargets(): EditTarget[] {

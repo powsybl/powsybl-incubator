@@ -1,14 +1,11 @@
 import {
-    BUSBAR_TYPES,
     DELETABLE_BAY_TYPES,
     DELETABLE_TYPES,
     INJECTION_TYPES,
     SWITCH_TYPES,
-    toElementType,
     type EditOperation,
     type EditTarget,
     type ElementType,
-    type NodeMetadata,
 } from './types';
 
 export interface OperationSpec {
@@ -37,11 +34,6 @@ export const OPERATIONS: Record<EditOperation, OperationSpec> = {
     CREATE_FEEDER_BAY: {
         label: 'Create a feeder bay',
         creates: INJECTION_TYPES,
-        appliesTo: (target) => target.kind === 'BUSBAR',
-    },
-    CREATE_BUSBAR: {
-        label: 'Create a busbar',
-        creates: BUSBAR_TYPES,
         appliesTo: (target) => target.kind === 'BUSBAR',
     },
     DELETE: {
@@ -108,8 +100,4 @@ export function availableOperations(target: EditTarget): EditOperation[] {
 
 export function creatableTypesFor(operation: EditOperation): ReadonlySet<ElementType> {
     return OPERATIONS[operation].creates ?? NO_TYPES;
-}
-
-export function isSwitchNode(node: NodeMetadata): boolean {
-    return SWITCH_TYPES.has(toElementType(node.componentType));
 }

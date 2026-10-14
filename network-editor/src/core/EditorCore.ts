@@ -2,7 +2,7 @@ import type { SldComponentOptions } from '@powsybl/network-viewer-core';
 
 import { EditorModel } from './EditorModel';
 import { buildActions, switchAction, type EditorAction } from './actions';
-import { availableOperations, creatableTypesFor, isSwitchNode } from './operations';
+import { availableOperations, creatableTypesFor } from './operations';
 import { pushTo } from './utils';
 import { mergeFeederBayMoves } from './modifications';
 import { CommandStack } from './commands/CommandStack';
@@ -46,6 +46,7 @@ import {
     NODE_COMPONENT_TYPE,
     SWITCH_TYPES,
     isCreatedNodeId,
+    isSwitchNode,
     nodeComponentType,
     toElementType,
     toDirection,
@@ -75,7 +76,9 @@ import {
     type SwitchEnd,
     type SwitchGesture,
     type SymbolProvider,
-    type TargetEvent, type DeleteScope, type OrderClaim,
+    type TargetEvent,
+    type DeleteScope,
+    type OrderClaim,
 } from './types';
 
 const DRAG_THRESHOLD = 10;
@@ -143,14 +146,6 @@ export class EditorCore {
         this.history.redo();
     }
 
-    deleteElement(equipmentId: string): boolean {
-        return this.deleteElements([equipmentId], 'element');
-    }
-
-    deleteFeederBay(equipmentId: string): boolean {
-        return this.deleteElements([equipmentId], 'bay');
-    }
-
     create(targetId: string, operation: EditOperation, spec: CreateSpec): boolean {
         const target = this.targets.get(targetId);
         if (!target || target.kind === 'EQUIPMENT') return false;
@@ -158,11 +153,7 @@ export class EditorCore {
         if (!creatableTypesFor(operation).has(spec.type)) return false;
         if (!availableOperations(target).includes(operation)) return false;
 
-        if (operation === 'CREATE_BUSBAR') {
-            return false;
-        }
-
-        let bay: { order: number; direction: FeederDirection } | undefined;
+        let bay: BayPosition | undefined;
 
         if (target.kind === 'BUSBAR') {
             const pending = this.pendingOrders(target.vlId);
@@ -332,7 +323,7 @@ export class EditorCore {
 
     getBayPosition(equipmentId: string): BayPosition | undefined {
         const pending = this.pendingBayPosition(equipmentId);
-        if (pending) return pending.bayPosition;
+        if (pending) return pending.position;
 
         const target = this.targets.get(equipmentId);
         if (target?.kind !== 'EQUIPMENT' || target.order === undefined) return undefined;
@@ -513,7 +504,7 @@ export class EditorCore {
         if (this.model.collectBay(equipmentId).nodes.length <= scope.nodes.length) return [];
 
         const claims: OrderClaim[] = [];
-        const movedPosition = this.pendingBayPosition(equipmentId)?.bayPosition;
+        const movedPosition = this.pendingBayPosition(equipmentId)?.position;
         for (const node of scope.nodes) {
             const order = movedPosition?.order ?? node.order;
             if (order === undefined) continue;
@@ -1390,8 +1381,8 @@ export class EditorCore {
         return this.symbols.componentSize(componentType);
     }
 
-    private switchSymbol(type: ElementType, anchorNodeId: string, open = false,): SymbolView | undefined {
-        return this.symbolFor(NODE_COMPONENT_TYPE[type], { open: open, orientation: 'RIGHT' }, anchorNodeId);
+    private switchSymbol(type: ElementType, anchorNodeId: string, open = false): SymbolView | undefined {
+        return this.symbolFor(NODE_COMPONENT_TYPE[type], { open, orientation: 'RIGHT' }, anchorNodeId);
     }
 
     private terminalSymbol(spec: CreateSpec, side: 'UP' | 'DOWN', anchorNodeId: string): SymbolView | undefined {

@@ -26,7 +26,7 @@ export class UpdateBayPositionCommand implements Command {
         private readonly feeder: EquipmentTarget,
         private readonly node: NodeMetadata,
         slot: BaySlot,
-        private readonly position: BayPosition,
+        readonly position: BayPosition,
         private readonly dom: SvgDomService,
         private readonly model: EditorModel,
         private readonly turn?: BayTurn,
@@ -36,10 +36,6 @@ export class UpdateBayPositionCommand implements Command {
 
     get equipmentId(): string {
         return this.feeder.equipmentId;
-    }
-
-    get bayPosition(): BayPosition {
-        return this.position;
     }
 
     execute(): void {

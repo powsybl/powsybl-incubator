@@ -1,4 +1,4 @@
-import { toDirection, type ElementType, type EquipmentProperties } from './types';
+import type { ElementType, EquipmentProperties, FeederDirection } from './types';
 
 export type ConnectionDirection = 'TOP' | 'BOTTOM' | 'UNDEFINED';
 
@@ -116,7 +116,7 @@ export interface EquipmentAttributeModification {
 }
 
 export interface EquipmentDeletion {
-    type: 'EQUIPMENT_DELETION';
+    type: 'EQUIPMENT_DELETION' | 'ELEMENT_DELETION';
     equipmentId: string;
     equipmentType: string;
 }
@@ -135,7 +135,6 @@ export interface MoveVoltageLevelFeederBays {
     voltageLevelId: string;
     feederBays: MoveFeederBay[];
 }
-
 
 export interface NodeInjectionCreation {
     type: 'NODE_INJECTION_CREATION';
@@ -165,12 +164,6 @@ export interface SwitchCreation {
     open: boolean;
 }
 
-export interface ElementDeletion {
-    type: 'ELEMENT_DELETION';
-    equipmentId: string;
-    equipmentType: string;
-}
-
 export interface EquipmentRename {
     type: 'EQUIPMENT_RENAME';
     equipmentId: string;
@@ -187,7 +180,6 @@ export type NetworkModification =
     | NodeInjectionCreation
     | SwitchedInjectionCreation
     | SwitchCreation
-    | ElementDeletion
     | EquipmentRename;
 
 const CREATION_TYPES: Partial<Record<ElementType, InjectionCreation['type']>> = {
@@ -202,14 +194,8 @@ const CREATION_TYPES: Partial<Record<ElementType, InjectionCreation['type']>> = 
 };
 
 const MODIFICATION_TYPES: Partial<Record<ElementType, EquipmentModification['type']>> = {
-    LOAD: 'LOAD_MODIFICATION',
-    GENERATOR: 'GENERATOR_MODIFICATION',
-    BATTERY: 'BATTERY_MODIFICATION',
-    SHUNT: 'SHUNT_COMPENSATOR_MODIFICATION',
     VSC_CONVERTER_STATION: 'CONVERTER_STATION_MODIFICATION',
     LCC_CONVERTER_STATION: 'LCC_CONVERTER_STATION_MODIFICATION',
-    LINE: 'LINE_MODIFICATION',
-    TWO_WINDINGS_TRANSFORMER: 'TWO_WINDINGS_TRANSFORMER_MODIFICATION',
 };
 
 const IDENTIFIABLE_TYPES: Record<ElementType, string> = {
@@ -248,11 +234,7 @@ export interface FeederPlacement {
     voltageLevelId: string;
     busbarSectionId: string;
     order: number | null;
-    direction: string | undefined;
-}
-
-function connectionDirection(direction: string | undefined): ConnectionDirection | null {
-    return toDirection(direction) ?? null;
+    direction: FeederDirection | undefined;
 }
 
 export function injectionCreation(
@@ -262,17 +244,28 @@ export function injectionCreation(
     properties: EquipmentProperties,
 ): InjectionCreation {
     return {
+        ...injectionFields(type, equipmentId, placement.voltageLevelId, properties),
+        busOrBusbarSectionId: placement.busbarSectionId,
+        connectionDirection: placement.direction ?? null,
+        connectionPosition: placement.order,
+    } as InjectionCreation;
+}
+
+export function injectionFields(
+    type: ElementType,
+    equipmentId: string,
+    voltageLevelId: string,
+    properties: EquipmentProperties,
+): NodeInjectionCreation['creation'] {
+    return {
         type: creationType(type),
         equipmentId,
         equipmentName: null,
-        voltageLevelId: placement.voltageLevelId,
-        busOrBusbarSectionId: placement.busbarSectionId,
+        voltageLevelId,
         connectionName: equipmentId,
-        connectionDirection: connectionDirection(placement.direction),
-        connectionPosition: placement.order,
         terminalConnected: true,
         ...properties,
-    } as InjectionCreation;
+    } as NodeInjectionCreation['creation'];
 }
 
 export function nodeInjectionCreation(
@@ -286,15 +279,7 @@ export function nodeInjectionCreation(
         type: 'NODE_INJECTION_CREATION',
         voltageLevelId,
         node,
-        creation: {
-            type: creationType(type),
-            equipmentId,
-            equipmentName: null,
-            voltageLevelId,
-            connectionName: equipmentId,
-            terminalConnected: true,
-            ...properties,
-        } as NodeInjectionCreation['creation'],
+        creation: injectionFields(type, equipmentId, voltageLevelId, properties),
     };
 }
 
@@ -327,7 +312,7 @@ export function moveFeederBay(
     equipmentId: string,
     busbarSectionId: string | null,
     order: number | undefined,
-    direction: string | undefined,
+    direction: FeederDirection | undefined,
     connectionSide: string | null,
 ): MoveVoltageLevelFeederBays {
     return {
@@ -340,7 +325,7 @@ export function moveFeederBay(
                 connectionSide,
                 connectionPosition: order ?? null,
                 connectionName: null,
-                connectionDirection: connectionDirection(direction),
+                connectionDirection: direction ?? null,
             },
         ],
     };

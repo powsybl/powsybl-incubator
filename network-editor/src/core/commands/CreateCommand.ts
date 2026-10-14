@@ -4,11 +4,11 @@ import { injectionCreation, nodeInjectionCreation, type NetworkModification } fr
 import {
     NODE_COMPONENT_TYPE,
     createdNodeId,
+    type BayPosition,
     type BusbarTarget,
     type CreateSpec,
     type ElementType,
     type EquipmentProperties,
-    type FeederDirection,
     type NodeMetadata,
     type NodeTarget,
     type OrderClaim,
@@ -27,7 +27,7 @@ export class CreateCommand implements PendingCreateCommand {
         private readonly target: NodeTarget | BusbarTarget,
         private readonly properties: EquipmentProperties,
         private readonly model: EditorModel,
-        private readonly bay?: { order: number; direction: FeederDirection },
+        private readonly bay?: BayPosition,
     ) {
         this.node = {
             id: createdNodeId(equipmentId),

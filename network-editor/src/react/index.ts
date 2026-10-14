@@ -1,7 +1,6 @@
 export { PropertyForm, type PropertyFormProps } from './PropertyForm';
 export {
     ActionFormHost,
-    actionFormKey,
     registryOf,
     type ActionFormComponent,
     type ActionFormHostProps,

@@ -44,11 +44,7 @@ export const INJECTION_TYPES: ReadonlySet<ElementType> = new Set<ElementType>([
     'BOUNDARY_LINE',
 ]);
 
-export const BUSBAR_TYPES: ReadonlySet<ElementType> = new Set<ElementType>([
-    'BUS',
-]);
-
-export const BRANCH_TYPES: ReadonlySet<ElementType> = new Set<ElementType>([
+const BRANCH_TYPES: ReadonlySet<ElementType> = new Set<ElementType>([
     'LINE',
     'TWO_WINDINGS_TRANSFORMER',
     'THREE_WINDINGS_TRANSFORMER',
@@ -82,7 +78,7 @@ export const SWITCH_END_CLASS = 'ne-switch-end';
 
 export const BAY_SLOT_CLASS = 'ne-bay-slot';
 
-export const COMPONENT_TYPE_MAP: Readonly<Record<string, ElementType>> = {
+const COMPONENT_TYPE_MAP: Readonly<Record<string, ElementType>> = {
     BUSBAR_SECTION: 'BUS',
     LOAD: 'LOAD',
     GENERATOR: 'GENERATOR',
@@ -109,6 +105,10 @@ export const COMPONENT_TYPE_MAP: Readonly<Record<string, ElementType>> = {
 export function toElementType(componentType: string | undefined): ElementType {
     if (!componentType) return 'UNKNOWN';
     return COMPONENT_TYPE_MAP[componentType] ?? 'UNKNOWN';
+}
+
+export function isSwitchNode(node: NodeMetadata): boolean {
+    return SWITCH_TYPES.has(toElementType(node.componentType));
 }
 
 export type FeederDirection = 'TOP' | 'BOTTOM';
@@ -236,8 +236,6 @@ export interface EquipmentTarget {
     direction?: FeederDirection;
     claimed?: boolean;
     created?: boolean;
-    createdBy?: EditOperation;
-    hostNodeId?: string;
 }
 
 export type EditTarget = NodeTarget | BusbarTarget | EquipmentTarget;
@@ -256,7 +254,6 @@ export type EditOperation =
     | 'CREATE_SWITCH'
     | 'CREATE_SWITCHED_INJECTION'
     | 'CREATE_FEEDER_BAY'
-    | 'CREATE_BUSBAR'
     | 'DELETE'
     | 'DELETE_BAY'
     | 'REPLACE'

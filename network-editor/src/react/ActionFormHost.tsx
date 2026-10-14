@@ -14,11 +14,8 @@ export type ActionFormComponent = ComponentType<ActionFormProps>;
 /** Picks the form of an action; undefined keeps the built-in PropertyForm. */
 export type ActionFormRegistry = (action: EditorAction) => ActionFormComponent | undefined;
 
-/** Same key as actionKey, kept for existing registries. */
-export const actionFormKey = actionKey;
-
 export function registryOf(forms: Record<string, ActionFormComponent>): ActionFormRegistry {
-    return (action) => forms[actionFormKey(action)];
+    return (action) => forms[actionKey(action)];
 }
 
 export interface ActionFormHostProps extends ActionFormProps {

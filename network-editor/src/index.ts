@@ -38,7 +38,6 @@ export {
 export { actionKey, type ActionEquipment, type ActionSubject, type EditorAction } from './core/actions';
 
 export {
-    actionFor,
     actionLabel,
     describeTargets,
     type ActionMenuItem,

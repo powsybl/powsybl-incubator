@@ -501,16 +501,8 @@ export class EditorCore {
         return [...this.targets.values()];
     }
 
-    getSelectedEquipmentIds(): readonly string[] {
-        return this.selectedEquipmentIds;
-    }
-
     getProperties(equipmentId: string): EquipmentProperties {
         return this.model.getProperties(equipmentId);
-    }
-
-    seedProperties(equipmentId: string, values: EquipmentProperties): void {
-        this.model.replaceProperties(equipmentId, values);
     }
 
     /** Debug overlay: shows the IIDM node each element stands on. */
@@ -756,10 +748,6 @@ export class EditorCore {
         document.removeEventListener('keydown', this.onKeyDown);
         this.paintTargets();
         this.emit('gesture:changed', { gesture: null, action: null });
-    }
-
-    getGesture(): Gesture | null {
-        return this.gesture;
     }
 
     private setGesture(gesture: Gesture): boolean {

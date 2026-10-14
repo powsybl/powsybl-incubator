@@ -46,24 +46,27 @@ export function actionKey(action: EditorAction): string {
 }
 
 export interface ActionHost {
-    create(targetId: string, operation: EditOperation, spec: CreateSpec): boolean;
-    applyProperties(equipmentId: string, changes: EquipmentProperties): boolean;
-    deleteElements(equipmentIds: readonly string[], kind: 'element' | 'bay'): boolean;
-    replaceEquipment(equipmentId: string, newEquipment: CreateSpec): boolean;
+    // Reads: what the forms show and which actions are offered.
     selectedTargets(): readonly EquipmentTarget[];
-    moveDestinations(equipmentId: string): BusbarTarget[];
-    moveFeederBay(equipmentId: string, busbarTargetId: string): boolean;
-    renameEquipment(equipmentId: string, newId: string): boolean;
-    beginSwitch(targetId: string, type: ElementType): boolean;
-    createSwitch(spec: CreateSpec): boolean;
-    beginBayMove(equipmentId: string): boolean;
-    canBeginBayMove(equipmentId: string): boolean;
-    createSwitchedInjection(targetId: string, spec: CreateSpec): boolean;
-    getBayPosition(equipmentId: string): BayPosition | undefined;
-    setBayPosition(equipmentId: string, position: BayPosition): boolean;
     getProperties(equipmentId: string): EquipmentProperties;
+    getBayPosition(equipmentId: string): BayPosition | undefined;
     proposedOrder(target: BusbarTarget, insertion?: number): number | undefined;
     proposeEquipmentId(type: ElementType): string;
+    moveDestinations(equipmentId: string): BusbarTarget[];
+    canBeginBayMove(equipmentId: string): boolean;
+
+    // Edits: each one validates, then pushes a command; false when refused.
+    create(targetId: string, operation: EditOperation, spec: CreateSpec): boolean;
+    createSwitchedInjection(targetId: string, spec: CreateSpec): boolean;
+    beginSwitch(targetId: string, type: ElementType): boolean;
+    createSwitch(spec: CreateSpec): boolean;
+    replaceEquipment(equipmentId: string, newEquipment: CreateSpec): boolean;
+    renameEquipment(equipmentId: string, newId: string): boolean;
+    applyProperties(equipmentId: string, changes: EquipmentProperties): boolean;
+    deleteElements(equipmentIds: readonly string[], kind: 'element' | 'bay'): boolean;
+    beginBayMove(equipmentId: string): boolean;
+    setBayPosition(equipmentId: string, position: BayPosition): boolean;
+    moveFeederBay(equipmentId: string, busbarTargetId: string): boolean;
 }
 
 const ORDER: PropertyDescriptor = { key: 'order', type: 'number', required: true, min: 0 };

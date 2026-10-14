@@ -1,6 +1,6 @@
 import type { EditorAction } from './actions';
 import { OPERATIONS } from './operations';
-import type { EditOperation, EditTarget } from './types';
+import type { EditTarget } from './types';
 
 export interface ActionMenuItem {
     action: EditorAction;
@@ -49,20 +49,6 @@ export function describeTarget(target: EditTarget): string {
 
 export function describeTargets(targets: readonly EditTarget[]): string {
     return targets.map(describeTarget).join(' · ');
-}
-
-export function actionFor(
-    source: ActionSource,
-    equipmentId: string | null,
-    operation: EditOperation,
-): EditorAction | null {
-    const target = source.getTargets().find(
-        (candidate) =>
-            candidate.id === equipmentId ||
-            (candidate.kind === 'BUSBAR' && candidate.busbarSectionId === equipmentId),
-    );
-    if (!target) return null;
-    return source.actionsFor(target).find((action) => action.operation === operation) ?? null;
 }
 
 export function menuItemsFor(source: ActionSource, subjects: MenuSubjects): ActionMenuItem[] {

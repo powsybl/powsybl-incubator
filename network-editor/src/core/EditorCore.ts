@@ -1171,7 +1171,6 @@ export class EditorCore {
         this.paintTargets();
 
         this.paintPending();
-        this.emit('targets:changed', { targets });
     }
 
     private indexByNode(targets: readonly EditTarget[]): Map<string, EditTarget[]> {

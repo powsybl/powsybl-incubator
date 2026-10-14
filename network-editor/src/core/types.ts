@@ -350,7 +350,6 @@ export interface SelectedElement {
 }
 
 export interface EditorEvents {
-    'targets:changed': { targets: readonly EditTarget[] };
     'element:selected': { elements: readonly SelectedElement[] };
     'history:changed': { canUndo: boolean; canRedo: boolean };
     'modifications:changed': { modifications: NetworkModification[] };

@@ -1,7 +1,8 @@
 import type { SldComponentOptions } from '@powsybl/network-viewer-core';
 
 import type { EditorModel } from '../core/EditorModel';
-import type { FeederLevels } from '../core/bayFlip';
+import { buildBayFlip, invertFlip, type BayFlip, type FeederLevels } from '../core/bayFlip';
+import type { BayTurn } from '../core/commands/UpdateBayPositionCommand';
 import {
     isCreatedNodeId,
     type DiagramPoint,
@@ -9,7 +10,7 @@ import {
     type NodeMetadata,
     type SymbolProvider,
 } from '../core/types';
-import type { SvgDomService } from './SvgDomService';
+import type { CellFlip, SvgDomService } from './SvgDomService';
 import type { SymbolView } from './svgShapes';
 
 export class DiagramGeometry {
@@ -64,5 +65,60 @@ export class DiagramGeometry {
         const element = this.symbols.createSymbol(componentType, options);
         element.classList.add(...this.dom.getVoltageClasses(anchorNodeId));
         return { element, width, height };
+    }
+
+    bayTurn(
+        feeder: NodeMetadata,
+        cellFeeders: readonly NodeMetadata[],
+        from: FeederDirection,
+        to: FeederDirection,
+    ): BayTurn | undefined {
+        const vlId = feeder.vid ?? '';
+        const busbarYs = this.model.busbarNodes(vlId).flatMap((busbar) => {
+            const span = this.dom.getDiagramSpan(busbar.id);
+            return span ? [span.y] : [];
+        });
+        const source = this.levelsOf(feeder);
+        if (busbarYs.length === 0 || !source) return undefined;
+
+        const flip = buildBayFlip(busbarYs, source, this.feederLevels(vlId, to) ?? source, from, to);
+
+        const heights = new Map<string, number>();
+        for (const id of this.dom.bayCellElementIds(feeder.id)) {
+            const componentType =
+                this.model.getNodeById(id)?.componentType ??
+                this.model.getFeederInfoById(id)?.componentType;
+            if (componentType) heights.set(id, this.componentSize(componentType).height);
+        }
+
+        return {
+            forth: this.cellFlip(feeder, cellFeeders, to, flip, heights),
+            back: this.cellFlip(feeder, cellFeeders, from, invertFlip(flip), heights),
+            feederNodeIds: cellFeeders.map((cellFeeder) => cellFeeder.id),
+            from,
+        };
+    }
+
+    private cellFlip(
+        feeder: NodeMetadata,
+        cellFeeders: readonly NodeMetadata[],
+        direction: FeederDirection,
+        y: BayFlip,
+        heights: ReadonlyMap<string, number>,
+    ): CellFlip {
+        const orientation = direction === 'TOP' ? 'UP' : 'DOWN';
+        const feeders = new Map<string, string | null>();
+        const arrows = new Map<string, string | null>();
+
+        for (const cellFeeder of cellFeeders) {
+            const symbol = this.symbols.createSymbol(cellFeeder.componentType, { orientation });
+            feeders.set(cellFeeder.id, symbol.firstElementChild?.getAttribute('transform') ?? null);
+
+            for (const info of this.model.getFeederInfosForEquipment(cellFeeder.equipmentId ?? '')) {
+                const { width, height } = this.componentSize(info.componentType);
+                arrows.set(info.id, direction === 'BOTTOM' ? `rotate(180.0,${width / 2},${height / 2})` : null);
+            }
+        }
+        return { feederNodeId: feeder.id, direction, y, heights, feeders, arrows };
     }
 }

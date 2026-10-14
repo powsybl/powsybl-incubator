@@ -5,7 +5,7 @@ import { pushTo } from './utils';
 import { menuItemsFor } from './menu';
 import { mergeFeederBayMoves, type NetworkModification } from './modifications';
 import { CommandStack } from './commands/CommandStack';
-import { isPendingCreate, type Command, type PendingCreateCommand } from './commands/Command';
+import type { Command, PendingCreateCommand } from './commands/Command';
 import {
     findAmendableRename,
     findPendingCreate,
@@ -21,40 +21,18 @@ import { DeleteElementCommand } from './commands/DeleteElementCommand';
 import { MoveBayCommand } from './commands/MoveBayCommand';
 import { RenameCommand } from './commands/RenameCommand';
 import { ReplaceCommand } from './commands/ReplaceCommand';
-import { UpdateBayPositionCommand, type BayTurn } from './commands/UpdateBayPositionCommand';
+import { UpdateBayPositionCommand } from './commands/UpdateBayPositionCommand';
 import { UpdatePropertiesCommand } from './commands/UpdatePropertiesCommand';
-import { buildBayFlip, invertFlip, type BayFlip } from './bayFlip';
-import {
-    busbarStretch,
-    cellWidthFromColumns,
-    layoutBay,
-    reflowCells,
-    type AddedCell,
-    type BayColumn,
-    type BayGeometry,
-    type LayoutCell,
-} from './bayLayout';
-import { SvgDomService, type CellFlip } from '../dom/SvgDomService';
+import { SvgDomService } from '../dom/SvgDomService';
 import { DiagramGeometry } from '../dom/DiagramGeometry';
-import {
-    alignedExtent,
-    defaultFeederLength,
-    defaultSwitchAt,
-    type FeederShape,
-    type PendingBadgeView,
-    type PendingPreview,
-    type PlacedSymbol,
-    type SwitchPreview,
-    type SymbolView,
-} from '../dom/svgShapes';
+import { BayPlacement, nearestSlot } from './BayPlacement';
+import { PendingPainter } from './PendingPainter';
 import {
     DELETABLE_BAY_TYPES,
     DELETABLE_TYPES,
     INJECTION_TYPES,
-    NODE_COMPONENT_TYPE,
     SWITCH_TYPES,
     isSwitchNode,
-    nodeComponentType,
     toElementType,
     toDirection,
     type BayMoveGesture,
@@ -63,8 +41,6 @@ import {
     type BaySlotCandidate,
     type BusbarTarget,
     type CreateSpec,
-    type DiagramPoint,
-    type DiagramSpan,
     type EditOperation,
     type EditTarget,
     type ElementType,
@@ -95,6 +71,8 @@ export class EditorCore {
 
     private readonly history: CommandStack;
     private readonly geometry: DiagramGeometry;
+    private readonly placement: BayPlacement;
+    private readonly painter: PendingPainter;
 
     private targets = new Map<string, EditTarget>();
     private targetsByNodeId = new Map<string, EditTarget[]>();
@@ -104,8 +82,6 @@ export class EditorCore {
     private hoveredBusbarId: string | null = null;
     private hoverCandidates: readonly BaySlotCandidate[] = [];
     private shownSlot: BaySlotCandidate | undefined;
-    private readonly createdBayXs = new Map<string, number>();
-    private readonly drawnCells = new WeakMap<Element, Omit<LayoutCell, 'id' | 'order'>>();
     private mouseDownX = 0;
     private mouseDownY = 0;
 
@@ -119,16 +95,19 @@ export class EditorCore {
         this.geometry = new DiagramGeometry(model, dom, symbols);
         this.history = new CommandStack((state) => {
             if (this.destroyed) return;
-            this.reflowBays();
+            this.placement.reflow();
             this.refreshTargets();
             this.emit('history:changed', state);
             this.emit('modifications:changed', { modifications: this.getModifications() });
         });
+        const pending = () => this.history.pending;
+        this.placement = new BayPlacement(model, dom, this.geometry, pending);
+        this.painter = new PendingPainter(model, dom, this.geometry, this.placement, pending, () => this.targets);
         const container: HTMLElement = this.dom.getContainer();
         container.addEventListener('mousedown', this.onMouseDown);
         container.addEventListener('mouseup', this.onMouseUp);
         container.addEventListener('mousemove', this.onMouseMove);
-        this.reflowBays();
+        this.placement.reflow();
         this.refreshTargets();
     }
 
@@ -363,7 +342,7 @@ export class EditorCore {
         const cellFeeders = this.model
             .feedersInSection(slot)
             .filter((feeder) => this.dom.bayCell(feeder.id) === cell);
-        const turn = cell ? this.bayTurn(node, cellFeeders, from, position.direction) : undefined;
+        const turn = cell ? this.geometry.bayTurn(node, cellFeeders, from, position.direction) : undefined;
         if (!turn) return false;
 
         const commands: UpdateBayPositionCommand[] = [
@@ -384,61 +363,6 @@ export class EditorCore {
 
         this.history.pushAll(commands);
         return true;
-    }
-
-    private bayTurn(
-        feeder: NodeMetadata,
-        cellFeeders: readonly NodeMetadata[],
-        from: FeederDirection,
-        to: FeederDirection,
-    ): BayTurn | undefined {
-        const vlId = feeder.vid ?? '';
-        const busbarYs = this.model.busbarNodes(vlId).flatMap((busbar) => {
-            const span = this.dom.getDiagramSpan(busbar.id);
-            return span ? [span.y] : [];
-        });
-        const source = this.geometry.levelsOf(feeder);
-        if (busbarYs.length === 0 || !source) return undefined;
-
-        const flip = buildBayFlip(busbarYs, source, this.geometry.feederLevels(vlId, to) ?? source, from, to);
-
-        const heights = new Map<string, number>();
-        for (const id of this.dom.bayCellElementIds(feeder.id)) {
-            const componentType =
-                this.model.getNodeById(id)?.componentType ??
-                this.model.getFeederInfoById(id)?.componentType;
-            if (componentType) heights.set(id, this.geometry.componentSize(componentType).height);
-        }
-
-        return {
-            forth: this.cellFlip(feeder, cellFeeders, to, flip, heights),
-            back: this.cellFlip(feeder, cellFeeders, from, invertFlip(flip), heights),
-            feederNodeIds: cellFeeders.map((cellFeeder) => cellFeeder.id),
-            from,
-        };
-    }
-
-    private cellFlip(
-        feeder: NodeMetadata,
-        cellFeeders: readonly NodeMetadata[],
-        direction: FeederDirection,
-        y: BayFlip,
-        heights: ReadonlyMap<string, number>,
-    ): CellFlip {
-        const orientation = direction === 'TOP' ? 'UP' : 'DOWN';
-        const feeders = new Map<string, string | null>();
-        const arrows = new Map<string, string | null>();
-
-        for (const cellFeeder of cellFeeders) {
-            const symbol = this.symbols.createSymbol(cellFeeder.componentType, { orientation });
-            feeders.set(cellFeeder.id, symbol.firstElementChild?.getAttribute('transform') ?? null);
-
-            for (const info of this.model.getFeederInfosForEquipment(cellFeeder.equipmentId ?? '')) {
-                const { width, height } = this.geometry.componentSize(info.componentType);
-                arrows.set(info.id, direction === 'BOTTOM' ? `rotate(180.0,${width / 2},${height / 2})` : null);
-            }
-        }
-        return { feederNodeId: feeder.id, direction, y, heights, feeders, arrows };
     }
 
     applyProperties(equipmentId: string, changes: EquipmentProperties): boolean {
@@ -629,7 +553,7 @@ export class EditorCore {
         const busbar = this.busbarAt(event.target as Element | null);
         if ((busbar?.id ?? null) !== this.hoveredBusbarId) {
             this.hoveredBusbarId = busbar?.id ?? null;
-            this.hoverCandidates = busbar ? this.baySlotCandidates(busbar) : [];
+            this.hoverCandidates = busbar ? this.placement.slotCandidates(busbar) : [];
         }
         this.showSlot(nearestSlot(this.hoverCandidates, x));
     };
@@ -808,7 +732,7 @@ export class EditorCore {
         direction: FeederDirection,
         pending: PendingOrders,
     ): boolean {
-        const candidates = this.baySlotCandidates(busbar, pending);
+        const candidates = this.placement.slotCandidates(busbar, pending);
         if (candidates.length === 0) return false;
         return this.setGesture({ kind: 'BAY_MOVE', equipmentId, direction, candidates });
     }
@@ -884,138 +808,6 @@ export class EditorCore {
     }
 
 
-    private bayGeometry(busbar: BusbarTarget, pending: PendingOrders): BayGeometry | undefined {
-        const span = this.dom.getDiagramSpan(busbar.id);
-        if (!span) return undefined;
-
-        return layoutBay(span, this.feederColumns(busbar, pending));
-    }
-
-    private baySlotCandidates(
-        busbar: BusbarTarget,
-        pending: PendingOrders = pendingOrders(this.history.pending, busbar.vlId),
-    ): BaySlotCandidate[] {
-        const geometry = this.bayGeometry(busbar, pending);
-        if (!geometry) return [];
-
-        return geometry.gaps.flatMap((gap) => {
-            const order = this.model.orderBetween(busbar, gap.leftOrder, gap.rightOrder, pending);
-            if (order === undefined) return [];
-            return [{ order, x: gap.x, y: geometry.y }];
-        });
-    }
-
-    private feederColumns(slot: BaySlot, { claims, vacated }: PendingOrders): BayColumn[] {
-        const columns: BayColumn[] = [];
-        for (const node of this.model.feedersInSection(slot)) {
-            if (vacated.has(node.id)) continue;
-            const x = this.geometry.nodeCentre(node)?.x;
-            if (x !== undefined) columns.push({ x, order: node.order });
-        }
-        for (const claim of claims) {
-            if (claim.sectionIndex !== slot.sectionIndex) continue;
-            const x = claim.x ?? this.reflowedX(claim);
-            if (x !== undefined) columns.push({ x, order: claim.order });
-        }
-        return columns.sort((a, b) => a.x - b.x);
-    }
-
-    private reflowBays(): void {
-        this.createdBayXs.clear();
-        for (const vlId of this.model.voltageLevelIds()) this.reflowVoltageLevel(vlId);
-    }
-
-    private reflowVoltageLevel(vlId: string): void {
-        const cellWidth = this.model.cellWidth();
-        const busbars = this.model.busbarNodes(vlId);
-        const cells = busbars[0] ? this.dom.voltageLevelCells(busbars[0].id) : [];
-        const pending = pendingOrders(this.history.pending, vlId);
-
-        const movedOrders = new Map<string, number>();
-        for (const claim of pending.claims) {
-            if (claim.vacatedNodeId) movedOrders.set(claim.vacatedNodeId, claim.order);
-        }
-
-        const layout: LayoutCell[] = [];
-        const removed: LayoutCell[] = [];
-        cells.forEach((cell, index) => {
-            const id = String(index);
-            const measured = this.measureCell(cell, movedOrders, cellWidth);
-            const drawn = this.drawnCells.get(cell);
-            if (measured) {
-                layout.push({ id, ...measured });
-                if (!drawn) {
-                    const { left, width, section } = measured;
-                    this.drawnCells.set(cell, { left, width, section });
-                }
-            } else if (drawn) {
-                removed.push({ id, ...drawn });
-            }
-        });
-
-        const added: AddedCell[] = pending.claims.filter(isCreatedBay).map((claim) => ({
-            id: createdBayKey(vlId, claim.order),
-            width: cellWidth,
-            order: claim.order,
-            section: claim.sectionIndex,
-        }));
-
-        const lefts = reflowCells(layout, added, removed);
-        for (const { id, left } of layout) {
-            this.dom.setCellShift(cells[Number(id)], lefts.get(id)! - left);
-        }
-        for (const { id, width } of added) {
-            this.createdBayXs.set(id, lefts.get(id)! + width / 2);
-        }
-        for (const busbar of busbars) {
-            if (busbar.sectionIndex === undefined) continue;
-            const { dx, dWidth } = busbarStretch(busbar.sectionIndex, added, removed);
-            this.dom.setBusbarStretch(busbar.id, dx, dWidth);
-        }
-    }
-
-    /** Where the cell stands before any editor shift, and the order it takes in the layout. */
-    private measureCell(
-        cell: Element,
-        movedOrders: ReadonlyMap<string, number>,
-        cellWidth: number,
-    ): Omit<LayoutCell, 'id'> | undefined {
-        const extern = cell.classList.contains('sld-extern-cell');
-        const xs: number[] = [];
-        let order: number | undefined;
-        let section: number | undefined;
-
-        for (const id of this.dom.cellElementIds(cell)) {
-            const node = this.model.getNodeById(id);
-            const x = node && this.geometry.nodeCentre(node)?.x;
-            if (!node || x === undefined) continue;
-            xs.push(x);
-
-            const nodeOrder = movedOrders.get(node.id) ?? node.order;
-            if (!extern || nodeOrder === undefined) continue;
-            order = Math.min(order ?? nodeOrder, nodeOrder);
-            section ??= this.model.slotOfFeeder(node)?.sectionIndex;
-        }
-        if (xs.length === 0) return undefined;
-
-        const minX = Math.min(...xs);
-        const maxX = Math.max(...xs);
-        return {
-            left: minX - cellWidth / 2 - this.dom.getCellShift(cell),
-            width: cellWidthFromColumns(minX, maxX, cellWidth),
-            order,
-            section,
-        };
-    }
-
-    private reflowedX(claim: OrderClaim): number | undefined {
-        if (claim.vacatedNodeId === undefined) {
-            return this.createdBayXs.get(createdBayKey(claim.vlId, claim.order));
-        }
-        const node = this.model.getNodeById(claim.vacatedNodeId);
-        return node && this.geometry.nodeCentre(node)?.x;
-    }
-
     private movableFeeder(
         equipmentId: string,
     ): { target: EquipmentTarget; node: NodeMetadata; slot: BaySlot } | undefined {
@@ -1046,13 +838,6 @@ export class EditorCore {
         return this.movableFeeder(equipmentId)?.node.id ?? null;
     }
 
-    private paintPending(): void {
-        const previews = this.pendingPreviews();
-        this.dom.setPendingPreviews(previews);
-        this.dom.setRenamedLabels(this.renamedLabels());
-        this.dom.setPendingBadges(this.pendingBadges(new Set(previews.map(({ id }) => id))));
-    }
-
     private busbarOf(slot: BaySlot): BusbarTarget | undefined {
         return [...this.targets.values()].find(
             (target): target is BusbarTarget =>
@@ -1074,7 +859,7 @@ export class EditorCore {
         const x = this.dom.toDiagramX(event.clientX, event.clientY);
         if (busbar?.kind !== 'BUSBAR' || x === undefined) return undefined;
 
-        return nearestSlot(this.baySlotCandidates(busbar), x)?.order;
+        return nearestSlot(this.placement.slotCandidates(busbar), x)?.order;
     }
 
     private resolveNodeAt(target: Element | null): NodeMetadata | undefined {
@@ -1152,7 +937,7 @@ export class EditorCore {
 
         this.paintTargets();
 
-        this.paintPending();
+        this.painter.paint();
     }
 
     private indexByNode(targets: readonly EditTarget[]): Map<string, EditTarget[]> {
@@ -1172,168 +957,6 @@ export class EditorCore {
             }
         }
         return byNode;
-    }
-
-    private renamedLabels(): Map<string, string> {
-        const labels = new Map<string, string>();
-
-        for (const command of this.history.pending) {
-            if (!(command instanceof RenameCommand || command instanceof ReplaceCommand)) continue;
-            if (command.newId === command.equipmentId) continue;
-            for (const node of this.model.getNodesForEquipment(command.newId)) {
-                labels.set(node.id, command.newId);
-            }
-        }
-        return labels;
-    }
-
-    private pendingBadges(drawn: ReadonlySet<string>): Map<string, PendingBadgeView[]> {
-        const badges = new Map<string, PendingBadgeView[]>();
-
-        for (const command of this.history.pending) {
-            const marker = command.pendingMarker;
-            if (!marker || (marker.elementId && drawn.has(marker.elementId))) continue;
-            pushTo(badges, marker.nodeId, { id: marker.elementId, label: marker.label });
-        }
-        return badges;
-    }
-
-    private pendingPreviews(): PendingPreview[] {
-        const previews: PendingPreview[] = [];
-
-        for (const command of this.history.pending) {
-            if (!isPendingCreate(command)) continue;
-
-            if (command instanceof CreateSwitchCommand) {
-                const preview = this.switchPreview(command);
-                if (preview) previews.push(preview);
-                continue;
-            }
-
-            const marker = command.pendingMarker;
-            const elementId = marker?.elementId;
-            const anchor = marker && this.targets.get(marker.targetId);
-            if (!elementId || !anchor) continue;
-
-            const spec = command.createSpec;
-            const shape =
-                anchor.kind === 'BUSBAR'
-                    ? this.bayPreview(anchor, spec)
-                    : anchor.kind === 'NODE'
-                      ? this.feederPreview(anchor, spec)
-                      : undefined;
-            if (!shape) continue;
-
-            previews.push({ kind: 'FEEDER', ...shape, id: elementId, label: command.equipmentId });
-        }
-        return previews;
-    }
-
-    private switchPreview(command: CreateSwitchCommand): SwitchPreview | undefined {
-        const first = this.targets.get(command.ends.first);
-        const second = this.targets.get(command.ends.second);
-        const from = first?.kind === 'NODE' ? this.nodePoint(first) : undefined;
-        const far = second && this.endAnchor(second);
-        const open = command.createSpec.properties.open === true;
-
-        if (!from || !far) return undefined;
-
-        return {
-            kind: 'SWITCH',
-            id: command.pendingMarker.elementId,
-            label: command.equipmentId,
-            from,
-            to: isSpan(far) ? { x: clampToSpan(far, from.x), y: far.y } : far,
-            symbol: first && this.switchSymbol(command.createSpec.type, first.id, open),
-        };
-    }
-
-    private endAnchor(target: EditTarget): DiagramPoint | DiagramSpan | undefined {
-        if (target.kind === 'BUSBAR') return this.dom.getDiagramSpan(target.id);
-        return target.kind === 'NODE' ? this.nodePoint(target) : undefined;
-    }
-
-    private nodePoint(target: NodeTarget): DiagramPoint | undefined {
-        const node = this.model.getNodeById(target.id);
-        return node && this.geometry.nodeCentre(node);
-    }
-
-    private bayPreview(busbar: BusbarTarget, spec: CreateSpec): FeederShape | undefined {
-        const geometry =
-            spec.order === undefined
-                ? undefined
-                : this.bayGeometry(busbar, pendingOrders(this.history.pending, busbar.vlId));
-        const column = geometry?.columns.find((candidate) => candidate.order === spec.order);
-        if (!geometry || !column) return undefined;
-
-        const side = spec.direction === 'TOP' ? 'UP' : 'DOWN';
-        const from = { x: column.x, y: geometry.y };
-        const busbars = this.crossedBusbars(busbar, from.y, side);
-        return this.feederShape(busbar.vlId, from, side, spec, spec.switchType ?? 'BREAKER', busbar.id, busbars);
-    }
-
-    private crossedBusbars(busbar: BusbarTarget, anchorY: number, side: 'UP' | 'DOWN'): PlacedSymbol[] {
-        const sign = side === 'UP' ? -1 : 1;
-        const crossed: PlacedSymbol[] = [];
-        for (const node of this.model.busbarNodes(busbar.vlId)) {
-            if (node.sectionIndex !== busbar.sectionIndex) continue;
-            const span = this.dom.getDiagramSpan(node.id);
-            const symbol =
-                span &&
-                this.geometry.symbolFor(NODE_COMPONENT_TYPE.DISCONNECTOR, { open: node.id !== busbar.id }, node.id);
-            if (symbol) crossed.push({ at: sign * (span.y - anchorY), symbol });
-        }
-        return crossed;
-    }
-
-    private feederPreview(target: NodeTarget, spec: CreateSpec): FeederShape | undefined {
-        const point = this.nodePoint(target);
-        if (!point) return undefined;
-
-        const busbarY = this.geometry.busbarY(target.vlId);
-        const side = busbarY !== undefined && point.y < busbarY ? 'UP' : 'DOWN';
-        return this.feederShape(target.vlId, point, side, spec, spec.switchType, target.id);
-    }
-
-    private feederShape(
-        vlId: string,
-        from: DiagramPoint,
-        side: 'UP' | 'DOWN',
-        spec: CreateSpec,
-        switchType: ElementType | undefined,
-        anchorNodeId: string,
-        busbars?: PlacedSymbol[],
-    ): FeederShape {
-        const terminal = this.terminalSymbol(spec, side, anchorNodeId);
-        const switchSize = switchType === undefined ? undefined : this.switchSize();
-        const levels = this.geometry.feederLevels(vlId, side === 'UP' ? 'TOP' : 'BOTTOM');
-        const extent = alignedExtent(levels, from.y, side, terminal?.height ?? 0, switchSize);
-
-        const shape: FeederShape = {
-            ...from,
-            side,
-            length: extent.length ?? defaultFeederLength(switchSize),
-            terminal,
-            busbars,
-        };
-        const symbol = switchType === undefined ? undefined : this.switchSymbol(switchType, anchorNodeId);
-        if (symbol && switchSize !== undefined) {
-            shape.switch = { at: extent.switchAt ?? defaultSwitchAt(switchSize), symbol };
-        }
-        return shape;
-    }
-
-    private switchSize(): number {
-        return this.geometry.componentSize(NODE_COMPONENT_TYPE.BREAKER).width;
-    }
-
-    private switchSymbol(type: ElementType, anchorNodeId: string, open = false): SymbolView | undefined {
-        return this.geometry.symbolFor(NODE_COMPONENT_TYPE[type], { open, orientation: 'RIGHT' }, anchorNodeId);
-    }
-
-    private terminalSymbol(spec: CreateSpec, side: 'UP' | 'DOWN', anchorNodeId: string): SymbolView | undefined {
-        const componentType = nodeComponentType(spec.type, spec.properties);
-        return this.geometry.symbolFor(componentType, { orientation: side }, anchorNodeId);
     }
 
     private readonly emit: EditorEmit = (name, payload) => {
@@ -1359,32 +982,4 @@ export class EditorCore {
             if (isSwitchNode(node)) this.dom.setSwitchState(node.id, open);
         }
     };
-}
-
-function nearestSlot(
-    candidates: readonly BaySlotCandidate[],
-    x: number | undefined,
-): BaySlotCandidate | undefined {
-    if (x === undefined) return undefined;
-    return candidates.reduce<BaySlotCandidate | undefined>(
-        (best, candidate) =>
-            best && Math.abs(best.x - x) <= Math.abs(candidate.x - x) ? best : candidate,
-        undefined,
-    );
-}
-
-function isSpan(anchor: DiagramPoint | DiagramSpan): anchor is DiagramSpan {
-    return 'left' in anchor;
-}
-
-function clampToSpan(span: DiagramSpan, x: number): number {
-    return Math.min(Math.max(x, span.left), span.right);
-}
-
-function isCreatedBay(claim: OrderClaim): boolean {
-    return claim.vacatedNodeId === undefined && claim.x === undefined;
-}
-
-function createdBayKey(vlId: string, order: number): string {
-    return `${vlId}:${order}`;
 }

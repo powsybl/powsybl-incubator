@@ -4,6 +4,7 @@ import { EditorModel } from './EditorModel';
 import { buildActions, switchAction, type EditorAction } from './actions';
 import { availableOperations, creatableTypesFor, isSwitchNode } from './operations';
 import { pushTo } from './utils';
+import { mergeFeederBayMoves } from './modifications';
 import { CommandStack } from './commands/CommandStack';
 import { isPendingCreate, type Command, type PendingCreateCommand } from './commands/Command';
 import { CreateCommand } from './commands/CreateCommand';
@@ -562,7 +563,9 @@ export class EditorCore {
     }
 
     getPendingChanges(): ChangeSet {
-        return this.history.pending.flatMap((command) => command.toModifications());
+        return this.history.pendingSteps.flatMap((step) =>
+            mergeFeederBayMoves(step.flatMap((command) => command.toModifications())),
+        );
     }
 
     clearPendingChanges(): void {

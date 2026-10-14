@@ -77,6 +77,10 @@ export class CommandStack {
         return this.undoStack.flat();
     }
 
+    get pendingSteps(): readonly Step[] {
+        return this.undoStack;
+    }
+
     private locate(command: Command): { step: number; index: number } | undefined {
         for (const [step, commands] of this.undoStack.entries()) {
             const index = commands.indexOf(command);

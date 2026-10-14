@@ -345,3 +345,24 @@ export function moveFeederBay(
         ],
     };
 }
+
+export function mergeFeederBayMoves(modifications: readonly NetworkModification[]): NetworkModification[] {
+    const merged: NetworkModification[] = [];
+    const movesByVoltageLevel = new Map<string, MoveVoltageLevelFeederBays>();
+
+    for (const modification of modifications) {
+        if (modification.type !== 'MOVE_VOLTAGE_LEVEL_FEEDER_BAYS') {
+            merged.push(modification);
+            continue;
+        }
+        const existing = movesByVoltageLevel.get(modification.voltageLevelId);
+        if (existing) {
+            existing.feederBays.push(...modification.feederBays);
+            continue;
+        }
+        const copy = { ...modification, feederBays: [...modification.feederBays] };
+        movesByVoltageLevel.set(modification.voltageLevelId, copy);
+        merged.push(copy);
+    }
+    return merged;
+}

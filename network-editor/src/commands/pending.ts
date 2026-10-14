@@ -1,7 +1,7 @@
-import { isPendingCreate, type Command, type PendingCreateCommand } from './commands/Command';
-import { RenameCommand } from './commands/RenameCommand';
-import { UpdateBayPositionCommand } from './commands/UpdateBayPositionCommand';
-import type { OrderClaim, PendingOrders } from './types';
+import { isPendingCreate, type Command, type PendingCreateCommand } from './Command.ts';
+import { RenameCommand } from './RenameCommand.ts';
+import { UpdateBayPositionCommand } from './UpdateBayPositionCommand.ts';
+import type { OrderClaim, PendingOrders } from '../types.ts';
 
 export function findPendingCreate(
     pending: readonly Command[],

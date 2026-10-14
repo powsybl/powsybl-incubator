@@ -1,4 +1,4 @@
-import { flipY, type BayFlip } from '../core/bayFlip';
+import { flipY, type BayFlip } from '../layout/bayFlip.ts';
 import {
     NODE_TARGET_CLASS,
     SELECTED_CLASS,
@@ -9,7 +9,7 @@ import {
     type DiagramSpan,
     type FeederDirection,
     type NodeDiagnostic,
-} from '../core/types';
+} from '../types.ts';
 import {
     BAY_SLOT_LAYER_CLASS,
     EDITOR_STYLE,

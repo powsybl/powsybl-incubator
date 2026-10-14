@@ -1,6 +1,6 @@
-import type { PendingCreateCommand } from './Command';
-import type { EditorModel } from '../EditorModel';
-import { injectionCreation, nodeInjectionCreation, type NetworkModification } from '../modifications';
+import type { PendingCreateCommand } from './Command.ts';
+import type { EditorModel } from '../model/EditorModel.ts';
+import { injectionCreation, nodeInjectionCreation, type NetworkModification } from '../modifications/modifications.ts';
 import {
     NODE_COMPONENT_TYPE,
     createdNodeId,
@@ -12,7 +12,7 @@ import {
     type NodeMetadata,
     type NodeTarget,
     type OrderClaim,
-} from '../types';
+} from '../types.ts';
 
 export class CreateCommand implements PendingCreateCommand {
     readonly pendingMarker: { targetId: string; nodeId: string; label: string; elementId: string };

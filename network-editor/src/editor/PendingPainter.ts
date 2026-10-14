@@ -1,11 +1,11 @@
-import { isPendingCreate, type Command } from './commands/Command';
-import { CreateSwitchCommand } from './commands/CreateSwitchCommand';
-import { RenameCommand } from './commands/RenameCommand';
-import { ReplaceCommand } from './commands/ReplaceCommand';
-import type { EditorModel } from './EditorModel';
-import type { BayPlacement } from './BayPlacement';
-import { pendingOrders } from './pending';
-import { pushTo } from './utils';
+import { isPendingCreate, type Command } from '../commands/Command.ts';
+import { CreateSwitchCommand } from '../commands/CreateSwitchCommand.ts';
+import { RenameCommand } from '../commands/RenameCommand.ts';
+import { ReplaceCommand } from '../commands/ReplaceCommand.ts';
+import type { EditorModel } from '../model/EditorModel.ts';
+import type { BayPlacement } from '../layout/BayPlacement.ts';
+import { pendingOrders } from '../commands/pending.ts';
+import { pushTo } from '../utils.ts';
 import {
     NODE_COMPONENT_TYPE,
     nodeComponentType,
@@ -16,9 +16,9 @@ import {
     type EditTarget,
     type ElementType,
     type NodeTarget,
-} from './types';
-import type { DiagramGeometry } from '../dom/DiagramGeometry';
-import type { SvgDomService } from '../dom/SvgDomService';
+} from '../types.ts';
+import type { DiagramGeometry } from '../layout/DiagramGeometry.ts';
+import type { SvgDomService } from '../dom/SvgDomService.ts';
 import {
     alignedExtent,
     defaultFeederLength,
@@ -29,7 +29,7 @@ import {
     type PlacedSymbol,
     type SwitchPreview,
     type SymbolView,
-} from '../dom/svgShapes';
+} from '../dom/svgShapes.ts';
 
 export class PendingPainter {
     constructor(

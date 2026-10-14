@@ -4,16 +4,16 @@ import {
     SingleLineDiagramViewer,
 } from '@powsybl/network-viewer-core';
 
-import { EditorModel } from './EditorModel';
-import { EditorCore } from './EditorCore';
-import { SvgDomService } from '../dom/SvgDomService';
-import type { NetworkModification } from './modifications';
+import { EditorModel } from '../model/EditorModel.ts';
+import { EditorCore } from './EditorCore.ts';
+import { SvgDomService } from '../dom/SvgDomService.ts';
+import type { NetworkModification } from '../modifications/modifications.ts';
 import {
     EDITOR_OPTION_DEFAULTS,
     type EditorOptions,
     type EquipmentProperties,
     type SymbolProvider,
-} from './types';
+} from '../types.ts';
 
 export type DiagramViewBox = Parameters<SingleLineDiagramViewer['setViewBox']>[0];
 

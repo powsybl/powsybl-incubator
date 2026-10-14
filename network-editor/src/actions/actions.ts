@@ -1,5 +1,5 @@
-import { availableOperations, creatableTypesFor } from './operations';
-import { defaultsOf, EQUIPMENT_ID, schemaFor, type PropertyDescriptor } from '../properties';
+import { availableOperations, creatableTypesFor } from './operations.ts';
+import { defaultsOf, EQUIPMENT_ID, schemaFor, type PropertyDescriptor } from './properties.ts';
 import {
     SWITCH_TYPES,
     toDirection,
@@ -14,7 +14,7 @@ import {
     type EquipmentProperties,
     type EquipmentTarget,
     type PickedSwitch,
-} from './types';
+} from '../types.ts';
 
 export type ActionSubject =
     | { kind: 'TYPE'; type: ElementType }

@@ -7,9 +7,9 @@ import type {
     OnToggleSldHoverCallbackType,
     SldComponentOptions,
 } from '@powsybl/network-viewer-core';
-import type { EditorAction } from './actions';
-import type { ActionMenuItem } from './menu';
-import type { NetworkModification } from './modifications';
+import type { EditorAction } from './actions/actions.ts';
+import type { ActionMenuItem } from './actions/menu.ts';
+import type { NetworkModification } from './modifications/modifications.ts';
 
 export type { SLDMetadata };
 

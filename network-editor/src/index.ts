@@ -1,4 +1,4 @@
-export { NetworkEditor, type DiagramViewBox } from './core/NetworkEditor';
+export { NetworkEditor, type DiagramViewBox } from './editor/NetworkEditor.ts';
 
 export type {
     AttributeModification,
@@ -26,22 +26,22 @@ export type {
     SwitchCreation,
     SwitchedInjectionCreation,
     SwitchKind,
-} from './core/modifications';
+} from './modifications/modifications.ts';
 
 export {
     PROPERTY_SCHEMAS,
     schemaFor,
     type PropertyDescriptor,
     type PropertyMode,
-} from './properties';
+} from './actions/properties.ts';
 
-export { actionKey, type ActionEquipment, type ActionSubject, type EditorAction } from './core/actions';
+export { actionKey, type ActionEquipment, type ActionSubject, type EditorAction } from './actions/actions.ts';
 
 export {
     actionLabel,
     describeTargets,
     type ActionMenuItem,
-} from './core/menu';
+} from './actions/menu.ts';
 
 export {
     BAY_SLOT_CLASS,
@@ -50,7 +50,7 @@ export {
     SELECTED_CLASS,
     SWITCH_END_CLASS,
     SWITCH_START_CLASS,
-} from './core/types';
+} from './types.ts';
 
 export type {
     BusbarTarget,
@@ -74,4 +74,4 @@ export type {
     SwitchEnd,
     SwitchGesture,
     ViewerCallbacks,
-} from './core/types';
+} from './types.ts';

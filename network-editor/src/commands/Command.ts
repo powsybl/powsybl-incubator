@@ -1,5 +1,5 @@
-import type { CreateSpec, OrderClaim } from '../types';
-import type { NetworkModification } from '../modifications';
+import type { CreateSpec, OrderClaim } from '../types.ts';
+import type { NetworkModification } from '../modifications/modifications.ts';
 
 export interface Command {
     execute(): void;

@@ -1,6 +1,6 @@
-import type { PendingCreateCommand } from './Command';
-import type { EditorModel } from '../EditorModel';
-import { switchKind, type NetworkModification } from '../modifications';
+import type { PendingCreateCommand } from './Command.ts';
+import type { EditorModel } from '../model/EditorModel.ts';
+import { switchKind, type NetworkModification } from '../modifications/modifications.ts';
 import {
     NODE_COMPONENT_TYPE,
     createdNodeId,
@@ -9,7 +9,7 @@ import {
     type EquipmentProperties,
     type NodeMetadata,
     type SwitchEnds,
-} from '../types';
+} from '../types.ts';
 
 export class CreateSwitchCommand implements PendingCreateCommand {
     readonly pendingMarker: { targetId: string; nodeId: string; label: string; elementId: string };

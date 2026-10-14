@@ -1,4 +1,4 @@
-import { pushTo, removeById, removeFrom } from './utils';
+import { pushTo, removeById, removeFrom } from '../utils.ts';
 import {
     BAY_TRAVERSABLE_TYPES,
     BUSBAR_SECTION_TYPE,
@@ -23,7 +23,7 @@ import {
     type EquipmentProperties,
     type EquipmentTarget,
     type WireMetadata,
-} from './types';
+} from '../types.ts';
 
 export class EditorModel {
     private readonly metadata: EditorMetadata;

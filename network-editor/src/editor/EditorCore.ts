@@ -1,11 +1,11 @@
-import { EditorModel } from './EditorModel';
-import { buildActions, switchAction, type EditorAction } from './actions';
-import { availableOperations, creatableTypesFor } from './operations';
-import { pushTo } from './utils';
-import { menuItemsFor } from './menu';
-import { mergeFeederBayMoves, type NetworkModification } from './modifications';
-import { CommandStack } from './commands/CommandStack';
-import type { Command, PendingCreateCommand } from './commands/Command';
+import { EditorModel } from '../model/EditorModel.ts';
+import { buildActions, switchAction, type EditorAction } from '../actions/actions.ts';
+import { availableOperations, creatableTypesFor } from '../actions/operations.ts';
+import { pushTo } from '../utils.ts';
+import { menuItemsFor } from '../actions/menu.ts';
+import { mergeFeederBayMoves, type NetworkModification } from '../modifications/modifications.ts';
+import { CommandStack } from '../commands/CommandStack.ts';
+import type { Command, PendingCreateCommand } from '../commands/Command.ts';
 import {
     findAmendableRename,
     findPendingCreate,
@@ -13,20 +13,20 @@ import {
     pendingBayPosition,
     pendingOrders,
     pendingScope,
-} from './pending';
-import { CreateCommand } from './commands/CreateCommand';
-import { CreateSwitchCommand } from './commands/CreateSwitchCommand';
-import { CreateSwitchedInjectionCommand } from './commands/CreateSwitchedInjectionCommand';
-import { DeleteElementCommand } from './commands/DeleteElementCommand';
-import { MoveBayCommand } from './commands/MoveBayCommand';
-import { RenameCommand } from './commands/RenameCommand';
-import { ReplaceCommand } from './commands/ReplaceCommand';
-import { UpdateBayPositionCommand } from './commands/UpdateBayPositionCommand';
-import { UpdatePropertiesCommand } from './commands/UpdatePropertiesCommand';
-import { SvgDomService } from '../dom/SvgDomService';
-import { DiagramGeometry } from '../dom/DiagramGeometry';
-import { BayPlacement, nearestSlot } from './BayPlacement';
-import { PendingPainter } from './PendingPainter';
+} from '../commands/pending.ts';
+import { CreateCommand } from '../commands/CreateCommand.ts';
+import { CreateSwitchCommand } from '../commands/CreateSwitchCommand.ts';
+import { CreateSwitchedInjectionCommand } from '../commands/CreateSwitchedInjectionCommand.ts';
+import { DeleteElementCommand } from '../commands/DeleteElementCommand.ts';
+import { MoveBayCommand } from '../commands/MoveBayCommand.ts';
+import { RenameCommand } from '../commands/RenameCommand.ts';
+import { ReplaceCommand } from '../commands/ReplaceCommand.ts';
+import { UpdateBayPositionCommand } from '../commands/UpdateBayPositionCommand.ts';
+import { UpdatePropertiesCommand } from '../commands/UpdatePropertiesCommand.ts';
+import { SvgDomService } from '../dom/SvgDomService.ts';
+import { DiagramGeometry } from '../layout/DiagramGeometry.ts';
+import { BayPlacement, nearestSlot } from '../layout/BayPlacement.ts';
+import { PendingPainter } from './PendingPainter.ts';
 import {
     DELETABLE_BAY_TYPES,
     DELETABLE_TYPES,
@@ -60,7 +60,7 @@ import {
     type SymbolProvider,
     type DeleteScope,
     type OrderClaim,
-} from './types';
+} from '../types.ts';
 
 const DRAG_THRESHOLD = 10;
 
@@ -497,10 +497,6 @@ export class EditorCore {
         this.history.clear();
     }
 
-    getTargets(): EditTarget[] {
-        return [...this.targets.values()];
-    }
-
     getProperties(equipmentId: string): EquipmentProperties {
         return this.model.getProperties(equipmentId);
     }
@@ -604,7 +600,7 @@ export class EditorCore {
         if (offered.length === 0) return false;
 
         this.emit('menu:requested', {
-            items: menuItemsFor(this, { targets: offered, insertion }),
+            items: menuItemsFor((target, at) => this.actionsFor(target, at), offered, insertion),
             targets: offered,
             trigger,
             position: { x: event.clientX, y: event.clientY },

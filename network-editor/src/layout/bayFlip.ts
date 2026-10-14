@@ -1,4 +1,5 @@
-import type { FeederDirection } from './types';
+import type { FeederDirection } from '../types.ts';
+import type {CellFlip} from "../dom/SvgDomService.ts";
 
 export interface BayFlip {
     busTop: number;
@@ -6,6 +7,13 @@ export interface BayFlip {
     from: FeederDirection;
     source: readonly number[];
     target: readonly number[];
+}
+
+export interface BayTurn {
+    forth: CellFlip;
+    back: CellFlip;
+    feederNodeIds: readonly string[];
+    from: FeederDirection;
 }
 
 export interface FeederLevels {

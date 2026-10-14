@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react';
-import type { EditorAction } from '../core/actions';
-import type { EquipmentProperties } from '../core/types';
-import type { PropertyDescriptor } from '../properties';
+import type { EditorAction } from '../actions/actions.ts';
+import type { EquipmentProperties } from '../types.ts';
+import type { PropertyDescriptor } from '../actions/properties.ts';
 
 export interface PropertyFormProps {
     action: EditorAction;

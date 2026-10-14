@@ -1,22 +1,15 @@
-import type { Command } from './Command';
-import { moveFeederBay, type NetworkModification } from '../modifications';
-import type { EditorModel } from '../EditorModel';
-import type { CellFlip, SvgDomService } from '../../dom/SvgDomService';
+import type { Command } from './Command.ts';
+import { moveFeederBay, type NetworkModification } from '../modifications/modifications.ts';
+import type { EditorModel } from '../model/EditorModel.ts';
+import type { SvgDomService } from '../dom/SvgDomService.ts';
 import type {
     BayPosition,
     BaySlot,
     EquipmentTarget,
-    FeederDirection,
     NodeMetadata,
     OrderClaim,
-} from '../types';
-
-export interface BayTurn {
-    forth: CellFlip;
-    back: CellFlip;
-    feederNodeIds: readonly string[];
-    from: FeederDirection;
-}
+} from '../types.ts';
+import type {BayTurn} from "../layout/bayFlip.ts";
 
 export class UpdateBayPositionCommand implements Command {
 

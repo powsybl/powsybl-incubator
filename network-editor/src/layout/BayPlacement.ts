@@ -1,6 +1,6 @@
-import type { EditorModel } from './EditorModel';
-import type { Command } from './commands/Command';
-import { pendingOrders } from './pending';
+import type { EditorModel } from '../model/EditorModel.ts';
+import type { Command } from '../commands/Command.ts';
+import { pendingOrders } from '../commands/pending.ts';
 import {
     busbarStretch,
     cellWidthFromColumns,
@@ -10,10 +10,10 @@ import {
     type BayColumn,
     type BayGeometry,
     type LayoutCell,
-} from './bayLayout';
-import type { BaySlot, BaySlotCandidate, BusbarTarget, OrderClaim, PendingOrders } from './types';
-import type { SvgDomService } from '../dom/SvgDomService';
-import type { DiagramGeometry } from '../dom/DiagramGeometry';
+} from './bayLayout.ts';
+import type { BaySlot, BaySlotCandidate, BusbarTarget, OrderClaim, PendingOrders } from '../types.ts';
+import type { SvgDomService } from '../dom/SvgDomService.ts';
+import type { DiagramGeometry } from './DiagramGeometry.ts';
 
 export class BayPlacement {
     private readonly createdBayXs = new Map<string, number>();

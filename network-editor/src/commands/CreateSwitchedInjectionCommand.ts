@@ -1,6 +1,6 @@
-import type { PendingCreateCommand } from './Command';
-import type { EditorModel } from '../EditorModel';
-import { injectionFields, switchKind, type NetworkModification } from '../modifications';
+import type { PendingCreateCommand } from './Command.ts';
+import type { EditorModel } from '../model/EditorModel.ts';
+import { injectionFields, switchKind, type NetworkModification } from '../modifications/modifications.ts';
 import {
     NODE_COMPONENT_TYPE,
     createdNodeId,
@@ -8,7 +8,7 @@ import {
     type ElementType,
     type EquipmentProperties,
     type NodeMetadata,
-} from '../types';
+} from '../types.ts';
 
 export class CreateSwitchedInjectionCommand implements PendingCreateCommand {
     readonly pendingMarker: { targetId: string; nodeId: string; label: string; elementId: string };

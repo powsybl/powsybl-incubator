@@ -1,4 +1,4 @@
-import type { ElementType, EquipmentProperties, FeederDirection } from './types';
+import type { ElementType, EquipmentProperties, FeederDirection } from '../types.ts';
 
 export type ConnectionDirection = 'TOP' | 'BOTTOM' | 'UNDEFINED';
 

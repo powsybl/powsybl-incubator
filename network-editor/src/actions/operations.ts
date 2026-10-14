@@ -6,7 +6,7 @@ import {
     type EditOperation,
     type EditTarget,
     type ElementType,
-} from './types';
+} from '../types.ts';
 
 export interface OperationSpec {
     label: string;

@@ -1,4 +1,4 @@
-import type { ElementType, EquipmentProperties } from './core/types';
+import type { ElementType, EquipmentProperties } from '../types.ts';
 
 export type PropertyMode = 'create' | 'edit';
 

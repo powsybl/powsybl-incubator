@@ -1,17 +1,16 @@
 import type { SldComponentOptions } from '@powsybl/network-viewer-core';
 
-import type { EditorModel } from '../core/EditorModel';
-import { buildBayFlip, invertFlip, type BayFlip, type FeederLevels } from '../core/bayFlip';
-import type { BayTurn } from '../core/commands/UpdateBayPositionCommand';
+import type { EditorModel } from '../model/EditorModel.ts';
+import { buildBayFlip, invertFlip, type BayFlip, type BayTurn, type FeederLevels } from './bayFlip.ts';
 import {
     isCreatedNodeId,
     type DiagramPoint,
     type FeederDirection,
     type NodeMetadata,
     type SymbolProvider,
-} from '../core/types';
-import type { CellFlip, SvgDomService } from './SvgDomService';
-import type { SymbolView } from './svgShapes';
+} from '../types.ts';
+import type { CellFlip, SvgDomService } from '../dom/SvgDomService.ts';
+import type { SymbolView } from '../dom/svgShapes.ts';
 
 export class DiagramGeometry {
     constructor(

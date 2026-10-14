@@ -57,7 +57,6 @@ export {
 
 export type {
     BusbarTarget,
-    ChangeSet,
     CreationPlacement,
     EditOperation,
     EditorEventListener,

@@ -5,10 +5,10 @@ import {
     describeTargets,
     NetworkEditor,
     type ActionMenuItem,
-    type ChangeSet,
     type EditorAction,
     type EditTarget,
     type EquipmentProperties,
+    type NetworkModification,
     type Gesture,
     type SelectedElement,
     type SLDMetadata,
@@ -28,7 +28,7 @@ export function App() {
     const container = useRef<HTMLDivElement>(null);
     const [editor, setEditor] = useState<NetworkEditor | null>(null);
     const [history, setHistory] = useState({ canUndo: false, canRedo: false });
-    const [changes, setChanges] = useState<ChangeSet>([]);
+    const [modifications, setModifications] = useState<NetworkModification[]>([]);
     const [menu, setMenu] = useState<Menu | null>(null);
     const [panel, setPanel] = useState<EditorAction | null>(null);
     const [overlay, setOverlay] = useState(false);
@@ -47,7 +47,7 @@ export function App() {
                     setMenu({ items, targets, x: position.x, y: position.y });
                 }
                 if (event.name === 'history:changed') setHistory(event);
-                if (event.name === 'modifications:changed') setChanges(event.modifications);
+                if (event.name === 'modifications:changed') setModifications(event.modifications);
                 if (event.name === 'targets:changed') setMenu(null);
                 if (event.name === 'gesture:changed') {
                     setGesture(event.gesture);
@@ -137,11 +137,11 @@ export function App() {
                         <p className="hint">Click or right-click the diagram.</p>
                     )}
 
-                    <h2>Change set ({changes.length})</h2>
+                    <h2>Modifications ({modifications.length})</h2>
                     <p className="hint">
-                        The body a backend receives, verbatim — <code>POST /network/changes</code>
+                        The body a backend receives, verbatim — <code>POST /network/modifications</code>
                     </p>
-                    <pre className="changeset">{JSON.stringify({ changes }, null, 2)}</pre>
+                    <pre className="changeset">{JSON.stringify(modifications, null, 2)}</pre>
                 </div>
             </div>
 

@@ -344,8 +344,6 @@ export const EDITOR_OPTION_DEFAULTS = {
     selectionBackColor: 'white',
 } as const;
 
-export type ChangeSet = NetworkModification[];
-
 export interface SelectedElement {
     id: string;
     type: ElementType;
@@ -355,7 +353,7 @@ export interface EditorEvents {
     'targets:changed': { targets: readonly EditTarget[] };
     'element:selected': { elements: readonly SelectedElement[] };
     'history:changed': { canUndo: boolean; canRedo: boolean };
-    'modifications:changed': { modifications: ChangeSet };
+    'modifications:changed': { modifications: NetworkModification[] };
     'gesture:changed': { gesture: Gesture | null; action: EditorAction | null };
     'menu:requested': {
         items: ActionMenuItem[];

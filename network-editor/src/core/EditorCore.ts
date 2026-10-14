@@ -5,7 +5,7 @@ import { buildActions, switchAction, type EditorAction } from './actions';
 import { availableOperations, creatableTypesFor } from './operations';
 import { pushTo } from './utils';
 import { menuItemsFor } from './menu';
-import { mergeFeederBayMoves } from './modifications';
+import { mergeFeederBayMoves, type NetworkModification } from './modifications';
 import { CommandStack } from './commands/CommandStack';
 import { isPendingCreate, type Command, type PendingCreateCommand } from './commands/Command';
 import { CreateCommand } from './commands/CreateCommand';
@@ -56,7 +56,6 @@ import {
     type BaySlot,
     type BaySlotCandidate,
     type BusbarTarget,
-    type ChangeSet,
     type CreateSpec,
     type DiagramPoint,
     type DiagramSpan,
@@ -115,7 +114,7 @@ export class EditorCore {
             this.reflowBays();
             this.refreshTargets();
             this.emit('history:changed', state);
-            this.emit('modifications:changed', { modifications: this.getPendingChanges() });
+            this.emit('modifications:changed', { modifications: this.getModifications() });
         });
         const container: HTMLElement = this.dom.getContainer();
         container.addEventListener('mousedown', this.onMouseDown);
@@ -552,13 +551,13 @@ export class EditorCore {
         return node && toElementType(node.componentType);
     }
 
-    getPendingChanges(): ChangeSet {
+    getModifications(): NetworkModification[] {
         return this.history.pendingSteps.flatMap((step) =>
             mergeFeederBayMoves(step.flatMap((command) => command.toModifications())),
         );
     }
 
-    clearPendingChanges(): void {
+    clearModifications(): void {
         this.history.clear();
     }
 

@@ -8,9 +8,9 @@ import { EditorModel } from './EditorModel';
 import { EditorCore } from './EditorCore';
 import { SvgDomService } from '../dom/SvgDomService';
 import { type EditorAction } from './actions';
+import type { NetworkModification } from './modifications';
 import {
     EDITOR_OPTION_DEFAULTS,
-    type ChangeSet,
     type EditorOptions,
     type EditTarget,
     type EquipmentProperties,
@@ -113,12 +113,12 @@ export class NetworkEditor {
         return this.viewer;
     }
 
-    getPendingChanges(): ChangeSet {
-        return this.core.getPendingChanges();
+    getModifications(): NetworkModification[] {
+        return this.core.getModifications();
     }
 
-    clearPendingChanges(): void {
-        this.core.clearPendingChanges();
+    clearModifications(): void {
+        this.core.clearModifications();
     }
 
     /** Debug overlay: shows the IIDM node each element stands on. */

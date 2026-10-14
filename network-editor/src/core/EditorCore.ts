@@ -100,7 +100,7 @@ export class EditorCore {
             this.emit('history:changed', state);
             this.emit('modifications:changed', { modifications: this.getModifications() });
         });
-        const pending = () => this.history.pending;
+        const pending = () => this.pending;
         this.placement = new BayPlacement(model, dom, this.geometry, pending);
         this.painter = new PendingPainter(model, dom, this.geometry, this.placement, pending, () => this.targets);
         const container: HTMLElement = this.dom.getContainer();
@@ -133,15 +133,13 @@ export class EditorCore {
 
     create(targetId: string, operation: EditOperation, spec: CreateSpec): boolean {
         const target = this.targets.get(targetId);
-        if (!target || target.kind === 'EQUIPMENT') return false;
-
+        if (!target || target.kind === 'EQUIPMENT' || !allows(target, operation)) return false;
         if (!creatableTypesFor(operation).has(spec.type)) return false;
-        if (!availableOperations(target).includes(operation)) return false;
 
         let bay: BayPosition | undefined;
 
         if (target.kind === 'BUSBAR') {
-            const pending = pendingOrders(this.history.pending, target.vlId);
+            const pending = pendingOrders(this.pending, target.vlId);
             const order =
                 spec.order === undefined
                     ? this.model.nextOrderForBusbar(target, pending)
@@ -153,12 +151,12 @@ export class EditorCore {
         }
 
         if (target.kind === 'NODE') {
-            const standing = pendingOrders(this.history.pending, target.vlId).claims
+            const standing = pendingOrders(this.pending, target.vlId).claims
                 .find((claim) => claim.iidmNode === target.node);
             if (standing) bay = { order: standing.order, direction: standing.direction ?? 'BOTTOM' };
         }
 
-        if (this.isExistingEquipmentId(spec.provisionalId)) return false;
+        if (!this.isFreeId(spec.provisionalId)) return false;
 
         this.history.push(
             new CreateCommand(
@@ -174,13 +172,12 @@ export class EditorCore {
     }
 
     replaceEquipment(equipmentId: string, spec: CreateSpec): boolean {
-        const target = this.targets.get(equipmentId);
-        if (target?.kind !== 'EQUIPMENT') return false;
-        if (!availableOperations(target).includes('REPLACE')) return false;
+        const target = this.targetFor(equipmentId, 'EQUIPMENT', 'REPLACE');
+        if (!target) return false;
         if (!INJECTION_TYPES.has(spec.type) || spec.type === target.type) return false;
 
         const newId = spec.provisionalId;
-        if (newId !== equipmentId && this.isExistingEquipmentId(newId)) return false;
+        if (newId !== equipmentId && !this.isFreeId(newId)) return false;
 
         const node = this.model.getNodesForEquipment(equipmentId)[0];
         if (!node) return false;
@@ -204,28 +201,28 @@ export class EditorCore {
     renameEquipment(equipmentId: string, newId: string): boolean {
         if (!newId || newId === equipmentId) return false;
 
-        const created = findPendingCreate(this.history.pending, equipmentId);
+        const created = this.pendingCreate(equipmentId);
         if (created) {
-            if (this.isExistingEquipmentId(newId, created)) return false;
+            if (!this.isFreeId(newId, created)) return false;
             if (!this.amend(created, { provisionalId: newId })) return false;
             this.onRenamed(equipmentId, newId);
             return true;
         }
 
         const target = this.renameTarget(equipmentId);
-        if (!target || !availableOperations(target).includes('RENAME')) return false;
+        if (!target || !allows(target, 'RENAME')) return false;
 
-        const renamed = findAmendableRename(this.history.pending, equipmentId);
+        const renamed = findAmendableRename(this.pending, equipmentId);
         if (renamed) {
             if (newId === renamed.equipmentId) return this.history.remove(renamed);
-            if (this.isExistingEquipmentId(newId, renamed)) return false;
+            if (!this.isFreeId(newId, renamed)) return false;
             return this.history.replace(
                 renamed,
                 new RenameCommand(renamed.equipmentId, newId, this.model, this.onRenamed),
             );
         }
 
-        if (this.isExistingEquipmentId(newId)) return false;
+        if (!this.isFreeId(newId)) return false;
 
         this.history.push(new RenameCommand(equipmentId, newId, this.model, this.onRenamed));
         return true;
@@ -244,23 +241,40 @@ export class EditorCore {
     proposeEquipmentId(type: ElementType): string {
         const base = `NEW_${type}`;
         let equipmentId = base;
-        for (let index = 1; this.isExistingEquipmentId(equipmentId); index++) {
+        for (let index = 1; !this.isFreeId(equipmentId); index++) {
             equipmentId = `${base}_${index}`;
         }
         return equipmentId;
     }
 
-    private isExistingEquipmentId(equipmentId: string, ignore?: Command): boolean {
+    private isFreeId(equipmentId: string, ignore?: Command): boolean {
         return (
-            this.model.getNodesForEquipment(equipmentId).length > 0 ||
-            isPendingId(this.history.pending, equipmentId, ignore)
+            this.model.getNodesForEquipment(equipmentId).length === 0 &&
+            !isPendingId(this.pending, equipmentId, ignore)
         );
     }
 
+    private targetFor<K extends EditTarget['kind']>(
+        id: string | undefined,
+        kind: K,
+        operation: EditOperation,
+    ): Extract<EditTarget, { kind: K }> | undefined {
+        const target = id === undefined ? undefined : this.targets.get(id);
+        if (target?.kind !== kind || !allows(target, operation)) return undefined;
+        return target as Extract<EditTarget, { kind: K }>;
+    }
+
+    private get pending(): readonly Command[] {
+        return this.history.pending;
+    }
+
+    private pendingCreate(equipmentId: string): PendingCreateCommand | undefined {
+        return findPendingCreate(this.pending, equipmentId);
+    }
+
     moveDestinations(equipmentId: string): BusbarTarget[] {
-        const feeder = this.targets.get(equipmentId);
-        if (feeder?.kind !== 'EQUIPMENT') return [];
-        if (!availableOperations(feeder).includes('MOVE_BAY')) return [];
+        const feeder = this.targetFor(equipmentId, 'EQUIPMENT', 'MOVE_BAY');
+        if (!feeder) return [];
 
         return [...this.targets.values()].filter(
             (target): target is BusbarTarget =>
@@ -282,7 +296,7 @@ export class EditorCore {
         if (!host || !node) return false;
 
         // The order must suit the target section: orders grow from one section to the next.
-        const pending = pendingOrders(this.history.pending, destination.vlId, node.id);
+        const pending = pendingOrders(this.pending, destination.vlId, node.id);
         const order = this.model.nextOrderForBusbar(destination, pending);
         if (order === undefined) return false;
 
@@ -300,12 +314,12 @@ export class EditorCore {
     proposedOrder(target: BusbarTarget, insertion?: number): number | undefined {
         return (
             insertion ??
-            this.model.nextOrderForBusbar(target, pendingOrders(this.history.pending, target.vlId))
+            this.model.nextOrderForBusbar(target, pendingOrders(this.pending, target.vlId))
         );
     }
 
     getBayPosition(equipmentId: string): BayPosition | undefined {
-        const pending = pendingBayPosition(this.history.pending, equipmentId);
+        const pending = pendingBayPosition(this.pending, equipmentId);
         if (pending) return pending.position;
 
         const target = this.targets.get(equipmentId);
@@ -314,14 +328,14 @@ export class EditorCore {
     }
 
     setBayPosition(equipmentId: string, position: BayPosition): boolean {
-        const created = findPendingCreate(this.history.pending, equipmentId);
+        const created = this.pendingCreate(equipmentId);
         if (created) return this.amendBayPosition(created, position);
 
         const feeder = this.movableFeeder(equipmentId);
         if (!feeder) return false;
         const { target, node, slot } = feeder;
 
-        const pending = pendingOrders(this.history.pending, slot.vlId, node.id);
+        const pending = pendingOrders(this.pending, slot.vlId, node.id);
         if (!this.model.isOrderAvailable(slot, position.order, pending)) return false;
 
         const from = toDirection(node.direction) ?? 'BOTTOM';
@@ -351,9 +365,8 @@ export class EditorCore {
         for (const sibling of cellFeeders) {
             if (sibling.id === node.id) continue;
 
-            const siblingTarget = sibling.equipmentId ? this.targets.get(sibling.equipmentId) : undefined;
-            if (siblingTarget?.kind !== 'EQUIPMENT' || siblingTarget.node === undefined) return false;
-            if (!availableOperations(siblingTarget).includes('UPDATE_BAY_POSITION')) return false;
+            const siblingTarget = this.targetFor(sibling.equipmentId, 'EQUIPMENT', 'UPDATE_BAY_POSITION');
+            if (siblingTarget?.node === undefined) return false;
 
             const siblingPosition = { order: sibling.order!, direction: position.direction };
             commands.push(
@@ -368,7 +381,7 @@ export class EditorCore {
     applyProperties(equipmentId: string, changes: EquipmentProperties): boolean {
         if (Object.keys(changes).length === 0) return false;
 
-        const created = findPendingCreate(this.history.pending, equipmentId);
+        const created = this.pendingCreate(equipmentId);
         if (created) {
             return this.amend(created, {
                 properties: { ...created.createSpec.properties, ...changes },
@@ -395,7 +408,7 @@ export class EditorCore {
         const commands: Command[] = [];
 
         for (const equipmentId of equipmentIds) {
-            const created = findPendingCreate(this.history.pending, equipmentId);
+            const created = this.pendingCreate(equipmentId);
             if (created) {
                 creations.push(created);
                 continue;
@@ -425,7 +438,7 @@ export class EditorCore {
         if (this.model.collectBay(equipmentId).nodes.length <= scope.nodes.length) return [];
 
         const claims: OrderClaim[] = [];
-        const movedPosition = pendingBayPosition(this.history.pending, equipmentId)?.position;
+        const movedPosition = pendingBayPosition(this.pending, equipmentId)?.position;
         for (const node of scope.nodes) {
             const order = movedPosition?.order ?? node.order;
             if (order === undefined) continue;
@@ -442,7 +455,7 @@ export class EditorCore {
     private deleteCommandFor(equipmentId: string, kind: 'element' | 'bay'): Command | undefined {
         const operation: EditOperation = kind === 'bay' ? 'DELETE_BAY' : 'DELETE';
         const target = this.targets.get(equipmentId);
-        if (target && !availableOperations(target).includes(operation)) return undefined;
+        if (target && !allows(target, operation)) return undefined;
 
         const node = this.model.getNodesForEquipment(equipmentId)[0];
         if (!node) return undefined;
@@ -608,10 +621,8 @@ export class EditorCore {
     }
 
     beginSwitch(targetId: string, type: ElementType): boolean {
-        const first = this.targets.get(targetId);
-        if (first?.kind !== 'NODE') return false;
-        if (!creatableTypesFor('CREATE_SWITCH').has(type)) return false;
-        if (!availableOperations(first).includes('CREATE_SWITCH')) return false;
+        const first = this.targetFor(targetId, 'NODE', 'CREATE_SWITCH');
+        if (!first || !creatableTypesFor('CREATE_SWITCH').has(type)) return false;
 
         const candidates = this.switchEndCandidates(first);
         if (candidates.length === 0) return false;
@@ -629,7 +640,7 @@ export class EditorCore {
     createSwitch(spec: CreateSpec): boolean {
         const picked = this.pickedSwitch();
         if (!picked) return false;
-        if (this.isExistingEquipmentId(spec.provisionalId)) return false;
+        if (!this.isFreeId(spec.provisionalId)) return false;
 
         const { first, second } = picked;
         this.cancelGesture();
@@ -655,17 +666,14 @@ export class EditorCore {
     }
 
     createSwitchedInjection(targetId: string, spec: CreateSpec): boolean {
-        const target = this.targets.get(targetId);
-        if (target?.kind !== 'NODE') return false;
-        if (!creatableTypesFor('CREATE_SWITCHED_INJECTION').has(spec.type)) return false;
-        if (!availableOperations(target).includes('CREATE_SWITCHED_INJECTION')) return false;
+        const target = this.targetFor(targetId, 'NODE', 'CREATE_SWITCHED_INJECTION');
+        if (!target || !creatableTypesFor('CREATE_SWITCHED_INJECTION').has(spec.type)) return false;
 
         const switchType = spec.switchType;
         if (!switchType || !SWITCH_TYPES.has(switchType)) return false;
 
         const switchId = `${spec.provisionalId}_${switchType}`;
-        if (this.isExistingEquipmentId(spec.provisionalId)) return false;
-        if (this.isExistingEquipmentId(switchId)) return false;
+        if (!this.isFreeId(spec.provisionalId) || !this.isFreeId(switchId)) return false;
 
         this.history.push(
             new CreateSwitchedInjectionCommand(
@@ -691,7 +699,7 @@ export class EditorCore {
         const busbar = this.pendingBusbar(command);
         if (!busbar) return false;
 
-        const pending = pendingOrders(this.history.pending, busbar.vlId, undefined, command);
+        const pending = pendingOrders(this.pending, busbar.vlId, undefined, command);
         if (!this.model.isOrderAvailable(busbar, position.order, pending)) return false;
 
         return this.amend(command, { order: position.order, direction: position.direction });
@@ -699,7 +707,7 @@ export class EditorCore {
 
     /** A bay on a fictitious busbar has no busbar to slide along. */
     canBeginBayMove(equipmentId: string): boolean {
-        const created = findPendingCreate(this.history.pending, equipmentId);
+        const created = this.pendingCreate(equipmentId);
         if (created) return this.pendingBusbar(created) !== undefined;
 
         const feeder = this.movableFeeder(equipmentId);
@@ -707,14 +715,14 @@ export class EditorCore {
     }
 
     beginBayMove(equipmentId: string): boolean {
-        const created = findPendingCreate(this.history.pending, equipmentId);
+        const created = this.pendingCreate(equipmentId);
         if (created) return this.beginPendingBayMove(created);
 
         const feeder = this.movableFeeder(equipmentId);
         const busbar = feeder && this.busbarOf(feeder.slot);
         if (!feeder || !busbar) return false;
 
-        const pending = pendingOrders(this.history.pending, busbar.vlId, feeder.node.id);
+        const pending = pendingOrders(this.pending, busbar.vlId, feeder.node.id);
         return this.startBayMove(equipmentId, busbar, feeder.target.direction ?? 'BOTTOM', pending);
     }
 
@@ -722,7 +730,7 @@ export class EditorCore {
         const busbar = this.pendingBusbar(command);
         if (!busbar) return false;
 
-        const pending = pendingOrders(this.history.pending, busbar.vlId, undefined, command);
+        const pending = pendingOrders(this.pending, busbar.vlId, undefined, command);
         return this.startBayMove(command.equipmentId, busbar, command.createSpec.direction ?? 'TOP', pending);
     }
 
@@ -811,9 +819,8 @@ export class EditorCore {
     private movableFeeder(
         equipmentId: string,
     ): { target: EquipmentTarget; node: NodeMetadata; slot: BaySlot } | undefined {
-        const target = this.targets.get(equipmentId);
-        if (target?.kind !== 'EQUIPMENT' || target.node === undefined) return undefined;
-        if (!availableOperations(target).includes('UPDATE_BAY_POSITION')) return undefined;
+        const target = this.targetFor(equipmentId, 'EQUIPMENT', 'UPDATE_BAY_POSITION');
+        if (target?.node === undefined) return undefined;
 
         const node = this.model.feederNodeOf(target);
         const slot = node && this.model.slotOfFeeder(node);
@@ -833,7 +840,7 @@ export class EditorCore {
     }
 
     private movingElementId({ equipmentId }: BayMoveGesture): string | null {
-        const created = findPendingCreate(this.history.pending, equipmentId);
+        const created = this.pendingCreate(equipmentId);
         if (created) return created.pendingMarker?.elementId ?? null;
         return this.movableFeeder(equipmentId)?.node.id ?? null;
     }
@@ -920,7 +927,7 @@ export class EditorCore {
     private refreshTargets(): void {
         this.cancelGesture();
         this.clearHoverSlots();
-        const { created, claimed } = pendingScope(this.history.pending);
+        const { created, claimed } = pendingScope(this.pending);
 
         const targets = this.model.collectTargets().map((target) => {
             if (target.kind !== 'EQUIPMENT') return target;
@@ -982,4 +989,8 @@ export class EditorCore {
             if (isSwitchNode(node)) this.dom.setSwitchState(node.id, open);
         }
     };
+}
+
+function allows(target: EditTarget, operation: EditOperation): boolean {
+    return availableOperations(target).includes(operation);
 }

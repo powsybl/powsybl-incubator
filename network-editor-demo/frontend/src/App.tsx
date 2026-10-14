@@ -1,44 +1,13 @@
 import {Banner, Button, Card, Header, Loader, Select} from "@design-system-rte/react";
-import { useEffect, useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
+import {isAxiosError} from "axios";
+import {actionLabel} from "@powsybl/network-editor";
+import {PropertyForm} from "@powsybl/network-editor/react";
 import type {NetworkInfo, Sld} from "./types.ts";
 import {applyModifications, getSld, getVoltageLevelIds, uploadNetwork} from "./api.ts";
-import {isAxiosError} from "axios";
-import {describeTargets, type Gesture, menuItemsFor, NetworkEditor, type NetworkModification} from "@powsybl/network-editor";
-import type {EditTarget} from "@powsybl/network-editor";
-import type {MenuItem} from "./components/Menu.tsx";
 import {Menu} from "./components/Menu.tsx";
-import { actionLabel, type EditorAction} from "@powsybl/network-editor";
-import {PropertyForm} from "@powsybl/network-editor/react";
-
-const CHANGE_LABELS: Partial<Record<NetworkModification['type'], string>> = {
-    LOAD_CREATION: 'Création de charge',
-    GENERATOR_CREATION: 'Création de générateur',
-    BATTERY_CREATION: 'Création de batterie',
-    SHUNT_COMPENSATOR_CREATION: 'Création de compensateur shunt',
-    STATIC_VAR_COMPENSATOR_CREATION: 'Création de CSPR',
-    CONVERTER_STATION_CREATION: 'Création de station VSC',
-    LCC_CONVERTER_STATION_CREATION: 'Création de station LCC',
-    BOUNDARY_LINE_CREATION: 'Création de ligne frontière',
-    NODE_INJECTION_CREATION: 'Création sur un nœud',
-    SWITCHED_INJECTION_CREATION: 'Création derrière un organe de coupure',
-    SWITCH_CREATION: 'Création d\'organe de coupure',
-    MOVE_VOLTAGE_LEVEL_FEEDER_BAYS: 'Déplacement de travée',
-    EQUIPMENT_ATTRIBUTE_MODIFICATION: 'Modification d\'attribut',
-    EQUIPMENT_DELETION: 'Suppression',
-    ELEMENT_DELETION: 'Suppression d\'élément',
-    EQUIPMENT_RENAME: 'Renommage',
-}
-
-const changeLabel = (change: NetworkModification) =>
-    CHANGE_LABELS[change.type] ?? (change.type.endsWith('_MODIFICATION') ? 'Modification' : change.type)
-
-const changeTarget = (change: NetworkModification) => {
-    if ('equipmentId' in change) return change.equipmentId
-    if (change.type === 'NODE_INJECTION_CREATION' || change.type === 'SWITCHED_INJECTION_CREATION') {
-        return change.creation.equipmentId
-    }
-    return change.voltageLevelId
-}
+import {modificationLabel, modificationTarget} from "./modificationLabels.ts";
+import {useNetworkEditor} from "./useNetworkEditor.ts";
 
 const errorMessage = (error: unknown) =>
     isAxiosError(error) && error.response?.data?.message ? error.response.data.message : String(error)
@@ -49,7 +18,7 @@ export default function App() {
     const fileInput = useRef<HTMLInputElement>(null);
 
     const [error, setError] = useState<string>("")
-    const [NetworkLoading, setNetworkLoading] = useState<boolean>(false)
+    const [networkLoading, setNetworkLoading] = useState<boolean>(false)
     const [applyLoading, setApplyLoading] = useState<boolean>(false)
     const [info, setInfo] = useState<NetworkInfo | null>(null)
     const [fileName, setFileName] = useState<string>("")
@@ -58,19 +27,27 @@ export default function App() {
     const [sld, setSld] = useState<Sld | null>(null)
     const [showIidmNodes, setShowIidmNodes] = useState<boolean>(false)
 
-    const [history, setHistory] = useState<{ canUndo: boolean; canRedo: boolean }>({canUndo: false, canRedo: false})
-    const [changes, setChanges] = useState<NetworkModification[]>([])
-    const [gesture, setGesture] = useState<Gesture | null>(null)
+    const {editor, menu, closeMenu, pick, form, closeForm, modifications, history} = useNetworkEditor(container, sld)
 
-    const [editor, setEditor] = useState<NetworkEditor | null>(null);
-    const [menu, setMenu] = useState<{
-        targets: readonly EditTarget[],
-        x: number,
-        y: number,
-        insertion?: number
-    } | null>(null)
-    const [panel, setPanel] = useState<EditorAction | null>(null)
+    const loadVlIds = () => {
+        getVoltageLevelIds().then(setVlIds).catch((err) => setError(String(err)))
+    }
 
+    const loadSld = (vlId: string) => {
+        getSld(vlId).then((loaded) => {
+            setSld(loaded)
+            setShowIidmNodes(false)
+        }).catch((err) => setError(String(err)))
+    }
+
+    useEffect(() => {
+        loadVlIds()
+        setSelectedVlId("MTPELP6")
+    }, [])
+
+    useEffect(() => {
+        if (selectedVlId) loadSld(selectedVlId)
+    }, [selectedVlId])
 
     const load = (file: File) => {
         setNetworkLoading(true)
@@ -78,121 +55,28 @@ export default function App() {
         setVlIds(null)
         setSelectedVlId(null)
         setSld(null)
-        setChanges([])
-        setPanel(null)
-        setMenu(null)
 
-        uploadNetwork(file).then(
-            (loaded) => {
-                setInfo(loaded)
-                setFileName(file.name)
-                setNetworkLoading(false)
-            }
-        ).catch((err) => {
+        uploadNetwork(file).then((loaded) => {
+            setInfo(loaded)
+            setFileName(file.name)
+            loadVlIds()
+        }).catch((err) => {
             setInfo(null)
             setFileName("")
-            setError(String(err));
-            setNetworkLoading(false)
-        })
-
+            setError(String(err))
+        }).finally(() => setNetworkLoading(false))
     }
-
-    useEffect(() => {
-
-        loadVlIds();
-        setSelectedVlId("MTPELP6")
-
-        getSld("MTPELP6").then(
-            async (sld) => {
-                setSld(sld)
-            }).catch((err) => {
-            setError(String(err))
-        })
-    }, [])
-
-    const loadVlIds = () => {
-        getVoltageLevelIds().then(
-            async (ids) => {
-                setVlIds(ids)
-            }).catch((err) => {
-            setError(String(err))
-        })
-    }
-
-    useEffect(() => {
-        if (!info) return
-        loadVlIds()
-    }, [info])
-
-    useEffect(() => {
-        if (!selectedVlId) return
-        getSld(selectedVlId).then(
-            async (sld) => {
-                setSld(sld);
-                setShowIidmNodes(false);
-            }
-        ).catch((err) => {
-            setError(String(err))
-        })
-    }, [selectedVlId])
-
-
-    useEffect(() => {
-        if (!sld || !container.current) return
-
-        const instance = new NetworkEditor({
-            container: container.current,
-            metadata: sld.metadata,
-            svgContent: sld.svg,
-            initialProperties: sld.properties,
-
-            onTargets: ({targets, position, insertion}) =>
-                setMenu({targets, x: position.x, y: position.y, insertion}),
-
-            onEvent: (event) => {
-                if (event.name === 'targets:changed') setMenu(null);
-                if (event.name === 'history:changed') setHistory({canRedo: event.canRedo, canUndo: event.canUndo});
-
-                if (event.name === 'model:changed') {
-                    setChanges(event.changeSet);
-                    console.log(event.changeSet);
-                }
-                if (event.name === 'gesture:changed') {
-                    setGesture(event.gesture);
-                    if (event.gesture) setMenu(null);
-                    setPanel(instance.switchAction());
-                }
-
-            },
-        });
-        setEditor(instance);
-        return () => instance.destroy();
-    }, [sld])
-
-
-    const menuItems: MenuItem[] =
-        editor && menu
-            ? menuItemsFor(editor, menu).map((item) => ({
-                label: item.label,
-                danger: item.danger,
-                onClick: () => (item.needsForm ? setPanel(item.action) : item.action.run()),
-            }))
-            : [];
-
 
     const applyChanges = async () => {
-
-        if (!selectedVlId || !editor) return;
+        if (!selectedVlId || !editor) return
         setError("")
-
+        setApplyLoading(true)
         try {
-            setApplyLoading(true);
-            await applyModifications(changes);
-
-            editor.clearPendingChanges();
-            setSld(await getSld(selectedVlId));
+            await applyModifications(editor.getModifications())
+            editor.clearModifications()
+            loadSld(selectedVlId)
         } catch (error) {
-            setError(errorMessage(error));
+            setError(errorMessage(error))
         }
         setApplyLoading(false)
     }
@@ -246,10 +130,10 @@ export default function App() {
                                 label="Charger le réseau"
                                 onClick={() => fileInput.current?.click()}
                                 variant="primary"
-                                disabled={NetworkLoading}
+                                disabled={networkLoading}
                             />
 
-                            {NetworkLoading &&
+                            {networkLoading &&
                                 <Loader
                                     appearance="brand"
                                     label="Chargement..."
@@ -300,14 +184,14 @@ export default function App() {
                             <div className="card-body">
                                 <h2 className="block-title">Modifications en attente</h2>
 
-                                {changes.length === 0 ?
+                                {modifications.length === 0 ?
                                     <p className="changes-empty">Aucune modification.</p>
                                     :
                                     <ul className="changes">
-                                        {changes.map((change, index) =>
-                                            <li key={`${change.type}-${index}`}>
-                                                <span className="change-op">{changeLabel(change)}</span>
-                                                <span className="change-id">{changeTarget(change)}</span>
+                                        {modifications.map((modification, index) =>
+                                            <li key={`${modification.type}-${index}`}>
+                                                <span className="change-op">{modificationLabel(modification)}</span>
+                                                <span className="change-id">{modificationTarget(modification)}</span>
                                             </li>
                                         )}
                                     </ul>
@@ -345,15 +229,15 @@ export default function App() {
                                 </div>
 
                                 <div className="toolbar-group">
-                                    {changes.length > 0 &&
+                                    {modifications.length > 0 &&
                                         <span className="pending">
-                                            {changes.length} modification{changes.length > 1 ? 's' : ''} en attente
+                                            {modifications.length} modification{modifications.length > 1 ? 's' : ''} en attente
                                         </span>
                                     }
                                     <Button
                                         label="Valider les modifications"
                                         variant="primary"
-                                        disabled={!changes.length || applyLoading}
+                                        disabled={!modifications.length || applyLoading}
                                         onClick={() => applyChanges()}
                                     />
                                     { applyLoading &&  <Loader
@@ -376,14 +260,13 @@ export default function App() {
                     }
                 </section>
 
-                {panel &&
+                {form &&
                     <aside className="properties">
-                        <h2 className="block-title">{actionLabel(panel)}</h2>
+                        <h2 className="block-title">{actionLabel(form)}</h2>
                         <PropertyForm
-                            action={panel}
-                            submitLabel="Valider"
+                            action={form}
                             refusedLabel="Refusé par le composant"
-                            onDone={() => setPanel(null)}
+                            onDone={closeForm}
                         >
                             <div className="properties-actions">
                                 <Button label="Valider" variant="primary" type="submit"/>
@@ -391,25 +274,14 @@ export default function App() {
                                     label="Fermer"
                                     variant="secondary"
                                     type="button"
-                                    onClick={() => {
-                                        setPanel(null)
-                                        editor?.cancelGesture();
-                                    }}
+                                    onClick={closeForm}
                                 />
                             </div>
                         </PropertyForm>
                     </aside>
                 }
 
-                {menu &&
-                    <Menu
-                        header={describeTargets(menu.targets)}
-                        x={menu.x}
-                        y={menu.y}
-                        onClose={() => setMenu(null)}
-                        items={menuItems}
-                    />
-                }
+                {menu && <Menu menu={menu} onPick={pick} onClose={closeMenu}/>}
             </main>
         </>
     );

@@ -1,21 +1,14 @@
 import {useEffect} from "react";
-
-export type MenuItem = {
-    label: string
-    enabled?: boolean
-    danger?: boolean
-    onClick: () => void
-}
+import {type ActionMenuItem, describeTargets} from "@powsybl/network-editor";
+import type {EditorMenu} from "../useNetworkEditor.ts";
 
 interface MenuProps {
-    header: string,
-    x: number,
-    y: number,
-    onClose: () => void,
-    items: MenuItem[],
+    menu: EditorMenu
+    onPick: (item: ActionMenuItem) => void
+    onClose: () => void
 }
 
-export function Menu({header,x,y,onClose,items}: MenuProps) {
+export function Menu({menu, onPick, onClose}: MenuProps) {
 
     useEffect(() => {
         const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
@@ -27,20 +20,15 @@ export function Menu({header,x,y,onClose,items}: MenuProps) {
         };
     }, [onClose]);
 
-
     return (
-        <div className="menu" style={{ left: x, top: y }} onMouseDown={(e) => e.stopPropagation()}>
-            <header>{header}</header>
-            {items.map((item, index) => (
+        <div className="menu" style={{left: menu.x, top: menu.y}} onMouseDown={(e) => e.stopPropagation()}>
+            <header>{describeTargets(menu.targets)}</header>
+            {menu.items.map((item) => (
                 <button
-                    key={`${item.label}-${index}`}
+                    key={item.action.id}
                     type="button"
                     className={item.danger ? 'danger' : undefined}
-                    disabled={item.enabled === false}
-                    onClick={() => {
-                        item.onClick?.();
-                        onClose();
-                    }}
+                    onClick={() => onPick(item)}
                 >
                     {item.label}
                 </button>

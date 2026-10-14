@@ -1,6 +1,6 @@
 import axios from "axios";
 import type {NetworkInfo, Sld} from "./types.ts";
-import type {ChangeSet} from "@powsybl/network-editor";
+import type {NetworkModification} from "@powsybl/network-editor";
 
 export const loadNetwork = (filePath: string) =>
     axios
@@ -24,5 +24,5 @@ export const getSld = (vlId: string) =>
     axios.post<Sld>('/api/network/sld', { vlId: vlId }).then((res) => res.data)
 
 
-export const applyModifications = (changes: ChangeSet) =>
-    axios.post<void>('/api/network/modifications', changes).then((res) => res.data)
+export const applyModifications = (modifications: NetworkModification[]) =>
+    axios.post<void>('/api/network/modifications', modifications).then((res) => res.data)

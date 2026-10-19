@@ -74,17 +74,4 @@ export class CreateSwitchCommand implements PendingCreateCommand {
             provisionalId: this.equipmentId,
         };
     }
-
-    withSpec(spec: CreateSpec): CreateSwitchCommand {
-        return new CreateSwitchCommand(
-            spec.provisionalId,
-            this.type,
-            this.vlId,
-            this.node1,
-            this.node2,
-            spec.properties,
-            this.ends,
-            this.model,
-        );
-    }
 }

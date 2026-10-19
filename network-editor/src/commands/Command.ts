@@ -17,11 +17,10 @@ export interface Command {
 
 export interface PendingCreate {
     readonly createSpec: CreateSpec;
-    withSpec(spec: CreateSpec): PendingCreateCommand;
 }
 
 export type PendingCreateCommand = Command & PendingCreate;
 
 export function isPendingCreate(command: Command): command is PendingCreateCommand {
-    return typeof (command as Partial<PendingCreate>).withSpec === 'function';
+    return 'createSpec' in command;
 }

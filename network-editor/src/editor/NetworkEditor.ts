@@ -110,6 +110,7 @@ export class NetworkEditor {
         return this.viewer;
     }
 
+    /** The change set to send to the backend: call it when the user sends. */
     getModifications(): NetworkModification[] {
         return this.core.getModifications();
     }

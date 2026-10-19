@@ -85,18 +85,4 @@ export class CreateCommand implements PendingCreateCommand {
             direction: this.bay?.direction,
         };
     }
-
-    withSpec(spec: CreateSpec): CreateCommand {
-        return new CreateCommand(
-            spec.provisionalId,
-            this.type,
-            this.target,
-            spec.properties,
-            this.model,
-            this.bay && {
-                order: spec.order ?? this.bay.order,
-                direction: spec.direction ?? this.bay.direction,
-            },
-        );
-    }
 }

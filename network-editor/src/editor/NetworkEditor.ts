@@ -4,19 +4,16 @@ import {
     SingleLineDiagramViewer,
 } from '@powsybl/network-viewer-core';
 
-import { EditorModel } from './EditorModel';
-import { EditorCore } from './EditorCore';
-import { SvgDomService } from '../dom/SvgDomService';
-import { type EditorAction } from './actions';
-import type { NetworkModification } from './modifications';
+import { EditorModel } from '../model/EditorModel.ts';
+import { EditorCore } from './EditorCore.ts';
+import { SvgDomService } from '../dom/SvgDomService.ts';
+import type { NetworkModification } from '../modifications/modifications.ts';
 import {
     EDITOR_OPTION_DEFAULTS,
     type EditorOptions,
-    type EditTarget,
     type EquipmentProperties,
-    type Gesture,
     type SymbolProvider,
-} from './types';
+} from '../types.ts';
 
 export type DiagramViewBox = Parameters<SingleLineDiagramViewer['setViewBox']>[0];
 
@@ -113,6 +110,7 @@ export class NetworkEditor {
         return this.viewer;
     }
 
+    /** The change set to send to the backend: call it when the user sends. */
     getModifications(): NetworkModification[] {
         return this.core.getModifications();
     }
@@ -126,33 +124,12 @@ export class NetworkEditor {
         this.core.showIidmNodes(enabled);
     }
 
-    getTargets(): EditTarget[] {
-        return this.core.getTargets();
-    }
-
-    getGesture(): Gesture | null {
-        return this.core.getGesture();
-    }
-
     cancelGesture(): void {
         this.core.cancelGesture();
     }
 
-
-    actionsFor(target: EditTarget, insertion?: number): EditorAction[] {
-        return this.core.actionsFor(target, insertion);
-    }
-
-    getSelectedEquipmentIds(): readonly string[] {
-        return this.core.getSelectedEquipmentIds();
-    }
-
     getProperties(equipmentId: string): EquipmentProperties {
         return this.core.getProperties(equipmentId);
-    }
-
-    seedProperties(equipmentId: string, values: EquipmentProperties): void {
-        this.core.seedProperties(equipmentId, values);
     }
 
     private readonly onContextMenu = (event: MouseEvent): void => {

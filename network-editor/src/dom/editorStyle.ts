@@ -5,7 +5,7 @@ import {
     SELECTED_CLASS,
     SWITCH_END_CLASS,
     SWITCH_START_CLASS,
-} from '../core/types';
+} from '../types.ts';
 
 export const IIDM_LINKED_CLASS = 'ne-iidm-linked';
 export const IIDM_UNLINKED_CLASS = 'ne-iidm-unlinked';

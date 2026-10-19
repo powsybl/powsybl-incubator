@@ -1,6 +1,6 @@
-import type { Command } from './Command';
-import { moveFeederBay, type NetworkModification } from '../modifications';
-import type { BayPosition, BusbarTarget, EquipmentTarget, OrderClaim } from '../types';
+import type { Command } from './Command.ts';
+import { moveFeederBay, type NetworkModification } from '../modifications/modifications.ts';
+import type { BayPosition, BusbarTarget, EquipmentTarget, OrderClaim } from '../types.ts';
 
 export class MoveBayCommand implements Command {
     readonly pendingMarker: { targetId: string; nodeId: string; label: string };

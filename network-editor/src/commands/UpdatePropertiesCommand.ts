@@ -1,7 +1,7 @@
-import type { Command } from './Command';
-import type { EditorModel } from '../EditorModel';
-import type { ElementType, EquipmentProperties } from '../types';
-import { equipmentModification, type NetworkModification } from '../modifications';
+import type { Command } from './Command.ts';
+import type { EditorModel } from '../model/EditorModel.ts';
+import type { ElementType, EquipmentProperties } from '../types.ts';
+import { equipmentModification, type NetworkModification } from '../modifications/modifications.ts';
 
 export class UpdatePropertiesCommand implements Command {
     private previous: EquipmentProperties = {};

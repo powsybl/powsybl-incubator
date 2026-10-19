@@ -1,9 +1,10 @@
-import type { PendingCreateCommand } from './Command';
-import type { EditorModel } from '../EditorModel';
-import { injectionCreation, nodeInjectionCreation, type NetworkModification } from '../modifications';
+import type { PendingCreateCommand } from './Command.ts';
+import type { EditorModel } from '../model/EditorModel.ts';
+import { injectionCreation, nodeInjectionCreation, type NetworkModification } from '../modifications/modifications.ts';
 import {
     NODE_COMPONENT_TYPE,
-    createdNodeId,
+    newCreatedNodeId,
+    toDirection,
     type BayPosition,
     type BusbarTarget,
     type CreateSpec,
@@ -12,13 +13,9 @@ import {
     type NodeMetadata,
     type NodeTarget,
     type OrderClaim,
-} from '../types';
+} from '../types.ts';
 
 export class CreateCommand implements PendingCreateCommand {
-    readonly pendingMarker: { targetId: string; nodeId: string; label: string; elementId: string };
-
-    readonly orderClaims?: OrderClaim[];
-
     private readonly node: NodeMetadata;
 
     constructor(
@@ -30,7 +27,7 @@ export class CreateCommand implements PendingCreateCommand {
         private readonly bay?: BayPosition,
     ) {
         this.node = {
-            id: createdNodeId(equipmentId),
+            id: newCreatedNodeId(equipmentId),
             equipmentId,
             componentType: NODE_COMPONENT_TYPE[type],
             vid: target.vlId,
@@ -38,19 +35,19 @@ export class CreateCommand implements PendingCreateCommand {
             order: bay?.order,
             direction: bay?.direction,
         };
-        this.pendingMarker = {
-            targetId: target.id,
-            nodeId: target.id,
-            label: equipmentId,
-            elementId: this.node.id,
-        };
-        if (target.kind === 'BUSBAR' && bay) {
-            this.orderClaims = [{
-                vlId: target.vlId,
-                sectionIndex: target.sectionIndex,
-                order: bay.order,
-            }];
-        }
+    }
+
+    get pendingMarker(): { targetId: string; nodeId: string; label: string; elementId: string } | undefined {
+        if (!this.isInModel) return undefined;
+        const { target, node } = this;
+        const label = node.equipmentId ?? this.equipmentId;
+        return { targetId: target.id, nodeId: target.id, label, elementId: node.id };
+    }
+
+    get orderClaims(): OrderClaim[] | undefined {
+        const { target, node } = this;
+        if (!this.isInModel || target.kind !== 'BUSBAR' || node.order === undefined) return undefined;
+        return [{ vlId: target.vlId, sectionIndex: target.sectionIndex, order: node.order }];
     }
 
     execute(): void {
@@ -77,26 +74,17 @@ export class CreateCommand implements PendingCreateCommand {
     }
 
     get createSpec(): CreateSpec {
+        const equipmentId = this.node.equipmentId ?? this.equipmentId;
         return {
             type: this.type,
-            properties: { ...this.properties },
-            provisionalId: this.equipmentId,
-            order: this.bay?.order,
-            direction: this.bay?.direction,
+            properties: this.model.getProperties(equipmentId),
+            provisionalId: equipmentId,
+            order: this.node.order,
+            direction: toDirection(this.node.direction),
         };
     }
 
-    withSpec(spec: CreateSpec): CreateCommand {
-        return new CreateCommand(
-            spec.provisionalId,
-            this.type,
-            this.target,
-            spec.properties,
-            this.model,
-            this.bay && {
-                order: spec.order ?? this.bay.order,
-                direction: spec.direction ?? this.bay.direction,
-            },
-        );
+    private get isInModel(): boolean {
+        return this.model.getNodeById(this.node.id) !== undefined;
     }
 }

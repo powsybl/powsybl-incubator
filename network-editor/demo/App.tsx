@@ -69,6 +69,8 @@ export function App() {
                     <div className="toolbar">
                         <button onClick={() => editor?.undo()}>↩ Undo</button>
                         <button onClick={() => editor?.redo()}>↪ Redo</button>
+                        <button onClick={() => setModifications(editor?.getModifications() ?? [])}>send to backend</button>
+                        <button onClick={() => editor?.clearModifications()}>clear</button>
                     </div>
 
                     {form && (
@@ -79,7 +81,7 @@ export function App() {
                         </>
                     )}
 
-                    <h2>Modifications ({modifications.length})</h2>
+                    <h2>Modifications</h2>
                     <pre className="modifications">{JSON.stringify(modifications, null, 2)}</pre>
                 </aside>
             </div>

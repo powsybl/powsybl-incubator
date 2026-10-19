@@ -1,12 +1,12 @@
-import type { Command } from './Command';
-import type { EditorModel } from '../EditorModel';
+import type { Command } from './Command.ts';
+import type { EditorModel } from '../model/EditorModel.ts';
 import {
     identifiableType,
     injectionCreation,
     nodeInjectionCreation,
     type NetworkModification,
-} from '../modifications';
-import type { SvgDomService, SymbolSnapshot } from '../../dom/SvgDomService';
+} from '../modifications/modifications.ts';
+import type { SvgDomService, SymbolSnapshot } from '../dom/SvgDomService.ts';
 import {
     nodeComponentType,
     toDirection,
@@ -15,7 +15,7 @@ import {
     type EquipmentProperties,
     type NodeMetadata,
     type SymbolProvider,
-} from '../types';
+} from '../types.ts';
 
 export class ReplaceCommand implements Command {
     private readonly oldComponentType: string;

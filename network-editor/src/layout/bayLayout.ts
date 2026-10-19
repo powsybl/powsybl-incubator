@@ -1,4 +1,4 @@
-import type { DiagramSpan } from './types';
+import type { DiagramSpan } from '../types.ts';
 
 
 export interface LayoutCell {

@@ -1,22 +1,12 @@
-import type { EditorAction } from './actions';
-import { OPERATIONS } from './operations';
-import type { EditOperation, EditTarget } from './types';
+import type { EditorAction } from './actions.ts';
+import { OPERATIONS } from './operations.ts';
+import type { EditTarget } from '../types.ts';
 
 export interface ActionMenuItem {
     action: EditorAction;
     label: string;
     danger: boolean;
     needsForm: boolean;
-}
-
-export interface ActionSource {
-    getTargets(): EditTarget[];
-    actionsFor(target: EditTarget, insertion?: number): EditorAction[];
-}
-
-export interface MenuSubjects {
-    targets: readonly EditTarget[];
-    insertion?: number;
 }
 
 export function actionLabel(action: EditorAction): string {
@@ -51,23 +41,13 @@ export function describeTargets(targets: readonly EditTarget[]): string {
     return targets.map(describeTarget).join(' · ');
 }
 
-export function actionFor(
-    source: ActionSource,
-    equipmentId: string | null,
-    operation: EditOperation,
-): EditorAction | null {
-    const target = source.getTargets().find(
-        (candidate) =>
-            candidate.id === equipmentId ||
-            (candidate.kind === 'BUSBAR' && candidate.busbarSectionId === equipmentId),
-    );
-    if (!target) return null;
-    return source.actionsFor(target).find((action) => action.operation === operation) ?? null;
-}
-
-export function menuItemsFor(source: ActionSource, subjects: MenuSubjects): ActionMenuItem[] {
-    return subjects.targets
-        .flatMap((target) => source.actionsFor(target, subjects.insertion))
+export function menuItemsFor(
+    actionsFor: (target: EditTarget, insertion?: number) => EditorAction[],
+    targets: readonly EditTarget[],
+    insertion?: number,
+): ActionMenuItem[] {
+    return targets
+        .flatMap((target) => actionsFor(target, insertion))
         .map((action) => ({
             action,
             label: actionLabel(action),

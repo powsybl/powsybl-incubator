@@ -3,9 +3,9 @@ import {
     PENDING_CREATE_CLASS,
     type BaySlotCandidate,
     type DiagramPoint,
-} from '../core/types';
+} from '../types.ts';
 import { PENDING_BADGE_CLASS, PENDING_SYMBOL_CLASS } from './editorStyle';
-import type { FeederLevels } from '../core/bayFlip';
+import type { FeederLevels } from '../layout/bayFlip.ts';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 

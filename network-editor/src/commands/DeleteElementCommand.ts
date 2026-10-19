@@ -1,14 +1,14 @@
-import type { Command } from './Command';
-import type { EditorModel } from '../EditorModel';
-import type { SvgDomService, RemovedDomElement } from '../../dom/SvgDomService';
-import { identifiableType, type NetworkModification } from '../modifications';
+import type { Command } from './Command.ts';
+import type { EditorModel } from '../model/EditorModel.ts';
+import type { SvgDomService, RemovedDomElement } from '../dom/SvgDomService.ts';
+import { identifiableType, type NetworkModification } from '../modifications/modifications.ts';
 import type {
     DeleteScope,
     ElementType,
     FeederInfoMetadata,
     NodeMetadata, OrderClaim,
     WireMetadata,
-} from '../types';
+} from '../types.ts';
 
 export class DeleteElementCommand implements Command {
     private domSnapshots: RemovedDomElement[] = [];

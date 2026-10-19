@@ -1,4 +1,4 @@
-import { pushTo, removeById, removeFrom } from './utils';
+import { pushTo, removeById, removeFrom } from '../utils.ts';
 import {
     BAY_TRAVERSABLE_TYPES,
     BUSBAR_SECTION_TYPE,
@@ -23,7 +23,7 @@ import {
     type EquipmentProperties,
     type EquipmentTarget,
     type WireMetadata,
-} from './types';
+} from '../types.ts';
 
 export class EditorModel {
     private readonly metadata: EditorMetadata;
@@ -39,6 +39,8 @@ export class EditorModel {
     private readonly feederInfosByEquipmentId = new Map<string, FeederInfoMetadata[]>();
 
     private readonly properties = new Map<string, EquipmentProperties>();
+
+    private readonly reservedIds = new Set<string>();
 
     private readonly componentSizes = new Map<string, { width: number; height: number }>();
 
@@ -134,6 +136,18 @@ export class EditorModel {
         return this.nodesByEquipmentId.get(equipmentId) ?? [];
     }
 
+    reserveId(equipmentId: string): void {
+        this.reservedIds.add(equipmentId);
+    }
+
+    releaseId(equipmentId: string): void {
+        this.reservedIds.delete(equipmentId);
+    }
+
+    isIdTaken(equipmentId: string): boolean {
+        return this.reservedIds.has(equipmentId) || this.getNodesForEquipment(equipmentId).length > 0;
+    }
+
     private getWiresForNode(nodeId: string): WireMetadata[] {
         return this.wiresByNode.get(nodeId) ?? [];
     }
@@ -154,6 +168,11 @@ export class EditorModel {
     setFeederDirection(nodeId: string, direction: FeederDirection): void {
         const node = this.nodesById.get(nodeId);
         if (node) node.direction = direction;
+    }
+
+    setFeederOrder(nodeId: string, order: number | undefined): void {
+        const node = this.nodesById.get(nodeId);
+        if (node) node.order = order;
     }
 
     setComponentType(nodeId: string, componentType: string): void {

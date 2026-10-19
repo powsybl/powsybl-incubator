@@ -7,9 +7,9 @@ import type {
     OnToggleSldHoverCallbackType,
     SldComponentOptions,
 } from '@powsybl/network-viewer-core';
-import type { EditorAction } from './actions';
-import type { ActionMenuItem } from './menu';
-import type { NetworkModification } from './modifications';
+import type { EditorAction } from './actions/actions.ts';
+import type { ActionMenuItem } from './actions/menu.ts';
+import type { NetworkModification } from './modifications/modifications.ts';
 
 export type { SLDMetadata };
 
@@ -350,7 +350,6 @@ export interface SelectedElement {
 }
 
 export interface EditorEvents {
-    'targets:changed': { targets: readonly EditTarget[] };
     'element:selected': { elements: readonly SelectedElement[] };
     'history:changed': { canUndo: boolean; canRedo: boolean };
     'modifications:changed': { modifications: NetworkModification[] };
@@ -420,8 +419,11 @@ export interface SymbolProvider {
 
 const CREATED_NODE_PREFIX = 'ne-';
 
-export function createdNodeId(equipmentId: string): string {
-    return `${CREATED_NODE_PREFIX}${equipmentId}`;
+let createdNodeCount = 0;
+
+export function newCreatedNodeId(equipmentId: string): string {
+    createdNodeCount += 1;
+    return `${CREATED_NODE_PREFIX}${equipmentId}-${createdNodeCount}`;
 }
 
 export function isCreatedNodeId(nodeId: string): boolean {

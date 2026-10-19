@@ -6,7 +6,7 @@ import { equipmentModification, type NetworkModification } from '../modification
 export class UpdatePropertiesCommand implements Command {
     private previous: EquipmentProperties = {};
 
-    readonly changes: EquipmentProperties;
+    private readonly changes: EquipmentProperties;
 
     constructor(
         readonly equipmentId: string,

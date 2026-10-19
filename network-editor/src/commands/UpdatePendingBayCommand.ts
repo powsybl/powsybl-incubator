@@ -1,17 +1,31 @@
 import type { Command } from './Command.ts';
+import type { EditorModel } from '../model/EditorModel.ts';
 import { moveFeederBay, type NetworkModification } from '../modifications/modifications.ts';
-import type { BayPosition, BusbarTarget } from '../types.ts';
+import { toDirection, type BayPosition, type BusbarTarget } from '../types.ts';
 
 export class UpdatePendingBayCommand implements Command {
+    private previous: { order?: number; direction?: string } = {};
+
     constructor(
         readonly equipmentId: string,
-        readonly position: BayPosition,
+        private readonly nodeId: string,
+        private readonly position: BayPosition,
         private readonly busbar: BusbarTarget,
+        private readonly model: EditorModel,
     ) {}
 
-    execute(): void {}
+    execute(): void {
+        const node = this.model.getNodeById(this.nodeId);
+        this.previous = { order: node?.order, direction: node?.direction };
+        this.model.setFeederOrder(this.nodeId, this.position.order);
+        this.model.setFeederDirection(this.nodeId, this.position.direction);
+    }
 
-    undo(): void {}
+    undo(): void {
+        this.model.setFeederOrder(this.nodeId, this.previous.order);
+        const direction = toDirection(this.previous.direction);
+        if (direction) this.model.setFeederDirection(this.nodeId, direction);
+    }
 
     toModifications(): NetworkModification[] {
         return [

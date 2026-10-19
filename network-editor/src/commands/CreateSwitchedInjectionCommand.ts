@@ -11,8 +11,6 @@ import {
 } from '../types.ts';
 
 export class CreateSwitchedInjectionCommand implements PendingCreateCommand {
-    readonly pendingMarker: { targetId: string; nodeId: string; label: string; elementId: string };
-
     /**
      * Only the injection enters the model: the switch it hangs behind gets its IIDM nodes from
      * the backend, and a node with no SVG element of its own would be unreachable.
@@ -27,7 +25,7 @@ export class CreateSwitchedInjectionCommand implements PendingCreateCommand {
         private readonly switchType: ElementType,
         readonly switchId: string,
         private readonly properties: EquipmentProperties,
-        targetId: string,
+        private readonly targetId: string,
         private readonly model: EditorModel,
     ) {
         this.node = {
@@ -36,12 +34,13 @@ export class CreateSwitchedInjectionCommand implements PendingCreateCommand {
             componentType: NODE_COMPONENT_TYPE[type],
             vid: vlId,
         };
-        this.pendingMarker = {
-            targetId,
-            nodeId: targetId,
-            label: equipmentId,
-            elementId: this.node.id,
-        };
+    }
+
+    get pendingMarker(): { targetId: string; nodeId: string; label: string; elementId: string } | undefined {
+        if (!this.isInModel) return undefined;
+        const { targetId, node } = this;
+        const label = node.equipmentId ?? this.equipmentId;
+        return { targetId, nodeId: targetId, label, elementId: node.id };
     }
 
     execute(): void {
@@ -68,11 +67,16 @@ export class CreateSwitchedInjectionCommand implements PendingCreateCommand {
     }
 
     get createSpec(): CreateSpec {
+        const equipmentId = this.node.equipmentId ?? this.equipmentId;
         return {
             type: this.type,
-            properties: { ...this.properties },
-            provisionalId: this.equipmentId,
+            properties: this.model.getProperties(equipmentId),
+            provisionalId: equipmentId,
             switchType: this.switchType,
         };
+    }
+
+    private get isInModel(): boolean {
+        return this.model.getNodeById(this.node.id) !== undefined;
     }
 }

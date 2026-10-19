@@ -4,7 +4,7 @@ import { RenameCommand } from '../commands/RenameCommand.ts';
 import { ReplaceCommand } from '../commands/ReplaceCommand.ts';
 import type { EditorModel } from '../model/EditorModel.ts';
 import type { BayPlacement } from '../layout/BayPlacement.ts';
-import { pendingCreations, pendingOrders, renameHistory, type PendingCreation } from '../commands/pending.ts';
+import { pendingOrders, renameHistory } from '../commands/pending.ts';
 import { pushTo } from '../utils.ts';
 import {
     NODE_COMPONENT_TYPE,
@@ -43,11 +43,10 @@ export class PendingPainter {
     ) {}
 
     paint(): void {
-        const creations = [...pendingCreations(this.pending()).values()];
-        const previews = this.pendingPreviews(creations);
+        const previews = this.pendingPreviews();
         this.dom.setPendingPreviews(previews);
         this.dom.setRenamedLabels(this.renamedLabels());
-        this.dom.setPendingBadges(this.pendingBadges(creations, new Set(previews.map(({ id }) => id))));
+        this.dom.setPendingBadges(this.pendingBadges(new Set(previews.map(({ id }) => id))));
     }
 
     private renamedLabels(): Map<string, string> {
@@ -66,30 +65,25 @@ export class PendingPainter {
         return labels;
     }
 
-    private pendingBadges(
-        creations: readonly PendingCreation[],
-        drawn: ReadonlySet<string>,
-    ): Map<string, PendingBadgeView[]> {
-        const creationIds = new Map<Command, string>(creations.map(({ command, spec }) => [command, spec.provisionalId]));
+    private pendingBadges(drawn: ReadonlySet<string>): Map<string, PendingBadgeView[]> {
         const badges = new Map<string, PendingBadgeView[]>();
 
         for (const command of this.pending()) {
             const marker = command.pendingMarker;
             if (!marker || (marker.elementId && drawn.has(marker.elementId))) continue;
-            if (isPendingCreate(command) && !creationIds.has(command)) continue;
-
-            const label = creationIds.get(command) ?? marker.label;
-            pushTo(badges, marker.nodeId, { id: marker.elementId, label });
+            pushTo(badges, marker.nodeId, { id: marker.elementId, label: marker.label });
         }
         return badges;
     }
 
-    private pendingPreviews(creations: readonly PendingCreation[]): PendingPreview[] {
+    private pendingPreviews(): PendingPreview[] {
         const previews: PendingPreview[] = [];
 
-        for (const { command, spec } of creations) {
+        for (const command of this.pending()) {
+            if (!isPendingCreate(command)) continue;
+
             if (command instanceof CreateSwitchCommand) {
-                const preview = this.switchPreview(command, spec);
+                const preview = this.switchPreview(command);
                 if (preview) previews.push(preview);
                 continue;
             }
@@ -99,6 +93,7 @@ export class PendingPainter {
             const anchor = marker && this.targets().get(marker.targetId);
             if (!elementId || !anchor) continue;
 
+            const spec = command.createSpec;
             const shape =
                 anchor.kind === 'BUSBAR'
                     ? this.bayPreview(anchor, spec)
@@ -112,18 +107,20 @@ export class PendingPainter {
         return previews;
     }
 
-    private switchPreview(command: CreateSwitchCommand, spec: CreateSpec): SwitchPreview | undefined {
+    private switchPreview(command: CreateSwitchCommand): SwitchPreview | undefined {
+        const marker = command.pendingMarker;
+        const spec = command.createSpec;
         const first = this.targets().get(command.ends.first);
         const second = this.targets().get(command.ends.second);
         const from = first?.kind === 'NODE' ? this.nodePoint(first) : undefined;
         const far = second && this.endAnchor(second);
         const open = spec.properties.open === true;
 
-        if (!from || !far) return undefined;
+        if (!marker || !from || !far) return undefined;
 
         return {
             kind: 'SWITCH',
-            id: command.pendingMarker.elementId,
+            id: marker.elementId,
             label: spec.provisionalId,
             from,
             to: isSpan(far) ? { x: clampToSpan(far, from.x), y: far.y } : far,

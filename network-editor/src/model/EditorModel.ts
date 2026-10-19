@@ -156,6 +156,11 @@ export class EditorModel {
         if (node) node.direction = direction;
     }
 
+    setFeederOrder(nodeId: string, order: number | undefined): void {
+        const node = this.nodesById.get(nodeId);
+        if (node) node.order = order;
+    }
+
     setComponentType(nodeId: string, componentType: string): void {
         const node = this.nodesById.get(nodeId);
         if (node) node.componentType = componentType;

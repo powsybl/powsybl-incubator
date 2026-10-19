@@ -3,7 +3,7 @@ import type { EditorModel } from '../model/EditorModel.ts';
 import { injectionCreation, nodeInjectionCreation, type NetworkModification } from '../modifications/modifications.ts';
 import {
     NODE_COMPONENT_TYPE,
-    createdNodeId,
+    newCreatedNodeId,
     toDirection,
     type BayPosition,
     type BusbarTarget,
@@ -27,7 +27,7 @@ export class CreateCommand implements PendingCreateCommand {
         private readonly bay?: BayPosition,
     ) {
         this.node = {
-            id: createdNodeId(equipmentId),
+            id: newCreatedNodeId(equipmentId),
             equipmentId,
             componentType: NODE_COMPONENT_TYPE[type],
             vid: target.vlId,

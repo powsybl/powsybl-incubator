@@ -227,7 +227,7 @@ export class EditorCore {
     }
 
     private isFreeId(equipmentId: string): boolean {
-        return this.model.getNodesForEquipment(equipmentId).length === 0;
+        return !this.model.isIdTaken(equipmentId);
     }
 
     private targetFor<K extends EditTarget['kind']>(

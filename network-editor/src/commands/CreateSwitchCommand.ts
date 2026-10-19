@@ -3,7 +3,7 @@ import type { EditorModel } from '../model/EditorModel.ts';
 import { switchKind, type NetworkModification } from '../modifications/modifications.ts';
 import {
     NODE_COMPONENT_TYPE,
-    createdNodeId,
+    newCreatedNodeId,
     type CreateSpec,
     type ElementType,
     type EquipmentProperties,
@@ -25,7 +25,7 @@ export class CreateSwitchCommand implements PendingCreateCommand {
         private readonly model: EditorModel,
     ) {
         this.node = {
-            id: createdNodeId(equipmentId),
+            id: newCreatedNodeId(equipmentId),
             equipmentId,
             componentType: NODE_COMPONENT_TYPE[type],
             vid: vlId,

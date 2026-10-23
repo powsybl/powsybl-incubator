@@ -117,11 +117,12 @@ function createForm(
     onBusbar: boolean,
     behindSwitch: boolean,
 ): PropertyDescriptor[] {
+    const properties = schemaFor(type,'create').filter(p => p !== EQUIPMENT_ID);
     return [
         EQUIPMENT_ID,
         ...(onBusbar ? [ORDER, DIRECTION] : []),
         ...(behindSwitch ? [SWITCH_KIND] : []),
-        ...schemaFor(type, 'create'),
+        ...properties
     ];
 }
 
@@ -167,7 +168,7 @@ function createAction(
     }
 
     if (operation === 'REPLACE' && target.kind === 'EQUIPMENT') {
-        const form = [EQUIPMENT_ID, ...schemaFor(type, 'create')];
+        const form = [...schemaFor(type, 'create')];
         const initial = creationInitial(host, form, type);
         return {
             id: `${createOperationId(target, operation)}:${type}`,

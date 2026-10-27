@@ -80,7 +80,6 @@ export interface LccConverterStationCreation extends InjectionCreationFields {
     powerFactor: number;
 }
 
-/** Proposal. */
 export interface BoundaryLineCreation extends InjectionCreationFields {
     type: 'BOUNDARY_LINE_CREATION';
     p0: number;
@@ -182,7 +181,7 @@ export type NetworkModification =
     | SwitchCreation
     | EquipmentRename;
 
-const CREATION_TYPES: Partial<Record<ElementType, InjectionCreation['type']>> = {
+export const INJECTION_CREATION_TYPES: Record<string, InjectionCreation['type']> = {
     LOAD: 'LOAD_CREATION',
     GENERATOR: 'GENERATOR_CREATION',
     BATTERY: 'BATTERY_CREATION',
@@ -223,7 +222,7 @@ export function identifiableType(type: ElementType): string {
 }
 
 function creationType(type: ElementType): string {
-    return CREATION_TYPES[type] ?? `${identifiableType(type)}_CREATION`;
+    return INJECTION_CREATION_TYPES[type] ?? `${identifiableType(type)}_CREATION`;
 }
 
 export function switchKind(type: ElementType): SwitchKind {

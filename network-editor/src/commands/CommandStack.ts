@@ -43,50 +43,11 @@ export class CommandStack {
         this.notify();
     }
 
-    replace(previous: Command, next: Command): boolean {
-        const at = this.locate(previous);
-        if (!at) return false;
-
-        previous.undo();
-        next.execute();
-        const step = [...this.undoStack[at.step]];
-        step[at.index] = next;
-        this.undoStack[at.step] = step;
-        this.redoStack.length = 0;
-        this.notify();
-        return true;
-    }
-
-    remove(command: Command): boolean {
-        const at = this.locate(command);
-        if (!at) return false;
-
-        command.undo();
-        const step = this.undoStack[at.step].filter((_, index) => index !== at.index);
-        if (step.length === 0) this.undoStack.splice(at.step, 1);
-        else this.undoStack[at.step] = step;
-        this.redoStack.length = 0;
-        this.notify();
-        return true;
-    }
-
     get canUndo(): boolean { return this.undoStack.length > 0; }
     get canRedo(): boolean { return this.redoStack.length > 0; }
 
     get pending(): readonly Command[] {
         return this.undoStack.flat();
-    }
-
-    get pendingSteps(): readonly Step[] {
-        return this.undoStack;
-    }
-
-    private locate(command: Command): { step: number; index: number } | undefined {
-        for (const [step, commands] of this.undoStack.entries()) {
-            const index = commands.indexOf(command);
-            if (index !== -1) return { step, index };
-        }
-        return undefined;
     }
 
     private notify(): void {

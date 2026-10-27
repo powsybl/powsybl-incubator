@@ -3,16 +3,18 @@ import { buildActions, switchAction, type EditorAction } from '../actions/action
 import { availableOperations, creatableTypesFor } from '../actions/operations.ts';
 import { pushTo } from '../utils.ts';
 import { menuItemsFor } from '../actions/menu.ts';
-import { mergeFeederBayMoves, type NetworkModification } from '../modifications/modifications.ts';
+import type { NetworkModification } from '../modifications/modifications.ts';
+import { normalizeModifications } from '../modifications/normalize.ts';
 import { CommandStack } from '../commands/CommandStack.ts';
 import type { Command, PendingCreateCommand } from '../commands/Command.ts';
 import {
-    findAmendableRename,
-    findPendingCreate,
     isPendingId,
     pendingBayPosition,
+    pendingCreations,
     pendingOrders,
     pendingScope,
+    renameHistory,
+    type PendingCreation,
 } from '../commands/pending.ts';
 import { CreateCommand } from '../commands/CreateCommand.ts';
 import { CreateSwitchCommand } from '../commands/CreateSwitchCommand.ts';
@@ -22,6 +24,7 @@ import { MoveBayCommand } from '../commands/MoveBayCommand.ts';
 import { RenameCommand } from '../commands/RenameCommand.ts';
 import { ReplaceCommand } from '../commands/ReplaceCommand.ts';
 import { UpdateBayPositionCommand } from '../commands/UpdateBayPositionCommand.ts';
+import { UpdatePendingBayCommand } from '../commands/UpdatePendingBayCommand.ts';
 import { UpdatePropertiesCommand } from '../commands/UpdatePropertiesCommand.ts';
 import { SvgDomService } from '../dom/SvgDomService.ts';
 import { DiagramGeometry } from '../layout/DiagramGeometry.ts';
@@ -98,7 +101,7 @@ export class EditorCore {
             this.placement.reflow();
             this.refreshTargets();
             this.emit('history:changed', state);
-            this.emit('modifications:changed', { modifications: this.getModifications() });
+            this.emit('modifications:changed', { modifications: this.journal() });
         });
         const pending = () => this.pending;
         this.placement = new BayPlacement(model, dom, this.geometry, pending);
@@ -201,31 +204,21 @@ export class EditorCore {
     renameEquipment(equipmentId: string, newId: string): boolean {
         if (!newId || newId === equipmentId) return false;
 
-        const created = this.pendingCreate(equipmentId);
-        if (created) {
-            if (!this.isFreeId(newId, created)) return false;
-            if (!this.amend(created, { provisionalId: newId })) return false;
-            this.onRenamed(equipmentId, newId);
-            return true;
+        if (!this.pendingCreate(equipmentId)) {
+            const target = this.renameTarget(equipmentId);
+            if (!target || !allows(target, 'RENAME')) return false;
         }
-
-        const target = this.renameTarget(equipmentId);
-        if (!target || !allows(target, 'RENAME')) return false;
-
-        const renamed = findAmendableRename(this.pending, equipmentId);
-        if (renamed) {
-            if (newId === renamed.equipmentId) return this.history.remove(renamed);
-            if (!this.isFreeId(newId, renamed)) return false;
-            return this.history.replace(
-                renamed,
-                new RenameCommand(renamed.equipmentId, newId, this.model, this.onRenamed),
-            );
-        }
-
-        if (!this.isFreeId(newId)) return false;
+        if (!this.isFreeId(newId) && !this.isFormerId(equipmentId, newId)) return false;
 
         this.history.push(new RenameCommand(equipmentId, newId, this.model, this.onRenamed));
         return true;
+    }
+
+    private isFormerId(equipmentId: string, id: string): boolean {
+        return (
+            this.model.getNodesForEquipment(id).length === 0 &&
+            renameHistory(this.pending, equipmentId).includes(id)
+        );
     }
 
     private renameTarget(equipmentId: string): EquipmentTarget | BusbarTarget | undefined {
@@ -247,10 +240,10 @@ export class EditorCore {
         return equipmentId;
     }
 
-    private isFreeId(equipmentId: string, ignore?: Command): boolean {
+    private isFreeId(equipmentId: string): boolean {
         return (
             this.model.getNodesForEquipment(equipmentId).length === 0 &&
-            !isPendingId(this.pending, equipmentId, ignore)
+            !isPendingId(this.pending, equipmentId)
         );
     }
 
@@ -268,8 +261,8 @@ export class EditorCore {
         return this.history.pending;
     }
 
-    private pendingCreate(equipmentId: string): PendingCreateCommand | undefined {
-        return findPendingCreate(this.pending, equipmentId);
+    private pendingCreate(equipmentId: string): PendingCreation | undefined {
+        return pendingCreations(this.pending).get(equipmentId);
     }
 
     moveDestinations(equipmentId: string): BusbarTarget[] {
@@ -319,6 +312,9 @@ export class EditorCore {
     }
 
     getBayPosition(equipmentId: string): BayPosition | undefined {
+        const spec = this.pendingCreate(equipmentId)?.spec;
+        if (spec?.order !== undefined) return { order: spec.order, direction: spec.direction ?? 'TOP' };
+
         const pending = pendingBayPosition(this.pending, equipmentId);
         if (pending) return pending.position;
 
@@ -329,7 +325,7 @@ export class EditorCore {
 
     setBayPosition(equipmentId: string, position: BayPosition): boolean {
         const created = this.pendingCreate(equipmentId);
-        if (created) return this.amendBayPosition(created, position);
+        if (created) return this.setPendingBayPosition(created, position);
 
         const feeder = this.movableFeeder(equipmentId);
         if (!feeder) return false;
@@ -381,13 +377,6 @@ export class EditorCore {
     applyProperties(equipmentId: string, changes: EquipmentProperties): boolean {
         if (Object.keys(changes).length === 0) return false;
 
-        const created = this.pendingCreate(equipmentId);
-        if (created) {
-            return this.amend(created, {
-                properties: { ...created.createSpec.properties, ...changes },
-            });
-        }
-
         const type = this.equipmentType(equipmentId);
         if (!type) return false;
 
@@ -404,26 +393,16 @@ export class EditorCore {
     }
 
     deleteElements(equipmentIds: readonly string[], kind: 'element' | 'bay'): boolean {
-        const creations: PendingCreateCommand[] = [];
         const commands: Command[] = [];
 
         for (const equipmentId of equipmentIds) {
-            const created = this.pendingCreate(equipmentId);
-            if (created) {
-                creations.push(created);
-                continue;
-            }
             const command = this.deleteCommandFor(equipmentId, kind);
             if (!command) return false;
             commands.push(command);
         }
 
-        for (const created of creations) {
-            this.dropSelection(created.equipmentId);
-            this.history.remove(created);
-        }
         this.history.pushAll(commands);
-        return creations.length + commands.length > 0;
+        return commands.length > 0;
     }
 
     selectedTargets(): EquipmentTarget[] {
@@ -453,6 +432,8 @@ export class EditorCore {
     }
 
     private deleteCommandFor(equipmentId: string, kind: 'element' | 'bay'): Command | undefined {
+        if (this.pendingCreate(equipmentId)) kind = 'element';
+
         const operation: EditOperation = kind === 'bay' ? 'DELETE_BAY' : 'DELETE';
         const target = this.targets.get(equipmentId);
         if (target && !allows(target, operation)) return undefined;
@@ -488,9 +469,11 @@ export class EditorCore {
     }
 
     getModifications(): NetworkModification[] {
-        return this.history.pendingSteps.flatMap((step) =>
-            mergeFeederBayMoves(step.flatMap((command) => command.toModifications())),
-        );
+        return normalizeModifications(this.journal());
+    }
+
+    private journal(): NetworkModification[] {
+        return this.history.pending.flatMap((command) => command.toModifications());
     }
 
     clearModifications(): void {
@@ -679,24 +662,21 @@ export class EditorCore {
         return true;
     }
 
-    private amend(command: PendingCreateCommand, patch: Partial<CreateSpec>): boolean {
-        return this.history.replace(command, command.withSpec({ ...command.createSpec, ...patch }));
-    }
-
-    private amendBayPosition(command: PendingCreateCommand, position: BayPosition): boolean {
+    private setPendingBayPosition({ command, spec }: PendingCreation, position: BayPosition): boolean {
         const busbar = this.pendingBusbar(command);
         if (!busbar) return false;
 
         const pending = pendingOrders(this.pending, busbar.vlId, undefined, command);
         if (!this.model.isOrderAvailable(busbar, position.order, pending)) return false;
 
-        return this.amend(command, { order: position.order, direction: position.direction });
+        this.history.push(new UpdatePendingBayCommand(spec.provisionalId, position, busbar));
+        return true;
     }
 
     /** A bay on a fictitious busbar has no busbar to slide along. */
     canBeginBayMove(equipmentId: string): boolean {
         const created = this.pendingCreate(equipmentId);
-        if (created) return this.pendingBusbar(created) !== undefined;
+        if (created) return this.pendingBusbar(created.command) !== undefined;
 
         const feeder = this.movableFeeder(equipmentId);
         return feeder !== undefined && this.busbarOf(feeder.slot) !== undefined;
@@ -714,12 +694,12 @@ export class EditorCore {
         return this.startBayMove(equipmentId, busbar, feeder.target.direction ?? 'BOTTOM', pending);
     }
 
-    private beginPendingBayMove(command: PendingCreateCommand): boolean {
+    private beginPendingBayMove({ command, spec }: PendingCreation): boolean {
         const busbar = this.pendingBusbar(command);
         if (!busbar) return false;
 
         const pending = pendingOrders(this.pending, busbar.vlId, undefined, command);
-        return this.startBayMove(command.equipmentId, busbar, command.createSpec.direction ?? 'TOP', pending);
+        return this.startBayMove(spec.provisionalId, busbar, spec.direction ?? 'TOP', pending);
     }
 
     private startBayMove(
@@ -825,7 +805,7 @@ export class EditorCore {
 
     private movingElementId({ equipmentId }: BayMoveGesture): string | null {
         const created = this.pendingCreate(equipmentId);
-        if (created) return created.pendingMarker?.elementId ?? null;
+        if (created) return created.command.pendingMarker?.elementId ?? null;
         return this.movableFeeder(equipmentId)?.node.id ?? null;
     }
 

@@ -27,7 +27,7 @@ export class CreateSwitchedInjectionCommand implements PendingCreateCommand {
         private readonly switchType: ElementType,
         readonly switchId: string,
         private readonly properties: EquipmentProperties,
-        private readonly targetId: string,
+        targetId: string,
         private readonly model: EditorModel,
     ) {
         this.node = {
@@ -74,20 +74,5 @@ export class CreateSwitchedInjectionCommand implements PendingCreateCommand {
             provisionalId: this.equipmentId,
             switchType: this.switchType,
         };
-    }
-
-    withSpec(spec: CreateSpec): CreateSwitchedInjectionCommand {
-        const switchType = spec.switchType ?? this.switchType;
-        return new CreateSwitchedInjectionCommand(
-            spec.provisionalId,
-            this.type, // the equipment type stays put: changing it means cancel and recreate
-            this.vlId,
-            this.iidmNode,
-            switchType,
-            `${spec.provisionalId}_${switchType}`,
-            spec.properties,
-            this.targetId,
-            this.model,
-        );
     }
 }

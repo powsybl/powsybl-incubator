@@ -7,15 +7,7 @@ import type { NetworkModification } from '../modifications/modifications.ts';
 import { normalizeModifications } from '../modifications/normalize.ts';
 import { CommandStack } from '../commands/CommandStack.ts';
 import type { Command, PendingCreateCommand } from '../commands/Command.ts';
-import {
-    isPendingId,
-    pendingBayPosition,
-    pendingCreations,
-    pendingOrders,
-    pendingScope,
-    renameHistory,
-    type PendingCreation,
-} from '../commands/pending.ts';
+import { claimedTargets, findPendingCreate, pendingBayPosition, pendingOrders } from '../commands/pending.ts';
 import { CreateCommand } from '../commands/CreateCommand.ts';
 import { CreateSwitchCommand } from '../commands/CreateSwitchCommand.ts';
 import { CreateSwitchedInjectionCommand } from '../commands/CreateSwitchedInjectionCommand.ts';
@@ -35,6 +27,7 @@ import {
     DELETABLE_TYPES,
     INJECTION_TYPES,
     SWITCH_TYPES,
+    isCreatedNodeId,
     isSwitchNode,
     toElementType,
     toDirection,
@@ -208,17 +201,10 @@ export class EditorCore {
             const target = this.renameTarget(equipmentId);
             if (!target || !allows(target, 'RENAME')) return false;
         }
-        if (!this.isFreeId(newId) && !this.isFormerId(equipmentId, newId)) return false;
+        if (!this.isFreeId(newId)) return false;
 
         this.history.push(new RenameCommand(equipmentId, newId, this.model, this.onRenamed));
         return true;
-    }
-
-    private isFormerId(equipmentId: string, id: string): boolean {
-        return (
-            this.model.getNodesForEquipment(id).length === 0 &&
-            renameHistory(this.pending, equipmentId).includes(id)
-        );
     }
 
     private renameTarget(equipmentId: string): EquipmentTarget | BusbarTarget | undefined {
@@ -241,10 +227,7 @@ export class EditorCore {
     }
 
     private isFreeId(equipmentId: string): boolean {
-        return (
-            this.model.getNodesForEquipment(equipmentId).length === 0 &&
-            !isPendingId(this.pending, equipmentId)
-        );
+        return this.model.getNodesForEquipment(equipmentId).length === 0;
     }
 
     private targetFor<K extends EditTarget['kind']>(
@@ -261,8 +244,9 @@ export class EditorCore {
         return this.history.pending;
     }
 
-    private pendingCreate(equipmentId: string): PendingCreation | undefined {
-        return pendingCreations(this.pending).get(equipmentId);
+    private pendingCreate(equipmentId: string): PendingCreateCommand | undefined {
+        const node = this.model.getNodesForEquipment(equipmentId).find((candidate) => isCreatedNodeId(candidate.id));
+        return node && findPendingCreate(this.pending, node.id);
     }
 
     moveDestinations(equipmentId: string): BusbarTarget[] {
@@ -312,9 +296,6 @@ export class EditorCore {
     }
 
     getBayPosition(equipmentId: string): BayPosition | undefined {
-        const spec = this.pendingCreate(equipmentId)?.spec;
-        if (spec?.order !== undefined) return { order: spec.order, direction: spec.direction ?? 'TOP' };
-
         const pending = pendingBayPosition(this.pending, equipmentId);
         if (pending) return pending.position;
 
@@ -662,21 +643,23 @@ export class EditorCore {
         return true;
     }
 
-    private setPendingBayPosition({ command, spec }: PendingCreation, position: BayPosition): boolean {
+    private setPendingBayPosition(command: PendingCreateCommand, position: BayPosition): boolean {
         const busbar = this.pendingBusbar(command);
-        if (!busbar) return false;
+        const nodeId = command.pendingMarker?.elementId;
+        if (!busbar || !nodeId) return false;
 
         const pending = pendingOrders(this.pending, busbar.vlId, undefined, command);
         if (!this.model.isOrderAvailable(busbar, position.order, pending)) return false;
 
-        this.history.push(new UpdatePendingBayCommand(spec.provisionalId, position, busbar));
+        const equipmentId = command.createSpec.provisionalId;
+        this.history.push(new UpdatePendingBayCommand(equipmentId, nodeId, position, busbar, this.model));
         return true;
     }
 
     /** A bay on a fictitious busbar has no busbar to slide along. */
     canBeginBayMove(equipmentId: string): boolean {
         const created = this.pendingCreate(equipmentId);
-        if (created) return this.pendingBusbar(created.command) !== undefined;
+        if (created) return this.pendingBusbar(created) !== undefined;
 
         const feeder = this.movableFeeder(equipmentId);
         return feeder !== undefined && this.busbarOf(feeder.slot) !== undefined;
@@ -694,12 +677,13 @@ export class EditorCore {
         return this.startBayMove(equipmentId, busbar, feeder.target.direction ?? 'BOTTOM', pending);
     }
 
-    private beginPendingBayMove({ command, spec }: PendingCreation): boolean {
+    private beginPendingBayMove(command: PendingCreateCommand): boolean {
         const busbar = this.pendingBusbar(command);
         if (!busbar) return false;
 
+        const { provisionalId, direction } = command.createSpec;
         const pending = pendingOrders(this.pending, busbar.vlId, undefined, command);
-        return this.startBayMove(spec.provisionalId, busbar, spec.direction ?? 'TOP', pending);
+        return this.startBayMove(provisionalId, busbar, direction ?? 'TOP', pending);
     }
 
     private startBayMove(
@@ -805,7 +789,7 @@ export class EditorCore {
 
     private movingElementId({ equipmentId }: BayMoveGesture): string | null {
         const created = this.pendingCreate(equipmentId);
-        if (created) return created.command.pendingMarker?.elementId ?? null;
+        if (created) return created.pendingMarker?.elementId ?? null;
         return this.movableFeeder(equipmentId)?.node.id ?? null;
     }
 
@@ -891,11 +875,11 @@ export class EditorCore {
     private refreshTargets(): void {
         this.cancelGesture();
         this.clearHoverSlots();
-        const { created, claimed } = pendingScope(this.pending);
+        const claimed = claimedTargets(this.pending);
 
         const targets = this.model.collectTargets().map((target) => {
             if (target.kind !== 'EQUIPMENT') return target;
-            if (created.has(target.equipmentId)) return { ...target, created: true };
+            if (this.pendingCreate(target.equipmentId)) return { ...target, created: true };
             return claimed.has(target.id) ? { ...target, claimed: true } : target;
         });
 

@@ -12,8 +12,6 @@ import {
 } from '../types.ts';
 
 export class CreateSwitchCommand implements PendingCreateCommand {
-    readonly pendingMarker: { targetId: string; nodeId: string; label: string; elementId: string };
-
     private readonly node: NodeMetadata;
 
     constructor(
@@ -35,12 +33,13 @@ export class CreateSwitchCommand implements PendingCreateCommand {
             iidmNode2: node2,
             open: properties.open === true,
         };
-        this.pendingMarker = {
-            targetId: ends.first,
-            nodeId: ends.first,
-            label: equipmentId,
-            elementId: this.node.id,
-        };
+    }
+
+    get pendingMarker(): { targetId: string; nodeId: string; label: string; elementId: string } | undefined {
+        if (!this.isInModel) return undefined;
+        const { ends, node } = this;
+        const label = node.equipmentId ?? this.equipmentId;
+        return { targetId: ends.first, nodeId: ends.first, label, elementId: node.id };
     }
 
     execute(): void {
@@ -68,10 +67,15 @@ export class CreateSwitchCommand implements PendingCreateCommand {
     }
 
     get createSpec(): CreateSpec {
+        const equipmentId = this.node.equipmentId ?? this.equipmentId;
         return {
             type: this.type,
-            properties: { ...this.properties },
-            provisionalId: this.equipmentId,
+            properties: this.model.getProperties(equipmentId),
+            provisionalId: equipmentId,
         };
+    }
+
+    private get isInModel(): boolean {
+        return this.model.getNodeById(this.node.id) !== undefined;
     }
 }

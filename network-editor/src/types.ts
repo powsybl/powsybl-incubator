@@ -419,8 +419,11 @@ export interface SymbolProvider {
 
 const CREATED_NODE_PREFIX = 'ne-';
 
-export function createdNodeId(equipmentId: string): string {
-    return `${CREATED_NODE_PREFIX}${equipmentId}`;
+let createdNodeCount = 0;
+
+export function newCreatedNodeId(equipmentId: string): string {
+    createdNodeCount += 1;
+    return `${CREATED_NODE_PREFIX}${equipmentId}-${createdNodeCount}`;
 }
 
 export function isCreatedNodeId(nodeId: string): boolean {

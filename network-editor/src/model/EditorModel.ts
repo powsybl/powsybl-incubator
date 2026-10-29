@@ -40,6 +40,8 @@ export class EditorModel {
 
     private readonly properties = new Map<string, EquipmentProperties>();
 
+    private readonly reservedIds = new Set<string>();
+
     private readonly componentSizes = new Map<string, { width: number; height: number }>();
 
     constructor(
@@ -132,6 +134,18 @@ export class EditorModel {
 
     getNodesForEquipment(equipmentId: string): NodeMetadata[] {
         return this.nodesByEquipmentId.get(equipmentId) ?? [];
+    }
+
+    reserveId(equipmentId: string): void {
+        this.reservedIds.add(equipmentId);
+    }
+
+    releaseId(equipmentId: string): void {
+        this.reservedIds.delete(equipmentId);
+    }
+
+    isIdTaken(equipmentId: string): boolean {
+        return this.reservedIds.has(equipmentId) || this.getNodesForEquipment(equipmentId).length > 0;
     }
 
     private getWiresForNode(nodeId: string): WireMetadata[] {

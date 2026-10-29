@@ -3,7 +3,7 @@ import type { EditorModel } from '../model/EditorModel.ts';
 import { injectionFields, switchKind, type NetworkModification } from '../modifications/modifications.ts';
 import {
     NODE_COMPONENT_TYPE,
-    createdNodeId,
+    newCreatedNodeId,
     type CreateSpec,
     type ElementType,
     type EquipmentProperties,
@@ -29,7 +29,7 @@ export class CreateSwitchedInjectionCommand implements PendingCreateCommand {
         private readonly model: EditorModel,
     ) {
         this.node = {
-            id: createdNodeId(equipmentId),
+            id: newCreatedNodeId(equipmentId),
             equipmentId,
             componentType: NODE_COMPONENT_TYPE[type],
             vid: vlId,
@@ -46,9 +46,11 @@ export class CreateSwitchedInjectionCommand implements PendingCreateCommand {
     execute(): void {
         this.model.addNode(this.node);
         this.model.replaceProperties(this.equipmentId, this.properties);
+        this.model.reserveId(this.switchId);
     }
 
     undo(): void {
+        this.model.releaseId(this.switchId);
         this.model.removeNode(this.node.id);
         this.model.clearProperties(this.equipmentId);
     }

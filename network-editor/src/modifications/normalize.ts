@@ -40,6 +40,12 @@ interface EquipmentHistory {
     move?: { voltageLevelId: string; bay: MoveFeederBay };
 }
 
+/**
+ * Turns the raw list of edits into the shortest equivalent change set:
+ * 1. group the edits by equipment, following renames;
+ * 2. emit one compact history per equipment (create + delete cancel out, edits fold into creations...);
+ * 3. order the result by kind, so that deletions free ids before renames and creations reuse them.
+ */
 export function normalizeModifications(modificationList: readonly NetworkModification[]): NetworkModification[] {
     const histories = groupByEquipment(modificationList);
     if (hasRenameCycle(histories)) return mergeFeederBayMoves(modificationList);
@@ -49,6 +55,7 @@ export function normalizeModifications(modificationList: readonly NetworkModific
     return mergeFeederBayMoves(ordered);
 }
 
+/** `byCurrentId` follows renames: a later edit targets the equipment by its latest id. */
 function groupByEquipment(modificationList: readonly NetworkModification[]): EquipmentHistory[] {
     const histories: EquipmentHistory[] = [];
     const byCurrentId = new Map<string, EquipmentHistory>();
@@ -108,6 +115,7 @@ function record(history: EquipmentHistory, modification: NetworkModification): v
     }
 }
 
+/** A rename chain like A→B, B→A cannot be replayed as single renames: the list is then kept as is. */
 function hasRenameCycle(histories: readonly EquipmentHistory[]): boolean {
     const renamed = histories.filter((history) => !history.creation && history.originalId !== history.currentId);
     const freedIds = new Set(renamed.map((history) => history.originalId));
@@ -136,7 +144,9 @@ function emitCreated(history: EquipmentHistory, creation: Creation): NetworkModi
             return withMove(history, switchCreationOf(history, creation));
         case 'NODE_INJECTION_CREATION':
         case 'SWITCHED_INJECTION_CREATION':
-            return withMove(history, nodeCreationOf(history, creation));
+            // The switch of a switched injection keeps its id: a rename only touches the injection.
+            applyHistory(history, creation.creation);
+            return withMove(history, creation);
         default:
             return [busbarCreationOf(history, creation)];
     }
@@ -148,17 +158,8 @@ function switchCreationOf(history: EquipmentHistory, creation: SwitchCreation): 
     return creation;
 }
 
-/** The switch of a switched injection keeps its id: a rename only touches the injection. */
-function nodeCreationOf<T extends NodeInjectionCreation | SwitchedInjectionCreation>(
-    history: EquipmentHistory,
-    creation: T,
-): T {
-    applyChanges(history, creation.creation);
-    return creation;
-}
-
 function busbarCreationOf(history: EquipmentHistory, creation: InjectionCreation): InjectionCreation {
-    applyChanges(history, creation);
+    applyHistory(history, creation);
     if (history.move) applyPlacement(creation, history.move.bay);
     return creation;
 }
@@ -167,7 +168,8 @@ function withMove(history: EquipmentHistory, creation: Creation): NetworkModific
     return history.move ? [creation, moveOf(history, history.move)] : [creation];
 }
 
-function applyChanges(
+/** Folds the rename and the property edits of a created injection into its creation. */
+function applyHistory(
     history: EquipmentHistory,
     injection: { equipmentId: string; connectionName: string | null },
 ): void {

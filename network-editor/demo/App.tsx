@@ -57,6 +57,12 @@ export function App() {
         editor?.cancelGesture();
     };
 
+    const clearModifications = () => {
+        for (let i=0; i< modifications.length; i++) {
+            editor?.undo()
+        }
+    }
+
     return (
         <>
             <h1>network-editor — demo</h1>
@@ -70,7 +76,7 @@ export function App() {
                         <button onClick={() => editor?.undo()}>↩ Undo</button>
                         <button onClick={() => editor?.redo()}>↪ Redo</button>
                         <button onClick={() => setModifications(editor?.getModifications() ?? [])}>send to backend</button>
-                        <button onClick={() => editor?.clearModifications()}>clear</button>
+                        <button onClick={() => clearModifications()}>clear</button>
                     </div>
 
                     {form && (

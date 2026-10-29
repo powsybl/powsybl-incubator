@@ -25,6 +25,7 @@ export class CreateCommand implements PendingCreateCommand {
         private readonly properties: EquipmentProperties,
         private readonly model: EditorModel,
         private readonly bay?: BayPosition,
+        private readonly fields: Readonly<Record<string, unknown>> = {},
     ) {
         this.node = {
             id: newCreatedNodeId(equipmentId),
@@ -62,7 +63,7 @@ export class CreateCommand implements PendingCreateCommand {
 
     toModifications(): NetworkModification[] {
         if (this.target.kind === 'NODE') {
-            return [nodeInjectionCreation(this.type, this.equipmentId, this.target.vlId, this.target.node, this.properties)];
+            return [nodeInjectionCreation(this.type, this.equipmentId, this.target.vlId, this.target.node, this.properties, this.fields)];
         }
         const placement = {
             voltageLevelId: this.target.vlId,
@@ -70,7 +71,7 @@ export class CreateCommand implements PendingCreateCommand {
             order: this.bay?.order ?? null,
             direction: this.bay?.direction,
         };
-        return [injectionCreation(this.type, this.equipmentId, placement, this.properties)];
+        return [injectionCreation(this.type, this.equipmentId, placement, this.properties, this.fields)];
     }
 
     get createSpec(): CreateSpec {

@@ -143,7 +143,7 @@ export class EditorCore {
                       ? spec.order
                       : undefined;
             if (order === undefined) return false;
-            bay = { order, direction: spec.direction ?? 'TOP' };
+            bay = { order, direction: spec.direction ?? 'BOTTOM' };
         }
 
         if (target.kind === 'NODE') {
@@ -162,6 +162,7 @@ export class EditorCore {
                 spec.properties,
                 this.model,
                 bay,
+                spec.fields,
             ),
         );
         return true;
@@ -458,6 +459,7 @@ export class EditorCore {
     }
 
     clearModifications(): void {
+        while (this.history.canUndo) this.history.undo();
         this.history.clear();
     }
 
@@ -683,7 +685,7 @@ export class EditorCore {
 
         const { provisionalId, direction } = command.createSpec;
         const pending = pendingOrders(this.pending, busbar.vlId, undefined, command);
-        return this.startBayMove(provisionalId, busbar, direction ?? 'TOP', pending);
+        return this.startBayMove(provisionalId, busbar, direction ?? 'BOTTOM', pending);
     }
 
     private startBayMove(

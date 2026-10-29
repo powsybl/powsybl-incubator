@@ -57,11 +57,7 @@ export function App() {
         editor?.cancelGesture();
     };
 
-    const clearModifications = () => {
-        for (let i=0; i< modifications.length; i++) {
-            editor?.undo()
-        }
-    }
+    const clearModifications = () => editor?.clearModifications();
 
     return (
         <>

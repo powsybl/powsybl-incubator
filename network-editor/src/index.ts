@@ -35,7 +35,13 @@ export {
     type PropertyMode,
 } from './actions/properties.ts';
 
-export { actionKey, type ActionEquipment, type ActionSubject, type EditorAction } from './actions/actions.ts';
+export {
+    actionKey,
+    type ActionEquipment,
+    type ActionSubject,
+    type ActionValues,
+    type EditorAction,
+} from './actions/actions.ts';
 
 export {
     actionLabel,
@@ -54,7 +60,6 @@ export {
 
 export type {
     BusbarTarget,
-    CreationPlacement,
     EditOperation,
     EditorEvent,
     EditorEventListener,

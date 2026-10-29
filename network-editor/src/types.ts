@@ -195,6 +195,13 @@ export interface FeederInfoMetadata {
     side?: string;
 }
 
+export interface FeederPlacement {
+    voltageLevelId: string;
+    busbarSectionId: string;
+    order: number | null;
+    direction: FeederDirection | undefined;
+}
+
 export interface DeleteScope {
     nodes: NodeMetadata[];
     wires: WireMetadata[];
@@ -240,15 +247,6 @@ export interface EquipmentTarget {
 }
 
 export type EditTarget = NodeTarget | BusbarTarget | EquipmentTarget;
-
-export interface CreationPlacement {
-    elementType: ElementType;
-    vlId: string;
-    busbarSectionId?: string;
-    node?: number;
-    order?: number;
-    direction?: FeederDirection;
-}
 
 export type EditOperation =
     | 'CREATE_INJECTION'
@@ -297,6 +295,7 @@ export interface CreateSpec {
     direction?: FeederDirection;
     order?: number;
     switchType?: ElementType;
+    fields?: Readonly<Record<string, unknown>>;
 }
 
 export interface ViewerCallbacks {

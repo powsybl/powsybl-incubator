@@ -1,4 +1,4 @@
-import type { ElementType, EquipmentProperties, FeederDirection } from '../types.ts';
+import type { ElementType, EquipmentProperties, FeederDirection, FeederPlacement } from '../types.ts';
 
 export type ConnectionDirection = 'TOP' | 'BOTTOM' | 'UNDEFINED';
 
@@ -229,21 +229,15 @@ export function switchKind(type: ElementType): SwitchKind {
     return type === 'DISCONNECTOR' || type === 'LOAD_BREAK_SWITCH' ? type : 'BREAKER';
 }
 
-export interface FeederPlacement {
-    voltageLevelId: string;
-    busbarSectionId: string;
-    order: number | null;
-    direction: FeederDirection | undefined;
-}
-
 export function injectionCreation(
     type: ElementType,
     equipmentId: string,
     placement: FeederPlacement,
     properties: EquipmentProperties,
+    fields: Readonly<Record<string, unknown>> = {},
 ): InjectionCreation {
     return {
-        ...injectionFields(type, equipmentId, placement.voltageLevelId, properties),
+        ...injectionFields(type, equipmentId, placement.voltageLevelId, properties, fields),
         busOrBusbarSectionId: placement.busbarSectionId,
         connectionDirection: placement.direction ?? null,
         connectionPosition: placement.order,
@@ -255,15 +249,17 @@ export function injectionFields(
     equipmentId: string,
     voltageLevelId: string,
     properties: EquipmentProperties,
+    fields: Readonly<Record<string, unknown>> = {},
 ): NodeInjectionCreation['creation'] {
     return {
-        type: creationType(type),
-        equipmentId,
         equipmentName: null,
-        voltageLevelId,
         connectionName: equipmentId,
         terminalConnected: true,
+        ...fields,
         ...properties,
+        type: creationType(type),
+        equipmentId,
+        voltageLevelId,
     } as NodeInjectionCreation['creation'];
 }
 
@@ -273,12 +269,13 @@ export function nodeInjectionCreation(
     voltageLevelId: string,
     node: number,
     properties: EquipmentProperties,
+    fields: Readonly<Record<string, unknown>> = {},
 ): NodeInjectionCreation {
     return {
         type: 'NODE_INJECTION_CREATION',
         voltageLevelId,
         node,
-        creation: injectionFields(type, equipmentId, voltageLevelId, properties),
+        creation: injectionFields(type, equipmentId, voltageLevelId, properties, fields),
     };
 }
 

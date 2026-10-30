@@ -56,7 +56,7 @@ export function PropertyForm({
     );
 }
 
-function input(descriptor: PropertyDescriptor, value: EquipmentProperties[string] | undefined) {
+function input(descriptor: PropertyDescriptor, value: unknown) {
     if (descriptor.type === 'boolean') {
         return (
             <input

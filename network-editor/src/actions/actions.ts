@@ -1,5 +1,6 @@
 import { availableOperations, creatableTypesFor } from './operations.ts';
 import { defaultsOf, EQUIPMENT_ID, schemaFor, type PropertyDescriptor } from './properties.ts';
+import { injectionCreation } from '../modifications/modifications.ts';
 import {
     SWITCH_TYPES,
     toDirection,
@@ -7,12 +8,12 @@ import {
     type BayPosition,
     type BusbarTarget,
     type CreateSpec,
-    type CreationPlacement,
     type EditOperation,
     type EditTarget,
     type ElementType,
     type EquipmentProperties,
     type EquipmentTarget,
+    type FeederPlacement,
     type PickedSwitch,
 } from '../types.ts';
 
@@ -27,15 +28,17 @@ export interface ActionEquipment {
     vlId: string;
 }
 
+// `any`, not `unknown`: only `Record<string, any>` accepts a host DTO declared as an interface.
+export type ActionValues = Readonly<Record<string, any>>;
+
 export interface EditorAction {
     id: string;
     operation: EditOperation;
     subject?: ActionSubject;
     form: readonly PropertyDescriptor[];
-    initial: EquipmentProperties;
-    placement?: CreationPlacement;
+    initial: ActionValues;
     equipment?: ActionEquipment;
-    run(values?: EquipmentProperties): boolean;
+    run(values?: ActionValues): boolean;
 }
 
 /** `OPERATION:TYPE` for a creation (e.g. `CREATE_FEEDER_BAY:LOAD`), the operation otherwise. */
@@ -69,7 +72,7 @@ export interface ActionHost {
     moveFeederBay(equipmentId: string, busbarTargetId: string): boolean;
 }
 
-const ORDER: PropertyDescriptor = { key: 'order', type: 'number', required: true, min: 0 };
+const ORDER: PropertyDescriptor = { key: 'connectionPosition', type: 'number', required: true, min: 0 };
 
 const SWITCH_KIND: PropertyDescriptor = {
     key: 'switchKind',
@@ -80,7 +83,7 @@ const SWITCH_KIND: PropertyDescriptor = {
 };
 
 const DIRECTION: PropertyDescriptor = {
-    key: 'direction',
+    key: 'connectionDirection',
     type: 'select',
     options: ['TOP', 'BOTTOM'],
     required: true,
@@ -134,18 +137,19 @@ function creationInitial(
     return { ...defaultsOf(form), equipmentId: host.proposeEquipmentId(type) };
 }
 
-function specFromValues(type: ElementType, values: EquipmentProperties): CreateSpec | undefined {
-    const { equipmentId, order, direction, switchKind, ...properties } = values;
+function specFromValues(type: ElementType, values: ActionValues): CreateSpec | undefined {
+    const { equipmentId, connectionPosition, connectionDirection, switchKind, ...rest } = values;
     const provisionalId = text(equipmentId);
     if (!provisionalId) return undefined;
 
     return {
         type,
-        properties,
+        properties: schemaValues(schemaFor(type, 'create'), rest),
         provisionalId,
-        order: typeof order === 'number' ? order : undefined,
-        direction: toDirection(text(direction)),
+        order: typeof connectionPosition === 'number' ? connectionPosition : undefined,
+        direction: toDirection(text(connectionDirection)),
         switchType: switchKind === undefined ? undefined : toElementType(text(switchKind)),
+        fields: rest,
     };
 }
 
@@ -188,12 +192,13 @@ function createAction(
     const behindSwitch = operation === 'CREATE_SWITCHED_INJECTION';
     const form = createForm(type, onBusbar, behindSwitch);
 
-    const initial = creationInitial(host, form, type);
-
-    if (onBusbar && target.kind === 'BUSBAR') {
-        const order = host.proposedOrder(target, insertion);
-        if (order !== undefined) initial.order = order;
-    }
+    const initial =
+        onBusbar && target.kind === 'BUSBAR'
+            ? proposedCreation(target, type, {
+                  ...creationInitial(host, form, type),
+                  connectionPosition: host.proposedOrder(target, insertion) ?? null,
+              })
+            : creationInitial(host, form, type);
 
     return {
         id: `${createOperationId(target, operation)}:${type}`,
@@ -201,9 +206,9 @@ function createAction(
         subject: { kind: 'TYPE', type },
         form,
         initial,
-        placement: placementOf(target, type, initial),
         run: (values = {}) => {
-            const spec = specFromValues(type, values);
+            if (target.kind === 'BUSBAR' && !isOnTarget(target, values)) return false;
+            const spec = specFromValues(type, followingId(values, initial));
             if (!spec) return false;
             if (behindSwitch && target.kind === 'NODE') {
                 return host.createSwitchedInjection(target.id, spec);
@@ -213,24 +218,52 @@ function createAction(
     };
 }
 
-function placementOf(
-    target: EditTarget,
-    type: ElementType,
-    initial: EquipmentProperties,
-): CreationPlacement | undefined {
-    if (target.kind === 'BUSBAR') {
-        return {
-            elementType: type,
-            vlId: target.vlId,
-            busbarSectionId: target.busbarSectionId,
-            order: typeof initial.order === 'number' ? initial.order : undefined,
-            direction: toDirection(text(initial.direction)),
-        };
+/** The creation `run` would produce from these form values: what a host form opens on. */
+function proposedCreation(target: BusbarTarget, type: ElementType, values: ActionValues): ActionValues {
+    const { equipmentId, ...rest } = values;
+    return {
+        ...injectionCreation(
+            type,
+            text(equipmentId) ?? '',
+            placementOf(target, values),
+            schemaValues(schemaFor(type, 'create'), rest),
+        ),
+    };
+}
+
+// A host form may offer another voltage level or busbar: the editor only creates on its target.
+function isOnTarget(target: BusbarTarget, values: ActionValues): boolean {
+    const { voltageLevelId, busOrBusbarSectionId } = values;
+    return (voltageLevelId === undefined || voltageLevelId === target.vlId)
+        && (busOrBusbarSectionId === undefined || busOrBusbarSectionId === target.busbarSectionId);
+}
+
+// The proposed connection name, left untouched, follows the equipment id the form hands back.
+function followingId(values: ActionValues, initial: ActionValues): ActionValues {
+    if (values.connectionName !== initial.connectionName) return values;
+    const { connectionName: _proposed, ...rest } = values;
+    return rest;
+}
+
+function placementOf(target: BusbarTarget, values: ActionValues): FeederPlacement {
+    return {
+        voltageLevelId: target.vlId,
+        busbarSectionId: target.busbarSectionId,
+        order: typeof values.connectionPosition === 'number' ? values.connectionPosition : null,
+        direction: toDirection(text(values.connectionDirection)),
+    };
+}
+
+/** Scalar values of the keys the schema knows: what the editor stores as properties. */
+function schemaValues(schema: readonly PropertyDescriptor[], values: ActionValues): EquipmentProperties {
+    const properties: EquipmentProperties = {};
+    for (const { key } of schema) {
+        const value = values[key];
+        if (typeof value === 'number' || typeof value === 'string' || typeof value === 'boolean') {
+            properties[key] = value;
+        }
     }
-    if (target.kind === 'NODE') {
-        return { elementType: type, vlId: target.vlId, node: target.node };
-    }
-    return undefined;
+    return properties;
 }
 
 export function switchAction(host: ActionHost, picked: PickedSwitch): EditorAction {
@@ -316,7 +349,7 @@ function equipmentActions(
                         return host.applyProperties(
                             equipmentId,
                             Object.fromEntries(
-                                Object.entries(properties).filter(([key, v]) => v !== stored[key]),
+                                Object.entries(schemaValues(form, properties)).filter(([key, v]) => v !== stored[key]),
                             ),
                         );
                     },
@@ -398,6 +431,6 @@ function createOperationId(target: EditTarget, operation: EditOperation): string
     return `${target.id}:${operation}`;
 }
 
-function text(value: EquipmentProperties[string] | undefined): string | undefined {
+function text(value: unknown): string | undefined {
     return typeof value === 'string' ? value : undefined;
 }

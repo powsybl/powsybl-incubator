@@ -1,0 +1,69 @@
+import { isPendingCreate, type Command, type PendingCreateCommand } from './Command.ts';
+import { RenameCommand } from './RenameCommand.ts';
+import { UpdateBayPositionCommand } from './UpdateBayPositionCommand.ts';
+import type { OrderClaim, PendingOrders } from '../types.ts';
+
+export function findPendingCreate(
+    pending: readonly Command[],
+    nodeId: string,
+): PendingCreateCommand | undefined {
+    return pending.find(
+        (command): command is PendingCreateCommand =>
+            isPendingCreate(command) && command.pendingMarker?.elementId === nodeId,
+    );
+}
+
+export function pendingBayPosition(
+    pending: readonly Command[],
+    equipmentId: string,
+): UpdateBayPositionCommand | undefined {
+    return pending.findLast(
+        (command): command is UpdateBayPositionCommand =>
+            command instanceof UpdateBayPositionCommand && command.equipmentId === equipmentId,
+    );
+}
+
+export function renameHistory(pending: readonly Command[], currentId: string): string[] {
+    const ids = [currentId];
+    for (const command of [...pending].reverse()) {
+        if (command instanceof RenameCommand && command.newId === ids[ids.length - 1]) {
+            ids.push(command.equipmentId);
+        }
+    }
+    return ids;
+}
+
+export function claimedTargets(pending: readonly Command[]): Set<string> {
+    const claimed = new Set<string>();
+    for (const command of pending) {
+        if (command.pendingMarker) claimed.add(command.pendingMarker.targetId);
+    }
+    return claimed;
+}
+
+export function pendingOrders(
+    pending: readonly Command[],
+    vlId: string,
+    vacating?: string,
+    ignore?: Command,
+): PendingOrders {
+    const claims: OrderClaim[] = [];
+    const vacated = new Set<string>(vacating ? [vacating] : []);
+
+    const lastClaims = new Map<string, OrderClaim>();
+
+    for (const command of pending) {
+        if (command === ignore) continue;
+        for (const claim of command.orderClaims ?? []) {
+            if (claim.vlId !== vlId) continue;
+            if (!claim.vacatedNodeId) {
+                claims.push(claim);
+                continue;
+            }
+            vacated.add(claim.vacatedNodeId);
+
+            if (claim.vacatedNodeId !== vacating) lastClaims.set(claim.vacatedNodeId, claim);
+        }
+    }
+    return { claims: [...claims, ...lastClaims.values()], vacated };
+}

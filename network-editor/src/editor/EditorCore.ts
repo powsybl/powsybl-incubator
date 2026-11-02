@@ -23,6 +23,7 @@ import { DiagramGeometry } from '../layout/DiagramGeometry.ts';
 import { BayPlacement, nearestSlot } from '../layout/BayPlacement.ts';
 import { PendingPainter } from './PendingPainter.ts';
 import {
+    DEFAULT_DIRECTION,
     DELETABLE_BAY_TYPES,
     DELETABLE_TYPES,
     INJECTION_TYPES,
@@ -143,13 +144,13 @@ export class EditorCore {
                       ? spec.order
                       : undefined;
             if (order === undefined) return false;
-            bay = { order, direction: spec.direction ?? 'BOTTOM' };
+            bay = { order, direction: spec.direction ?? DEFAULT_DIRECTION };
         }
 
         if (target.kind === 'NODE') {
             const standing = pendingOrders(this.pending, target.vlId).claims
                 .find((claim) => claim.iidmNode === target.node);
-            if (standing) bay = { order: standing.order, direction: standing.direction ?? 'BOTTOM' };
+            if (standing) bay = { order: standing.order, direction: standing.direction ?? DEFAULT_DIRECTION };
         }
 
         if (!this.isFreeId(spec.provisionalId)) return false;
@@ -278,7 +279,7 @@ export class EditorCore {
         const order = this.model.nextOrderForBusbar(destination, pending);
         if (order === undefined) return false;
 
-        const direction = this.getBayPosition(equipmentId)?.direction ?? 'BOTTOM';
+        const direction = this.getBayPosition(equipmentId)?.direction ?? DEFAULT_DIRECTION;
         this.history.push(
             new MoveBayCommand(feeder, destination, host.id, { order, direction }, node.id, this.model.feederSide(node)),
         );
@@ -302,7 +303,7 @@ export class EditorCore {
 
         const target = this.targets.get(equipmentId);
         if (target?.kind !== 'EQUIPMENT' || target.order === undefined) return undefined;
-        return { order: target.order, direction: target.direction ?? 'BOTTOM' };
+        return { order: target.order, direction: target.direction ?? DEFAULT_DIRECTION };
     }
 
     setBayPosition(equipmentId: string, position: BayPosition): boolean {
@@ -316,7 +317,7 @@ export class EditorCore {
         const pending = pendingOrders(this.pending, slot.vlId, node.id);
         if (!this.model.isOrderAvailable(slot, position.order, pending)) return false;
 
-        const from = toDirection(node.direction) ?? 'BOTTOM';
+        const from = toDirection(node.direction) ?? DEFAULT_DIRECTION;
         if (position.direction !== from) return this.flipBay(target, node, slot, position, from);
 
         this.history.push(new UpdateBayPositionCommand(target, node, slot, position, this.dom, this.model));
@@ -685,7 +686,7 @@ export class EditorCore {
         if (!feeder || !busbar) return false;
 
         const pending = pendingOrders(this.pending, busbar.vlId, feeder.node.id);
-        return this.startBayMove(equipmentId, busbar, feeder.target.direction ?? 'BOTTOM', pending);
+        return this.startBayMove(equipmentId, busbar, feeder.target.direction ?? DEFAULT_DIRECTION, pending);
     }
 
     private beginPendingBayMove(command: PendingCreateCommand): boolean {
@@ -694,7 +695,7 @@ export class EditorCore {
 
         const { provisionalId, direction } = command.createSpec;
         const pending = pendingOrders(this.pending, busbar.vlId, undefined, command);
-        return this.startBayMove(provisionalId, busbar, direction ?? 'BOTTOM', pending);
+        return this.startBayMove(provisionalId, busbar, direction ?? DEFAULT_DIRECTION, pending);
     }
 
     private startBayMove(
@@ -773,7 +774,6 @@ export class EditorCore {
         const { equipmentId, direction } = bayMove;
         this.setBayPosition(equipmentId, { order: chosen.order, direction });
     }
-
 
     private movableFeeder(
         equipmentId: string,

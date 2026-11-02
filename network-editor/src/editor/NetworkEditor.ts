@@ -11,7 +11,6 @@ import type { NetworkModification } from '../modifications/modifications.ts';
 import {
     EDITOR_OPTION_DEFAULTS,
     type EditorOptions,
-    type EquipmentProperties,
     type SymbolProvider,
 } from '../types.ts';
 
@@ -106,10 +105,6 @@ export class NetworkEditor {
         this.core.redo();
     }
 
-    getViewer(): SingleLineDiagramViewer {
-        return this.viewer;
-    }
-
     /** The change set to send to the backend: call it when the user sends. */
     getModifications(): NetworkModification[] {
         return this.core.getModifications();
@@ -126,10 +121,6 @@ export class NetworkEditor {
 
     cancelGesture(): void {
         this.core.cancelGesture();
-    }
-
-    getProperties(equipmentId: string): EquipmentProperties {
-        return this.core.getProperties(equipmentId);
     }
 
     private readonly onContextMenu = (event: MouseEvent): void => {

@@ -51,7 +51,7 @@ export function actionKey(action: EditorAction): string {
     return action.operation;
 }
 
-export interface ActionHost {
+interface ActionHost {
     // Reads: what the forms show and which actions are offered.
     selectedTargets(): readonly EquipmentTarget[];
     getProperties(equipmentId: string): EquipmentProperties;
@@ -298,7 +298,7 @@ function editEquipment(
     if (placement.voltageLevelId !== undefined && placement.voltageLevelId !== target.vlId) return false;
 
     const fields = Object.fromEntries(Object.entries(rest).filter(([, value]) => value !== null && value !== undefined));
-    const known = schemaValues(form, modificationValues(fields));
+    const known = schemaValues(form, modificationValues(modification));
     const busbar = text(placement.busOrBusbarSectionId);
     const hasFields = Object.keys(fields).length > 0;
 

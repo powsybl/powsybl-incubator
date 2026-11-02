@@ -1,6 +1,6 @@
 import type { ElementType, EquipmentProperties } from '../types.ts';
 
-export type PropertyMode = 'create' | 'edit';
+type PropertyMode = 'create' | 'edit';
 
 export interface PropertyDescriptor {
     key: string;
@@ -40,7 +40,7 @@ const BRANCH_SCHEMA: PropertyDescriptor[] = [
     { key: 'terminal2Connected', type: 'boolean', defaultValue: true, editOnly: true },
 ];
 
-export const PROPERTY_SCHEMAS: Partial<Record<ElementType, PropertyDescriptor[]>> = {
+const PROPERTY_SCHEMAS: Partial<Record<ElementType, PropertyDescriptor[]>> = {
     LOAD: [
         EQUIPMENT_ID,
         {

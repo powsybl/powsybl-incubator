@@ -24,7 +24,7 @@ export function actionLabel(action: EditorAction): string {
     }
 }
 
-export function describeTarget(target: EditTarget): string {
+function describeTarget(target: EditTarget): string {
     switch (target.kind) {
         case 'NODE':
             return target.occupied ? `Node ${target.node} (taken)` : `Node ${target.node}`;

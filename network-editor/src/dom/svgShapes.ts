@@ -52,7 +52,7 @@ export interface FeederShape {
     busbars?: PlacedSymbol[];
 }
 
-export interface FeederPreview extends FeederShape {
+interface FeederPreview extends FeederShape {
     kind: 'FEEDER';
     id: string;
     label: string;

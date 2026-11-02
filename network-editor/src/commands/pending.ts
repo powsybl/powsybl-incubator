@@ -44,11 +44,11 @@ export function claimedTargets(pending: readonly Command[]): Set<string> {
 export function pendingOrders(
     pending: readonly Command[],
     vlId: string,
-    vacating?: string,
+    vacating: readonly string[] = [],
     ignore?: Command,
 ): PendingOrders {
     const claims: OrderClaim[] = [];
-    const vacated = new Set<string>(vacating ? [vacating] : []);
+    const vacated = new Set<string>(vacating);
 
     const lastClaims = new Map<string, OrderClaim>();
 
@@ -62,7 +62,7 @@ export function pendingOrders(
             }
             vacated.add(claim.vacatedNodeId);
 
-            if (claim.vacatedNodeId !== vacating) lastClaims.set(claim.vacatedNodeId, claim);
+            if (!vacating.includes(claim.vacatedNodeId)) lastClaims.set(claim.vacatedNodeId, claim);
         }
     }
     return { claims: [...claims, ...lastClaims.values()], vacated };

@@ -4,7 +4,7 @@ import { RenameCommand } from '../commands/RenameCommand.ts';
 import { ReplaceCommand } from '../commands/ReplaceCommand.ts';
 import type { EditorModel } from '../model/EditorModel.ts';
 import type { BayPlacement } from '../layout/BayPlacement.ts';
-import { pendingOrders, renameHistory } from '../commands/pending.ts';
+import { renameHistory } from '../commands/pending.ts';
 import { pushTo } from '../utils.ts';
 import {
     NODE_COMPONENT_TYPE,
@@ -139,15 +139,12 @@ export class PendingPainter {
     }
 
     private bayPreview(busbar: BusbarTarget, spec: CreateSpec): FeederShape | undefined {
-        const geometry =
-            spec.order === undefined
-                ? undefined
-                : this.placement.bayGeometry(busbar, pendingOrders(this.pending(), busbar.vlId));
-        const column = geometry?.columns.find((candidate) => candidate.order === spec.order);
-        if (!geometry || !column) return undefined;
+        const x = spec.order === undefined ? undefined : this.placement.createdBayX(busbar.vlId, spec.order);
+        const y = this.dom.getDiagramSpan(busbar.id)?.y;
+        if (x === undefined || y === undefined) return undefined;
 
         const side = spec.direction === 'TOP' ? 'UP' : 'DOWN';
-        const from = { x: column.x, y: geometry.y };
+        const from = { x, y };
         const busbars = this.crossedBusbars(busbar, from.y, side);
         return this.feederShape(busbar.vlId, from, side, spec, spec.switchType ?? 'BREAKER', busbar.id, busbars);
     }

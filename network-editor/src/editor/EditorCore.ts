@@ -275,7 +275,7 @@ export class EditorCore {
         if (!host || !node) return false;
 
         // The order must suit the target section: orders grow from one section to the next.
-        const pending = pendingOrders(this.pending, destination.vlId, node.id);
+        const pending = pendingOrders(this.pending, destination.vlId, [node.id]);
         const order = this.model.nextOrderForBusbar(destination, pending);
         if (order === undefined) return false;
 
@@ -311,50 +311,64 @@ export class EditorCore {
         if (created) return this.setPendingBayPosition(created, position);
 
         const feeder = this.movableFeeder(equipmentId);
-        if (!feeder) return false;
-        const { target, node, slot } = feeder;
+        const current = this.getBayPosition(equipmentId);
+        if (!feeder || !current) return false;
+        const { node, slot } = feeder;
 
-        const pending = pendingOrders(this.pending, slot.vlId, node.id);
-        if (!this.model.isOrderAvailable(slot, position.order, pending)) return false;
+        // A fork is one cell: all its feeders shift by the same delta, and turn together.
+        const moves = this.cellMoves(node, slot, position.order - current.order);
+        if (!moves) return false;
+        const pending = pendingOrders(this.pending, slot.vlId, moves.map((move) => move.node.id));
+        if (!moves.every((move) => this.model.isOrderAvailable(slot, move.order, pending))) return false;
 
         const from = toDirection(node.direction) ?? DEFAULT_DIRECTION;
-        if (position.direction !== from) return this.flipBay(target, node, slot, position, from);
+        const turns = position.direction !== from;
+        const turn =
+            turns && this.dom.bayCell(node.id)
+                ? this.geometry.bayTurn(node, moves.map((move) => move.node), from, position.direction)
+                : undefined;
+        if (turns && !turn) return false;
 
-        this.history.push(new UpdateBayPositionCommand(target, node, slot, position, this.dom, this.model));
+        this.history.pushAll(
+            moves.map(
+                (move) =>
+                    new UpdateBayPositionCommand(
+                        move.target,
+                        move.node,
+                        slot,
+                        { order: move.order, direction: position.direction },
+                        this.dom,
+                        this.model,
+                        move.node.id === node.id ? turn : undefined,
+                    ),
+            ),
+        );
         return true;
     }
 
-    private flipBay(
-        target: EquipmentTarget,
+    private cellMoves(
         node: NodeMetadata,
         slot: BaySlot,
-        position: BayPosition,
-        from: FeederDirection,
-    ): boolean {
-        const cell = this.dom.bayCell(node.id);
-        const cellFeeders = this.model
-            .feedersInSection(slot)
-            .filter((feeder) => this.dom.bayCell(feeder.id) === cell);
-        const turn = cell ? this.geometry.bayTurn(node, cellFeeders, from, position.direction) : undefined;
-        if (!turn) return false;
-
-        const commands: UpdateBayPositionCommand[] = [
-            new UpdateBayPositionCommand(target, node, slot, position, this.dom, this.model, turn),
-        ];
-        for (const sibling of cellFeeders) {
-            if (sibling.id === node.id) continue;
-
-            const siblingTarget = this.targetFor(sibling.equipmentId, 'EQUIPMENT', 'UPDATE_BAY_POSITION');
-            if (siblingTarget?.node === undefined) return false;
-
-            const siblingPosition = { order: sibling.order!, direction: position.direction };
-            commands.push(
-                new UpdateBayPositionCommand(siblingTarget, sibling, slot, siblingPosition, this.dom, this.model),
-            );
+        delta: number,
+    ): { target: EquipmentTarget; node: NodeMetadata; order: number }[] | undefined {
+        const moves = [];
+        for (const feeder of this.cellFeeders(node, slot)) {
+            const target = this.targetFor(feeder.equipmentId, 'EQUIPMENT', 'UPDATE_BAY_POSITION');
+            const current = target && this.getBayPosition(target.equipmentId);
+            if (target?.node === undefined || !current) return undefined;
+            moves.push({ target, node: feeder, order: current.order + delta });
         }
+        return moves;
+    }
 
-        this.history.pushAll(commands);
-        return true;
+    /** A feeder and those sharing its cell (a fork), smallest order first: the cell moves as one block. */
+    private cellFeeders(node: NodeMetadata, slot: BaySlot): NodeMetadata[] {
+        const cell = this.dom.bayCell(node.id);
+        if (!cell) return [node];
+        return this.model
+            .feedersInSection(slot)
+            .filter((feeder) => this.dom.bayCell(feeder.id) === cell)
+            .sort((a, b) => a.order! - b.order!);
     }
 
     applyProperties(
@@ -660,7 +674,7 @@ export class EditorCore {
         const nodeId = command.pendingMarker?.elementId;
         if (!busbar || !nodeId) return false;
 
-        const pending = pendingOrders(this.pending, busbar.vlId, undefined, command);
+        const pending = pendingOrders(this.pending, busbar.vlId, [], command);
         if (!this.model.isOrderAvailable(busbar, position.order, pending)) return false;
 
         const equipmentId = command.createSpec.provisionalId;
@@ -685,8 +699,10 @@ export class EditorCore {
         const busbar = feeder && this.busbarOf(feeder.slot);
         if (!feeder || !busbar) return false;
 
-        const pending = pendingOrders(this.pending, busbar.vlId, feeder.node.id);
-        return this.startBayMove(equipmentId, busbar, feeder.target.direction ?? DEFAULT_DIRECTION, pending);
+        const feeders = this.cellFeeders(feeder.node, feeder.slot);
+        const lead = feeders[0].equipmentId ?? equipmentId;
+        const pending = pendingOrders(this.pending, busbar.vlId, feeders.map((node) => node.id));
+        return this.startBayMove(lead, busbar, feeder.target.direction ?? DEFAULT_DIRECTION, pending);
     }
 
     private beginPendingBayMove(command: PendingCreateCommand): boolean {
@@ -694,7 +710,7 @@ export class EditorCore {
         if (!busbar) return false;
 
         const { provisionalId, direction } = command.createSpec;
-        const pending = pendingOrders(this.pending, busbar.vlId, undefined, command);
+        const pending = pendingOrders(this.pending, busbar.vlId, [], command);
         return this.startBayMove(provisionalId, busbar, direction ?? DEFAULT_DIRECTION, pending);
     }
 

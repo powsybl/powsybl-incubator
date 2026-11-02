@@ -8,7 +8,7 @@ import {
     type NetworkModification,
     type SLDMetadata,
 } from '../src';
-import { PropertyForm } from '../src/react';
+import { PropertyForm } from './PropertyForm';
 import svgContent from './data/reseau.svg?raw';
 import metadata from './data/reseau_metadata.json';
 import properties from './data/reseau_properties.json';

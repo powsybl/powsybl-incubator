@@ -1,6 +1,5 @@
 import type { DiagramSpan } from '../types.ts';
 
-
 export interface LayoutCell {
     id: string;
     left: number;
@@ -102,30 +101,37 @@ export function busbarStretch(
     return { dx, dWidth };
 }
 
-export interface BayGeometry {
-    y: number;
-    columns: BayColumn[];
-    gaps: { x: number; leftOrder?: number; rightOrder?: number }[];
-}
-
-export interface BayColumn {
-    x: number;
+export interface BayBlock {
+    left: number;
+    right: number;
     order?: number;
 }
 
-/** Places left between the bays of a busbar, from one end to the other. */
-export function layoutBay(span: DiagramSpan, columns: BayColumn[]): BayGeometry {
-    columns = columns.filter((column) => column.x >= span.left && column.x <= span.right);
-    const bounds = [span.left, ...columns.map((column) => column.x), span.right];
-    return {
-        y: span.y,
-        columns,
-        gaps: bounds.slice(1).map((bound, gap) => ({
-            x: (bounds[gap] + bound) / 2,
-            leftOrder: columns[gap - 1]?.order,
-            rightOrder: columns[gap]?.order,
-        })),
-    };
+export interface BayGap {
+    x: number;
+    leftOrder?: number;
+    rightOrder?: number;
+}
+
+export function bayGaps(span: DiagramSpan, blocks: readonly BayBlock[]): BayGap[] {
+    const onBusbar = blocks
+        .filter((block) => block.right > span.left && block.left < span.right)
+        .sort((a, b) => a.left - b.left);
+    const middle = (from: BayBlock | undefined, to: BayBlock | undefined): number =>
+        ((from?.right ?? span.left) + (to?.left ?? span.right)) / 2;
+
+    const gaps: BayGap[] = [];
+    let leftOrder: number | undefined;
+    onBusbar.forEach((block, index) => {
+        if (block.order === undefined) return;
+        gaps.push({ x: middle(onBusbar[index - 1], block), leftOrder, rightOrder: block.order });
+        leftOrder = block.order;
+    });
+
+    const lastOrdered = onBusbar.findLastIndex((block) => block.order !== undefined);
+    const last = lastOrdered === -1 ? onBusbar.length - 1 : lastOrdered;
+    gaps.push({ x: middle(onBusbar[last], onBusbar[last + 1]), leftOrder });
+    return gaps;
 }
 
 /** Width of a cell whose outer columns are centred at `minX` and `maxX`. */

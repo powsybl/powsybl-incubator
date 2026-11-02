@@ -20,6 +20,20 @@ export class CommandStack {
         this.notify();
     }
 
+    /** Runs several edits as one undo step: all of them stay, or, when `edit` returns false, none. */
+    group(edit: () => boolean): boolean {
+        const start = this.undoStack.length;
+        const applied = edit();
+        const commands = this.undoStack.splice(start).flat();
+        if (!applied) {
+            for (const command of commands.reverse()) command.undo();
+        } else if (commands.length > 0) {
+            this.undoStack.push(commands);
+        }
+        this.notify();
+        return applied;
+    }
+
     undo(): void {
         const step = this.undoStack.pop();
         if (!step) return;

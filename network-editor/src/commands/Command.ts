@@ -15,7 +15,7 @@ export interface Command {
     readonly equipmentId: string;
 }
 
-export interface PendingCreate {
+interface PendingCreate {
     readonly createSpec: CreateSpec;
 }
 

@@ -8,7 +8,7 @@ import {
     type ElementType,
 } from '../types.ts';
 
-export interface OperationSpec {
+interface OperationSpec {
     label: string;
     danger?: boolean;
     creates?: ReadonlySet<ElementType>;

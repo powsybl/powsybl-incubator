@@ -114,6 +114,8 @@ export function isSwitchNode(node: NodeMetadata): boolean {
 
 export type FeederDirection = 'TOP' | 'BOTTOM';
 
+export const DEFAULT_DIRECTION: FeederDirection = 'BOTTOM';
+
 export function toDirection(direction: string | undefined): FeederDirection | undefined {
     return direction === 'TOP' || direction === 'BOTTOM' ? direction : undefined;
 }

@@ -28,12 +28,7 @@ export type {
     SwitchKind,
 } from './modifications/modifications.ts';
 
-export {
-    PROPERTY_SCHEMAS,
-    schemaFor,
-    type PropertyDescriptor,
-    type PropertyMode,
-} from './actions/properties.ts';
+export type { PropertyDescriptor } from './actions/properties.ts';
 
 export {
     actionKey,
@@ -48,15 +43,6 @@ export {
     describeTargets,
     type ActionMenuItem,
 } from './actions/menu.ts';
-
-export {
-    BAY_SLOT_CLASS,
-    NODE_TARGET_CLASS,
-    PENDING_CREATE_CLASS,
-    SELECTED_CLASS,
-    SWITCH_END_CLASS,
-    SWITCH_START_CLASS,
-} from './types.ts';
 
 export type {
     BusbarTarget,

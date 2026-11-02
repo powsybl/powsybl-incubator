@@ -1,6 +1,6 @@
 # Network Editor
 
-React/TypeScript component extending the [powsybl-network-viewer](https://github.com/powsybl/powsybl-network-viewer) SLD/NAD viewers with network editing capabilities (element selection, deletion, undo/redo command stack).
+TypeScript component extending the [powsybl-network-viewer](https://github.com/powsybl/powsybl-network-viewer) SLD/NAD viewers with network editing capabilities (element selection, deletion, undo/redo command stack).
 
 ## Build
 

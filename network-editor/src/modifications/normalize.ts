@@ -1,7 +1,7 @@
 import {
     INJECTION_CREATION_TYPES,
+    isAttributeModification,
     mergeFeederBayMoves,
-    type AttributeModification,
     type EquipmentAttributeModification,
     type EquipmentDeletion,
     type EquipmentModification,
@@ -16,8 +16,6 @@ import {
 } from './modifications.ts';
 
 type Creation = InjectionCreation | NodeInjectionCreation | SwitchedInjectionCreation | SwitchCreation;
-
-type FieldChange = AttributeModification<number | string | boolean>;
 
 type Kind = 'DELETION' | 'RENAME' | 'CREATION' | 'PROPERTIES' | 'SWITCH_STATE' | 'MOVE';
 
@@ -35,7 +33,7 @@ interface EquipmentHistory {
     currentId: string;
     creation?: Creation;
     deletion?: EquipmentDeletion;
-    properties?: { type: EquipmentModification['type']; fields: Record<string, FieldChange> };
+    properties?: { type: EquipmentModification['type']; fields: Record<string, unknown> };
     switchOpen?: boolean;
     move?: { voltageLevelId: string; bay: MoveFeederBay };
 }
@@ -108,8 +106,7 @@ function record(history: EquipmentHistory, modification: NetworkModification): v
         }
         case 'PROPERTIES': {
             const { type, equipmentId, ...fields } = modification as EquipmentModification;
-            const changes = fields as Record<string, FieldChange>;
-            history.properties = { type, fields: { ...history.properties?.fields, ...changes } };
+            history.properties = { type, fields: { ...history.properties?.fields, ...fields } };
             break;
         }
     }
@@ -178,10 +175,12 @@ function applyHistory(
     if (history.properties) applyFields(injection, history.properties.fields);
 }
 
-function applyFields(target: object, fields: Record<string, FieldChange>): void {
+function applyFields(target: object, fields: Record<string, unknown>): void {
     const record = target as Record<string, unknown>;
     for (const [field, change] of Object.entries(fields)) {
-        if (change.op === 'SET') record[field] = change.value;
+        // A host field the editor does not know (name, free properties...) is carried as is.
+        if (!isAttributeModification(change)) record[field] = change;
+        else if (change.op === 'SET') record[field] = change.value;
         else delete record[field];
     }
 }

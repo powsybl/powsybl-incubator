@@ -356,8 +356,12 @@ export class EditorCore {
         return true;
     }
 
-    applyProperties(equipmentId: string, changes: EquipmentProperties): boolean {
-        if (Object.keys(changes).length === 0) return false;
+    applyProperties(
+        equipmentId: string,
+        changes: EquipmentProperties,
+        fields: Readonly<Record<string, unknown>> = {},
+    ): boolean {
+        if (Object.keys(changes).length === 0 && Object.keys(fields).length === 0) return false;
 
         const type = this.equipmentType(equipmentId);
         if (!type) return false;
@@ -369,9 +373,14 @@ export class EditorCore {
                 changes,
                 this.model,
                 this.repaintSwitchState,
+                fields,
             ),
         );
         return true;
+    }
+
+    group(edit: () => boolean): boolean {
+        return this.history.group(edit);
     }
 
     deleteElements(equipmentIds: readonly string[], kind: 'element' | 'bay'): boolean {

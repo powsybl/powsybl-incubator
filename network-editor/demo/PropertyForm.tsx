@@ -1,7 +1,10 @@
 import { useState, type ReactNode } from 'react';
-import type { EditorAction } from '../actions/actions.ts';
-import type { EquipmentProperties } from '../types.ts';
-import type { PropertyDescriptor } from '../actions/properties.ts';
+import type { ActionValues, EditorAction, EquipmentProperties, PropertyDescriptor } from '../src';
+import { defaultsOf } from '../src/actions/properties.ts';
+import { equipmentModification, modificationValues } from '../src/modifications/modifications.ts';
+
+// The demo form: one input per descriptor of the action, keyed by the raw field names.
+// A host builds its own forms; this one only shows how `initial` and `run` are used.
 
 export interface PropertyFormProps {
     action: EditorAction;
@@ -12,7 +15,6 @@ export interface PropertyFormProps {
     children?: ReactNode;
 }
 
-
 export function PropertyForm({
     action,
     onDone,
@@ -22,6 +24,7 @@ export function PropertyForm({
     children,
 }: PropertyFormProps) {
     const [refusedBy, setRefusedBy] = useState<string | null>(null);
+    const shown = formValues(action);
 
     return (
         <>
@@ -30,11 +33,8 @@ export function PropertyForm({
                 className={className}
                 onSubmit={(e) => {
                     e.preventDefault();
-                    const values = {
-                        ...action.initial,
-                        ...readValues(action.form, new FormData(e.currentTarget)),
-                    };
-                    const applied = action.run(values);
+                    const entered = readValues(action.form, new FormData(e.currentTarget));
+                    const applied = action.run(submittedValues(action, entered));
                     setRefusedBy(applied ? null : action.id);
                     if (applied) onDone?.();
                 }}
@@ -46,7 +46,7 @@ export function PropertyForm({
                             {descriptor.unit && ` (${descriptor.unit})`}
                             {descriptor.required && ' *'}
                         </span>
-                        {input(descriptor, action.initial[descriptor.key])}
+                        {input(descriptor, shown[descriptor.key])}
                     </label>
                 ))}
                 {children ?? <button type="submit">{submitLabel}</button>}
@@ -115,4 +115,25 @@ function readValues(
         values[descriptor.key] = descriptor.type === 'number' ? Number(raw) : String(raw);
     }
     return values;
+}
+
+/** The plain values the form shows: a property edit holds a modification, a creation holds plain values already. */
+function formValues(action: EditorAction): ActionValues {
+    if (action.operation !== 'UPDATE_PROPERTIES' || !action.equipment) return action.initial;
+    return {
+        ...defaultsOf(action.form.filter((descriptor) => descriptor.editOnly)),
+        ...modificationValues(action.initial),
+        equipmentId: action.equipment.id,
+    };
+}
+
+/** What `run` expects from the plain values the form entered. */
+function submittedValues(action: EditorAction, entered: EquipmentProperties): ActionValues {
+    if (action.operation !== 'UPDATE_PROPERTIES' || !action.equipment) return { ...action.initial, ...entered };
+    // A plain form hands back every field: only the ones the user changed become a modification.
+    const shown = formValues(action);
+    const { equipmentId: _id, ...changes } = Object.fromEntries(
+        Object.entries(entered).filter(([key, value]) => value !== shown[key]),
+    );
+    return equipmentModification(action.equipment.type, action.equipment.id, changes);
 }

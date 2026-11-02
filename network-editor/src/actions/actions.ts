@@ -1,6 +1,6 @@
 import { availableOperations, creatableTypesFor } from './operations.ts';
 import { defaultsOf, EQUIPMENT_ID, schemaFor, type PropertyDescriptor } from './properties.ts';
-import { injectionCreation } from '../modifications/modifications.ts';
+import { equipmentModification, injectionCreation, modificationValues } from '../modifications/modifications.ts';
 import {
     SWITCH_TYPES,
     toDirection,
@@ -41,11 +41,14 @@ export interface EditorAction {
     run(values?: ActionValues): boolean;
 }
 
-/** `OPERATION:TYPE` for a creation (e.g. `CREATE_FEEDER_BAY:LOAD`), the operation otherwise. */
+/**
+ * `OPERATION:TYPE` for a creation (e.g. `CREATE_FEEDER_BAY:LOAD`) or a property edit (e.g. `UPDATE_PROPERTIES:LOAD`),
+ * the operation otherwise.
+ */
 export function actionKey(action: EditorAction): string {
-    return action.subject?.kind === 'TYPE'
-        ? `${action.operation}:${action.subject.type}`
-        : action.operation;
+    if (action.subject?.kind === 'TYPE') return `${action.operation}:${action.subject.type}`;
+    if (action.operation === 'UPDATE_PROPERTIES' && action.equipment) return `${action.operation}:${action.equipment.type}`;
+    return action.operation;
 }
 
 export interface ActionHost {
@@ -65,11 +68,16 @@ export interface ActionHost {
     createSwitch(spec: CreateSpec): boolean;
     replaceEquipment(equipmentId: string, newEquipment: CreateSpec): boolean;
     renameEquipment(equipmentId: string, newId: string): boolean;
-    applyProperties(equipmentId: string, changes: EquipmentProperties): boolean;
+    applyProperties(
+        equipmentId: string,
+        changes: EquipmentProperties,
+        fields?: Readonly<Record<string, unknown>>,
+    ): boolean;
     deleteElements(equipmentIds: readonly string[], kind: 'element' | 'bay'): boolean;
     beginBayMove(equipmentId: string): boolean;
     setBayPosition(equipmentId: string, position: BayPosition): boolean;
     moveFeederBay(equipmentId: string, busbarTargetId: string): boolean;
+    group(edit: () => boolean): boolean;
 }
 
 const ORDER: PropertyDescriptor = { key: 'connectionPosition', type: 'number', required: true, min: 0 };
@@ -266,6 +274,58 @@ function schemaValues(schema: readonly PropertyDescriptor[], values: ActionValue
     return properties;
 }
 
+/**
+ * Applies a host modification as one step, or not at all: the bay placement goes through the bay edits,
+ * every other field is kept as is, so the change set sends what the host form produced.
+ */
+function editEquipment(
+    host: ActionHost,
+    target: EquipmentTarget,
+    form: readonly PropertyDescriptor[],
+    modification: ActionValues,
+): boolean {
+    const {
+        type: _type,
+        equipmentId: _id,
+        voltageLevelId,
+        busOrBusbarSectionId,
+        connectionPosition,
+        connectionDirection,
+        ...rest
+    } = modification;
+    const placement = modificationValues({ voltageLevelId, busOrBusbarSectionId, connectionPosition, connectionDirection });
+    // A bay only moves within its voltage level.
+    if (placement.voltageLevelId !== undefined && placement.voltageLevelId !== target.vlId) return false;
+
+    const fields = Object.fromEntries(Object.entries(rest).filter(([, value]) => value !== null && value !== undefined));
+    const known = schemaValues(form, modificationValues(fields));
+    const busbar = text(placement.busOrBusbarSectionId);
+    const hasFields = Object.keys(fields).length > 0;
+
+    return host.group(() => {
+        if (busbar !== undefined && !moveToBusbar(host, target.equipmentId, busbar)) return false;
+        const position = bayPositionChange(host.getBayPosition(target.equipmentId), placement);
+        if (position && !host.setBayPosition(target.equipmentId, position)) return false;
+        if (hasFields && !host.applyProperties(target.equipmentId, known, fields)) return false;
+        return busbar !== undefined || position !== undefined || hasFields;
+    });
+}
+
+function moveToBusbar(host: ActionHost, equipmentId: string, busbarSectionId: string): boolean {
+    const destination = host
+        .moveDestinations(equipmentId)
+        .find((candidate) => candidate.busbarSectionId === busbarSectionId);
+    return destination !== undefined && host.moveFeederBay(equipmentId, destination.id);
+}
+
+/** The bay position a host modification asks for (`connectionPosition`, `connectionDirection`), when it moves the bay. */
+function bayPositionChange(current: BayPosition | undefined, placement: EquipmentProperties): BayPosition | undefined {
+    if (!current) return undefined;
+    const order = typeof placement.connectionPosition === 'number' ? placement.connectionPosition : current.order;
+    const direction = toDirection(text(placement.connectionDirection)) ?? current.direction;
+    return order === current.order && direction === current.direction ? undefined : { order, direction };
+}
+
 export function switchAction(host: ActionHost, picked: PickedSwitch): EditorAction {
     const form = createForm(picked.type, false, false);
     const initial = creationInitial(host, form, picked.type);
@@ -332,27 +392,15 @@ function equipmentActions(
                         ? { ...descriptor, readOnly: true }
                         : descriptor,
             );
+            const { equipmentId: _id, ...known } = schemaValues(form, host.getProperties(equipmentId));
             return [
                 {
                     id: createOperationId(target, operation),
                     operation,
                     form,
-                    initial: {
-                        ...defaultsOf(form.filter((descriptor) => descriptor.editOnly)),
-                        ...host.getProperties(equipmentId),
-                        equipmentId,
-                    },
+                    initial: equipmentModification(target.type, equipmentId, known),
                     equipment: equipmentOf(target),
-                    run: (values = {}) => {
-                        const { equipmentId: _newId, ...properties } = values;
-                        const stored = host.getProperties(equipmentId);
-                        return host.applyProperties(
-                            equipmentId,
-                            Object.fromEntries(
-                                Object.entries(schemaValues(form, properties)).filter(([key, v]) => v !== stored[key]),
-                            ),
-                        );
-                    },
+                    run: (values = {}) => editEquipment(host, target, form, values),
                 },
             ];
         }

@@ -14,6 +14,7 @@ export class UpdatePropertiesCommand implements Command {
         changes: EquipmentProperties,
         private readonly model: EditorModel,
         private readonly onChanged: (equipmentId: string, changes: EquipmentProperties) => void,
+        private readonly fields: Readonly<Record<string, unknown>> = {},
     ) {
         this.changes = { ...changes };
     }
@@ -33,6 +34,8 @@ export class UpdatePropertiesCommand implements Command {
     }
 
     toModifications(): NetworkModification[] {
-        return [equipmentModification(this.type, this.equipmentId, this.changes)];
+        return [
+            { ...equipmentModification(this.type, this.equipmentId, this.changes), ...this.fields } as NetworkModification,
+        ];
     }
 }

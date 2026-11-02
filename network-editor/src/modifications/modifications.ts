@@ -39,6 +39,7 @@ export interface GeneratorCreation extends InjectionCreationFields {
     voltageRegulationOn: boolean;
     minP: number;
     maxP: number;
+    participate?: boolean;
 }
 
 export interface BatteryCreation extends InjectionCreationFields {
@@ -277,6 +278,26 @@ export function nodeInjectionCreation(
         node,
         creation: injectionFields(type, equipmentId, voltageLevelId, properties, fields),
     };
+}
+
+export function modificationValues(modification: Readonly<Record<string, unknown>>): EquipmentProperties {
+    if (modification.type === 'EQUIPMENT_ATTRIBUTE_MODIFICATION') {
+        const { equipmentAttributeName: name, equipmentAttributeValue: value } = modification;
+        return typeof name === 'string' && isPropertyValue(value) ? { [name]: value } : {};
+    }
+    const values: EquipmentProperties = {};
+    for (const [key, field] of Object.entries(modification)) {
+        if (isAttributeModification(field) && field.op === 'SET' && isPropertyValue(field.value)) values[key] = field.value;
+    }
+    return values;
+}
+
+export function isAttributeModification(field: unknown): field is AttributeModification<unknown> {
+    return typeof field === 'object' && field !== null && 'op' in field;
+}
+
+function isPropertyValue(value: unknown): value is number | string | boolean {
+    return typeof value === 'number' || typeof value === 'boolean' || typeof value === 'string';
 }
 
 export function equipmentModification(

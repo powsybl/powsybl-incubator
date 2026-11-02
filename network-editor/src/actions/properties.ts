@@ -69,6 +69,7 @@ export const PROPERTY_SCHEMAS: Partial<Record<ElementType, PropertyDescriptor[]>
         { key: 'voltageRegulationOn', type: 'boolean', defaultValue: true },
         { key: 'minP', unit: 'MW', type: 'number', required: true, defaultValue: 0 },
         { key: 'maxP', unit: 'MW', type: 'number', required: true, defaultValue: 100 },
+        { key: 'participate', type: 'boolean', defaultValue: false },
         CONNECTED,
     ],
     BATTERY: [

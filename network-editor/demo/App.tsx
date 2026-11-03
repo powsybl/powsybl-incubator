@@ -21,6 +21,7 @@ export function App() {
     const [menu, setMenu] = useState<Menu | null>(null);
     const [form, setForm] = useState<EditorAction | null>(null);
     const [modifications, setModifications] = useState<NetworkModification[]>([]);
+    const [showIidmNodes, setShowIidmNodes] = useState(false);
 
     useEffect(() => {
         const instance = new NetworkEditor({
@@ -46,7 +47,7 @@ export function App() {
         return () => instance.destroy();
     }, []);
 
-    const pick = (item: ActionMenuItem) => {
+    const itemClicked = (item: ActionMenuItem) => {
         setMenu(null);
         if (item.needsForm) setForm(item.action);
         else item.action.run();
@@ -58,6 +59,11 @@ export function App() {
     };
 
     const clearModifications = () => editor?.clearModifications();
+
+    const toggleIidmNodes = () => {
+        setShowIidmNodes(!showIidmNodes);
+        editor?.showIidmNodes(!showIidmNodes);
+    };
 
     return (
         <>
@@ -73,6 +79,9 @@ export function App() {
                         <button onClick={() => editor?.redo()}>↪ Redo</button>
                         <button onClick={() => setModifications(editor?.getModifications() ?? [])}>send to backend</button>
                         <button onClick={() => clearModifications()}>clear</button>
+                        <button onClick={toggleIidmNodes}>
+                            {showIidmNodes ? 'hide IIDM nodes' : 'show IIDM nodes'}
+                        </button>
                     </div>
 
                     {form && (
@@ -99,7 +108,7 @@ export function App() {
                             <button
                                 key={item.action.id}
                                 className={item.danger ? 'danger' : undefined}
-                                onClick={() => pick(item)}
+                                onClick={() => itemClicked(item)}
                             >
                                 {item.label}
                             </button>

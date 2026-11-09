@@ -23,14 +23,13 @@ export function pendingBayPosition(
     );
 }
 
-export function renameHistory(pending: readonly Command[], currentId: string): string[] {
-    const ids = [currentId];
-    for (const command of [...pending].reverse()) {
-        if (command instanceof RenameCommand && command.newId === ids[ids.length - 1]) {
-            ids.push(command.equipmentId);
-        }
+export function originalId(pending: readonly Command[], currentId: string): string {
+    let id = currentId;
+    for (let i = pending.length - 1; i >= 0; i--) {
+        const command = pending[i];
+        if (command instanceof RenameCommand && command.newId === id) id = command.equipmentId;
     }
-    return ids;
+    return id;
 }
 
 export function claimedTargets(pending: readonly Command[]): Set<string> {

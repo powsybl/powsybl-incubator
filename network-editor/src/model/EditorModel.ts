@@ -2,7 +2,7 @@ import { pushTo, removeById, removeFrom } from '../utils.ts';
 import {
     BAY_TRAVERSABLE_TYPES,
     BUSBAR_SECTION_TYPE,
-    DEFAULT_CELL_WIDTH,
+    DEFAULT_LAYOUT_PARAMS,
     HIDDEN_NODE_TYPE,
     isSwitchNode,
     NO_PENDING_ORDERS,
@@ -13,6 +13,7 @@ import {
     type BaySlot,
     type DeleteScope,
     type EditorMetadata,
+    type LayoutParams,
     type EditTarget,
     type FeederDirection,
     type FeederInfoMetadata,
@@ -79,8 +80,12 @@ export class EditorModel {
         return this.componentSizes.get(componentType);
     }
 
+    layoutParams(): LayoutParams {
+        return { ...DEFAULT_LAYOUT_PARAMS, ...this.metadata.layoutParams };
+    }
+
     cellWidth(): number {
-        return this.metadata.layoutParams?.cellWidth ?? DEFAULT_CELL_WIDTH;
+        return this.layoutParams().cellWidth;
     }
 
     voltageLevelIds(): string[] {

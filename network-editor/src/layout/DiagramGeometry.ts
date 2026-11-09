@@ -1,7 +1,14 @@
 import type { SldComponentOptions } from '@powsybl/network-viewer-core';
 
 import type { EditorModel } from '../model/EditorModel.ts';
-import { buildBayFlip, invertFlip, type BayFlip, type BayTurn, type FeederLevels } from './bayFlip.ts';
+import {
+    buildBayFlip,
+    defaultFeederLevels,
+    invertFlip,
+    type BayFlip,
+    type BayTurn,
+    type FeederLevels,
+} from './bayFlip.ts';
 import {
     isCreatedNodeId,
     type DiagramPoint,
@@ -48,10 +55,27 @@ export class DiagramGeometry {
         return { feederY, switchY: breaker && this.nodeCentre(breaker)?.y };
     }
 
-    /** Heights of the first drawn feeder on that side, to align new bays with it. */
     feederLevels(vlId: string, direction: FeederDirection): FeederLevels | undefined {
+        const drawn = this.drawnFeederLevels(vlId, direction);
+        if (drawn) return drawn;
+
+        const busbarYs = this.busbarYs(vlId);
+        if (busbarYs.length === 0) return undefined;
+        const params = this.model.layoutParams();
+        return defaultFeederLevels(params, Math.min(...busbarYs), Math.max(...busbarYs), direction);
+    }
+
+    /** Heights of the first drawn feeder on that side. */
+    private drawnFeederLevels(vlId: string, direction: FeederDirection): FeederLevels | undefined {
         const feeder = this.model.feederNodes(vlId, direction).find((node) => !isCreatedNodeId(node.id));
         return feeder && this.levelsOf(feeder);
+    }
+
+    private busbarYs(vlId: string): number[] {
+        return this.model.busbarNodes(vlId).flatMap((busbar) => {
+            const span = this.dom.getDiagramSpan(busbar.id);
+            return span ? [span.y] : [];
+        });
     }
 
     symbolFor(
@@ -73,14 +97,11 @@ export class DiagramGeometry {
         to: FeederDirection,
     ): BayTurn | undefined {
         const vlId = feeder.vid ?? '';
-        const busbarYs = this.model.busbarNodes(vlId).flatMap((busbar) => {
-            const span = this.dom.getDiagramSpan(busbar.id);
-            return span ? [span.y] : [];
-        });
+        const busbarYs = this.busbarYs(vlId);
         const source = this.levelsOf(feeder);
         if (busbarYs.length === 0 || !source) return undefined;
 
-        const flip = buildBayFlip(busbarYs, source, this.feederLevels(vlId, to) ?? source, from, to);
+        const flip = buildBayFlip(busbarYs, source, this.drawnFeederLevels(vlId, to) ?? source, from, to);
 
         const heights = new Map<string, number>();
         for (const id of this.dom.bayCellElementIds(feeder.id)) {

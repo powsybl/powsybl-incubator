@@ -12,9 +12,7 @@ import org.gridsuite.modification.modifications.AbstractModification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,7 +26,6 @@ import org.gridsuite.modification.dto.ModificationInfos;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.nio.file.Path;
 import java.util.List;
 
 
@@ -49,21 +46,6 @@ public class Controller {
 
 
     // LOADER
-    @PostMapping("/load")
-    public Dto.loadNetworkResponse loadNetwork(@RequestBody Dto.loadNetworkRequest request) {
-        Network network;
-
-        try {
-            network = Network.read(Path.of(request.file_path()));
-        } catch (PowsyblException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "failed to read " + request.file_path() + " : " + e.getMessage(), e);
-        }
-
-        networkState.set(network);
-
-        return toResponse(request.file_path(), network);
-    }
-
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Dto.loadNetworkResponse uploadNetwork(@RequestParam("file") MultipartFile file) {
         if (file.isEmpty()) {

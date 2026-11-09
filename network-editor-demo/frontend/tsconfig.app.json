@@ -17,7 +17,6 @@
     "jsx": "react-jsx",
 
     "paths": {
-      "@powsybl/network-editor/react": ["../../network-editor/src/react/index.ts"],
       "@powsybl/network-editor": ["../../network-editor/src/index.ts"]
     },
 

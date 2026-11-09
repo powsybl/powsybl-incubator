@@ -59,7 +59,7 @@ export function useNetworkEditor(container: RefObject<HTMLDivElement | null>, sl
 
     const closeMenu = useCallback(() => setMenu(null), [])
 
-    const pick = (item: ActionMenuItem) => {
+    const itemClicked = (item: ActionMenuItem) => {
         setMenu(null)
         if (item.needsForm) setForm(item.action)
         else item.action.run()
@@ -70,5 +70,5 @@ export function useNetworkEditor(container: RefObject<HTMLDivElement | null>, sl
         editor?.cancelGesture()
     }
 
-    return {editor, menu, closeMenu, pick, form, closeForm, modifications, history}
+    return {editor, menu, closeMenu, pick: itemClicked, form, closeForm, modifications, history}
 }

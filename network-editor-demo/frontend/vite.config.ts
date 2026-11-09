@@ -15,13 +15,7 @@ const componentSrc = path.resolve(rootDir, '../../network-editor/src');
 export default defineConfig({
   plugins: [react()],
   resolve: {
-    // Order matters: the "/react" subpath must be matched before the bare
-    // specifier, otherwise the shorter prefix swallows both.
     alias: [
-      {
-        find: '@powsybl/network-editor/react',
-        replacement: path.join(componentSrc, 'react/index.ts'),
-      },
       {
         find: '@powsybl/network-editor',
         replacement: path.join(componentSrc, 'index.ts'),

@@ -2,10 +2,10 @@ import {Banner, Button, Card, Header, Loader, Select} from "@design-system-rte/r
 import {useEffect, useRef, useState} from "react";
 import {isAxiosError} from "axios";
 import {actionLabel} from "@powsybl/network-editor";
-import {PropertyForm} from "@powsybl/network-editor/react";
 import type {NetworkInfo, Sld} from "./types.ts";
 import {applyModifications, getSld, getVoltageLevelIds, uploadNetwork} from "./api.ts";
 import {Menu} from "./components/Menu.tsx";
+import {PropertyForm} from "./components/PropertyForm.tsx";
 import {modificationLabel, modificationTarget} from "./modificationLabels.ts";
 import {useNetworkEditor} from "./useNetworkEditor.ts";
 
@@ -170,7 +170,7 @@ export default function App() {
                                     options={vlIds.map(id => ({
                                         label: id,
                                         value: id
-                                    })).filter((a) => a.label.charAt(0)==='M')}
+                                    }))}
                                     placeholder="Choisir un niveau de tension"
                                     showLabel
                                     value={selectedVlId ?? ""}

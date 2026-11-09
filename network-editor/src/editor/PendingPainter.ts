@@ -4,7 +4,7 @@ import { RenameCommand } from '../commands/RenameCommand.ts';
 import { ReplaceCommand } from '../commands/ReplaceCommand.ts';
 import type { EditorModel } from '../model/EditorModel.ts';
 import type { BayPlacement } from '../layout/BayPlacement.ts';
-import { renameHistory } from '../commands/pending.ts';
+import { originalId } from '../commands/pending.ts';
 import { pushTo } from '../utils.ts';
 import {
     NODE_COMPONENT_TYPE,
@@ -56,7 +56,7 @@ export class PendingPainter {
         for (const command of pending) {
             if (!(command instanceof RenameCommand || command instanceof ReplaceCommand)) continue;
             if (command.newId === command.equipmentId) continue;
-            if (command instanceof RenameCommand && renameHistory(pending, command.newId).at(-1) === command.newId) continue;
+            if (command instanceof RenameCommand && originalId(pending, command.newId) === command.newId) continue;
 
             for (const node of this.model.getNodesForEquipment(command.newId)) {
                 if (!isCreatedNodeId(node.id)) labels.set(node.id, command.newId);

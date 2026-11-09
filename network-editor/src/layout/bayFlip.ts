@@ -1,4 +1,4 @@
-import type { FeederDirection } from '../types.ts';
+import type { FeederDirection, LayoutParams } from '../types.ts';
 import type {CellFlip} from "../dom/SvgDomService.ts";
 
 export interface BayFlip {
@@ -19,6 +19,22 @@ export interface BayTurn {
 export interface FeederLevels {
     feederY: number;
     switchY?: number;
+}
+
+export function defaultFeederLevels(
+    params: LayoutParams,
+    busTop: number,
+    busBottom: number,
+    direction: FeederDirection,
+): FeederLevels {
+    const feederSpan = params.spaceForFeederInfos + params.maxComponentHeight;
+    const cellHeight = params.adaptCellHeightToContent
+        ? params.minExternCellHeight + feederSpan + params.stackHeight
+        : params.externCellHeight + params.stackHeight;
+    const switchDistance = params.stackHeight + (cellHeight - params.stackHeight - feederSpan) / 2;
+
+    const at = (distance: number): number => (direction === 'TOP' ? busTop - distance : busBottom + distance);
+    return { feederY: at(cellHeight), switchY: at(switchDistance) };
 }
 
 export function buildBayFlip(

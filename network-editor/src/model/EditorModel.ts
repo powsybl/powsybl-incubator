@@ -153,6 +153,13 @@ export class EditorModel {
         return this.reservedIds.has(equipmentId) || this.getNodesForEquipment(equipmentId).length > 0;
     }
 
+    neighbours(nodeId: string): NodeMetadata[] {
+        return this.getWiresForNode(nodeId).flatMap((wire) => {
+            const other = this.otherEnd(wire, nodeId);
+            return other ? [other] : [];
+        });
+    }
+
     private getWiresForNode(nodeId: string): WireMetadata[] {
         return this.wiresByNode.get(nodeId) ?? [];
     }

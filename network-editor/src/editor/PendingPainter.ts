@@ -104,7 +104,7 @@ export class PendingPainter {
                 anchor.kind === 'BUSBAR'
                     ? this.bayPreview(anchor, spec)
                     : anchor.kind === 'NODE'
-                      ? this.feederPreview(anchor, spec)
+                      ? this.feederPreview(anchor, spec, elementId)
                       : undefined;
             if (!shape) continue;
 
@@ -169,13 +169,13 @@ export class PendingPainter {
         return crossed;
     }
 
-    private feederPreview(target: NodeTarget, spec: CreateSpec): FeederShape | undefined {
+    private feederPreview(target: NodeTarget, spec: CreateSpec, elementId: string): FeederShape | undefined {
         const point = this.nodePoint(target);
         if (!point) return undefined;
 
-        const busbarY = this.geometry.busbarY(target.vlId);
-        const side = busbarY !== undefined && point.y < busbarY ? 'UP' : 'DOWN';
-        return this.feederShape(target.vlId, point, side, spec, spec.switchType, target.id);
+        const side = this.geometry.feederSide(target.vlId, point);
+        const shape = this.feederShape(target.vlId, point, side, spec, spec.switchType, target.id);
+        return { ...shape, branchX: this.placement.forkX(elementId) };
     }
 
     private feederShape(

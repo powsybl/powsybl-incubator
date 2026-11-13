@@ -39,6 +39,11 @@ export class DiagramGeometry {
         return { x: point.x + width / 2, y: point.y + height / 2 };
     }
 
+    feederSide(vlId: string, point: DiagramPoint): 'UP' | 'DOWN' {
+        const busbarY = this.busbarY(vlId);
+        return busbarY !== undefined && point.y < busbarY ? 'UP' : 'DOWN';
+    }
+
     busbarY(vlId: string): number | undefined {
         for (const node of this.model.busbarNodes(vlId)) {
             const span = this.dom.getDiagramSpan(node.id);

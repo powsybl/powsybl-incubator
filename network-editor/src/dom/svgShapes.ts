@@ -51,6 +51,8 @@ export interface FeederShape {
     switch?: PlacedSymbol;
     terminal?: SymbolView;
     busbars?: PlacedSymbol[];
+    /** Column of the branch when the feeder forks off its node. */
+    branchX?: number;
 }
 
 interface FeederPreview extends FeederShape {
@@ -110,7 +112,8 @@ export function defaultSwitchAt(switchSize: number): number {
 }
 
 function feederPreview(view: FeederPreview): SVGGElement {
-    const { x, y, side, length, terminal, busbars = [] } = view;
+    const { y, side, length, terminal, busbars = [] } = view;
+    const x = view.branchX ?? view.x;
     const sign = side === 'UP' ? -1 : 1;
     const end = y + sign * length;
     const terminalHeight = terminal?.height ?? 0;
@@ -130,7 +133,16 @@ function feederPreview(view: FeederPreview): SVGGElement {
         stub.prepend(placeSymbol(symbol, x, y + sign * at));
     }
     if (terminal) stub.append(placeSymbol(terminal, x, end + (sign * terminalHeight) / 2));
+    if (view.branchX !== undefined) stub.prepend(elbow(view.x, view.branchX, y));
     return stub;
+}
+
+/** Horizontal wire from the forked node to the column of the branch. */
+function elbow(fromX: number, toX: number, y: number): SVGGElement {
+    const segment = svgElement('g');
+    segment.setAttribute('transform', `translate(0,${y})`);
+    segment.append(dashLine(fromX, toX));
+    return segment;
 }
 
 function switchPreview(view: SwitchPreview): SVGGElement {

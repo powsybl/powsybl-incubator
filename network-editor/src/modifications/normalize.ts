@@ -3,6 +3,7 @@ import {
     isAttributeModification,
     mergeFeederBayMoves,
     type BusbarCreation,
+    type CouplingDeviceCreation,
     type EquipmentAttributeModification,
     type EquipmentDeletion,
     type EquipmentModification,
@@ -18,9 +19,9 @@ import {
 
 type Creation = InjectionCreation | NodeInjectionCreation | SwitchedInjectionCreation | SwitchCreation | BusbarCreation;
 
-type Kind = 'DELETION' | 'RENAME' | 'CREATION' | 'PROPERTIES' | 'SWITCH_STATE' | 'MOVE';
+type Kind = 'DELETION' | 'RENAME' | 'CREATION' | 'COUPLING' | 'PROPERTIES' | 'SWITCH_STATE' | 'MOVE';
 
-const OUTPUT_ORDER: Kind[] = ['DELETION', 'RENAME', 'CREATION', 'PROPERTIES', 'SWITCH_STATE', 'MOVE'];
+const OUTPUT_ORDER: Kind[] = ['DELETION', 'RENAME', 'CREATION', 'COUPLING', 'PROPERTIES', 'SWITCH_STATE', 'MOVE'];
 
 const CREATION_TYPES = new Set<string>([
     ...Object.values(INJECTION_CREATION_TYPES),
@@ -29,6 +30,11 @@ const CREATION_TYPES = new Set<string>([
     'SWITCH_CREATION',
     'BUSBAR_CREATION',
 ]);
+
+interface CouplingHistory {
+    modification: CouplingDeviceCreation;
+    ends: [EquipmentHistory, EquipmentHistory];
+}
 
 interface EquipmentHistory {
     originalId: string;
@@ -47,17 +53,20 @@ interface EquipmentHistory {
  * 3. order the result by kind, so that deletions free ids before renames and creations reuse them.
  */
 export function normalizeModifications(modificationList: readonly NetworkModification[]): NetworkModification[] {
-    const histories = groupByEquipment(modificationList);
+    const { histories, couplings } = groupByEquipment(modificationList);
     if (hasRenameCycle(histories)) return mergeFeederBayMoves(modificationList);
 
-    const emitted = histories.flatMap(emit);
+    const emitted = [...histories.flatMap(emit), ...couplings.map(emitCoupling)];
     const ordered = OUTPUT_ORDER.flatMap((kind) => emitted.filter((modification) => kindOf(modification) === kind));
     return mergeFeederBayMoves(ordered);
 }
 
 /** `byCurrentId` follows renames: a later edit targets the equipment by its latest id. */
-function groupByEquipment(modificationList: readonly NetworkModification[]): EquipmentHistory[] {
+function groupByEquipment(
+    modificationList: readonly NetworkModification[],
+): { histories: EquipmentHistory[]; couplings: CouplingHistory[] } {
     const histories: EquipmentHistory[] = [];
+    const couplings: CouplingHistory[] = [];
     const byCurrentId = new Map<string, EquipmentHistory>();
 
     const start = (equipmentId: string, creation?: Creation): EquipmentHistory => {
@@ -66,20 +75,34 @@ function groupByEquipment(modificationList: readonly NetworkModification[]): Equ
         byCurrentId.set(equipmentId, history);
         return history;
     };
+    const historyOf = (equipmentId: string): EquipmentHistory => byCurrentId.get(equipmentId) ?? start(equipmentId);
 
     for (const modification of splitMoves(modificationList)) {
+        if (modification.type === 'CREATE_COUPLING_DEVICE') {
+            const { busbarSectionId1, busbarSectionId2 } = modification.couplingDeviceInfos;
+            couplings.push({ modification, ends: [historyOf(busbarSectionId1), historyOf(busbarSectionId2)] });
+            continue;
+        }
+
         const equipmentId = equipmentIdOf(modification);
         if (kindOf(modification) === 'CREATION') {
             start(equipmentId, structuredClone(modification as Creation));
             continue;
         }
-        const history = byCurrentId.get(equipmentId) ?? start(equipmentId);
+        const history = historyOf(equipmentId);
         record(history, modification);
 
         byCurrentId.delete(equipmentId);
         if (!history.deletion) byCurrentId.set(history.currentId, history);
     }
-    return histories;
+    return { histories, couplings };
+}
+
+function emitCoupling({ modification, ends }: CouplingHistory): CouplingDeviceCreation {
+    return {
+        ...modification,
+        couplingDeviceInfos: { busbarSectionId1: ends[0].currentId, busbarSectionId2: ends[1].currentId },
+    };
 }
 
 function splitMoves(modificationList: readonly NetworkModification[]): NetworkModification[] {
@@ -237,6 +260,8 @@ function kindOf(modification: NetworkModification): Kind {
             return 'DELETION';
         case 'EQUIPMENT_RENAME':
             return 'RENAME';
+        case 'CREATE_COUPLING_DEVICE':
+            return 'COUPLING';
         case 'EQUIPMENT_ATTRIBUTE_MODIFICATION':
             return 'SWITCH_STATE';
         case 'MOVE_VOLTAGE_LEVEL_FEEDER_BAYS':
@@ -246,7 +271,7 @@ function kindOf(modification: NetworkModification): Kind {
     }
 }
 
-function equipmentIdOf(modification: NetworkModification): string {
+function equipmentIdOf(modification: Exclude<NetworkModification, CouplingDeviceCreation>): string {
     switch (modification.type) {
         case 'NODE_INJECTION_CREATION':
         case 'SWITCHED_INJECTION_CREATION':

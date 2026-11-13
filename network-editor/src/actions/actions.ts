@@ -59,6 +59,7 @@ interface ActionHost {
     proposedOrder(target: BusbarTarget, insertion?: number): number | undefined;
     proposeEquipmentId(type: ElementType): string;
     moveDestinations(equipmentId: string): BusbarTarget[];
+    couplingTargets(targetId: string): BusbarTarget[];
     canBeginBayMove(equipmentId: string): boolean;
 
     // Edits: each one validates, then pushes a command; false when refused.
@@ -76,6 +77,7 @@ interface ActionHost {
     deleteElements(equipmentIds: readonly string[], kind: 'element' | 'bay'): boolean;
     beginBayMove(equipmentId: string): boolean;
     createBusbar(targetId: string, equipmentId: string): boolean;
+    createCoupling(targetId: string, otherId: string): boolean;
     setBayPosition(equipmentId: string, position: BayPosition): boolean;
     moveFeederBay(equipmentId: string, busbarTargetId: string): boolean;
     group(edit: () => boolean): boolean;
@@ -120,6 +122,7 @@ export function buildActions(
         }
         if (operation === 'RENAME') return renameAction(host, target);
         if (operation === 'CREATE_BUSBAR') return [busbarAction(host, target)];
+        if (operation === 'CREATE_COUPLING') return couplingActions(host, target);
         if (target.kind === 'EQUIPMENT') return equipmentActions(host, target, operation);
         return [];
     });
@@ -447,6 +450,17 @@ function busbarAction(host: ActionHost, target: EditTarget): EditorAction {
             return equipmentId ? host.createBusbar(target.id, equipmentId) : false;
         },
     };
+}
+
+function couplingActions(host: ActionHost, target: EditTarget): EditorAction[] {
+    return host.couplingTargets(target.id).map((other) => ({
+        id: `${createOperationId(target, 'CREATE_COUPLING')}:${other.id}`,
+        operation: 'CREATE_COUPLING' as const,
+        subject: { kind: 'BUSBAR' as const, busbarSectionId: other.busbarSectionId },
+        form: [],
+        initial: {},
+        run: () => host.createCoupling(target.id, other.id),
+    }));
 }
 
 function renameAction(host: ActionHost, target: EditTarget): EditorAction[] {

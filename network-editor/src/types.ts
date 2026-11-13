@@ -263,7 +263,8 @@ export type EditOperation =
     | 'FLIP_BAY_DIRECTION'
     | 'MOVE_BAY'
     | 'RENAME'
-    | 'CREATE_BUSBAR';
+    | 'CREATE_BUSBAR'
+    | 'CREATE_COUPLING';
 
 export const ORDER_STEP = 10;
 

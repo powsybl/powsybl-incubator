@@ -173,6 +173,12 @@ export interface BusbarCreation {
     sectionIndex: number;
 }
 
+export interface CouplingDeviceCreation {
+    type: 'CREATE_COUPLING_DEVICE';
+    voltageLevelId: string;
+    couplingDeviceInfos: { busbarSectionId1: string; busbarSectionId2: string };
+}
+
 export interface EquipmentRename {
     type: 'EQUIPMENT_RENAME';
     equipmentId: string;
@@ -190,6 +196,7 @@ export type NetworkModification =
     | SwitchedInjectionCreation
     | SwitchCreation
     | BusbarCreation
+    | CouplingDeviceCreation
     | EquipmentRename;
 
 export const INJECTION_CREATION_TYPES: Record<string, InjectionCreation['type']> = {

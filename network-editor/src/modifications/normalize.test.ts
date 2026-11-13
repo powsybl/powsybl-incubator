@@ -678,4 +678,30 @@ describe('normalizeModifications', () => {
         };
         expect(normalizeModifications([busbar])).toEqual([busbar]);
     });
+    describe('coupling', () => {
+        const coupling = (id1: string, id2: string): NetworkModification => ({
+            type: 'CREATE_COUPLING_DEVICE',
+            voltageLevelId: 'VL1',
+            couplingDeviceInfos: { busbarSectionId1: id1, busbarSectionId2: id2 },
+        });
+        const rename = (equipmentId: string, newEquipmentId: string): NetworkModification => ({
+            type: 'EQUIPMENT_RENAME',
+            equipmentId,
+            newEquipmentId,
+        });
+
+        it('follows a busbar renamed after the coupling', () => {
+            expect(normalizeModifications([coupling('BBS1', 'BBS2'), rename('BBS2', 'X')])).toEqual([
+                expect.objectContaining(rename('BBS2', 'X')),
+                coupling('BBS1', 'X'),
+            ]);
+        });
+
+        it('keeps a busbar renamed before the coupling', () => {
+            expect(normalizeModifications([rename('BBS2', 'X'), coupling('BBS1', 'X')])).toEqual([
+                expect.objectContaining(rename('BBS2', 'X')),
+                coupling('BBS1', 'X'),
+            ]);
+        });
+    });
 });

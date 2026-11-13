@@ -10,6 +10,7 @@ import type { Command, PendingCreateCommand } from '../commands/Command.ts';
 import { claimedTargets, findPendingCreate, pendingBayPosition, pendingOrders } from '../commands/pending.ts';
 import { CreateCommand } from '../commands/CreateCommand.ts';
 import { CreateBusbarCommand } from '../commands/CreateBusbarCommand.ts';
+import { CreateCouplingCommand } from '../commands/CreateCouplingCommand.ts';
 import { CreateSwitchCommand } from '../commands/CreateSwitchCommand.ts';
 import { CreateSwitchedInjectionCommand } from '../commands/CreateSwitchedInjectionCommand.ts';
 import { DeleteElementCommand } from '../commands/DeleteElementCommand.ts';
@@ -184,6 +185,40 @@ export class EditorCore {
             .filter((command) => command.vlId === vlId)
             .map((command) => command.busbarIndex);
         return Math.max(this.model.lastBusbarIndex(vlId), ...pending) + 1;
+    }
+
+    couplingTargets(targetId: string): BusbarTarget[] {
+        const busbar = this.targetFor(targetId, 'BUSBAR', 'CREATE_COUPLING');
+        if (!busbar) return [];
+
+        const coupled = this.coupledWith(busbar);
+        return [...this.targets.values()].filter(
+            (target): target is BusbarTarget =>
+                target.kind === 'BUSBAR' &&
+                target.id !== busbar.id &&
+                target.vlId === busbar.vlId &&
+                target.sectionIndex === busbar.sectionIndex &&
+                !coupled.has(target.id),
+        );
+    }
+
+    private coupledWith(busbar: BusbarTarget): Set<string> {
+        const coupled = new Set<string>();
+        for (const command of this.pending) {
+            if (!(command instanceof CreateCouplingCommand)) continue;
+            const ends = [command.first.id, command.second.id];
+            if (ends.includes(busbar.id)) for (const end of ends) coupled.add(end);
+        }
+        return coupled;
+    }
+
+    createCoupling(targetId: string, otherId: string): boolean {
+        const busbar = this.targetFor(targetId, 'BUSBAR', 'CREATE_COUPLING');
+        const other = this.couplingTargets(targetId).find((target) => target.id === otherId);
+        if (!busbar || !other) return false;
+
+        this.history.push(new CreateCouplingCommand(busbar, other));
+        return true;
     }
 
     replaceEquipment(equipmentId: string, spec: CreateSpec): boolean {

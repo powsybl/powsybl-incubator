@@ -1,21 +1,36 @@
 import type { EditorModel } from '../model/EditorModel.ts';
-import type { Command } from '../commands/Command.ts';
+import { isPendingCreate, type Command } from '../commands/Command.ts';
+import { CreateCouplingCommand } from '../commands/CreateCouplingCommand.ts';
+import { CreateSwitchCommand } from '../commands/CreateSwitchCommand.ts';
 import { pendingOrders } from '../commands/pending.ts';
 import {
     bayGaps,
     busbarStretch,
     cellWidthFromColumns,
+    forkSide,
     reflowCells,
     type AddedCell,
     type BayBlock,
     type LayoutCell,
 } from './bayLayout.ts';
-import type { BaySlotCandidate, BusbarTarget, OrderClaim, PendingOrders } from '../types.ts';
+import {
+    BUSBAR_SECTION_TYPE,
+    type BaySlotCandidate,
+    type BusbarTarget,
+    type DiagramPoint,
+    type NodeMetadata,
+    type OrderClaim,
+    type PendingOrders,
+} from '../types.ts';
 import type { SvgDomService } from '../dom/SvgDomService.ts';
 import type { DiagramGeometry } from './DiagramGeometry.ts';
 
+const COUPLING_ORDER = Number.MAX_SAFE_INTEGER / 2;
+
 export class BayPlacement {
     private readonly createdBayXs = new Map<string, number>();
+    private readonly forkXs = new Map<string, number>();
+    private readonly couplingXs = new Map<string, number>();
     private readonly drawnCells = new WeakMap<Element, Omit<LayoutCell, 'id' | 'order'>>();
 
     constructor(
@@ -27,11 +42,23 @@ export class BayPlacement {
 
     reflow(): void {
         this.createdBayXs.clear();
+        this.forkXs.clear();
+        this.couplingXs.clear();
         for (const vlId of this.model.voltageLevelIds()) this.reflowVoltageLevel(vlId);
     }
 
     createdBayX(vlId: string, order: number): number | undefined {
         return this.createdBayXs.get(createdBayKey(vlId, order));
+    }
+
+    /** Column of the branch of a preview that forks off its node, if it forks at all. */
+    forkX(elementId: string): number | undefined {
+        return this.forkXs.get(elementId);
+    }
+
+    /** Centre of the two columns a pending coupling stands on. */
+    couplingX(previewId: string): number | undefined {
+        return this.couplingXs.get(previewId);
     }
 
     slotCandidates(
@@ -92,25 +119,105 @@ export class BayPlacement {
             }
         });
 
-        const added: AddedCell[] = pending.claims.filter(isCreatedBay).map((claim) => ({
+        const bays: AddedCell[] = pending.claims.filter(isCreatedBay).map((claim) => ({
             id: createdBayKey(vlId, claim.order),
             width: cellWidth,
             order: claim.order,
             section: claim.sectionIndex,
         }));
+        const forks = this.forkColumns(vlId, cells, layout, cellWidth);
+        const couplings = this.couplingCells(vlId, cellWidth);
+        const added = [...bays, ...forks, ...couplings];
 
         const lefts = reflowCells(layout, added, removed);
         for (const { id, left } of layout) {
             this.dom.setCellShift(cells[Number(id)], lefts.get(id)! - left);
         }
-        for (const { id, width } of added) {
+        for (const { id, width } of bays) {
             this.createdBayXs.set(id, lefts.get(id)! + width / 2);
+        }
+        for (const { id, width } of forks) {
+            this.forkXs.set(id, lefts.get(id)! + width / 2);
+        }
+        for (const { id, width } of couplings) {
+            this.couplingXs.set(id, lefts.get(id)! + width / 2);
         }
         for (const busbar of busbars) {
             if (busbar.sectionIndex === undefined) continue;
             const { dx, dWidth } = busbarStretch(busbar.sectionIndex, added, removed);
             this.dom.setBusbarStretch(busbar.id, dx, dWidth);
         }
+    }
+
+    /** Two columns at the end of the section, one per busbar, for every pending coupling. */
+    private couplingCells(vlId: string, cellWidth: number): AddedCell[] {
+        return this.pending()
+            .filter((command): command is CreateCouplingCommand => command instanceof CreateCouplingCommand)
+            .filter((command) => command.first.vlId === vlId)
+            .map((command, rank) => ({
+                id: command.previewId,
+                width: 2 * cellWidth,
+                order: COUPLING_ORDER + rank,
+                section: command.first.sectionIndex,
+            }));
+    }
+
+    /**
+     * One more column for every preview that forks off its node, as powsybl gives every feeder of a cell its own
+     * column. A column is a cell added right before or after its own: the reflow makes room for it.
+     */
+    private forkColumns(
+        vlId: string,
+        cells: readonly Element[],
+        layout: readonly LayoutCell[],
+        cellWidth: number,
+    ): AddedCell[] {
+        const anchored = new Set<string>();
+        const counts = new Map<string, number>();
+        const columns: AddedCell[] = [];
+
+        for (const command of this.pending()) {
+            // A switch preview joins two nodes, a bay preview stands on its busbar: neither leaves a node.
+            if (!isPendingCreate(command) || command instanceof CreateSwitchCommand) continue;
+
+            const marker = command.pendingMarker;
+            const node = marker && this.model.getNodeById(marker.nodeId);
+            const centre = node && this.geometry.nodeCentre(node);
+            if (!marker?.elementId || !node || !centre || node.vid !== vlId) continue;
+            if (node.componentType === BUSBAR_SECTION_TYPE) continue;
+
+            const alreadyAnchored = anchored.has(node.id);
+            anchored.add(node.id);
+            if (!alreadyAnchored && !this.hasBranch(node, centre, vlId)) continue;
+
+            // Without a bay cell (coupling), there is no column to add.
+            const element = this.dom.bayCell(node.id);
+            const cell = element && layout.find(({ id }) => id === String(cells.indexOf(element)));
+            if (!cell || cell.order === undefined || cell.section === undefined) continue;
+
+            const side = forkSide(centre.x, cell);
+            const key = `${cell.id}:${side}`;
+            const rank = (counts.get(key) ?? 0) + 1;
+            counts.set(key, rank);
+            // Between the cell and its neighbour, a little further out for each fork on the same side.
+            const offset = rank / (rank + 1);
+            columns.push({
+                id: marker.elementId,
+                width: cellWidth,
+                order: side === 'LEFT' ? cell.order - offset : cell.order + offset,
+                section: cell.section,
+            });
+        }
+        return columns;
+    }
+
+    /** A branch already leaves the node on the side the preview goes: the stub would lie over it. */
+    private hasBranch(node: NodeMetadata, centre: DiagramPoint, vlId: string): boolean {
+        const sign = this.geometry.feederSide(vlId, centre) === 'UP' ? -1 : 1;
+        return this.model.neighbours(node.id).some((other) => {
+            const y = this.geometry.nodeCentre(other)?.y;
+            return y !== undefined && sign * (y - centre.y) > 0;
+        });
     }
 
     /** Where the cell stands before any editor shift, and the order it takes in the layout. */

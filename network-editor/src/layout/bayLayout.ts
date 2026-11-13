@@ -139,3 +139,9 @@ export function cellWidthFromColumns(minX: number, maxX: number, cellWidth: numb
     const columns = Math.round((maxX - minX) / cellWidth) + 1;
     return columns * cellWidth;
 }
+
+export type ForkSide = 'LEFT' | 'RIGHT';
+
+export function forkSide(nodeX: number, cell: LayoutCell): ForkSide {
+    return nodeX < cell.left + cell.width / 2 ? 'LEFT' : 'RIGHT';
+}

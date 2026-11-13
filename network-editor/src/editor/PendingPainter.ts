@@ -1,5 +1,6 @@
 import { isPendingCreate, type Command } from '../commands/Command.ts';
 import { CreateBusbarCommand } from '../commands/CreateBusbarCommand.ts';
+import { CreateCouplingCommand } from '../commands/CreateCouplingCommand.ts';
 import { CreateSwitchCommand } from '../commands/CreateSwitchCommand.ts';
 import { RenameCommand } from '../commands/RenameCommand.ts';
 import { ReplaceCommand } from '../commands/ReplaceCommand.ts';
@@ -25,6 +26,7 @@ import {
     alignedExtent,
     defaultFeederLength,
     defaultSwitchAt,
+    type CouplingPreview,
     type FeederShape,
     type PendingBadgeView,
     type PendingPreview,
@@ -32,6 +34,8 @@ import {
     type SwitchPreview,
     type SymbolView,
 } from '../dom/svgShapes.ts';
+
+const COUPLING_HEIGHT = 40;
 
 export class PendingPainter {
     constructor(
@@ -86,6 +90,11 @@ export class PendingPainter {
                 if (span) previews.push({ kind: 'BUSBAR', id: `ne-busbar-${command.equipmentId}`, label: command.equipmentId, span });
                 continue;
             }
+            if (command instanceof CreateCouplingCommand) {
+                const preview = this.couplingPreview(command);
+                if (preview) previews.push(preview);
+                continue;
+            }
             if (!isPendingCreate(command)) continue;
 
             if (command instanceof CreateSwitchCommand) {
@@ -104,7 +113,7 @@ export class PendingPainter {
                 anchor.kind === 'BUSBAR'
                     ? this.bayPreview(anchor, spec)
                     : anchor.kind === 'NODE'
-                      ? this.feederPreview(anchor, spec)
+                      ? this.feederPreview(anchor, spec, elementId)
                       : undefined;
             if (!shape) continue;
 
@@ -132,6 +141,35 @@ export class PendingPainter {
             to: isSpan(far) ? { x: clampToSpan(far, from.x), y: far.y } : far,
             symbol: first && this.switchSymbol(spec.type, first.id, open),
         };
+    }
+
+    private couplingPreview(command: CreateCouplingCommand): CouplingPreview | undefined {
+        const centre = this.placement.couplingX(command.previewId);
+        const ends = [command.first, command.second].flatMap((busbar) => {
+            const span = this.dom.getDiagramSpan(busbar.id);
+            return span ? [{ id: busbar.id, y: span.y }] : [];
+        });
+        if (centre === undefined || ends.length < 2) return undefined;
+        const [lower, upper] = ends.sort((a, b) => b.y - a.y);
+
+        const half = this.model.cellWidth() / 2;
+        return {
+            kind: 'COUPLING',
+            id: command.previewId,
+            // powsybl names the devices it creates: their ids are unknown until the backend answers.
+            label: 'Coupling',
+            // The lower busbar takes the left column, as in a drawn coupling cell.
+            legs: [
+                { x: centre - half, y: lower.y, symbol: this.couplingSymbol(lower.id) },
+                { x: centre + half, y: upper.y, symbol: this.couplingSymbol(upper.id) },
+            ],
+            bridgeY: upper.y - COUPLING_HEIGHT,
+            breaker: this.switchSymbol('BREAKER', command.first.id),
+        };
+    }
+
+    private couplingSymbol(busbarNodeId: string): SymbolView | undefined {
+        return this.geometry.symbolFor(NODE_COMPONENT_TYPE.DISCONNECTOR, { open: false }, busbarNodeId);
     }
 
     private endAnchor(target: EditTarget): DiagramPoint | DiagramSpan | undefined {
@@ -169,13 +207,13 @@ export class PendingPainter {
         return crossed;
     }
 
-    private feederPreview(target: NodeTarget, spec: CreateSpec): FeederShape | undefined {
+    private feederPreview(target: NodeTarget, spec: CreateSpec, elementId: string): FeederShape | undefined {
         const point = this.nodePoint(target);
         if (!point) return undefined;
 
-        const busbarY = this.geometry.busbarY(target.vlId);
-        const side = busbarY !== undefined && point.y < busbarY ? 'UP' : 'DOWN';
-        return this.feederShape(target.vlId, point, side, spec, spec.switchType, target.id);
+        const side = this.geometry.feederSide(target.vlId, point);
+        const shape = this.feederShape(target.vlId, point, side, spec, spec.switchType, target.id);
+        return { ...shape, branchX: this.placement.forkX(elementId) };
     }
 
     private feederShape(

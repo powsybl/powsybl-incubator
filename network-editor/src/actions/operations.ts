@@ -40,6 +40,10 @@ export const OPERATIONS: Record<EditOperation, OperationSpec> = {
         label: 'Add busbar',
         appliesTo: (target) => target.kind === 'BUSBAR',
     },
+    CREATE_COUPLING: {
+        label: 'Add coupling',
+        appliesTo: (target) => target.kind === 'BUSBAR',
+    },
     DELETE: {
         label: 'Delete',
         danger: true,

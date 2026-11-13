@@ -51,6 +51,8 @@ export interface FeederShape {
     switch?: PlacedSymbol;
     terminal?: SymbolView;
     busbars?: PlacedSymbol[];
+    /** Column of the branch when the feeder forks off its node. */
+    branchX?: number;
 }
 
 interface FeederPreview extends FeederShape {
@@ -75,7 +77,21 @@ export interface BusbarPreview {
     span: DiagramSpan;
 }
 
-export type PendingPreview = FeederPreview | SwitchPreview | BusbarPreview;
+/** A disconnector sitting on a busbar, where the coupling leaves it. */
+export interface CouplingLeg extends DiagramPoint {
+    symbol?: SymbolView;
+}
+
+export interface CouplingPreview {
+    kind: 'COUPLING';
+    id: string;
+    label: string;
+    legs: readonly [CouplingLeg, CouplingLeg];
+    bridgeY: number;
+    breaker?: SymbolView;
+}
+
+export type PendingPreview = FeederPreview | SwitchPreview | BusbarPreview | CouplingPreview;
 
 interface PreviewLayout {
     id: string;
@@ -96,6 +112,8 @@ export function createPendingPreview(view: PendingPreview): SVGGElement {
             return switchPreview(view);
         case 'BUSBAR':
             return busbarPreview(view);
+        case 'COUPLING':
+            return couplingPreview(view);
         default:
             return feederPreview(view);
     }
@@ -110,7 +128,8 @@ export function defaultSwitchAt(switchSize: number): number {
 }
 
 function feederPreview(view: FeederPreview): SVGGElement {
-    const { x, y, side, length, terminal, busbars = [] } = view;
+    const { y, side, length, terminal, busbars = [] } = view;
+    const x = view.branchX ?? view.x;
     const sign = side === 'UP' ? -1 : 1;
     const end = y + sign * length;
     const terminalHeight = terminal?.height ?? 0;
@@ -130,7 +149,16 @@ function feederPreview(view: FeederPreview): SVGGElement {
         stub.prepend(placeSymbol(symbol, x, y + sign * at));
     }
     if (terminal) stub.append(placeSymbol(terminal, x, end + (sign * terminalHeight) / 2));
+    if (view.branchX !== undefined) stub.prepend(elbow(view.x, view.branchX, y));
     return stub;
+}
+
+/** Horizontal wire from the forked node to the column of the branch. */
+function elbow(fromX: number, toX: number, y: number): SVGGElement {
+    const segment = svgElement('g');
+    segment.setAttribute('transform', `translate(0,${y})`);
+    segment.append(dashLine(fromX, toX));
+    return segment;
 }
 
 function switchPreview(view: SwitchPreview): SVGGElement {
@@ -146,6 +174,32 @@ function switchPreview(view: SwitchPreview): SVGGElement {
         gap: symbol && { at: length / 2, symbol },
         label: { text: view.label, x: middle.x, top: middle.y - height - LABEL_HEIGHT },
     });
+}
+
+function couplingPreview(view: CouplingPreview): SVGGElement {
+    const [first, second] = view.legs;
+    const { bridgeY } = view;
+
+    const coupling = drawPreview({
+        id: view.id,
+        from: { x: first.x, y: bridgeY },
+        to: { x: second.x, y: bridgeY },
+        gap: view.breaker && { at: (second.x - first.x) / 2, symbol: view.breaker },
+        label: { text: view.label, x: (first.x + second.x) / 2, top: bridgeY - LABEL_GAP - LABEL_HEIGHT },
+    });
+
+    for (const leg of view.legs) {
+        coupling.prepend(couplingLeg(leg, bridgeY));
+        if (leg.symbol) coupling.append(placeSymbol(leg.symbol, leg.x, leg.y));
+    }
+    return coupling;
+}
+
+function couplingLeg(leg: CouplingLeg, bridgeY: number): SVGGElement {
+    const wire = svgElement('g');
+    wire.setAttribute('transform', `translate(${leg.x},${leg.y}) rotate(-90)`);
+    wire.append(dashLine((leg.symbol?.height ?? 0) / 2, leg.y - bridgeY));
+    return wire;
 }
 
 function busbarPreview({ id, label, span }: BusbarPreview): SVGGElement {

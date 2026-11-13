@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { bayGaps, busbarStretch, cellWidthFromColumns, reflowCells } from './bayLayout.ts';
+import { bayGaps, busbarStretch, cellWidthFromColumns, forkSide, reflowCells } from './bayLayout.ts';
 
 const SPAN = { left: 0, right: 300, y: 0 };
 
@@ -137,5 +137,37 @@ describe('cellWidthFromColumns', () => {
         expect(cellWidthFromColumns(0, 20, 10)).toBe(30);
         expect(cellWidthFromColumns(5, 5, 10)).toBe(10);
         expect(cellWidthFromColumns(0, 19, 10)).toBe(30);
+    });
+});
+
+describe('forkSide', () => {
+    // Cell of the demo with columns 515 and 565.
+    const CELL = { id: 'A', left: 490, width: 100 };
+
+    it('opens the column away from the other branches of the cell', () => {
+        expect(forkSide(515, CELL)).toBe('LEFT');
+        expect(forkSide(540, CELL)).toBe('RIGHT');
+    });
+});
+
+describe('fork columns', () => {
+    // Cell of the demo with columns 515 and 565 (order 90), then the cell of order 110.
+    const FORKED = { id: 'A', left: 490, width: 100, order: 90, section: 1 };
+    const NEXT = { id: 'B', left: 590, width: 50, order: 110, section: 1 };
+    const column = (id: string, order: number) => ({ id, width: 50, order, section: 1 });
+
+    it('opens a column on the right of the cell and pushes the next one', () => {
+        const lefts = reflowCells([FORKED, NEXT], [column('F', 90.5)]);
+        expect(lefts).toEqual(new Map([['A', 490], ['F', 590], ['B', 640]]));
+    });
+
+    it('opens a column on the left of the cell and pushes the cell', () => {
+        const lefts = reflowCells([FORKED, NEXT], [column('F', 89.5)]);
+        expect(lefts).toEqual(new Map([['F', 490], ['A', 540], ['B', 640]]));
+    });
+
+    it('puts each new fork of a side further out', () => {
+        const lefts = reflowCells([FORKED, NEXT], [column('F1', 90 + 1 / 2), column('F2', 90 + 2 / 3)]);
+        expect(lefts).toEqual(new Map([['A', 490], ['F1', 590], ['F2', 640], ['B', 690]]));
     });
 });

@@ -43,7 +43,8 @@ powsybl-diagram ──► SVG + metadata ──► NetworkEditor ──► chang
   - injections (load, generator, battery, shunt compensator, static var compensator, VSC/LCC converter stations,
     boundary line) as a new feeder bay on a busbar, on a free node, or behind a new switch;
   - switches between two nodes;
-  - busbars, below the existing ones.
+  - busbars, below the existing ones;
+  - couplings between two busbars of the same section.
 - **Deletion** of equipments and whole bays, **replacement** of an injection by another type, **renaming**, **property
   update**.
 - **Bay layout**: move a bay to another busbar, change its position, flip its direction.
@@ -206,6 +207,7 @@ Each operation produces one entry of the change set. The format follows the DTOs
 | `CREATE_SWITCHED_INJECTION` | node | `SWITCHED_INJECTION_CREATION` | none yet |
 | `CREATE_SWITCH` | two nodes | `SWITCH_CREATION` | fork |
 | `CREATE_BUSBAR` | busbar | `BUSBAR_CREATION` | fork |
+| `CREATE_COUPLING` | two busbars | `CREATE_COUPLING_DEVICE` | GridSuite |
 | `DELETE_BAY` | equipment | `EQUIPMENT_DELETION` | GridSuite |
 | `DELETE` | equipment | `ELEMENT_DELETION` | none yet |
 | `REPLACE` | injection | `EQUIPMENT_DELETION` + creation (`*_CREATION`, or `NODE_INJECTION_CREATION` off a busbar bay) | GridSuite / none yet |

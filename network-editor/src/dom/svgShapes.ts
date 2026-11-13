@@ -77,7 +77,21 @@ export interface BusbarPreview {
     span: DiagramSpan;
 }
 
-export type PendingPreview = FeederPreview | SwitchPreview | BusbarPreview;
+/** A disconnector sitting on a busbar, where the coupling leaves it. */
+export interface CouplingLeg extends DiagramPoint {
+    symbol?: SymbolView;
+}
+
+export interface CouplingPreview {
+    kind: 'COUPLING';
+    id: string;
+    label: string;
+    legs: readonly [CouplingLeg, CouplingLeg];
+    bridgeY: number;
+    breaker?: SymbolView;
+}
+
+export type PendingPreview = FeederPreview | SwitchPreview | BusbarPreview | CouplingPreview;
 
 interface PreviewLayout {
     id: string;
@@ -98,6 +112,8 @@ export function createPendingPreview(view: PendingPreview): SVGGElement {
             return switchPreview(view);
         case 'BUSBAR':
             return busbarPreview(view);
+        case 'COUPLING':
+            return couplingPreview(view);
         default:
             return feederPreview(view);
     }
@@ -158,6 +174,32 @@ function switchPreview(view: SwitchPreview): SVGGElement {
         gap: symbol && { at: length / 2, symbol },
         label: { text: view.label, x: middle.x, top: middle.y - height - LABEL_HEIGHT },
     });
+}
+
+function couplingPreview(view: CouplingPreview): SVGGElement {
+    const [first, second] = view.legs;
+    const { bridgeY } = view;
+
+    const coupling = drawPreview({
+        id: view.id,
+        from: { x: first.x, y: bridgeY },
+        to: { x: second.x, y: bridgeY },
+        gap: view.breaker && { at: (second.x - first.x) / 2, symbol: view.breaker },
+        label: { text: view.label, x: (first.x + second.x) / 2, top: bridgeY - LABEL_GAP - LABEL_HEIGHT },
+    });
+
+    for (const leg of view.legs) {
+        coupling.prepend(couplingLeg(leg, bridgeY));
+        if (leg.symbol) coupling.append(placeSymbol(leg.symbol, leg.x, leg.y));
+    }
+    return coupling;
+}
+
+function couplingLeg(leg: CouplingLeg, bridgeY: number): SVGGElement {
+    const wire = svgElement('g');
+    wire.setAttribute('transform', `translate(${leg.x},${leg.y}) rotate(-90)`);
+    wire.append(dashLine((leg.symbol?.height ?? 0) / 2, leg.y - bridgeY));
+    return wire;
 }
 
 function busbarPreview({ id, label, span }: BusbarPreview): SVGGElement {

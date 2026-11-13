@@ -757,3 +757,43 @@ describe('EditorCore busbar creation', () => {
         expect(busbarAction(core, model).run({ equipmentId: 'BBS3' })).toBe(true);
     });
 });
+
+describe('EditorCore coupling creation', () => {
+    const COUPLING = {
+        type: 'CREATE_COUPLING_DEVICE',
+        voltageLevelId: 'MTPELP6',
+        couplingDeviceInfos: { busbarSectionId1: 'MTPELP6_1', busbarSectionId2: 'MTPELP6_2' },
+    };
+
+    function couplingActions(core: EditorCore, model: EditorModel, busbarId = BUSBAR): EditorAction[] {
+        const busbar = model.collectTargets().find((target) => target.id === busbarId)!;
+        return core.actionsFor(busbar).filter((candidate) => candidate.operation === 'CREATE_COUPLING');
+    }
+
+    it('offers one coupling per other busbar of the section and sends it without a form', () => {
+        const { core, model } = setup();
+        const [action, ...others] = couplingActions(core, model);
+        expect(others).toEqual([]);
+        expect(action.subject).toEqual({ kind: 'BUSBAR', busbarSectionId: 'MTPELP6_2' });
+        expect(action.form).toEqual([]);
+
+        expect(action.run()).toBe(true);
+        expect(core.getModifications()).toEqual([COUPLING]);
+
+        core.undo();
+        expect(core.getModifications()).toEqual([]);
+    });
+
+    it('no longer offers a pair already coupled, even after a rename', () => {
+        const { core, model } = setup();
+        couplingActions(core, model)[0].run();
+        core.renameEquipment('MTPELP6_2', 'BBS2');
+
+        expect(couplingActions(core, model)).toEqual([]);
+        expect(couplingActions(core, model, 'idMTPELP6_95_2')).toEqual([]);
+        expect(core.getModifications()).toEqual([
+            expect.objectContaining({ type: 'EQUIPMENT_RENAME', equipmentId: 'MTPELP6_2', newEquipmentId: 'BBS2' }),
+            { ...COUPLING, couplingDeviceInfos: { busbarSectionId1: 'MTPELP6_1', busbarSectionId2: 'BBS2' } },
+        ]);
+    });
+});

@@ -1,5 +1,6 @@
 import type { EditorModel } from '../model/EditorModel.ts';
 import { isPendingCreate, type Command } from '../commands/Command.ts';
+import { CreateCouplingCommand } from '../commands/CreateCouplingCommand.ts';
 import { CreateSwitchCommand } from '../commands/CreateSwitchCommand.ts';
 import { pendingOrders } from '../commands/pending.ts';
 import {
@@ -24,9 +25,12 @@ import {
 import type { SvgDomService } from '../dom/SvgDomService.ts';
 import type { DiagramGeometry } from './DiagramGeometry.ts';
 
+const COUPLING_ORDER = Number.MAX_SAFE_INTEGER / 2;
+
 export class BayPlacement {
     private readonly createdBayXs = new Map<string, number>();
     private readonly forkXs = new Map<string, number>();
+    private readonly couplingXs = new Map<string, number>();
     private readonly drawnCells = new WeakMap<Element, Omit<LayoutCell, 'id' | 'order'>>();
 
     constructor(
@@ -39,6 +43,7 @@ export class BayPlacement {
     reflow(): void {
         this.createdBayXs.clear();
         this.forkXs.clear();
+        this.couplingXs.clear();
         for (const vlId of this.model.voltageLevelIds()) this.reflowVoltageLevel(vlId);
     }
 
@@ -49,6 +54,11 @@ export class BayPlacement {
     /** Column of the branch of a preview that forks off its node, if it forks at all. */
     forkX(elementId: string): number | undefined {
         return this.forkXs.get(elementId);
+    }
+
+    /** Centre of the two columns a pending coupling stands on. */
+    couplingX(previewId: string): number | undefined {
+        return this.couplingXs.get(previewId);
     }
 
     slotCandidates(
@@ -116,7 +126,8 @@ export class BayPlacement {
             section: claim.sectionIndex,
         }));
         const forks = this.forkColumns(vlId, cells, layout, cellWidth);
-        const added = [...bays, ...forks];
+        const couplings = this.couplingCells(vlId, cellWidth);
+        const added = [...bays, ...forks, ...couplings];
 
         const lefts = reflowCells(layout, added, removed);
         for (const { id, left } of layout) {
@@ -128,11 +139,27 @@ export class BayPlacement {
         for (const { id, width } of forks) {
             this.forkXs.set(id, lefts.get(id)! + width / 2);
         }
+        for (const { id, width } of couplings) {
+            this.couplingXs.set(id, lefts.get(id)! + width / 2);
+        }
         for (const busbar of busbars) {
             if (busbar.sectionIndex === undefined) continue;
             const { dx, dWidth } = busbarStretch(busbar.sectionIndex, added, removed);
             this.dom.setBusbarStretch(busbar.id, dx, dWidth);
         }
+    }
+
+    /** Two columns at the end of the section, one per busbar, for every pending coupling. */
+    private couplingCells(vlId: string, cellWidth: number): AddedCell[] {
+        return this.pending()
+            .filter((command): command is CreateCouplingCommand => command instanceof CreateCouplingCommand)
+            .filter((command) => command.first.vlId === vlId)
+            .map((command, rank) => ({
+                id: command.previewId,
+                width: 2 * cellWidth,
+                order: COUPLING_ORDER + rank,
+                section: command.first.sectionIndex,
+            }));
     }
 
     /**

@@ -113,7 +113,6 @@ h2 {
     border: 1px solid #ccc;
     border-radius: 4px;
     box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
-    overflow: hidden;
 }
 
 .menu button {
@@ -133,4 +132,35 @@ h2 {
 
 .menu button.danger {
     color: #dc3545;
+}
+
+.menu .menu-group {
+    position: relative;
+}
+
+.menu .menu-group > button {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.menu .chevron {
+    color: #868e96;
+}
+
+.menu .submenu {
+    position: absolute;
+    top: -1px;
+    left: 100%;
+    min-width: 170px;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
+}
+
+.menu .separator {
+    margin: 0;
+    border: none;
+    border-top: 1px solid #e9ecef;
 }

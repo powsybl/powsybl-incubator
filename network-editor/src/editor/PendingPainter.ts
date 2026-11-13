@@ -1,4 +1,5 @@
 import { isPendingCreate, type Command } from '../commands/Command.ts';
+import { CreateBusbarCommand } from '../commands/CreateBusbarCommand.ts';
 import { CreateSwitchCommand } from '../commands/CreateSwitchCommand.ts';
 import { RenameCommand } from '../commands/RenameCommand.ts';
 import { ReplaceCommand } from '../commands/ReplaceCommand.ts';
@@ -80,6 +81,11 @@ export class PendingPainter {
         const previews: PendingPreview[] = [];
 
         for (const command of this.pending()) {
+            if (command instanceof CreateBusbarCommand) {
+                const span = this.geometry.newBusbarSpan(command.vlId, command.busbarIndex);
+                if (span) previews.push({ kind: 'BUSBAR', id: `ne-busbar-${command.equipmentId}`, label: command.equipmentId, span });
+                continue;
+            }
             if (!isPendingCreate(command)) continue;
 
             if (command instanceof CreateSwitchCommand) {

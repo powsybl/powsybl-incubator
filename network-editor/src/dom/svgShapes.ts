@@ -3,8 +3,9 @@ import {
     PENDING_CREATE_CLASS,
     type BaySlotCandidate,
     type DiagramPoint,
+    type DiagramSpan,
 } from '../types.ts';
-import { PENDING_BADGE_CLASS, PENDING_SYMBOL_CLASS } from './editorStyle';
+import { PENDING_BADGE_CLASS, PENDING_BUSBAR_CLASS, PENDING_SYMBOL_CLASS } from './editorStyle';
 import type { FeederLevels } from '../layout/bayFlip.ts';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
@@ -67,7 +68,14 @@ export interface SwitchPreview {
     symbol?: SymbolView;
 }
 
-export type PendingPreview = FeederPreview | SwitchPreview;
+export interface BusbarPreview {
+    kind: 'BUSBAR';
+    id: string;
+    label: string;
+    span: DiagramSpan;
+}
+
+export type PendingPreview = FeederPreview | SwitchPreview | BusbarPreview;
 
 interface PreviewLayout {
     id: string;
@@ -83,7 +91,14 @@ export function svgElement<K extends keyof SVGElementTagNameMap>(name: K): SVGEl
 }
 
 export function createPendingPreview(view: PendingPreview): SVGGElement {
-    return view.kind === 'SWITCH' ? switchPreview(view) : feederPreview(view);
+    switch (view.kind) {
+        case 'SWITCH':
+            return switchPreview(view);
+        case 'BUSBAR':
+            return busbarPreview(view);
+        default:
+            return feederPreview(view);
+    }
 }
 
 export function defaultFeederLength(switchSize?: number): number {
@@ -131,6 +146,17 @@ function switchPreview(view: SwitchPreview): SVGGElement {
         gap: symbol && { at: length / 2, symbol },
         label: { text: view.label, x: middle.x, top: middle.y - height - LABEL_HEIGHT },
     });
+}
+
+function busbarPreview({ id, label, span }: BusbarPreview): SVGGElement {
+    const preview = drawPreview({
+        id,
+        from: { x: span.left, y: span.y },
+        to: { x: span.right, y: span.y },
+        label: { text: label, x: span.left, top: span.y - LABEL_GAP - LABEL_HEIGHT },
+    });
+    preview.classList.add(PENDING_BUSBAR_CLASS);
+    return preview;
 }
 
 function drawPreview({ id, from, to, back = 0, gap, label }: PreviewLayout): SVGGElement {

@@ -723,3 +723,37 @@ describe('EditorCore lifecycle and overlays', () => {
         expect(events).toHaveLength(eventsAfterDestroy);
     });
 });
+
+describe('EditorCore busbar creation', () => {
+    function busbarAction(core: EditorCore, model: EditorModel): EditorAction {
+        const busbar = model.collectTargets().find((target) => target.id === BUSBAR)!;
+        return core.actionsFor(busbar).find((candidate) => actionKey(candidate) === 'CREATE_BUSBAR')!;
+    }
+
+    it('creates a busbar below the others, one index after the last pending one', () => {
+        const { core, model } = setup();
+        const action = busbarAction(core, model);
+        expect(action.initial).toEqual({ equipmentId: 'NEW_BUS' });
+
+        expect(action.run({ equipmentId: 'BBS3' })).toBe(true);
+        expect(busbarAction(core, model).run({ equipmentId: 'BBS4' })).toBe(true);
+
+        expect(core.getModifications()).toEqual([
+            { type: 'BUSBAR_CREATION', equipmentId: 'BBS3', equipmentName: null, voltageLevelId: 'MTPELP6', busbarIndex: 3, sectionIndex: 1 },
+            { type: 'BUSBAR_CREATION', equipmentId: 'BBS4', equipmentName: null, voltageLevelId: 'MTPELP6', busbarIndex: 4, sectionIndex: 1 },
+        ]);
+    });
+
+    it('refuses a taken id and frees its id on undo', () => {
+        const { core, model } = setup();
+        expect(busbarAction(core, model).run({ equipmentId: 'MTPELP6_1' })).toBe(false);
+
+        expect(busbarAction(core, model).run({ equipmentId: 'BBS3' })).toBe(true);
+        expect(busbarAction(core, model).run({ equipmentId: 'BBS3' })).toBe(false);
+        expect(busbarAction(core, model).initial).toEqual({ equipmentId: 'NEW_BUS' });
+
+        core.undo();
+        expect(core.getModifications()).toEqual([]);
+        expect(busbarAction(core, model).run({ equipmentId: 'BBS3' })).toBe(true);
+    });
+});

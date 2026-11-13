@@ -75,6 +75,7 @@ interface ActionHost {
     ): boolean;
     deleteElements(equipmentIds: readonly string[], kind: 'element' | 'bay'): boolean;
     beginBayMove(equipmentId: string): boolean;
+    createBusbar(targetId: string, equipmentId: string): boolean;
     setBayPosition(equipmentId: string, position: BayPosition): boolean;
     moveFeederBay(equipmentId: string, busbarTargetId: string): boolean;
     group(edit: () => boolean): boolean;
@@ -118,6 +119,7 @@ export function buildActions(
                 .map((type) => createAction(host, target, operation, type, insertion));
         }
         if (operation === 'RENAME') return renameAction(host, target);
+        if (operation === 'CREATE_BUSBAR') return [busbarAction(host, target)];
         if (target.kind === 'EQUIPMENT') return equipmentActions(host, target, operation);
         return [];
     });
@@ -432,6 +434,19 @@ function batchActions(
             initial: {},
             run: () => host.deleteElements(equipmentIds, kind),
         }));
+}
+
+function busbarAction(host: ActionHost, target: EditTarget): EditorAction {
+    return {
+        id: createOperationId(target, 'CREATE_BUSBAR'),
+        operation: 'CREATE_BUSBAR',
+        form: [EQUIPMENT_ID],
+        initial: { equipmentId: host.proposeEquipmentId('BUS') },
+        run: (values = {}) => {
+            const equipmentId = text(values.equipmentId);
+            return equipmentId ? host.createBusbar(target.id, equipmentId) : false;
+        },
+    };
 }
 
 function renameAction(host: ActionHost, target: EditTarget): EditorAction[] {

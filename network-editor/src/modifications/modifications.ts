@@ -164,6 +164,15 @@ export interface SwitchCreation {
     open: boolean;
 }
 
+export interface BusbarCreation {
+    type: 'BUSBAR_CREATION';
+    equipmentId: string;
+    equipmentName: string | null;
+    voltageLevelId: string;
+    busbarIndex: number;
+    sectionIndex: number;
+}
+
 export interface EquipmentRename {
     type: 'EQUIPMENT_RENAME';
     equipmentId: string;
@@ -180,6 +189,7 @@ export type NetworkModification =
     | NodeInjectionCreation
     | SwitchedInjectionCreation
     | SwitchCreation
+    | BusbarCreation
     | EquipmentRename;
 
 export const INJECTION_CREATION_TYPES: Record<string, InjectionCreation['type']> = {

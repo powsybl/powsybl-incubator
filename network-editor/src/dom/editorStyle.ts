@@ -16,6 +16,7 @@ export const BAY_SLOT_LAYER_CLASS = 'ne-bay-slot-layer';
 export const PENDING_LAYER_CLASS = 'ne-pending-layer';
 export const PENDING_BADGE_CLASS = 'ne-pending-badge';
 export const PENDING_SYMBOL_CLASS = 'ne-symbol';
+export const PENDING_BUSBAR_CLASS = 'ne-pending-busbar';
 
 const PENDING = `:is(.${PENDING_CREATE_CLASS}, .${PENDING_BADGE_CLASS})`;
 
@@ -50,6 +51,12 @@ g${PENDING} > g > line {
     stroke-width: 1.2;
     stroke-dasharray: 2 1.5;
     pointer-events: none;
+}
+g.${PENDING_BUSBAR_CLASS}[id] {
+    pointer-events: none;
+}
+g.${PENDING_BUSBAR_CLASS} > g > line {
+    stroke-width: 3;
 }
 g${PENDING} > text {
     fill: var(--ne-accent-strong, #0d47a1);

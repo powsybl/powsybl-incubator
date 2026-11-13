@@ -262,7 +262,8 @@ export type EditOperation =
     | 'UPDATE_BAY_POSITION'
     | 'FLIP_BAY_DIRECTION'
     | 'MOVE_BAY'
-    | 'RENAME';
+    | 'RENAME'
+    | 'CREATE_BUSBAR';
 
 export const ORDER_STEP = 10;
 
@@ -274,6 +275,7 @@ export interface LayoutParams {
     spaceForFeederInfos: number;
     maxComponentHeight: number;
     adaptCellHeightToContent: boolean;
+    verticalSpaceBus: number;
 }
 
 export const DEFAULT_LAYOUT_PARAMS: LayoutParams = {
@@ -284,6 +286,7 @@ export const DEFAULT_LAYOUT_PARAMS: LayoutParams = {
     spaceForFeederInfos: 50,
     maxComponentHeight: 12,
     adaptCellHeightToContent: true,
+    verticalSpaceBus: 25,
 };
 
 export interface BayPosition {

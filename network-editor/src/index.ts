@@ -4,6 +4,7 @@ export type {
     AttributeModification,
     BatteryCreation,
     BoundaryLineCreation,
+    BusbarCreation,
     ConnectionDirection,
     ConverterStationCreation,
     EquipmentAttributeModification,

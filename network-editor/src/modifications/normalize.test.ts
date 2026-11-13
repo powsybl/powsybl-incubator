@@ -666,4 +666,16 @@ describe('normalizeModifications', () => {
             ]);
         });
     });
+
+    it('keeps a busbar creation as is', () => {
+        const busbar: NetworkModification = {
+            type: 'BUSBAR_CREATION',
+            equipmentId: 'BBS3',
+            equipmentName: null,
+            voltageLevelId: 'VL1',
+            busbarIndex: 3,
+            sectionIndex: 1,
+        };
+        expect(normalizeModifications([busbar])).toEqual([busbar]);
+    });
 });

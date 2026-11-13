@@ -9,6 +9,7 @@ import { CommandStack } from '../commands/CommandStack.ts';
 import type { Command, PendingCreateCommand } from '../commands/Command.ts';
 import { claimedTargets, findPendingCreate, pendingBayPosition, pendingOrders } from '../commands/pending.ts';
 import { CreateCommand } from '../commands/CreateCommand.ts';
+import { CreateBusbarCommand } from '../commands/CreateBusbarCommand.ts';
 import { CreateSwitchCommand } from '../commands/CreateSwitchCommand.ts';
 import { CreateSwitchedInjectionCommand } from '../commands/CreateSwitchedInjectionCommand.ts';
 import { DeleteElementCommand } from '../commands/DeleteElementCommand.ts';
@@ -167,6 +168,22 @@ export class EditorCore {
             ),
         );
         return true;
+    }
+
+    createBusbar(targetId: string, equipmentId: string): boolean {
+        const busbar = this.targetFor(targetId, 'BUSBAR', 'CREATE_BUSBAR');
+        if (!busbar || !this.isFreeId(equipmentId)) return false;
+
+        this.history.push(new CreateBusbarCommand(equipmentId, busbar.vlId, this.nextBusbarIndex(busbar.vlId), this.model));
+        return true;
+    }
+
+    private nextBusbarIndex(vlId: string): number {
+        const pending = this.pending
+            .filter((command): command is CreateBusbarCommand => command instanceof CreateBusbarCommand)
+            .filter((command) => command.vlId === vlId)
+            .map((command) => command.busbarIndex);
+        return Math.max(this.model.lastBusbarIndex(vlId), ...pending) + 1;
     }
 
     replaceEquipment(equipmentId: string, spec: CreateSpec): boolean {

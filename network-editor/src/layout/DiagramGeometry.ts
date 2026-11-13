@@ -12,6 +12,7 @@ import {
 import {
     isCreatedNodeId,
     type DiagramPoint,
+    type DiagramSpan,
     type FeederDirection,
     type NodeMetadata,
     type SymbolProvider,
@@ -44,6 +45,18 @@ export class DiagramGeometry {
             if (span) return span.y;
         }
         return undefined;
+    }
+
+    newBusbarSpan(vlId: string, busbarIndex: number): DiagramSpan | undefined {
+        const spans = this.model.busbarNodes(vlId).flatMap((busbar) => this.dom.getDiagramSpan(busbar.id) ?? []);
+        if (spans.length === 0) return undefined;
+
+        const below = busbarIndex - this.model.lastBusbarIndex(vlId);
+        return {
+            left: Math.min(...spans.map((span) => span.left)),
+            right: Math.max(...spans.map((span) => span.right)),
+            y: Math.max(...spans.map((span) => span.y)) + below * this.model.layoutParams().verticalSpaceBus,
+        };
     }
 
     /** Heights of a feeder and of its breaker. */

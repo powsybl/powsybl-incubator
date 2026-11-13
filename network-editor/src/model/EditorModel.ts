@@ -525,6 +525,11 @@ export class EditorModel {
         return this.collectBay(feeder.equipmentId).nodes.filter((node) => node.vid === feeder.vid);
     }
 
+    lastBusbarIndex(vlId: string): number {
+        const busbars = this.busbarNodes(vlId);
+        return Math.max(busbars.length, ...busbars.map((busbar) => busbar.busbarIndex ?? 0));
+    }
+
     busbarNodes(vlId: string): NodeMetadata[] {
         return this.metadata.nodes.filter(
             (node) => node.componentType === BUSBAR_SECTION_TYPE && node.vid === vlId,

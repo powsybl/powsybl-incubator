@@ -36,6 +36,10 @@ export const OPERATIONS: Record<EditOperation, OperationSpec> = {
         creates: INJECTION_TYPES,
         appliesTo: (target) => target.kind === 'BUSBAR',
     },
+    CREATE_BUSBAR: {
+        label: 'Add busbar',
+        appliesTo: (target) => target.kind === 'BUSBAR',
+    },
     DELETE: {
         label: 'Delete',
         danger: true,

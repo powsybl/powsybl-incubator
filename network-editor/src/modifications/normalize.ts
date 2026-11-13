@@ -2,6 +2,7 @@ import {
     INJECTION_CREATION_TYPES,
     isAttributeModification,
     mergeFeederBayMoves,
+    type BusbarCreation,
     type EquipmentAttributeModification,
     type EquipmentDeletion,
     type EquipmentModification,
@@ -15,7 +16,7 @@ import {
     type SwitchedInjectionCreation,
 } from './modifications.ts';
 
-type Creation = InjectionCreation | NodeInjectionCreation | SwitchedInjectionCreation | SwitchCreation;
+type Creation = InjectionCreation | NodeInjectionCreation | SwitchedInjectionCreation | SwitchCreation | BusbarCreation;
 
 type Kind = 'DELETION' | 'RENAME' | 'CREATION' | 'PROPERTIES' | 'SWITCH_STATE' | 'MOVE';
 
@@ -26,6 +27,7 @@ const CREATION_TYPES = new Set<string>([
     'NODE_INJECTION_CREATION',
     'SWITCHED_INJECTION_CREATION',
     'SWITCH_CREATION',
+    'BUSBAR_CREATION',
 ]);
 
 interface EquipmentHistory {
@@ -139,6 +141,8 @@ function emitCreated(history: EquipmentHistory, creation: Creation): NetworkModi
     switch (creation.type) {
         case 'SWITCH_CREATION':
             return withMove(history, switchCreationOf(history, creation));
+        case 'BUSBAR_CREATION':
+            return [creation];
         case 'NODE_INJECTION_CREATION':
         case 'SWITCHED_INJECTION_CREATION':
             // The switch of a switched injection keeps its id: a rename only touches the injection.

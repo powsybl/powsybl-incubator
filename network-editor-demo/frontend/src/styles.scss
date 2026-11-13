@@ -253,7 +253,6 @@ body {
   position: fixed;
   z-index: 1000;
   min-width: 200px;
-  overflow: hidden;
   background: var(--background-default);
   border: $width-xs solid var(--border-divider);
   border-radius: $radius-m;
@@ -293,5 +292,38 @@ body {
     &.danger {
       color: var(--content-danger-default);
     }
+  }
+
+  .menu-group {
+    position: relative;
+
+    > button {
+      display: flex;
+      justify-content: space-between;
+      gap: $positive-spacing_200;
+    }
+  }
+
+  .chevron {
+    color: var(--content-tertiary);
+  }
+
+  .submenu {
+    position: absolute;
+    top: -$width-xs;
+    left: 100%;
+    min-width: 180px;
+    background: var(--background-default);
+    border: $width-xs solid var(--border-divider);
+    border-radius: $radius-m;
+    box-shadow:
+      0 4px 8px 0 var(--elevation-shadow-key),
+      0 0 2px 0 var(--elevation-shadow-ambient);
+  }
+
+  .separator {
+    margin: 0;
+    border: none;
+    border-top: $width-xs solid var(--border-divider);
   }
 }

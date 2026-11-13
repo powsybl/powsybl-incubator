@@ -41,6 +41,10 @@ export {
 export {
     actionLabel,
     describeTargets,
+    groupMenuItems,
+    operationLabel,
+    type ActionMenuEntry,
+    type ActionMenuGroup,
     type ActionMenuItem,
 } from './actions/menu.ts';
 

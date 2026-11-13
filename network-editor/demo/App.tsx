@@ -8,6 +8,7 @@ import {
     type NetworkModification,
     type SLDMetadata,
 } from '../src';
+import { ContextMenu } from './ContextMenu';
 import { PropertyForm } from './PropertyForm';
 import svgContent from './data/reseau.svg?raw';
 import metadata from './data/reseau_metadata.json';
@@ -99,21 +100,7 @@ export function App() {
 
             {menu && (
                 <div className="backdrop" onMouseDown={() => setMenu(null)}>
-                    <div
-                        className="menu"
-                        style={{ left: menu.x, top: menu.y }}
-                        onMouseDown={(event) => event.stopPropagation()}
-                    >
-                        {menu.items.map((item) => (
-                            <button
-                                key={item.action.id}
-                                className={item.danger ? 'danger' : undefined}
-                                onClick={() => itemClicked(item)}
-                            >
-                                {item.label}
-                            </button>
-                        ))}
-                    </div>
+                    <ContextMenu items={menu.items} x={menu.x} y={menu.y} onPick={itemClicked} />
                 </div>
             )}
         </>

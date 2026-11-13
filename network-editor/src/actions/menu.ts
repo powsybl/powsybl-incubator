@@ -1,6 +1,6 @@
 import type { EditorAction } from './actions.ts';
 import { OPERATIONS } from './operations.ts';
-import type { EditTarget } from '../types.ts';
+import type { EditOperation, EditTarget } from '../types.ts';
 
 export interface ActionMenuItem {
     action: EditorAction;
@@ -9,8 +9,24 @@ export interface ActionMenuItem {
     needsForm: boolean;
 }
 
+export interface ActionMenuGroup {
+    operation: EditOperation;
+    label: string;
+    danger: boolean;
+    entries: ActionMenuEntry[];
+}
+
+export interface ActionMenuEntry {
+    item: ActionMenuItem;
+    label: string;
+}
+
+export function operationLabel(operation: EditOperation): string {
+    return OPERATIONS[operation].label;
+}
+
 export function actionLabel(action: EditorAction): string {
-    const base = OPERATIONS[action.operation].label;
+    const base = operationLabel(action.operation);
 
     switch (action.subject?.kind) {
         case 'TYPE':
@@ -54,4 +70,30 @@ export function menuItemsFor(
             danger: OPERATIONS[action.operation].danger ?? false,
             needsForm: action.form.length > 0,
         }));
+}
+
+export function groupMenuItems(items: readonly ActionMenuItem[]): ActionMenuGroup[] {
+    const groups = new Map<EditOperation, ActionMenuItem[]>();
+    for (const item of items) {
+        const group = groups.get(item.action.operation);
+        if (group) group.push(item);
+        else groups.set(item.action.operation, [item]);
+    }
+
+    return [...groups].map(([operation, grouped]) => ({
+        operation,
+        label: operationLabel(operation),
+        danger: grouped[0].danger,
+        entries: grouped.map((item) => ({
+            item,
+            label: grouped.length === 1 ? item.label : entryLabel(item),
+        })),
+    })).sort((a, b) => Number(a.danger) - Number(b.danger));
+}
+
+function entryLabel(item: ActionMenuItem): string {
+    const { subject, equipment } = item.action;
+    if (subject?.kind === 'TYPE') return subject.type;
+    if (subject?.kind === 'BUSBAR') return subject.busbarSectionId;
+    return equipment?.id ?? item.label;
 }

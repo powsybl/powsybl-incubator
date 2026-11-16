@@ -264,7 +264,8 @@ export type EditOperation =
     | 'MOVE_BAY'
     | 'RENAME'
     | 'CREATE_BUSBAR'
-    | 'CREATE_COUPLING';
+    | 'CREATE_COUPLING'
+    | 'TOGGLE_SWITCH';
 
 export const ORDER_STEP = 10;
 

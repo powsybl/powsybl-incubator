@@ -1,0 +1,110 @@
+{
+  "VL1_DISCONNECTOR_0_4": {
+    "open": false
+  },
+  "VL1_BREAKER_1_1": {
+    "open": false
+  },
+  "VL1_DISCONNECTOR_5_2": {
+    "open": false
+  },
+  "VL1_DISCONNECTOR_1_6": {
+    "open": false
+  },
+  "VL1_BREAKER_2_1": {
+    "open": false
+  },
+  "VL1_DISCONNECTOR_7_3": {
+    "open": false
+  },
+  "VL1_BREAKER": {
+    "open": false
+  },
+  "VL1_DISCONNECTOR_8_0": {
+    "open": false
+  },
+  "VL1_DISCONNECTOR_9_1": {
+    "open": false
+  },
+  "VL1_BREAKER#0": {
+    "open": false
+  },
+  "VL1_DISCONNECTOR_10_2": {
+    "open": false
+  },
+  "VL1_DISCONNECTOR_11_3": {
+    "open": false
+  },
+  "GEN1_BREAKER": {
+    "open": false
+  },
+  "GEN1_DISCONNECTOR_13_0": {
+    "open": false
+  },
+  "GEN1_DISCONNECTOR_13_1": {
+    "open": true
+  },
+  "LOAD1_BREAKER": {
+    "open": false
+  },
+  "LOAD1_DISCONNECTOR_15_0": {
+    "open": false
+  },
+  "LOAD1_DISCONNECTOR_15_1": {
+    "open": true
+  },
+  "LOAD2_BREAKER": {
+    "open": false
+  },
+  "LOAD2_DISCONNECTOR_17_2": {
+    "open": true
+  },
+  "LOAD2_DISCONNECTOR_17_3": {
+    "open": false
+  },
+  "LINE11_BREAKER": {
+    "open": false
+  },
+  "LINE11_DISCONNECTOR_19_2": {
+    "open": false
+  },
+  "LINE11_DISCONNECTOR_19_3": {
+    "open": true
+  },
+  "VL1_1_1": {
+    "connected": true
+  },
+  "VL1_2_1": {
+    "connected": true
+  },
+  "VL1_1_2": {
+    "connected": true
+  },
+  "VL1_2_2": {
+    "connected": true
+  },
+  "GEN1": {
+    "minP": 0.0,
+    "maxP": 1000.0,
+    "targetP": 600.0,
+    "targetV": 405.0,
+    "voltageRegulatorOn": true,
+    "connected": true
+  },
+  "LOAD1": {
+    "p0": 200.0,
+    "q0": 50.0,
+    "connected": true
+  },
+  "LOAD2": {
+    "p0": 150.0,
+    "q0": 30.0,
+    "connected": true
+  },
+  "LINE1": {
+    "r": 1.0,
+    "x": 10.0,
+    "connected1": true,
+    "connected2": true
+  }
+}

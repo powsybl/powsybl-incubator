@@ -20,7 +20,8 @@ import {
 export type ActionSubject =
     | { kind: 'TYPE'; type: ElementType }
     | { kind: 'BUSBAR'; busbarSectionId: string }
-    | { kind: 'SELECTION'; size: number };
+    | { kind: 'SELECTION'; size: number }
+    | { kind: 'STATE'; open: boolean }
 
 export interface ActionEquipment {
     id: string;
@@ -390,6 +391,20 @@ function equipmentActions(
             ];
         }
 
+        case 'TOGGLE_SWITCH': {
+            const open = host.getProperties(equipmentId).open;
+            if (typeof open != "boolean") return [];
+
+            return [
+                plain(
+                    target,
+                    operation,
+                    () => host.applyProperties(equipmentId, { open: !open }),
+                    { kind: 'STATE', open }
+                )
+            ]
+        }
+
         case 'UPDATE_PROPERTIES': {
             const form = schemaFor(target.type, target.created ? 'create' : 'edit').map(
                 (descriptor) =>
@@ -489,10 +504,16 @@ function renameAction(host: ActionHost, target: EditTarget): EditorAction[] {
 }
 
 
-function plain(target: EquipmentTarget, operation: EditOperation, run: () => boolean): EditorAction {
+function plain(
+    target: EquipmentTarget,
+    operation: EditOperation,run: () => boolean,
+    subject?:ActionSubject
+): EditorAction
+{
     return {
         id: createOperationId(target, operation),
         operation,
+        subject,
         form: [],
         initial: {},
         equipment: equipmentOf(target),

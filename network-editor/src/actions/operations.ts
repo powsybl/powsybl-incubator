@@ -81,6 +81,10 @@ export const OPERATIONS: Record<EditOperation, OperationSpec> = {
         label: 'Flip bay direction',
         appliesTo: (target) => target.kind === 'EQUIPMENT' && target.order !== undefined,
     },
+    TOGGLE_SWITCH: {
+        label: 'open/close',
+        appliesTo: (target) => target.kind === 'EQUIPMENT' && SWITCH_TYPES.has(target.type),
+    },
 };
 
 const OPERATION_NAMES = Object.keys(OPERATIONS) as EditOperation[];
@@ -93,6 +97,7 @@ const CREATED_OPERATIONS: ReadonlySet<EditOperation> = new Set<EditOperation>([
     'UPDATE_PROPERTIES',
     'UPDATE_BAY_POSITION',
     'FLIP_BAY_DIRECTION',
+    'TOGGLE_SWITCH',
 ]);
 
 export function availableOperations(target: EditTarget): EditOperation[] {

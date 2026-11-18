@@ -1,6 +1,6 @@
 import type { Command } from './Command.ts';
 import type { EditorModel } from '../model/EditorModel.ts';
-import type { NetworkModification } from '../modifications/modifications.ts';
+import { rename, type NetworkChange } from '../changes/changes.ts';
 
 export class RenameCommand implements Command {
     constructor(
@@ -20,14 +20,7 @@ export class RenameCommand implements Command {
         this.onRenamed(this.newId, this.equipmentId);
     }
 
-    toModifications(): NetworkModification[] {
-        return [
-            {
-                type: 'EQUIPMENT_RENAME',
-                equipmentId: this.equipmentId,
-                newEquipmentId: this.newId,
-                newConnectionName: this.newId,
-            },
-        ];
+    toChanges(): NetworkChange[] {
+        return [rename(this.equipmentId, this.newId)];
     }
 }

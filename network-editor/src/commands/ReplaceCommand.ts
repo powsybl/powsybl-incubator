@@ -1,11 +1,6 @@
 import type { Command } from './Command.ts';
 import type { EditorModel } from '../model/EditorModel.ts';
-import {
-    identifiableType,
-    injectionCreation,
-    nodeInjectionCreation,
-    type NetworkModification,
-} from '../modifications/modifications.ts';
+import { createFeederBay, createInjection, removal, type NetworkChange } from '../changes/changes.ts';
 import type { SvgDomService, SymbolSnapshot } from '../dom/SvgDomService.ts';
 import {
     nodeComponentType,
@@ -63,28 +58,30 @@ export class ReplaceCommand implements Command {
         this.rename(this.newId, this.equipmentId);
     }
 
-    toModifications(): NetworkModification[] {
-        const deletion: NetworkModification = {
-            type: 'EQUIPMENT_DELETION',
-            equipmentId: this.equipmentId,
-            equipmentType: identifiableType(toElementType(this.oldComponentType)),
-        };
+    /**
+     * A bay on a busbar is removed with its switches and created again; an injection on a bare node is
+     * replaced alone, so that the node and its switches stay.
+     */
+    toChanges(): NetworkChange[] {
+        const oldType = toElementType(this.oldComponentType);
+        const voltageLevelId = this.node.vid ?? '';
         const busbarSectionId = this.model.busbarSectionOfBay(this.node);
-        const creation =
-            busbarSectionId === undefined && this.node.iidmNode !== undefined
-                ? nodeInjectionCreation(this.type, this.newId, this.node.vid ?? '', this.node.iidmNode, this.properties)
-                : injectionCreation(
-                      this.type,
-                      this.newId,
-                      {
-                          voltageLevelId: this.node.vid ?? '',
-                          busbarSectionId: busbarSectionId ?? '',
-                          order: this.node.order ?? null,
-                          direction: toDirection(this.node.direction),
-                      },
-                      this.properties,
-                  );
-        return [deletion, creation];
+        if (busbarSectionId === undefined && this.node.iidmNode !== undefined) {
+            return [
+                removal(this.equipmentId, oldType, false),
+                createInjection(this.type, this.newId, voltageLevelId, this.node.iidmNode, this.properties),
+            ];
+        }
+        const placement = {
+            voltageLevelId,
+            busbarSectionId: busbarSectionId ?? '',
+            order: this.node.order,
+            direction: toDirection(this.node.direction),
+        };
+        return [
+            removal(this.equipmentId, oldType, true),
+            createFeederBay(this.type, this.newId, placement, this.properties),
+        ];
     }
 
     private rename(from: string, to: string): void {

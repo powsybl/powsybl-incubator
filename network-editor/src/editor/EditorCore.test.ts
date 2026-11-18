@@ -11,9 +11,9 @@ import type {
     EquipmentProperties,
     SLDMetadata,
 } from '../types.ts';
-import svgContent from '../../demo/data/reseau.svg?raw';
-import metadata from '../../demo/data/reseau_metadata.json';
-import properties from '../../demo/data/reseau_properties.json';
+import svgContent from '../../demo/data/reseau1.svg?raw';
+import metadata from '../../demo/data/reseau_metadata1.json';
+import properties from '../../demo/data/reseau_properties1.json';
 
 const BUSBAR = 'idMTPELP6_95_1';
 const EXISTING_LOAD = 'MTPEL6TR611';
@@ -67,9 +67,9 @@ function canTakeOrder(core: EditorCore, order: number): boolean {
 }
 
 function placements(core: EditorCore): string[] {
-    return core.getModifications().map((modification) => {
-        const { equipmentId, connectionPosition, connectionDirection } = modification as Record<string, unknown>;
-        return `${equipmentId}@${connectionPosition}/${connectionDirection}`;
+    return core.getChanges().map((change) => {
+        const { id, connectableId, positionOrder, direction } = change as unknown as Record<string, unknown>;
+        return `${id ?? connectableId}@${positionOrder}/${direction}`;
     });
 }
 
@@ -138,14 +138,18 @@ describe('EditorCore pending creations', () => {
         core.create(BUSBAR, 'CREATE_FEEDER_BAY', load('X'));
         core.renameEquipment('X', 'Y');
         core.applyProperties('Y', { p0: 5 });
-        expect(core.getModifications()).toEqual([expect.objectContaining({ equipmentId: 'Y', p0: 5 })]);
+        expect(core.getChanges()).toEqual([
+            expect.objectContaining({ id: 'Y', attributes: expect.objectContaining({ p0: 5 }) }),
+        ]);
 
         core.deleteElements(['Y'], 'bay');
-        expect(core.getModifications()).toEqual([]);
+        expect(core.getChanges()).toEqual([]);
 
         core.undo();
         core.undo();
-        expect(core.getModifications()).toEqual([expect.objectContaining({ equipmentId: 'Y', p0: 10 })]);
+        expect(core.getChanges()).toEqual([
+            expect.objectContaining({ id: 'Y', attributes: expect.objectContaining({ p0: 10 }) }),
+        ]);
     });
 
     it('frees the order of a moved or deleted creation', () => {
@@ -164,24 +168,36 @@ describe('EditorCore pending creations', () => {
         const { core, model } = setup();
         const busbar = model.collectTargets().find((target) => target.id === BUSBAR)!;
         const action = core.actionsFor(busbar).find((candidate) => actionKey(candidate) === 'CREATE_FEEDER_BAY:LOAD')!;
-        const proposed = action.initial.connectionPosition;
+        const proposed = action.initial.positionOrder;
         expect(typeof proposed).toBe('number');
 
-        expect(action.run({ ...action.initial, equipmentId: 'X', connectionDirection: 'TOP' })).toBe(true);
+        expect(action.run({ ...action.initial, equipmentId: 'X', direction: 'TOP' })).toBe(true);
         expect(placements(core)).toEqual([`X@${proposed}/TOP`]);
-        expect(core.getProperties('X')).not.toHaveProperty('connectionPosition');
-        expect(core.getProperties('X')).not.toHaveProperty('connectionDirection');
+        expect(core.getProperties('X')).not.toHaveProperty('positionOrder');
+        expect(core.getProperties('X')).not.toHaveProperty('direction');
     });
 
-    it('proposes the very modification a feeder bay creation produces', () => {
+    it('proposes the values of the feeder bay creation it produces', () => {
         const { core, model } = setup();
         const busbar = model.collectTargets().find((target) => target.id === BUSBAR)!;
         const action = core.actionsFor(busbar).find((candidate) => actionKey(candidate) === 'CREATE_FEEDER_BAY:LOAD')!;
-        expect(action.initial).toMatchObject({ type: 'LOAD_CREATION', busOrBusbarSectionId: expect.any(String) });
+        const { equipmentId, voltageLevelId, busOrBusbarSectionId, positionOrder, direction, p0, q0, loadType } = action.initial;
+        expect(busOrBusbarSectionId).toEqual(expect.any(String));
 
         expect(action.run(action.initial)).toBe(true);
-        expect(core.getModifications()).toEqual([action.initial]);
-        expect(core.getProperties(String(action.initial.equipmentId))).not.toHaveProperty('busOrBusbarSectionId');
+        expect(core.getChanges()).toEqual([
+            {
+                kind: 'CREATE_FEEDER_BAY',
+                equipmentType: 'LOAD',
+                id: equipmentId,
+                voltageLevelId,
+                busOrBusbarSectionId,
+                positionOrder,
+                direction,
+                attributes: { p0, q0, loadType },
+            },
+        ]);
+        expect(core.getProperties(String(equipmentId))).not.toHaveProperty('busOrBusbarSectionId');
     });
 });
 
@@ -193,13 +209,13 @@ describe('EditorCore creations from a host form', () => {
         return core.actionsFor(busbar).find((candidate) => actionKey(candidate) === 'CREATE_FEEDER_BAY:LOAD')!;
     }
 
-    it('carries the fields it does not know into the modification', () => {
+    it('carries the fields it does not know into the change extra', () => {
         const { core, model } = setup();
         const action = feederBayAction(core, model);
         action.run({ ...action.initial, equipmentId: 'X', equipmentName: 'Load X', properties: FREE_PROPERTIES });
 
-        expect(core.getModifications()).toEqual([
-            expect.objectContaining({ equipmentId: 'X', equipmentName: 'Load X', properties: FREE_PROPERTIES }),
+        expect(core.getChanges()).toEqual([
+            expect.objectContaining({ id: 'X', extra: { equipmentName: 'Load X', properties: FREE_PROPERTIES } }),
         ]);
         expect(core.getProperties('X')).not.toHaveProperty('properties');
     });
@@ -211,27 +227,23 @@ describe('EditorCore creations from a host form', () => {
         core.renameEquipment('X', 'Y');
         core.applyProperties('Y', { p0: 5 });
 
-        expect(core.getModifications()).toEqual([
-            expect.objectContaining({ equipmentId: 'Y', p0: 5, properties: FREE_PROPERTIES }),
+        expect(core.getChanges()).toEqual([
+            expect.objectContaining({
+                id: 'Y',
+                attributes: expect.objectContaining({ p0: 5 }),
+                extra: { properties: FREE_PROPERTIES },
+            }),
         ]);
     });
 
     it('sends the position the editor holds, not the one the form entered', () => {
         const { core, model } = setup();
         const action = feederBayAction(core, model);
-        action.run({ ...action.initial, equipmentId: 'X', connectionDirection: 'TOP' });
+        action.run({ ...action.initial, equipmentId: 'X', direction: 'TOP' });
         const { order } = core.getBayPosition('X')!;
         core.setBayPosition('X', { order, direction: 'BOTTOM' });
 
         expect(placements(core)).toEqual([`X@${order}/BOTTOM`]);
-    });
-
-    it('lets an untouched connection name follow the equipment id', () => {
-        const { core, model } = setup();
-        const action = feederBayAction(core, model);
-        action.run({ ...action.initial, equipmentId: 'X' });
-
-        expect(core.getModifications()).toEqual([expect.objectContaining({ connectionName: 'X' })]);
     });
 
     it('refuses a taken position, another busbar or another voltage level', () => {
@@ -247,7 +259,7 @@ describe('EditorCore creations from a host form', () => {
     it('creates the bay at the bottom when the form leaves the direction undefined', () => {
         const { core, model } = setup();
         const action = feederBayAction(core, model);
-        action.run({ ...action.initial, equipmentId: 'X', connectionDirection: 'UNDEFINED' });
+        action.run({ ...action.initial, equipmentId: 'X', direction: 'UNDEFINED' });
 
         expect(core.getBayPosition('X')?.direction).toBe('BOTTOM');
     });
@@ -256,10 +268,10 @@ describe('EditorCore creations from a host form', () => {
         const { core, model } = setup();
         const action = feederBayAction(core, model);
         action.run({ ...action.initial, equipmentId: 'X' });
-        core.clearModifications();
+        core.clearChanges();
 
         expect(model.getNodesForEquipment('X')).toEqual([]);
-        expect(core.getModifications()).toEqual([]);
+        expect(core.getChanges()).toEqual([]);
     });
 });
 
@@ -286,7 +298,7 @@ describe('EditorCore fork moves', () => {
 
         // The load would land on order 110, the last bay of the section.
         expect(core.setBayPosition(FORK_GENERATOR, { order: 111, direction })).toBe(false);
-        expect(core.getModifications()).toEqual([]);
+        expect(core.getChanges()).toEqual([]);
     });
 });
 
@@ -294,18 +306,18 @@ describe('EditorCore history', () => {
     it('redoes an undone step and drops the redo stack on a new edit', () => {
         const { core } = setup();
         core.renameEquipment(EXISTING_LOAD, 'A');
-        const renamed = core.getModifications();
+        const renamed = core.getChanges();
 
         core.undo();
-        expect(core.getModifications()).toEqual([]);
+        expect(core.getChanges()).toEqual([]);
         core.redo();
-        expect(core.getModifications()).toEqual(renamed);
+        expect(core.getChanges()).toEqual(renamed);
 
         core.undo();
         core.renameEquipment(EXISTING_LOAD, 'B');
         core.redo();
-        expect(core.getModifications()).toEqual([
-            expect.objectContaining({ type: 'EQUIPMENT_RENAME', newEquipmentId: 'B' }),
+        expect(core.getChanges()).toEqual([
+            expect.objectContaining({ kind: 'RENAME', newId: 'B' }),
         ]);
     });
 
@@ -313,18 +325,18 @@ describe('EditorCore history', () => {
         const { core } = setup();
         core.undo();
         core.redo();
-        expect(core.getModifications()).toEqual([]);
+        expect(core.getChanges()).toEqual([]);
     });
 
     it('reverts existing equipments on clear', () => {
         const { core } = setup();
         const p0 = core.getProperties(EXISTING_LOAD).p0;
         core.applyProperties(EXISTING_LOAD, { p0: 1234 });
-        core.clearModifications();
+        core.clearChanges();
 
         expect(core.getProperties(EXISTING_LOAD).p0).toBe(p0);
         core.redo();
-        expect(core.getModifications()).toEqual([]);
+        expect(core.getChanges()).toEqual([]);
     });
 });
 
@@ -333,18 +345,16 @@ describe('EditorCore renames', () => {
         const { core } = setup();
         core.renameEquipment(EXISTING_LOAD, 'A');
         core.renameEquipment('A', 'B');
-        expect(core.getModifications()).toEqual([
-            expect.objectContaining({ type: 'EQUIPMENT_RENAME', equipmentId: EXISTING_LOAD, newEquipmentId: 'B' }),
+        expect(core.getChanges()).toEqual([
+            { kind: 'RENAME', id: EXISTING_LOAD, newId: 'B' },
         ]);
 
         core.renameEquipment('B', EXISTING_LOAD);
-        expect(core.getModifications()).toEqual([]);
+        expect(core.getChanges()).toEqual([]);
     });
 });
 
 describe('EditorCore property edits', () => {
-    const SET = <T,>(value: T) => ({ value, op: 'SET' as const });
-
     function editAction(core: EditorCore, model: EditorModel): EditorAction {
         const load = model.collectTargets().find(
             (target) => target.kind === 'EQUIPMENT' && target.equipmentId === EXISTING_LOAD,
@@ -352,34 +362,33 @@ describe('EditorCore property edits', () => {
         return core.actionsFor(load).find((candidate) => actionKey(candidate) === 'UPDATE_PROPERTIES:LOAD')!;
     }
 
-    function modification(fields: Record<string, unknown>) {
-        return { type: 'LOAD_MODIFICATION', equipmentId: EXISTING_LOAD, ...fields };
+    function update(attributes: Record<string, unknown>, extra?: Record<string, unknown>) {
+        return { kind: 'UPDATE_ATTRIBUTES', equipmentType: 'LOAD', id: EXISTING_LOAD, attributes, ...(extra ? { extra } : {}) };
     }
 
-    it('opens on the modification setting every value the editor knows', () => {
+    it('opens on every value the editor knows', () => {
         const { core, model } = setup();
 
-        expect(editAction(core, model).initial).toMatchObject(
-            modification({ p0: SET(core.getProperties(EXISTING_LOAD).p0) }),
-        );
+        expect(editAction(core, model).initial).toMatchObject({
+            equipmentId: EXISTING_LOAD,
+            p0: core.getProperties(EXISTING_LOAD).p0,
+        });
     });
 
-    it('sends every field of the host modification, null ones aside', () => {
+    it('sends the known attributes and carries the other host values as extra, null ones aside', () => {
         const { core, model } = setup();
         const freeProperties = [{ name: 'a', value: 'b', added: true }];
-        const applied = editAction(core, model).run(
-            modification({
-                p0: SET(12),
-                q0: null,
-                equipmentName: SET('Load A'),
-                pMeasurementValue: SET(11),
-                properties: freeProperties,
-            }),
-        );
+        const applied = editAction(core, model).run({
+            p0: 12,
+            q0: null,
+            equipmentName: 'Load A',
+            pMeasurementValue: 11,
+            properties: freeProperties,
+        });
 
         expect(applied).toBe(true);
-        expect(core.getModifications()).toEqual([
-            modification({ p0: SET(12), equipmentName: SET('Load A'), pMeasurementValue: SET(11), properties: freeProperties }),
+        expect(core.getChanges()).toEqual([
+            update({ p0: 12 }, { equipmentName: 'Load A', pMeasurementValue: 11, properties: freeProperties }),
         ]);
         expect(core.getProperties(EXISTING_LOAD)).toMatchObject({ p0: 12 });
         expect(core.getProperties(EXISTING_LOAD)).not.toHaveProperty('equipmentName');
@@ -388,50 +397,46 @@ describe('EditorCore property edits', () => {
     it('applies a value the editor already holds: it may not know the real one', () => {
         const { core, model } = setup();
 
-        expect(editAction(core, model).run(modification({ terminalConnected: SET(true) }))).toBe(true);
-        expect(core.getModifications()).toEqual([modification({ terminalConnected: SET(true) })]);
+        expect(editAction(core, model).run({ connected: true })).toBe(true);
+        expect(core.getChanges()).toEqual([update({ connected: true })]);
     });
 
-    it('refuses a modification without any field', () => {
+    it('refuses values without any change', () => {
         const { core, model } = setup();
 
-        expect(editAction(core, model).run(modification({ p0: null }))).toBe(false);
-        expect(core.getModifications()).toEqual([]);
+        expect(editAction(core, model).run({ p0: null })).toBe(false);
+        expect(core.getChanges()).toEqual([]);
     });
 
     // Same path as a direction change, which jsdom cannot test: a flip needs the SVG geometry.
-    it('moves the bay when the modification changes its position', () => {
+    it('moves the bay when the values change its position', () => {
         const { core, model } = setup();
         const action = editAction(core, model);
         const { order, direction } = core.getBayPosition(EXISTING_LOAD)!;
         let next = order + 1;
-        while (next < order + 100 && !action.run(modification({ connectionPosition: SET(next) }))) next++;
+        while (next < order + 100 && !action.run({ positionOrder: next })) next++;
 
         expect(core.getBayPosition(EXISTING_LOAD)).toEqual({ order: next, direction });
-        expect(core.getModifications()).toEqual([
-            expect.objectContaining({
-                type: 'MOVE_VOLTAGE_LEVEL_FEEDER_BAYS',
-                // The load shares its cell with a generator: the fork moves as a whole.
-                feederBays: [
-                    expect.objectContaining({ equipmentId: EXISTING_LOAD, connectionPosition: next }),
-                    expect.objectContaining({ equipmentId: 'MTPELIN2', connectionPosition: next + 1 }),
-                ],
-            }),
+        // The load shares its cell with a generator: the fork moves as a whole.
+        expect(core.getChanges()).toEqual([
+            expect.objectContaining({ kind: 'MOVE_FEEDER_BAY', connectableId: EXISTING_LOAD, positionOrder: next }),
+            expect.objectContaining({ kind: 'MOVE_FEEDER_BAY', connectableId: 'MTPELIN2', positionOrder: next + 1 }),
         ]);
     });
 
-    it('moves the bay to the busbar section the modification names', () => {
+    it('moves the bay to the busbar section the values name', () => {
         const { core, model } = setup();
         const busbars = core.moveDestinations(EXISTING_LOAD);
-        const destination = busbars.find((busbar) => editAction(core, model).run(
-            modification({ busOrBusbarSectionId: SET(busbar.busbarSectionId) }),
-        ))!;
+        const destination = busbars.find((busbar) =>
+            editAction(core, model).run({ busOrBusbarSectionId: busbar.busbarSectionId }),
+        )!;
 
         expect(destination).toBeDefined();
-        expect(core.getModifications()).toEqual([
+        expect(core.getChanges()).toEqual([
             expect.objectContaining({
-                type: 'MOVE_VOLTAGE_LEVEL_FEEDER_BAYS',
-                feederBays: [expect.objectContaining({ equipmentId: EXISTING_LOAD, busbarSectionId: destination.busbarSectionId })],
+                kind: 'MOVE_FEEDER_BAY',
+                connectableId: EXISTING_LOAD,
+                targetBusOrBusbarSectionId: destination.busbarSectionId,
             }),
         ]);
     });
@@ -440,37 +445,31 @@ describe('EditorCore property edits', () => {
         const { core, model } = setup();
         const action = editAction(core, model);
 
-        const busbar = SET(core.moveDestinations(EXISTING_LOAD)[0].busbarSectionId);
+        const busbar = core.moveDestinations(EXISTING_LOAD)[0].busbarSectionId;
 
         // The busbar move succeeds, the position is refused: the move is reverted.
-        expect(action.run(modification({ busOrBusbarSectionId: busbar, connectionPosition: SET(-1) }))).toBe(false);
-        expect(action.run(modification({ p0: SET(12), voltageLevelId: SET('OTHER_VL') }))).toBe(false);
-        expect(core.getModifications()).toEqual([]);
+        expect(action.run({ busOrBusbarSectionId: busbar, positionOrder: -1 })).toBe(false);
+        expect(action.run({ p0: 12, voltageLevelId: 'OTHER_VL' })).toBe(false);
+        expect(core.getChanges()).toEqual([]);
 
-        expect(action.run(modification({ busOrBusbarSectionId: busbar, p0: SET(12) }))).toBe(true);
-        expect(core.getModifications()).toHaveLength(2);
+        expect(action.run({ busOrBusbarSectionId: busbar, p0: 12 })).toBe(true);
+        expect(core.getChanges()).toHaveLength(2);
         core.undo();
-        expect(core.getModifications()).toEqual([]);
+        expect(core.getChanges()).toEqual([]);
     });
 
-    it('opens and closes a breaker through its attribute modification', () => {
+    it('opens and closes a breaker through its open attribute', () => {
         const { core, model } = setup();
         const breaker = model.collectTargets().find(
             (target) => target.kind === 'EQUIPMENT' && target.type === 'BREAKER',
         )!;
         const action = core.actionsFor(breaker).find((candidate) => actionKey(candidate) === 'UPDATE_PROPERTIES:BREAKER')!;
-        const open = !action.initial.equipmentAttributeValue;
+        const open = !action.initial.open;
 
-        expect(action.run({ ...action.initial, equipmentAttributeValue: open })).toBe(true);
+        expect(action.run({ ...action.initial, open })).toBe(true);
         expect(core.getProperties(action.equipment!.id).open).toBe(open);
-        expect(core.getModifications()).toEqual([
-            {
-                type: 'EQUIPMENT_ATTRIBUTE_MODIFICATION',
-                equipmentId: action.equipment!.id,
-                equipmentType: 'SWITCH',
-                equipmentAttributeName: 'open',
-                equipmentAttributeValue: open,
-            },
+        expect(core.getChanges()).toEqual([
+            { kind: 'UPDATE_ATTRIBUTES', equipmentType: 'SWITCH', id: action.equipment!.id, attributes: { open } },
         ]);
     });
 });
@@ -481,11 +480,8 @@ describe('EditorCore public operations', () => {
         const node = model.collectTargets().find((target) => target.kind === 'NODE')!;
 
         expect(core.create(node.id, 'CREATE_INJECTION', load('CREATED_ON_NODE'))).toBe(true);
-        expect(core.getModifications()).toEqual([
-            expect.objectContaining({
-                type: 'NODE_INJECTION_CREATION',
-                creation: expect.objectContaining({ type: 'LOAD_CREATION', equipmentId: 'CREATED_ON_NODE' }),
-            }),
+        expect(core.getChanges()).toEqual([
+            expect.objectContaining({ kind: 'CREATE_INJECTION', equipmentType: 'LOAD', id: 'CREATED_ON_NODE' }),
         ]);
         expect(core.create('UNKNOWN_NODE', 'CREATE_INJECTION', load('OTHER'))).toBe(false);
         expect(core.create(EXISTING_LOAD, 'CREATE_FEEDER_BAY', load('OTHER'))).toBe(false);
@@ -508,7 +504,7 @@ describe('EditorCore public operations', () => {
         expect(core.replaceEquipment(EXISTING_LOAD, { ...load(EXISTING_LOAD), type: 'LOAD' })).toBe(false);
         expect(core.replaceEquipment(EXISTING_LOAD, { ...load('NEW_SWITCH'), type: 'BREAKER' })).toBe(false);
         expect(core.replaceEquipment(EXISTING_LOAD, { ...load('MTPELIN2'), type: 'GENERATOR' })).toBe(false);
-        expect(core.getModifications()).toEqual([]);
+        expect(core.getChanges()).toEqual([]);
 
         expect(core.replaceEquipment(EXISTING_LOAD, { ...load('NEW_GENERATOR'), type: 'GENERATOR' })).toBe(true);
         expect(model.getNodesForEquipment(EXISTING_LOAD)).toEqual([]);
@@ -534,13 +530,11 @@ describe('EditorCore public operations', () => {
 
         const destination = destinations.find((candidate) => core.moveFeederBay(EXISTING_LOAD, candidate.id));
         expect(destination).toBeDefined();
-        expect(core.getModifications()).toEqual([
+        expect(core.getChanges()).toEqual([
             expect.objectContaining({
-                type: 'MOVE_VOLTAGE_LEVEL_FEEDER_BAYS',
-                feederBays: [expect.objectContaining({
-                    equipmentId: EXISTING_LOAD,
-                    busbarSectionId: destination!.busbarSectionId,
-                })],
+                kind: 'MOVE_FEEDER_BAY',
+                connectableId: EXISTING_LOAD,
+                targetBusOrBusbarSectionId: destination!.busbarSectionId,
             }),
         ]);
     });
@@ -550,7 +544,7 @@ describe('EditorCore public operations', () => {
         expect(core.getProperties('UNKNOWN_EQUIPMENT')).toEqual({});
         expect(core.applyProperties(EXISTING_LOAD, {})).toBe(false);
         expect(core.applyProperties('UNKNOWN_EQUIPMENT', { p0: 5 })).toBe(false);
-        expect(core.getModifications()).toEqual([]);
+        expect(core.getChanges()).toEqual([]);
     });
 });
 
@@ -642,17 +636,17 @@ describe('EditorCore grouped edits and deletion', () => {
             core.renameEquipment(EXISTING_LOAD, 'GROUPED_LOAD');
             return core.applyProperties('GROUPED_LOAD', { p0: 20 });
         })).toBe(true);
-        expect(core.getModifications()).toHaveLength(2);
+        expect(core.getChanges()).toHaveLength(2);
 
         core.undo();
-        expect(core.getModifications()).toEqual([]);
+        expect(core.getChanges()).toEqual([]);
         expect(core.getProperties(EXISTING_LOAD).p0).not.toBe(20);
 
         expect(core.group(() => {
             core.renameEquipment(EXISTING_LOAD, 'ROLLED_BACK_LOAD');
             return false;
         })).toBe(false);
-        expect(core.getModifications()).toEqual([]);
+        expect(core.getChanges()).toEqual([]);
         expect(core.getProperties(EXISTING_LOAD)).toBeDefined();
     });
 
@@ -661,13 +655,13 @@ describe('EditorCore grouped edits and deletion', () => {
         const generatorId = 'MTPELIN2';
 
         expect(core.deleteElements([EXISTING_LOAD, 'UNKNOWN_EQUIPMENT'], 'element')).toBe(false);
-        expect(core.getModifications()).toEqual([]);
+        expect(core.getChanges()).toEqual([]);
         expect(model.getNodesForEquipment(EXISTING_LOAD)).not.toEqual([]);
 
         expect(core.deleteElements([EXISTING_LOAD, generatorId], 'element')).toBe(true);
         expect(model.getNodesForEquipment(EXISTING_LOAD)).toEqual([]);
         expect(model.getNodesForEquipment(generatorId)).toEqual([]);
-        expect(core.getModifications()).toHaveLength(2);
+        expect(core.getChanges()).toHaveLength(2);
 
         core.undo();
         expect(model.getNodesForEquipment(EXISTING_LOAD)).not.toEqual([]);
@@ -738,9 +732,9 @@ describe('EditorCore busbar creation', () => {
         expect(action.run({ equipmentId: 'BBS3' })).toBe(true);
         expect(busbarAction(core, model).run({ equipmentId: 'BBS4' })).toBe(true);
 
-        expect(core.getModifications()).toEqual([
-            { type: 'BUSBAR_CREATION', equipmentId: 'BBS3', equipmentName: null, voltageLevelId: 'MTPELP6', busbarIndex: 3, sectionIndex: 1 },
-            { type: 'BUSBAR_CREATION', equipmentId: 'BBS4', equipmentName: null, voltageLevelId: 'MTPELP6', busbarIndex: 4, sectionIndex: 1 },
+        expect(core.getChanges()).toEqual([
+            { kind: 'CREATE_BUSBAR_SECTION', id: 'BBS3', voltageLevelId: 'MTPELP6', busbarIndex: 3, sectionIndex: 1 },
+            { kind: 'CREATE_BUSBAR_SECTION', id: 'BBS4', voltageLevelId: 'MTPELP6', busbarIndex: 4, sectionIndex: 1 },
         ]);
     });
 
@@ -753,16 +747,17 @@ describe('EditorCore busbar creation', () => {
         expect(busbarAction(core, model).initial).toEqual({ equipmentId: 'NEW_BUS' });
 
         core.undo();
-        expect(core.getModifications()).toEqual([]);
+        expect(core.getChanges()).toEqual([]);
         expect(busbarAction(core, model).run({ equipmentId: 'BBS3' })).toBe(true);
     });
 });
 
 describe('EditorCore coupling creation', () => {
     const COUPLING = {
-        type: 'CREATE_COUPLING_DEVICE',
+        kind: 'CREATE_COUPLING_DEVICE',
         voltageLevelId: 'MTPELP6',
-        couplingDeviceInfos: { busbarSectionId1: 'MTPELP6_1', busbarSectionId2: 'MTPELP6_2' },
+        busOrBusbarSectionId1: 'MTPELP6_1',
+        busOrBusbarSectionId2: 'MTPELP6_2',
     };
 
     function couplingActions(core: EditorCore, model: EditorModel, busbarId = BUSBAR): EditorAction[] {
@@ -778,10 +773,10 @@ describe('EditorCore coupling creation', () => {
         expect(action.form).toEqual([]);
 
         expect(action.run()).toBe(true);
-        expect(core.getModifications()).toEqual([COUPLING]);
+        expect(core.getChanges()).toEqual([COUPLING]);
 
         core.undo();
-        expect(core.getModifications()).toEqual([]);
+        expect(core.getChanges()).toEqual([]);
     });
 
     it('no longer offers a pair already coupled, even after a rename', () => {
@@ -791,9 +786,9 @@ describe('EditorCore coupling creation', () => {
 
         expect(couplingActions(core, model)).toEqual([]);
         expect(couplingActions(core, model, 'idMTPELP6_95_2')).toEqual([]);
-        expect(core.getModifications()).toEqual([
-            expect.objectContaining({ type: 'EQUIPMENT_RENAME', equipmentId: 'MTPELP6_2', newEquipmentId: 'BBS2' }),
-            { ...COUPLING, couplingDeviceInfos: { busbarSectionId1: 'MTPELP6_1', busbarSectionId2: 'BBS2' } },
+        expect(core.getChanges()).toEqual([
+            { kind: 'RENAME', id: 'MTPELP6_2', newId: 'BBS2' },
+            { ...COUPLING, busOrBusbarSectionId2: 'BBS2' },
         ]);
     });
 });

@@ -7,7 +7,7 @@ import {
 import { EditorModel } from '../model/EditorModel.ts';
 import { EditorCore } from './EditorCore.ts';
 import { SvgDomService } from '../dom/SvgDomService.ts';
-import type { NetworkModification } from '../modifications/modifications.ts';
+import type { NetworkChange } from '../changes/changes.ts';
 import {
     EDITOR_OPTION_DEFAULTS,
     type EditorOptions,
@@ -105,13 +105,16 @@ export class NetworkEditor {
         this.core.redo();
     }
 
-    /** The change set to send to the backend: call it when the user sends. */
-    getModifications(): NetworkModification[] {
-        return this.core.getModifications();
+    /**
+     * The change set to send to the backend, normalized: call it when the user sends.
+     * Send it as `{ formatVersion: CHANGE_FORMAT_VERSION, changes }`.
+     */
+    getChanges(): NetworkChange[] {
+        return this.core.getChanges();
     }
 
-    clearModifications(): void {
-        this.core.clearModifications();
+    clearChanges(): void {
+        this.core.clearChanges();
     }
 
     /** Debug overlay: shows the IIDM node each element stands on. */

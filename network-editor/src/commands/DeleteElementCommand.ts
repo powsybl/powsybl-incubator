@@ -1,7 +1,7 @@
 import type { Command } from './Command.ts';
 import type { EditorModel } from '../model/EditorModel.ts';
 import type { SvgDomService, RemovedDomElement } from '../dom/SvgDomService.ts';
-import { identifiableType, type NetworkModification } from '../modifications/modifications.ts';
+import { removal, type NetworkChange } from '../changes/changes.ts';
 import type {
     DeleteScope,
     ElementType,
@@ -71,14 +71,8 @@ export class DeleteElementCommand implements Command {
 
     }
 
-    toModifications(): NetworkModification[] {
-        return [
-            {
-                type: this.kind === 'bay' ? 'EQUIPMENT_DELETION' : 'ELEMENT_DELETION',
-                equipmentId: this.equipmentId,
-                equipmentType: identifiableType(this.type),
-            },
-        ];
+    toChanges(): NetworkChange[] {
+        return [removal(this.equipmentId, this.type, this.kind === 'bay')];
     }
 
     private removeFromDom(svgId: string): void {

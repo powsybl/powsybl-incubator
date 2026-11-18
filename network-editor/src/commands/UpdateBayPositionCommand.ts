@@ -1,5 +1,5 @@
 import type { Command } from './Command.ts';
-import { moveFeederBay, type NetworkModification } from '../modifications/modifications.ts';
+import { moveFeederBay, type NetworkChange } from '../changes/changes.ts';
 import type { EditorModel } from '../model/EditorModel.ts';
 import type { SvgDomService } from '../dom/SvgDomService.ts';
 import type {
@@ -49,7 +49,7 @@ export class UpdateBayPositionCommand implements Command {
         }
     }
 
-    toModifications(): NetworkModification[] {
+    toChanges(): NetworkChange[] {
         return [
             moveFeederBay(
                 this.feeder.vlId,

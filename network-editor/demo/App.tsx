@@ -5,7 +5,7 @@ import {
     type ActionMenuItem,
     type EditorAction,
     type EquipmentProperties,
-    type NetworkModification,
+    type NetworkChange,
     type SLDMetadata,
 } from '../src';
 import { ContextMenu } from './ContextMenu';
@@ -21,7 +21,7 @@ export function App() {
     const [editor, setEditor] = useState<NetworkEditor | null>(null);
     const [menu, setMenu] = useState<Menu | null>(null);
     const [form, setForm] = useState<EditorAction | null>(null);
-    const [modifications, setModifications] = useState<NetworkModification[]>([]);
+    const [changes, setChanges] = useState<NetworkChange[]>([]);
     const [showIidmNodes, setShowIidmNodes] = useState(false);
     const [history, setHistory] = useState<{ canUndo: boolean; canRedo: boolean }>({ canUndo: false, canRedo: false });
 
@@ -39,8 +39,8 @@ export function App() {
                     case 'gesture:changed':
                         setForm(event.action);
                         break;
-                    case 'modifications:changed':
-                        setModifications(event.modifications);
+                    case 'changes:changed':
+                        setChanges(event.changes);
                         break;
                     case 'history:changed' :
                         setHistory({ canUndo: event.canUndo, canRedo: event.canRedo });
@@ -63,7 +63,7 @@ export function App() {
         editor?.cancelGesture();
     };
 
-    const clearModifications = () => editor?.clearModifications();
+    const clearChanges = () => editor?.clearChanges();
 
     const toggleIidmNodes = () => {
         setShowIidmNodes(!showIidmNodes);
@@ -82,8 +82,8 @@ export function App() {
                     <div className="toolbar">
                         <button disabled={!history.canUndo} onClick={() => editor?.undo()}>↩ Undo</button>
                         <button disabled={!history.canRedo} onClick={() => editor?.redo()}>↪ Redo</button>
-                        <button onClick={() => setModifications(editor?.getModifications() ?? [])}>send to backend</button>
-                        <button onClick={() => clearModifications()}>clear</button>
+                        <button onClick={() => setChanges(editor?.getChanges() ?? [])}>send to backend</button>
+                        <button onClick={() => clearChanges()}>clear</button>
                         <button onClick={toggleIidmNodes}>
                             {showIidmNodes ? 'hide IIDM nodes' : 'show IIDM nodes'}
                         </button>
@@ -97,8 +97,8 @@ export function App() {
                         </>
                     )}
 
-                    <h2>Modifications</h2>
-                    <pre className="modifications">{JSON.stringify(modifications, null, 2)}</pre>
+                    <h2>Changes</h2>
+                    <pre className="modifications">{JSON.stringify(changes, null, 2)}</pre>
                 </aside>
             </div>
 

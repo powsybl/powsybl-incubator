@@ -1,6 +1,6 @@
 import type { PendingCreateCommand } from './Command.ts';
 import type { EditorModel } from '../model/EditorModel.ts';
-import { injectionFields, switchKind, type NetworkModification } from '../modifications/modifications.ts';
+import { createInjection, type NetworkChange } from '../changes/changes.ts';
 import {
     NODE_COMPONENT_TYPE,
     newCreatedNodeId,
@@ -55,17 +55,9 @@ export class CreateSwitchedInjectionCommand implements PendingCreateCommand {
         this.model.clearProperties(this.equipmentId);
     }
 
-    toModifications(): NetworkModification[] {
-        return [
-            {
-                type: 'SWITCHED_INJECTION_CREATION',
-                voltageLevelId: this.vlId,
-                node: this.iidmNode,
-                switchId: this.switchId,
-                switchKind: switchKind(this.switchType),
-                creation: injectionFields(this.type, this.equipmentId, this.vlId, this.properties),
-            },
-        ];
+    toChanges(): NetworkChange[] {
+        const behindSwitch = { id: this.switchId, type: this.switchType };
+        return [createInjection(this.type, this.equipmentId, this.vlId, this.iidmNode, this.properties, {}, behindSwitch)];
     }
 
     get createSpec(): CreateSpec {

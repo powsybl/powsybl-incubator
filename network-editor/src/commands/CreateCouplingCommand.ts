@@ -1,5 +1,5 @@
 import type { Command } from './Command.ts';
-import type { NetworkModification } from '../modifications/modifications.ts';
+import { createCouplingDevice, type NetworkChange } from '../changes/changes.ts';
 import type { BusbarTarget } from '../types.ts';
 
 let nextPreview = 0;
@@ -23,16 +23,7 @@ export class CreateCouplingCommand implements Command {
 
     undo(): void {}
 
-    toModifications(): NetworkModification[] {
-        return [
-            {
-                type: 'CREATE_COUPLING_DEVICE',
-                voltageLevelId: this.first.vlId,
-                couplingDeviceInfos: {
-                    busbarSectionId1: this.first.busbarSectionId,
-                    busbarSectionId2: this.second.busbarSectionId,
-                },
-            },
-        ];
+    toChanges(): NetworkChange[] {
+        return [createCouplingDevice(this.first.vlId, this.first.busbarSectionId, this.second.busbarSectionId)];
     }
 }

@@ -1,6 +1,6 @@
 import type { PendingCreateCommand } from './Command.ts';
 import type { EditorModel } from '../model/EditorModel.ts';
-import { switchKind, type NetworkModification } from '../modifications/modifications.ts';
+import { createSwitch, type NetworkChange } from '../changes/changes.ts';
 import {
     NODE_COMPONENT_TYPE,
     newCreatedNodeId,
@@ -52,18 +52,8 @@ export class CreateSwitchCommand implements PendingCreateCommand {
         this.model.clearProperties(this.equipmentId);
     }
 
-    toModifications(): NetworkModification[] {
-        return [
-            {
-                type: 'SWITCH_CREATION',
-                equipmentId: this.equipmentId,
-                voltageLevelId: this.vlId,
-                switchKind: switchKind(this.type),
-                node1: this.node1,
-                node2: this.node2,
-                open: this.properties.open === true,
-            },
-        ];
+    toChanges(): NetworkChange[] {
+        return [createSwitch(this.type, this.equipmentId, this.vlId, this.node1, this.node2, this.properties.open === true)];
     }
 
     get createSpec(): CreateSpec {

@@ -1,10 +1,10 @@
 import type { CreateSpec, OrderClaim } from '../types.ts';
-import type { NetworkModification } from '../modifications/modifications.ts';
+import type { NetworkChange } from '../changes/changes.ts';
 
 export interface Command {
     execute(): void;
     undo(): void;
-    toModifications(): NetworkModification[];
+    toChanges(): NetworkChange[];
     readonly pendingMarker?: {
         targetId: string;
         nodeId: string;

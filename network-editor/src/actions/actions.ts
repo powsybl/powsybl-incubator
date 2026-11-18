@@ -1,6 +1,5 @@
 import { availableOperations, creatableTypesFor } from './operations.ts';
 import { defaultsOf, EQUIPMENT_ID, schemaFor, type PropertyDescriptor } from './properties.ts';
-import { equipmentModification, injectionCreation, modificationValues } from '../modifications/modifications.ts';
 import {
     SWITCH_TYPES,
     toDirection,
@@ -13,7 +12,6 @@ import {
     type ElementType,
     type EquipmentProperties,
     type EquipmentTarget,
-    type FeederPlacement,
     type PickedSwitch,
 } from '../types.ts';
 
@@ -84,7 +82,7 @@ interface ActionHost {
     group(edit: () => boolean): boolean;
 }
 
-const ORDER: PropertyDescriptor = { key: 'connectionPosition', type: 'number', required: true, min: 0 };
+const ORDER: PropertyDescriptor = { key: 'positionOrder', type: 'number', required: true, min: 0 };
 
 const SWITCH_KIND: PropertyDescriptor = {
     key: 'switchKind',
@@ -95,7 +93,7 @@ const SWITCH_KIND: PropertyDescriptor = {
 };
 
 const DIRECTION: PropertyDescriptor = {
-    key: 'connectionDirection',
+    key: 'direction',
     type: 'select',
     options: ['TOP', 'BOTTOM'],
     required: true,
@@ -152,18 +150,27 @@ function creationInitial(
 }
 
 function specFromValues(type: ElementType, values: ActionValues): CreateSpec | undefined {
-    const { equipmentId, connectionPosition, connectionDirection, switchKind, ...rest } = values;
+    const {
+        equipmentId,
+        positionOrder,
+        direction,
+        switchKind,
+        voltageLevelId: _vlId,
+        busOrBusbarSectionId: _busbarId,
+        ...rest
+    } = values;
     const provisionalId = text(equipmentId);
     if (!provisionalId) return undefined;
 
+    const schema = schemaFor(type, 'create');
     return {
         type,
-        properties: schemaValues(schemaFor(type, 'create'), rest),
+        properties: schemaValues(schema, rest),
         provisionalId,
-        order: typeof connectionPosition === 'number' ? connectionPosition : undefined,
-        direction: toDirection(text(connectionDirection)),
+        order: typeof positionOrder === 'number' ? positionOrder : undefined,
+        direction: toDirection(text(direction)),
         switchType: switchKind === undefined ? undefined : toElementType(text(switchKind)),
-        fields: rest,
+        fields: extraValues(schema, rest),
     };
 }
 
@@ -206,12 +213,14 @@ function createAction(
     const behindSwitch = operation === 'CREATE_SWITCHED_INJECTION';
     const form = createForm(type, onBusbar, behindSwitch);
 
-    const initial =
+    const initial: ActionValues =
         onBusbar && target.kind === 'BUSBAR'
-            ? proposedCreation(target, type, {
+            ? {
                   ...creationInitial(host, form, type),
-                  connectionPosition: host.proposedOrder(target, insertion) ?? null,
-              })
+                  voltageLevelId: target.vlId,
+                  busOrBusbarSectionId: target.busbarSectionId,
+                  positionOrder: host.proposedOrder(target, insertion),
+              }
             : creationInitial(host, form, type);
 
     return {
@@ -222,7 +231,7 @@ function createAction(
         initial,
         run: (values = {}) => {
             if (target.kind === 'BUSBAR' && !isOnTarget(target, values)) return false;
-            const spec = specFromValues(type, followingId(values, initial));
+            const spec = specFromValues(type, values);
             if (!spec) return false;
             if (behindSwitch && target.kind === 'NODE') {
                 return host.createSwitchedInjection(target.id, spec);
@@ -232,40 +241,11 @@ function createAction(
     };
 }
 
-/** The creation `run` would produce from these form values: what a host form opens on. */
-function proposedCreation(target: BusbarTarget, type: ElementType, values: ActionValues): ActionValues {
-    const { equipmentId, ...rest } = values;
-    return {
-        ...injectionCreation(
-            type,
-            text(equipmentId) ?? '',
-            placementOf(target, values),
-            schemaValues(schemaFor(type, 'create'), rest),
-        ),
-    };
-}
-
 // A host form may offer another voltage level or busbar: the editor only creates on its target.
 function isOnTarget(target: BusbarTarget, values: ActionValues): boolean {
     const { voltageLevelId, busOrBusbarSectionId } = values;
     return (voltageLevelId === undefined || voltageLevelId === target.vlId)
         && (busOrBusbarSectionId === undefined || busOrBusbarSectionId === target.busbarSectionId);
-}
-
-// The proposed connection name, left untouched, follows the equipment id the form hands back.
-function followingId(values: ActionValues, initial: ActionValues): ActionValues {
-    if (values.connectionName !== initial.connectionName) return values;
-    const { connectionName: _proposed, ...rest } = values;
-    return rest;
-}
-
-function placementOf(target: BusbarTarget, values: ActionValues): FeederPlacement {
-    return {
-        voltageLevelId: target.vlId,
-        busbarSectionId: target.busbarSectionId,
-        order: typeof values.connectionPosition === 'number' ? values.connectionPosition : null,
-        direction: toDirection(text(values.connectionDirection)),
-    };
 }
 
 /** Scalar values of the keys the schema knows: what the editor stores as properties. */
@@ -280,40 +260,39 @@ function schemaValues(schema: readonly PropertyDescriptor[], values: ActionValue
     return properties;
 }
 
+/** The values of the keys the schema does not know: host data carried as is in the change `extra`. */
+function extraValues(schema: readonly PropertyDescriptor[], values: ActionValues): Record<string, unknown> {
+    const known = new Set(schema.map(({ key }) => key));
+    return Object.fromEntries(
+        Object.entries(values).filter(([key, value]) => !known.has(key) && value !== null && value !== undefined),
+    );
+}
+
 /**
- * Applies a host modification as one step, or not at all: the bay placement goes through the bay edits,
- * every other field is kept as is, so the change set sends what the host form produced.
+ * Applies host values as one step, or not at all: the bay placement goes through the bay edits,
+ * the attributes through a property edit that also carries the unknown keys as `extra`.
  */
 function editEquipment(
     host: ActionHost,
     target: EquipmentTarget,
     form: readonly PropertyDescriptor[],
-    modification: ActionValues,
+    values: ActionValues,
 ): boolean {
-    const {
-        type: _type,
-        equipmentId: _id,
-        voltageLevelId,
-        busOrBusbarSectionId,
-        connectionPosition,
-        connectionDirection,
-        ...rest
-    } = modification;
-    const placement = modificationValues({ voltageLevelId, busOrBusbarSectionId, connectionPosition, connectionDirection });
+    const { equipmentId: _id, voltageLevelId, busOrBusbarSectionId, positionOrder, direction, ...rest } = values;
     // A bay only moves within its voltage level.
-    if (placement.voltageLevelId !== undefined && placement.voltageLevelId !== target.vlId) return false;
+    if (voltageLevelId !== undefined && voltageLevelId !== target.vlId) return false;
 
-    const fields = Object.fromEntries(Object.entries(rest).filter(([, value]) => value !== null && value !== undefined));
-    const known = schemaValues(form, modificationValues(modification));
-    const busbar = text(placement.busOrBusbarSectionId);
-    const hasFields = Object.keys(fields).length > 0;
+    const known = schemaValues(form, rest);
+    const extra = extraValues(form, rest);
+    const hasEdits = Object.keys(known).length > 0 || Object.keys(extra).length > 0;
+    const busbar = text(busOrBusbarSectionId);
 
     return host.group(() => {
         if (busbar !== undefined && !moveToBusbar(host, target.equipmentId, busbar)) return false;
-        const position = bayPositionChange(host.getBayPosition(target.equipmentId), placement);
+        const position = bayPositionChange(host.getBayPosition(target.equipmentId), positionOrder, direction);
         if (position && !host.setBayPosition(target.equipmentId, position)) return false;
-        if (hasFields && !host.applyProperties(target.equipmentId, known, fields)) return false;
-        return busbar !== undefined || position !== undefined || hasFields;
+        if (hasEdits && !host.applyProperties(target.equipmentId, known, extra)) return false;
+        return busbar !== undefined || position !== undefined || hasEdits;
     });
 }
 
@@ -324,12 +303,12 @@ function moveToBusbar(host: ActionHost, equipmentId: string, busbarSectionId: st
     return destination !== undefined && host.moveFeederBay(equipmentId, destination.id);
 }
 
-/** The bay position a host modification asks for (`connectionPosition`, `connectionDirection`), when it moves the bay. */
-function bayPositionChange(current: BayPosition | undefined, placement: EquipmentProperties): BayPosition | undefined {
+/** The bay position the host values ask for (`positionOrder`, `direction`), when it moves the bay. */
+function bayPositionChange(current: BayPosition | undefined, positionOrder: unknown, direction: unknown): BayPosition | undefined {
     if (!current) return undefined;
-    const order = typeof placement.connectionPosition === 'number' ? placement.connectionPosition : current.order;
-    const direction = toDirection(text(placement.connectionDirection)) ?? current.direction;
-    return order === current.order && direction === current.direction ? undefined : { order, direction };
+    const order = typeof positionOrder === 'number' ? positionOrder : current.order;
+    const newDirection = toDirection(text(direction)) ?? current.direction;
+    return order === current.order && newDirection === current.direction ? undefined : { order, direction: newDirection };
 }
 
 export function switchAction(host: ActionHost, picked: PickedSwitch): EditorAction {
@@ -418,7 +397,7 @@ function equipmentActions(
                     id: createOperationId(target, operation),
                     operation,
                     form,
-                    initial: equipmentModification(target.type, equipmentId, known),
+                    initial: { ...known, equipmentId },
                     equipment: equipmentOf(target),
                     run: (values = {}) => editEquipment(host, target, form, values),
                 },

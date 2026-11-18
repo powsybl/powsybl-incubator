@@ -1,6 +1,6 @@
 import type { PendingCreateCommand } from './Command.ts';
 import type { EditorModel } from '../model/EditorModel.ts';
-import { injectionCreation, nodeInjectionCreation, type NetworkModification } from '../modifications/modifications.ts';
+import { createFeederBay, createInjection, type NetworkChange } from '../changes/changes.ts';
 import {
     NODE_COMPONENT_TYPE,
     newCreatedNodeId,
@@ -61,17 +61,18 @@ export class CreateCommand implements PendingCreateCommand {
         this.model.clearProperties(this.equipmentId);
     }
 
-    toModifications(): NetworkModification[] {
-        if (this.target.kind === 'NODE') {
-            return [nodeInjectionCreation(this.type, this.equipmentId, this.target.vlId, this.target.node, this.properties, this.fields)];
+    toChanges(): NetworkChange[] {
+        const { target, type, equipmentId, properties, fields } = this;
+        if (target.kind === 'NODE') {
+            return [createInjection(type, equipmentId, target.vlId, target.node, properties, fields)];
         }
         const placement = {
-            voltageLevelId: this.target.vlId,
-            busbarSectionId: this.target.busbarSectionId,
-            order: this.bay?.order ?? null,
+            voltageLevelId: target.vlId,
+            busbarSectionId: target.busbarSectionId,
+            order: this.bay?.order,
             direction: this.bay?.direction,
         };
-        return [injectionCreation(this.type, this.equipmentId, placement, this.properties, this.fields)];
+        return [createFeederBay(type, equipmentId, placement, properties, fields)];
     }
 
     get createSpec(): CreateSpec {

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { DEFAULT_LAYOUT_PARAMS } from '../types.ts';
 import { defaultFeederLevels } from './bayFlip.ts';
 
-// Busbars of the demo diagram (demo/data/reseau.svg).
+// Busbars of the demo diagram (demo/data/reseau1.svg).
 const BUS_TOP = 280;
 const BUS_BOTTOM = 305;
 

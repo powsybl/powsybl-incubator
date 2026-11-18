@@ -1,6 +1,6 @@
 import type { Command } from './Command.ts';
 import type { EditorModel } from '../model/EditorModel.ts';
-import type { NetworkModification } from '../modifications/modifications.ts';
+import { createBusbarSection, type NetworkChange } from '../changes/changes.ts';
 
 export class CreateBusbarCommand implements Command {
     constructor(
@@ -18,16 +18,7 @@ export class CreateBusbarCommand implements Command {
         this.model.releaseId(this.equipmentId);
     }
 
-    toModifications(): NetworkModification[] {
-        return [
-            {
-                type: 'BUSBAR_CREATION',
-                equipmentId: this.equipmentId,
-                equipmentName: null,
-                voltageLevelId: this.vlId,
-                busbarIndex: this.busbarIndex,
-                sectionIndex: 1,
-            },
-        ];
+    toChanges(): NetworkChange[] {
+        return [createBusbarSection(this.equipmentId, this.vlId, this.busbarIndex)];
     }
 }

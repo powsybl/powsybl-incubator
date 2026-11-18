@@ -35,6 +35,8 @@ export function actionLabel(action: EditorAction): string {
             return `${base}: ${action.subject.busbarSectionId}`;
         case 'SELECTION':
             return `${base} (${action.subject.size})`;
+        case 'STATE' :
+            return action.subject.open ? 'close' : 'open';
         default:
             return base;
     }

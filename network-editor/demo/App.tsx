@@ -23,6 +23,7 @@ export function App() {
     const [form, setForm] = useState<EditorAction | null>(null);
     const [modifications, setModifications] = useState<NetworkModification[]>([]);
     const [showIidmNodes, setShowIidmNodes] = useState(false);
+    const [history, setHistory] = useState<{ canUndo: boolean; canRedo: boolean }>({ canUndo: false, canRedo: false });
 
     useEffect(() => {
         const instance = new NetworkEditor({
@@ -40,6 +41,9 @@ export function App() {
                         break;
                     case 'modifications:changed':
                         setModifications(event.modifications);
+                        break;
+                    case 'history:changed' :
+                        setHistory({ canUndo: event.canUndo, canRedo: event.canRedo });
                         break;
                 }
             },
@@ -76,8 +80,8 @@ export function App() {
 
                 <aside className="panel">
                     <div className="toolbar">
-                        <button onClick={() => editor?.undo()}>↩ Undo</button>
-                        <button onClick={() => editor?.redo()}>↪ Redo</button>
+                        <button disabled={!history.canUndo} onClick={() => editor?.undo()}>↩ Undo</button>
+                        <button disabled={!history.canRedo} onClick={() => editor?.redo()}>↪ Redo</button>
                         <button onClick={() => setModifications(editor?.getModifications() ?? [])}>send to backend</button>
                         <button onClick={() => clearModifications()}>clear</button>
                         <button onClick={toggleIidmNodes}>

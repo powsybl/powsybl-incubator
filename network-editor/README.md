@@ -31,9 +31,9 @@ powsybl-diagram ──► SVG + metadata ──► NetworkEditor ──► chang
   - [Actions, menus and forms](#actions-menus-and-forms)
 - [Operations and change set](#operations-and-change-set)
 - [Styling](#styling)
+- [Limitations](#limitations)
 - [Development](#development)
 - [Project structure](#project-structure)
-- [Contributing](#contributing)
 - [License](#license)
 
 ## Features
@@ -62,7 +62,8 @@ powsybl-diagram ──► SVG + metadata ──► NetworkEditor ──► chang
 |---|---|
 | A browser (DOM + SVG) | The editor works on the SVG rendered in the page. |
 | [`@powsybl/network-viewer-core`](https://github.com/powsybl/powsybl-network-viewer) `^3.8.0-dev.0` (peer dependency) | Displays the SLD and provides the SLD component library (`createSldComponentElement`, `DefaultSldLibraryComponents`) used to draw previews. Not released yet: branch `cl-sld-viewer-expose-component-library`. |
-| SLD SVG and metadata from [powsybl-diagram](https://github.com/powsybl/powsybl-diagram), **with IIDM node metadata** | The editor maps diagram nodes to IIDM nodes (`iidmNode`, `iidmNode1`, `iidmNode2`) and busbars to their position (`busbarIndex`, `sectionIndex`). Without them, nodes and busbars are not editable. Not released yet: branch `cl-sld-metadata-extension`. |
+| SLD SVG and metadata from [powsybl-diagram](https://github.com/powsybl/powsybl-diagram), **with IIDM node metadata** | The editor maps diagram nodes to IIDM nodes (`iidmNode`, `iidmNode1`, `iidmNode2`) and busbars to their position (`busbarIndex`, `sectionIndex`). Without them, nodes and busbars are not editable. Added in SLD metadata version `1.2`, not released yet: branch `cl-sld-metadata-extension`. |
+| A node/breaker voltage level, drawn with `PositionVoltageLevelLayout` | IIDM nodes only exist in node/breaker topology; bay previews reproduce the horizontal placement of this layout. See [Limitations](#limitations). |
 | A backend applying the change set | For instance one built on [gridsuite-network-modification](https://github.com/gridsuite/network-modification). See [Operations and change set](#operations-and-change-set) for the supported types. |
 
 ## Installation
@@ -72,7 +73,7 @@ The package is not published yet. Build it from this repository and link it in y
 ```bash
 cd network-editor
 npm install
-npm run build          # produces dist/ (ESM + CJS + type declarations)
+npm run build          
 ```
 
 ## Quick start
@@ -97,6 +98,7 @@ const editor = new NetworkEditor({
                 break;
             case 'gesture:changed':     // an action needs a form (or a gesture ended)
                 if (event.action) showForm(event.action);
+                else closeForm();       // gesture cancelled (Esc) or finished
                 break;
             case 'modifications:changed':
                 showChangeSet(event.modifications);
@@ -111,7 +113,8 @@ function onItemClicked(item: ActionMenuItem): void {
 }
 
 // When the user validates the edits
-await backend.apply(editor.getModifications());
+const modifications = editor.getModifications();  // normalized; may be empty (e.g. create then delete)
+if (modifications.length > 0) await backend.apply(modifications);
 editor.destroy();                       // then redraw the SLD returned by the backend
 ```
 
@@ -139,16 +142,16 @@ Everything exported by [`src/index.ts`](src/index.ts) is public; anything else i
 | `maxWidth`           | `number`                              | `2000`            | Maximum diagram width. |
 | `maxHeight`          | `number`                              | `2000`            | Maximum diagram height. |
 | `selectionBackColor` | `string`                              | `'white'`         | Background color used by the viewer for selection. |
-| `callbacks`          | `ViewerCallbacks`                     | —                 | Viewer callbacks (`onNextVoltage`, `onBreaker`, `onFeeder`, `onBus`, `onToggleHover`), called when the editor has no action for the clicked target. |
+| `callbacks`          | `ViewerCallbacks`                     | —                 | Viewer callbacks (`onNextVoltage`, `onBreaker`, `onFeeder`, `onBus`, `onToggleHover`), passed to the viewer. The editor handles right clicks first: `onFeeder` and `onBus` are only called when it has no action for the clicked target. |
 | `onEvent`            | `(event: EditorEvent) => void`        | —                 | Listener receiving every editor event. |
-| `initialProperties`  | `Record<string, EquipmentProperties>` | —                 | Initial equipment properties, by equipment id: they fill the edit forms. |
+| `initialProperties`  | `Record<string, EquipmentProperties>` | —                 | Initial equipment properties, by equipment id, keyed like the property forms (e.g. `{ "LOAD1": { "p0": 10, "q0": 0 } }`, `{ "BREAKER1": { "open": false } }`): they fill the edit forms. |
 | `isSupported`        | `(action: EditorAction) => boolean`   | —                 | Filters the actions offered to the user, e.g. those the host backend cannot apply. |
 
 ### Methods
 
 | Method                          | Description |
 |---------------------------------|-------------|
-| `undo()` / `redo()`             | Undo or redo the last command. |
+| `undo()` / `redo()`             | Undo or redo the last command. The editor binds no undo/redo shortcut: the host does. |
 | `getModifications()`            | Returns the pending change set as `NetworkModification[]`. |
 | `clearModifications()`          | Reverts every pending command and clears the history. |
 | `cancelGesture()`               | Cancels the gesture in progress (also triggered by `Esc`). |
@@ -177,6 +180,7 @@ The editor offers **actions** (`EditorAction`); the host decides how to show the
 
 | `EditorAction` field | Description |
 |---|---|
+| `id`                 | Unique id of the action, e.g. to key a form. |
 | `operation`, `subject` | What the action does (`EditOperation`) and on what (an element type, a destination busbar, a selection size). |
 | `form`               | `PropertyDescriptor[]` describing the fields to ask (`key`, `type`, `options`, `required`, `min`, `max`, `unit`, `readOnly`…). Empty when no form is needed. |
 | `initial`            | Initial form values. For a feeder bay creation or a property update, it is the very GridSuite modification the action would produce, so a GridSuite dialog can open on it. |
@@ -231,6 +235,16 @@ The editor injects its own styles. Colors can be themed with CSS variables on th
 Main CSS classes: `ne-selected`, `ne-pending-create`, `ne-node-target`, `ne-switch-start`, `ne-switch-end`,
 `ne-bay-slot`.
 
+## Limitations
+
+- **Node/breaker only**: bus/breaker voltage levels have no IIDM nodes, so nothing can be created on them.
+- **Voltage level diagrams**: substation diagrams are not supported, and branches (lines, transformers) cannot be
+  created: they have two ends, possibly in two substations.
+- **Previews are approximate** outside `PositionVoltageLevelLayout`: the bay reflow reproduces its horizontal pass only.
+  The backend stays the reference: the diagram it redraws after applying the change set is the final one.
+- **Validation**: the editor checks what the diagram tells (free id, free bay position, edited target). Business rules
+  are checked by the backend.
+
 ## Development
 
 ```bash
@@ -240,13 +254,6 @@ npm run check  # type-check (src + demo)
 npm run test   # unit tests (Vitest, jsdom)
 npm run build  # library build into dist/
 ```
-
-`@powsybl/network-viewer-core` is linked as a `file:` dev dependency to a local build of powsybl-network-viewer: build
-that package first.
-
-Conventions: strict TypeScript, every edit goes through a reversible command, every SVG access through
-`SvgDomService`, the SLD metadata is never mutated, the change set format stays aligned with the gridsuite DTOs. Tests
-live next to the tested file (`*.test.ts`).
 
 ## Project structure
 
@@ -264,3 +271,7 @@ src/
 demo/               # standalone React demo
 docs/               # design notes (in French)
 ```
+
+## License
+
+[Mozilla Public License 2.0](https://www.mozilla.org/en-US/MPL/2.0/), see [`LICENSE`](../LICENSE).

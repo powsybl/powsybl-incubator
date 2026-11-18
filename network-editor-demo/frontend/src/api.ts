@@ -1,6 +1,6 @@
 import axios from "axios";
 import type {NetworkInfo, Sld} from "./types.ts";
-import type {NetworkModification} from "@powsybl/network-editor";
+import {CHANGE_FORMAT_VERSION, type NetworkChange} from "@powsybl/network-editor";
 
 export const uploadNetwork = (file: File) => {
     const formData = new FormData()
@@ -19,5 +19,7 @@ export const getSld = (vlId: string) =>
     axios.post<Sld>('/api/network/sld', { vlId: vlId }).then((res) => res.data)
 
 
-export const applyModifications = (modifications: NetworkModification[]) =>
-    axios.post<void>('/api/network/modifications', modifications).then((res) => res.data)
+export const sendChanges = (changes: NetworkChange[]) =>
+    axios
+        .post<void>('/api/network/modifications', { formatVersion: CHANGE_FORMAT_VERSION, changes })
+        .then((res) => res.data)

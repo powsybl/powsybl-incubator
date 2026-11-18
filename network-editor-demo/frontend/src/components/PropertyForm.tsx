@@ -115,7 +115,7 @@ function readValues(
     return values;
 }
 
-/** The plain values the form shows: a property edit opens on a modification, a creation on plain values. */
+/** The values the form shows: an edit form also shows the defaults of the fields the diagram does not give. */
 function formValues(action: EditorAction): ActionValues {
     if (action.operation !== 'UPDATE_PROPERTIES' || !action.equipment) return action.initial;
 
@@ -123,31 +123,13 @@ function formValues(action: EditorAction): ActionValues {
     for (const { key, editOnly, defaultValue } of action.form) {
         if (editOnly && defaultValue !== undefined) values[key] = defaultValue;
     }
-    const { initial } = action;
-    if (initial.type === 'EQUIPMENT_ATTRIBUTE_MODIFICATION') {
-        values[initial.equipmentAttributeName] = initial.equipmentAttributeValue;
-    } else {
-        for (const [key, field] of Object.entries(initial)) {
-            if (field?.op === 'SET') values[key] = field.value;
-        }
-    }
-    return { ...values, equipmentId: action.equipment.id };
+    return { ...values, ...action.initial };
 }
 
-/** What `run` expects: for a property edit, the initial modification with only the fields the user changed. */
+/** What `run` expects: for a property edit, only the values the user changed. */
 function submittedValues(action: EditorAction, entered: EquipmentProperties): ActionValues {
     if (action.operation !== 'UPDATE_PROPERTIES' || !action.equipment) return { ...action.initial, ...entered };
 
     const shown = formValues(action);
-    const { equipmentId: _id, ...changes } = Object.fromEntries(
-        Object.entries(entered).filter(([key, value]) => value !== shown[key]),
-    );
-    const { type, equipmentId, equipmentAttributeName } = action.initial;
-    if (type === 'EQUIPMENT_ATTRIBUTE_MODIFICATION') {
-        return equipmentAttributeName in changes
-            ? { ...action.initial, equipmentAttributeValue: changes[equipmentAttributeName] }
-            : { type, equipmentId };
-    }
-    const fields = Object.entries(changes).map(([key, value]) => [key, { value, op: 'SET' }]);
-    return { type, equipmentId, ...Object.fromEntries(fields) };
+    return Object.fromEntries(Object.entries(entered).filter(([key, value]) => value !== shown[key]));
 }

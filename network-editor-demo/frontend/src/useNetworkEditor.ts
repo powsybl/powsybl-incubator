@@ -4,7 +4,7 @@ import {
     type EditorAction,
     type EditTarget,
     NetworkEditor,
-    type NetworkModification,
+    type NetworkChange,
 } from "@powsybl/network-editor";
 import type {Sld} from "./types.ts";
 
@@ -19,14 +19,14 @@ export function useNetworkEditor(container: RefObject<HTMLDivElement | null>, sl
     const [editor, setEditor] = useState<NetworkEditor | null>(null)
     const [menu, setMenu] = useState<EditorMenu | null>(null)
     const [form, setForm] = useState<EditorAction | null>(null)
-    const [modifications, setModifications] = useState<NetworkModification[]>([])
+    const [changes, setChanges] = useState<NetworkChange[]>([])
     const [history, setHistory] = useState({canUndo: false, canRedo: false})
 
     useEffect(() => {
         setEditor(null)
         setMenu(null)
         setForm(null)
-        setModifications([])
+        setChanges([])
         setHistory({canUndo: false, canRedo: false})
         if (!sld || !container.current) return
 
@@ -44,8 +44,8 @@ export function useNetworkEditor(container: RefObject<HTMLDivElement | null>, sl
                         setMenu(null)
                         setForm(event.action)
                         break
-                    case "modifications:changed":
-                        setModifications(event.modifications)
+                    case "changes:changed":
+                        setChanges(event.changes)
                         break
                     case "history:changed":
                         setHistory({canUndo: event.canUndo, canRedo: event.canRedo})
@@ -70,5 +70,5 @@ export function useNetworkEditor(container: RefObject<HTMLDivElement | null>, sl
         editor?.cancelGesture()
     }
 
-    return {editor, menu, closeMenu, pick: itemClicked, form, closeForm, modifications, history}
+    return {editor, menu, closeMenu, pick: itemClicked, form, closeForm, changes, history}
 }

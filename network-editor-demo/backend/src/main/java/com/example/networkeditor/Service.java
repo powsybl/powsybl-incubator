@@ -1,12 +1,15 @@
 package com.example.networkeditor;
 
 import com.powsybl.commons.PowsyblException;
+import com.powsybl.commons.report.ReportNode;
+import com.powsybl.iidm.modification.topology.CreateCouplingDeviceBuilder;
 import com.powsybl.iidm.modification.topology.CreateFeederBayBuilder;
 import com.powsybl.iidm.modification.topology.MoveFeederBayBuilder;
 import com.powsybl.iidm.modification.topology.RemoveFeederBayBuilder;
 import com.powsybl.iidm.network.*;
 import com.powsybl.iidm.network.extensions.ConnectablePosition;
 import com.powsybl.iidm.network.extensions.BusbarSectionPosition;
+import com.powsybl.iidm.network.extensions.BusbarSectionPositionAdder;
 import com.powsybl.iidm.network.extensions.ConnectablePositionAdder;
 import com.powsybl.iidm.network.util.BusbarSectionFinderTraverser;
 
@@ -22,35 +25,6 @@ import java.util.function.IntConsumer;
 
 @org.springframework.stereotype.Service
 public class Service {
-
-
-    public void removeElement(Network n, String elementId) throws PowsyblException {
-
-        Identifiable<?> identifiable = n.getIdentifiable(elementId);
-        if(identifiable == null) {
-            throw new PowsyblException("Element with id " + elementId + " not found");
-        }
-
-        try {
-            if (identifiable instanceof Connectable<?> connectable) {
-                connectable.remove();
-            } else if (identifiable instanceof Switch aSwitch) {
-                aSwitch.getVoltageLevel().getNodeBreakerView().removeSwitch(elementId);
-            } else {
-                throw new PowsyblException("Failed to delete '" + elementId + "' is neither a connectable nor a switch");
-            }
-        } catch (PowsyblException e) {
-            throw new PowsyblException("Failed to delete '" + elementId + "': " + e.getMessage());
-        }
-    }
-
-    public void removeBay(Network n, String elementId) throws PowsyblException {
-        try {
-            new RemoveFeederBayBuilder().withConnectableId(elementId).build().apply(n);
-        } catch (PowsyblException e) {
-            throw new PowsyblException("Failed to delete bay '" + elementId + "': " + e.getMessage());
-        }
-    }
 
 
     public Map<String, Map<String, Object>> readProperties(Network network, String vlId) {
@@ -104,7 +78,7 @@ public class Service {
             putDouble(properties, "voltageSetpoint", svc.getVoltageSetpoint());
             putDouble(properties, "reactivePowerSetpoint", svc.getReactivePowerSetpoint());
             properties.put("regulationMode", svc.getRegulationMode().name());
-            properties.put("isRegulating", svc.isRegulating());
+            properties.put("regulating", svc.isRegulating());
 
         } else if (identifiable instanceof VscConverterStation vsc) {
             putDouble(properties, "lossFactor", vsc.getLossFactor());
@@ -165,142 +139,140 @@ public class Service {
         }
     }
 
-    public void apply(Network network, Dto.ChangeEntry change) {
-        switch (change.op()) {
-            case "create" -> create(network, change);
-            case "create-bay" -> createBay(network, change);
-            case "create-switch" -> createSwitch(network, change);
-            case "create-switched-injection" -> createSwitchedInjection(network, change);
-            case "update" -> update(network, change);
-            case "update-position" -> updatePosition(network, change);
-            case "move-bay" -> moveBay(network, change);
-            case "rename" -> renameEquipment(network, change);
-            case "replace" -> replace(network, change);
-            default -> throw new PowsyblException("Unsupported change '" + change.op() + "'");
+    // APPLY: one change of the editor change set, with powsybl-iidm-modification or the IIDM API.
+
+    public void apply(Network network, Changes.Change change) {
+        switch (change) {
+            case Changes.CreateFeederBay c -> createFeederBay(network, c);
+            case Changes.CreateInjection c -> createInjection(network, c);
+            case Changes.CreateSwitch c -> createSwitch(network, c);
+            case Changes.CreateBusbarSection c -> createBusbarSection(network, c);
+            case Changes.CreateCouplingDevice c -> new CreateCouplingDeviceBuilder()
+                    .withBusOrBusbarSectionId1(c.busOrBusbarSectionId1())
+                    .withBusOrBusbarSectionId2(c.busOrBusbarSectionId2())
+                    .build()
+                    .apply(network, true, ReportNode.NO_OP);
+            case Changes.RemoveFeederBay c -> new RemoveFeederBayBuilder()
+                    .withConnectableId(c.connectableId())
+                    .build()
+                    .apply(network, true, ReportNode.NO_OP);
+            case Changes.RemoveElement c -> removeElement(network, c.id());
+            case Changes.MoveFeederBay c -> moveFeederBay(network, c);
+            case Changes.UpdateAttributes c -> updateAttributes(network, c);
+            case Changes.Rename c -> rename(network, c);
+            default -> throw new PowsyblException("Unsupported change " + change.getClass().getSimpleName());
         }
     }
 
-    public void renameEquipment(Network network, Dto.ChangeEntry change) {
-        Connectable<?> connectable = network.getConnectable(change.equipmentId());
-        if (connectable == null) {
-            throw new PowsyblException("Connectable '" + change.equipmentId() + "' not found");
+    private void createFeederBay(Network network, Changes.CreateFeederBay change) {
+        requireNewId(network, change.id());
+        CreateFeederBayBuilder builder = new CreateFeederBayBuilder()
+                .withInjectionAdder(injectionAdder(requireVoltageLevel(network, change.voltageLevelId()),
+                        change.equipmentType(), change.id()))
+                .withBusOrBusbarSectionId(change.busOrBusbarSectionId())
+                .withLogOrThrowIfIncorrectPositionOrder(true);
+        if (change.positionOrder() != null) {
+            builder.withInjectionPositionOrder(change.positionOrder());
         }
-        String newId = requireText(change.payload(), "newId");
-        requireNewId(network, newId);
-
-        connectable.setName(newId);
-        connectable.setId(newId);
-        renameFeeders(connectable, newId);
+        if (change.direction() != null) {
+            builder.withInjectionDirection(change.direction());
+        }
+        builder.build().apply(network, true, ReportNode.NO_OP);
+        applyAttributes(network.getIdentifiable(change.id()), change.attributes());
     }
 
-    public void replace(Network network, Dto.ChangeEntry change) {
-        if (!(network.getIdentifiable(change.equipmentId()) instanceof Injection<?> old)) {
-            throw new PowsyblException("Injection '" + change.equipmentId() + "' not found");
+    private void createInjection(Network network, Changes.CreateInjection change) {
+        VoltageLevel voltageLevel = requireVoltageLevel(network, change.voltageLevelId());
+        requireNewId(network, change.id());
+        int node = change.node();
+        if (change.behindSwitch() != null) {
+            requireNewId(network, change.behindSwitch().id());
+            int injectionNode = voltageLevel.getNodeBreakerView().getMaximumNodeIndex() + 1;
+            addSwitch(voltageLevel, change.behindSwitch().id(), change.behindSwitch().kind(), node, injectionNode);
+            node = injectionNode;
         }
-        Map<String, Object> payload = change.payload();
-        String newId = requireText(payload, "newId");
-        if (!newId.equals(old.getId())) {
-            requireNewId(network, newId);
-        }
+        injectionAdder(voltageLevel, change.equipmentType(), change.id()).setNode(node).add();
+        applyAttributes(network.getIdentifiable(change.id()), change.attributes());
+    }
 
-        VoltageLevel voltageLevel = old.getTerminal().getVoltageLevel();
-        int node = old.getTerminal().getNodeBreakerView().getNode();
-        ConnectablePosition.Feeder feeder = feederOf(old, 0);
-        Integer order = feeder == null ? null : feeder.getOrder().orElse(null);
-        ConnectablePosition.Direction direction = feeder == null ? null : feeder.getDirection();
+    private static void createSwitch(Network network, Changes.CreateSwitch change) {
+        VoltageLevel voltageLevel = requireVoltageLevel(network, change.voltageLevelId());
+        requireNewId(network, change.id());
+        addSwitch(voltageLevel, change.id(), change.switchKind(), change.node1(), change.node2());
+        network.getSwitch(change.id()).setOpen(change.open());
+    }
 
-        old.remove();
-        injectionAdder(voltageLevel, requireText(payload, "equipmentType"), newId)
-                .setNode(node)
+    private static void createBusbarSection(Network network, Changes.CreateBusbarSection change) {
+        VoltageLevel voltageLevel = requireVoltageLevel(network, change.voltageLevelId());
+        requireNewId(network, change.id());
+        BusbarSection busbarSection = voltageLevel.getNodeBreakerView().newBusbarSection()
+                .setId(change.id())
+                .setNode(voltageLevel.getNodeBreakerView().getMaximumNodeIndex() + 1)
                 .add();
+        busbarSection.newExtension(BusbarSectionPositionAdder.class)
+                .withBusbarIndex(change.busbarIndex())
+                .withSectionIndex(change.sectionIndex())
+                .add();
+    }
 
-        Connectable<?> created = network.getConnectable(newId);
+    private static void removeElement(Network network, String id) {
+        Identifiable<?> identifiable = network.getIdentifiable(id);
+        if (identifiable instanceof Connectable<?> connectable) {
+            connectable.remove();
+        } else if (identifiable instanceof Switch aSwitch) {
+            aSwitch.getVoltageLevel().getNodeBreakerView().removeSwitch(id);
+        } else {
+            throw new PowsyblException("Cannot remove '" + id + "': neither a connectable nor a switch");
+        }
+    }
+
+    private static void moveFeederBay(Network network, Changes.MoveFeederBay change) {
+        Connectable<?> connectable = network.getConnectable(change.connectableId());
+        if (connectable == null) {
+            throw new PowsyblException("Unknown element '" + change.connectableId() + "'");
+        }
+        int side = sideOf(connectable, change.side());
+        Terminal terminal = connectable.getTerminals().get(Math.max(side, 1) - 1);
+        String target = change.targetBusOrBusbarSectionId();
+        if (target != null && !target.equals(BusbarSectionFinderTraverser.findBusbarSectionId(terminal))) {
+            new MoveFeederBayBuilder()
+                    .withConnectableId(connectable.getId())
+                    .withTargetVoltageLevelId(change.targetVoltageLevelId())
+                    .withTargetBusOrBusBarSectionId(target)
+                    .withTerminal(terminal)
+                    .build()
+                    .apply(network, true, ReportNode.NO_OP);
+            connectable = network.getConnectable(change.connectableId());
+        }
+
+        ConnectablePosition.Feeder before = feederOf(connectable, side);
+        Integer order = change.positionOrder() != null ? change.positionOrder()
+                : before == null ? null : before.getOrder().orElse(null);
+        ConnectablePosition.Direction direction = change.direction() != null ? change.direction()
+                : before == null ? ConnectablePosition.Direction.BOTTOM : before.getDirection();
         if (order != null) {
-            setFeederPosition(created, 0, order, direction);
+            setFeederPosition(connectable, side, order, direction);
         }
-        applyProperties(created, properties(payload));
     }
 
-    public void create(Network network, Dto.ChangeEntry change) {
-        Map<String, Object> payload = change.payload();
-        VoltageLevel voltageLevel = requireVoltageLevel(network, requireText(payload, "vlId"));
-        requireNewId(network, change.equipmentId());
-
-        injectionAdder(voltageLevel, requireText(payload, "equipmentType"), change.equipmentId())
-                .setNode(requireInt(payload, "node"))
-                .add();
-
-        if (payload.get("order") instanceof Number) {
-            int order = requireInt(payload, "order");
-            ConnectablePosition.Direction direction = payload.get("direction") == null
-                    ? ConnectablePosition.Direction.BOTTOM
-                    : direction(requireText(payload, "direction"));
-            Connectable<?> connectable = network.getConnectable(change.equipmentId());
-            try {
-                setFeederPosition(connectable, 0, order, direction);
-            } catch (IllegalArgumentException e) {
-                throw new PowsyblException("Failed to set position of '" + change.equipmentId() + "': " + e.getMessage());
-            }
-        }
-
-        applyProperties(network.getIdentifiable(change.equipmentId()), properties(payload));
-    }
-
-    public void createBay(Network network, Dto.ChangeEntry change) {
-        Map<String, Object> payload = change.payload();
-        String equipmentId = change.equipmentId();
-        String bbsId = requireText(payload, "busbarSectionId");
-
-        BusbarSection bbs = network.getBusbarSection(bbsId);
-        if (bbs == null) {
-            throw new PowsyblException("Unknown busbar section '" + bbsId + "'");
-        }
-
-        requireNewId(network, equipmentId);
-
-        InjectionAdder<?, ?> adder = injectionAdder(bbs.getTerminal().getVoltageLevel(),
-                requireText(payload, "equipmentType"), equipmentId);
-
-        new CreateFeederBayBuilder()
-                .withInjectionAdder(adder)
-                .withBusOrBusbarSectionId(bbsId)
-                .withInjectionPositionOrder(requireInt(payload, "order"))
-                .withInjectionDirection(direction(requireText(payload, "direction")))
-                .withLogOrThrowIfIncorrectPositionOrder(true)
-                .build()
-                .apply(network);
-
-        applyProperties(network.getIdentifiable(equipmentId), properties(payload));
-    }
-
-    public void update(Network network, Dto.ChangeEntry change) {
-        Identifiable<?> identifiable = network.getIdentifiable(change.equipmentId());
+    private void updateAttributes(Network network, Changes.UpdateAttributes change) {
+        Identifiable<?> identifiable = network.getIdentifiable(change.id());
         if (identifiable == null) {
-            throw new PowsyblException("Unknown element '" + change.equipmentId() + "'");
+            throw new PowsyblException("Unknown element '" + change.id() + "'");
         }
-
-        applyProperties(identifiable, change.payload());
-        applyConnections(identifiable, change.payload());
+        applyAttributes(identifiable, change.attributes());
     }
 
-    public void updatePosition(Network network, Dto.ChangeEntry change) {
-
-        Map<String, Object> payload = change.payload();
-        int node = requireInt(payload, "node");
-        int order = requireInt(payload, "order");
-        ConnectablePosition.Direction direction = direction(requireText(payload, "direction"));
-
-        Connectable<?> connectable = network.getConnectable(change.equipmentId());
+    /** IIDM has no id change: the demo renames in place, feeder names included. */
+    private static void rename(Network network, Changes.Rename change) {
+        Connectable<?> connectable = network.getConnectable(change.id());
         if (connectable == null) {
-            throw new PowsyblException("Unknown element '" + change.equipmentId() + "'");
+            throw new PowsyblException("Connectable '" + change.id() + "' not found");
         }
-
-        try {
-            setFeederPosition(connectable, sideOf(connectable,node), order, direction);
-        } catch (IllegalArgumentException e) {
-            throw new PowsyblException("Failed to update position for element '" + change.equipmentId() + "': " + e.getMessage());
-        }
-
+        requireNewId(network, change.newId());
+        connectable.setName(change.newId());
+        connectable.setId(change.newId());
+        renameFeeders(connectable, change.newId());
     }
 
     private static <C extends Connectable<C>> ConnectablePosition.Feeder feederOf(Connectable<C> connectable, int side) {
@@ -315,50 +287,6 @@ public class Service {
             case 2 -> position.getFeeder2();
             default -> position.getFeeder3();
         };
-    }
-
-    public void moveBay(Network network, Dto.ChangeEntry change) {
-        Map<String, Object> payload = change.payload();
-        Connectable<?> connectable = network.getConnectable(change.equipmentId());
-        if (connectable == null) {
-            throw new PowsyblException("Unknown element '" + change.equipmentId() + "'");
-        }
-        String bbsId = requireText(payload, "targetBusbarSectionId");
-        BusbarSection bbs = network.getBusbarSection(bbsId);
-        if (bbs == null) {
-            throw new PowsyblException("Unknown busbar section '" + bbsId + "'");
-        }
-
-        int node = requireInt(payload, "node");
-        int side = sideOf(connectable, node);
-        ConnectablePosition.Feeder before = feederOf(connectable, side);
-        Integer order = payload.get("order") instanceof Number number
-                ? Integer.valueOf(number.intValue())
-                : before == null ? null : before.getOrder().orElse(null);
-        ConnectablePosition.Direction direction = payload.get("direction") != null
-                ? direction(requireText(payload, "direction"))
-                : before == null ? ConnectablePosition.Direction.BOTTOM : before.getDirection();
-
-        new MoveFeederBayBuilder()
-                .withConnectableId(connectable.getId())
-                .withTargetVoltageLevelId(bbs.getTerminal().getVoltageLevel().getId())
-                .withTerminal(terminalAt(connectable, node))
-                .withTargetBusOrBusBarSectionId(bbsId)
-                .build()
-                .apply(network);
-
-        if (order != null) {
-            setFeederPosition(network.getConnectable(change.equipmentId()), side, order, direction);
-        }
-    }
-
-    private static Terminal terminalAt(Connectable<?> connectable, int node) {
-        for (Terminal terminal : connectable.getTerminals()) {
-            if (terminal.getNodeBreakerView().getNode() == node) {
-                return terminal;
-            }
-        }
-        throw new PowsyblException("Node " + node + " not found on connectable " + connectable.getId());
     }
 
     @SuppressWarnings("unchecked")
@@ -455,6 +383,18 @@ public class Service {
         return position == null ? 0 : position.getSectionIndex();
     }
 
+    private static int sideOf(Connectable<?> connectable, String side) {
+        if (connectable instanceof Injection<?> || side == null) {
+            return connectable instanceof Injection<?> ? 0 : 1;
+        }
+        return switch (side) {
+            case "ONE" -> 1;
+            case "TWO" -> 2;
+            case "THREE" -> 3;
+            default -> throw new PowsyblException("Unknown side '" + side + "'");
+        };
+    }
+
     private static int sideOf( Connectable<?> connectable, int node) {
         if ( connectable instanceof Injection<?>) {
             return 0;
@@ -467,50 +407,6 @@ public class Service {
             }
         }
         throw new PowsyblException("Node " + node + " not found on connectable " + connectable.getId());
-    }
-
-    public void createBusbar(Network network, Dto.ChangeEntry change) {
-
-        Map<String, Object> payload = change.payload();
-        VoltageLevel voltageLevel = requireVoltageLevel(network, requireText(payload,"vlId"));
-        requireNewId(network, change.equipmentId());
-
-        voltageLevel.getNodeBreakerView().newBusbarSection()
-                .setId(change.equipmentId())
-                .setNode(voltageLevel.getNodeBreakerView().getMaximumNodeIndex() + 1)
-                .add();
-
-        applyProperties(network.getIdentifiable(change.equipmentId()), properties(change.payload()));
-
-    }
-
-    public void createSwitch(Network network, Dto.ChangeEntry change) {
-
-        Map<String, Object> payload = change.payload();
-        VoltageLevel voltageLevel = requireVoltageLevel(network, requireText(payload,"vlId"));
-        requireNewId(network, change.equipmentId());
-
-        addSwitch(voltageLevel, change.equipmentId(), requireText(payload, "equipmentType"),
-                requireInt(payload, "node1"), requireInt(payload, "node2"));
-
-        applyProperties(network.getIdentifiable(change.equipmentId()), properties(payload));
-
-    }
-
-    public void createSwitchedInjection(Network network, Dto.ChangeEntry change) {
-        Map<String, Object> payload = change.payload();
-        VoltageLevel voltageLevel = requireVoltageLevel(network, requireText(payload, "vlId"));
-        String switchId = requireText(payload, "switchId");
-        requireNewId(network, change.equipmentId());
-        requireNewId(network, switchId);
-
-        int injectionNode = voltageLevel.getNodeBreakerView().getMaximumNodeIndex() + 1;
-        addSwitch(voltageLevel, switchId, requireText(payload, "switchType"), requireInt(payload, "node"), injectionNode);
-        injectionAdder(voltageLevel, requireText(payload, "equipmentType"), change.equipmentId())
-                .setNode(injectionNode)
-                .add();
-
-        applyProperties(network.getIdentifiable(change.equipmentId()), properties(payload));
     }
 
     //HELPERS
@@ -599,21 +495,22 @@ public class Service {
         }
     }
 
-    private static ConnectablePosition.Direction direction(String value) {
-        try {
-            return ConnectablePosition.Direction.valueOf(value);
-        } catch (IllegalArgumentException e) {
-            throw new PowsyblException("Unknown direction '" + value + "'");
+    private void applyAttributes(Identifiable<?> identifiable, Map<String, Object> attributes) {
+        if (attributes == null) {
+            return;
         }
+        applyValues(identifiable, attributes);
+        applyConnections(identifiable, attributes);
     }
 
-    private void applyProperties(Identifiable<?> identifiable, Map<String, Object> payload) {
+    private void applyValues(Identifiable<?> identifiable, Map<String, Object> payload) {
         if (identifiable instanceof Switch aSwitch) {
             setBoolean(payload, "open", aSwitch::setOpen);
 
         } else if (identifiable instanceof Load load) {
             setDouble(payload, "p0", load::setP0);
             setDouble(payload, "q0", load::setQ0);
+            setText(payload, "loadType", type -> load.setLoadType(LoadType.valueOf(type)));
 
         } else if (identifiable instanceof Generator generator) {
             setDouble(payload, "minP", generator::setMinP);
@@ -622,6 +519,7 @@ public class Service {
             setDouble(payload, "targetQ", generator::setTargetQ);
             setDouble(payload, "targetV", generator::setTargetV);
             setBoolean(payload, "voltageRegulatorOn", generator::setVoltageRegulatorOn);
+            setText(payload, "energySource", source -> generator.setEnergySource(EnergySource.valueOf(source)));
 
         } else if (identifiable instanceof Battery battery) {
             setDouble(payload, "minP", battery::setMinP);
@@ -735,28 +633,6 @@ public class Service {
         if (value != null) {
             setter.accept(String.valueOf(value));
         }
-    }
-
-    private static String requireText(Map<String, Object> payload, String key) {
-        Object value = payload.get(key);
-        if (value == null) {
-            throw new PowsyblException("Missing property '" + key + "'");
-        }
-        return String.valueOf(value);
-    }
-
-    private static int requireInt(Map<String, Object> payload, String key) {
-        Object value = payload.get(key);
-        if (!(value instanceof Number number)) {
-            throw new PowsyblException("Property '" + key + "' must be a number");
-        }
-        return number.intValue();
-    }
-
-    @SuppressWarnings("unchecked")
-    private static Map<String, Object> properties(Map<String, Object> payload) {
-        Object values = payload.get("properties");
-        return values instanceof Map ? (Map<String, Object>) values : Map.of();
     }
 
     private static void setConnected(Map<String, Object> payload, String key, Terminal terminal) {

@@ -1,14 +1,13 @@
-import {Banner, Button, Card, Header, Loader, Modal, Select} from "@design-system-rte/react";
+import {Banner, Button, Card, Header, Loader, Select} from "@design-system-rte/react";
 import {useEffect, useRef, useState} from "react";
 import {isAxiosError} from "axios";
 import {actionLabel} from "@powsybl/network-editor";
 import type {NetworkInfo, Sld} from "./types.ts";
-import {applyModifications, getSld, getVoltageLevelIds, uploadNetwork} from "./api.ts";
+import {getSld, getVoltageLevelIds, sendChanges, uploadNetwork} from "./api.ts";
 import {Menu} from "./components/Menu.tsx";
 import {PropertyForm} from "./components/PropertyForm.tsx";
-import {modificationLabel, modificationTarget} from "./modificationLabels.ts";
+import {changeLabel, changeTarget} from "./changeLabels.ts";
 import {useNetworkEditor} from "./useNetworkEditor.ts";
-import type {NetworkModification} from "@powsybl/network-editor";
 
 const errorMessage = (error: unknown) =>
     isAxiosError(error) && error.response?.data?.message ? error.response.data.message : String(error)
@@ -29,7 +28,7 @@ export default function App() {
     const [showIidmNodes, setShowIidmNodes] = useState<boolean>(false)
     const [changeSet, setChangeSet] = useState<boolean>(false);
 
-    const {editor, menu, closeMenu, pick, form, closeForm, modifications, history} = useNetworkEditor(container, sld)
+    const {editor, menu, closeMenu, pick, form, closeForm, changes, history} = useNetworkEditor(container, sld)
 
     const loadVlIds = () => {
         getVoltageLevelIds().then(setVlIds).catch((err) => setError(String(err)))
@@ -74,8 +73,8 @@ export default function App() {
         setError("")
         setApplyLoading(true)
         try {
-            await applyModifications(editor.getModifications())
-            editor.clearModifications()
+            await sendChanges(editor.getChanges())
+            editor.clearChanges()
             loadSld(selectedVlId)
         } catch (error) {
             setError(errorMessage(error))
@@ -191,17 +190,17 @@ export default function App() {
                                     onClick={() => setChangeSet(!changeSet)}
                                 />
 
-                                {modifications.length === 0 ?
+                                {changes.length === 0 ?
                                     <p className="changes-empty">Aucune modification.</p>
                                     :
                                     changeSet ?
-                                        <pre className="modifications">{JSON.stringify(modifications, null, 2)}</pre>
+                                        <pre className="modifications">{JSON.stringify(changes, null, 2)}</pre>
                                         :
                                         <ul className="changes">
-                                            {modifications.map((modification, index) =>
-                                                <li key={`${modification.type}-${index}`}>
-                                                    <span className="change-op">{modificationLabel(modification)}</span>
-                                                    <span className="change-id">{modificationTarget(modification)}</span>
+                                            {changes.map((change, index) =>
+                                                <li key={`${change.kind}-${index}`}>
+                                                    <span className="change-op">{changeLabel(change)}</span>
+                                                    <span className="change-id">{changeTarget(change)}</span>
                                                 </li>
                                             )}
                                         </ul>
@@ -242,15 +241,15 @@ export default function App() {
                                 </div>
 
                                 <div className="toolbar-group">
-                                    {modifications.length > 0 &&
+                                    {changes.length > 0 &&
                                         <span className="pending">
-                                            {modifications.length} modification{modifications.length > 1 ? 's' : ''} en attente
+                                            {changes.length} modification{changes.length > 1 ? 's' : ''} en attente
                                         </span>
                                     }
                                     <Button
                                         label="Valider les modifications"
                                         variant="primary"
-                                        disabled={!modifications.length || applyLoading}
+                                        disabled={!changes.length || applyLoading}
                                         onClick={() => applyChanges()}
                                     />
                                     { applyLoading &&  <Loader

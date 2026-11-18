@@ -2,13 +2,10 @@ package com.example.networkeditor;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.powsybl.commons.PowsyblException;
-import com.powsybl.commons.report.ReportNode;
 import com.powsybl.iidm.network.Network;
 import com.powsybl.iidm.network.VoltageLevel;
 import com.powsybl.iidm.serde.NetworkSerDe;
 import com.powsybl.sld.SingleLineDiagram;
-import org.gridsuite.modification.context.ModificationContext;
-import org.gridsuite.modification.modifications.AbstractModification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -21,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
-import org.gridsuite.modification.dto.ModificationInfos;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,10 +34,10 @@ public class Controller {
     private final ObjectMapper objectMapper;
     private final Service service;
 
-    Controller(NetworkState networkState) {
+    Controller(NetworkState networkState, Service service, ObjectMapper objectMapper) {
         this.networkState = networkState;
-        this.service = new Service();
-        this.objectMapper = new ObjectMapper();
+        this.service = service;
+        this.objectMapper = objectMapper;
     }
 
 
@@ -53,6 +49,10 @@ public class Controller {
         }
 
         String fileName = file.getOriginalFilename();
+        if (fileName == null) {
+            throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED, "no fileName");
+        }
+
         Network network;
 
         try (InputStream data = file.getInputStream()) {
@@ -77,7 +77,7 @@ public class Controller {
     // INFOS
     @GetMapping("/infos/voltage_levels")
     public List<String> getVoltageLevelsIds() {
-        return networkState.get().getVoltageLevelStream().map(vl -> vl.getId()).toList();
+        return networkState.get().getVoltageLevelStream().map(VoltageLevel::getId).toList();
     }
 
     @PostMapping("/sld")
@@ -110,25 +110,21 @@ public class Controller {
     // MODIFICATORS
 
     @PostMapping("/modifications")
-    public void applyModifications(@RequestBody List<ModificationInfos> modifications) {
+    public void applyChanges(@RequestBody Changes.ChangeSet changeSet) {
+        if (changeSet.formatVersion() != 1) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unsupported format version " + changeSet.formatVersion());
+        }
+        List<Changes.Change> changes = changeSet.changes();
         Network copy = NetworkSerDe.copy(networkState.get());
-        for (int i = 0; i < modifications.size(); i++) {
-            ModificationInfos infos = modifications.get(i);
+        for (int i = 0; i < changes.size(); i++) {
+            Changes.Change change = changes.get(i);
             try {
-                AbstractModification modification = infos.toModification(ModificationContext.empty());
-                modification.check(copy);
-                modification.apply(copy, ReportNode.NO_OP);
+                service.apply(copy, change);
             } catch (RuntimeException e) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                        "Modification " + i + " (" + infos.getType() + ") : " + e.getMessage(), e);
+                        "Change " + i + " (" + change.getClass().getSimpleName() + ") : " + e.getMessage(), e);
             }
         }
         networkState.set(copy);
     }
-
-
-
-
-
-
 }

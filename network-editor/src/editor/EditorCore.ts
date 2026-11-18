@@ -3,8 +3,8 @@ import { buildActions, switchAction, type EditorAction } from '../actions/action
 import { availableOperations, creatableTypesFor } from '../actions/operations.ts';
 import { pushTo } from '../utils.ts';
 import { menuItemsFor } from '../actions/menu.ts';
-import type { NetworkModification } from '../modifications/modifications.ts';
-import { normalizeModifications } from '../modifications/normalize.ts';
+import type { NetworkChange } from '../changes/changes.ts';
+import { normalizeChanges } from '../changes/normalize.ts';
 import { CommandStack } from '../commands/CommandStack.ts';
 import type { Command, PendingCreateCommand } from '../commands/Command.ts';
 import { claimedTargets, findPendingCreate, pendingBayPosition, pendingOrders } from '../commands/pending.ts';
@@ -97,7 +97,7 @@ export class EditorCore {
             this.placement.reflow();
             this.refreshTargets();
             this.emit('history:changed', state);
-            this.emit('modifications:changed', { modifications: this.journal() });
+            this.emit('changes:changed', { changes: this.journal() });
         });
         const pending = () => this.pending;
         this.placement = new BayPlacement(model, dom, this.geometry, pending);
@@ -526,15 +526,15 @@ export class EditorCore {
         return node && toElementType(node.componentType);
     }
 
-    getModifications(): NetworkModification[] {
-        return normalizeModifications(this.journal());
+    getChanges(): NetworkChange[] {
+        return normalizeChanges(this.journal());
     }
 
-    private journal(): NetworkModification[] {
-        return this.history.pending.flatMap((command) => command.toModifications());
+    private journal(): NetworkChange[] {
+        return this.history.pending.flatMap((command) => command.toChanges());
     }
 
-    clearModifications(): void {
+    clearChanges(): void {
         while (this.history.canUndo) this.history.undo();
         this.history.clear();
     }

@@ -1,6 +1,6 @@
 import type { Command } from './Command.ts';
 import type { EditorModel } from '../model/EditorModel.ts';
-import { moveFeederBay, type NetworkModification } from '../modifications/modifications.ts';
+import { moveFeederBay, type NetworkChange } from '../changes/changes.ts';
 import { toDirection, type BayPosition, type BusbarTarget } from '../types.ts';
 
 export class UpdatePendingBayCommand implements Command {
@@ -27,7 +27,7 @@ export class UpdatePendingBayCommand implements Command {
         if (direction) this.model.setFeederDirection(this.nodeId, direction);
     }
 
-    toModifications(): NetworkModification[] {
+    toChanges(): NetworkChange[] {
         return [
             moveFeederBay(
                 this.busbar.vlId,

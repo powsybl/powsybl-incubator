@@ -9,7 +9,7 @@ import type {
 } from '@powsybl/network-viewer-core';
 import type { EditorAction } from './actions/actions.ts';
 import type { ActionMenuItem } from './actions/menu.ts';
-import type { NetworkModification } from './modifications/modifications.ts';
+import type { NetworkChange } from './changes/changes.ts';
 
 export type { SLDMetadata };
 
@@ -370,7 +370,7 @@ export interface SelectedElement {
 export interface EditorEvents {
     'element:selected': { elements: readonly SelectedElement[] };
     'history:changed': { canUndo: boolean; canRedo: boolean };
-    'modifications:changed': { modifications: NetworkModification[] };
+    'changes:changed': { changes: NetworkChange[] };
     'gesture:changed': { gesture: Gesture | null; action: EditorAction | null };
     'menu:requested': {
         items: ActionMenuItem[];
@@ -424,7 +424,7 @@ export const NODE_COMPONENT_TYPE: Readonly<Record<ElementType, string>> = {
 
 export function nodeComponentType(type: ElementType, properties: EquipmentProperties = {}): string {
     if (type === 'SHUNT') {
-        const susceptance = properties.maxSusceptance;
+        const susceptance = properties.bPerSection;
         return typeof susceptance === 'number' && susceptance < 0 ? 'INDUCTOR' : 'CAPACITOR';
     }
     return NODE_COMPONENT_TYPE[type];

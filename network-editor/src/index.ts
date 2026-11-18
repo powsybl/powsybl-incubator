@@ -1,33 +1,24 @@
 export { NetworkEditor, type DiagramViewBox } from './editor/NetworkEditor.ts';
 
+export { CHANGE_FORMAT_VERSION, equipmentTypeOf } from './changes/changes.ts';
+
 export type {
-    AttributeModification,
-    BatteryCreation,
-    BoundaryLineCreation,
-    BusbarCreation,
-    ConnectionDirection,
-    ConverterStationCreation,
-    EquipmentAttributeModification,
-    EquipmentDeletion,
-    EquipmentModification,
-    EquipmentRename,
-    EnergySource,
-    GeneratorCreation,
-    InjectionCreation,
-    InjectionCreationFields,
-    LccConverterStationCreation,
-    LoadCreation,
-    LoadType,
+    Attributes,
+    CreateBusbarSection,
+    CreateCouplingDevice,
+    CreateFeederBay,
+    CreateInjection,
+    CreateSwitch,
+    EquipmentType,
+    Extra,
     MoveFeederBay,
-    MoveVoltageLevelFeederBays,
-    NetworkModification,
-    NodeInjectionCreation,
-    ShuntCompensatorCreation,
-    StaticVarCompensatorCreation,
-    SwitchCreation,
-    SwitchedInjectionCreation,
+    NetworkChange,
+    RemoveElement,
+    RemoveFeederBay,
+    Rename,
     SwitchKind,
-} from './modifications/modifications.ts';
+    UpdateAttributes,
+} from './changes/changes.ts';
 
 export type { PropertyDescriptor } from './actions/properties.ts';
 

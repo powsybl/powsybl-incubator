@@ -1,7 +1,7 @@
 import type { Command } from './Command.ts';
 import type { EditorModel } from '../model/EditorModel.ts';
 import type { ElementType, EquipmentProperties } from '../types.ts';
-import { equipmentModification, type NetworkModification } from '../modifications/modifications.ts';
+import { updateAttributes, type NetworkChange } from '../changes/changes.ts';
 
 export class UpdatePropertiesCommand implements Command {
     private previous: EquipmentProperties = {};
@@ -33,9 +33,7 @@ export class UpdatePropertiesCommand implements Command {
         this.onChanged(this.equipmentId, this.previous);
     }
 
-    toModifications(): NetworkModification[] {
-        return [
-            { ...equipmentModification(this.type, this.equipmentId, this.changes), ...this.fields } as NetworkModification,
-        ];
+    toChanges(): NetworkChange[] {
+        return [updateAttributes(this.type, this.equipmentId, this.changes, this.fields)];
     }
 }

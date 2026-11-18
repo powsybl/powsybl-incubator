@@ -1,7 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import type { ActionValues, EditorAction, EquipmentProperties, PropertyDescriptor } from '../src';
 import { defaultsOf } from '../src/actions/properties.ts';
-import { equipmentModification, modificationValues } from '../src/modifications/modifications.ts';
 
 // The demo form: one input per descriptor of the action, keyed by the raw field names.
 // A host builds its own forms; this one only shows how `initial` and `run` are used.
@@ -117,23 +116,16 @@ function readValues(
     return values;
 }
 
-/** The plain values the form shows: a property edit holds a modification, a creation holds plain values already. */
+/** The values the form shows: an edit form also shows the defaults of the fields the diagram does not give. */
 function formValues(action: EditorAction): ActionValues {
     if (action.operation !== 'UPDATE_PROPERTIES' || !action.equipment) return action.initial;
-    return {
-        ...defaultsOf(action.form.filter((descriptor) => descriptor.editOnly)),
-        ...modificationValues(action.initial),
-        equipmentId: action.equipment.id,
-    };
+    return { ...defaultsOf(action.form.filter((descriptor) => descriptor.editOnly)), ...action.initial };
 }
 
 /** What `run` expects from the plain values the form entered. */
 function submittedValues(action: EditorAction, entered: EquipmentProperties): ActionValues {
     if (action.operation !== 'UPDATE_PROPERTIES' || !action.equipment) return { ...action.initial, ...entered };
-    // A plain form hands back every field: only the ones the user changed become a modification.
+    // A plain form hands back every field: only the ones the user changed become a change.
     const shown = formValues(action);
-    const { equipmentId: _id, ...changes } = Object.fromEntries(
-        Object.entries(entered).filter(([key, value]) => value !== shown[key]),
-    );
-    return equipmentModification(action.equipment.type, action.equipment.id, changes);
+    return Object.fromEntries(Object.entries(entered).filter(([key, value]) => value !== shown[key]));
 }
